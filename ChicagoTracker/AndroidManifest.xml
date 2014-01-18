@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="fr.cph.chicago"
+    android:versionCode="2"
+    android:versionName="2" >
+
+    <uses-sdk
+        android:minSdkVersion="14"
+        android:targetSdkVersion="19" />
+    
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:name="fr.cph.chicago.ChicagoTracker"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name="fr.cph.chicago.activity.MainActivity"
+            android:alwaysRetainTaskState="true"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity 
+            android:name="fr.cph.chicago.activity.StationActivity"
+            android:label="@string/station_activity"
+            android:parentActivityName="fr.cph.chicago.activity.MainActivity"
+             >
+            <!-- 	
+            
+            android:parentActivityName Load the names activity when pushed by user.
+            		May have issue with data persistence 
+           	-->
+        </activity>
+        <activity 
+            android:name="fr.cph.chicago.activity.TrainStationActivity"
+            android:label="@string/train_station_activity"
+            android:parentActivityName="fr.cph.chicago.activity.MainActivity"
+             >
+        </activity>
+    </application>
+
+</manifest>

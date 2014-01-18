@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@+dimen/activity_train_line_padding_bottom"
+    android:paddingLeft="@+dimen/activity_train_line_padding_left"
+    android:paddingTop="@+dimen/activity_train_line_padding_top" >
+
+    <TextView
+        android:id="@+id/route_b"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:paddingRight="@+dimen/activity_station_stops_line1_padding_color"
+        android:text="B"
+        android:textColor="@+color/grey_M"
+        android:textIsSelectable="false"
+        android:textSize="@+dimen/activity_train_line_M"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/route_color_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/route_b"
+        android:layout_toRightOf="@+id/route_b"
+        android:background="@color/grey_5"
+        android:text=" "
+        android:textIsSelectable="false"
+        android:textSize="@+dimen/activity_train_line_M" />
+
+    <TextView
+        android:id="@+id/route_name_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/route_b"
+        android:layout_toRightOf="@+id/route_color_value"
+        android:paddingLeft="@+dimen/activity_station_stops_line1_padding_color"
+        android:textColor="@+color/black"
+        android:textIsSelectable="false"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/route_number_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/route_b"
+        android:layout_alignParentRight="true"
+        android:textColor="@color/black"
+        android:textIsSelectable="false"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:id="@+id/route_details"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/route_b"
+        android:orientation="horizontal"
+        android:visibility="gone" >
+
+        <TextView
+            android:id="@+id/loading_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Loading..."
+            android:textColor="@color/black"
+            android:paddingLeft="30dp"
+            android:paddingTop="5dp"
+            android:textIsSelectable="false"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</RelativeLayout>

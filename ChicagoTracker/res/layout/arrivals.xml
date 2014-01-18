@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/route_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:text="derp derp"
+        android:textColor="@color/black"
+        android:textIsSelectable="false" />
+    
+    <TextView
+        android:id="@+id/time_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="derp2 derp2"
+        android:textColor="@color/black"
+        android:textIsSelectable="false" />
+
+    <TextView
+        android:id="@+id/destination_name_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:text="derp2 derp2"
+        android:textColor="@color/black"
+        android:textIsSelectable="false" />
+
+</RelativeLayout>
