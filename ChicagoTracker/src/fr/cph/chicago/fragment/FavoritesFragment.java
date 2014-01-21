@@ -25,14 +25,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import fr.cph.chicago.R;
 import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.FavoritesAdapter;
 import fr.cph.chicago.connection.CtaRequestType;
-import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
+import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.task.CtaConnectTask;
 
@@ -112,7 +112,7 @@ public class FavoritesFragment extends Fragment {
 	}
 
 	public void loadData() {
-		if (firstLoad) {
+		if (firstLoad && menu.size() > 1) {
 			MenuItem menuItem = menu.getItem(1);
 			menuItem.setActionView(R.layout.progressbar);
 			menuItem.expandActionView();

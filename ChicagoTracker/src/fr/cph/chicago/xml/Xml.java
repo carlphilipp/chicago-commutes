@@ -19,6 +19,7 @@ import android.util.SparseArray;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusRoute;
+import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
@@ -291,7 +292,7 @@ public class Xml {
 			} else if (eventType == XmlPullParser.TEXT) {
 				String text = parser.getText();
 				BusDirection busDirection = BusDirection.fromString(text);
-				if(busDirection != null){
+				if (busDirection != null) {
 					directions.addBusDirection(busDirection);
 				}
 			}
@@ -299,4 +300,43 @@ public class Xml {
 		}
 		return directions;
 	}
+
+	public List<BusStop> parseBusBounds(String xml) throws XmlPullParserException, IOException {
+		List<BusStop> busStops = null;
+		String tagName = null;
+		BusStop busStop = null;
+
+		InputStream is = new ByteArrayInputStream(xml.getBytes());
+		parser.setInput(is, "UTF-8");
+		int eventType = parser.getEventType();
+		while (eventType != XmlPullParser.END_DOCUMENT) {
+			if (eventType == XmlPullParser.START_DOCUMENT) {
+				busStops = new ArrayList<BusStop>();
+			} else if (eventType == XmlPullParser.START_TAG) {
+				tagName = parser.getName();
+			} else if (eventType == XmlPullParser.END_TAG) {
+				tagName = null;
+			} else if (eventType == XmlPullParser.TEXT) {
+				String text = parser.getText();
+				if (tagName != null) {
+					if (tagName.equals("stpid")) {
+						busStop = new BusStop();
+						busStop.setId(Integer.valueOf(text));
+						busStops.add(busStop);
+					} else if (tagName.equals("stpnm")) {
+						busStop.setName(text);
+					} else if (tagName.equals("lat")) {
+						Position position = new Position();
+						position.setLatitude(Double.valueOf(text));
+						busStop.setPosition(position);
+					} else if (tagName.equals("lon")) {
+						busStop.getPosition().setLongitude(Double.valueOf(text));
+					}
+				}
+			}
+			eventType = parser.next();
+		}
+		return busStops;
+	}
+
 }

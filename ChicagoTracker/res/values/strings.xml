@@ -22,4 +22,8 @@
     
     <!-- Bus -->
     <string name="bus_login_progress">Station</string>
+    <string name="bus_station_activity">Bus</string>
+    
+     <!-- Bus Bound -->
+      <string name="bus_bound_activity">Bus Bound</string>
 </resources>

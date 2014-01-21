@@ -12,6 +12,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.entity.BusRoute;
+import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.xml.Xml;
 
 public class BusData {
@@ -50,11 +51,29 @@ public class BusData {
 		return routes;
 	}
 	
-	public int getSize(){
+	public int getRouteSize(){
 		return routes.size();
 	}
 	
 	public BusRoute getRoute(int position){
 		return routes.get(position);
+	}
+	
+	public List<BusStop> readBusStop(String stopId, String bound){
+		CtaConnect connect = CtaConnect.getInstance();
+		MultiMap<String, String> params2 = new MultiValueMap<String, String>();
+		params2.put("rt", stopId);
+		params2.put("dir", bound);
+		List<BusStop> busStops = null;
+		try {
+			String xmlResult = connect.connect(CtaRequestType.BUS_STOP_LIST, params2);
+			Xml xml = new Xml();
+			busStops = xml.parseBusBounds(xmlResult);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (XmlPullParserException e) {
+			e.printStackTrace();
+		}
+		return busStops;
 	}
 }

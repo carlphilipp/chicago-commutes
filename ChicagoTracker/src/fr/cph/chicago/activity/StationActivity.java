@@ -33,24 +33,25 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import fr.cph.chicago.R;
 import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.connection.GStreetViewConnect;
-import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
-import fr.cph.chicago.entity.TrainArrival;
+import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.Stop;
+import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.TrainDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.Util;
@@ -139,7 +140,7 @@ public class StationActivity extends Activity {
 
 		favoritesImage = (ImageView) findViewById(R.id.activity_station_favorite_star);
 		if (isFavorite) {
-			favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.star_filled));
+			favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_active));
 		}
 		favoritesImage.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -298,9 +299,9 @@ public class StationActivity extends Activity {
 			isFavorite = true;
 		}
 		if (isFavorite) {
-			favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.star_filled));
+			favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_active));
 		} else {
-			favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.star_blank));
+			favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_disabled));
 		}
 	}
 
@@ -513,7 +514,6 @@ public class StationActivity extends Activity {
 								}
 							}
 						}
-
 					}
 				}
 			}

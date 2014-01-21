@@ -1,5 +1,9 @@
 package fr.cph.chicago.data;
 
+import java.util.List;
+
+import fr.cph.chicago.entity.BusStop;
+
 public class DataHolder {
 
 	private static DataHolder dataHolder;
@@ -32,5 +36,4 @@ public class DataHolder {
 	public void setBusData(BusData busData) {
 		this.busData = busData;
 	}
-
 }

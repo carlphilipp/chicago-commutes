@@ -7,7 +7,7 @@
     <uses-sdk
         android:minSdkVersion="14"
         android:targetSdkVersion="19" />
-    
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
@@ -23,25 +23,32 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity 
+        <activity
             android:name="fr.cph.chicago.activity.StationActivity"
             android:label="@string/station_activity"
-            android:parentActivityName="fr.cph.chicago.activity.MainActivity"
-             >
-            <!-- 	
-            
+            android:parentActivityName="fr.cph.chicago.activity.MainActivity" >
+
+            <!--
             android:parentActivityName Load the names activity when pushed by user.
             		May have issue with data persistence 
-           	-->
+            -->
         </activity>
-        <activity 
+        <activity
             android:name="fr.cph.chicago.activity.TrainStationActivity"
             android:label="@string/train_station_activity"
-            android:parentActivityName="fr.cph.chicago.activity.MainActivity"
-             >
+            android:parentActivityName="fr.cph.chicago.activity.MainActivity" >
+        </activity>
+        <activity
+            android:name="fr.cph.chicago.activity.BusBoundActivity"
+            android:label="@string/train_station_activity">
+        </activity>
+         <activity
+            android:name="fr.cph.chicago.activity.BusActivity"
+            android:label="@string/bus_bound_activity">
         </activity>
     </application>
 
