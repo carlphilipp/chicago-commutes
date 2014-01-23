@@ -87,11 +87,52 @@
                 android:textColor="@color/white" />
         </RelativeLayout>
 
+        <RelativeLayout
+            android:id="@+id/activity_bus_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            android:layout_below="@+id/activity_bus_streetview_container" >
+
+            <TextView
+                android:id="@+id/activity_bus_T"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:paddingRight="@+dimen/activity_station_stops_line1_padding_color"
+                android:text="B"
+                android:textColor="@color/grey_M"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/activity_bus_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/activity_bus_T"
+                android:layout_toRightOf="@+id/activity_bus_T"
+                android:background="@color/grey_5"
+                android:text=" "
+                android:textIsSelectable="false"
+                android:textSize="@+dimen/activity_train_line_M" />
+
+            <TextView
+                android:id="@+id/activity_bus_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/activity_bus_T"
+                android:layout_toRightOf="@+id/activity_bus_color"
+                android:paddingLeft="@+dimen/activity_station_stops_line1_padding_color"
+                android:textColor="@+color/black"
+                android:textIsSelectable="false"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
         <LinearLayout
             android:id="@+id/activity_bus_stops"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/activity_bus_streetview_container"
+            android:layout_below="@+id/activity_bus_title"
             android:orientation="vertical" >
         </LinearLayout>
     </RelativeLayout>

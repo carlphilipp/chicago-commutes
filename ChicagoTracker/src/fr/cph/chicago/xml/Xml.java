@@ -17,6 +17,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import android.annotation.SuppressLint;
 import android.util.SparseArray;
 import fr.cph.chicago.data.TrainData;
+import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
@@ -26,6 +27,7 @@ import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.Stop;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.BusDirection;
+import fr.cph.chicago.entity.enumeration.PredictionType;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
 public class Xml {
@@ -34,13 +36,15 @@ public class Xml {
 	private static final String TAG = "Xml";
 
 	private XmlPullParser parser;
-	private SimpleDateFormat df;
+	private SimpleDateFormat dfTrain;
+	private SimpleDateFormat dfBus;
 
 	@SuppressLint("SimpleDateFormat")
 	public Xml() throws XmlPullParserException {
 		XmlPullParserFactory pullParserFactory = XmlPullParserFactory.newInstance();
 		parser = pullParserFactory.newPullParser();
-		df = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
+		dfTrain = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
+		dfBus = new SimpleDateFormat("yyyyMMdd HH:mm");
 	}
 
 	public SparseArray<TrainArrival> parseArrivals(String xml, TrainData data) throws XmlPullParserException, IOException, ParseException {
@@ -154,13 +158,13 @@ public class Xml {
 						TrainArrival arri = arrivals.get(staId, null);
 						if (arri != null) {
 							Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-							currentEta.setPredictionDate(df.parse(text));
+							currentEta.setPredictionDate(dfTrain.parse(text));
 						}
 					} else if (tagName.equals("arrT")) {
 						TrainArrival arri = arrivals.get(staId, null);
 						if (arri != null) {
 							Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-							currentEta.setArrivalDepartureDate(df.parse(text));
+							currentEta.setArrivalDepartureDate(dfTrain.parse(text));
 						}
 					} else if (tagName.equals("isApp")) {
 						TrainArrival arri = arrivals.get(staId, null);
@@ -212,7 +216,7 @@ public class Xml {
 					}
 					break;
 				case TMST:
-					tmst = df.parse(text);
+					tmst = dfTrain.parse(text);
 					break;
 				case ERRCD:
 					errCd = Integer.valueOf(text);
@@ -339,4 +343,56 @@ public class Xml {
 		return busStops;
 	}
 
+	public List<BusArrival> parseBusArrivals(String xml) throws XmlPullParserException, IOException, ParseException {
+		List<BusArrival> busArrivals = null;
+		String tagName = null;
+		BusArrival busArrival = null;
+		InputStream is = new ByteArrayInputStream(xml.getBytes());
+		parser.setInput(is, "UTF-8");
+		int eventType = parser.getEventType();
+		while (eventType != XmlPullParser.END_DOCUMENT) {
+			if (eventType == XmlPullParser.START_DOCUMENT) {
+				busArrivals = new ArrayList<BusArrival>();
+			} else if (eventType == XmlPullParser.START_TAG) {
+				tagName = parser.getName();
+			} else if (eventType == XmlPullParser.END_TAG) {
+				tagName = null;
+			} else if (eventType == XmlPullParser.TEXT) {
+				String text = parser.getText();
+				if (tagName != null) {
+					if (tagName.equals("tmstmp")) {
+						busArrival = new BusArrival();
+						busArrival.setTimeStamp(dfBus.parse(text));
+						busArrivals.add(busArrival);
+					} else if (tagName.equals("typ")) {
+						busArrival.setPredictionType(PredictionType.fromString(text));
+					} else if (tagName.equals("stpnm")) {
+						busArrival.setStopName(text);
+					} else if (tagName.equals("stpid")) {
+						if(busArrival != null){
+							busArrival.setStopId(Integer.valueOf(text));
+						}
+					} else if (tagName.equals("vid")) {
+						busArrival.setBusId(Integer.valueOf(text));
+					} else if (tagName.equals("dstp")) {
+						busArrival.setDistanceToStop(Integer.valueOf(text));
+					} else if (tagName.equals("rt")) {
+						if(busArrival != null){
+							busArrival.setRouteId(text);
+						}
+					} else if (tagName.equals("rtdir")) {
+						busArrival.setRouteDirection(text);
+					} else if (tagName.equals("des")) {
+						busArrival.setBusDestination(text);
+					} else if (tagName.equals("prdtm")) {
+						busArrival.setPredictionTime(dfBus.parse(text));
+					} else if (tagName.equals("dly")) {
+						busArrival.setIsDly(BooleanUtils.toBoolean(text));
+					}
+				}
+			}
+			eventType = parser.next();
+		}
+		return busArrivals;
+	}
 }

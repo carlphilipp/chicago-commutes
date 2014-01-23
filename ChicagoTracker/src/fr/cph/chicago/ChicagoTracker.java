@@ -8,7 +8,7 @@ import android.content.Context;
 public class ChicagoTracker extends Application {
 
 	private static Context context;
-	public static final String PREFERENCE_FAVORITES = "TrainTrackerFavorites";
+	public static final String PREFERENCE_FAVORITES = "ChicagoTrackerFavoritesTrain";
 	private static Date lastTrainUpdate = null;
 
 	public void onCreate() {

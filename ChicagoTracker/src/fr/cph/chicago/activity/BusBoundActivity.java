@@ -45,6 +45,7 @@ public class BusBoundActivity extends ListActivity {
 				extras.putString("busStopName", busStop.getName());
 				extras.putString("busRouteId", busRouteId);
 				extras.putString("busRouteName", busRouteName);
+				extras.putString("bound", bound);
 				extras.putDouble("latitude", busStop.getPosition().getLatitude());
 				extras.putDouble("longitude", busStop.getPosition().getLongitude());
 				
