@@ -1,3 +1,19 @@
+/**
+ * Copyright 2014 Carl-Philipp Harmant
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package fr.cph.chicago.activity;
 
 import java.io.IOException;
@@ -214,7 +230,7 @@ public class StationActivity extends Activity {
 				checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 					@Override
 					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-						Preferences.saveFilter(stationId, line, stop.getDirection(), isChecked);
+						Preferences.saveTrainFilter(stationId, line, stop.getDirection(), isChecked);
 					}
 				});
 				checkBox.setOnClickListener(new View.OnClickListener() {
@@ -226,7 +242,7 @@ public class StationActivity extends Activity {
 						new LoadData().execute(reqParams);
 					}
 				});
-				checkBox.setChecked(Preferences.getFilter(stationId, line, stop.getDirection()));
+				checkBox.setChecked(Preferences.getTrainFilter(stationId, line, stop.getDirection()));
 				checkBox.setText(stop.getDirection().toString());
 				checkBox.setTextColor(getResources().getColor(R.color.grey));
 
@@ -276,7 +292,7 @@ public class StationActivity extends Activity {
 			menuItem.expandActionView();
 
 			MultiMap<String, String> params = new MultiValueMap<String, String>();
-			List<Integer> favorites = Preferences.getFavorites(ChicagoTracker.PREFERENCE_FAVORITES);
+			List<Integer> favorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
 			for (Integer fav : favorites) {
 				params.put("mapid", String.valueOf(fav));
 			}
@@ -287,15 +303,14 @@ public class StationActivity extends Activity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
-
 	}
 
 	protected void switchFavorite() {
 		if (isFavorite) {
-			removeFromFavorites(null);
+			Util.removeFromTrainFavorites(stationId, ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
 			isFavorite = false;
 		} else {
-			addToFavorites(null);
+			Util.addToTrainFavorites(stationId, ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
 			isFavorite = true;
 		}
 		if (isFavorite) {
@@ -307,30 +322,17 @@ public class StationActivity extends Activity {
 
 	public boolean isFavorite() {
 		boolean isFavorite = false;
-		List<Integer> favorites = Preferences.getFavorites(ChicagoTracker.PREFERENCE_FAVORITES);
+		List<Integer> favorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
 		for (Integer fav : favorites) {
 			if (fav.intValue() == stationId.intValue()) {
 				isFavorite = true;
+				break;
 			}
 		}
 		return isFavorite;
 	}
 
-	public void addToFavorites(View view) {
-		List<Integer> favorites = Preferences.getFavorites(ChicagoTracker.PREFERENCE_FAVORITES);
-		if (!favorites.contains(stationId)) {
-			favorites.add(stationId);
-			Preferences.saveFavorites(ChicagoTracker.PREFERENCE_FAVORITES, favorites);
-		}
-		Toast.makeText(this, "Adding to favorites", Toast.LENGTH_SHORT).show();
-	}
-
-	public void removeFromFavorites(View view) {
-		List<Integer> favorites = Preferences.getFavorites(ChicagoTracker.PREFERENCE_FAVORITES);
-		favorites.remove(stationId);
-		Preferences.saveFavorites(ChicagoTracker.PREFERENCE_FAVORITES, favorites);
-		Toast.makeText(this, "Removing from favorites", Toast.LENGTH_SHORT).show();
-	}
+	
 
 	private class DisplayGoogleStreetPicture extends AsyncTask<Position, Void, Drawable> {
 		private Position position;
@@ -443,7 +445,7 @@ public class StationActivity extends Activity {
 						station = eta.getStation();
 						line = eta.getRouteName();
 						direction = eta.getStop().getDirection();
-						boolean toRemove = Preferences.getFilter(station.getId(), line, direction);
+						boolean toRemove = Preferences.getTrainFilter(station.getId(), line, direction);
 						if (!toRemove) {
 							etas.remove(i - j++);
 						}

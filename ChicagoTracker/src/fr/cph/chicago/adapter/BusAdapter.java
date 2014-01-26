@@ -1,3 +1,19 @@
+/**
+ * Copyright 2014 Carl-Philipp Harmant
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package fr.cph.chicago.adapter;
 
 import java.io.IOException;
@@ -24,7 +40,6 @@ import android.widget.TextView;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BusBoundActivity;
-import fr.cph.chicago.activity.StationActivity;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.data.BusData;
@@ -39,30 +54,25 @@ public final class BusAdapter extends BaseAdapter {
 	/** Tag **/
 	private static final String TAG = "BusAdapter";
 
-	private BusData data;
+	private BusData busData;
 
 	private Map<String, LinearLayout> detailsMap;
 	private Map<String, List<TextView>> bouds;
 
 	public BusAdapter() {
-		this.data = DataHolder.getInstance().getBusData();
+		this.busData = DataHolder.getInstance().getBusData();
 		this.detailsMap = new HashMap<String, LinearLayout>();
 		this.bouds = new HashMap<String, List<TextView>>();
 	}
 
 	@Override
 	public final int getCount() {
-		if (data != null) {
-			return data.getRouteSize();
-		} else {
-			return 0;
-		}
-
+		return busData.getRouteSize();
 	}
 
 	@Override
 	public final Object getItem(int position) {
-		return data.getRoute(position);
+		return busData.getRoute(position);
 	}
 
 	@Override
@@ -73,7 +83,7 @@ public final class BusAdapter extends BaseAdapter {
 	@Override
 	public final View getView(int position, View convertView, ViewGroup parent) {
 
-		final BusRoute route = data.getRoute(position);
+		final BusRoute route = busData.getRoute(position);
 
 		LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		convertView = vi.inflate(R.layout.list_bus, null);
@@ -125,11 +135,6 @@ public final class BusAdapter extends BaseAdapter {
 		return convertView;
 	}
 
-	public void setBusData() {
-		this.data = null;
-		this.data = DataHolder.getInstance().getBusData();
-	}
-
 	private class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 
 		private BusRoute busRoute;
@@ -143,12 +148,11 @@ public final class BusAdapter extends BaseAdapter {
 			try {
 				MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
 				busRoute = (BusRoute) params[0];
-				
+
 				reqParams.put("rt", busRoute.getId());
 				Xml xml = new Xml();
 				String xmlResult = connect.connect(CtaRequestType.BUS_DIRECTION, reqParams);
-				
-				
+
 				busDirections = xml.parseBusDirections(xmlResult, busRoute.getId());
 				loading = (TextView) params[1];
 				routeDirections = (LinearLayout) params[2];

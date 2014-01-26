@@ -1,3 +1,19 @@
+/**
+ * Copyright 2014 Carl-Philipp Harmant
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package fr.cph.chicago.fragment;
 
 /**
@@ -49,74 +65,12 @@ public class BusFragment extends Fragment {
 		return fragment;
 	}
 
-	public BusFragment() {
-	}
-
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_bus, container, false);
 		ada = new BusAdapter();
 		ListView listView = (ListView) rootView.findViewById(R.id.bus_list);
 		listView.setAdapter(ada);
-
-//		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//			@Override
-//			public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
-//				ada.updateDetails(childView, position);
-//			}
-//		});
-
-		// private TextView loading;
-		// private LinearLayout detailsLayout;
-		//
-		// @Override
-		// public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
-		// RelativeLayout view = (RelativeLayout) childView;
-		// detailsLayout = (LinearLayout) view.findViewById(R.id.route_details);
-		// detailsLayout.setVisibility(LinearLayout.VISIBLE);
-		// loading = (TextView) detailsLayout.findViewById(R.id.loading_text_view);
-		//
-		// BusRoute busRoute = (BusRoute) ada.getItem(position);
-		//
-		// String stopId = busRoute.getId();
-		//
-		// new DirectionAsyncTask().execute(stopId);
-		// Log.i(TAG, "Click");
-		// }
-		//
-		// class DirectionAsyncTask extends AsyncTask<String, Void, BusDirections> {
-		// @Override
-		// protected BusDirections doInBackground(String... params) {
-		// Log.i(TAG, "doInBackground");
-		// CtaConnect connect = CtaConnect.getInstance();
-		// BusDirections busDirections = null;
-		// try {
-		// MultiMap<String,String> reqParams = new MultiValueMap<String, String>();
-		// reqParams.put("rt", params[0]);
-		// Xml xml = new Xml();
-		// String xmlResult = connect.connect(CtaRequestType.BUS_DIRECTION, reqParams);
-		// busDirections = xml.parseBusDirections(xmlResult, params[0]);
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// } catch (XmlPullParserException e) {
-		// e.printStackTrace();
-		// }
-		// return busDirections;
-		// }
-		// @Override
-		// protected void onPostExecute(BusDirections result) {
-		// loading.setVisibility(TextView.GONE);
-		// for(BusDirection busDirection : result.getlBusDirection()){
-		// TextView textView = new TextView(TrainTracker.getAppContext());
-		// textView.setText(busDirection.toString()+ " ");
-		// Log.i(TAG, "Loading view "+ loading.getId() +" Update view " + detailsLayout.getId() + " with " + textView.getText());
-		// detailsLayout.addView(textView);
-		// }
-		// }
-		// }
-		// }
-
-		new LoadBusRoutes().execute();
 		return rootView;
 	}
 
@@ -147,9 +101,6 @@ public class BusFragment extends Fragment {
 			MenuItem menuItem = item;
 			menuItem.setActionView(R.layout.progressbar);
 			menuItem.expandActionView();
-
-			new LoadBusRoutes().execute();
-
 			Toast.makeText(this.getActivity(), "Refresh...!", Toast.LENGTH_SHORT).show();
 			return true;
 		}
@@ -161,24 +112,6 @@ public class BusFragment extends Fragment {
 			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
 			refreshMenuItem.collapseActionView();
 			refreshMenuItem.setActionView(null);
-		}
-	}
-
-	private class LoadBusRoutes extends AsyncTask<Void, Void, BusData> {
-
-		@Override
-		protected BusData doInBackground(Void... params) {
-			BusData data = BusData.getInstance();
-			data.read();
-			return data;
-		}
-
-		@Override
-		protected void onPostExecute(BusData result) {
-			DataHolder.getInstance().setBusData(result);
-			ada.setBusData();
-			ada.notifyDataSetChanged();
-			stopRefreshAnimation();
 		}
 	}
 }

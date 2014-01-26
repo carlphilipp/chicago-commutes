@@ -1,3 +1,19 @@
+/**
+ * Copyright 2014 Carl-Philipp Harmant
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package fr.cph.chicago.activity;
 
 import java.io.IOException;
@@ -28,13 +44,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.connection.GStreetViewConnect;
+import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.Position;
+import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
 
 public class BusActivity extends Activity {
@@ -48,7 +67,7 @@ public class BusActivity extends Activity {
 	private String busRouteId;
 	private String bound;
 	private Integer busStopId;
-	private ImageView streetViewImage, mapImage, directionImage;
+	private ImageView streetViewImage, mapImage, directionImage, favoritesImage;
 	private Position position;
 	private Menu menu;
 	private LinearLayout stopsView;
@@ -62,8 +81,6 @@ public class BusActivity extends Activity {
 		// Load right xml
 		setContentView(R.layout.activity_bus);
 
-		this.isFavorite = isFavorite();
-
 		busStopId = getIntent().getExtras().getInt("busStopId");
 		String busStopName = getIntent().getExtras().getString("busStopName");
 		busRouteId = getIntent().getExtras().getString("busRouteId");
@@ -72,6 +89,8 @@ public class BusActivity extends Activity {
 		position = new Position();
 		position.setLatitude(getIntent().getExtras().getDouble("latitude"));
 		position.setLongitude(getIntent().getExtras().getDouble("longitude"));
+
+		this.isFavorite = isFavorite();
 
 		stopsView = (LinearLayout) findViewById(R.id.activity_bus_stops);
 
@@ -86,6 +105,17 @@ public class BusActivity extends Activity {
 		mapImage = (ImageView) findViewById(R.id.activity_bus_map_image);
 
 		directionImage = (ImageView) findViewById(R.id.activity_bus_map_direction);
+
+		favoritesImage = (ImageView) findViewById(R.id.activity_bus_favorite_star);
+		if (isFavorite) {
+			favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_active));
+		}
+		favoritesImage.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				BusActivity.this.switchFavorite();
+			}
+		});
 
 		new DisplayGoogleStreetPicture().execute(position);
 
@@ -112,8 +142,25 @@ public class BusActivity extends Activity {
 		return true;
 	}
 
-	private class LoadData extends AsyncTask<Void, Void, List<BusArrival>> {
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			finish();
+			return true;
+		case R.id.action_refresh:
+			MenuItem menuItem = item;
+			menuItem.setActionView(R.layout.progressbar);
+			menuItem.expandActionView();
+			(new LoadData()).execute();
+			Toast.makeText(this, "Refresh...!", Toast.LENGTH_SHORT).show();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 
+	}
+
+	private class LoadData extends AsyncTask<Void, Void, List<BusArrival>> {
 		@Override
 		protected List<BusArrival> doInBackground(Void... params) {
 			MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
@@ -126,7 +173,6 @@ public class BusActivity extends Activity {
 				return xml.parseBusArrivals(xmlResult);
 			} catch (IOException e) {
 				e.printStackTrace();
-				e.printStackTrace();
 			} catch (XmlPullParserException e) {
 				e.printStackTrace();
 			} catch (ParseException e) {
@@ -136,9 +182,24 @@ public class BusActivity extends Activity {
 		}
 
 		@Override
+		protected void onProgressUpdate(Void... values) {
+			// Get menu item and put it to loading mod
+			if (menu != null) {
+				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+				refreshMenuItem.setActionView(R.layout.progressbar);
+				refreshMenuItem.expandActionView();
+			}
+		}
+
+		@Override
 		protected void onPostExecute(List<BusArrival> result) {
 			BusActivity.this.busArrivals = result;
 			BusActivity.this.buildArrivals();
+			if (!firstLoad) {
+				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+				refreshMenuItem.collapseActionView();
+				refreshMenuItem.setActionView(null);
+			}
 		}
 
 	}
@@ -213,6 +274,21 @@ public class BusActivity extends Activity {
 		}
 	}
 
+	protected void switchFavorite() {
+		if (isFavorite) {
+			Util.removeFromBusFavorites(busRouteId, String.valueOf(busStopId), bound, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+			isFavorite = false;
+		} else {
+			Util.addToBusFavorites(busRouteId, String.valueOf(busStopId), bound, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+			isFavorite = true;
+		}
+		if (isFavorite) {
+			favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_active));
+		} else {
+			favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_disabled));
+		}
+	}
+
 	public void buildArrivals() {
 		if (busArrivals != null) {
 			Map<String, TextView> mapRes = new HashMap<String, TextView>();
@@ -230,6 +306,7 @@ public class BusActivity extends Activity {
 					}
 				}
 			}
+			stopsView.removeAllViews();
 			for (Entry<String, TextView> entry : mapRes.entrySet()) {
 				stopsView.addView(entry.getValue());
 			}
@@ -237,14 +314,14 @@ public class BusActivity extends Activity {
 	}
 
 	public boolean isFavorite() {
-		// boolean isFavorite = false;
-		// List<Integer> favorites = Preferences.getFavorites(ChicagoTracker.PREFERENCE_FAVORITES);
-		// for (Integer fav : favorites) {
-		// if (fav.intValue() == stationId.intValue()) {
-		// isFavorite = true;
-		// }
-		// }
-		// return isFavorite;
-		return false;
+		boolean isFavorite = false;
+		List<String> favorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+		for (String fav : favorites) {
+			if (fav.equals(busRouteId + "_" + busStopId + "_" + bound)) {
+				isFavorite = true;
+				break;
+			}
+		}
+		return isFavorite;
 	}
 }

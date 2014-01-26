@@ -45,16 +45,17 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.FavoritesAdapter;
 import fr.cph.chicago.connection.CtaRequestType;
+import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
+import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.task.CtaConnectTask2;
-import fr.cph.chicago.util.Util;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class FavoritesFragment extends Fragment {
+public class FavoritesFragment_bak extends Fragment {
 	/**
 	 * The fragment argument representing the section number for this fragment.
 	 */
@@ -67,6 +68,8 @@ public class FavoritesFragment extends Fragment {
 
 	private static FavoritesAdapter ada;
 
+	private TrainData data;
+
 	private Menu menu;
 
 	private RefreshTask refreshTimingTask;
@@ -76,8 +79,8 @@ public class FavoritesFragment extends Fragment {
 	/**
 	 * Returns a new instance of this fragment for the given section number.
 	 */
-	public static FavoritesFragment newInstance(int sectionNumber) {
-		FavoritesFragment fragment = new FavoritesFragment();
+	public static FavoritesFragment_bak newInstance(int sectionNumber) {
+		FavoritesFragment_bak fragment = new FavoritesFragment_bak();
 		Bundle args = new Bundle();
 		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
 		fragment.setArguments(args);
@@ -86,6 +89,7 @@ public class FavoritesFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		this.data = DataHolder.getInstance().getTrainData();
 		View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 		if (ada == null) {
 			ada = new FavoritesAdapter(mActivity);
@@ -119,18 +123,10 @@ public class FavoritesFragment extends Fragment {
 			for (Integer fav : favorites) {
 				params.put("mapid", String.valueOf(fav));
 			}
-			
-			MultiMap<String, String> params2 = new MultiValueMap<String, String>();
-			List<String> busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
-			for(String str : busFavorites){
-				String[] fav = Util.decodeBusFavorite(str);
-				params2.put("rt", fav[0]);
-				params2.put("stpid", fav[1]);
-			}
 
 			try {
-				CtaConnectTask2 task = new CtaConnectTask2(FavoritesFragment.class, CtaRequestType.TRAIN_ARRIVALS, params,
-						CtaRequestType.BUS_ARRIVALS, params2);
+				CtaConnectTask2 task = new CtaConnectTask2(FavoritesFragment_bak.class, CtaRequestType.TRAIN_ARRIVALS, params,
+						CtaRequestType.BUS_ARRIVALS, null);
 				task.execute((Void) null);
 			} catch (XmlPullParserException e) {
 				e.printStackTrace();

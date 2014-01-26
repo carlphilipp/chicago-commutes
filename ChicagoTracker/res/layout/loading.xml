@@ -1,5 +1,5 @@
 <!--  
-  Copyright 2013 Carl-Philipp Harmant
+  Copyright 2014 Carl-Philipp Harmant
  
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  -->
  
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/login_status"
+    android:id="@+id/loading_layout"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
@@ -41,7 +41,7 @@
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:fontFamily="sans-serif-light"
-        android:text="@string/bus_login_progress"
+        android:text="@string/progress_message"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </LinearLayout>
