@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!--  
+<!--
   Copyright 2014 Carl-Philipp Harmant
  
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,8 +14,8 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
- -->
- 
+-->
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -34,7 +34,7 @@
             android:layout_alignParentLeft="true"
             android:paddingRight="@+dimen/activity_station_stops_line1_padding_color"
             android:text="T"
-            android:textColor="@+color/grey_M"
+            android:textColor="@+color/grey_M_B"
             android:textIsSelectable="false"
             android:textSize="@+dimen/activity_train_line_M"
             android:textStyle="bold" />
@@ -45,9 +45,9 @@
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/station_t"
             android:layout_toRightOf="@+id/station_t"
-            android:textIsSelectable="false"
+            android:background="@color/grey_5"
             android:text=" "
-            android:background="@color/grey_5" 
+            android:textIsSelectable="false"
             android:textSize="@+dimen/activity_train_line_M" />
 
         <TextView
@@ -56,20 +56,24 @@
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/station_t"
             android:layout_toRightOf="@+id/station_separator"
+            android:layout_toLeftOf="@+id/station_updated"
             android:paddingLeft="@+dimen/activity_station_stops_line1_padding_color"
             android:textColor="@color/black"
-            android:textIsSelectable="false" />
-        
-         <TextView
+            android:textIsSelectable="false"
+            android:lines="1"
+    		android:scrollHorizontally="true"
+            android:ellipsize="end" />
+
+        <TextView
             android:id="@+id/station_updated"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/station_t"
-            android:layout_toLeftOf="@+id/arrow"
-            android:textColor="@color/grey"
             android:layout_marginRight="10dp"
+            android:layout_alignParentRight="true"
+            android:textColor="@color/grey"
             android:textIsSelectable="false" />
-
+<!-- 
         <ImageView
             android:id="@+id/arrow"
             android:layout_width="wrap_content"
@@ -78,6 +82,7 @@
             android:layout_centerVertical="true"
             android:contentDescription="derpderp"
             android:src="@drawable/left_arrow" />
+            -->
     </RelativeLayout>
 
     <LinearLayout

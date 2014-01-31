@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:textStyle="bold"
-        android:textColor="@+color/grey_M"
+        android:textColor="@+color/grey_M_B"
         android:text="T"
         android:textSize="@+dimen/activity_train_line_M"
         android:paddingRight="@+dimen/activity_station_stops_line1_padding_color"

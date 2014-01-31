@@ -96,8 +96,6 @@ public class StationActivity extends Activity {
 
 	private Map<String, Integer> ids;
 
-	// private ArrayList<View> viewListToRemove = new ArrayList<View>();
-
 	private Station station;
 
 	private LinearLayout.LayoutParams paramsStop;
@@ -106,7 +104,6 @@ public class StationActivity extends Activity {
 
 	private boolean firstLoad = true;
 
-	// private MenuItem menuItem;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -185,7 +182,7 @@ public class StationActivity extends Activity {
 			textView2.setText("T");
 			textView2.setTypeface(Typeface.DEFAULT_BOLD);
 			textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
-			textView2.setTextColor(getResources().getColor(R.color.grey_M));
+			textView2.setTextColor(getResources().getColor(R.color.grey_M_B));
 			int id = Util.generateViewId();
 			textView2.setId(id);
 			textView2.setPadding(0, 0, line1PaddingColor, 0);

@@ -42,7 +42,7 @@ public class VehiculeArrival {
 	private List<Integer> trainFavorites;
 	private List<String> busFavorites;
 	private List<String> fakeBusFavorites;
-//	private int actualRouteNumberBusFavorites;
+	// private int actualRouteNumberBusFavorites;
 
 	private TrainData trainData;
 	private BusData busData;
@@ -92,27 +92,53 @@ public class VehiculeArrival {
 		return res;
 	}
 
+	public BusArrival getOneBusArrival(String routeId) {
+		BusArrival bus = null;
+		for (BusArrival busArrival : busArrivals) {
+			if (busArrival.getRouteId().equals(routeId)) {
+				bus = busArrival;
+				break;
+			}
+		}
+		return bus;
+	}
+
 	public Map<String, Map<String, List<BusArrival>>> getBusArrivalsMapped(String routeId) {
 		Map<String, Map<String, List<BusArrival>>> res = new HashMap<String, Map<String, List<BusArrival>>>();
 		for (BusArrival busArrival : busArrivals) {
-			if (busArrival.getRouteId().equals(routeId)) {
-				if (res.containsKey(busArrival.getStopName())) {
-					Map<String, List<BusArrival>> tempMap = res.get(busArrival.getStopName());
-					if (tempMap.containsKey(busArrival.getRouteDirection())) {
-						List<BusArrival> arrivals = tempMap.get(busArrival.getRouteDirection());
-						arrivals.add(busArrival);
+			String bound = busArrival.getRouteDirection();
+			if (isInFavorites(routeId, bound)) {
+				if (busArrival.getRouteId().equals(routeId)) {
+					if (res.containsKey(busArrival.getStopName())) {
+						Map<String, List<BusArrival>> tempMap = res.get(busArrival.getStopName());
+						if (tempMap.containsKey(bound)) {
+							List<BusArrival> arrivals = tempMap.get(busArrival.getRouteDirection());
+							arrivals.add(busArrival);
+						} else {
+							List<BusArrival> arrivals = new ArrayList<BusArrival>();
+							arrivals.add(busArrival);
+							tempMap.put(bound, arrivals);
+						}
 					} else {
+						Map<String, List<BusArrival>> tempMap = new HashMap<String, List<BusArrival>>();
 						List<BusArrival> arrivals = new ArrayList<BusArrival>();
 						arrivals.add(busArrival);
-						tempMap.put(busArrival.getRouteDirection(), arrivals);
+						tempMap.put(bound, arrivals);
+						res.put(busArrival.getStopName(), tempMap);
 					}
-				} else {
-					Map<String, List<BusArrival>> tempMap = new HashMap<String, List<BusArrival>>();
-					List<BusArrival> arrivals = new ArrayList<BusArrival>();
-					arrivals.add(busArrival);
-					tempMap.put(busArrival.getRouteDirection(), arrivals);
-					res.put(busArrival.getStopName(), tempMap);
 				}
+			}
+		}
+		return res;
+	}
+
+	private boolean isInFavorites(String routeId, String bound) {
+		boolean res = false;
+		for (String fav : busFavorites) {
+			String decoded[] = Util.decodeBusFavorite(fav);
+			if (routeId.equals(decoded[0]) && bound.equals(decoded[2])) {
+				res = true;
+				break;
 			}
 		}
 		return res;
@@ -140,8 +166,8 @@ public class VehiculeArrival {
 		this.busArrivals = busArrivals;
 		setFavorites();
 	}
-	
-	private void removeDuplicates(List<BusArrival> busArrivals){
+
+	private void removeDuplicates(List<BusArrival> busArrivals) {
 		Set<BusArrival> stBusArrivals = new LinkedHashSet<BusArrival>(busArrivals);
 		busArrivals.clear();
 		busArrivals.addAll(stBusArrivals);

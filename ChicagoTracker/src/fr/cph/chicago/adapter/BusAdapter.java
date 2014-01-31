@@ -35,6 +35,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import fr.cph.chicago.ChicagoTracker;
@@ -57,12 +58,12 @@ public final class BusAdapter extends BaseAdapter {
 	private BusData busData;
 
 	private Map<String, LinearLayout> detailsMap;
-	private Map<String, List<TextView>> bouds;
+	private Map<String, List<TextView>> bounds;
 
 	public BusAdapter() {
 		this.busData = DataHolder.getInstance().getBusData();
 		this.detailsMap = new HashMap<String, LinearLayout>();
-		this.bouds = new HashMap<String, List<TextView>>();
+		this.bounds = new HashMap<String, List<TextView>>();
 	}
 
 	@Override
@@ -81,7 +82,7 @@ public final class BusAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public final View getView(int position, View convertView, ViewGroup parent) {
+	public final View getView(final int position, View convertView, final ViewGroup parent) {
 
 		final BusRoute route = busData.getRoute(position);
 
@@ -105,24 +106,22 @@ public final class BusAdapter extends BaseAdapter {
 
 			TextView loadingSaved = (TextView) detailsLayoutSaved.findViewById(R.id.loading_text_view);
 
-			loading.setText((loadingSaved).getText());
+			loading.setText(loadingSaved.getText());
 			loading.setVisibility(loadingSaved.getVisibility());
 
-			if (bouds.containsKey(route.getId())) {
-				List<TextView> tempListView = bouds.get(route.getId());
+			if (bounds.containsKey(route.getId())) {
+				List<TextView> tempListView = bounds.get(route.getId());
 
 				for (TextView text : tempListView) {
-					TextView derp = new TextView(ChicagoTracker.getAppContext());
-					derp.setText(text.getText());
-					routeDirections.addView(derp);
+					TextView text2 = new TextView(ChicagoTracker.getAppContext());
+					text2.setText(text.getText());
+					routeDirections.addView(text2);
 				}
 			}
 		}
-
 		detailsMap.put(route.getId(), detailsLayout);
-
+		
 		convertView.setOnClickListener(new View.OnClickListener() {
-
 			@Override
 			public void onClick(View v) {
 				if (detailsLayout.getVisibility() == LinearLayout.GONE) {
@@ -131,7 +130,7 @@ public final class BusAdapter extends BaseAdapter {
 				detailsLayout.setVisibility(LinearLayout.VISIBLE);
 			}
 		});
-
+		
 		return convertView;
 	}
 
@@ -168,10 +167,17 @@ public final class BusAdapter extends BaseAdapter {
 		protected void onPostExecute(BusDirections result) {
 			loading.setVisibility(TextView.GONE);
 			for (final BusDirection busDirection : result.getlBusDirection()) {
-				TextView currentBound = new TextView(ChicagoTracker.getAppContext());
+				Button currentBound = new Button(ChicagoTracker.getAppContext(), null, android.R.attr.buttonStyleSmall);
 				currentBound.setText(busDirection.toString());
-				currentBound.setTextColor(ChicagoTracker.getAppContext().getResources().getColor(R.color.black));
-				currentBound.setPadding(10, 0, 0, 0);
+//				currentBound.setTextColor(ChicagoTracker.getAppContext().getResources().getColor(R.color.grey_M_B));
+				
+//				currentBound.setTextSize(ChicagoTracker.getAppContext().getResources().getDimension(R.dimen.bus_adapter_button_text_size));
+				currentBound.setWidth((int) ChicagoTracker.getAppContext().getResources().getDimension(R.dimen.bus_adapter_button_width));
+				currentBound.setHeight((int) ChicagoTracker.getAppContext().getResources().getDimension(R.dimen.bus_adapter_button_height));
+				
+//				currentBound.setBackground(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.buttonshape));
+//				currentBound.setShadowLayer(5, 0, 0, R.color.grey_again);
+//				currentBound.setPadding(10, 0, 0, 0);
 				currentBound.setOnClickListener(new OnClickListener() {
 
 					@Override
@@ -186,12 +192,12 @@ public final class BusAdapter extends BaseAdapter {
 						ChicagoTracker.getAppContext().startActivity(intent);
 					}
 				});
-				if (bouds.containsKey(busRoute.getId())) {
-					bouds.get(busRoute.getId()).add(currentBound);
+				if (bounds.containsKey(busRoute.getId())) {
+					bounds.get(busRoute.getId()).add(currentBound);
 				} else {
 					List<TextView> lviews = new ArrayList<TextView>();
 					lviews.add(currentBound);
-					bouds.put(busRoute.getId(), lviews);
+					bounds.put(busRoute.getId(), lviews);
 				}
 				routeDirections.addView(currentBound);
 			}

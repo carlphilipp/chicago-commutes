@@ -42,7 +42,7 @@ public class BaseActivity extends Activity {
 	/** Tag **/
 	private static final String TAG = "BaseActivity";
 
-	private View loginLayout;
+	private View loadLayout;
 
 	/*
 	 * (non-Javadoc)
@@ -54,7 +54,7 @@ public class BaseActivity extends Activity {
 		Log.v(TAG, "BaseActivity onCreate");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.loading);
-		loginLayout = findViewById(R.id.loading_layout);
+		loadLayout = findViewById(R.id.loading_layout);
 
 		if (DataHolder.getInstance().getBusData() == null || DataHolder.getInstance().getTrainData() == null) {
 			showProgress(true, null);
@@ -64,21 +64,24 @@ public class BaseActivity extends Activity {
 		}
 	}
 
-	private class LoadData extends AsyncTask<Void, Void, BusData> {
+	private class LoadData extends AsyncTask<Void, Void, Void> {
 
+		private BusData busData;
+		private TrainData trainData;
+		
 		@Override
-		protected BusData doInBackground(Void... params) {
-			BusData data = BusData.getInstance();
-			data.read();
-			return data;
+		protected Void doInBackground(Void... params) {
+			this.busData = BusData.getInstance();
+			this.busData.read();
+			this.trainData = new TrainData();
+			this.trainData.read();
+			return null;
 		}
 
 		@Override
-		protected void onPostExecute(BusData result) {
+		protected void onPostExecute(Void result) {
 			DataHolder dataHolder = DataHolder.getInstance();
-			dataHolder.setBusData(result);
-			TrainData trainData = new TrainData();
-			trainData.read();
+			dataHolder.setBusData(busData);
 			dataHolder.setTrainData(trainData);
 			loadHome();
 		}
@@ -109,17 +112,17 @@ public class BaseActivity extends Activity {
 		// the progress spinner.
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
 			int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-			loginLayout.setVisibility(View.VISIBLE);
-			loginLayout.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+			loadLayout.setVisibility(View.VISIBLE);
+			loadLayout.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
 				@Override
 				public void onAnimationEnd(Animator animation) {
-					loginLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+					loadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
 				}
 			});
 		} else {
 			// The ViewPropertyAnimator APIs are not available, so simply show
 			// and hide the relevant UI components.
-			loginLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+			loadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
 		}
 	}
 

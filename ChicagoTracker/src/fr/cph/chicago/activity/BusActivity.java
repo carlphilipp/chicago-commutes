@@ -73,6 +73,7 @@ public class BusActivity extends Activity {
 	private LinearLayout stopsView;
 	private boolean firstLoad = true;
 	private boolean isFavorite;
+	private TextView streetViewText;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +103,8 @@ public class BusActivity extends Activity {
 
 		streetViewImage = (ImageView) findViewById(R.id.activity_bus_streetview_image);
 
+		streetViewText = (TextView) findViewById(R.id.activity_bus_steetview_text);
+
 		mapImage = (ImageView) findViewById(R.id.activity_bus_map_image);
 
 		directionImage = (ImageView) findViewById(R.id.activity_bus_map_direction);
@@ -121,6 +124,7 @@ public class BusActivity extends Activity {
 
 		(new LoadData()).execute();
 
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
 	@Override
@@ -227,6 +231,7 @@ public class BusActivity extends Activity {
 			ViewGroup.LayoutParams params2 = BusActivity.this.streetViewImage.getLayoutParams();
 			params2.height = height;
 			params2.width = params.width;
+			BusActivity.this.streetViewText.setText("Street view");
 			BusActivity.this.streetViewImage.setLayoutParams(params2);
 			BusActivity.this.streetViewImage.setImageDrawable(result);
 			BusActivity.this.streetViewImage.setOnClickListener(new View.OnClickListener() {

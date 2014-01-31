@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -30,11 +31,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils.TruncateAt;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -42,12 +47,17 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
+import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.TextView;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
+import fr.cph.chicago.activity.BusActivity;
 import fr.cph.chicago.activity.StationActivity;
+import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusRoute;
+import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.Stop;
@@ -64,11 +74,6 @@ public final class FavoritesAdapter extends BaseAdapter {
 	private Activity activity;
 	private Context context;
 
-	// private SparseArray<TrainArrival> trainArrivals;
-	// private List<Integer> trainFavorites;
-	//
-	// private TrainData trainData;
-
 	private VehiculeArrival arrival;
 
 	private Map<String, Integer> ids;
@@ -82,9 +87,6 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 		this.activity = activity;
 		this.arrival = new VehiculeArrival();
-		// this.trainArrivals = new SparseArray<TrainArrival>();
-		// this.trainFavorites = new ArrayList<Integer>();
-		// this.trainData = DataHolder.getInstance().getTrainData();
 
 		this.ids = new HashMap<String, Integer>();
 		this.layouts = new HashMap<Integer, LinearLayout>();
@@ -109,9 +111,14 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 	@Override
 	public final View getView(final int position, View convertView, ViewGroup parent) {
-		
+
+		LinearLayout.LayoutParams paramsLayout = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		LinearLayout.LayoutParams paramsTextView = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
+		int line1PaddingColor = (int) context.getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
+		int stopsPaddingTop = (int) context.getResources().getDimension(R.dimen.activity_station_stops_padding_top);
+
 		Date lastUpdate = ChicagoTracker.getLastTrainUpdate();
-		
+
 		Object object = arrival.getObject(position);
 		if (object instanceof Station) {
 			Station station = (Station) object;
@@ -146,7 +153,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 			textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
 			textView.setTextColor(activity.getResources().getColor(R.color.black));
 
-			final ImageView arrow = (ImageView) convertView.findViewById(R.id.arrow);
+//			final ImageView arrow = (ImageView) convertView.findViewById(R.id.arrow);
 
 			TextView updated = (TextView) convertView.findViewById(R.id.station_updated);
 			lupdated.add(updated);
@@ -154,8 +161,6 @@ public final class FavoritesAdapter extends BaseAdapter {
 				updated.setText(String.valueOf(getLastUpdateInMinutes(lastUpdate)));
 			}
 
-			LinearLayout.LayoutParams paramsLayout = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-			LinearLayout.LayoutParams paramsTextView = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
 			LinearLayout.LayoutParams paramsArrival = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
 			Set<TrainLine> setTL = station.getLines();
@@ -174,11 +179,9 @@ public final class FavoritesAdapter extends BaseAdapter {
 				}
 			}
 
-			int line1PaddingColor = (int) context.getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
-			int stopsPaddingTop = (int) context.getResources().getDimension(R.dimen.activity_station_stops_padding_top);
 			for (TrainLine tl : setTL) {
 				if (arrival.getTrainArrival(stationId) != null) {
-					arrow.setImageDrawable(activity.getResources().getDrawable(R.drawable.down_arrow));
+//					arrow.setImageDrawable(activity.getResources().getDrawable(R.drawable.down_arrow));
 					// TODO chedk if mod ok
 					List<Eta> etas = arrival.getTrainArrival(stationId).getEtas(tl);
 					if (etas.size() != 0) {
@@ -233,13 +236,16 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 								TextView stopName = new TextView(context);
 								stopName.setText(eta.getDestName() + ": ");
-								stopName.setTextColor(context.getResources().getColor(R.color.grey));
+								// stopName.setTextColor(context.getResources().getColor(R.color.grey));
 								// stopName.setPadding(line3Padding, 0, 0, 0);
+								stopName.setTextColor(context.getResources().getColor(R.color.grey_5));
 								insideLayout.addView(stopName);
 
 								TextView timing = new TextView(context);
 								timing.setText(eta.getTimeLeftDueDelay() + " ");
 								timing.setTextColor(context.getResources().getColor(R.color.grey));
+								timing.setLines(1);
+								timing.setEllipsize(TruncateAt.END);
 								insideLayout.addView(timing);
 
 								llv.addView(insideLayout);
@@ -281,19 +287,25 @@ public final class FavoritesAdapter extends BaseAdapter {
 				}
 			}
 		} else {
-			BusRoute busRoute = (BusRoute) object;
+			final BusRoute busRoute = (BusRoute) object;
 			LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = vi.inflate(R.layout.list_favorites_bus, null);
-			TextView textView = (TextView) convertView.findViewById(R.id.route_name_value);
-			textView.setText(busRoute.getId() + " " + busRoute.getName());
+			TextView textView = (TextView) convertView.findViewById(R.id.route_id);
+			textView.setText(busRoute.getId());
 			textView.setTypeface(Typeface.DEFAULT_BOLD);
 			textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
 			textView.setTextColor(activity.getResources().getColor(R.color.black));
+			
+			TextView textView2 = (TextView) convertView.findViewById(R.id.route_name_value);
+			textView2.setText(" " + busRoute.getName());
+			textView2.setTypeface(Typeface.DEFAULT_BOLD);
+			textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+			textView2.setTextColor(activity.getResources().getColor(R.color.black));
 
-			final ImageView arrow = (ImageView) convertView.findViewById(R.id.arrow);
+//			final ImageView arrow = (ImageView) convertView.findViewById(R.id.arrow);
 
 			final LinearLayout favoritesLayout = (LinearLayout) convertView.findViewById(R.id.favorites_list);
-			
+
 			TextView updated = (TextView) convertView.findViewById(R.id.station_updated);
 			lupdated.add(updated);
 			if (lastUpdate != null) {
@@ -302,42 +314,100 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 			Map<String, Map<String, List<BusArrival>>> busArrivals = arrival.getBusArrivalsMapped(busRoute.getId());
 			if (busArrivals.size() > 0) {
-				arrow.setImageDrawable(activity.getResources().getDrawable(R.drawable.down_arrow));
-				for(Entry<String, Map<String, List<BusArrival>>> entry: busArrivals.entrySet()){
-					String key = entry.getKey();
-					Map<String, List<BusArrival>> value = entry.getValue();
-					
+//				arrow.setImageDrawable(activity.getResources().getDrawable(R.drawable.down_arrow));
+				for (Entry<String, Map<String, List<BusArrival>>> entry : busArrivals.entrySet()) {
+					LinearLayout llh = new LinearLayout(context);
+					llh.setLayoutParams(paramsLayout);
+					llh.setOrientation(LinearLayout.HORIZONTAL);
+					llh.setPadding(line1PaddingColor, stopsPaddingTop, 0, 0);
+
+					TextView tlView = new TextView(context);
+					tlView.setBackgroundColor(context.getResources().getColor(R.color.black));
+					tlView.setText("   ");
+					tlView.setLayoutParams(paramsTextView);
+					llh.addView(tlView);
+
+					final String key = entry.getKey();
+					final Map<String, List<BusArrival>> value = entry.getValue();
+
+					llh.setOnClickListener(new OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							if (value.entrySet().size() == 1) {
+								BusArrival busArrival = value.entrySet().iterator().next().getValue().get(0);
+								new BusBoundAsyncTask().execute(busArrival.getRouteId(), busArrival.getRouteDirection(),
+										String.valueOf(busArrival.getStopId()), key);
+							} else {
+								List<String> menuTitles = new ArrayList<String>();
+								for (Entry<String, List<BusArrival>> entry : value.entrySet()) {
+									menuTitles.add(entry.getKey());
+								}
+								PopupMenu popupMenu = new PopupMenu(context, v);
+
+								for (int i = 0; i < menuTitles.size(); i++) {
+									popupMenu.getMenu().add(Menu.NONE, i, Menu.NONE, menuTitles.get(i));
+								}
+								popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+									@Override
+									public boolean onMenuItemClick(MenuItem item) {
+										Log.i(TAG, "id " + item.getItemId());
+										Iterator<Entry<String, List<BusArrival>>> iterator = value.entrySet().iterator();
+										if (item.getItemId() == 1) {
+											iterator.next();
+										} else if (item.getItemId() == 2) {
+											iterator.next();
+											iterator.next();
+										} else if (item.getItemId() == 3) {
+											iterator.next();
+											iterator.next();
+											iterator.next();
+										}
+										BusArrival busArrival = iterator.next().getValue().get(0);
+										new BusBoundAsyncTask().execute(busArrival.getRouteId(), busArrival.getRouteDirection(),
+												String.valueOf(busArrival.getStopId()), key);
+										return false;
+									}
+								});
+								popupMenu.show();
+							}
+						}
+					});
+
 					LinearLayout stopLayout = new LinearLayout(context);
 					stopLayout.setOrientation(LinearLayout.VERTICAL);
-					
+					stopLayout.setPadding(line1PaddingColor, 0, 0, 0);
+
 					TextView stopName = new TextView(context);
 					stopName.setText(String.valueOf(key));
-					stopName.setTextColor(context.getResources().getColor(R.color.grey));
-					
+					stopName.setTextColor(context.getResources().getColor(R.color.grey_5));
+					stopName.setTypeface(Typeface.DEFAULT_BOLD);
+
 					stopLayout.addView(stopName);
-					
-					for(Entry<String, List<BusArrival>> entry2: value.entrySet()){
+
+					for (Entry<String, List<BusArrival>> entry2 : value.entrySet()) {
 						String key2 = entry2.getKey();
 						List<BusArrival> buses = entry2.getValue();
-						
+
 						LinearLayout boundLayout = new LinearLayout(context);
 						boundLayout.setOrientation(LinearLayout.HORIZONTAL);
-						
+
 						TextView bound = new TextView(context);
 						bound.setText(key2 + ": ");
-						bound.setTextColor(context.getResources().getColor(R.color.grey));
-						
+						bound.setTextColor(context.getResources().getColor(R.color.grey_5));
 						boundLayout.addView(bound);
-						
-						for(BusArrival arri :  buses){
+
+						for (BusArrival arri : buses) {
 							TextView timeView = new TextView(context);
-							timeView.setText(arri.getTimeLeftDueDelay()+ " ");
+							timeView.setText(arri.getTimeLeftDueDelay() + " ");
 							timeView.setTextColor(context.getResources().getColor(R.color.grey));
+							timeView.setLines(1);
+							timeView.setEllipsize(TruncateAt.END);
 							boundLayout.addView(timeView);
 						}
 						stopLayout.addView(boundLayout);
 					}
-					favoritesLayout.addView(stopLayout);
+					llh.addView(stopLayout);
+					favoritesLayout.addView(llh);
 				}
 			}
 		}
@@ -417,6 +487,50 @@ public final class FavoritesAdapter extends BaseAdapter {
 		Date lastUpdate = ChicagoTracker.getLastTrainUpdate();
 		for (TextView updated : lupdated) {
 			updated.setText(String.valueOf(getLastUpdateInMinutes(lastUpdate)));
+		}
+	}
+
+	private class BusBoundAsyncTask extends AsyncTask<String, Void, BusStop> {
+
+		private String busRouteId;
+		private String bound;
+		private String stopId;
+		private String busRouteName;
+
+		@Override
+		protected BusStop doInBackground(String... params) {
+			busRouteId = params[0];
+			bound = params[1];
+			stopId = params[2];
+			busRouteName = params[3];
+			List<BusStop> busStops = DataHolder.getInstance().getBusData().readBusStop(busRouteId, bound);
+			BusStop res = null;
+			for (BusStop bus : busStops) {
+				if (String.valueOf(bus.getId()).equals(stopId)) {
+					res = bus;
+					break;
+				}
+			}
+			return res;
+		}
+
+		@Override
+		protected void onPostExecute(BusStop result) {
+			BusStop busStop = result;
+
+			Intent intent = new Intent(ChicagoTracker.getAppContext(), BusActivity.class);
+			Bundle extras = new Bundle();
+			extras.putInt("busStopId", busStop.getId());
+			extras.putString("busStopName", busStop.getName());
+			extras.putString("busRouteId", busRouteId);
+			extras.putString("busRouteName", busRouteName);
+			extras.putString("bound", bound);
+			extras.putDouble("latitude", busStop.getPosition().getLatitude());
+			extras.putDouble("longitude", busStop.getPosition().getLongitude());
+
+			intent.putExtras(extras);
+			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			ChicagoTracker.getAppContext().startActivity(intent);
 		}
 	}
 }

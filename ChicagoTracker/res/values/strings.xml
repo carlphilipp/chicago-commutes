@@ -18,6 +18,7 @@
  
 <resources>
 
+    <string name="empty_string">&#160;</string>
     <string name="app_name">Train Tracker Chicago</string>
     <string name="favorites">Favorites</string>
     <string name="train">Train Lines</string>
@@ -30,6 +31,8 @@
     <string name="action_refresh">Refresh</string>
     <string name="action_search">Search</string>
     <string name="progress_message">Loading...</string>
+    <string name="M">M</string>
+    <string name="B">B</string>
 
     <!-- Favorites -->
     <string name="station_name">Station: </string>
@@ -38,10 +41,12 @@
     <!-- Station -->
     <string name="station_activity">Station</string>
     <string name="train_station_activity">Stations</string>
+    
 
     <!-- Bus -->
     <string name="bus_login_progress">Station</string>
     <string name="bus_station_activity">Bus</string>
+    <string name="bus_activity_google_map_link_desc">Link to google map</string>
 
     <!-- Bus Bound -->
     <string name="bus_bound_activity">Bus Bound</string>

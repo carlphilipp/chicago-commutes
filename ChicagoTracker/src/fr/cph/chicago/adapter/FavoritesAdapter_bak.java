@@ -142,7 +142,7 @@ public final class FavoritesAdapter_bak extends BaseAdapter {
 		textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
 		textView.setTextColor(activity.getResources().getColor(R.color.black));
 
-		final ImageView arrow = (ImageView) convertView.findViewById(R.id.arrow);
+//		final ImageView arrow = (ImageView) convertView.findViewById(R.id.arrow);
 
 		TextView updated = (TextView) convertView.findViewById(R.id.station_updated);
 		lupdated.add(updated);
@@ -174,7 +174,7 @@ public final class FavoritesAdapter_bak extends BaseAdapter {
 		int stopsPaddingTop = (int) context.getResources().getDimension(R.dimen.activity_station_stops_padding_top);
 		for (TrainLine tl : setTL) {
 			if (arrival != null) {
-				arrow.setImageDrawable(activity.getResources().getDrawable(R.drawable.down_arrow));
+//				arrow.setImageDrawable(activity.getResources().getDrawable(R.drawable.down_arrow));
 				List<Eta> etas = arrival.getEtas(tl);
 				if (etas.size() != 0) {
 					String key = station.getName() + "_" + tl.toString() + "_h";

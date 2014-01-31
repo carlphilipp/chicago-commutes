@@ -40,8 +40,13 @@
     <dimen name="activity_train_line_padding_left">10dp</dimen>
     <dimen name="activity_train_line_padding_top">8dp</dimen>
     <dimen name="activity_train_line_padding_bottom">8dp</dimen>
+    <dimen name="activity_train_line_padding_right">10dp</dimen>
     <!-- Activity list train station for one line -->
     <dimen name="activity_list_station_name">20sp</dimen>
     <dimen name="activity_list_station_colors">8dp</dimen>
     <dimen name="activity_list_station_colors_space">2dp</dimen>
+     <!-- Bus Adapter -->
+     <dimen name="bus_adapter_button_text_size">30sp</dimen>
+     <dimen name="bus_adapter_button_width">100dp</dimen>
+     <dimen name="bus_adapter_button_height">5dp</dimen>
 </resources>

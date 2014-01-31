@@ -27,20 +27,15 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaRequestType;
-import fr.cph.chicago.data.BusData;
-import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
-import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.fragment.BusFragment;
 import fr.cph.chicago.fragment.FavoritesFragment;
 import fr.cph.chicago.fragment.NavigationDrawerFragment;
@@ -66,12 +61,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
 	private BusFragment busFragment;
 
-	/**
-	 * Used to store the last screen title. For use in {@link #restoreActionBar()}.
-	 */
 	private CharSequence mTitle;
-
-//	private TrainData data;
 
 	private Menu menu;
 
@@ -79,21 +69,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		
 		super.onCreate(savedInstanceState);
-
-//		this.data = new TrainData();
-//		this.data.read();
-
-//		DataHolder dataHolder = DataHolder.getInstance();
-//		Log.i(TAG, " " + String.valueOf(dataHolder.getBusData() != null));
-//		Log.i(TAG, " " + String.valueOf(dataHolder.getTrainData() != null));
-//		dataHolder.setTrainData(this.data);
-
-		// BusData busData = BusData.getInstance();
-		// busData.read();
-		// dataHolder.setBusData(busData);
-
-//		new LoadBusRoutes().execute();
 
 		setContentView(R.layout.activity_main);
 
@@ -226,7 +203,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	@Override
 	public void onBackPressed() {
 		if (currentPosition != 0) {
-			onNavigationDrawerItemSelected(0);
+			mNavigationDrawerFragment.selectItem(0);
 		} else {
 			new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_alert).setTitle("Exit application")
 					.setMessage("Are you sure you want to exit?").setPositiveButton("Yes", new DialogInterface.OnClickListener() {

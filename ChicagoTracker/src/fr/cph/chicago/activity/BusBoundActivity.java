@@ -24,6 +24,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import fr.cph.chicago.ChicagoTracker;
@@ -50,7 +52,7 @@ public class BusBoundActivity extends ListActivity {
 		
 		ada = new BusBoundAdapter(busRouteId);
 		setListAdapter(ada);
-		getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {			
+		getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 				BusStop busStop = (BusStop) ada.getItem(position);
@@ -70,16 +72,31 @@ public class BusBoundActivity extends ListActivity {
 				ChicagoTracker.getAppContext().startActivity(intent);
 			}
 		});
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 		new BusBoundAsyncTask().execute();
 	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.global, menu);
+		
 		ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		actionBar.setDisplayShowTitleEnabled(true);
 		actionBar.setTitle(this.busRouteName + " (" + this.bound + ")");
-		return super.onCreateOptionsMenu(menu);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			finish();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 
 	private class BusBoundAsyncTask extends AsyncTask<Void, Void, List<BusStop>> {

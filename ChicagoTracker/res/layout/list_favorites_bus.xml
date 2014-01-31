@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!--  
+<!--
   Copyright 2014 Carl-Philipp Harmant
  
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,8 +14,8 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
- -->
- 
+-->
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -33,8 +33,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:paddingRight="@+dimen/activity_station_stops_line1_padding_color"
-            android:text="B"
-            android:textColor="@+color/grey_M"
+            android:text="@string/B"
+            android:textColor="@+color/grey_M_B"
             android:textIsSelectable="false"
             android:textSize="@+dimen/activity_train_line_M"
             android:textStyle="bold" />
@@ -45,13 +45,13 @@
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/station_b"
             android:layout_toRightOf="@+id/station_b"
+            android:background="@color/grey_5"
+            android:text="@string/empty_string"
             android:textIsSelectable="false"
-            android:text=" "
-            android:background="@color/grey_5" 
             android:textSize="@+dimen/activity_train_line_M" />
 
         <TextView
-            android:id="@+id/route_name_value"
+            android:id="@+id/route_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/station_b"
@@ -59,25 +59,41 @@
             android:paddingLeft="@+dimen/activity_station_stops_line1_padding_color"
             android:textColor="@color/black"
             android:textIsSelectable="false" />
-        
-         <TextView
+
+        <TextView
+            android:id="@+id/route_name_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/station_b"
+            android:layout_toLeftOf="@+id/station_updated"
+            android:layout_toRightOf="@+id/route_id"
+            android:ellipsize="end"
+            android:lines="1"
+            android:scrollHorizontally="true"
+            android:textColor="@color/black"
+            android:textIsSelectable="false" />
+
+        <TextView
             android:id="@+id/station_updated"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/station_b"
-            android:layout_toLeftOf="@+id/arrow"
-            android:textColor="@color/grey"
             android:layout_marginRight="10dp"
-            android:textIsSelectable="false" />
-
+            android:layout_alignParentRight="true"
+            android:textColor="@color/grey"
+            android:textIsSelectable="false"
+             />
+<!--  
         <ImageView
             android:id="@+id/arrow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+            android:background="@color/black"
             android:contentDescription="derpderp"
             android:src="@drawable/left_arrow" />
+            -->
     </RelativeLayout>
 
     <LinearLayout

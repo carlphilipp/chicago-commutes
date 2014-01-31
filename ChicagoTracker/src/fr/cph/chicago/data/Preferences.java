@@ -18,6 +18,7 @@ package fr.cph.chicago.data;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -30,6 +31,7 @@ import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.enumeration.TrainDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
+import fr.cph.chicago.util.Util;
 
 public final class Preferences {
 
@@ -61,6 +63,26 @@ public final class Preferences {
 				favorites.add(value);
 			}
 		}
+		Collections.sort(favorites, new Comparator<String>() {
+			@Override
+			public int compare(String str1, String str2) {
+				String derp1 = Util.decodeBusFavorite(str1)[0];
+				String derp2 = Util.decodeBusFavorite(str2)[0];
+				Integer int1 = null;
+				Integer int2 = null;
+				try {
+					int1 = Integer.valueOf(derp1);
+				} catch (NumberFormatException e) {
+					int1 = Integer.valueOf(derp1.substring(0, derp1.length() - 1));
+				}
+				try {
+					int2 = Integer.valueOf(derp2);
+				} catch (NumberFormatException e) {
+					int2 = Integer.valueOf(derp2.substring(0, derp2.length() - 1));
+				}
+				return int1.compareTo(int2);
+			}
+		});
 		Log.v(TAG, "Read bus favorites : " + favorites.toString());
 		return favorites;
 	}

@@ -119,10 +119,10 @@ public class FavoritesFragment extends Fragment {
 			for (Integer fav : favorites) {
 				params.put("mapid", String.valueOf(fav));
 			}
-			
+
 			MultiMap<String, String> params2 = new MultiValueMap<String, String>();
 			List<String> busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
-			for(String str : busFavorites){
+			for (String str : busFavorites) {
 				String[] fav = Util.decodeBusFavorite(str);
 				params2.put("rt", fav[0]);
 				params2.put("stpid", fav[1]);

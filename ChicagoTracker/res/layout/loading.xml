@@ -1,4 +1,4 @@
-<!--  
+<!--
   Copyright 2014 Carl-Philipp Harmant
  
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,36 +12,42 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
- -->
- 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+-->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/loading_layout"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:layout_gravity="center"
+    android:background="@drawable/back3"
     android:focusable="false"
     android:focusableInTouchMode="false"
-    android:gravity="center_horizontal"
-    android:orientation="vertical"
     android:visibility="gone" >
 
     <ProgressBar
+        android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_vertical"
         android:layout_marginBottom="8dp"
         android:focusable="false"
-        android:focusableInTouchMode="false" />
+        android:focusableInTouchMode="false"
+        android:layout_marginTop="190dp" />
 
     <TextView
         android:id="@+id/login_status_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/progressBar"
+        android:layout_centerHorizontal="true"
         android:layout_marginBottom="16dp"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:fontFamily="sans-serif-light"
         android:text="@string/progress_message"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/white" />
 
-</LinearLayout>
+</RelativeLayout>
