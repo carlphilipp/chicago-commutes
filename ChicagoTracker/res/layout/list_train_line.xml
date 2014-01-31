@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!--  
+<!--
   Copyright 2014 Carl-Philipp Harmant
  
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,44 +14,46 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
- -->
- 
+-->
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="@+dimen/activity_train_line_padding_top"
     android:paddingBottom="@+dimen/activity_train_line_padding_bottom"
-    android:paddingLeft="@+dimen/activity_train_line_padding_left"> 
+    android:paddingLeft="@+dimen/activity_train_line_padding_left"
+    android:paddingRight="@+dimen/activity_train_line_padding_right"
+    android:paddingTop="@+dimen/activity_train_line_padding_top" >
 
     <TextView
         android:id="@+id/station_m"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:textStyle="bold"
-        android:textColor="@+color/grey_M_B"
-        android:text="T"
-        android:textSize="@+dimen/activity_train_line_M"
         android:paddingRight="@+dimen/activity_station_stops_line1_padding_color"
-        android:textIsSelectable="false" />
-    
-     <TextView
+        android:text="T"
+        android:textColor="@+color/grey_M_B"
+        android:textIsSelectable="false"
+        android:textSize="@+dimen/activity_train_line_M"
+        android:textStyle="bold" />
+
+    <TextView
         android:id="@+id/station_color_value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/station_m"
         android:layout_toRightOf="@+id/station_m"
         android:textIsSelectable="false"
-        android:textSize="@+dimen/activity_train_line_M"
-        android:layout_alignBaseline="@+id/station_m"
-         />
+        android:textSize="@+dimen/activity_train_line_M" />
+
     <TextView
         android:id="@+id/station_name_value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/station_m"
         android:layout_toRightOf="@+id/station_color_value"
         android:paddingLeft="@+dimen/activity_station_stops_line1_padding_color"
         android:textColor="@+color/grey"
-        android:textStyle="bold"
         android:textIsSelectable="false"
-        android:layout_alignBaseline="@+id/station_m" />
+        android:textStyle="bold" />
+
 </RelativeLayout>

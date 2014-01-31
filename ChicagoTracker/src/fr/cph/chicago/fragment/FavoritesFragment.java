@@ -103,6 +103,7 @@ public class FavoritesFragment extends Fragment {
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		Log.i(TAG,"onCreateOptionsMenu");
 		this.menu = menu;
 		loadData();
 		super.onCreateOptionsMenu(menu, inflater);
@@ -170,6 +171,7 @@ public class FavoritesFragment extends Fragment {
 
 	@Override
 	public void onResume() {
+		Log.i(TAG,"on resume");
 		super.onResume();
 		ada.setFavorites();
 		ada.notifyDataSetChanged();

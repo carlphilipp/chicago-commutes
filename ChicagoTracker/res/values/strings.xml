@@ -21,7 +21,7 @@
     <string name="empty_string">&#160;</string>
     <string name="app_name">Train Tracker Chicago</string>
     <string name="favorites">Favorites</string>
-    <string name="train">Train Lines</string>
+    <string name="train">Train</string>
     <string name="bus">Bus</string>
     <string name="nearby">Nearby</string>
     <string name="alerts">Alerts</string>
