@@ -18,6 +18,7 @@ package fr.cph.chicago.connection;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map.Entry;
@@ -25,11 +26,13 @@ import java.util.Map.Entry;
 import org.apache.commons.collections4.MultiMap;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
 
 import android.util.Log;
+import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.util.Util;
 
 public class CtaConnect {
@@ -41,13 +44,12 @@ public class CtaConnect {
 	private static final String BASE_URL_TRAIN_ARRIVALS = "http://lapi.transitchicago.com/api/1.0/ttarrivals.aspx";
 	private static final String BASE_URL_TRAIN_FOLLOW = "http://lapi.transitchicago.com/api/1.0/ttfollow.aspx";
 	private static final String BASE_URL_TRAIN_LOCATION = "http://lapi.transitchicago.com/api/1.0/ttpositions.aspx";
-	
 
 	private static final String BASE_URL_BUS_ROUTES = "http://www.ctabustracker.com/bustime/api/v1/getroutes";
 	private static final String BASE_URL_BUS_DIRECTION = "http://www.ctabustracker.com/bustime/api/v1/getdirections";
 	private static final String BASE_URL_BUS_STOPS = "http://www.ctabustracker.com/bustime/api/v1/getstops";
 	private static final String BASE_URL_BUS_ARRIVAL = "http://www.ctabustracker.com/bustime/api/v1/getpredictions";
-	
+
 	private String CTA_BUS_KEY;
 	private String CTA_TRAIN_KEY;
 
@@ -66,28 +68,39 @@ public class CtaConnect {
 		return instance;
 	}
 
-	private String connectUrl(String adress) throws IOException {
+	private String connectUrl(String adress) throws ConnectException {
 		String toreturn = null;
-		client.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 30000);
-		client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 60000);
-		Log.v(TAG, "adress: " + adress);
-		HttpGet get = new HttpGet(adress);
-		HttpResponse getResponse = client.execute(get);
-		HttpEntity responseEntity = getResponse.getEntity();
+		try {
+			client.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 30000);
+			client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 60000);
+			Log.v(TAG, "adress: " + adress);
+			HttpGet get = new HttpGet(adress);
+			HttpResponse getResponse = client.execute(get);
+			HttpEntity responseEntity = getResponse.getEntity();
 
-		Charset charset = Charset.forName("UTF8");
-		InputStreamReader in = new InputStreamReader(responseEntity.getContent(), charset);
-		int c = in.read();
-		StringBuilder build = new StringBuilder();
-		while (c != -1) {
-			build.append((char) c);
-			c = in.read();
+			Charset charset = Charset.forName("UTF8");
+			InputStreamReader in = new InputStreamReader(responseEntity.getContent(), charset);
+			int c = in.read();
+			StringBuilder build = new StringBuilder();
+			while (c != -1) {
+				build.append((char) c);
+				c = in.read();
+			}
+			toreturn = build.toString();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+			throw new ConnectException("Connect exception", e);
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+			throw new ConnectException("Connect exception", e);
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new ConnectException("Connect exception", e);
 		}
-		toreturn = build.toString();
 		return toreturn;
 	}
 
-	public String connect(CtaRequestType requestType, MultiMap<String, String> params) throws IOException {
+	public String connect(CtaRequestType requestType, MultiMap<String, String> params) throws ConnectException {
 		StringBuilder adress = null;
 		switch (requestType) {
 		case TRAIN_ARRIVALS:
@@ -111,7 +124,6 @@ public class CtaConnect {
 		case BUS_ARRIVALS:
 			adress = new StringBuilder(BASE_URL_BUS_ARRIVAL + "?key=" + CTA_BUS_KEY);
 			break;
-
 		}
 		for (Entry<String, Object> entry : params.entrySet()) {
 			String key = entry.getKey();

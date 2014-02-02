@@ -24,12 +24,14 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
+import fr.cph.chicago.exception.ConnectException;
+import fr.cph.chicago.exception.ParserException;
+import fr.cph.chicago.exception.TrackerException;
 
 /**
  * This class represents the base activity of the app
@@ -42,17 +44,13 @@ public class BaseActivity extends Activity {
 	/** Tag **/
 	private static final String TAG = "BaseActivity";
 
+	/** Layout loaded **/
 	private View loadLayout;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onCreate(android.os.Bundle)
-	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		Log.v(TAG, "BaseActivity onCreate");
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.loading);
 		loadLayout = findViewById(R.id.loading_layout);
 
@@ -64,37 +62,48 @@ public class BaseActivity extends Activity {
 		}
 	}
 
+	/**
+	 * Load Bus and train data into DataHolder
+	 * 
+	 * @author Carl-Philipp Harmant
+	 * 
+	 */
 	private class LoadData extends AsyncTask<Void, Void, Void> {
-
+		/** Bus data **/
 		private BusData busData;
+		/** Train data **/
 		private TrainData trainData;
-		
+		/** Tracker exception **/
+		private TrackerException exceptionToBeThrown;
+
 		@Override
 		protected Void doInBackground(Void... params) {
-			this.busData = BusData.getInstance();
-			this.busData.read();
-			this.trainData = new TrainData();
-			this.trainData.read();
+			try {
+				this.busData = BusData.getInstance();
+				this.busData.read();
+				this.trainData = new TrainData();
+				this.trainData.read();
+			} catch (ParserException e) {
+				this.exceptionToBeThrown = e;
+			} catch (ConnectException e) {
+				this.exceptionToBeThrown = e;
+			}
 			return null;
 		}
 
 		@Override
 		protected void onPostExecute(Void result) {
-			DataHolder dataHolder = DataHolder.getInstance();
-			dataHolder.setBusData(busData);
-			dataHolder.setTrainData(trainData);
-			loadHome();
+			if (exceptionToBeThrown == null) {
+				DataHolder dataHolder = DataHolder.getInstance();
+				dataHolder.setBusData(busData);
+				dataHolder.setTrainData(trainData);
+
+				// Load home when finished
+				loadHome();
+			} else {
+				loadError(exceptionToBeThrown);
+			}
 		}
-	}
-
-	@Override
-	public void onStart() {
-		super.onStart();
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
 	}
 
 	/**
@@ -107,9 +116,6 @@ public class BaseActivity extends Activity {
 	 */
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
 	private void showProgress(final boolean show, String errorMessage) {
-		// On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-		// for very easy animations. If available, use these APIs to fade-in
-		// the progress spinner.
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
 			int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 			loadLayout.setVisibility(View.VISIBLE);
@@ -120,8 +126,6 @@ public class BaseActivity extends Activity {
 				}
 			});
 		} else {
-			// The ViewPropertyAnimator APIs are not available, so simply show
-			// and hide the relevant UI components.
 			loadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
 		}
 	}
@@ -129,11 +133,21 @@ public class BaseActivity extends Activity {
 	/**
 	 * Load home
 	 * 
-	 * @param portfolio
-	 *            the portfolio
 	 */
-	public void loadHome() {
+	private void loadHome() {
 		Intent intent = new Intent(this, MainActivity.class);
+		showProgress(false, null);
+		finish();
+		startActivity(intent);
+		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+	}
+	
+	/**
+	 * Load home
+	 * 
+	 */
+	private void loadError(TrackerException exceptionToBeThrown) {
+		Intent intent = new Intent(this, ErrorActivity.class);
 		showProgress(false, null);
 		finish();
 		startActivity(intent);

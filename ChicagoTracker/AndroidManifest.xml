@@ -5,7 +5,7 @@
     android:versionName="3" >
 
     <uses-sdk
-        android:minSdkVersion="16"
+        android:minSdkVersion="14"
         android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -19,8 +19,8 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="fr.cph.chicago.activity.BaseActivity"
-            android:label="@string/app_name"
-            android:alwaysRetainTaskState="true">
+            android:alwaysRetainTaskState="true"
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -29,8 +29,8 @@
         </activity>
         <activity
             android:name="fr.cph.chicago.activity.MainActivity"
-            android:label="@string/app_name"
-            android:alwaysRetainTaskState="true">
+            android:alwaysRetainTaskState="true"
+            android:label="@string/app_name" >
         </activity>
         <activity
             android:name="fr.cph.chicago.activity.StationActivity"
@@ -49,11 +49,15 @@
         </activity>
         <activity
             android:name="fr.cph.chicago.activity.BusBoundActivity"
-            android:label="@string/train_station_activity">
+            android:label="@string/train_station_activity" >
         </activity>
-         <activity
+        <activity
             android:name="fr.cph.chicago.activity.BusActivity"
-            android:label="@string/bus_bound_activity">
+            android:label="@string/bus_bound_activity" >
+        </activity>
+        <activity
+            android:name="fr.cph.chicago.activity.ErrorActivity"
+            android:label="@string/bus_bound_activity" >
         </activity>
     </application>
 

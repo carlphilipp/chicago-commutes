@@ -16,6 +16,7 @@
   limitations under the License.
 -->
 
+
 <!-- Scroll view wrapping the layout to allow to scroll -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -28,10 +29,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="@+dimen/activity_train_line_padding_bottom"
-    	android:paddingLeft="@+dimen/activity_train_line_padding_left"
-    	android:paddingRight="@+dimen/activity_train_line_padding_right"
-   		android:paddingTop="@+dimen/activity_train_line_padding_top"
-         >
+        android:paddingLeft="@+dimen/activity_train_line_padding_left"
+        android:paddingRight="@+dimen/activity_train_line_padding_right"
+        android:paddingTop="@+dimen/activity_train_line_padding_top" >
 
         <RelativeLayout
             android:id="@+id/header"
@@ -64,7 +64,7 @@
                     android:layout_height="35dp"
                     android:layout_toRightOf="@+id/activity_station_map_image"
                     android:clickable="true"
-                    android:contentDescription="Link to google map" >
+                    android:contentDescription="@string/station_activity_google_map_link_desc" >
                 </ImageView>
 
                 <ImageView
@@ -72,7 +72,7 @@
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_toRightOf="@+id/activity_station_map_image"
-                    android:contentDescription="Link to google map" >
+                    android:contentDescription="@string/station_activity_google_map_link_desc" >
                 </ImageView>
 
                 <ImageView
@@ -80,7 +80,7 @@
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_toRightOf="@+id/activity_station_map_direction"
-                    android:contentDescription="favorites"
+                    android:contentDescription="@string/station_activity_google_map_link_desc"
                     android:src="@drawable/ic_save_disabled" >
                 </ImageView>
             </RelativeLayout>
@@ -90,13 +90,14 @@
             android:id="@+id/activity_station_streetview_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/header" >
+            android:layout_below="@+id/header"
+            android:paddingTop="@+dimen/activity_train_line_padding_top" >
 
             <ImageView
                 android:id="@+id/activity_station_streetview_image"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:contentDescription="Street view"
+                android:contentDescription="@string/station_activity_google_map_link_desc"
                 android:scaleType="centerCrop" >
             </ImageView>
 
@@ -106,7 +107,6 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_marginLeft="4dp"
-                android:text="Street view"
                 android:textColor="@color/white" />
         </RelativeLayout>
 

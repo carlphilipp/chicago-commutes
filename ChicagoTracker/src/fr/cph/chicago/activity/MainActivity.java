@@ -27,6 +27,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
@@ -36,11 +37,12 @@ import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.data.Preferences;
+import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.fragment.BusFragment;
 import fr.cph.chicago.fragment.FavoritesFragment;
 import fr.cph.chicago.fragment.NavigationDrawerFragment;
 import fr.cph.chicago.fragment.TrainFragment;
-import fr.cph.chicago.task.CtaConnectTask2;
+import fr.cph.chicago.task.CtaConnectTask;
 import fr.cph.chicago.util.Util;
 
 ;
@@ -184,12 +186,15 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				params2.put("rt", fav[0]);
 				params2.put("stpid", fav[1]);
 			}
-			CtaConnectTask2 task;
+			CtaConnectTask task;
 			try {
-				task = new CtaConnectTask2(FavoritesFragment.class, CtaRequestType.TRAIN_ARRIVALS, params, CtaRequestType.BUS_ARRIVALS, params2);
+				task = new CtaConnectTask(FavoritesFragment.class, CtaRequestType.TRAIN_ARRIVALS, params, CtaRequestType.BUS_ARRIVALS, params2);
 				task.execute((Void) null);
-			} catch (XmlPullParserException e) {
-				e.printStackTrace();
+			} catch (ParserException e) {
+				Intent intent = new Intent(ChicagoTracker.getAppContext(), ErrorActivity.class);
+				finish();
+				startActivity(intent);
+				return true;
 			}
 			Toast.makeText(this, "Refresh...!", Toast.LENGTH_SHORT).show();
 			return true;

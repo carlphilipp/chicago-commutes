@@ -48,6 +48,8 @@ import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.enumeration.BusDirection;
+import fr.cph.chicago.exception.ConnectException;
+import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.xml.Xml;
 
 public final class BusAdapter extends BaseAdapter {
@@ -155,9 +157,9 @@ public final class BusAdapter extends BaseAdapter {
 				busDirections = xml.parseBusDirections(xmlResult, busRoute.getId());
 				loading = (TextView) params[1];
 				routeDirections = (LinearLayout) params[2];
-			} catch (IOException e) {
+			} catch (ParserException e) {
 				e.printStackTrace();
-			} catch (XmlPullParserException e) {
+			} catch (ConnectException e) {
 				e.printStackTrace();
 			}
 			return busDirections;

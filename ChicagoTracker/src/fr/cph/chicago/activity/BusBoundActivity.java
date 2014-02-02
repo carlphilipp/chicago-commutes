@@ -33,9 +33,12 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.adapter.BusBoundAdapter;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BusStop;
+import fr.cph.chicago.exception.ConnectException;
+import fr.cph.chicago.exception.ParserException;
+import fr.cph.chicago.exception.TrackerException;
 
 public class BusBoundActivity extends ListActivity {
-	
+
 	private static final String TAG = "BusBoundActivity";
 	private String busRouteId;
 	private String busRouteName;
@@ -49,7 +52,7 @@ public class BusBoundActivity extends ListActivity {
 		busRouteId = getIntent().getExtras().getString("busRouteId");
 		busRouteName = getIntent().getExtras().getString("busRouteName");
 		bound = getIntent().getExtras().getString("bound");
-		
+
 		ada = new BusBoundAdapter(busRouteId);
 		setListAdapter(ada);
 		getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -57,7 +60,7 @@ public class BusBoundActivity extends ListActivity {
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 				BusStop busStop = (BusStop) ada.getItem(position);
 				Intent intent = new Intent(ChicagoTracker.getAppContext(), BusActivity.class);
-				
+
 				Bundle extras = new Bundle();
 				extras.putInt("busStopId", busStop.getId());
 				extras.putString("busStopName", busStop.getName());
@@ -66,7 +69,7 @@ public class BusBoundActivity extends ListActivity {
 				extras.putString("bound", bound);
 				extras.putDouble("latitude", busStop.getPosition().getLatitude());
 				extras.putDouble("longitude", busStop.getPosition().getLongitude());
-				
+
 				intent.putExtras(extras);
 				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				ChicagoTracker.getAppContext().startActivity(intent);
@@ -75,20 +78,20 @@ public class BusBoundActivity extends ListActivity {
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		new BusBoundAsyncTask().execute();
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.global, menu);
-		
+
 		ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		actionBar.setDisplayShowTitleEnabled(true);
 		actionBar.setTitle(this.busRouteName + " (" + this.bound + ")");
 		return true;
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -101,14 +104,31 @@ public class BusBoundActivity extends ListActivity {
 
 	private class BusBoundAsyncTask extends AsyncTask<Void, Void, List<BusStop>> {
 
+		private TrackerException trackerException;
+
 		@Override
 		protected List<BusStop> doInBackground(Void... params) {
-			return DataHolder.getInstance().getBusData().readBusStop(busRouteId, bound);
+			List<BusStop> lBuses = null;
+			try {
+				lBuses = DataHolder.getInstance().getBusData().readBusStop(busRouteId, bound);
+			} catch (ParserException e) {
+				this.trackerException = e;
+			} catch (ConnectException e) {
+				this.trackerException = e;
+			}
+			return lBuses;
 		}
+
 		@Override
 		protected void onPostExecute(List<BusStop> result) {
-			ada.update(result);
-			ada.notifyDataSetChanged();
+			if (trackerException == null) {
+				ada.update(result);
+				ada.notifyDataSetChanged();
+			} else {
+				Intent intent = new Intent(ChicagoTracker.getAppContext(), ErrorActivity.class);
+				finish();
+				startActivity(intent);
+			}
 		}
 	}
 }

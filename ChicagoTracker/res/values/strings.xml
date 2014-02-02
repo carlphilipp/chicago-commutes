@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!--  
+<!--
   Copyright 2014 Carl-Philipp Harmant
  
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,8 +14,8 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
- -->
- 
+-->
+
 <resources>
 
     <string name="empty_string">&#160;</string>
@@ -33,6 +33,7 @@
     <string name="progress_message">Loading...</string>
     <string name="M">M</string>
     <string name="B">B</string>
+    <string name="T">T</string>
 
     <!-- Favorites -->
     <string name="station_name">Station: </string>
@@ -41,14 +42,20 @@
     <!-- Station -->
     <string name="station_activity">Station</string>
     <string name="train_station_activity">Stations</string>
-    
+    <string name="station_activity_google_map_link_desc">Link to google map</string>
+    <string name="station_activity_street_view">Street view</string>
 
     <!-- Bus -->
     <string name="bus_login_progress">Station</string>
     <string name="bus_station_activity">Bus</string>
     <string name="bus_activity_google_map_link_desc">Link to google map</string>
+    <string name="bus_activity_street_view">Street view</string>
 
     <!-- Bus Bound -->
     <string name="bus_bound_activity">Bus Bound</string>
+
+    <!-- Error -->
+    <string name="error_desc">Error</string>
+    <string name="error_retry">Retry</string>
 
 </resources>

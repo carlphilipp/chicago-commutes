@@ -24,7 +24,7 @@
     android:paddingRight="@+dimen/activity_train_line_padding_right"
     android:paddingTop="@+dimen/activity_train_line_padding_top" >
 
-    <RelativeLayout
+   <RelativeLayout
         android:id="@+id/line1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
@@ -84,17 +84,7 @@
             android:layout_marginRight="10dp"
             android:textColor="@color/grey"
             android:textIsSelectable="false" />
-        <!--
-        <ImageView
-            android:id="@+id/arrow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:background="@color/black"
-            android:contentDescription="derpderp"
-            android:src="@drawable/left_arrow" />
-        -->
+
     </RelativeLayout>
 
     <LinearLayout

@@ -45,7 +45,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.PopupMenu.OnMenuItemClickListener;
@@ -53,6 +52,7 @@ import android.widget.TextView;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BusActivity;
+import fr.cph.chicago.activity.ErrorActivity;
 import fr.cph.chicago.activity.StationActivity;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BusArrival;
@@ -64,6 +64,9 @@ import fr.cph.chicago.entity.Stop;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.VehiculeArrival;
 import fr.cph.chicago.entity.enumeration.TrainLine;
+import fr.cph.chicago.exception.ConnectException;
+import fr.cph.chicago.exception.ParserException;
+import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.util.Util;
 
 public final class FavoritesAdapter extends BaseAdapter {
@@ -153,8 +156,6 @@ public final class FavoritesAdapter extends BaseAdapter {
 			textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
 			textView.setTextColor(activity.getResources().getColor(R.color.black));
 
-//			final ImageView arrow = (ImageView) convertView.findViewById(R.id.arrow);
-
 			TextView updated = (TextView) convertView.findViewById(R.id.station_updated);
 			lupdated.add(updated);
 			if (lastUpdate != null) {
@@ -181,8 +182,6 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 			for (TrainLine tl : setTL) {
 				if (arrival.getTrainArrival(stationId) != null) {
-//					arrow.setImageDrawable(activity.getResources().getDrawable(R.drawable.down_arrow));
-					// TODO chedk if mod ok
 					List<Eta> etas = arrival.getTrainArrival(stationId).getEtas(tl);
 					if (etas.size() != 0) {
 						String key = station.getName() + "_" + tl.toString() + "_h";
@@ -236,8 +235,6 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 								TextView stopName = new TextView(context);
 								stopName.setText(eta.getDestName() + ": ");
-								// stopName.setTextColor(context.getResources().getColor(R.color.grey));
-								// stopName.setPadding(line3Padding, 0, 0, 0);
 								stopName.setTextColor(context.getResources().getColor(R.color.grey_5));
 								insideLayout.addView(stopName);
 
@@ -295,14 +292,14 @@ public final class FavoritesAdapter extends BaseAdapter {
 			textView.setTypeface(Typeface.DEFAULT_BOLD);
 			textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
 			textView.setTextColor(activity.getResources().getColor(R.color.black));
-			
+
 			TextView textView2 = (TextView) convertView.findViewById(R.id.route_name_value);
 			textView2.setText(" " + busRoute.getName());
 			textView2.setTypeface(Typeface.DEFAULT_BOLD);
 			textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
 			textView2.setTextColor(activity.getResources().getColor(R.color.black));
 
-//			final ImageView arrow = (ImageView) convertView.findViewById(R.id.arrow);
+			// final ImageView arrow = (ImageView) convertView.findViewById(R.id.arrow);
 
 			final LinearLayout favoritesLayout = (LinearLayout) convertView.findViewById(R.id.favorites_list);
 
@@ -314,7 +311,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 			Map<String, Map<String, List<BusArrival>>> busArrivals = arrival.getBusArrivalsMapped(busRoute.getId());
 			if (busArrivals.size() > 0) {
-//				arrow.setImageDrawable(activity.getResources().getDrawable(R.drawable.down_arrow));
+				// arrow.setImageDrawable(activity.getResources().getDrawable(R.drawable.down_arrow));
 				for (Entry<String, Map<String, List<BusArrival>>> entry : busArrivals.entrySet()) {
 					LinearLayout llh = new LinearLayout(context);
 					llh.setLayoutParams(paramsLayout);
@@ -496,41 +493,57 @@ public final class FavoritesAdapter extends BaseAdapter {
 		private String bound;
 		private String stopId;
 		private String busRouteName;
+		private TrackerException trackerException;
 
 		@Override
 		protected BusStop doInBackground(String... params) {
-			busRouteId = params[0];
-			bound = params[1];
-			stopId = params[2];
-			busRouteName = params[3];
-			List<BusStop> busStops = DataHolder.getInstance().getBusData().readBusStop(busRouteId, bound);
 			BusStop res = null;
-			for (BusStop bus : busStops) {
-				if (String.valueOf(bus.getId()).equals(stopId)) {
-					res = bus;
-					break;
+			try {
+				busRouteId = params[0];
+				bound = params[1];
+				stopId = params[2];
+				busRouteName = params[3];
+				List<BusStop> busStops;
+				busStops = DataHolder.getInstance().getBusData().readBusStop(busRouteId, bound);
+
+				for (BusStop bus : busStops) {
+					if (String.valueOf(bus.getId()).equals(stopId)) {
+						res = bus;
+						break;
+					}
 				}
+			} catch (ConnectException e) {
+				this.trackerException = e;
+			} catch (ParserException e) {
+				this.trackerException = e;
 			}
 			return res;
 		}
 
 		@Override
 		protected void onPostExecute(BusStop result) {
-			BusStop busStop = result;
+			if (trackerException == null) {
+				BusStop busStop = result;
 
-			Intent intent = new Intent(ChicagoTracker.getAppContext(), BusActivity.class);
-			Bundle extras = new Bundle();
-			extras.putInt("busStopId", busStop.getId());
-			extras.putString("busStopName", busStop.getName());
-			extras.putString("busRouteId", busRouteId);
-			extras.putString("busRouteName", busRouteName);
-			extras.putString("bound", bound);
-			extras.putDouble("latitude", busStop.getPosition().getLatitude());
-			extras.putDouble("longitude", busStop.getPosition().getLongitude());
+				Intent intent = new Intent(ChicagoTracker.getAppContext(), BusActivity.class);
+				Bundle extras = new Bundle();
+				extras.putInt("busStopId", busStop.getId());
+				extras.putString("busStopName", busStop.getName());
+				extras.putString("busRouteId", busRouteId);
+				extras.putString("busRouteName", busRouteName);
+				extras.putString("bound", bound);
+				extras.putDouble("latitude", busStop.getPosition().getLatitude());
+				extras.putDouble("longitude", busStop.getPosition().getLongitude());
 
-			intent.putExtras(extras);
-			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			ChicagoTracker.getAppContext().startActivity(intent);
+				intent.putExtras(extras);
+				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				ChicagoTracker.getAppContext().startActivity(intent);
+			} else {
+				Intent intent = new Intent(ChicagoTracker.getAppContext(), ErrorActivity.class);
+				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				activity.finish();
+				activity.startActivity(intent);
+			}
 		}
 	}
 }

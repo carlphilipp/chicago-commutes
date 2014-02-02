@@ -16,9 +16,6 @@
 
 package fr.cph.chicago.task;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,20 +23,23 @@ import java.util.Map.Entry;
 
 import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.map.MultiValueMap;
-import org.xmlpull.v1.XmlPullParserException;
 
 import android.os.AsyncTask;
-import android.util.Log;
 import android.util.SparseArray;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.CtaRequestType;
+import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.data.TrainData;
+import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.TrainDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
+import fr.cph.chicago.exception.ConnectException;
+import fr.cph.chicago.exception.ParserException;
+import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.xml.Xml;
 
 public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
@@ -48,25 +48,35 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 	private static final String TAG = "CtaConnectTask";
 
 	private Class<?> classe;
-	private CtaRequestType requestType;
-	private MultiMap<String, String> params;
+	private CtaRequestType requestType, requestType2;
+	private MultiMap<String, String> params, params2;
 	private Xml xml;
-	private SparseArray<TrainArrival> arrivals;
+	private SparseArray<TrainArrival> trainArrivals;
 	private TrainData data;
+	private TrackerException trackerException;
+	private List<BusArrival> busArrivals;
 
-	public CtaConnectTask(final Class<?> classe, final CtaRequestType requestType, final MultiMap<String, String> params, final TrainData data)
-			throws XmlPullParserException {
+	public CtaConnectTask(final Class<?> classe, final CtaRequestType requestType, final MultiMap<String, String> params,
+			final CtaRequestType requestType2, final MultiMap<String, String> params2
+
+	) throws ParserException {
+
 		this.classe = classe;
 		this.requestType = requestType;
 		this.params = params;
+		this.data = DataHolder.getInstance().getTrainData();
+
+		this.requestType2 = requestType2;
+		this.params2 = params2;
+
+		this.trainArrivals = new SparseArray<TrainArrival>();
+		this.busArrivals = new ArrayList<BusArrival>();
+
 		this.xml = new Xml();
-		this.data = data;
-		this.arrivals = new SparseArray<TrainArrival>();
 	}
 
 	@Override
 	protected Boolean doInBackground(Void... connects) {
-		Log.i(TAG, "CtaConnectTask");
 		CtaConnect connect = CtaConnect.getInstance();
 		try {
 			for (Entry<String, Object> entry : params.entrySet()) {
@@ -75,13 +85,13 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 					Object value = entry.getValue();
 					if (value instanceof String) {
 						String xmlResult = connect.connect(requestType, params);
-						this.arrivals = xml.parseArrivals(xmlResult, data);
+						this.trainArrivals = xml.parseArrivals(xmlResult, data);
 					} else if (value instanceof List) {
 						@SuppressWarnings("unchecked")
 						List<String> list = (List<String>) value;
 						if (list.size() < 5) {
 							String xmlResult = connect.connect(requestType, params);
-							this.arrivals = xml.parseArrivals(xmlResult, data);
+							this.trainArrivals = xml.parseArrivals(xmlResult, data);
 						} else {
 							int size = list.size();
 							SparseArray<TrainArrival> tempArrivals = new SparseArray<TrainArrival>();
@@ -106,7 +116,7 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 									end = end + 3;
 								}
 							}
-							this.arrivals = tempArrivals;
+							this.trainArrivals = tempArrivals;
 						}
 					}
 				}
@@ -114,8 +124,8 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 
 			// Apply filters
 			int index = 0;
-			while (index < arrivals.size()) {
-				TrainArrival arri = arrivals.valueAt(index++);
+			while (index < trainArrivals.size()) {
+				TrainArrival arri = trainArrivals.valueAt(index++);
 				List<Eta> etas = arri.getEtas();
 				// Sort Eta by arriving time
 				Collections.sort(etas);
@@ -138,12 +148,41 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 					}
 				}
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (XmlPullParserException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
-			e.printStackTrace();
+
+			List<String> rts = new ArrayList<String>();
+			List<String> stpids = new ArrayList<String>();
+			for (Entry<String, Object> entry : params2.entrySet()) {
+
+				String key = entry.getKey();
+				StringBuilder str = new StringBuilder();
+				int i = 0;
+				@SuppressWarnings("unchecked")
+				List<String> values = (ArrayList<String>) entry.getValue();
+				for (String v : values) {
+					str.append(v + ",");
+					if (i == 9 || i == values.size() - 1) {
+						if (key.equals("rt")) {
+							rts.add(str.toString());
+						} else if (key.equals("stpid")) {
+							stpids.add(str.toString());
+						}
+						str = new StringBuilder();
+						i = -1;
+					}
+					i++;
+				}
+			}
+			for (int i = 0; i < rts.size(); i++) {
+				MultiMap<String, String> para = new MultiValueMap<String, String>();
+				para.put("rt", rts.get(i));
+				para.put("stpid", stpids.get(i));
+				String xmlResult = connect.connect(requestType2, para);
+				this.busArrivals.addAll(xml.parseBusArrivals(xmlResult));
+			}
+		} catch (ConnectException e) {
+			this.trackerException = e;
+		} catch (ParserException e) {
+			this.trackerException = e;
 		}
 		return true;
 	}
@@ -156,14 +195,13 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 	@Override
 	protected void onPostExecute(final Boolean success) {
 		try {
-			classe.getMethod("reloadData", SparseArray.class).invoke(null, this.arrivals);
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
+			if (trackerException == null) {
+				classe.getMethod("reloadData", SparseArray.class, List.class).invoke(null, this.trainArrivals, this.busArrivals);
+			} else {
+				// call static function
+				classe.getMethod("displayError").invoke(null, (Object[]) null);
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		super.onPostExecute(success);

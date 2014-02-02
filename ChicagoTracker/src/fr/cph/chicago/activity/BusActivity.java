@@ -17,7 +17,6 @@
 package fr.cph.chicago.activity;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -26,7 +25,6 @@ import java.util.Map.Entry;
 
 import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.map.MultiValueMap;
-import org.xmlpull.v1.XmlPullParserException;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -53,6 +51,9 @@ import fr.cph.chicago.connection.GStreetViewConnect;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.Position;
+import fr.cph.chicago.exception.ConnectException;
+import fr.cph.chicago.exception.ParserException;
+import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
 
@@ -165,6 +166,8 @@ public class BusActivity extends Activity {
 	}
 
 	private class LoadData extends AsyncTask<Void, Void, List<BusArrival>> {
+		private TrackerException trackerException;
+
 		@Override
 		protected List<BusArrival> doInBackground(Void... params) {
 			MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
@@ -175,12 +178,10 @@ public class BusActivity extends Activity {
 				Xml xml = new Xml();
 				String xmlResult = connect.connect(CtaRequestType.BUS_ARRIVALS, reqParams);
 				return xml.parseBusArrivals(xmlResult);
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (XmlPullParserException e) {
-				e.printStackTrace();
-			} catch (ParseException e) {
-				e.printStackTrace();
+			} catch (ParserException e) {
+				this.trackerException = e;
+			} catch (ConnectException e) {
+				this.trackerException = e;
 			}
 			return null;
 		}
@@ -197,9 +198,16 @@ public class BusActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(List<BusArrival> result) {
-			BusActivity.this.busArrivals = result;
-			BusActivity.this.buildArrivals();
-			if (!firstLoad) {
+			if (trackerException == null) {
+				BusActivity.this.busArrivals = result;
+				BusActivity.this.buildArrivals();
+			} else {
+				Intent intent = new Intent(ChicagoTracker.getAppContext(), ErrorActivity.class);
+				finish();
+				startActivity(intent);
+			}
+
+			if (!firstLoad || trackerException != null) {
 				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
 				refreshMenuItem.collapseActionView();
 				refreshMenuItem.setActionView(null);

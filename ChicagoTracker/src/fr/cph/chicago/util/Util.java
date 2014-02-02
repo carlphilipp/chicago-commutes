@@ -26,6 +26,7 @@ import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.data.Preferences;
 
 public class Util {
+	/** **/
 	private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
 
 	/**
@@ -46,6 +47,11 @@ public class Util {
 		}
 	}
 
+	/**
+	 * 
+	 * @param property
+	 * @return
+	 */
 	public static String getProperty(String property) {
 		Properties prop = new Properties();
 		try {
@@ -57,6 +63,11 @@ public class Util {
 		return prop.getProperty(property, null);
 	}
 
+	/**
+	 * 
+	 * @param stationId
+	 * @param preference
+	 */
 	public static void addToTrainFavorites(Integer stationId, String preference) {
 		List<Integer> favorites = Preferences.getTrainFavorites(preference);
 		if (!favorites.contains(stationId)) {
@@ -66,6 +77,11 @@ public class Util {
 		Toast.makeText(ChicagoTracker.getAppContext(), "Adding to favorites", Toast.LENGTH_SHORT).show();
 	}
 
+	/**
+	 * 
+	 * @param stationId
+	 * @param preference
+	 */
 	public static void removeFromTrainFavorites(Integer stationId, String preference) {
 		List<Integer> favorites = Preferences.getTrainFavorites(preference);
 		favorites.remove(stationId);
@@ -73,6 +89,13 @@ public class Util {
 		Toast.makeText(ChicagoTracker.getAppContext(), "Removing from favorites", Toast.LENGTH_SHORT).show();
 	}
 
+	/**
+	 * 
+	 * @param busRouteId
+	 * @param busStopId
+	 * @param bound
+	 * @param preference
+	 */
 	public static void removeFromBusFavorites(String busRouteId, String busStopId, String bound, String preference) {
 		String id = busRouteId + "_" + busStopId + "_" + bound;
 		List<String> favorites = Preferences.getBusFavorites(preference);
@@ -81,6 +104,13 @@ public class Util {
 		Toast.makeText(ChicagoTracker.getAppContext(), "Removing from favorites", Toast.LENGTH_SHORT).show();
 	}
 
+	/**
+	 * 
+	 * @param busRouteId
+	 * @param busStopId
+	 * @param bound
+	 * @param preference
+	 */
 	public static void addToBusFavorites(String busRouteId, String busStopId, String bound, String preference) {
 		String id = busRouteId + "_" + busStopId + "_" + bound;
 		List<String> favorites = Preferences.getBusFavorites(preference);
@@ -91,6 +121,11 @@ public class Util {
 		Toast.makeText(ChicagoTracker.getAppContext(), "Adding to favorites", Toast.LENGTH_SHORT).show();
 	}
 
+	/**
+	 * 
+	 * @param fav
+	 * @return
+	 */
 	public static String[] decodeBusFavorite(String fav) {
 		String[] res = new String[3];
 		int first = fav.indexOf('_');

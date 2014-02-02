@@ -24,10 +24,10 @@ import java.util.List;
 
 import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.map.MultiValueMap;
-import org.xmlpull.v1.XmlPullParserException;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
@@ -42,13 +42,15 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
+import fr.cph.chicago.activity.ErrorActivity;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.FavoritesAdapter;
 import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.task.CtaConnectTask2;
+import fr.cph.chicago.exception.ParserException;
+import fr.cph.chicago.task.CtaConnectTask;
 import fr.cph.chicago.util.Util;
 
 /**
@@ -103,13 +105,18 @@ public class FavoritesFragment extends Fragment {
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		Log.i(TAG,"onCreateOptionsMenu");
+		Log.i(TAG, "onCreateOptionsMenu");
 		this.menu = menu;
-		loadData();
+		try {
+			loadData();
+		} catch (ParserException e) {
+			Intent intent = new Intent(ChicagoTracker.getAppContext(), ErrorActivity.class);
+			startActivity(intent);
+		}
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
-	public void loadData() {
+	public void loadData() throws ParserException {
 		if (firstLoad && menu.size() > 1) {
 			MenuItem menuItem = menu.getItem(1);
 			menuItem.setActionView(R.layout.progressbar);
@@ -129,13 +136,9 @@ public class FavoritesFragment extends Fragment {
 				params2.put("stpid", fav[1]);
 			}
 
-			try {
-				CtaConnectTask2 task = new CtaConnectTask2(FavoritesFragment.class, CtaRequestType.TRAIN_ARRIVALS, params,
-						CtaRequestType.BUS_ARRIVALS, params2);
-				task.execute((Void) null);
-			} catch (XmlPullParserException e) {
-				e.printStackTrace();
-			}
+			CtaConnectTask task = new CtaConnectTask(FavoritesFragment.class, CtaRequestType.TRAIN_ARRIVALS, params, CtaRequestType.BUS_ARRIVALS,
+					params2);
+			task.execute((Void) null);
 			firstLoad = false;
 		}
 	}
@@ -171,7 +174,7 @@ public class FavoritesFragment extends Fragment {
 
 	@Override
 	public void onResume() {
-		Log.i(TAG,"on resume");
+		Log.i(TAG, "on resume");
 		super.onResume();
 		ada.setFavorites();
 		ada.notifyDataSetChanged();
@@ -192,6 +195,12 @@ public class FavoritesFragment extends Fragment {
 		ada.refreshUpdated();
 		ada.notifyDataSetChanged();
 		((MainActivity) mActivity).stopRefreshAnimation();
+	}
+	
+	public static void displayError(){
+		Intent intent = new Intent(ChicagoTracker.getAppContext(), ErrorActivity.class);
+		mActivity.finish();
+		mActivity.startActivity(intent);
 	}
 
 	public static void updateFavorites() {

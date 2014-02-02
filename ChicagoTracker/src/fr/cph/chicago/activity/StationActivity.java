@@ -17,7 +17,6 @@
 package fr.cph.chicago.activity;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,7 +28,6 @@ import java.util.Set;
 
 import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.map.MultiValueMap;
-import org.xmlpull.v1.XmlPullParserException;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -39,6 +37,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils.TruncateAt;
 import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -49,7 +48,6 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -70,6 +68,9 @@ import fr.cph.chicago.entity.Stop;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.TrainDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
+import fr.cph.chicago.exception.ConnectException;
+import fr.cph.chicago.exception.ParserException;
+import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
 
@@ -83,6 +84,8 @@ public class StationActivity extends Activity {
 	private Integer stationId;
 
 	private ImageView streetViewImage;
+
+	private TextView streetViewText;
 
 	private ImageView mapImage;
 
@@ -104,12 +107,11 @@ public class StationActivity extends Activity {
 
 	private boolean firstLoad = true;
 
-
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		// Load data
 		DataHolder dataHolder = DataHolder.getInstance();
 		this.data = dataHolder.getTrainData();
@@ -138,18 +140,16 @@ public class StationActivity extends Activity {
 
 		streetViewImage = (ImageView) findViewById(R.id.activity_station_streetview_image);
 
+		streetViewText = (TextView) findViewById(R.id.activity_station_steetview_text);
+
 		mapImage = (ImageView) findViewById(R.id.activity_station_map_image);
 
 		directionImage = (ImageView) findViewById(R.id.activity_station_map_direction);
-
-		// LinearLayout colorView = (LinearLayout) findViewById(R.id.activity_station_station_color);
 
 		int width = (int) getResources().getDimension(R.dimen.activity_station_line_width);
 		int height = (int) getResources().getDimension(R.dimen.activity_station_line_height);
 		int line1PaddingColor = (int) getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
 		int line1PaddingTop = (int) getResources().getDimension(R.dimen.activity_station_stops_line1_padding_top);
-
-		android.view.ViewGroup.LayoutParams params = new android.view.ViewGroup.LayoutParams(width, height);
 
 		favoritesImage = (ImageView) findViewById(R.id.activity_station_favorite_star);
 		if (isFavorite) {
@@ -179,7 +179,7 @@ public class StationActivity extends Activity {
 			Collections.sort(stopss);
 
 			TextView textView2 = new TextView(this);
-			textView2.setText("T");
+			textView2.setText(ChicagoTracker.getAppContext().getResources().getString(R.string.T));
 			textView2.setTypeface(Typeface.DEFAULT_BOLD);
 			textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
 			textView2.setTextColor(getResources().getColor(R.color.grey_M_B));
@@ -190,12 +190,15 @@ public class StationActivity extends Activity {
 
 			textView2 = new TextView(this);
 			textView2.setBackgroundColor(line.getColor());
-			textView2.setLayoutParams(params);
 			int id2 = Util.generateViewId();
 			textView2.setId(id2);
-			RelativeLayout.LayoutParams derp2 = new RelativeLayout.LayoutParams(width, height);
-			derp2.addRule(RelativeLayout.RIGHT_OF, id);
-			textView2.setLayoutParams(derp2);
+
+			RelativeLayout.LayoutParams layoutParam = new RelativeLayout.LayoutParams(stopsView.getLayoutParams());
+			layoutParam.addRule(RelativeLayout.RIGHT_OF, id);
+			layoutParam.addRule(RelativeLayout.ALIGN_BASELINE, id);
+			layoutParam.width = 15;
+			textView2.setTextSize(ChicagoTracker.getAppContext().getResources().getDimension(R.dimen.activity_train_line_color));
+			textView2.setLayoutParams(layoutParam);
 			line1.addView(textView2);
 
 			textView2 = new TextView(this);
@@ -213,12 +216,7 @@ public class StationActivity extends Activity {
 
 			stopsView.addView(line1);
 
-			// LinearLayout line2 = new LinearLayout(this);
-			// line2.setOrientation(LinearLayout.HORIZONTAL);
-			// line2.setLayoutParams(paramsStop);
-
 			for (final Stop stop : stopss) {
-
 				LinearLayout line2 = new LinearLayout(this);
 				line2.setOrientation(LinearLayout.HORIZONTAL);
 				line2.setLayoutParams(paramsStop);
@@ -279,8 +277,6 @@ public class StationActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			// Intent returnIntent = new Intent();
-			// setResult(RESULT_CANCELED, returnIntent);
 			finish();
 			return true;
 		case R.id.action_refresh:
@@ -329,8 +325,6 @@ public class StationActivity extends Activity {
 		return isFavorite;
 	}
 
-	
-
 	private class DisplayGoogleStreetPicture extends AsyncTask<Position, Void, Drawable> {
 		private Position position;
 
@@ -365,12 +359,6 @@ public class StationActivity extends Activity {
 					intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
 					try {
 						startActivity(intent);
-
-						// To get direction
-						// String uri = "http://maps.google.com/?f=d&daddr="+position.getLatitude() + "," + position.getLongitude();
-						// Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-						// i.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
-						// startActivity(i);
 					} catch (ActivityNotFoundException ex) {
 						uri = String.format(Locale.ENGLISH, "http://maps.google.com/maps?q=&layer=c&cbll=%f,%f&cbp=11,0,0,0,0",
 								position.getLatitude(), position.getLongitude());
@@ -402,6 +390,9 @@ public class StationActivity extends Activity {
 				}
 			});
 
+			StationActivity.this.streetViewText.setText(ChicagoTracker.getAppContext().getResources()
+					.getString(R.string.station_activity_street_view));
+
 			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
 			refreshMenuItem.collapseActionView();
 			refreshMenuItem.setActionView(null);
@@ -410,6 +401,8 @@ public class StationActivity extends Activity {
 	}
 
 	private class LoadData extends AsyncTask<MultiMap<String, String>, Void, TrainArrival> {
+
+		private TrackerException trackerException;
 
 		@Override
 		protected TrainArrival doInBackground(MultiMap<String, String>... params) {
@@ -448,12 +441,10 @@ public class StationActivity extends Activity {
 						}
 					}
 				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (XmlPullParserException e) {
-				e.printStackTrace();
-			} catch (ParseException e) {
-				e.printStackTrace();
+			} catch (ParserException e) {
+				this.trackerException = e;
+			} catch (ConnectException e) {
+				this.trackerException = e;
 			}
 			if (arrivals.size() == 1) {
 				@SuppressWarnings("unchecked")
@@ -476,21 +467,27 @@ public class StationActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(TrainArrival result) {
-			arrival = result;
-			List<Eta> etas;
-			if (arrival != null) {
-				etas = arrival.getEtas();
+			if (this.trackerException == null) {
+				arrival = result;
+				List<Eta> etas;
+				if (arrival != null) {
+					etas = arrival.getEtas();
+				} else {
+					etas = new ArrayList<Eta>();
+				}
+				reset(StationActivity.this.station);
+				for (Eta eta : etas) {
+					drawLine3(eta);
+				}
+				if (!firstLoad) {
+					MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+					refreshMenuItem.collapseActionView();
+					refreshMenuItem.setActionView(null);
+				}
 			} else {
-				etas = new ArrayList<Eta>();
-			}
-			reset(StationActivity.this.station);
-			for (Eta eta : etas) {
-				drawLine3(eta);
-			}
-			if (!firstLoad) {
-				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-				refreshMenuItem.collapseActionView();
-				refreshMenuItem.setActionView(null);
+				Intent intent = new Intent(ChicagoTracker.getAppContext(), ErrorActivity.class);
+				finish();
+				startActivity(intent);
 			}
 		}
 	}
@@ -543,12 +540,13 @@ public class StationActivity extends Activity {
 			TextView timing = new TextView(this);
 			timing.setText(eta.getTimeLeftDueDelay() + " ");
 			timing.setTextColor(getResources().getColor(R.color.grey));
+			timing.setLines(1);
+			timing.setEllipsize(TruncateAt.END);
 			insideLayout.addView(timing);
 
 			line3View.addView(insideLayout);
 		} else {
 			LinearLayout insideLayout = (LinearLayout) findViewById(id);
-
 			TextView timing = (TextView) insideLayout.getChildAt(1);
 			timing.setText(timing.getText() + eta.getTimeLeftDueDelay() + " ");
 		}

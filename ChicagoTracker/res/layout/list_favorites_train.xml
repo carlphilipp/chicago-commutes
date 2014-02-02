@@ -24,7 +24,7 @@
     android:paddingRight="@+dimen/activity_train_line_padding_right"
     android:paddingTop="@+dimen/activity_train_line_padding_top" >
 
-    <RelativeLayout
+   <RelativeLayout
         android:id="@+id/line1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:paddingRight="@+dimen/activity_station_stops_line1_padding_color"
-            android:text="T"
+            android:text="@string/T"
             android:textColor="@+color/grey_M_B"
             android:textIsSelectable="false"
             android:textSize="@+dimen/activity_train_line_M"
@@ -48,7 +48,7 @@
             android:layout_alignBaseline="@+id/station_t"
             android:layout_toRightOf="@+id/station_t"
             android:background="@color/grey_5"
-            android:text=" "
+            android:text="@string/empty_string"
             android:textIsSelectable="false"
             android:textSize="@+dimen/activity_train_line_M" />
 
@@ -74,16 +74,6 @@
             android:layout_alignParentRight="true"
             android:textColor="@color/grey"
             android:textIsSelectable="false" />
-        <!--
-        <ImageView
-            android:id="@+id/arrow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:contentDescription="derpderp"
-            android:src="@drawable/left_arrow" />
-        -->
     </RelativeLayout>
 
     <LinearLayout
