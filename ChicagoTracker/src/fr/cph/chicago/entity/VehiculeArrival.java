@@ -42,7 +42,6 @@ public class VehiculeArrival {
 	private List<Integer> trainFavorites;
 	private List<String> busFavorites;
 	private List<String> fakeBusFavorites;
-	// private int actualRouteNumberBusFavorites;
 
 	private TrainData trainData;
 	private BusData busData;
@@ -59,11 +58,11 @@ public class VehiculeArrival {
 		this.busData = DataHolder.getInstance().getBusData();
 	}
 
-	public int size() {
+	public final int size() {
 		return trainFavorites.size() + fakeBusFavorites.size();
 	}
 
-	public Object getObject(int position) {
+	public final Object getObject(final int position) {
 		Object result = null;
 		if (position < trainFavorites.size()) {
 			Integer stationId = trainFavorites.get(position);
@@ -78,11 +77,11 @@ public class VehiculeArrival {
 		return result;
 	}
 
-	public TrainArrival getTrainArrival(Integer stationId) {
+	public final TrainArrival getTrainArrival(final Integer stationId) {
 		return trainArrivals.get(stationId);
 	}
 
-	public List<BusArrival> getBusArrivals(String routeId) {
+	public final List<BusArrival> getBusArrivals(final String routeId) {
 		List<BusArrival> res = new ArrayList<BusArrival>();
 		for (BusArrival busArrival : busArrivals) {
 			if (busArrival.getRouteId().equals(routeId)) {
@@ -92,7 +91,7 @@ public class VehiculeArrival {
 		return res;
 	}
 
-	public BusArrival getOneBusArrival(String routeId) {
+	public final BusArrival getOneBusArrival(final String routeId) {
 		BusArrival bus = null;
 		for (BusArrival busArrival : busArrivals) {
 			if (busArrival.getRouteId().equals(routeId)) {
@@ -103,7 +102,7 @@ public class VehiculeArrival {
 		return bus;
 	}
 
-	public Map<String, Map<String, List<BusArrival>>> getBusArrivalsMapped(String routeId) {
+	public final Map<String, Map<String, List<BusArrival>>> getBusArrivalsMapped(final String routeId) {
 		Map<String, Map<String, List<BusArrival>>> res = new HashMap<String, Map<String, List<BusArrival>>>();
 		for (BusArrival busArrival : busArrivals) {
 			String bound = busArrival.getRouteDirection();
@@ -132,7 +131,7 @@ public class VehiculeArrival {
 		return res;
 	}
 
-	private boolean isInFavorites(String routeId, String bound) {
+	private final boolean isInFavorites(final String routeId, final String bound) {
 		boolean res = false;
 		for (String fav : busFavorites) {
 			String decoded[] = Util.decodeBusFavorite(fav);
@@ -144,21 +143,21 @@ public class VehiculeArrival {
 		return res;
 	}
 
-	public void setTrainArrival(SparseArray<TrainArrival> trainArrival) {
+	public final void setTrainArrival(final SparseArray<TrainArrival> trainArrival) {
 		this.trainArrivals = trainArrival;
 	}
 
-	public void setBusArrivals(List<BusArrival> busArrivals) {
+	public final void setBusArrivals(final List<BusArrival> busArrivals) {
 		this.busArrivals = busArrivals;
 	}
 
-	public void setFavorites() {
+	public final void setFavorites() {
 		this.trainFavorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
 		this.busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
 		this.fakeBusFavorites = calculateaActualRouteNumberBusFavorites();
 	}
 
-	public void setArrivals(SparseArray<TrainArrival> trainArrivals, List<BusArrival> busArrivals) {
+	public final void setArrivals(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals) {
 		this.trainArrivals.clear();
 		this.trainArrivals = trainArrivals;
 		removeDuplicates(busArrivals);
@@ -167,13 +166,13 @@ public class VehiculeArrival {
 		setFavorites();
 	}
 
-	private void removeDuplicates(List<BusArrival> busArrivals) {
+	private final void removeDuplicates(final List<BusArrival> busArrivals) {
 		Set<BusArrival> stBusArrivals = new LinkedHashSet<BusArrival>(busArrivals);
 		busArrivals.clear();
 		busArrivals.addAll(stBusArrivals);
 	}
 
-	public List<String> calculateaActualRouteNumberBusFavorites() {
+	public final List<String> calculateaActualRouteNumberBusFavorites() {
 		List<String> found = new ArrayList<String>();
 		List<String> favs = new ArrayList<String>();
 		for (String fav : busFavorites) {

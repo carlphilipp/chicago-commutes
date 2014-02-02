@@ -69,7 +69,7 @@ public class Xml {
 		}
 	}
 
-	public SparseArray<TrainArrival> parseArrivals(String xml, TrainData data) throws ParserException {
+	public final SparseArray<TrainArrival> parseArrivals(final String xml, final TrainData data) throws ParserException {
 		InputStream is = new ByteArrayInputStream(xml.getBytes());
 		SparseArray<TrainArrival> arrivals = null;
 		try {
@@ -262,7 +262,7 @@ public class Xml {
 		return arrivals;
 	}
 
-	public List<BusRoute> parseBusRoutes(String xml) throws ParserException {
+	public final List<BusRoute> parseBusRoutes(final String xml) throws ParserException {
 		List<BusRoute> routes = null;
 		try {
 			InputStream is = new ByteArrayInputStream(xml.getBytes());
@@ -316,7 +316,7 @@ public class Xml {
 		return routes;
 	}
 
-	public BusDirections parseBusDirections(String xml, String id) throws ParserException {
+	public final BusDirections parseBusDirections(final String xml, final String id) throws ParserException {
 		BusDirections directions = null;
 		try {
 			InputStream is = new ByteArrayInputStream(xml.getBytes());
@@ -347,7 +347,7 @@ public class Xml {
 		return directions;
 	}
 
-	public List<BusStop> parseBusBounds(String xml) throws ParserException {
+	public final List<BusStop> parseBusBounds(final String xml) throws ParserException {
 		List<BusStop> busStops = null;
 		String tagName = null;
 		BusStop busStop = null;
@@ -393,7 +393,7 @@ public class Xml {
 		return busStops;
 	}
 
-	public List<BusArrival> parseBusArrivals(String xml) throws ParserException {
+	public final List<BusArrival> parseBusArrivals(final String xml) throws ParserException {
 		List<BusArrival> busArrivals = null;
 		String tagName = null;
 		BusArrival busArrival = null;

@@ -55,7 +55,7 @@ public class TrainData {
 		this.stops = new SparseArray<Stop>();
 	}
 
-	public void read() {
+	public final void read() {
 		if (stations.size() == 0 && stops.size() == 0) {
 			try {
 				CSVReader reader = new CSVReader(new InputStreamReader(ChicagoTracker.getAppContext().getAssets().open("cta_L_stops_cph.csv")));
@@ -141,7 +141,7 @@ public class TrainData {
 		}
 	}
 
-	private void order() {
+	private final void order() {
 		List<Station> vals = new ArrayList<Station>();
 		for (int i = 0; i < stations.size(); i++) {
 			vals.add(stations.valueAt(i));
@@ -175,12 +175,12 @@ public class TrainData {
 		}
 	}
 
-	public List<Station> getStationsForLine(TrainLine line) {
+	public final List<Station> getStationsForLine(final TrainLine line) {
 		List<Station> res = stationsOrderByLineMap.get(line);
 		return res;
 	}
 
-	public Stop getStop(Integer id) {
+	public final Stop getStop(final Integer id) {
 		if (stops.size() != 0) {
 			return stops.get(id);
 		} else {
@@ -188,7 +188,7 @@ public class TrainData {
 		}
 	}
 
-	public Stop getStopByPosition(int position) {
+	public final Stop getStopByPosition(final int position) {
 		if (stops.size() != 0) {
 			return stops.valueAt(position);
 		} else {
@@ -196,11 +196,11 @@ public class TrainData {
 		}
 	}
 
-	public int getStopsSize() {
+	public final int getStopsSize() {
 		return stops.size();
 	}
 
-	public Station getStation(Integer id) {
+	public final Station getStation(final Integer id) {
 		if (stations.size() != 0) {
 			return stations.get(id);
 		} else {
@@ -208,7 +208,7 @@ public class TrainData {
 		}
 	}
 
-	public Station getStationByPosition(int position) {
+	public final Station getStationByPosition(final int position) {
 		if (stations.size() != 0 && position <= stations.size()) {
 			return stations.valueAt(position);
 		} else {
@@ -216,7 +216,7 @@ public class TrainData {
 		}
 	}
 
-	public Station getStationByPositionAndName(int position) {
+	public final Station getStationByPositionAndName(final int position) {
 		if (stationsOrderByName.size() != 0 && position <= stationsOrderByName.size()) {
 			return stationsOrderByName.get(position);
 		} else {
@@ -224,7 +224,7 @@ public class TrainData {
 		}
 	}
 
-	public Station getStationByPositionAndLine(int position) {
+	public final Station getStationByPositionAndLine(final int position) {
 		if (stationsOrderByLine.size() != 0 && position <= stationsOrderByLine.size()) {
 			return stationsOrderByLine.get(position);
 		} else {
@@ -232,15 +232,15 @@ public class TrainData {
 		}
 	}
 
-	public int getStationsSize() {
+	public final int getStationsSize() {
 		return stations.size();
 	}
 
-	public int getStationsSizeByLine() {
+	public final int getStationsSizeByLine() {
 		return stationsOrderByLine.size();
 	}
 
-	public Stop getStopByDesc(String desc) {
+	public final Stop getStopByDesc(final String desc) {
 		int index = 0;
 		while (index < stops.size()) {
 			Stop stop = stops.valueAt(index++);
@@ -251,7 +251,7 @@ public class TrainData {
 		return null;
 	}
 
-	public Station getStationByName(String name) {
+	public final Station getStationByName(final String name) {
 		int index = 0;
 		while (index < stations.size()) {
 			Station station = stations.valueAt(index++);

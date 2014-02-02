@@ -76,7 +76,7 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 	}
 
 	@Override
-	protected Boolean doInBackground(Void... connects) {
+	protected final Boolean doInBackground(final Void... connects) {
 		CtaConnect connect = CtaConnect.getInstance();
 		try {
 			for (Entry<String, Object> entry : params.entrySet()) {
@@ -188,18 +188,18 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 	}
 
 	@Override
-	protected void onProgressUpdate(Void... progress) {
+	protected final void onProgressUpdate(final Void... progress) {
 
 	}
 
 	@Override
-	protected void onPostExecute(final Boolean success) {
+	protected final void onPostExecute(final Boolean success) {
 		try {
 			if (trackerException == null) {
 				classe.getMethod("reloadData", SparseArray.class, List.class).invoke(null, this.trainArrivals, this.busArrivals);
 			} else {
 				// call static function
-				classe.getMethod("displayError").invoke(null, (Object[]) null);
+				classe.getMethod("displayError", TrackerException.class).invoke(null, trackerException);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

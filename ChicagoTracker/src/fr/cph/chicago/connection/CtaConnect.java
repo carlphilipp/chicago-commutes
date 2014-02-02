@@ -61,14 +61,14 @@ public class CtaConnect {
 		CTA_BUS_KEY = Util.getProperty("cta.bus.key");
 	}
 
-	public static CtaConnect getInstance() {
+	public final static CtaConnect getInstance() {
 		if (instance == null) {
 			instance = new CtaConnect();
 		}
 		return instance;
 	}
 
-	private String connectUrl(String adress) throws ConnectException {
+	private String connectUrl(final String adress) throws ConnectException {
 		String toreturn = null;
 		try {
 			client.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 30000);
@@ -100,7 +100,7 @@ public class CtaConnect {
 		return toreturn;
 	}
 
-	public String connect(CtaRequestType requestType, MultiMap<String, String> params) throws ConnectException {
+	public final String connect(final CtaRequestType requestType, final MultiMap<String, String> params) throws ConnectException {
 		StringBuilder adress = null;
 		switch (requestType) {
 		case TRAIN_ARRIVALS:

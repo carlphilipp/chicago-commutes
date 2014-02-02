@@ -50,6 +50,7 @@ import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.exception.ParserException;
+import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.task.CtaConnectTask;
 import fr.cph.chicago.util.Util;
 
@@ -78,7 +79,7 @@ public class FavoritesFragment extends Fragment {
 	/**
 	 * Returns a new instance of this fragment for the given section number.
 	 */
-	public static FavoritesFragment newInstance(int sectionNumber) {
+	public static final FavoritesFragment newInstance(final int sectionNumber) {
 		FavoritesFragment fragment = new FavoritesFragment();
 		Bundle args = new Bundle();
 		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
@@ -87,7 +88,7 @@ public class FavoritesFragment extends Fragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 		if (ada == null) {
 			ada = new FavoritesAdapter(mActivity);
@@ -104,19 +105,20 @@ public class FavoritesFragment extends Fragment {
 	}
 
 	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+	public final void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
 		Log.i(TAG, "onCreateOptionsMenu");
 		this.menu = menu;
 		try {
 			loadData();
 		} catch (ParserException e) {
-			Intent intent = new Intent(ChicagoTracker.getAppContext(), ErrorActivity.class);
-			startActivity(intent);
+//			Intent intent = new Intent(ChicagoTracker.getAppContext(), ErrorActivity.class);
+//			startActivity(intent);
+			ChicagoTracker.displayError(mActivity, e);
 		}
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
-	public void loadData() throws ParserException {
+	public final void loadData() throws ParserException {
 		if (firstLoad && menu.size() > 1) {
 			MenuItem menuItem = menu.getItem(1);
 			menuItem.setActionView(R.layout.progressbar);
@@ -146,13 +148,13 @@ public class FavoritesFragment extends Fragment {
 	private class RefreshTask extends AsyncTask<Void, Void, Void> {
 
 		@Override
-		protected void onProgressUpdate(Void... values) {
+		protected final void onProgressUpdate(final Void... values) {
 			super.onProgressUpdate(values);
 			ada.refreshUpdatedView();
 		}
 
 		@Override
-		protected Void doInBackground(Void... params) {
+		protected final Void doInBackground(final Void... params) {
 			while (!this.isCancelled()) {
 				Log.v(TAG, "Updated of time " + Thread.currentThread().getId());
 				try {
@@ -167,13 +169,13 @@ public class FavoritesFragment extends Fragment {
 	}
 
 	@Override
-	public void onStop() {
+	public final void onStop() {
 		super.onStop();
 		refreshTimingTask.cancel(true);
 	}
 
 	@Override
-	public void onResume() {
+	public final void onResume() {
 		Log.i(TAG, "on resume");
 		super.onResume();
 		ada.setFavorites();
@@ -184,26 +186,27 @@ public class FavoritesFragment extends Fragment {
 	}
 
 	@Override
-	public void onAttach(Activity activity) {
+	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
 		mActivity = activity;
 		((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 
-	public static void reloadData(SparseArray<TrainArrival> trainArrivals, List<BusArrival> busArrivals) {
+	public static void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals) {
 		ada.setArrivals(trainArrivals, busArrivals);
 		ada.refreshUpdated();
 		ada.notifyDataSetChanged();
 		((MainActivity) mActivity).stopRefreshAnimation();
 	}
 	
-	public static void displayError(){
-		Intent intent = new Intent(ChicagoTracker.getAppContext(), ErrorActivity.class);
-		mActivity.finish();
-		mActivity.startActivity(intent);
+	public static final void displayError(TrackerException trackerException){
+//		Intent intent = new Intent(ChicagoTracker.getAppContext(), ErrorActivity.class);
+//		mActivity.finish();
+//		mActivity.startActivity(intent);
+		ChicagoTracker.displayError(mActivity, trackerException);
 	}
 
-	public static void updateFavorites() {
+	public static final void updateFavorites() {
 		ada.setFavorites();
 	}
 }

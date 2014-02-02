@@ -17,20 +17,17 @@
 package fr.cph.chicago.entity.enumeration;
 
 public enum TrainDirection {
-	NORTH("N", "North"),
-	SOUTH("S", "South"),
-	EAST("E", "East"), 
-	WEST("W", "West");
+	NORTH("N", "North"), SOUTH("S", "South"), EAST("E", "East"), WEST("W", "West");
 
 	private String text;
 	private String formattedText;
 
-	TrainDirection(String text, String formattedText) {
+	TrainDirection(final String text, final String formattedText) {
 		this.text = text;
 		this.formattedText = formattedText;
 	}
 
-	public static TrainDirection fromString(String text) {
+	public static final TrainDirection fromString(final String text) {
 		if (text != null) {
 			for (TrainDirection b : TrainDirection.values()) {
 				if (text.equalsIgnoreCase(b.text)) {
@@ -42,7 +39,7 @@ public enum TrainDirection {
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return this.formattedText;
 	}
 }

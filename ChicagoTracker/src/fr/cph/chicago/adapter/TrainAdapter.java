@@ -42,7 +42,7 @@ public final class TrainAdapter extends BaseAdapter {
 
 	private Context context;
 
-	public TrainAdapter(TrainLine line) {
+	public TrainAdapter(final TrainLine line) {
 		// Load data
 		DataHolder dataHolder = DataHolder.getInstance();
 		TrainData data = dataHolder.getTrainData();
@@ -56,17 +56,17 @@ public final class TrainAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public final Object getItem(int position) {
+	public final Object getItem(final int position) {
 		return stations.get(position);
 	}
 
 	@Override
-	public final long getItemId(int position) {
+	public final long getItemId(final int position) {
 		return position;
 	}
 
 	@Override
-	public final View getView(int position, View convertView, ViewGroup parent) {
+	public final View getView(final int position, View convertView, final ViewGroup parent) {
 		Station station = stations.get(position);
 		Set<TrainLine> lines = station.getLines();
 

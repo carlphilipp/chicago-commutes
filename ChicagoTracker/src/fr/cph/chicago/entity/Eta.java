@@ -22,15 +22,13 @@ import java.util.concurrent.TimeUnit;
 
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
-public class Eta implements Comparable<Eta>{
+public final class Eta implements Comparable<Eta> {
 	private Station station;
 	private Stop stop;
 
 	private Integer runNumber;
 	private TrainLine routeName;
 
-	//private Stop destStop;
-	
 	private Integer destSt;
 	private String destName;
 
@@ -48,125 +46,124 @@ public class Eta implements Comparable<Eta>{
 
 	private Integer heading;
 
-	public Station getStation() {
+	public final Station getStation() {
 		return station;
 	}
 
-	public void setStation(Station station) {
+	public final void setStation(final Station station) {
 		this.station = station;
 	}
 
-	public Stop getStop() {
+	public final Stop getStop() {
 		return stop;
 	}
 
-	public void setStop(Stop stop) {
+	public final void setStop(final Stop stop) {
 		this.stop = stop;
 	}
 
-	public Integer getRunNumber() {
+	public final Integer getRunNumber() {
 		return runNumber;
 	}
 
-	public void setRunNumber(Integer runNumber) {
+	public final void setRunNumber(final Integer runNumber) {
 		this.runNumber = runNumber;
 	}
 
-	public TrainLine getRouteName() {
+	public final TrainLine getRouteName() {
 		return routeName;
 	}
 
-	public void setRouteName(TrainLine routeName) {
+	public final void setRouteName(final TrainLine routeName) {
 		this.routeName = routeName;
 	}
 
-	public Integer getTrainRouteDirectionCode() {
+	public final Integer getTrainRouteDirectionCode() {
 		return trainRouteDirectionCode;
 	}
 
-	public void setTrainRouteDirectionCode(Integer trainRouteDirectionCode) {
+	public final void setTrainRouteDirectionCode(final Integer trainRouteDirectionCode) {
 		this.trainRouteDirectionCode = trainRouteDirectionCode;
 	}
 
-	public Date getPredictionDate() {
+	public final Date getPredictionDate() {
 		return predictionDate;
 	}
 
-	public void setPredictionDate(Date predictionDate) {
+	public final void setPredictionDate(final Date predictionDate) {
 		this.predictionDate = predictionDate;
 	}
 
-	public Date getArrivalDepartureDate() {
+	public final Date getArrivalDepartureDate() {
 		return arrivalDepartureDate;
 	}
 
-	public void setArrivalDepartureDate(Date arrivalDepartureDate) {
+	public final void setArrivalDepartureDate(final Date arrivalDepartureDate) {
 		this.arrivalDepartureDate = arrivalDepartureDate;
 	}
 
-	public Boolean getIsApp() {
+	public final Boolean getIsApp() {
 		return isApp;
 	}
 
-	public void setIsApp(Boolean isApp) {
+	public final void setIsApp(final Boolean isApp) {
 		this.isApp = isApp;
 	}
 
-	public Boolean getIsSch() {
+	public final Boolean getIsSch() {
 		return isSch;
 	}
 
-	public void setIsSch(Boolean isSch) {
+	public final void setIsSch(final Boolean isSch) {
 		this.isSch = isSch;
 	}
 
-	public Boolean getIsFlt() {
+	public final Boolean getIsFlt() {
 		return isFlt;
 	}
 
-	public void setIsFlt(Boolean isFlt) {
+	public final void setIsFlt(final Boolean isFlt) {
 		this.isFlt = isFlt;
 	}
 
-	public Boolean getIsDly() {
+	public final Boolean getIsDly() {
 		return isDly;
 	}
 
-	public void setIsDly(Boolean isDly) {
+	public final void setIsDly(final Boolean isDly) {
 		this.isDly = isDly;
 	}
 
-	public String getFlags() {
+	public final String getFlags() {
 		return flags;
 	}
 
-	public void setFlags(String flags) {
+	public final void setFlags(final String flags) {
 		this.flags = flags;
 	}
 
-	public Position getPosition() {
+	public final Position getPosition() {
 		return position;
 	}
 
-	public void setPosition(Position position) {
+	public final void setPosition(final Position position) {
 		this.position = position;
 	}
 
-	public Integer getHeading() {
+	public final Integer getHeading() {
 		return heading;
 	}
 
-	public void setHeading(Integer heading) {
+	public final void setHeading(final Integer heading) {
 		this.heading = heading;
 	}
 
-
-	public String getTimeLeft() {
+	public final String getTimeLeft() {
 		long time = arrivalDepartureDate.getTime() - predictionDate.getTime();
 		return String.format(Locale.ENGLISH, "%d min", TimeUnit.MILLISECONDS.toMinutes(time));
 	}
-	
-	public String getTimeLeftDueDelay(){
+
+	public final String getTimeLeftDueDelay() {
 		String result;
 		if (getIsDly()) {
 			result = "Delay";
@@ -180,27 +177,26 @@ public class Eta implements Comparable<Eta>{
 		return result;
 	}
 
-	public Integer getDestSt() {
+	public final Integer getDestSt() {
 		return destSt;
 	}
 
-	public void setDestSt(Integer destSt) {
+	public final void setDestSt(final Integer destSt) {
 		this.destSt = destSt;
 	}
 
-	public String getDestName() {
+	public final String getDestName() {
 		return destName;
 	}
 
-	public void setDestName(String destName) {
+	public final void setDestName(String destName) {
 		this.destName = destName;
 	}
 
 	@Override
-	public int compareTo(Eta another) {
+	public final int compareTo(final Eta another) {
 		Long time1 = arrivalDepartureDate.getTime() - predictionDate.getTime();
 		Long time2 = another.getArrivalDepartureDate().getTime() - another.getPredictionDate().getTime();
 		return time1.compareTo(time2);
 	}
-
 }

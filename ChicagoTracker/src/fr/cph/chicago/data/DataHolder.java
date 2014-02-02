@@ -26,26 +26,26 @@ public class DataHolder {
 	private DataHolder() {
 	}
 
-	public static DataHolder getInstance() {
+	public static final DataHolder getInstance() {
 		if (dataHolder == null) {
 			dataHolder = new DataHolder();
 		} 
 		return dataHolder;
 	}
 	
-	public TrainData getTrainData(){
+	public final TrainData getTrainData(){
 		return trainData;
 	}
 	
-	public void setTrainData(TrainData data){
+	public final void setTrainData(final TrainData data){
 		this.trainData = data;
 	}
 
-	public BusData getBusData() {
+	public final BusData getBusData() {
 		return busData;
 	}
 
-	public void setBusData(BusData busData) {
+	public final void setBusData(final BusData busData) {
 		this.busData = busData;
 	}
 }

@@ -22,8 +22,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-import fr.cph.chicago.R;
 import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.R;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
 public final class TrainStationAdapter extends BaseAdapter {
@@ -40,28 +40,27 @@ public final class TrainStationAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public final Object getItem(int position) {
+	public final Object getItem(final int position) {
 		return TrainLine.values()[position];
 	}
 
 	@Override
-	public final long getItemId(int position) {
+	public final long getItemId(final int position) {
 		return position;
 	}
 
 	@Override
-	public final View getView(int position, View convertView, ViewGroup parent) {
+	public final View getView(final int position, View convertView, final ViewGroup parent) {
 		View v = convertView;
 		LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		v = vi.inflate(R.layout.list_train_line, null);
-		
+
 		TextView textView = (TextView) v.findViewById(R.id.station_color_value);
 		textView.setBackgroundColor(TrainLine.values()[position].getColor());
 		textView.setText("  ");
-		
+
 		textView = (TextView) v.findViewById(R.id.station_name_value);
 		textView.setText(TrainLine.values()[position].toString());
 		return v;
 	}
-
 }

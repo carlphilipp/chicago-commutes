@@ -18,6 +18,11 @@ package fr.cph.chicago.entity;
 
 import java.util.Date;
 
+/**
+ * Not used (yet?)
+ * @author carl
+ *
+ */
 public class Train {
 	private Integer runNumber;
 	

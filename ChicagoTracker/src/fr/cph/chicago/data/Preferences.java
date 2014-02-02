@@ -38,7 +38,7 @@ public final class Preferences {
 	/** Tag **/
 	private static final String TAG = "Preferences";
 
-	public static void saveBusFavorites(String name, List<String> favorites) {
+	public static final void saveBusFavorites(final String name, final List<String> favorites) {
 		Context context = ChicagoTracker.getAppContext();
 		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
@@ -51,7 +51,7 @@ public final class Preferences {
 		editor.commit();
 	}
 
-	public static List<String> getBusFavorites(String name) {
+	public static final List<String> getBusFavorites(final String name) {
 		Context context = ChicagoTracker.getAppContext();
 		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
 		Set<String> setPref = sharedPref.getStringSet(name, null);
@@ -87,7 +87,7 @@ public final class Preferences {
 		return favorites;
 	}
 
-	public static void saveTrainFavorites(String name, List<Integer> favorites) {
+	public static final void saveTrainFavorites(final String name, final List<Integer> favorites) {
 		Context context = ChicagoTracker.getAppContext();
 		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
@@ -100,7 +100,7 @@ public final class Preferences {
 		editor.commit();
 	}
 
-	public static List<Integer> getTrainFavorites(String name) {
+	public static final List<Integer> getTrainFavorites(final String name) {
 		Context context = ChicagoTracker.getAppContext();
 		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
 		Set<String> setPref = sharedPref.getStringSet(name, null);
@@ -127,7 +127,7 @@ public final class Preferences {
 		return res;
 	}
 
-	public static void saveTrainFilter(Integer stationId, TrainLine line, TrainDirection direction, boolean value) {
+	public static final void saveTrainFilter(final Integer stationId, final TrainLine line, final TrainDirection direction, final boolean value) {
 		Context context = ChicagoTracker.getAppContext();
 		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
@@ -135,7 +135,7 @@ public final class Preferences {
 		editor.commit();
 	}
 
-	public static boolean getTrainFilter(Integer stationId, TrainLine line, TrainDirection direction) {
+	public static final boolean getTrainFilter(final Integer stationId, final TrainLine line, final TrainDirection direction) {
 		Context context = ChicagoTracker.getAppContext();
 		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
 		boolean result = sharedPref.getBoolean(String.valueOf(stationId) + "_" + line + "_" + direction, true);

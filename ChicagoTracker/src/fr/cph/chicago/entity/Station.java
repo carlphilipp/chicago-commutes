@@ -30,32 +30,32 @@ public class Station implements Comparable<Station> {
 	private String name;
 	private List<Stop> stops;
 
-	public Integer getId() {
+	public final Integer getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public final void setId(final Integer id) {
 		this.id = id;
 	}
 
-	public String getName() {
+	public final String getName() {
 		return name;
 	}
 
-	public void setName(String name) {
+	public final void setName(final String name) {
 		this.name = name;
 	}
 
-	public List<Stop> getStops() {
+	public final List<Stop> getStops() {
 		return stops;
 	}
 
-	public void setStops(List<Stop> stops) {
+	public final void setStops(final List<Stop> stops) {
 		this.stops = stops;
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		StringBuilder stb = new StringBuilder();
 		stb.append("[Id=" + id);
 		stb.append(";name=" + name);
@@ -77,10 +77,6 @@ public class Station implements Comparable<Station> {
 					lines.add(tl);
 				}
 			}
-			// PURPLE_EXPRESS MOD
-//			if (lines.contains(TrainLine.PURPLE) && lines.contains(TrainLine.PURPLE_EXPRESS)) {
-//				lines.remove(TrainLine.PURPLE_EXPRESS);
-//			}
 			return lines;
 		} else {
 			return null;
@@ -102,15 +98,14 @@ public class Station implements Comparable<Station> {
 					stopss.add(stop);
 					map.put(tl, stopss);
 				}
-				
+
 			}
 		}
-		//Collections.sort(map);
 		return map;
 	}
 
 	@Override
-	public int compareTo(Station another) {
+	public final int compareTo(final Station another) {
 		return this.getName().compareTo(another.getName());
 	}
 }

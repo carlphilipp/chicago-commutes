@@ -25,7 +25,7 @@ public enum PredictionType {
 		this.message = message;
 	}
 
-	public static PredictionType fromString(String text) {
+	public static final PredictionType fromString(final String text) {
 		if (text != null) {
 			for (PredictionType b : PredictionType.values()) {
 				if (text.equalsIgnoreCase(b.message)) {
@@ -37,7 +37,7 @@ public enum PredictionType {
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return this.message;
 	}
 }

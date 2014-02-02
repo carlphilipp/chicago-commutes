@@ -18,8 +18,13 @@ package fr.cph.chicago;
 
 import java.util.Date;
 
+import fr.cph.chicago.activity.ErrorActivity;
+import fr.cph.chicago.exception.TrackerException;
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 
 public class ChicagoTracker extends Application {
 
@@ -29,7 +34,7 @@ public class ChicagoTracker extends Application {
 	public static final String PREFERENCE_FAVORITES_TRAIN = "ChicagoTrackerFavoritesTrain";
 	public static final String PREFERENCE_FAVORITES_BUS = "ChicagoTrackerFavoritesBus";
 
-	public void onCreate() {
+	public final void onCreate() {
 		super.onCreate();
 		ChicagoTracker.context = getApplicationContext();
 	}
@@ -38,12 +43,20 @@ public class ChicagoTracker extends Application {
 		return ChicagoTracker.context;
 	}
 
-	public static void modifyLastUpdate(Date date) {
+	public static void modifyLastUpdate(final Date date) {
 		lastTrainUpdate = date;
 	}
 
 	public static Date getLastTrainUpdate() {
 		return lastTrainUpdate;
 	}
-
+	
+	public static void displayError(Activity activity, TrackerException ex){
+		Intent intent = new Intent(activity, ErrorActivity.class);
+		Bundle extras = new Bundle();
+		extras.putString("error", ex.getMessage());
+		intent.putExtras(extras);
+		activity.finish();
+		activity.startActivity(intent);
+	}
 }

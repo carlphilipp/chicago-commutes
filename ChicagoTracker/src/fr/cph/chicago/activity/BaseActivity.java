@@ -25,6 +25,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
@@ -48,7 +49,7 @@ public class BaseActivity extends Activity {
 	private View loadLayout;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.loading);
@@ -68,7 +69,7 @@ public class BaseActivity extends Activity {
 	 * @author Carl-Philipp Harmant
 	 * 
 	 */
-	private class LoadData extends AsyncTask<Void, Void, Void> {
+	private final class LoadData extends AsyncTask<Void, Void, Void> {
 		/** Bus data **/
 		private BusData busData;
 		/** Train data **/
@@ -77,7 +78,7 @@ public class BaseActivity extends Activity {
 		private TrackerException exceptionToBeThrown;
 
 		@Override
-		protected Void doInBackground(Void... params) {
+		protected Void doInBackground(final Void... params) {
 			try {
 				this.busData = BusData.getInstance();
 				this.busData.read();
@@ -92,7 +93,7 @@ public class BaseActivity extends Activity {
 		}
 
 		@Override
-		protected void onPostExecute(Void result) {
+		protected void onPostExecute(final Void result) {
 			if (exceptionToBeThrown == null) {
 				DataHolder dataHolder = DataHolder.getInstance();
 				dataHolder.setBusData(busData);
@@ -115,7 +116,7 @@ public class BaseActivity extends Activity {
 	 *            the error message
 	 */
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-	private void showProgress(final boolean show, String errorMessage) {
+	private final void showProgress(final boolean show, final String errorMessage) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
 			int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 			loadLayout.setVisibility(View.VISIBLE);
@@ -134,7 +135,7 @@ public class BaseActivity extends Activity {
 	 * Load home
 	 * 
 	 */
-	private void loadHome() {
+	private final void loadHome() {
 		Intent intent = new Intent(this, MainActivity.class);
 		showProgress(false, null);
 		finish();
@@ -143,29 +144,12 @@ public class BaseActivity extends Activity {
 	}
 	
 	/**
-	 * Load home
+	 * Load error
 	 * 
 	 */
-	private void loadError(TrackerException exceptionToBeThrown) {
-		Intent intent = new Intent(this, ErrorActivity.class);
+	private final void loadError(final TrackerException exceptionToBeThrown) {
 		showProgress(false, null);
-		finish();
-		startActivity(intent);
+		ChicagoTracker.displayError(this, exceptionToBeThrown);
 		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 	}
-
-	/**
-	 * Display error
-	 * 
-	 * @param jsonObject
-	 *            the json object
-	 */
-	// public void displayError(JSONObject jsonObject) {
-	// Intent intent = new Intent(this, ErrorActivity.class);
-	// intent.putExtra("data", jsonObject.toString());
-	// intent.putExtra("login", login);
-	// intent.putExtra("password", password);
-	// startActivity(intent);
-	// finish();
-	// }
 }

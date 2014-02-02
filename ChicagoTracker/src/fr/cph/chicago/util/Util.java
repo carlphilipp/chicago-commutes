@@ -34,7 +34,7 @@ public class Util {
 	 * 
 	 * @return a generated ID value
 	 */
-	public static int generateViewId() {
+	public static final int generateViewId() {
 		for (;;) {
 			final int result = sNextGeneratedId.get();
 			// aapt-generated IDs have the high byte nonzero; clamp to the range under that.
@@ -52,7 +52,7 @@ public class Util {
 	 * @param property
 	 * @return
 	 */
-	public static String getProperty(String property) {
+	public static final String getProperty(final String property) {
 		Properties prop = new Properties();
 		try {
 			prop.load(ChicagoTracker.getAppContext().getAssets().open("app.properties"));
@@ -68,7 +68,7 @@ public class Util {
 	 * @param stationId
 	 * @param preference
 	 */
-	public static void addToTrainFavorites(Integer stationId, String preference) {
+	public static final void addToTrainFavorites(final Integer stationId, final String preference) {
 		List<Integer> favorites = Preferences.getTrainFavorites(preference);
 		if (!favorites.contains(stationId)) {
 			favorites.add(stationId);
@@ -82,7 +82,7 @@ public class Util {
 	 * @param stationId
 	 * @param preference
 	 */
-	public static void removeFromTrainFavorites(Integer stationId, String preference) {
+	public static final void removeFromTrainFavorites(final Integer stationId, final String preference) {
 		List<Integer> favorites = Preferences.getTrainFavorites(preference);
 		favorites.remove(stationId);
 		Preferences.saveTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN, favorites);
@@ -96,7 +96,7 @@ public class Util {
 	 * @param bound
 	 * @param preference
 	 */
-	public static void removeFromBusFavorites(String busRouteId, String busStopId, String bound, String preference) {
+	public static final void removeFromBusFavorites(final String busRouteId, final String busStopId, final String bound, final String preference) {
 		String id = busRouteId + "_" + busStopId + "_" + bound;
 		List<String> favorites = Preferences.getBusFavorites(preference);
 		favorites.remove(id);
@@ -111,7 +111,7 @@ public class Util {
 	 * @param bound
 	 * @param preference
 	 */
-	public static void addToBusFavorites(String busRouteId, String busStopId, String bound, String preference) {
+	public static final void addToBusFavorites(final String busRouteId, final String busStopId, final String bound, final String preference) {
 		String id = busRouteId + "_" + busStopId + "_" + bound;
 		List<String> favorites = Preferences.getBusFavorites(preference);
 		if (!favorites.contains(id)) {
@@ -126,7 +126,7 @@ public class Util {
 	 * @param fav
 	 * @return
 	 */
-	public static String[] decodeBusFavorite(String fav) {
+	public static final String[] decodeBusFavorite(final String fav) {
 		String[] res = new String[3];
 		int first = fav.indexOf('_');
 		String routeId = fav.substring(0, first);

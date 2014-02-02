@@ -34,28 +34,28 @@ public class BusBoundAdapter extends BaseAdapter {
 	private List<BusStop> busStops;
 	private String stopId;
 
-	public BusBoundAdapter(String stopId) {
+	public BusBoundAdapter(final String stopId) {
 		this.busStops = new ArrayList<BusStop>();
 		this.stopId = stopId;
 	}
 
 	@Override
-	public int getCount() {
+	public final int getCount() {
 		return busStops.size();
 	}
 
 	@Override
-	public Object getItem(int position) {
+	public final Object getItem(final int position) {
 		return busStops.get(position);
 	}
 
 	@Override
-	public long getItemId(int position) {
+	public final long getItemId(final int position) {
 		return busStops.get(position).getId();
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	public final View getView(final int position, View convertView, final ViewGroup parent) {
 		BusStop busStop = busStops.get(position);
 
 		LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -70,7 +70,7 @@ public class BusBoundAdapter extends BaseAdapter {
 		return convertView;
 	}
 
-	public void update(List<BusStop> result) {
+	public final void update(final List<BusStop> result) {
 		this.busStops = null;
 		this.busStops = result;
 	}

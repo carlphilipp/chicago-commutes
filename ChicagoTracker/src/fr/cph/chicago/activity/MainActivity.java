@@ -70,7 +70,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	private int currentPosition;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected final void onCreate(final Bundle savedInstanceState) {
 		
 		super.onCreate(savedInstanceState);
 
@@ -84,7 +84,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	}
 
 	@Override
-	public void onNavigationDrawerItemSelected(int position) {
+	public final void onNavigationDrawerItemSelected(final int position) {
 		currentPosition = position;
 		// update the main content by replacing fragments
 		FragmentManager fragmentManager = getFragmentManager();
@@ -116,7 +116,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		}
 	}
 
-	public void onSectionAttached(int number) {
+	public final void onSectionAttached(final int number) {
 		switch (number) {
 		case 1:
 			mTitle = getString(R.string.favorites);
@@ -136,7 +136,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		}
 	}
 
-	public void restoreActionBar() {
+	public final void restoreActionBar() {
 		ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		actionBar.setDisplayShowTitleEnabled(true);
@@ -144,7 +144,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public boolean onCreateOptionsMenu(final Menu menu) {
 		this.menu = menu;
 		if (!mNavigationDrawerFragment.isDrawerOpen()) {
 			// Only show items in the action bar relevant to this screen
@@ -162,7 +162,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+	public final boolean onOptionsItemSelected(final MenuItem item) {
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
@@ -191,9 +191,10 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				task = new CtaConnectTask(FavoritesFragment.class, CtaRequestType.TRAIN_ARRIVALS, params, CtaRequestType.BUS_ARRIVALS, params2);
 				task.execute((Void) null);
 			} catch (ParserException e) {
-				Intent intent = new Intent(ChicagoTracker.getAppContext(), ErrorActivity.class);
-				finish();
-				startActivity(intent);
+//				Intent intent = new Intent(ChicagoTracker.getAppContext(), ErrorActivity.class);
+//				finish();
+//				startActivity(intent);
+				ChicagoTracker.displayError(this, e);
 				return true;
 			}
 			Toast.makeText(this, "Refresh...!", Toast.LENGTH_SHORT).show();
@@ -206,7 +207,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	}
 
 	@Override
-	public void onBackPressed() {
+	public final void onBackPressed() {
 		if (currentPosition != 0) {
 			mNavigationDrawerFragment.selectItem(0);
 		} else {
@@ -221,7 +222,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		}
 	}
 
-	public void stopRefreshAnimation() {
+	public final void stopRefreshAnimation() {
 		if (menu != null) {
 			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
 			refreshMenuItem.collapseActionView();

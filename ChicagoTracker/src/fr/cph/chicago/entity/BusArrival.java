@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import fr.cph.chicago.entity.enumeration.PredictionType;
 
-public class BusArrival {
+public final class BusArrival {
 	private Date timeStamp;
 	private String errorMessage;
 	private PredictionType predictionType;
@@ -36,108 +36,108 @@ public class BusArrival {
 	private Date predictionTime;
 	private Boolean isDly = false;
 
-	public Date getTimeStamp() {
+	public final Date getTimeStamp() {
 		return timeStamp;
 	}
 
-	public void setTimeStamp(Date timeStamp) {
+	public final void setTimeStamp(final Date timeStamp) {
 		this.timeStamp = timeStamp;
 	}
 
-	public String getErrorMessage() {
+	public final String getErrorMessage() {
 		return errorMessage;
 	}
 
-	public void setErrorMessage(String errorMessage) {
+	public final void setErrorMessage(final String errorMessage) {
 		this.errorMessage = errorMessage;
 	}
 
-	public PredictionType getPredictionType() {
+	public final PredictionType getPredictionType() {
 		return predictionType;
 	}
 
-	public void setPredictionType(PredictionType predictionType) {
+	public final void setPredictionType(final PredictionType predictionType) {
 		this.predictionType = predictionType;
 	}
 
-	public String getStopName() {
+	public final String getStopName() {
 		return stopName;
 	}
 
-	public void setStopName(String stopName) {
+	public final void setStopName(final String stopName) {
 		this.stopName = stopName;
 	}
 
-	public Integer getStopId() {
+	public final Integer getStopId() {
 		return stopId;
 	}
 
-	public void setStopId(Integer stopId) {
+	public final void setStopId(final Integer stopId) {
 		this.stopId = stopId;
 	}
 
-	public Integer getBusId() {
+	public final Integer getBusId() {
 		return busId;
 	}
 
-	public void setBusId(Integer busId) {
+	public final void setBusId(final Integer busId) {
 		this.busId = busId;
 	}
 
-	public Integer getDistanceToStop() {
+	public final Integer getDistanceToStop() {
 		return distanceToStop;
 	}
 
-	public void setDistanceToStop(Integer distanceToStop) {
+	public final void setDistanceToStop(final Integer distanceToStop) {
 		this.distanceToStop = distanceToStop;
 	}
 
-	public String getRouteId() {
+	public final String getRouteId() {
 		return routeId;
 	}
 
-	public void setRouteId(String routeId) {
+	public final void setRouteId(final String routeId) {
 		this.routeId = routeId;
 	}
 
-	public String getRouteDirection() {
+	public final String getRouteDirection() {
 		return routeDirection;
 	}
 
-	public void setRouteDirection(String routeDirection) {
+	public final void setRouteDirection(final String routeDirection) {
 		this.routeDirection = routeDirection;
 	}
 
-	public String getBusDestination() {
+	public final String getBusDestination() {
 		return busDestination;
 	}
 
-	public void setBusDestination(String busDestination) {
+	public final void setBusDestination(final String busDestination) {
 		this.busDestination = busDestination;
 	}
 
-	public Date getPredictionTime() {
+	public final Date getPredictionTime() {
 		return predictionTime;
 	}
 
-	public void setPredictionTime(Date predictionTime) {
+	public final void setPredictionTime(final Date predictionTime) {
 		this.predictionTime = predictionTime;
 	}
 
-	public Boolean getIsDly() {
+	public final Boolean getIsDly() {
 		return isDly;
 	}
 
-	public void setIsDly(Boolean isDly) {
+	public final void setIsDly(final Boolean isDly) {
 		this.isDly = isDly;
 	}
 
-	public String getTimeLeft() {
+	public final String getTimeLeft() {
 		long time = predictionTime.getTime() - timeStamp.getTime();
 		return String.format(Locale.ENGLISH, "%d min", TimeUnit.MILLISECONDS.toMinutes(time));
 	}
 
-	public String getTimeLeftDueDelay() {
+	public final String getTimeLeftDueDelay() {
 		String result;
 		if (getIsDly()) {
 			result = "Delay";
@@ -148,7 +148,7 @@ public class BusArrival {
 	}
 
 	@Override
-	public int hashCode() {
+	public final int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((busDestination == null) ? 0 : busDestination.hashCode());
@@ -167,7 +167,7 @@ public class BusArrival {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public final boolean equals(final Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)

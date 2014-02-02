@@ -28,7 +28,6 @@ import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
-import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.xml.Xml;
 
 public class BusData {
@@ -48,7 +47,7 @@ public class BusData {
 		routes = new ArrayList<BusRoute>();
 	}
 
-	public List<BusRoute> read() throws ParserException, ConnectException {
+	public final List<BusRoute> read() throws ParserException, ConnectException {
 		if (routes.size() == 0) {
 			MultiMap<String, String> params = new MultiValueMap<String, String>();
 			CtaConnect connect = CtaConnect.getInstance();
@@ -59,15 +58,15 @@ public class BusData {
 		return routes;
 	}
 
-	public int getRouteSize() {
+	public final int getRouteSize() {
 		return routes.size();
 	}
 
-	public BusRoute getRoute(int position) {
+	public final BusRoute getRoute(final int position) {
 		return routes.get(position);
 	}
 
-	public BusRoute getRoute(String routeId) {
+	public final BusRoute getRoute(final String routeId) {
 		BusRoute result = null;
 		for (BusRoute br : routes) {
 			if (br.getId().equals(routeId)) {
@@ -78,7 +77,7 @@ public class BusData {
 		return result;
 	}
 
-	public List<BusStop> readBusStop(String stopId, String bound) throws ConnectException, ParserException {
+	public final List<BusStop> readBusStop(final String stopId, final String bound) throws ConnectException, ParserException {
 		CtaConnect connect = CtaConnect.getInstance();
 		MultiMap<String, String> params2 = new MultiValueMap<String, String>();
 		params2.put("rt", stopId);

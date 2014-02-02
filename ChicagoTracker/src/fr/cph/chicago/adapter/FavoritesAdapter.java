@@ -85,7 +85,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 	private List<TextView> lupdated;
 
 	@SuppressLint("UseSparseArrays")
-	public FavoritesAdapter(Activity activity) {
+	public FavoritesAdapter(final Activity activity) {
 		this.context = ChicagoTracker.getAppContext();
 
 		this.activity = activity;
@@ -103,17 +103,17 @@ public final class FavoritesAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public final Object getItem(int position) {
+	public final Object getItem(final int position) {
 		return arrival.getObject(position);
 	}
 
 	@Override
-	public final long getItemId(int position) {
+	public final long getItemId(final int position) {
 		return position;
 	}
 
 	@Override
-	public final View getView(final int position, View convertView, ViewGroup parent) {
+	public final View getView(final int position, View convertView, final ViewGroup parent) {
 
 		LinearLayout.LayoutParams paramsLayout = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 		LinearLayout.LayoutParams paramsTextView = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
@@ -411,7 +411,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 		return convertView;
 	}
 
-	private String getLastUpdateInMinutes(Date lastUpdate) {
+	private final String getLastUpdateInMinutes(final Date lastUpdate) {
 		String res = null;
 		if (lastUpdate != null) {
 			Date currentCDate = Calendar.getInstance().getTime();
@@ -432,7 +432,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 		return res;
 	}
 
-	public static long[] getTimeDifference(Date d1, Date d2) {
+	public static long[] getTimeDifference(final Date d1, final Date d2) {
 		long[] result = new long[2];
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(d1);
@@ -468,19 +468,19 @@ public final class FavoritesAdapter extends BaseAdapter {
 		return result;
 	}
 
-	public void setArrivals(SparseArray<TrainArrival> arrivals, List<BusArrival> busArrivals) {
+	public final void setArrivals(final SparseArray<TrainArrival> arrivals, final List<BusArrival> busArrivals) {
 		arrival.setArrivals(arrivals, busArrivals);
 	}
 
-	public void setFavorites() {
+	public final void setFavorites() {
 		arrival.setFavorites();
 	}
 
-	public void refreshUpdated() {
+	public final void refreshUpdated() {
 		ChicagoTracker.modifyLastUpdate(Calendar.getInstance().getTime());
 	}
 
-	public void refreshUpdatedView() {
+	public final void refreshUpdatedView() {
 		Date lastUpdate = ChicagoTracker.getLastTrainUpdate();
 		for (TextView updated : lupdated) {
 			updated.setText(String.valueOf(getLastUpdateInMinutes(lastUpdate)));
@@ -496,7 +496,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 		private TrackerException trackerException;
 
 		@Override
-		protected BusStop doInBackground(String... params) {
+		protected final BusStop doInBackground(final String... params) {
 			BusStop res = null;
 			try {
 				busRouteId = params[0];
@@ -521,7 +521,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 		}
 
 		@Override
-		protected void onPostExecute(BusStop result) {
+		protected final void onPostExecute(final BusStop result) {
 			if (trackerException == null) {
 				BusStop busStop = result;
 
@@ -539,10 +539,11 @@ public final class FavoritesAdapter extends BaseAdapter {
 				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				ChicagoTracker.getAppContext().startActivity(intent);
 			} else {
-				Intent intent = new Intent(ChicagoTracker.getAppContext(), ErrorActivity.class);
-				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				activity.finish();
-				activity.startActivity(intent);
+//				Intent intent = new Intent(ChicagoTracker.getAppContext(), ErrorActivity.class);
+//				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//				activity.finish();
+//				activity.startActivity(intent);
+				ChicagoTracker.displayError(activity, trackerException);
 			}
 		}
 	}

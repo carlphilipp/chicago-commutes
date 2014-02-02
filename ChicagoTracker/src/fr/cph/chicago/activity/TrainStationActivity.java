@@ -24,32 +24,30 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
-import fr.cph.chicago.R;
 import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.R;
 import fr.cph.chicago.adapter.TrainAdapter;
-import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.data.DataHolder;
+import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
 public class TrainStationActivity extends ListActivity {
 
 	private TrainData data;
 
-
-	public void onCreate(Bundle savedInstanceState) {
+	public final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		// Load data
 		DataHolder dataHolder = DataHolder.getInstance();
 		this.data = dataHolder.getTrainData();
-		
+
 		final TrainLine line = TrainLine.fromString(getIntent().getExtras().getString("line"));
-		
+
 		this.setTitle(line.toStringWithLine());
-		
+
 		setContentView(R.layout.activity_train_station);
-		
+
 		TrainAdapter ada = new TrainAdapter(line);
 		setListAdapter(ada);
 		ListView listView = getListView();
@@ -66,12 +64,12 @@ public class TrainStationActivity extends ListActivity {
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public final boolean onCreateOptionsMenu(final Menu menu) {
 		return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+	public final boolean onOptionsItemSelected(final MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			finish();

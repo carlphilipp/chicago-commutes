@@ -21,7 +21,7 @@ import java.util.List;
 
 import fr.cph.chicago.entity.enumeration.BusDirection;
 
-public class BusDirections {
+public final class BusDirections {
 	private String id;
 	private List<BusDirection> lBusDirection;
 	
@@ -29,23 +29,23 @@ public class BusDirections {
 		lBusDirection = new ArrayList<BusDirection>();
 	}
 
-	public String getId() {
+	public final String getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public final void setId(final String id) {
 		this.id = id;
 	}
 
-	public List<BusDirection> getlBusDirection() {
+	public final List<BusDirection> getlBusDirection() {
 		return lBusDirection;
 	}
 
-	public void setlBusDirection(List<BusDirection> lBusDirection) {
+	public final void setlBusDirection(final List<BusDirection> lBusDirection) {
 		this.lBusDirection = lBusDirection;
 	}
 	
-	public void addBusDirection(BusDirection dir){
+	public final void addBusDirection(final BusDirection dir){
 		lBusDirection.add(dir);
 	}
 

@@ -30,56 +30,56 @@ public class Stop implements Comparable<Stop> {
 	private Boolean ada;
 	private List<TrainLine> lines;
 
-	public Integer getId() {
+	public final Integer getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public final void setId(final Integer id) {
 		this.id = id;
 	}
 
-	public String getDescription() {
+	public final String getDescription() {
 		return description;
 	}
 
-	public void setDescription(String description) {
+	public final void setDescription(final String description) {
 		this.description = description;
 	}
 
-	public TrainDirection getDirection() {
+	public final TrainDirection getDirection() {
 		return direction;
 	}
 
-	public void setDirection(TrainDirection direction) {
+	public final void setDirection(final TrainDirection direction) {
 		this.direction = direction;
 	}
 
-	public Position getPosition() {
+	public final Position getPosition() {
 		return position;
 	}
 
-	public void setPosition(Position position) {
+	public final void setPosition(final Position position) {
 		this.position = position;
 	}
 
-	public List<TrainLine> getLines() {
+	public final List<TrainLine> getLines() {
 		return lines;
 	}
 
-	public void setLines(List<TrainLine> lines) {
+	public final void setLines(final List<TrainLine> lines) {
 		this.lines = lines;
 	}
 
-	public Boolean getAda() {
+	public final Boolean getAda() {
 		return ada;
 	}
 
-	public void setAda(Boolean ada) {
+	public final void setAda(final Boolean ada) {
 		this.ada = ada;
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		StringBuilder stb = new StringBuilder();
 		stb.append("[Id=" + id);
 		if (description != null) {
@@ -102,7 +102,7 @@ public class Stop implements Comparable<Stop> {
 	}
 
 	@Override
-	public int compareTo(Stop anotherStop) {
+	public final int compareTo(final Stop anotherStop) {
 		return this.direction.compareTo(anotherStop.getDirection());
 	}
 }

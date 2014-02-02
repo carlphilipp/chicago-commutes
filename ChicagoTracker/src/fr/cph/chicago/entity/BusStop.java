@@ -16,37 +16,37 @@
 
 package fr.cph.chicago.entity;
 
-public class BusStop {
+public final class BusStop {
 	private Integer id;
 	private String name;
 	private Position position;
 
-	public Integer getId() {
+	public final Integer getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public final void setId(final Integer id) {
 		this.id = id;
 	}
 
-	public String getName() {
+	public final String getName() {
 		return name;
 	}
 
-	public void setName(String name) {
+	public final void setName(final String name) {
 		this.name = name;
 	}
 
-	public Position getPosition() {
+	public final Position getPosition() {
 		return position;
 	}
 
-	public void setPosition(Position position) {
+	public final void setPosition(final Position position) {
 		this.position = position;
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return "[id:" + getId() + ";name:" + getName() + ";position:" + getPosition() + "]";
 	}
 

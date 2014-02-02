@@ -28,39 +28,39 @@ public class TrainArrival {
 	private String errorMessage;
 	private List<Eta> etas;
 
-	public Date getTimeStamp() {
+	public final Date getTimeStamp() {
 		return timeStamp;
 	}
 
-	public void setTimeStamp(Date timeStamp) {
+	public final void setTimeStamp(final Date timeStamp) {
 		this.timeStamp = timeStamp;
 	}
 
-	public Integer getErrorCode() {
+	public final Integer getErrorCode() {
 		return errorCode;
 	}
 
-	public void setErrorCode(Integer errorCode) {
+	public final void setErrorCode(final Integer errorCode) {
 		this.errorCode = errorCode;
 	}
 
-	public String getErrorMessage() {
+	public final String getErrorMessage() {
 		return errorMessage;
 	}
 
-	public void setErrorMessage(String errorMessage) {
+	public final void setErrorMessage(final String errorMessage) {
 		this.errorMessage = errorMessage;
 	}
 
-	public List<Eta> getEtas() {
+	public final List<Eta> getEtas() {
 		return etas;
 	}
 
-	public void setEtas(List<Eta> etas) {
+	public final void setEtas(final List<Eta> etas) {
 		this.etas = etas;
 	}
 
-	public List<Eta> getEtas(TrainLine line) {
+	public final List<Eta> getEtas(final TrainLine line) {
 		List<Eta> etas = new ArrayList<Eta>();
 		for (Eta eta : getEtas()) {
 			if (eta.getRouteName() == line) {

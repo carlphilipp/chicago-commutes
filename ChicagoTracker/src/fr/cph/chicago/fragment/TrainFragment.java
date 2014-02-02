@@ -35,7 +35,7 @@ import fr.cph.chicago.activity.TrainStationActivity;
 import fr.cph.chicago.adapter.TrainStationAdapter;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
-public class TrainFragment extends Fragment {
+public final class TrainFragment extends Fragment {
 	/**
 	 * The fragment argument representing the section number for this fragment.
 	 */
@@ -44,7 +44,7 @@ public class TrainFragment extends Fragment {
 	/**
 	 * Returns a new instance of this fragment for the given section number.
 	 */
-	public static TrainFragment newInstance(int sectionNumber) {
+	public static final TrainFragment newInstance(int sectionNumber) {
 		TrainFragment fragment = new TrainFragment();
 		Bundle args = new Bundle();
 		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
@@ -56,7 +56,7 @@ public class TrainFragment extends Fragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 
 		View rootView = inflater.inflate(R.layout.fragment_train, container, false);
 		
@@ -78,7 +78,7 @@ public class TrainFragment extends Fragment {
 	}
 
 	@Override
-	public void onAttach(Activity activity) {
+	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
 		((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}

@@ -2,26 +2,39 @@ package fr.cph.chicago.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 import fr.cph.chicago.R;
 
 public class ErrorActivity extends Activity {
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.error);
+		Intent intent = getIntent();
+		String error = intent.getExtras().getString("error");
 		TextView errorText = (TextView) findViewById(R.id.error_message);
-		errorText.setText("Error");
+		errorText.setText(error);
 		Button button = (Button) findViewById(R.id.retry_button);
-//		button.setOnClickListener(new ErrorButtonOnClickListener(this, login, password));
+		button.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(ErrorActivity.this, BaseActivity.class);
+				finish();
+				startActivity(intent);
+			}
+		});
 	}
-	
+
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public final boolean onCreateOptionsMenu(final Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.global, menu);

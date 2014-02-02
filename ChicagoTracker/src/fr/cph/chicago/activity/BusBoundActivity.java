@@ -46,7 +46,7 @@ public class BusBoundActivity extends ListActivity {
 	private BusBoundAdapter ada;
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_bus_bound);
 		busRouteId = getIntent().getExtras().getString("busRouteId");
@@ -80,7 +80,7 @@ public class BusBoundActivity extends ListActivity {
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public final boolean onCreateOptionsMenu(final Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.global, menu);
@@ -93,7 +93,7 @@ public class BusBoundActivity extends ListActivity {
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+	public final boolean onOptionsItemSelected(final MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			finish();
@@ -107,7 +107,7 @@ public class BusBoundActivity extends ListActivity {
 		private TrackerException trackerException;
 
 		@Override
-		protected List<BusStop> doInBackground(Void... params) {
+		protected final List<BusStop> doInBackground(final Void... params) {
 			List<BusStop> lBuses = null;
 			try {
 				lBuses = DataHolder.getInstance().getBusData().readBusStop(busRouteId, bound);
@@ -120,14 +120,15 @@ public class BusBoundActivity extends ListActivity {
 		}
 
 		@Override
-		protected void onPostExecute(List<BusStop> result) {
+		protected final void onPostExecute(final List<BusStop> result) {
 			if (trackerException == null) {
 				ada.update(result);
 				ada.notifyDataSetChanged();
 			} else {
-				Intent intent = new Intent(ChicagoTracker.getAppContext(), ErrorActivity.class);
-				finish();
-				startActivity(intent);
+//				Intent intent = new Intent(ChicagoTracker.getAppContext(), ErrorActivity.class);
+//				finish();
+//				startActivity(intent);
+				ChicagoTracker.displayError(BusBoundActivity.this, trackerException);
 			}
 		}
 	}

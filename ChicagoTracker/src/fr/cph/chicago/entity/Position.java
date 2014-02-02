@@ -29,24 +29,24 @@ public class Position {
 		this.longitude = longitude;
 	}
 
-	public Double getLatitude() {
+	public final Double getLatitude() {
 		return latitude;
 	}
 
-	public void setLatitude(Double latitude) {
+	public final void setLatitude(final Double latitude) {
 		this.latitude = latitude;
 	}
 
-	public Double getLongitude() {
+	public final Double getLongitude() {
 		return longitude;
 	}
 
-	public void setLongitude(Double longitude) {
+	public final void setLongitude(final Double longitude) {
 		this.longitude = longitude;
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return "[lattitude=" + latitude + ";longitude=" + longitude + "]";
 	}
 

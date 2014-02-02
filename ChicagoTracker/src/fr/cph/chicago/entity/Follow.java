@@ -19,6 +19,11 @@ package fr.cph.chicago.entity;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Not used (yet?)
+ * @author carl
+ *
+ */
 public class Follow {
 	private Date timeStamp;
 	private Integer errorCode;

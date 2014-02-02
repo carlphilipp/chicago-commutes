@@ -25,7 +25,7 @@ public enum BusDirection {
 		this.text = text;
 	}
 	
-	public static BusDirection fromString(String text) {
+	public static final BusDirection fromString(final String text) {
 		if (text != null) {
 			for (BusDirection b : BusDirection.values()) {
 				if (text.equalsIgnoreCase(b.text)) {
@@ -37,7 +37,7 @@ public enum BusDirection {
 	}
 	
 	@Override
-	public String toString(){
+	public final String toString(){
 		return text;
 	}
 	

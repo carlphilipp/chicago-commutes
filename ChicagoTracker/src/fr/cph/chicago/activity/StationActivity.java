@@ -109,7 +109,7 @@ public class StationActivity extends Activity {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		// Load data
@@ -259,7 +259,7 @@ public class StationActivity extends Activity {
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public final boolean onCreateOptionsMenu(final Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		this.menu = menu;
 		MenuInflater inflater = getMenuInflater();
@@ -274,7 +274,7 @@ public class StationActivity extends Activity {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+	public final boolean onOptionsItemSelected(final MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			finish();
@@ -298,7 +298,7 @@ public class StationActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	protected void switchFavorite() {
+	protected final void switchFavorite() {
 		if (isFavorite) {
 			Util.removeFromTrainFavorites(stationId, ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
 			isFavorite = false;
@@ -313,7 +313,7 @@ public class StationActivity extends Activity {
 		}
 	}
 
-	public boolean isFavorite() {
+	public final boolean isFavorite() {
 		boolean isFavorite = false;
 		List<Integer> favorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
 		for (Integer fav : favorites) {
@@ -325,11 +325,11 @@ public class StationActivity extends Activity {
 		return isFavorite;
 	}
 
-	private class DisplayGoogleStreetPicture extends AsyncTask<Position, Void, Drawable> {
+	private final class DisplayGoogleStreetPicture extends AsyncTask<Position, Void, Drawable> {
 		private Position position;
 
 		@Override
-		protected Drawable doInBackground(Position... params) {
+		protected final Drawable doInBackground(final Position... params) {
 			GStreetViewConnect connect = GStreetViewConnect.getInstance();
 			try {
 				this.position = params[0];
@@ -341,7 +341,7 @@ public class StationActivity extends Activity {
 		}
 
 		@Override
-		protected void onPostExecute(Drawable result) {
+		protected final void onPostExecute(final Drawable result) {
 			int height = (int) getResources().getDimension(R.dimen.activity_station_street_map_height);
 			android.widget.RelativeLayout.LayoutParams params = (android.widget.RelativeLayout.LayoutParams) StationActivity.this.streetViewImage
 					.getLayoutParams();
@@ -405,7 +405,7 @@ public class StationActivity extends Activity {
 		private TrackerException trackerException;
 
 		@Override
-		protected TrainArrival doInBackground(MultiMap<String, String>... params) {
+		protected final TrainArrival doInBackground(final MultiMap<String, String>... params) {
 			// Get menu item and put it to loading mod
 			publishProgress((Void[]) null);
 			SparseArray<TrainArrival> arrivals = new SparseArray<TrainArrival>();
@@ -456,7 +456,7 @@ public class StationActivity extends Activity {
 		}
 
 		@Override
-		protected void onProgressUpdate(Void... values) {
+		protected final void onProgressUpdate(final Void... values) {
 			// Get menu item and put it to loading mod
 			if (menu != null) {
 				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
@@ -466,7 +466,7 @@ public class StationActivity extends Activity {
 		}
 
 		@Override
-		protected void onPostExecute(TrainArrival result) {
+		protected final void onPostExecute(final TrainArrival result) {
 			if (this.trackerException == null) {
 				arrival = result;
 				List<Eta> etas;
@@ -485,14 +485,15 @@ public class StationActivity extends Activity {
 					refreshMenuItem.setActionView(null);
 				}
 			} else {
-				Intent intent = new Intent(ChicagoTracker.getAppContext(), ErrorActivity.class);
-				finish();
-				startActivity(intent);
+//				Intent intent = new Intent(ChicagoTracker.getAppContext(), ErrorActivity.class);
+//				finish();
+//				startActivity(intent);
+				ChicagoTracker.displayError(StationActivity.this, trackerException);
 			}
 		}
 	}
 
-	private void reset(Station station) {
+	private final void reset(final Station station) {
 		Set<TrainLine> setTL = station.getLines();
 		for (TrainLine tl : setTL) {
 			for (TrainDirection d : TrainDirection.values()) {
@@ -516,7 +517,7 @@ public class StationActivity extends Activity {
 		}
 	}
 
-	protected void drawLine3(Eta eta) {
+	protected final void drawLine3(final Eta eta) {
 		TrainLine line = eta.getRouteName();
 		Stop stop = eta.getStop();
 		int line3Padding = (int) getResources().getDimension(R.dimen.activity_station_stops_line3);
@@ -552,21 +553,4 @@ public class StationActivity extends Activity {
 		}
 		line3View.setVisibility(View.VISIBLE);
 	}
-
-	// To delete
-	// public String connectTest() {
-	// StringBuilder derp = new StringBuilder();
-	// try {
-	// InputStreamReader ipsr = new InputStreamReader(this.getAssets().open("test2.xml"));
-	// BufferedReader reader = new BufferedReader(ipsr);
-	// String line = null;
-	//
-	// while ((line = reader.readLine()) != null) {
-	// derp.append(line);
-	// }
-	// } catch (IOException e) {
-	// e.printStackTrace();
-	// }
-	// return derp.toString();
-	// }
 }

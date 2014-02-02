@@ -16,7 +16,6 @@
 
 package fr.cph.chicago.adapter;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +23,6 @@ import java.util.Map;
 
 import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.map.MultiValueMap;
-import org.xmlpull.v1.XmlPullParserException;
 
 import android.content.Context;
 import android.content.Intent;
@@ -74,12 +72,12 @@ public final class BusAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public final Object getItem(int position) {
+	public final Object getItem(final int position) {
 		return busData.getRoute(position);
 	}
 
 	@Override
-	public final long getItemId(int position) {
+	public final long getItemId(final int position) {
 		return position;
 	}
 
@@ -122,7 +120,7 @@ public final class BusAdapter extends BaseAdapter {
 			}
 		}
 		detailsMap.put(route.getId(), detailsLayout);
-		
+
 		convertView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -132,7 +130,7 @@ public final class BusAdapter extends BaseAdapter {
 				detailsLayout.setVisibility(LinearLayout.VISIBLE);
 			}
 		});
-		
+
 		return convertView;
 	}
 
@@ -143,7 +141,7 @@ public final class BusAdapter extends BaseAdapter {
 		private LinearLayout routeDirections;
 
 		@Override
-		protected BusDirections doInBackground(Object... params) {
+		protected final BusDirections doInBackground(final Object... params) {
 			CtaConnect connect = CtaConnect.getInstance();
 			BusDirections busDirections = null;
 			try {
@@ -166,24 +164,24 @@ public final class BusAdapter extends BaseAdapter {
 		}
 
 		@Override
-		protected void onPostExecute(BusDirections result) {
+		protected final void onPostExecute(final BusDirections result) {
 			loading.setVisibility(TextView.GONE);
 			for (final BusDirection busDirection : result.getlBusDirection()) {
 				Button currentBound = new Button(ChicagoTracker.getAppContext(), null, android.R.attr.buttonStyleSmall);
 				currentBound.setText(busDirection.toString());
-//				currentBound.setTextColor(ChicagoTracker.getAppContext().getResources().getColor(R.color.grey_M_B));
-				
-//				currentBound.setTextSize(ChicagoTracker.getAppContext().getResources().getDimension(R.dimen.bus_adapter_button_text_size));
+				// currentBound.setTextColor(ChicagoTracker.getAppContext().getResources().getColor(R.color.grey_M_B));
+
+				// currentBound.setTextSize(ChicagoTracker.getAppContext().getResources().getDimension(R.dimen.bus_adapter_button_text_size));
 				currentBound.setWidth((int) ChicagoTracker.getAppContext().getResources().getDimension(R.dimen.bus_adapter_button_width));
 				currentBound.setHeight((int) ChicagoTracker.getAppContext().getResources().getDimension(R.dimen.bus_adapter_button_height));
-				
-//				currentBound.setBackground(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.buttonshape));
-//				currentBound.setShadowLayer(5, 0, 0, R.color.grey_again);
-//				currentBound.setPadding(10, 0, 0, 0);
+
+				// currentBound.setBackground(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.buttonshape));
+				// currentBound.setShadowLayer(5, 0, 0, R.color.grey_again);
+				// currentBound.setPadding(10, 0, 0, 0);
 				currentBound.setOnClickListener(new OnClickListener() {
 
 					@Override
-					public void onClick(View v) {
+					public final void onClick(View v) {
 						Intent intent = new Intent(ChicagoTracker.getAppContext(), BusBoundActivity.class);
 						Bundle extras = new Bundle();
 						extras.putString("busRouteId", busRoute.getId());

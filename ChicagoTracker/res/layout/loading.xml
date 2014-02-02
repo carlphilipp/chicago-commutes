@@ -19,9 +19,10 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:layout_gravity="center"
-    android:background="@drawable/back3"
+    android:background="@drawable/station_selector"
     android:focusable="false"
     android:focusableInTouchMode="false"
+    android:scaleType="centerCrop"
     android:visibility="gone" >
 
     <ProgressBar
@@ -32,9 +33,9 @@
         android:layout_centerHorizontal="true"
         android:layout_gravity="center_vertical"
         android:layout_marginBottom="8dp"
+        android:layout_marginTop="190dp"
         android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:layout_marginTop="190dp" />
+        android:focusableInTouchMode="false" />
 
     <TextView
         android:id="@+id/login_status_message"
@@ -48,6 +49,6 @@
         android:fontFamily="sans-serif-light"
         android:text="@string/progress_message"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/white" />
+        android:textColor="@color/black" />
 
 </RelativeLayout>

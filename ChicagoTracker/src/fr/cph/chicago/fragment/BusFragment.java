@@ -22,7 +22,6 @@ package fr.cph.chicago.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,14 +29,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.BusAdapter;
-import fr.cph.chicago.data.BusData;
-import fr.cph.chicago.data.DataHolder;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -57,7 +53,7 @@ public class BusFragment extends Fragment {
 	/**
 	 * Returns a new instance of this fragment for the given section number.
 	 */
-	public static BusFragment newInstance(int sectionNumber) {
+	public static BusFragment newInstance(final int sectionNumber) {
 		BusFragment fragment = new BusFragment();
 		Bundle args = new Bundle();
 		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
@@ -66,7 +62,7 @@ public class BusFragment extends Fragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_bus, container, false);
 		ada = new BusAdapter();
 		ListView listView = (ListView) rootView.findViewById(R.id.bus_list);
@@ -75,13 +71,13 @@ public class BusFragment extends Fragment {
 	}
 
 	@Override
-	public void onAttach(Activity activity) {
+	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
 		((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 
 	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+	public final void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
 		this.menu = menu;
 		MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
 		refreshMenuItem.setActionView(R.layout.progressbar);
@@ -90,7 +86,7 @@ public class BusFragment extends Fragment {
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+	public final boolean onOptionsItemSelected(final MenuItem item) {
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
@@ -107,7 +103,7 @@ public class BusFragment extends Fragment {
 		return true;
 	}
 
-	public void stopRefreshAnimation() {
+	public final void stopRefreshAnimation() {
 		if (menu != null) {
 			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
 			refreshMenuItem.collapseActionView();

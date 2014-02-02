@@ -77,7 +77,7 @@ public class BusActivity extends Activity {
 	private TextView streetViewText;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		// Load right xml
@@ -129,7 +129,7 @@ public class BusActivity extends Activity {
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public final boolean onCreateOptionsMenu(final Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		this.menu = menu;
 		MenuInflater inflater = getMenuInflater();
@@ -148,7 +148,7 @@ public class BusActivity extends Activity {
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+	public final boolean onOptionsItemSelected(final MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			finish();
@@ -165,11 +165,11 @@ public class BusActivity extends Activity {
 
 	}
 
-	private class LoadData extends AsyncTask<Void, Void, List<BusArrival>> {
+	private final class LoadData extends AsyncTask<Void, Void, List<BusArrival>> {
 		private TrackerException trackerException;
 
 		@Override
-		protected List<BusArrival> doInBackground(Void... params) {
+		protected List<BusArrival> doInBackground(final Void... params) {
 			MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
 			reqParams.put("rt", busRouteId);
 			reqParams.put("stpid", String.valueOf(busStopId));
@@ -187,7 +187,7 @@ public class BusActivity extends Activity {
 		}
 
 		@Override
-		protected void onProgressUpdate(Void... values) {
+		protected final void onProgressUpdate(final Void... values) {
 			// Get menu item and put it to loading mod
 			if (menu != null) {
 				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
@@ -197,14 +197,15 @@ public class BusActivity extends Activity {
 		}
 
 		@Override
-		protected void onPostExecute(List<BusArrival> result) {
+		protected final void onPostExecute(final List<BusArrival> result) {
 			if (trackerException == null) {
 				BusActivity.this.busArrivals = result;
 				BusActivity.this.buildArrivals();
 			} else {
-				Intent intent = new Intent(ChicagoTracker.getAppContext(), ErrorActivity.class);
-				finish();
-				startActivity(intent);
+//				Intent intent = new Intent(ChicagoTracker.getAppContext(), ErrorActivity.class);
+//				finish();
+//				startActivity(intent);
+				ChicagoTracker.displayError(BusActivity.this, trackerException);
 			}
 
 			if (!firstLoad || trackerException != null) {
@@ -216,11 +217,11 @@ public class BusActivity extends Activity {
 
 	}
 
-	private class DisplayGoogleStreetPicture extends AsyncTask<Position, Void, Drawable> {
+	private final class DisplayGoogleStreetPicture extends AsyncTask<Position, Void, Drawable> {
 		private Position position;
 
 		@Override
-		protected Drawable doInBackground(Position... params) {
+		protected final Drawable doInBackground(final Position... params) {
 			GStreetViewConnect connect = GStreetViewConnect.getInstance();
 			try {
 				this.position = params[0];
@@ -232,7 +233,7 @@ public class BusActivity extends Activity {
 		}
 
 		@Override
-		protected void onPostExecute(Drawable result) {
+		protected final void onPostExecute(final Drawable result) {
 			int height = (int) getResources().getDimension(R.dimen.activity_station_street_map_height);
 			android.widget.RelativeLayout.LayoutParams params = (android.widget.RelativeLayout.LayoutParams) BusActivity.this.streetViewImage
 					.getLayoutParams();
@@ -287,7 +288,7 @@ public class BusActivity extends Activity {
 		}
 	}
 
-	protected void switchFavorite() {
+	protected final void switchFavorite() {
 		if (isFavorite) {
 			Util.removeFromBusFavorites(busRouteId, String.valueOf(busStopId), bound, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
 			isFavorite = false;
@@ -302,7 +303,7 @@ public class BusActivity extends Activity {
 		}
 	}
 
-	public void buildArrivals() {
+	public final void buildArrivals() {
 		if (busArrivals != null) {
 			Map<String, TextView> mapRes = new HashMap<String, TextView>();
 			for (BusArrival arrival : this.busArrivals) {
@@ -326,7 +327,7 @@ public class BusActivity extends Activity {
 		}
 	}
 
-	public boolean isFavorite() {
+	public final boolean isFavorite() {
 		boolean isFavorite = false;
 		List<String> favorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
 		for (String fav : favorites) {

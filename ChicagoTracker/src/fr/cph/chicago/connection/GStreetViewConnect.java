@@ -50,7 +50,7 @@ public class GStreetViewConnect {
 		return instance;
 	}
 
-	private Drawable connectUrl(String adress) throws IOException {
+	private Drawable connectUrl(final String adress) throws IOException {
 		Log.v(TAG, "adress: " + adress);
 		try {
 			InputStream is = (InputStream) new URL(adress).getContent();
@@ -61,7 +61,7 @@ public class GStreetViewConnect {
 		}
 	}
 
-	public Drawable connect(Position position) throws IOException {
+	public final Drawable connect(final Position position) throws IOException {
 		StringBuilder adress = new StringBuilder(BASE_URL);
 		adress.append("?key=" + GOOGLE_KEY);
 		adress.append("&sensor=false");
@@ -70,5 +70,4 @@ public class GStreetViewConnect {
 		adress.append("&location=" + position.getLatitude() + "," + position.getLongitude());
 		return connectUrl(adress.toString());
 	}
-
 }
