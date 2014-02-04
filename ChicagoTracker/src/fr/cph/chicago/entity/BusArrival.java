@@ -142,7 +142,11 @@ public final class BusArrival {
 		if (getIsDly()) {
 			result = "Delay";
 		} else {
-			result = getTimeLeft();
+			if (getTimeLeft().equals("0 min")) {
+				result = "Due";
+			} else {
+				result = getTimeLeft();
+			}
 		}
 		return result;
 	}

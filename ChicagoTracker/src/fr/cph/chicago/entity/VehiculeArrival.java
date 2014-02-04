@@ -17,12 +17,14 @@
 package fr.cph.chicago.entity;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
+import android.util.Log;
 import android.util.SparseArray;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.data.BusData;
@@ -103,10 +105,16 @@ public class VehiculeArrival {
 	}
 
 	public final Map<String, Map<String, List<BusArrival>>> getBusArrivalsMapped(final String routeId) {
-		Map<String, Map<String, List<BusArrival>>> res = new HashMap<String, Map<String, List<BusArrival>>>();
+		Map<String, Map<String, List<BusArrival>>> res = new TreeMap<String, Map<String, List<BusArrival>>>(new Comparator<String>() {
+			@Override
+			public int compare(String lhs, String rhs) {
+				return lhs.compareTo(rhs);
+			}
+		});
 		for (BusArrival busArrival : busArrivals) {
+			Integer stopId = busArrival.getStopId();
 			String bound = busArrival.getRouteDirection();
-			if (isInFavorites(routeId, bound)) {
+			if (isInFavorites(routeId, stopId, bound)) {
 				if (busArrival.getRouteId().equals(routeId)) {
 					if (res.containsKey(busArrival.getStopName())) {
 						Map<String, List<BusArrival>> tempMap = res.get(busArrival.getStopName());
@@ -117,9 +125,10 @@ public class VehiculeArrival {
 							List<BusArrival> arrivals = new ArrayList<BusArrival>();
 							arrivals.add(busArrival);
 							tempMap.put(bound, arrivals);
+
 						}
 					} else {
-						Map<String, List<BusArrival>> tempMap = new HashMap<String, List<BusArrival>>();
+						Map<String, List<BusArrival>> tempMap = new TreeMap<String, List<BusArrival>>();
 						List<BusArrival> arrivals = new ArrayList<BusArrival>();
 						arrivals.add(busArrival);
 						tempMap.put(bound, arrivals);
@@ -131,11 +140,12 @@ public class VehiculeArrival {
 		return res;
 	}
 
-	private final boolean isInFavorites(final String routeId, final String bound) {
+	private final boolean isInFavorites(final String routeId, final Integer stopId, final String bound) {
 		boolean res = false;
 		for (String fav : busFavorites) {
 			String decoded[] = Util.decodeBusFavorite(fav);
-			if (routeId.equals(decoded[0]) && bound.equals(decoded[2])) {
+			// TODO: Is that correct ? maybe remove stopId
+			if (routeId.equals(decoded[0]) && bound.equals(decoded[2]) && String.valueOf(stopId).equals(decoded[1])) {
 				res = true;
 				break;
 			}

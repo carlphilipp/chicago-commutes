@@ -45,14 +45,15 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.PopupMenu.OnDismissListener;
 import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.TextView;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BusActivity;
-import fr.cph.chicago.activity.ErrorActivity;
 import fr.cph.chicago.activity.StationActivity;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BusArrival;
@@ -76,6 +77,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 	private Activity activity;
 	private Context context;
+	private FrameLayout firstLayout;
 
 	private VehiculeArrival arrival;
 
@@ -89,6 +91,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 		this.context = ChicagoTracker.getAppContext();
 
 		this.activity = activity;
+		this.firstLayout = ChicagoTracker.container;
 		this.arrival = new VehiculeArrival();
 
 		this.ids = new HashMap<String, Integer>();
@@ -340,14 +343,12 @@ public final class FavoritesAdapter extends BaseAdapter {
 									menuTitles.add(entry.getKey());
 								}
 								PopupMenu popupMenu = new PopupMenu(context, v);
-
 								for (int i = 0; i < menuTitles.size(); i++) {
 									popupMenu.getMenu().add(Menu.NONE, i, Menu.NONE, menuTitles.get(i));
 								}
 								popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 									@Override
 									public boolean onMenuItemClick(MenuItem item) {
-										Log.i(TAG, "id " + item.getItemId());
 										Iterator<Entry<String, List<BusArrival>>> iterator = value.entrySet().iterator();
 										if (item.getItemId() == 1) {
 											iterator.next();
@@ -365,6 +366,13 @@ public final class FavoritesAdapter extends BaseAdapter {
 										return false;
 									}
 								});
+								popupMenu.setOnDismissListener(new OnDismissListener() {
+									@Override
+									public void onDismiss(PopupMenu menu) {
+										firstLayout.getForeground().setAlpha(0);
+									}
+								});
+								firstLayout.getForeground().setAlpha(210);
 								popupMenu.show();
 							}
 						}
@@ -394,6 +402,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 						boundLayout.addView(bound);
 
 						for (BusArrival arri : buses) {
+							Log.i(TAG, "Bus: " + arri.getRouteId() + " " + arri.getRouteDirection() + " " + arri.getStopId());
 							TextView timeView = new TextView(context);
 							timeView.setText(arri.getTimeLeftDueDelay() + " ");
 							timeView.setTextColor(context.getResources().getColor(R.color.grey));
@@ -539,10 +548,6 @@ public final class FavoritesAdapter extends BaseAdapter {
 				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				ChicagoTracker.getAppContext().startActivity(intent);
 			} else {
-//				Intent intent = new Intent(ChicagoTracker.getAppContext(), ErrorActivity.class);
-//				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//				activity.finish();
-//				activity.startActivity(intent);
 				ChicagoTracker.displayError(activity, trackerException);
 			}
 		}

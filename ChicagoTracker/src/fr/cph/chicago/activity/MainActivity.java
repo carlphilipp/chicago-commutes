@@ -17,6 +17,7 @@
 package fr.cph.chicago.activity;
 
 import java.util.List;
+import android.widget.FrameLayout;
 
 import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.map.MultiValueMap;
@@ -75,6 +76,10 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_main);
+		
+		ChicagoTracker.container = (FrameLayout) findViewById(R.id.container);
+		ChicagoTracker.container.getForeground().setAlpha(0);
+		
 
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
 		mTitle = getTitle();
@@ -191,9 +196,6 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				task = new CtaConnectTask(FavoritesFragment.class, CtaRequestType.TRAIN_ARRIVALS, params, CtaRequestType.BUS_ARRIVALS, params2);
 				task.execute((Void) null);
 			} catch (ParserException e) {
-//				Intent intent = new Intent(ChicagoTracker.getAppContext(), ErrorActivity.class);
-//				finish();
-//				startActivity(intent);
 				ChicagoTracker.displayError(this, e);
 				return true;
 			}

@@ -16,7 +16,6 @@
 
 package fr.cph.chicago.adapter;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,17 +23,22 @@ import java.util.Map;
 import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.map.MultiValueMap;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
+import android.widget.PopupMenu.OnDismissListener;
+import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.TextView;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
@@ -48,6 +52,7 @@ import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.enumeration.BusDirection;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
+import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.xml.Xml;
 
 public final class BusAdapter extends BaseAdapter {
@@ -55,15 +60,20 @@ public final class BusAdapter extends BaseAdapter {
 	/** Tag **/
 	private static final String TAG = "BusAdapter";
 
+	private Activity activity;
+	
 	private BusData busData;
+	private FrameLayout firstLayout;
 
 	private Map<String, LinearLayout> detailsMap;
 	private Map<String, List<TextView>> bounds;
 
-	public BusAdapter() {
+	public BusAdapter(final Activity activity) {
+		this.activity = activity;
 		this.busData = DataHolder.getInstance().getBusData();
 		this.detailsMap = new HashMap<String, LinearLayout>();
 		this.bounds = new HashMap<String, List<TextView>>();
+		this.firstLayout = ChicagoTracker.container;
 	}
 
 	@Override
@@ -125,7 +135,7 @@ public final class BusAdapter extends BaseAdapter {
 			@Override
 			public void onClick(View v) {
 				if (detailsLayout.getVisibility() == LinearLayout.GONE) {
-					new DirectionAsyncTask().execute(route, loading, routeDirections);
+					new DirectionAsyncTask().execute(route, loading, detailsLayout);
 				}
 				detailsLayout.setVisibility(LinearLayout.VISIBLE);
 			}
@@ -138,7 +148,8 @@ public final class BusAdapter extends BaseAdapter {
 
 		private BusRoute busRoute;
 		private TextView loading;
-		private LinearLayout routeDirections;
+		private View convertView;
+		private TrackerException trackerException;
 
 		@Override
 		protected final BusDirections doInBackground(final Object... params) {
@@ -154,52 +165,52 @@ public final class BusAdapter extends BaseAdapter {
 
 				busDirections = xml.parseBusDirections(xmlResult, busRoute.getId());
 				loading = (TextView) params[1];
-				routeDirections = (LinearLayout) params[2];
+				convertView = (View) ((LinearLayout) params[2]).getParent();
 			} catch (ParserException e) {
-				e.printStackTrace();
+				this.trackerException = e;
 			} catch (ConnectException e) {
-				e.printStackTrace();
+				this.trackerException = e;
 			}
 			return busDirections;
 		}
 
 		@Override
 		protected final void onPostExecute(final BusDirections result) {
-			loading.setVisibility(TextView.GONE);
-			for (final BusDirection busDirection : result.getlBusDirection()) {
-				Button currentBound = new Button(ChicagoTracker.getAppContext(), null, android.R.attr.buttonStyleSmall);
-				currentBound.setText(busDirection.toString());
-				// currentBound.setTextColor(ChicagoTracker.getAppContext().getResources().getColor(R.color.grey_M_B));
-
-				// currentBound.setTextSize(ChicagoTracker.getAppContext().getResources().getDimension(R.dimen.bus_adapter_button_text_size));
-				currentBound.setWidth((int) ChicagoTracker.getAppContext().getResources().getDimension(R.dimen.bus_adapter_button_width));
-				currentBound.setHeight((int) ChicagoTracker.getAppContext().getResources().getDimension(R.dimen.bus_adapter_button_height));
-
-				// currentBound.setBackground(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.buttonshape));
-				// currentBound.setShadowLayer(5, 0, 0, R.color.grey_again);
-				// currentBound.setPadding(10, 0, 0, 0);
-				currentBound.setOnClickListener(new OnClickListener() {
-
+			if (trackerException == null) {
+				loading.setVisibility(TextView.GONE);
+				PopupMenu popupMenu = new PopupMenu(ChicagoTracker.getAppContext(), convertView);
+				List<BusDirection> lBus = result.getlBusDirection();
+				for (int i = 0; i < lBus.size(); i++) {
+					popupMenu.getMenu().add(Menu.NONE, i, Menu.NONE, lBus.get(i).toString());
+				}
+				popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 					@Override
-					public final void onClick(View v) {
-						Intent intent = new Intent(ChicagoTracker.getAppContext(), BusBoundActivity.class);
-						Bundle extras = new Bundle();
-						extras.putString("busRouteId", busRoute.getId());
-						extras.putString("busRouteName", busRoute.getName());
-						extras.putString("bound", busDirection.toString());
-						intent.putExtras(extras);
-						intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-						ChicagoTracker.getAppContext().startActivity(intent);
+					public boolean onMenuItemClick(MenuItem item) {
+						for (final BusDirection busDirection : result.getlBusDirection()) {
+							Intent intent = new Intent(ChicagoTracker.getAppContext(), BusBoundActivity.class);
+							Bundle extras = new Bundle();
+							extras.putString("busRouteId", busRoute.getId());
+							extras.putString("busRouteName", busRoute.getName());
+							extras.putString("bound", busDirection.toString());
+							intent.putExtras(extras);
+							intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+							ChicagoTracker.getAppContext().startActivity(intent);
+							return false;
+						}
+						return false;
+					}
+
+				});
+				popupMenu.setOnDismissListener(new OnDismissListener() {
+					@Override
+					public void onDismiss(PopupMenu menu) {
+						firstLayout.getForeground().setAlpha(0);
 					}
 				});
-				if (bounds.containsKey(busRoute.getId())) {
-					bounds.get(busRoute.getId()).add(currentBound);
-				} else {
-					List<TextView> lviews = new ArrayList<TextView>();
-					lviews.add(currentBound);
-					bounds.put(busRoute.getId(), lviews);
-				}
-				routeDirections.addView(currentBound);
+				firstLayout.getForeground().setAlpha(210);
+				popupMenu.show();
+			} else {
+				ChicagoTracker.displayError(activity, trackerException);
 			}
 		}
 	}

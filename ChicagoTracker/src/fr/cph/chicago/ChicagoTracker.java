@@ -25,6 +25,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.FrameLayout;
 
 public class ChicagoTracker extends Application {
 
@@ -33,6 +34,8 @@ public class ChicagoTracker extends Application {
 	public static final String PREFERENCE_FAVORITES = "ChicagoTrackerFavorites";
 	public static final String PREFERENCE_FAVORITES_TRAIN = "ChicagoTrackerFavoritesTrain";
 	public static final String PREFERENCE_FAVORITES_BUS = "ChicagoTrackerFavoritesBus";
+	
+	public static FrameLayout container;
 
 	public final void onCreate() {
 		super.onCreate();

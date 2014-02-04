@@ -41,6 +41,8 @@ import fr.cph.chicago.adapter.BusAdapter;
 public class BusFragment extends Fragment {
 
 	private static final String TAG = "BusFragment";
+	
+	private static Activity mActivity;
 	/**
 	 * The fragment argument representing the section number for this fragment.
 	 */
@@ -64,7 +66,7 @@ public class BusFragment extends Fragment {
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_bus, container, false);
-		ada = new BusAdapter();
+		ada = new BusAdapter(mActivity);
 		ListView listView = (ListView) rootView.findViewById(R.id.bus_list);
 		listView.setAdapter(ada);
 		return rootView;
@@ -73,6 +75,7 @@ public class BusFragment extends Fragment {
 	@Override
 	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
+		mActivity = activity;
 		((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 

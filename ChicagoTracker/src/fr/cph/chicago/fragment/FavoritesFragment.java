@@ -27,7 +27,6 @@ import org.apache.commons.collections4.map.MultiValueMap;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
@@ -42,7 +41,6 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
-import fr.cph.chicago.activity.ErrorActivity;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.FavoritesAdapter;
 import fr.cph.chicago.connection.CtaRequestType;
@@ -90,6 +88,7 @@ public class FavoritesFragment extends Fragment {
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+		
 		if (ada == null) {
 			ada = new FavoritesAdapter(mActivity);
 		}
@@ -106,13 +105,10 @@ public class FavoritesFragment extends Fragment {
 
 	@Override
 	public final void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
-		Log.i(TAG, "onCreateOptionsMenu");
 		this.menu = menu;
 		try {
 			loadData();
 		} catch (ParserException e) {
-//			Intent intent = new Intent(ChicagoTracker.getAppContext(), ErrorActivity.class);
-//			startActivity(intent);
 			ChicagoTracker.displayError(mActivity, e);
 		}
 		super.onCreateOptionsMenu(menu, inflater);
@@ -176,7 +172,6 @@ public class FavoritesFragment extends Fragment {
 
 	@Override
 	public final void onResume() {
-		Log.i(TAG, "on resume");
 		super.onResume();
 		ada.setFavorites();
 		ada.notifyDataSetChanged();
@@ -200,9 +195,6 @@ public class FavoritesFragment extends Fragment {
 	}
 	
 	public static final void displayError(TrackerException trackerException){
-//		Intent intent = new Intent(ChicagoTracker.getAppContext(), ErrorActivity.class);
-//		mActivity.finish();
-//		mActivity.startActivity(intent);
 		ChicagoTracker.displayError(mActivity, trackerException);
 	}
 

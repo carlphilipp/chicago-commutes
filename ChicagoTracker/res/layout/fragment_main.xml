@@ -14,20 +14,24 @@
   limitations under the License.
 -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/station_selector"
-    tools:context=".MainActivity$PlaceholderFragment" >
+    tools:context=".MainActivity$PlaceholderFragment"
+    android:id="@+id/frameLayout" >
 
     <ListView
         android:id="@+id/favorites_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
         android:dividerHeight="1dp" >
     </ListView>
+    
+    <!-- 
+    	android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+     -->
 
-</RelativeLayout>
+</FrameLayout>
