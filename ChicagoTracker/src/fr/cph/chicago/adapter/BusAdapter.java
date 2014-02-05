@@ -89,26 +89,49 @@ public final class BusAdapter extends BaseAdapter {
 
 		final BusRoute route = busData.getRoute(position);
 
-		LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		convertView = vi.inflate(R.layout.list_bus, null);
+		TextView routeNameView = null;
+		TextView routeNumberView = null;
+		LinearLayout detailsLayout = null;
 
-		TextView routeNameView = (TextView) convertView.findViewById(R.id.route_name_value);
-		routeNameView.setText(route.getName());
+		if (convertView == null) {
+			LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			convertView = vi.inflate(R.layout.list_bus, null);
 
-		TextView routeNumberView = (TextView) convertView.findViewById(R.id.route_number_value);
-		routeNumberView.setText(route.getId());
-		
-		final LinearLayout detailsLayout = (LinearLayout) convertView.findViewById(R.id.route_details);
+			final ViewHolder holder = new ViewHolder();
+			routeNameView = (TextView) convertView.findViewById(R.id.route_name_value);
+			routeNameView.setText(route.getName());
+			holder.routeNameView = routeNameView;
 
-		convertView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				detailsLayout.setVisibility(LinearLayout.VISIBLE);
-				new DirectionAsyncTask().execute(route, detailsLayout);
-			}
-		});
+			routeNumberView = (TextView) convertView.findViewById(R.id.route_number_value);
+			routeNumberView.setText(route.getId());
+			holder.routeNumberView = routeNumberView;
+
+			detailsLayout = (LinearLayout) convertView.findViewById(R.id.route_details);
+			holder.detailsLayout = detailsLayout;
+
+			convertView.setTag(holder);
+
+			convertView.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					holder.detailsLayout.setVisibility(LinearLayout.VISIBLE);
+					new DirectionAsyncTask().execute(route, holder.detailsLayout);
+				}
+			});
+		} else {
+			ViewHolder viewHolder = (ViewHolder) convertView.getTag();
+			routeNameView = viewHolder.routeNameView;
+			routeNumberView = viewHolder.routeNumberView;
+			detailsLayout = viewHolder.detailsLayout;
+		}
 
 		return convertView;
+	}
+
+	static class ViewHolder {
+		TextView routeNameView;
+		TextView routeNumberView;
+		LinearLayout detailsLayout;
 	}
 
 	private class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
