@@ -150,6 +150,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 					extras.putInt("stationId", stationId);
 					intent.putExtras(extras);
 					activity.startActivity(intent);
+					activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 				}
 			});
 
@@ -546,7 +547,8 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 				intent.putExtras(extras);
 				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				ChicagoTracker.getAppContext().startActivity(intent);
+				activity.startActivity(intent);
+				activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 			} else {
 				ChicagoTracker.displayError(activity, trackerException);
 			}

@@ -56,18 +56,37 @@ public class BusBoundAdapter extends BaseAdapter {
 
 	@Override
 	public final View getView(final int position, View convertView, final ViewGroup parent) {
+
 		BusStop busStop = busStops.get(position);
 
-		LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		convertView = vi.inflate(R.layout.list_bus_bounds, null);
+		TextView routNumberView = null;
+		TextView routNameView = null;
 
-		TextView routNumberView = (TextView) convertView.findViewById(R.id.route_number);
-		routNumberView.setText(stopId);
+		if (convertView == null) {
+			LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			convertView = vi.inflate(R.layout.list_bus_bounds, null);
 
-		TextView routNameView = (TextView) convertView.findViewById(R.id.route_name_value);
-		routNameView.setText(busStop.getName());
+			ViewHolder holder = new ViewHolder();
+			routNumberView = (TextView) convertView.findViewById(R.id.route_number);
+			routNumberView.setText(stopId);
+			holder.routNumberView = routNumberView;
 
+			routNameView = (TextView) convertView.findViewById(R.id.route_name_value);
+			routNameView.setText(busStop.getName());
+			holder.routNameView = routNameView;
+
+			convertView.setTag(holder);
+		} else {
+			ViewHolder viewHolder = (ViewHolder) convertView.getTag();
+			routNumberView = viewHolder.routNumberView;
+			routNameView = viewHolder.routNameView;
+		}
 		return convertView;
+	}
+
+	static class ViewHolder {
+		TextView routNumberView;
+		TextView routNameView;
 	}
 
 	public final void update(final List<BusStop> result) {

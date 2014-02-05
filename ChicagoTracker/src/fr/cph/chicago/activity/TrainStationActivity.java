@@ -59,6 +59,7 @@ public class TrainStationActivity extends ListActivity {
 				extras.putInt("stationId", data.getStationsForLine(line).get(position).getId());
 				intent.putExtras(extras);
 				startActivity(intent);
+				overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 			}
 		});
 	}

@@ -152,6 +152,7 @@ public class BusActivity extends Activity {
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			finish();
+//			overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 			return true;
 		case R.id.action_refresh:
 			MenuItem menuItem = item;

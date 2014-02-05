@@ -72,7 +72,8 @@ public class BusBoundActivity extends ListActivity {
 
 				intent.putExtras(extras);
 				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				ChicagoTracker.getAppContext().startActivity(intent);
+				startActivity(intent);
+				overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 			}
 		});
 		getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -125,9 +126,6 @@ public class BusBoundActivity extends ListActivity {
 				ada.update(result);
 				ada.notifyDataSetChanged();
 			} else {
-//				Intent intent = new Intent(ChicagoTracker.getAppContext(), ErrorActivity.class);
-//				finish();
-//				startActivity(intent);
 				ChicagoTracker.displayError(BusBoundActivity.this, trackerException);
 			}
 		}
