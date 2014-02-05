@@ -81,7 +81,6 @@
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/station_b"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="10dp"
             android:textColor="@color/grey"
             android:textIsSelectable="false" />
 

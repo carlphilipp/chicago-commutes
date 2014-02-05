@@ -16,9 +16,7 @@
 
 package fr.cph.chicago.adapter;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.map.MultiValueMap;
@@ -61,18 +59,13 @@ public final class BusAdapter extends BaseAdapter {
 	private static final String TAG = "BusAdapter";
 
 	private Activity activity;
-	
+
 	private BusData busData;
 	private FrameLayout firstLayout;
-
-	private Map<String, LinearLayout> detailsMap;
-	private Map<String, List<TextView>> bounds;
 
 	public BusAdapter(final Activity activity) {
 		this.activity = activity;
 		this.busData = DataHolder.getInstance().getBusData();
-		this.detailsMap = new HashMap<String, LinearLayout>();
-		this.bounds = new HashMap<String, List<TextView>>();
 		this.firstLayout = ChicagoTracker.container;
 	}
 
@@ -104,40 +97,14 @@ public final class BusAdapter extends BaseAdapter {
 
 		TextView routeNumberView = (TextView) convertView.findViewById(R.id.route_number_value);
 		routeNumberView.setText(route.getId());
-
-		final TextView loading = (TextView) convertView.findViewById(R.id.loading_text_view);
-
-		final LinearLayout routeDirections = (LinearLayout) convertView.findViewById(R.id.route_directions);
-
+		
 		final LinearLayout detailsLayout = (LinearLayout) convertView.findViewById(R.id.route_details);
-		if (detailsMap.containsKey(route.getId())) {
-			LinearLayout detailsLayoutSaved = detailsMap.get(route.getId());
-			detailsLayout.setVisibility(detailsLayoutSaved.getVisibility());
-
-			TextView loadingSaved = (TextView) detailsLayoutSaved.findViewById(R.id.loading_text_view);
-
-			loading.setText(loadingSaved.getText());
-			loading.setVisibility(loadingSaved.getVisibility());
-
-			if (bounds.containsKey(route.getId())) {
-				List<TextView> tempListView = bounds.get(route.getId());
-
-				for (TextView text : tempListView) {
-					TextView text2 = new TextView(ChicagoTracker.getAppContext());
-					text2.setText(text.getText());
-					routeDirections.addView(text2);
-				}
-			}
-		}
-		detailsMap.put(route.getId(), detailsLayout);
 
 		convertView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (detailsLayout.getVisibility() == LinearLayout.GONE) {
-					new DirectionAsyncTask().execute(route, loading, detailsLayout);
-				}
 				detailsLayout.setVisibility(LinearLayout.VISIBLE);
+				new DirectionAsyncTask().execute(route, detailsLayout);
 			}
 		});
 
@@ -147,8 +114,7 @@ public final class BusAdapter extends BaseAdapter {
 	private class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 
 		private BusRoute busRoute;
-		private TextView loading;
-		private View convertView;
+		private LinearLayout convertView;
 		private TrackerException trackerException;
 
 		@Override
@@ -158,14 +124,11 @@ public final class BusAdapter extends BaseAdapter {
 			try {
 				MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
 				busRoute = (BusRoute) params[0];
-
 				reqParams.put("rt", busRoute.getId());
 				Xml xml = new Xml();
 				String xmlResult = connect.connect(CtaRequestType.BUS_DIRECTION, reqParams);
-
 				busDirections = xml.parseBusDirections(xmlResult, busRoute.getId());
-				loading = (TextView) params[1];
-				convertView = (View) ((LinearLayout) params[2]).getParent();
+				convertView = (LinearLayout) params[1];
 			} catch (ParserException e) {
 				this.trackerException = e;
 			} catch (ConnectException e) {
@@ -177,34 +140,30 @@ public final class BusAdapter extends BaseAdapter {
 		@Override
 		protected final void onPostExecute(final BusDirections result) {
 			if (trackerException == null) {
-				loading.setVisibility(TextView.GONE);
 				PopupMenu popupMenu = new PopupMenu(ChicagoTracker.getAppContext(), convertView);
-				List<BusDirection> lBus = result.getlBusDirection();
+				final List<BusDirection> lBus = result.getlBusDirection();
 				for (int i = 0; i < lBus.size(); i++) {
 					popupMenu.getMenu().add(Menu.NONE, i, Menu.NONE, lBus.get(i).toString());
 				}
 				popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 					@Override
 					public boolean onMenuItemClick(MenuItem item) {
-						for (final BusDirection busDirection : result.getlBusDirection()) {
-							Intent intent = new Intent(ChicagoTracker.getAppContext(), BusBoundActivity.class);
-							Bundle extras = new Bundle();
-							extras.putString("busRouteId", busRoute.getId());
-							extras.putString("busRouteName", busRoute.getName());
-							extras.putString("bound", busDirection.toString());
-							intent.putExtras(extras);
-							intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-							ChicagoTracker.getAppContext().startActivity(intent);
-							return false;
-						}
+						Intent intent = new Intent(ChicagoTracker.getAppContext(), BusBoundActivity.class);
+						Bundle extras = new Bundle();
+						extras.putString("busRouteId", busRoute.getId());
+						extras.putString("busRouteName", busRoute.getName());
+						extras.putString("bound", lBus.get(item.getItemId()).toString());
+						intent.putExtras(extras);
+						intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+						ChicagoTracker.getAppContext().startActivity(intent);
 						return false;
 					}
-
 				});
 				popupMenu.setOnDismissListener(new OnDismissListener() {
 					@Override
 					public void onDismiss(PopupMenu menu) {
 						firstLayout.getForeground().setAlpha(0);
+						convertView.setVisibility(LinearLayout.GONE);
 					}
 				});
 				firstLayout.getForeground().setAlpha(210);

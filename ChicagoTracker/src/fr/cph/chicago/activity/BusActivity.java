@@ -202,9 +202,6 @@ public class BusActivity extends Activity {
 				BusActivity.this.busArrivals = result;
 				BusActivity.this.buildArrivals();
 			} else {
-//				Intent intent = new Intent(ChicagoTracker.getAppContext(), ErrorActivity.class);
-//				finish();
-//				startActivity(intent);
 				ChicagoTracker.displayError(BusActivity.this, trackerException);
 			}
 
