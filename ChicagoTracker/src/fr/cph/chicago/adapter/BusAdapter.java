@@ -99,11 +99,9 @@ public final class BusAdapter extends BaseAdapter {
 
 			final ViewHolder holder = new ViewHolder();
 			routeNameView = (TextView) convertView.findViewById(R.id.route_name_value);
-			routeNameView.setText(route.getName());
 			holder.routeNameView = routeNameView;
 
 			routeNumberView = (TextView) convertView.findViewById(R.id.route_number_value);
-			routeNumberView.setText(route.getId());
 			holder.routeNumberView = routeNumberView;
 
 			detailsLayout = (LinearLayout) convertView.findViewById(R.id.route_details);
@@ -124,6 +122,9 @@ public final class BusAdapter extends BaseAdapter {
 			routeNumberView = viewHolder.routeNumberView;
 			detailsLayout = viewHolder.detailsLayout;
 		}
+		
+		routeNameView.setText(route.getName());
+		routeNumberView.setText(route.getId());
 
 		return convertView;
 	}

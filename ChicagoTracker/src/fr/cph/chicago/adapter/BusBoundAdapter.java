@@ -68,11 +68,9 @@ public class BusBoundAdapter extends BaseAdapter {
 
 			ViewHolder holder = new ViewHolder();
 			routNumberView = (TextView) convertView.findViewById(R.id.route_number);
-			routNumberView.setText(stopId);
 			holder.routNumberView = routNumberView;
 
 			routNameView = (TextView) convertView.findViewById(R.id.route_name_value);
-			routNameView.setText(busStop.getName());
 			holder.routNameView = routNameView;
 
 			convertView.setTag(holder);
@@ -81,6 +79,10 @@ public class BusBoundAdapter extends BaseAdapter {
 			routNumberView = viewHolder.routNumberView;
 			routNameView = viewHolder.routNameView;
 		}
+		
+		routNumberView.setText(stopId);
+		routNameView.setText(busStop.getName());
+		
 		return convertView;
 	}
 
