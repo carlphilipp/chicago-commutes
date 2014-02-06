@@ -41,6 +41,7 @@ import android.widget.TextView;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BusBoundActivity;
+import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.data.BusData;
@@ -58,12 +59,12 @@ public final class BusAdapter extends BaseAdapter {
 	/** Tag **/
 	private static final String TAG = "BusAdapter";
 
-	private Activity activity;
+	private MainActivity activity;
 
 	private BusData busData;
 	private FrameLayout firstLayout;
 
-	public BusAdapter(final Activity activity) {
+	public BusAdapter(final MainActivity activity) {
 		this.activity = activity;
 		this.busData = DataHolder.getInstance().getBusData();
 		this.firstLayout = ChicagoTracker.container;
@@ -113,6 +114,7 @@ public final class BusAdapter extends BaseAdapter {
 				@Override
 				public void onClick(View v) {
 					holder.detailsLayout.setVisibility(LinearLayout.VISIBLE);
+					activity.startRefreshAnimation();
 					new DirectionAsyncTask().execute(route, holder.detailsLayout);
 				}
 			});
@@ -163,6 +165,7 @@ public final class BusAdapter extends BaseAdapter {
 
 		@Override
 		protected final void onPostExecute(final BusDirections result) {
+			activity.stopRefreshAnimation();
 			if (trackerException == null) {
 				PopupMenu popupMenu = new PopupMenu(ChicagoTracker.getAppContext(), convertView);
 				final List<BusDirection> lBus = result.getlBusDirection();
@@ -188,6 +191,7 @@ public final class BusAdapter extends BaseAdapter {
 					public void onDismiss(PopupMenu menu) {
 						firstLayout.getForeground().setAlpha(0);
 						convertView.setVisibility(LinearLayout.GONE);
+						activity.stopRefreshAnimation();
 					}
 				});
 				firstLayout.getForeground().setAlpha(210);

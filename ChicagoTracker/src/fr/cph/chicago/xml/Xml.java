@@ -289,19 +289,21 @@ public class Xml {
 					tag = XmlArrivalBusTag.OTHER;
 				} else if (eventType == XmlPullParser.TEXT) {
 					String text = parser.getText();
-					switch (tag) {
-					case ROUTE:
-						busRoute = new BusRoute();
-						routes.add(busRoute);
-						break;
-					case RT:
-						busRoute.setId(text);
-						break;
-					case RTNM:
-						busRoute.setName(text);
-						break;
-					default:
-						break;
+					if (tag != null) {
+						switch (tag) {
+						case ROUTE:
+							busRoute = new BusRoute();
+							routes.add(busRoute);
+							break;
+						case RT:
+							busRoute.setId(text);
+							break;
+						case RTNM:
+							busRoute.setName(text);
+							break;
+						default:
+							break;
+						}
 					}
 				}
 				eventType = parser.next();

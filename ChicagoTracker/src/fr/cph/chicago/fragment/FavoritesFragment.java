@@ -64,7 +64,7 @@ public class FavoritesFragment extends Fragment {
 	/** Tag **/
 	private static final String TAG = "FavoritesFragment";
 
-	private static Activity mActivity;
+	private static MainActivity mActivity;
 
 	private static FavoritesAdapter ada;
 
@@ -88,7 +88,7 @@ public class FavoritesFragment extends Fragment {
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-		
+
 		if (ada == null) {
 			ada = new FavoritesAdapter(mActivity);
 		}
@@ -183,7 +183,7 @@ public class FavoritesFragment extends Fragment {
 	@Override
 	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
-		mActivity = activity;
+		mActivity = (MainActivity) activity;
 		((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 

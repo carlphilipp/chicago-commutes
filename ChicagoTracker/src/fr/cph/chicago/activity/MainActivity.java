@@ -223,6 +223,14 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 					}).setNegativeButton("No", null).show();
 		}
 	}
+	
+	public final void startRefreshAnimation() {
+		if (menu != null) {
+			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+			refreshMenuItem.setActionView(R.layout.progressbar);
+			refreshMenuItem.expandActionView();
+		}
+	}
 
 	public final void stopRefreshAnimation() {
 		if (menu != null) {

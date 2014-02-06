@@ -16,11 +16,11 @@
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/station_selector"
-    tools:context=".MainActivity$PlaceholderFragment"
-    android:id="@+id/frameLayout" >
+    tools:context=".MainActivity$PlaceholderFragment" >
 
     <ListView
         android:id="@+id/favorites_list"
@@ -28,10 +28,10 @@
         android:layout_height="match_parent"
         android:dividerHeight="1dp" >
     </ListView>
-    
-    <!-- 
+
+    <!--
     	android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-     -->
+    -->
 
 </FrameLayout>

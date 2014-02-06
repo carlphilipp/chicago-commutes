@@ -24,7 +24,7 @@
     android:paddingRight="@+dimen/activity_train_line_padding_right"
     android:paddingTop="@+dimen/activity_train_line_padding_top" >
 
-   <RelativeLayout
+    <RelativeLayout
         android:id="@+id/line1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
@@ -83,7 +83,6 @@
             android:layout_alignParentRight="true"
             android:textColor="@color/grey"
             android:textIsSelectable="false" />
-
     </RelativeLayout>
 
     <LinearLayout

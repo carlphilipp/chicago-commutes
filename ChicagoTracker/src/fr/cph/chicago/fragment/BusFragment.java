@@ -42,7 +42,7 @@ public class BusFragment extends Fragment {
 
 	private static final String TAG = "BusFragment";
 	
-	private static Activity mActivity;
+	private static MainActivity mActivity;
 	/**
 	 * The fragment argument representing the section number for this fragment.
 	 */
@@ -75,7 +75,7 @@ public class BusFragment extends Fragment {
 	@Override
 	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
-		mActivity = activity;
+		mActivity = (MainActivity) activity;
 		((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 
