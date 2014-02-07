@@ -17,15 +17,19 @@
 package fr.cph.chicago;
 
 import java.util.Date;
+import java.util.List;
 
-import fr.cph.chicago.activity.ErrorActivity;
-import fr.cph.chicago.exception.TrackerException;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.SparseArray;
 import android.widget.FrameLayout;
+import fr.cph.chicago.activity.ErrorActivity;
+import fr.cph.chicago.entity.BusArrival;
+import fr.cph.chicago.entity.TrainArrival;
+import fr.cph.chicago.exception.TrackerException;
 
 public class ChicagoTracker extends Application {
 
@@ -34,7 +38,9 @@ public class ChicagoTracker extends Application {
 	public static final String PREFERENCE_FAVORITES = "ChicagoTrackerFavorites";
 	public static final String PREFERENCE_FAVORITES_TRAIN = "ChicagoTrackerFavoritesTrain";
 	public static final String PREFERENCE_FAVORITES_BUS = "ChicagoTrackerFavoritesBus";
-	
+	private static SparseArray<TrainArrival> trainArrivals;
+	private static List<BusArrival> busArrivals;
+
 	public static FrameLayout container;
 
 	public final void onCreate() {
@@ -53,13 +59,29 @@ public class ChicagoTracker extends Application {
 	public static Date getLastTrainUpdate() {
 		return lastTrainUpdate;
 	}
-	
-	public static void displayError(Activity activity, TrackerException ex){
+
+	public static void displayError(Activity activity, TrackerException ex) {
 		Intent intent = new Intent(activity, ErrorActivity.class);
 		Bundle extras = new Bundle();
 		extras.putString("error", ex.getMessage());
 		intent.putExtras(extras);
 		activity.finish();
 		activity.startActivity(intent);
+	}
+
+	public static SparseArray<TrainArrival> getTrainArrivals() {
+		return trainArrivals;
+	}
+
+	public static void setTrainArrivals(SparseArray<TrainArrival> trainArrivals) {
+		ChicagoTracker.trainArrivals = trainArrivals;
+	}
+
+	public static List<BusArrival> getBusArrivals() {
+		return busArrivals;
+	}
+
+	public static void setBusArrivals(List<BusArrival> busArrivals) {
+		ChicagoTracker.busArrivals = busArrivals;
 	}
 }

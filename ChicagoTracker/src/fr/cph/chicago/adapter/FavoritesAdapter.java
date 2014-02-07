@@ -83,7 +83,9 @@ public final class FavoritesAdapter extends BaseAdapter {
 	private Map<String, Integer> ids;
 	private Map<Integer, LinearLayout> layouts;
 	private Map<Integer, View> views;
-	private List<TextView> lupdated;
+	private Map<String, TextView> mUpdated;
+
+	private String lastUpdate;
 
 	@SuppressLint("UseSparseArrays")
 	public FavoritesAdapter(final MainActivity activity) {
@@ -96,7 +98,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 		this.ids = new HashMap<String, Integer>();
 		this.layouts = new HashMap<Integer, LinearLayout>();
 		this.views = new HashMap<Integer, View>();
-		this.lupdated = new ArrayList<TextView>();
+		this.mUpdated = new HashMap<String, TextView>();
 	}
 
 	@Override
@@ -131,15 +133,40 @@ public final class FavoritesAdapter extends BaseAdapter {
 				final Integer stationId = station.getId();
 				final LinearLayout favoritesLayout;
 
+				TextView updatedView = null;
+
 				if (layouts.containsKey(stationId)) {
 					favoritesLayout = layouts.get(stationId);
 					convertView = views.get(stationId);
+
+					TrainViewHolder viewHolder = (TrainViewHolder) convertView.getTag();
+					updatedView = viewHolder.updatedView;
+					updatedView.setText(this.lastUpdate);
+
 				} else {
 					LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 					convertView = vi.inflate(R.layout.list_favorites_train, null);
 					favoritesLayout = (LinearLayout) convertView.findViewById(R.id.favorites_list);
 					layouts.put(stationId, favoritesLayout);
 					views.put(stationId, convertView);
+
+					TrainViewHolder holder = new TrainViewHolder();
+
+					TextView stationNameView = (TextView) convertView.findViewById(R.id.station_name_value);
+					stationNameView.setText(station.getName());
+					stationNameView.setTypeface(Typeface.DEFAULT_BOLD);
+					stationNameView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+					stationNameView.setTextColor(activity.getResources().getColor(R.color.black));
+					holder.stationNameView = stationNameView;
+
+					updatedView = (TextView) convertView.findViewById(R.id.station_updated);
+					mUpdated.put(station.getId().toString(), updatedView);
+					if (lastUpdate != null) {
+						updatedView.setText(this.lastUpdate);
+					}
+					holder.updatedView = updatedView;
+
+					convertView.setTag(holder);
 				}
 
 				convertView.setOnClickListener(new OnClickListener() {
@@ -153,18 +180,6 @@ public final class FavoritesAdapter extends BaseAdapter {
 						activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 					}
 				});
-
-				TextView textView = (TextView) convertView.findViewById(R.id.station_name_value);
-				textView.setText(station.getName());
-				textView.setTypeface(Typeface.DEFAULT_BOLD);
-				textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-				textView.setTextColor(activity.getResources().getColor(R.color.black));
-
-				TextView updated = (TextView) convertView.findViewById(R.id.station_updated);
-				lupdated.add(updated);
-				if (lastUpdate != null) {
-					updated.setText(String.valueOf(getLastUpdateInMinutes(lastUpdate)));
-				}
 
 				LinearLayout.LayoutParams paramsArrival = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
@@ -292,24 +307,26 @@ public final class FavoritesAdapter extends BaseAdapter {
 				final BusRoute busRoute = (BusRoute) object;
 				LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				convertView = vi.inflate(R.layout.list_favorites_bus, null);
-				TextView textView = (TextView) convertView.findViewById(R.id.route_id);
-				textView.setText(busRoute.getId());
-				textView.setTypeface(Typeface.DEFAULT_BOLD);
-				textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-				textView.setTextColor(activity.getResources().getColor(R.color.black));
+				TextView routeIdView = (TextView) convertView.findViewById(R.id.route_id);
+				routeIdView.setText(busRoute.getId());
+				routeIdView.setTypeface(Typeface.DEFAULT_BOLD);
+				routeIdView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+				routeIdView.setTextColor(activity.getResources().getColor(R.color.black));
 
-				TextView textView2 = (TextView) convertView.findViewById(R.id.route_name_value);
-				textView2.setText(" " + busRoute.getName());
-				textView2.setTypeface(Typeface.DEFAULT_BOLD);
-				textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-				textView2.setTextColor(activity.getResources().getColor(R.color.black));
+				TextView routeNameView = (TextView) convertView.findViewById(R.id.route_name_value);
+				routeNameView.setText(" " + busRoute.getName());
+				routeNameView.setTypeface(Typeface.DEFAULT_BOLD);
+				routeNameView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+				routeNameView.setTextColor(activity.getResources().getColor(R.color.black));
 
 				final LinearLayout favoritesLayout = (LinearLayout) convertView.findViewById(R.id.favorites_list);
 
 				TextView updated = (TextView) convertView.findViewById(R.id.station_updated);
-				lupdated.add(updated);
+				if (!mUpdated.containsKey(busRoute.getId())) {
+					mUpdated.put(busRoute.getId(), updated);
+				}
 				if (lastUpdate != null) {
-					updated.setText(String.valueOf(getLastUpdateInMinutes(lastUpdate)));
+					updated.setText(this.lastUpdate);
 				}
 
 				Map<String, Map<String, List<BusArrival>>> busArrivals = arrival.getBusArrivalsMapped(busRoute.getId());
@@ -422,6 +439,11 @@ public final class FavoritesAdapter extends BaseAdapter {
 		return convertView;
 	}
 
+	static class TrainViewHolder {
+		TextView stationNameView;
+		TextView updatedView;
+	}
+
 	private final String getLastUpdateInMinutes(final Date lastUpdate) {
 		String res = null;
 		if (lastUpdate != null) {
@@ -493,8 +515,9 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 	public final void refreshUpdatedView() {
 		Date lastUpdate = ChicagoTracker.getLastTrainUpdate();
-		for (TextView updated : lupdated) {
-			updated.setText(String.valueOf(getLastUpdateInMinutes(lastUpdate)));
+		if (!String.valueOf(getLastUpdateInMinutes(lastUpdate)).equals(this.lastUpdate)) {
+			this.lastUpdate = String.valueOf(getLastUpdateInMinutes(lastUpdate));
+			this.notifyDataSetChanged();
 		}
 	}
 

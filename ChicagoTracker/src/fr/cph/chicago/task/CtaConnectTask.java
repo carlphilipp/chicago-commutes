@@ -25,6 +25,7 @@ import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.map.MultiValueMap;
 
 import android.os.AsyncTask;
+import android.util.Log;
 import android.util.SparseArray;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.CtaRequestType;
@@ -47,20 +48,22 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 	/** Tag **/
 	private static final String TAG = "CtaConnectTask";
 
+	private Object instance;
 	private Class<?> classe;
 	private CtaRequestType requestType, requestType2;
 	private MultiMap<String, String> params, params2;
 	private Xml xml;
 	private SparseArray<TrainArrival> trainArrivals;
 	private TrainData data;
-	private TrackerException trackerException;
+	private TrackerException trackerTrainException;
+	private TrackerException trackerBusException;
 	private List<BusArrival> busArrivals;
 
-	public CtaConnectTask(final Class<?> classe, final CtaRequestType requestType, final MultiMap<String, String> params,
+	public CtaConnectTask(final Object instance, final Class<?> classe, final CtaRequestType requestType, final MultiMap<String, String> params,
 			final CtaRequestType requestType2, final MultiMap<String, String> params2
 
 	) throws ParserException {
-
+		this.instance = instance;
 		this.classe = classe;
 		this.requestType = requestType;
 		this.params = params;
@@ -77,6 +80,8 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 
 	@Override
 	protected final Boolean doInBackground(final Void... connects) {
+		boolean trainBoolean = true;
+		boolean busBoolean = true;
 		CtaConnect connect = CtaConnect.getInstance();
 		try {
 			for (Entry<String, Object> entry : params.entrySet()) {
@@ -149,10 +154,17 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 				}
 			}
 
+		} catch (ConnectException e) {
+			trainBoolean = false;
+			this.trackerTrainException = e;
+		} catch (ParserException e) {
+			trainBoolean = false;
+			this.trackerTrainException = e;
+		}
+		try {
 			List<String> rts = new ArrayList<String>();
 			List<String> stpids = new ArrayList<String>();
 			for (Entry<String, Object> entry : params2.entrySet()) {
-
 				String key = entry.getKey();
 				StringBuilder str = new StringBuilder();
 				int i = 0;
@@ -180,11 +192,13 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 				this.busArrivals.addAll(xml.parseBusArrivals(xmlResult));
 			}
 		} catch (ConnectException e) {
-			this.trackerException = e;
+			busBoolean = false;
+			this.trackerBusException = e;
 		} catch (ParserException e) {
-			this.trackerException = e;
+			busBoolean = false;
+			this.trackerBusException = e;
 		}
-		return true;
+		return trainBoolean || busBoolean;
 	}
 
 	@Override
@@ -195,14 +209,16 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 	@Override
 	protected final void onPostExecute(final Boolean success) {
 		try {
-			if (trackerException == null) {
-				classe.getMethod("reloadData", SparseArray.class, List.class).invoke(null, this.trainArrivals, this.busArrivals);
+			if (success) {
+				classe.getMethod("reloadData", SparseArray.class, List.class).invoke(instance, this.trainArrivals, this.busArrivals);
 			} else {
 				// call static function
-				classe.getMethod("displayError", TrackerException.class).invoke(null, trackerException);
+				TrackerException ex = trackerBusException == null ? trackerTrainException : trackerBusException;
+				Log.e(TAG, ex.getMessage(), ex);
+				classe.getMethod("displayError", TrackerException.class).invoke(null, ex);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			Log.e(TAG, e.getMessage(), e);
 		}
 		super.onPostExecute(success);
 	}

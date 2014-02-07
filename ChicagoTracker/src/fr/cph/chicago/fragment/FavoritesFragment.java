@@ -22,9 +22,6 @@ package fr.cph.chicago.fragment;
 
 import java.util.List;
 
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
-
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.AsyncTask;
@@ -35,7 +32,6 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -43,14 +39,9 @@ import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.FavoritesAdapter;
-import fr.cph.chicago.connection.CtaRequestType;
-import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
-import fr.cph.chicago.task.CtaConnectTask;
-import fr.cph.chicago.util.Util;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -68,11 +59,7 @@ public class FavoritesFragment extends Fragment {
 
 	private static FavoritesAdapter ada;
 
-	private Menu menu;
-
 	private RefreshTask refreshTimingTask;
-
-	private boolean firstLoad = true;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -91,6 +78,7 @@ public class FavoritesFragment extends Fragment {
 
 		if (ada == null) {
 			ada = new FavoritesAdapter(mActivity);
+			ada.setArrivals(ChicagoTracker.getTrainArrivals(), ChicagoTracker.getBusArrivals());
 		}
 		ListView listView = (ListView) rootView.findViewById(R.id.favorites_list);
 		listView.setAdapter(ada);
@@ -98,54 +86,26 @@ public class FavoritesFragment extends Fragment {
 		// Force onCreateOptionsMenu being called
 		setHasOptionsMenu(true);
 
-		refreshTimingTask = (RefreshTask) new RefreshTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		startRefreshTask();
 
 		return rootView;
 	}
 
 	@Override
 	public final void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
-		this.menu = menu;
-		try {
-			loadData();
-		} catch (ParserException e) {
-			ChicagoTracker.displayError(mActivity, e);
-		}
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
-	public final void loadData() throws ParserException {
-		if (firstLoad && menu.size() > 1) {
-			MenuItem menuItem = menu.getItem(1);
-			menuItem.setActionView(R.layout.progressbar);
-			menuItem.expandActionView();
-
-			MultiMap<String, String> params = new MultiValueMap<String, String>();
-			List<Integer> favorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
-			for (Integer fav : favorites) {
-				params.put("mapid", String.valueOf(fav));
-			}
-
-			MultiMap<String, String> params2 = new MultiValueMap<String, String>();
-			List<String> busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
-			for (String str : busFavorites) {
-				String[] fav = Util.decodeBusFavorite(str);
-				params2.put("rt", fav[0]);
-				params2.put("stpid", fav[1]);
-			}
-
-			CtaConnectTask task = new CtaConnectTask(FavoritesFragment.class, CtaRequestType.TRAIN_ARRIVALS, params, CtaRequestType.BUS_ARRIVALS,
-					params2);
-			task.execute((Void) null);
-			firstLoad = false;
-		}
+	private void startRefreshTask() {
+		refreshTimingTask = (RefreshTask) new RefreshTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		ada.refreshUpdatedView();
 	}
 
 	private class RefreshTask extends AsyncTask<Void, Void, Void> {
 
 		@Override
-		protected final void onProgressUpdate(final Void... values) {
-			super.onProgressUpdate(values);
+		protected final void onProgressUpdate(Void... values) {
+			super.onProgressUpdate();
 			ada.refreshUpdatedView();
 		}
 
@@ -187,14 +147,15 @@ public class FavoritesFragment extends Fragment {
 		((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 
-	public static void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals) {
+	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals) {
+		startRefreshTask();
 		ada.setArrivals(trainArrivals, busArrivals);
 		ada.refreshUpdated();
 		ada.notifyDataSetChanged();
 		((MainActivity) mActivity).stopRefreshAnimation();
 	}
-	
-	public static final void displayError(TrackerException trackerException){
+
+	public static final void displayError(TrackerException trackerException) {
 		ChicagoTracker.displayError(mActivity, trackerException);
 	}
 

@@ -193,7 +193,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			}
 			CtaConnectTask task;
 			try {
-				task = new CtaConnectTask(FavoritesFragment.class, CtaRequestType.TRAIN_ARRIVALS, params, CtaRequestType.BUS_ARRIVALS, params2);
+				task = new CtaConnectTask(favoritesFragment, FavoritesFragment.class, CtaRequestType.TRAIN_ARRIVALS, params, CtaRequestType.BUS_ARRIVALS, params2);
 				task.execute((Void) null);
 			} catch (ParserException e) {
 				ChicagoTracker.displayError(this, e);

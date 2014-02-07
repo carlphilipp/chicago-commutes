@@ -16,6 +16,12 @@
 
 package fr.cph.chicago.activity;
 
+import java.util.Calendar;
+import java.util.List;
+
+import org.apache.commons.collections4.MultiMap;
+import org.apache.commons.collections4.map.MultiValueMap;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
@@ -24,15 +30,23 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.SparseArray;
 import android.view.View;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
+import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
+import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.data.TrainData;
+import fr.cph.chicago.entity.BusArrival;
+import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
+import fr.cph.chicago.task.CtaConnectTask;
+import fr.cph.chicago.util.Util;
 
 /**
  * This class represents the base activity of the app
@@ -59,7 +73,7 @@ public class BaseActivity extends Activity {
 			showProgress(true, null);
 			new LoadData().execute();
 		} else {
-			loadHome();
+			reloadData(null, null);
 		}
 	}
 
@@ -74,35 +88,35 @@ public class BaseActivity extends Activity {
 		private BusData busData;
 		/** Train data **/
 		private TrainData trainData;
-		/** Tracker exception **/
-		private TrackerException exceptionToBeThrown;
 
 		@Override
-		protected Void doInBackground(final Void... params) {
+		protected final Void doInBackground(final Void... params) {
+
+			// Load local CSV
+			this.trainData = new TrainData();
+			this.trainData.read();
+
+			// Load bus API data
 			try {
 				this.busData = BusData.getInstance();
 				this.busData.read();
-				this.trainData = new TrainData();
-				this.trainData.read();
 			} catch (ParserException e) {
-				this.exceptionToBeThrown = e;
+				Log.e(TAG, e.getMessage(), e);
 			} catch (ConnectException e) {
-				this.exceptionToBeThrown = e;
+				Log.e(TAG, e.getMessage(), e);
 			}
 			return null;
 		}
 
 		@Override
-		protected void onPostExecute(final Void result) {
-			if (exceptionToBeThrown == null) {
-				DataHolder dataHolder = DataHolder.getInstance();
-				dataHolder.setBusData(busData);
-				dataHolder.setTrainData(trainData);
-
-				// Load home when finished
-				loadHome();
-			} else {
-				loadError(exceptionToBeThrown);
+		protected final void onPostExecute(final Void result) {
+			DataHolder dataHolder = DataHolder.getInstance();
+			dataHolder.setBusData(busData);
+			dataHolder.setTrainData(trainData);
+			try {
+				loadData();
+			} catch (ParserException e) {
+				displayError(e);
 			}
 		}
 	}
@@ -132,24 +146,43 @@ public class BaseActivity extends Activity {
 	}
 
 	/**
-	 * Load home
+	 * Load error
 	 * 
 	 */
-	private final void loadHome() {
+	private final void displayError(final TrackerException exceptionToBeThrown) {
+		showProgress(false, null);
+		ChicagoTracker.displayError(this, exceptionToBeThrown);
+		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+	}
+
+	public final void loadData() throws ParserException {
+		MultiMap<String, String> params = new MultiValueMap<String, String>();
+		List<Integer> favorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
+		for (Integer fav : favorites) {
+			params.put("mapid", String.valueOf(fav));
+		}
+
+		MultiMap<String, String> params2 = new MultiValueMap<String, String>();
+		List<String> busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+		for (String str : busFavorites) {
+			String[] fav = Util.decodeBusFavorite(str);
+			params2.put("rt", fav[0]);
+			params2.put("stpid", fav[1]);
+		}
+
+		CtaConnectTask task = new CtaConnectTask(this, BaseActivity.class, CtaRequestType.TRAIN_ARRIVALS, params, CtaRequestType.BUS_ARRIVALS,
+				params2);
+		task.execute((Void) null);
+	}
+
+	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals) {
+		ChicagoTracker.setBusArrivals(busArrivals);
+		ChicagoTracker.setTrainArrivals(trainArrivals);
+		ChicagoTracker.modifyLastUpdate(Calendar.getInstance().getTime());
 		Intent intent = new Intent(this, MainActivity.class);
 		showProgress(false, null);
 		finish();
 		startActivity(intent);
-		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-	}
-	
-	/**
-	 * Load error
-	 * 
-	 */
-	private final void loadError(final TrackerException exceptionToBeThrown) {
-		showProgress(false, null);
-		ChicagoTracker.displayError(this, exceptionToBeThrown);
 		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 	}
 }
