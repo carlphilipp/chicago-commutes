@@ -175,6 +175,10 @@ public class TrainData {
 		}
 	}
 
+	public final Map<TrainLine, List<Station>> getAllStations() {
+		return stationsOrderByLineMap;
+	}
+
 	public final List<Station> getStationsForLine(final TrainLine line) {
 		List<Station> res = stationsOrderByLineMap.get(line);
 		return res;

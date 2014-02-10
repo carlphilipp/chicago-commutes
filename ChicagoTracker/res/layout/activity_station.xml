@@ -63,6 +63,7 @@
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_toRightOf="@+id/activity_station_map_image"
+                    android:background="@drawable/any_selector"
                     android:clickable="true"
                     android:contentDescription="@string/station_activity_google_map_link_desc" >
                 </ImageView>
@@ -72,6 +73,7 @@
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_toRightOf="@+id/activity_station_map_image"
+                    android:background="@drawable/any_selector"
                     android:contentDescription="@string/station_activity_google_map_link_desc" >
                 </ImageView>
 
@@ -80,6 +82,7 @@
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_toRightOf="@+id/activity_station_map_direction"
+                    android:background="@drawable/any_selector"
                     android:contentDescription="@string/station_activity_google_map_link_desc"
                     android:src="@drawable/ic_save_disabled" >
                 </ImageView>

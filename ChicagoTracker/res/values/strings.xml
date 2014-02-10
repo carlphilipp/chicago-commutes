@@ -19,7 +19,7 @@
 <resources>
 
     <string name="empty_string">&#160;</string>
-    <string name="app_name">Train Tracker Chicago</string>
+    <string name="app_name">Chicago Tracker</string>
     <string name="favorites">Favorites</string>
     <string name="train">Train</string>
     <string name="bus">Bus</string>
@@ -57,5 +57,9 @@
     <!-- Error -->
     <string name="error_desc">Error</string>
     <string name="error_retry">Retry</string>
+    
+     <!-- Search -->
+     <string name="search_title">Search</string>
+     <string name="search_hint">Search train stations or bus lines</string>
 
 </resources>

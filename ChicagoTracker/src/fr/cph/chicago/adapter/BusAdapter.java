@@ -119,10 +119,19 @@ public final class BusAdapter extends BaseAdapter {
 				}
 			});
 		} else {
-			ViewHolder viewHolder = (ViewHolder) convertView.getTag();
-			routeNameView = viewHolder.routeNameView;
-			routeNumberView = viewHolder.routeNumberView;
-			detailsLayout = viewHolder.detailsLayout;
+			final ViewHolder holder = (ViewHolder) convertView.getTag();
+			routeNameView = holder.routeNameView;
+			routeNumberView = holder.routeNumberView;
+			detailsLayout = holder.detailsLayout;
+			
+			convertView.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					holder.detailsLayout.setVisibility(LinearLayout.VISIBLE);
+					activity.startRefreshAnimation();
+					new DirectionAsyncTask().execute(route, holder.detailsLayout);
+				}
+			});
 		}
 		
 		routeNameView.setText(route.getName());

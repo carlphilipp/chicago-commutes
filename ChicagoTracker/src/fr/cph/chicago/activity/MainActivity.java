@@ -17,22 +17,24 @@
 package fr.cph.chicago.activity;
 
 import java.util.List;
-import android.widget.FrameLayout;
 
 import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.map.MultiValueMap;
-import org.xmlpull.v1.XmlPullParserException;
 
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.FrameLayout;
+import android.widget.SearchView;
 import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
@@ -46,7 +48,7 @@ import fr.cph.chicago.fragment.TrainFragment;
 import fr.cph.chicago.task.CtaConnectTask;
 import fr.cph.chicago.util.Util;
 
-;
+
 
 public class MainActivity extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
@@ -72,14 +74,13 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
-		
+
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_main);
-		
+
 		ChicagoTracker.container = (FrameLayout) findViewById(R.id.container);
 		ChicagoTracker.container.getForeground().setAlpha(0);
-		
 
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
 		mTitle = getTitle();
@@ -159,6 +160,11 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				getMenuInflater().inflate(R.menu.global, menu);
 			} else {
 				getMenuInflater().inflate(R.menu.main, menu);
+
+				// Associate searchable configuration with the SearchView
+				SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+				SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+				searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 			}
 			restoreActionBar();
 			return true;
@@ -193,7 +199,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			}
 			CtaConnectTask task;
 			try {
-				task = new CtaConnectTask(favoritesFragment, FavoritesFragment.class, CtaRequestType.TRAIN_ARRIVALS, params, CtaRequestType.BUS_ARRIVALS, params2);
+				task = new CtaConnectTask(favoritesFragment, FavoritesFragment.class, CtaRequestType.TRAIN_ARRIVALS, params,
+						CtaRequestType.BUS_ARRIVALS, params2);
 				task.execute((Void) null);
 			} catch (ParserException e) {
 				ChicagoTracker.displayError(this, e);
@@ -202,6 +209,9 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			Toast.makeText(this, "Refresh...!", Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.action_search:
+			// Intent intent = new Intent(this, SearchActivity.class);
+			// startActivity(intent);
+			// startSearch("", false, null, false);
 			Toast.makeText(this, "Search... !", Toast.LENGTH_SHORT).show();
 			return true;
 		}
@@ -223,7 +233,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 					}).setNegativeButton("No", null).show();
 		}
 	}
-	
+
 	public final void startRefreshAnimation() {
 		if (menu != null) {
 			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);

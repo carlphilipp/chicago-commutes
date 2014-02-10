@@ -40,7 +40,7 @@
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/error_desc"
                 android:padding="10dp"
-                android:src="@drawable/ic_launcher_web" />
+                android:src="@drawable/logo_1" />
 
             <TextView
                 android:id="@+id/error_message"

@@ -13,7 +13,9 @@
   distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
-  limitations under the License.-->
+  limitations under the License.
+-->
+
 
 <!-- Scroll view wrapping the layout to allow to scroll -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -59,6 +61,7 @@
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_toRightOf="@+id/activity_bus_map_image"
+                    android:background="@drawable/any_selector"
                     android:contentDescription="@string/bus_activity_google_map_link_desc" >
                 </ImageView>
 
@@ -67,6 +70,7 @@
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_toRightOf="@+id/activity_bus_map_image"
+                    android:background="@drawable/any_selector"
                     android:contentDescription="@string/bus_activity_google_map_link_desc" >
                 </ImageView>
 
@@ -75,6 +79,7 @@
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_toRightOf="@+id/activity_bus_map_direction"
+                    android:background="@drawable/any_selector"
                     android:contentDescription="@string/bus_activity_google_map_link_desc"
                     android:src="@drawable/ic_save_disabled" >
                 </ImageView>
@@ -92,9 +97,9 @@
                 android:id="@+id/activity_bus_streetview_image"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/bus_activity_street_view"
                 android:contentDescription="@string/bus_activity_google_map_link_desc"
-                android:scaleType="centerCrop" >
+                android:scaleType="centerCrop"
+                android:text="@string/bus_activity_street_view" >
             </ImageView>
 
             <TextView

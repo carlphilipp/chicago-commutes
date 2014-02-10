@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="fr.cph.chicago"
-    android:versionCode="5"
-    android:versionName="5" >
+    android:versionCode="6"
+    android:versionName="6" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -14,7 +14,7 @@
     <application
         android:name="fr.cph.chicago.ChicagoTracker"
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/logo_1"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
@@ -31,6 +31,9 @@
             android:name="fr.cph.chicago.activity.MainActivity"
             android:alwaysRetainTaskState="true"
             android:label="@string/app_name" >
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value="fr.cph.chicago.activity.SearchActivity" />
         </activity>
         <activity
             android:name="fr.cph.chicago.activity.StationActivity"
@@ -58,6 +61,17 @@
         <activity
             android:name="fr.cph.chicago.activity.ErrorActivity"
             android:label="@string/bus_bound_activity" >
+        </activity>
+        <activity
+            android:name="fr.cph.chicago.activity.SearchActivity"
+            android:label="@string/search_title"
+            android:launchMode="singleTop" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
         </activity>
     </application>
 

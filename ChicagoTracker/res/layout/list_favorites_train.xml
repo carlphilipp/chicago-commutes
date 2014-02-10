@@ -19,6 +19,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/any_selector"
     android:paddingBottom="@+dimen/activity_train_line_padding_bottom"
     android:paddingLeft="@+dimen/activity_train_line_padding_left"
     android:paddingRight="@+dimen/activity_train_line_padding_right"

@@ -25,12 +25,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils.TruncateAt;
 import android.util.SparseArray;
@@ -116,6 +117,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 		return position;
 	}
 
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	@Override
 	public final View getView(final int position, View convertView, final ViewGroup parent) {
 
@@ -337,6 +339,10 @@ public final class FavoritesAdapter extends BaseAdapter {
 						llh.setLayoutParams(paramsLayout);
 						llh.setOrientation(LinearLayout.HORIZONTAL);
 						llh.setPadding(line1PaddingColor, stopsPaddingTop, 0, 0);
+						
+						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+							llh.setBackground(context.getResources().getDrawable(R.drawable.any_selector));
+						}
 
 						TextView tlView = new TextView(context);
 						tlView.setBackgroundColor(context.getResources().getColor(R.color.black));
