@@ -68,4 +68,17 @@
         android:orientation="horizontal" >
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/loading_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/train_bus_type"
+        android:paddingLeft="30dp"
+        android:paddingTop="5dp"
+        android:text="Loading..."
+        android:textColor="@color/black"
+        android:textIsSelectable="false"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
 </RelativeLayout>

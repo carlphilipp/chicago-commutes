@@ -31,10 +31,11 @@
         android:orderInCategory="200"
         android:showAsAction="ifRoom"
         android:title="@string/action_refresh"/>
+    <!--  
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="300"
         android:showAsAction="never"
         android:title="@string/action_settings"/>
-
+	-->
 </menu>

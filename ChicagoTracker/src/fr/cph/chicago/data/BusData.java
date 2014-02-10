@@ -58,6 +58,10 @@ public class BusData {
 		return routes;
 	}
 
+	public List<BusRoute> getRoutes() {
+		return routes;
+	}
+
 	public final int getRouteSize() {
 		return routes.size();
 	}

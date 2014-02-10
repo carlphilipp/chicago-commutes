@@ -28,7 +28,6 @@ import android.app.FragmentManager;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
@@ -47,8 +46,6 @@ import fr.cph.chicago.fragment.NavigationDrawerFragment;
 import fr.cph.chicago.fragment.TrainFragment;
 import fr.cph.chicago.task.CtaConnectTask;
 import fr.cph.chicago.util.Util;
-
-
 
 public class MainActivity extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
@@ -160,12 +157,12 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				getMenuInflater().inflate(R.menu.global, menu);
 			} else {
 				getMenuInflater().inflate(R.menu.main, menu);
-
-				// Associate searchable configuration with the SearchView
-				SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-				SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-				searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 			}
+			// Associate searchable configuration with the SearchView
+			SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+			SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+			searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
 			restoreActionBar();
 			return true;
 		}
@@ -178,8 +175,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		switch (item.getItemId()) {
-		case R.id.action_settings:
-			return true;
+		// case R.id.action_settings:
+		// return true;
 		case R.id.action_refresh:
 			MenuItem menuItem = item;
 			menuItem.setActionView(R.layout.progressbar);
@@ -209,10 +206,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			Toast.makeText(this, "Refresh...!", Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.action_search:
-			// Intent intent = new Intent(this, SearchActivity.class);
-			// startActivity(intent);
-			// startSearch("", false, null, false);
-			Toast.makeText(this, "Search... !", Toast.LENGTH_SHORT).show();
+			// InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+			// imm.hideSoftInputFromWindow(mNavigationDrawerFragment.getView().getWindowToken(), 0);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

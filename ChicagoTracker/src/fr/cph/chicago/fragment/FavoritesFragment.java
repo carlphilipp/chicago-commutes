@@ -32,6 +32,7 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -90,10 +91,11 @@ public class FavoritesFragment extends Fragment {
 
 		return rootView;
 	}
-
+	
 	@Override
-	public final void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
-		super.onCreateOptionsMenu(menu, inflater);
+	public final boolean onOptionsItemSelected(final MenuItem item) {
+		
+		return super.onOptionsItemSelected(item);
 	}
 
 	private void startRefreshTask() {

@@ -14,9 +14,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -26,6 +28,7 @@ import fr.cph.chicago.adapter.SearchAdapter;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
+import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
@@ -38,7 +41,9 @@ public class SearchActivity extends ListActivity {
 	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_search);
-		ada = new SearchAdapter(this);
+		FrameLayout container = (FrameLayout) findViewById(R.id.container);
+		container.getForeground().setAlpha(0);
+		ada = new SearchAdapter(this, container);
 		handleIntent(getIntent());
 		setListAdapter(ada);
 	}
@@ -62,26 +67,54 @@ public class SearchActivity extends ListActivity {
 	private void handleIntent(Intent intent) {
 		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 			String query = intent.getStringExtra(SearchManager.QUERY);
-			Toast.makeText(this.getBaseContext(), query, Toast.LENGTH_LONG).show();
 
 			DataHolder dataHolder = DataHolder.getInstance();
 			BusData busData = dataHolder.getBusData();
 			TrainData trainData = dataHolder.getTrainData();
 
-			List<Station> found = new ArrayList<Station>();
+			List<Station> foundStations = new ArrayList<Station>();
 
 			for (Entry<TrainLine, List<Station>> e : trainData.getAllStations().entrySet()) {
 				for (Station station : e.getValue()) {
 					boolean res = StringUtils.containsIgnoreCase(station.getName(), query);
 					if (res) {
-						if(!found.contains(station)){
-							found.add(station);
+						if(!foundStations.contains(station)){
+							foundStations.add(station);
 						}
 					}
 				}
 			}
-			ada.setTrains(found);
+			
+			List<BusRoute> foundBusRoutes = new ArrayList<BusRoute>();
+			
+			for(BusRoute busRoute : busData.getRoutes()){
+				boolean res = StringUtils.containsIgnoreCase(busRoute.getId(), query) || StringUtils.containsIgnoreCase(busRoute.getName(), query);
+				if (res) {
+					if(!foundBusRoutes.contains(busRoute)){
+						foundBusRoutes.add(busRoute);
+					}
+				}
+			}
+			
+			
+			ada.updateData(foundStations, foundBusRoutes);
 			ada.notifyDataSetChanged();
+		}
+	}
+	
+	public final void startRefreshAnimation() {
+		if (menu != null) {
+			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+			refreshMenuItem.setActionView(R.layout.progressbar);
+			refreshMenuItem.expandActionView();
+		}
+	}
+
+	public final void stopRefreshAnimation() {
+		if (menu != null) {
+			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+			refreshMenuItem.collapseActionView();
+			refreshMenuItem.setActionView(null);
 		}
 	}
 }

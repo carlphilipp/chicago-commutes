@@ -263,7 +263,7 @@ public class StationActivity extends Activity {
 		super.onCreateOptionsMenu(menu);
 		this.menu = menu;
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.main, menu);
+		inflater.inflate(R.menu.main_no_search, menu);
 
 		MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
 		refreshMenuItem.setActionView(R.layout.progressbar);
