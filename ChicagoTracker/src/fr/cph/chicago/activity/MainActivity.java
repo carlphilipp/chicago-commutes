@@ -32,6 +32,7 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -84,6 +85,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		// Set up the drawer.
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout));
 
+		// Preventing keyboard from moving background when showing up
+		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 	}
 
 	@Override
@@ -162,7 +165,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 			SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
 			searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-
+			
 			restoreActionBar();
 			return true;
 		}
@@ -208,6 +211,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		case R.id.action_search:
 			// InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 			// imm.hideSoftInputFromWindow(mNavigationDrawerFragment.getView().getWindowToken(), 0);
+			favoritesFragment.getView().requestFocus();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

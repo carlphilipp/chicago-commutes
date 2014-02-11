@@ -149,7 +149,9 @@ public class BaseActivity extends Activity {
 	 * Load error
 	 * 
 	 */
-	private final void displayError(final TrackerException exceptionToBeThrown) {
+	public final void displayError(final TrackerException exceptionToBeThrown) {
+		DataHolder.getInstance().setTrainData(null);
+		DataHolder.getInstance().setBusData(null);
 		showProgress(false, null);
 		ChicagoTracker.displayError(this, exceptionToBeThrown);
 		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);

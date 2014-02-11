@@ -13,17 +13,20 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/loading_layout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:layout_gravity="center"
-    android:background="@drawable/station_selector"
     android:focusable="false"
     android:focusableInTouchMode="false"
-    android:scaleType="centerCrop"
     android:visibility="gone" >
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:contentDescription="derp"
+        android:scaleType="fitXY"
+        android:src="@drawable/skyline" />
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -31,19 +34,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_gravity="center_vertical"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="190dp"
+        android:layout_marginTop="50dp"
         android:focusable="false"
         android:focusableInTouchMode="false" />
 
     <TextView
-        android:id="@+id/login_status_message"
+        android:id="@+id/loadingView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/progressBar"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="16dp"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:fontFamily="sans-serif-light"

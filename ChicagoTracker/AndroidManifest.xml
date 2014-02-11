@@ -14,7 +14,7 @@
     <application
         android:name="fr.cph.chicago.ChicagoTracker"
         android:allowBackup="true"
-        android:icon="@drawable/logo_1"
+        android:icon="@drawable/ic_logo_1"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity

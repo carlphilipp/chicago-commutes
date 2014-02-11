@@ -30,9 +30,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -91,39 +88,16 @@ public class FavoritesFragment extends Fragment {
 
 		return rootView;
 	}
-	
-	@Override
-	public final boolean onOptionsItemSelected(final MenuItem item) {
-		
-		return super.onOptionsItemSelected(item);
-	}
 
 	private void startRefreshTask() {
 		refreshTimingTask = (RefreshTask) new RefreshTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		ada.refreshUpdatedView();
 	}
 
-	private class RefreshTask extends AsyncTask<Void, Void, Void> {
-
-		@Override
-		protected final void onProgressUpdate(Void... values) {
-			super.onProgressUpdate();
-			ada.refreshUpdatedView();
-		}
-
-		@Override
-		protected final Void doInBackground(final Void... params) {
-			while (!this.isCancelled()) {
-				Log.v(TAG, "Updated of time " + Thread.currentThread().getId());
-				try {
-					publishProgress();
-					Thread.sleep(5000);
-				} catch (InterruptedException e) {
-					Log.v(TAG, "Stopping thread. Normal Behavior");
-				}
-			}
-			return null;
-		}
+	@Override
+	public final void onPause() {
+		super.onPause();
+		refreshTimingTask.cancel(true);
 	}
 
 	@Override
@@ -150,7 +124,8 @@ public class FavoritesFragment extends Fragment {
 	}
 
 	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals) {
-		startRefreshTask();
+		// startRefreshTask();
+		ada.refreshUpdatedView();
 		ada.setArrivals(trainArrivals, busArrivals);
 		ada.refreshUpdated();
 		ada.notifyDataSetChanged();
@@ -163,5 +138,28 @@ public class FavoritesFragment extends Fragment {
 
 	public static final void updateFavorites() {
 		ada.setFavorites();
+	}
+
+	private class RefreshTask extends AsyncTask<Void, Void, Void> {
+
+		@Override
+		protected final void onProgressUpdate(Void... values) {
+			super.onProgressUpdate();
+			ada.refreshUpdatedView();
+		}
+
+		@Override
+		protected final Void doInBackground(final Void... params) {
+			while (!this.isCancelled()) {
+				Log.v(TAG, "Updated of time " + Thread.currentThread().getId());
+				try {
+					publishProgress();
+					Thread.sleep(5000);
+				} catch (InterruptedException e) {
+					Log.v(TAG, "Stopping thread. Normal Behavior");
+				}
+			}
+			return null;
+		}
 	}
 }

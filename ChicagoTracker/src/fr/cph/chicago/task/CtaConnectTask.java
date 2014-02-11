@@ -215,7 +215,7 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 				// call static function
 				TrackerException ex = trackerBusException == null ? trackerTrainException : trackerBusException;
 				Log.e(TAG, ex.getMessage(), ex);
-				classe.getMethod("displayError", TrackerException.class).invoke(null, ex);
+				classe.getMethod("displayError", TrackerException.class).invoke(instance, ex);
 			}
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage(), e);

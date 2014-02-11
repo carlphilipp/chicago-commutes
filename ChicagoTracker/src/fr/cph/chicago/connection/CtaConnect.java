@@ -28,6 +28,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
 
@@ -87,14 +88,17 @@ public class CtaConnect {
 				c = in.read();
 			}
 			toreturn = build.toString();
+		} catch (ConnectTimeoutException e) {
+			Log.e(TAG, e.getMessage(), e);
+			throw new ConnectException("Connect exception", e);
 		} catch (UnknownHostException e) {
-			e.printStackTrace();
+			Log.e(TAG, e.getMessage(), e);
 			throw new ConnectException("Connect exception", e);
 		} catch (ClientProtocolException e) {
-			e.printStackTrace();
+			Log.e(TAG, e.getMessage(), e);
 			throw new ConnectException("Connect exception", e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			Log.e(TAG, e.getMessage(), e);
 			throw new ConnectException("Connect exception", e);
 		}
 		return toreturn;
