@@ -211,7 +211,6 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		case R.id.action_search:
 			// InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 			// imm.hideSoftInputFromWindow(mNavigationDrawerFragment.getView().getWindowToken(), 0);
-			favoritesFragment.getView().requestFocus();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

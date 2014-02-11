@@ -2,9 +2,7 @@ package fr.cph.chicago.activity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -15,14 +13,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.AdapterView;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.Toast;
-import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.adapter.SearchAdapter;
 import fr.cph.chicago.data.BusData;
@@ -46,6 +39,9 @@ public class SearchActivity extends ListActivity {
 		ada = new SearchAdapter(this, container);
 		handleIntent(getIntent());
 		setListAdapter(ada);
+
+		// Preventing keyboard from moving background when showing up
+		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 	}
 
 	@Override
@@ -78,30 +74,29 @@ public class SearchActivity extends ListActivity {
 				for (Station station : e.getValue()) {
 					boolean res = StringUtils.containsIgnoreCase(station.getName(), query);
 					if (res) {
-						if(!foundStations.contains(station)){
+						if (!foundStations.contains(station)) {
 							foundStations.add(station);
 						}
 					}
 				}
 			}
-			
+
 			List<BusRoute> foundBusRoutes = new ArrayList<BusRoute>();
-			
-			for(BusRoute busRoute : busData.getRoutes()){
+
+			for (BusRoute busRoute : busData.getRoutes()) {
 				boolean res = StringUtils.containsIgnoreCase(busRoute.getId(), query) || StringUtils.containsIgnoreCase(busRoute.getName(), query);
 				if (res) {
-					if(!foundBusRoutes.contains(busRoute)){
+					if (!foundBusRoutes.contains(busRoute)) {
 						foundBusRoutes.add(busRoute);
 					}
 				}
 			}
-			
-			
+
 			ada.updateData(foundStations, foundBusRoutes);
 			ada.notifyDataSetChanged();
 		}
 	}
-	
+
 	public final void startRefreshAnimation() {
 		if (menu != null) {
 			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
