@@ -125,9 +125,9 @@ public class FavoritesFragment extends Fragment {
 
 	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals) {
 		// startRefreshTask();
-		ada.refreshUpdatedView();
 		ada.setArrivals(trainArrivals, busArrivals);
 		ada.refreshUpdated();
+		ada.refreshUpdatedView();
 		ada.notifyDataSetChanged();
 		((MainActivity) mActivity).stopRefreshAnimation();
 	}
