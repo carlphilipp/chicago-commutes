@@ -21,6 +21,8 @@ import java.util.List;
 import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.map.MultiValueMap;
 
+import com.google.android.gms.common.GooglePlayServicesUtil;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -30,6 +32,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -44,6 +47,7 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.fragment.BusFragment;
 import fr.cph.chicago.fragment.FavoritesFragment;
 import fr.cph.chicago.fragment.NavigationDrawerFragment;
+import fr.cph.chicago.fragment.NearbyFragment;
 import fr.cph.chicago.fragment.TrainFragment;
 import fr.cph.chicago.task.CtaConnectTask;
 import fr.cph.chicago.util.Util;
@@ -63,6 +67,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	private TrainFragment trainFragment;
 
 	private BusFragment busFragment;
+	
+	private NearbyFragment nearbyFragment;
 
 	private CharSequence mTitle;
 
@@ -114,7 +120,10 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			fragmentManager.beginTransaction().replace(R.id.container, busFragment).commit();
 			break;
 		case 3:
-			Toast.makeText(this, "Not implemented yet", Toast.LENGTH_SHORT).show();
+			if (nearbyFragment == null) {
+				nearbyFragment = NearbyFragment.newInstance(position + 1);
+			}
+			fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
 			break;
 		case 4:
 			Toast.makeText(this, "Not implemented yet", Toast.LENGTH_SHORT).show();

@@ -16,7 +16,7 @@
 
 package fr.cph.chicago.entity;
 
-public final class BusStop {
+public final class BusStop implements Comparable<BusStop> {
 	private Integer id;
 	private String name;
 	private Position position;
@@ -48,6 +48,13 @@ public final class BusStop {
 	@Override
 	public final String toString() {
 		return "[id:" + getId() + ";name:" + getName() + ";position:" + getPosition() + "]";
+	}
+
+	@Override
+	public int compareTo(BusStop another) {
+		Position position = another.getPosition();
+		int latitude = getPosition().getLatitude().compareTo(position.getLatitude());
+		return latitude == 0 ? getPosition().getLongitude().compareTo(position.getLongitude()) : latitude;
 	}
 
 }

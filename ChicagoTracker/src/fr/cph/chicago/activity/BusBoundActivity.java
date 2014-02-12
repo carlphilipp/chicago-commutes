@@ -109,7 +109,7 @@ public class BusBoundActivity extends ListActivity {
 		protected final List<BusStop> doInBackground(final Void... params) {
 			List<BusStop> lBuses = null;
 			try {
-				lBuses = DataHolder.getInstance().getBusData().readBusStop(busRouteId, bound);
+				lBuses = DataHolder.getInstance().getBusData().loadBusStop(busRouteId, bound);
 			} catch (ParserException e) {
 				this.trackerException = e;
 			} catch (ConnectException e) {

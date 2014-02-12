@@ -61,5 +61,8 @@
      <!-- Search -->
      <string name="search_title">Search</string>
      <string name="search_hint">Train Stations or Bus Lines</string>
+     
+     <!--  nearby -->
+     <string name="nearby_title">Nearby</string>
 
 </resources>

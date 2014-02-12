@@ -16,23 +16,34 @@
 
 package fr.cph.chicago.data;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.map.MultiValueMap;
 
+import android.util.Log;
+import au.com.bytecode.opencsv.CSVReader;
+import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
+import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.xml.Xml;
 
 public class BusData {
 
+	/** Tag **/
+	private static final String TAG = "BusData";
+
 	private List<BusRoute> routes;
+	private List<BusStop> stops;
 
 	private static BusData busData;
 
@@ -44,10 +55,54 @@ public class BusData {
 	}
 
 	private BusData() {
-		routes = new ArrayList<BusRoute>();
+		this.routes = new ArrayList<BusRoute>();
+		this.stops = new ArrayList<BusStop>();
 	}
 
-	public final List<BusRoute> read() throws ParserException, ConnectException {
+	public final List<BusStop> readBusStops() {
+		if (stops.size() == 0) {
+			try {
+				CSVReader reader = new CSVReader(new InputStreamReader(ChicagoTracker.getAppContext().getAssets().open("stops.txt")));
+				reader.readNext();
+				String[] row = null;
+				while ((row = reader.readNext()) != null) {
+					int locationType = Integer.valueOf(row[6]);// location_type
+					if (locationType == 0) {
+
+						Integer stopId = Integer.valueOf(row[0]); // stop_id
+						// String stopCode = TrainDirection.fromString(row[1]); // stop_code
+						String stopName = row[2]; // stop_name
+						// String stopDesc = row[3]; // stop_desc
+						Double latitude = Double.valueOf(row[4]);// stop_lat
+						Double longitude = Double.valueOf(row[5]);// stop_lon
+
+						BusStop busStop = new BusStop();
+						busStop.setId(stopId);
+						busStop.setName(stopName);
+						Position positon = new Position();
+						positon.setLatitude(latitude);
+						positon.setLongitude(longitude);
+						busStop.setPosition(positon);
+
+						stops.add(busStop);
+					}
+				}
+				reader.close();
+				order();
+			} catch (IOException e) {
+				Log.e(TAG, e.getMessage(), e);
+			}
+		}
+		return stops;
+	}
+
+	private void order() {
+		if (stops.size() != 0) {
+			Collections.sort(stops);
+		}
+	}
+
+	public final List<BusRoute> loadBusRoutes() throws ParserException, ConnectException {
 		if (routes.size() == 0) {
 			MultiMap<String, String> params = new MultiValueMap<String, String>();
 			CtaConnect connect = CtaConnect.getInstance();
@@ -81,15 +136,32 @@ public class BusData {
 		return result;
 	}
 
-	public final List<BusStop> readBusStop(final String stopId, final String bound) throws ConnectException, ParserException {
+	public final List<BusStop> loadBusStop(final String stopId, final String bound) throws ConnectException, ParserException {
 		CtaConnect connect = CtaConnect.getInstance();
-		MultiMap<String, String> params2 = new MultiValueMap<String, String>();
-		params2.put("rt", stopId);
-		params2.put("dir", bound);
+		MultiMap<String, String> param = new MultiValueMap<String, String>();
+		param.put("rt", stopId);
+		param.put("dir", bound);
 		List<BusStop> busStops = null;
-		String xmlResult = connect.connect(CtaRequestType.BUS_STOP_LIST, params2);
+		String xmlResult = connect.connect(CtaRequestType.BUS_STOP_LIST, param);
 		Xml xml = new Xml();
 		busStops = xml.parseBusBounds(xmlResult);
 		return busStops;
+	}
+
+	public final List<BusStop> readAllBusStops() {
+		return this.stops;
+	}
+
+	public final List<BusStop> readNearbyStops(Position position) {
+		List<BusStop> res = new ArrayList<BusStop>();
+		double latitude = position.getLatitude();
+		double longitude = position.getLongitude();
+		for (BusStop busStop : stops) {
+			if ((busStop.getPosition().getLatitude() + 0.014472 < latitude || busStop.getPosition().getLatitude() - 0.014472 < latitude)
+					&& (busStop.getPosition().getLongitude() + 0.014472 < longitude || busStop.getPosition().getLongitude() - 0.014472 < longitude)) {
+				res.add(busStop);
+			}
+		}
+		return res;
 	}
 }

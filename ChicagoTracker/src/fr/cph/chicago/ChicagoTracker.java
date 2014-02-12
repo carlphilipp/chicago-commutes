@@ -28,6 +28,7 @@ import android.util.SparseArray;
 import android.widget.FrameLayout;
 import fr.cph.chicago.activity.ErrorActivity;
 import fr.cph.chicago.entity.BusArrival;
+import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.exception.TrackerException;
 
@@ -40,6 +41,7 @@ public class ChicagoTracker extends Application {
 	public static final String PREFERENCE_FAVORITES_BUS = "ChicagoTrackerFavoritesBus";
 	private static SparseArray<TrainArrival> trainArrivals;
 	private static List<BusArrival> busArrivals;
+	private static List<BusStop> geoBusStops;
 
 	public static FrameLayout container;
 
@@ -83,5 +85,13 @@ public class ChicagoTracker extends Application {
 
 	public static void setBusArrivals(List<BusArrival> busArrivals) {
 		ChicagoTracker.busArrivals = busArrivals;
+	}
+
+	public static List<BusStop> getGeoBusStops() {
+		return geoBusStops;
+	}
+
+	public static void setGeoBusStops(List<BusStop> geoBusStops) {
+		ChicagoTracker.geoBusStops = geoBusStops;
 	}
 }

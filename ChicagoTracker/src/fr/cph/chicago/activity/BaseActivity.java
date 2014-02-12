@@ -27,6 +27,9 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -97,9 +100,11 @@ public class BaseActivity extends Activity {
 			this.trainData.read();
 
 			// Load bus API data
+			this.busData = BusData.getInstance();
+			this.busData.readBusStops();
+
 			try {
-				this.busData = BusData.getInstance();
-				this.busData.read();
+				this.busData.loadBusRoutes();
 			} catch (ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			} catch (ConnectException e) {

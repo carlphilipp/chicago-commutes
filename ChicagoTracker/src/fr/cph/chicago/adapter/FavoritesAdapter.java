@@ -544,7 +544,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 				stopId = params[2];
 				busRouteName = params[3];
 				List<BusStop> busStops;
-				busStops = DataHolder.getInstance().getBusData().readBusStop(busRouteId, bound);
+				busStops = DataHolder.getInstance().getBusData().loadBusStop(busRouteId, bound);
 
 				for (BusStop bus : busStops) {
 					if (String.valueOf(bus.getId()).equals(stopId)) {

@@ -27,6 +27,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
+import android.util.Log;
 import android.util.SparseArray;
 import au.com.bytecode.opencsv.CSVReader;
 import fr.cph.chicago.ChicagoTracker;
@@ -41,7 +42,7 @@ import fr.cph.chicago.entity.factory.StopFactory;
 public class TrainData {
 
 	/** Tag **/
-	private static final String TAG = "Data";
+	private static final String TAG = "TrainData";
 
 	private SparseArray<Station> stations;
 	private List<Station> stationsOrderByName;
@@ -136,7 +137,7 @@ public class TrainData {
 				reader.close();
 				order();
 			} catch (IOException e) {
-				e.printStackTrace();
+				Log.e(TAG, e.getMessage(), e);
 			}
 		}
 	}
