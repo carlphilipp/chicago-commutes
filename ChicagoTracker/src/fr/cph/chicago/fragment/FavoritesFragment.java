@@ -72,7 +72,6 @@ public class FavoritesFragment extends Fragment {
 
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-		Log.i(TAG, "onCreateView");
 		View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
 		if (ada == null) {
@@ -98,28 +97,24 @@ public class FavoritesFragment extends Fragment {
 	@Override
 	public final void onPause() {
 		super.onPause();
-		Log.i(TAG, "onPause");
 		refreshTimingTask.cancel(true);
 	}
 
 	@Override
 	public final void onStop() {
 		super.onStop();
-		Log.i(TAG, "onStop");
 		refreshTimingTask.cancel(true);
 	}
 
 	@Override
 	public final void onDestroy() {
 		super.onDestroy();
-		Log.i(TAG, "onDestroy");
 		refreshTimingTask.cancel(true);
 	}
 
 	@Override
 	public final void onResume() {
 		super.onResume();
-		Log.i(TAG, "onResume");
 		ada.setFavorites();
 		ada.notifyDataSetChanged();
 		if (refreshTimingTask.getStatus() == Status.FINISHED) {
