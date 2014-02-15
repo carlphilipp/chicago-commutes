@@ -16,7 +16,7 @@
   limitations under the License.
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="en">
 
     <string name="empty_string">&#160;</string>
     <string name="app_name">Chicago Tracker</string>

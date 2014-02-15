@@ -152,16 +152,40 @@ public class BusData {
 		return this.stops;
 	}
 
+	public final BusStop readOneBus(int id){
+		BusStop res = null;
+		for (BusStop busStop : stops) {
+			if(busStop.getId().intValue() == id){
+				res = busStop;
+				break;
+			}
+		}
+		return res;
+	}
+	
 	public final List<BusStop> readNearbyStops(Position position) {
+		
+		final double dist = 0.004472;
+		
 		List<BusStop> res = new ArrayList<BusStop>();
 		double latitude = position.getLatitude();
 		double longitude = position.getLongitude();
+
+		double latMax = latitude + dist;
+		double latMin = latitude - dist;
+		double lonMax = longitude + dist;
+		double lonMin = longitude - dist;
+
 		for (BusStop busStop : stops) {
-			if ((busStop.getPosition().getLatitude() + 0.014472 < latitude || busStop.getPosition().getLatitude() - 0.014472 < latitude)
-					&& (busStop.getPosition().getLongitude() + 0.014472 < longitude || busStop.getPosition().getLongitude() - 0.014472 < longitude)) {
+			double busLatitude = busStop.getPosition().getLatitude();
+			double busLongitude = busStop.getPosition().getLongitude();
+			if (busLatitude <= latMax && busLatitude >= latMin && busLongitude <= lonMax && busLongitude >= lonMin) {
 				res.add(busStop);
+				Log.i(TAG, busStop.toString());
 			}
+
 		}
+		Log.i(TAG, "size: " + res.size() + "");
 		return res;
 	}
 }

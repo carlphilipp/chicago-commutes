@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="fr.cph.chicago"
-    android:versionCode="7"
-    android:versionName="7" >
+    android:versionCode="8"
+    android:versionName="8" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -25,10 +25,6 @@
         android:icon="@drawable/ic_logo_1"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
-
         <activity
             android:name="fr.cph.chicago.activity.BaseActivity"
             android:alwaysRetainTaskState="true"
@@ -86,14 +82,13 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-        <activity
-            android:name="fr.cph.chicago.activity.NearbyActivity"
-            android:label="@string/nearby_title" >
-        </activity>
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyANty5Kvp86JNTLSuYEItBurlhCOIaZn0c" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>
