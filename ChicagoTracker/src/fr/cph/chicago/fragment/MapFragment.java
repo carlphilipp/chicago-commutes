@@ -1,11 +1,11 @@
 package fr.cph.chicago.fragment;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.os.Bundle;
 import android.util.FloatMath;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,8 +14,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import fr.cph.chicago.R;
+import fr.cph.chicago.activity.MainActivity;
 
 public class MapFragment extends Fragment implements OnTouchListener {
+	
+	private static final String TAG = "MapFragment";
 
 	/**
 	 * The fragment argument representing the section number for this fragment.
@@ -57,6 +60,12 @@ public class MapFragment extends Fragment implements OnTouchListener {
 
 		return rootView;
 	}
+	
+	@Override
+	public final void onAttach(final Activity activity) {
+		super.onAttach(activity);
+		((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
+	}
 
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
@@ -89,7 +98,6 @@ public class MapFragment extends Fragment implements OnTouchListener {
 				matrix.postTranslate(event.getX() - start.x, event.getY() - start.y);
 			} else if (mode == ZOOM) {
 				float newDist = spacing(event);
-				Log.d("", "newDist=" + newDist);
 				if (newDist > 5f) {
 					matrix.set(savedMatrix);
 					float scale = newDist / oldDist; // setting the scaling of the

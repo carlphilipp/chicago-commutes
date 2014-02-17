@@ -30,6 +30,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -180,7 +181,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			// Only show items in the action bar relevant to this screen
 			// if the drawer is not showing. Otherwise, let the drawer
 			// decide what to show in the action bar.
-			if (currentPosition == 1) {
+			if (currentPosition == 1 || currentPosition == 5) {
 				getMenuInflater().inflate(R.menu.global, menu);
 			} else {
 				getMenuInflater().inflate(R.menu.main, menu);
