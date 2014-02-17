@@ -43,6 +43,7 @@ import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.fragment.BusFragment;
 import fr.cph.chicago.fragment.FavoritesFragment;
+import fr.cph.chicago.fragment.MapFragment;
 import fr.cph.chicago.fragment.NavigationDrawerFragment;
 import fr.cph.chicago.fragment.NearbyFragment;
 import fr.cph.chicago.fragment.TrainFragment;
@@ -66,6 +67,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	private BusFragment busFragment;
 
 	private NearbyFragment nearbyFragment;
+
+	private MapFragment mapFragment;
 
 	private CharSequence mTitle;
 
@@ -131,6 +134,12 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		case 4:
 			Toast.makeText(this, "Not implemented yet", Toast.LENGTH_SHORT).show();
 			break;
+		case 5:
+			if (mapFragment == null) {
+				mapFragment = MapFragment.newInstance(position + 1);
+			}
+			fragmentManager.beginTransaction().replace(R.id.container, mapFragment).commit();
+			break;
 		}
 	}
 
@@ -150,6 +159,9 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			break;
 		case 5:
 			mTitle = getString(R.string.alerts);
+			break;
+		case 6:
+			mTitle = getString(R.string.map);
 			break;
 		}
 	}
@@ -232,18 +244,28 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
 	@Override
 	public final void onBackPressed() {
-		if (currentPosition != 0) {
+		if (currentPosition != 0 && currentPosition != 5) {
 			mNavigationDrawerFragment.selectItem(0);
+		} else if (currentPosition == 5) {
+			if (mapFragment.isCenteredAlready()) {
+				mNavigationDrawerFragment.selectItem(0);
+			} else {
+				mapFragment.resetImage();
+			}
 		} else {
-			new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_alert).setTitle("Exit application")
-					.setMessage("Are you sure you want to exit?").setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							finish();
-						}
-
-					}).setNegativeButton("No", null).show();
+			exitAlertDialog();
 		}
+	}
+
+	private final void exitAlertDialog() {
+		new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_alert).setTitle("Exit application")
+				.setMessage("Are you sure you want to exit?").setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						finish();
+					}
+
+				}).setNegativeButton("No", null).show();
 	}
 
 	public final void startRefreshAnimation() {
