@@ -37,6 +37,7 @@
     <dimen name="activity_station_street_map_height">100dp</dimen>
     <!-- Activity train station -->
     <dimen name="activity_train_line_M">25sp</dimen>
+    <dimen name="activity_train_station_name">18sp</dimen>
     <dimen name="activity_train_line_color">10sp</dimen>
     <dimen name="activity_train_line_padding_left">10dp</dimen>
     <dimen name="activity_train_line_padding_top">8dp</dimen>

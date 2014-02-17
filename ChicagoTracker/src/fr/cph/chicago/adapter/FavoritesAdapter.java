@@ -156,9 +156,6 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 					TextView stationNameView = (TextView) convertView.findViewById(R.id.station_name_value);
 					stationNameView.setText(station.getName());
-					stationNameView.setTypeface(Typeface.DEFAULT_BOLD);
-					stationNameView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-					stationNameView.setTextColor(activity.getResources().getColor(R.color.black));
 					holder.stationNameView = stationNameView;
 
 					updatedView = (TextView) convertView.findViewById(R.id.station_updated);
@@ -311,15 +308,9 @@ public final class FavoritesAdapter extends BaseAdapter {
 				convertView = vi.inflate(R.layout.list_favorites_bus, null);
 				TextView routeIdView = (TextView) convertView.findViewById(R.id.route_id);
 				routeIdView.setText(busRoute.getId());
-				routeIdView.setTypeface(Typeface.DEFAULT_BOLD);
-				routeIdView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-				routeIdView.setTextColor(activity.getResources().getColor(R.color.black));
 
 				TextView routeNameView = (TextView) convertView.findViewById(R.id.route_name_value);
 				routeNameView.setText(" " + busRoute.getName());
-				routeNameView.setTypeface(Typeface.DEFAULT_BOLD);
-				routeNameView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-				routeNameView.setTextColor(activity.getResources().getColor(R.color.black));
 
 				final LinearLayout favoritesLayout = (LinearLayout) convertView.findViewById(R.id.favorites_list);
 

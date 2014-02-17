@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.collections4.MultiMap;
@@ -66,10 +67,9 @@ public class BusData {
 				reader.readNext();
 				String[] row = null;
 				while ((row = reader.readNext()) != null) {
-					int locationType = Integer.valueOf(row[6]);// location_type
-					if (locationType == 0) {
-
-						Integer stopId = Integer.valueOf(row[0]); // stop_id
+					// int locationType = Integer.valueOf(row[6]);// location_type
+					Integer stopId = Integer.valueOf(row[0]); // stop_id
+					if (stopId < 30000) {
 						// String stopCode = TrainDirection.fromString(row[1]); // stop_code
 						String stopName = row[2]; // stop_name
 						// String stopDesc = row[3]; // stop_desc
@@ -85,6 +85,8 @@ public class BusData {
 						busStop.setPosition(positon);
 
 						stops.add(busStop);
+					} else {
+						break;
 					}
 				}
 				reader.close();
@@ -152,21 +154,21 @@ public class BusData {
 		return this.stops;
 	}
 
-	public final BusStop readOneBus(int id){
+	public final BusStop readOneBus(int id) {
 		BusStop res = null;
 		for (BusStop busStop : stops) {
-			if(busStop.getId().intValue() == id){
+			if (busStop.getId().intValue() == id) {
 				res = busStop;
 				break;
 			}
 		}
 		return res;
 	}
-	
+
 	public final List<BusStop> readNearbyStops(Position position) {
-		
+
 		final double dist = 0.004472;
-		
+
 		List<BusStop> res = new ArrayList<BusStop>();
 		double latitude = position.getLatitude();
 		double longitude = position.getLongitude();
@@ -181,11 +183,16 @@ public class BusData {
 			double busLongitude = busStop.getPosition().getLongitude();
 			if (busLatitude <= latMax && busLatitude >= latMin && busLongitude <= lonMax && busLongitude >= lonMin) {
 				res.add(busStop);
-				Log.i(TAG, busStop.toString());
 			}
 
 		}
-		Log.i(TAG, "size: " + res.size() + "");
+		Collections.sort(res, new Comparator<BusStop>() {
+
+			@Override
+			public int compare(BusStop lhs, BusStop rhs) {
+				return lhs.getName().compareTo(rhs.getName());
+			}
+		});
 		return res;
 	}
 }

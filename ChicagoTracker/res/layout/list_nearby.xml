@@ -69,7 +69,7 @@
     </LinearLayout>
     
     <LinearLayout
-        android:id="@+id/nearby_bus_result"
+        android:id="@+id/nearby_results"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/train_bus_type"

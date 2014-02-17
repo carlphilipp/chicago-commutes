@@ -21,8 +21,6 @@ import java.util.List;
 import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.map.MultiValueMap;
 
-import com.google.android.gms.common.GooglePlayServicesUtil;
-
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -32,7 +30,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -67,7 +64,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	private TrainFragment trainFragment;
 
 	private BusFragment busFragment;
-	
+
 	private NearbyFragment nearbyFragment;
 
 	private CharSequence mTitle;
@@ -78,7 +75,6 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
-
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_main);
@@ -97,6 +93,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
 	@Override
 	public final void onNavigationDrawerItemSelected(final int position) {
+		int oldPosition = currentPosition;
 		currentPosition = position;
 		// update the main content by replacing fragments
 		FragmentManager fragmentManager = getFragmentManager();
@@ -122,8 +119,15 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		case 3:
 			if (nearbyFragment == null) {
 				nearbyFragment = NearbyFragment.newInstance(position + 1);
+				fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
+			} else {
+				if (oldPosition == 3) {
+					fragmentManager.beginTransaction().commit();
+				} else {
+					fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
+				}
 			}
-			fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
+
 			break;
 		case 4:
 			Toast.makeText(this, "Not implemented yet", Toast.LENGTH_SHORT).show();
@@ -165,7 +169,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			// Only show items in the action bar relevant to this screen
 			// if the drawer is not showing. Otherwise, let the drawer
 			// decide what to show in the action bar.
-			if (currentPosition == 1) {
+			if (currentPosition == 1 || currentPosition == 3) {
 				getMenuInflater().inflate(R.menu.global, menu);
 			} else {
 				getMenuInflater().inflate(R.menu.main, menu);
@@ -174,7 +178,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 			SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
 			searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-			
+
 			restoreActionBar();
 			return true;
 		}
@@ -218,8 +222,6 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			Toast.makeText(this, "Refresh...!", Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.action_search:
-			// InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-			// imm.hideSoftInputFromWindow(mNavigationDrawerFragment.getView().getWindowToken(), 0);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

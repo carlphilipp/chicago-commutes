@@ -25,7 +25,7 @@
     android:paddingRight="@+dimen/activity_train_line_padding_right"
     android:paddingTop="@+dimen/activity_train_line_padding_top" >
 
-   <RelativeLayout
+    <RelativeLayout
         android:id="@+id/line1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
@@ -65,7 +65,9 @@
             android:paddingLeft="@+dimen/activity_station_stops_line1_padding_color"
             android:scrollHorizontally="true"
             android:textColor="@color/black"
-            android:textIsSelectable="false" />
+            android:textIsSelectable="false"
+            android:textSize="@+dimen/activity_train_station_name"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/station_updated"

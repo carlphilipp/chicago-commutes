@@ -60,7 +60,9 @@
             android:layout_toRightOf="@+id/station_separator"
             android:paddingLeft="@+dimen/activity_station_stops_line1_padding_color"
             android:textColor="@color/black"
-            android:textIsSelectable="false" />
+            android:textIsSelectable="false"
+            android:textSize="@+dimen/activity_train_station_name"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/route_name_value"
@@ -73,7 +75,9 @@
             android:lines="1"
             android:scrollHorizontally="true"
             android:textColor="@color/black"
-            android:textIsSelectable="false" />
+            android:textIsSelectable="false"
+            android:textSize="@+dimen/activity_train_station_name"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/station_updated"

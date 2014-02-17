@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import android.util.Log;
 import android.util.SparseArray;
 import au.com.bytecode.opencsv.CSVReader;
 import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.Stop;
@@ -265,5 +267,31 @@ public class TrainData {
 			}
 		}
 		return null;
+	}
+	
+	public final List<Station> readNearbyStation(Position position) {
+
+		final double dist = 0.004472;
+
+		List<Station> res = new ArrayList<Station>();
+		double latitude = position.getLatitude();
+		double longitude = position.getLongitude();
+
+		double latMax = latitude + dist;
+		double latMin = latitude - dist;
+		double lonMax = longitude + dist;
+		double lonMin = longitude - dist;
+
+		for (Station station : stationsOrderByName) {
+			for(Position stopPosition : station.getStopsPosition()){
+				double trainLatitude = stopPosition.getLatitude();
+				double trainLongitude = stopPosition.getLongitude();
+				if (trainLatitude <= latMax && trainLatitude >= latMin && trainLongitude <= lonMax && trainLongitude >= lonMin) {
+					res.add(station);
+					break;
+				}
+			}
+		}
+		return res;
 	}
 }

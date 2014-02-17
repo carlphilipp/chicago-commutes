@@ -29,6 +29,7 @@ public class Station implements Comparable<Station> {
 	private Integer id;
 	private String name;
 	private List<Stop> stops;
+	private List<Position> stopsPosition;
 
 	public final Integer getId() {
 		return id;
@@ -108,4 +109,13 @@ public class Station implements Comparable<Station> {
 	public final int compareTo(final Station another) {
 		return this.getName().compareTo(another.getName());
 	}
+
+	public List<Position> getStopsPosition() {
+		List<Position> positions = new ArrayList<Position>();
+		for(Stop stop : stops){
+			positions.add(stop.getPosition());
+		}
+		return positions;
+	}
+
 }

@@ -105,12 +105,4 @@ public class BusFragment extends Fragment {
 		}
 		return true;
 	}
-
-	public final void stopRefreshAnimation() {
-		if (menu != null) {
-			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-			refreshMenuItem.collapseActionView();
-			refreshMenuItem.setActionView(null);
-		}
-	}
 }

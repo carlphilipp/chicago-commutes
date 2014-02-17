@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.map.MultiValueMap;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -20,6 +22,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
@@ -27,17 +30,17 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import fr.cph.chicago.ChicagoTracker;
@@ -48,9 +51,12 @@ import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
+import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Position;
+import fr.cph.chicago.entity.Station;
+import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
@@ -66,6 +72,7 @@ public class NearbyFragment extends Fragment {
 	private View loadLayout;
 	private GoogleMap map;
 	private NearbyAdapter ada;
+	private ListView listView;
 
 	private static final LatLng CHICAGO = new LatLng(41.8819, -87.6278);
 	private static final LatLng SKOKIE = new LatLng(41.883273, -88.309474);
@@ -89,31 +96,31 @@ public class NearbyFragment extends Fragment {
 	}
 
 	@Override
+	public final void onAttach(final Activity activity) {
+		super.onAttach(activity);
+		Log.i(TAG, "onAttach");
+		mActivity = (MainActivity) activity;
+		((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
+	}
+
+	@Override
+	public final void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		Log.i(TAG, "onCreate");
+	}
+
+	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		Log.i(TAG, "onCreateView");
 		View rootView = inflater.inflate(R.layout.fragment_nearby, container, false);
 		ada = new NearbyAdapter(mActivity);
-		ListView listView = (ListView) rootView.findViewById(R.id.fragment_nearby_list);
+		listView = (ListView) rootView.findViewById(R.id.fragment_nearby_list);
 		listView.setAdapter(ada);
+		setHasOptionsMenu(true);
 
-		// map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
-		// map = ((MapView)rootView.findViewById(R.id.map)).getMap();
-		// Marker chicago = map.addMarker(new MarkerOptions().position(CHICAGO).title("Chicago"));
-		// Marker skokie = map.addMarker(new MarkerOptions().position(SKOKIE).title("Geneva").snippet("Amber's place"));
-		// .icon(BitmapDescriptorFactory.fromResource(R.drawable.left_arrow)));
+		loadLayout = rootView.findViewById(R.id.loading_layout);
+		showProgress(true, null);
 
-		// Move the camera instantly to hamburg with a zoom of 15.
-		// map.moveCamera(CameraUpdateFactory.newLatLngZoom(CHICAGO, 15));
-
-		// Zoom in, animating the camera.
-		// map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
-		// View rootView = inflater.inflate(R.layout.loading, container, false);
-		// loadLayout = rootView.findViewById(R.id.loading_layout);
-		//
-		// showProgress(true, null);
-		// new LoadNearby().execute();
-
-		//
 		return rootView;
 	}
 
@@ -121,17 +128,24 @@ public class NearbyFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		Log.i(TAG, "onActivityCreated");
 		super.onActivityCreated(savedInstanceState);
+
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		Log.i(TAG, "onStart");
 		FragmentManager fm = getFragmentManager();
 		mapFragment = (MapFragment) fm.findFragmentById(R.id.map);
-		if (mapFragment == null) {
-			mapFragment = MapFragment.newInstance();
-			fm.beginTransaction().replace(R.id.map, mapFragment).commit();
-		}
+		mapFragment = MapFragment.newInstance();
+		mapFragment.setRetainInstance(true);
+		fm.beginTransaction().replace(R.id.map, mapFragment).commit();
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
+		Log.i(TAG, "onResume");
 		if (map == null) {
 			map = mapFragment.getMap();
 		}
@@ -139,87 +153,80 @@ public class NearbyFragment extends Fragment {
 	}
 
 	@Override
-	public void onDestroyView() {
+	public final void onPause() {
+		super.onPause();
+		Log.i(TAG, "onPause");
+	}
+
+	@Override
+	public final void onStop() {
+		super.onStop();
+		Log.i(TAG, "onStop");
+	}
+
+	@Override
+	public final void onDestroyView() {
 		super.onDestroyView();
-		MapFragment f = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
-		if (f != null) {
-			getFragmentManager().beginTransaction().remove(f).commit();
-		}
+		Log.i(TAG, "onDestroyView");
 	}
 
 	@Override
-	public final void onAttach(final Activity activity) {
-		super.onAttach(activity);
-		mActivity = (MainActivity) activity;
-		((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
+	public final void onDestroy() {
+		super.onDestroy();
+		Log.i(TAG, "onDestroy");
 	}
 
 	@Override
-	public final void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
-		this.menu = menu;
-		MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-		refreshMenuItem.setActionView(R.layout.progressbar);
-		refreshMenuItem.expandActionView();
-		super.onCreateOptionsMenu(menu, inflater);
+	public final void onDetach() {
+		super.onDetach();
+		Log.i(TAG, "onDetach");
 	}
 
-	@Override
-	public final boolean onOptionsItemSelected(final MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.action_refresh:
-			// MenuItem menuItem = item;
-			// menuItem.setActionView(R.layout.progressbar);
-			// menuItem.expandActionView();
-			Toast.makeText(this.getActivity(), "Refresh...!", Toast.LENGTH_SHORT).show();
-			return true;
-		}
-		return true;
+	/**
+	 * Load error
+	 * 
+	 */
+	public final void displayError(final TrackerException exceptionToBeThrown) {
+		DataHolder.getInstance().setTrainData(null);
+		DataHolder.getInstance().setBusData(null);
+		ChicagoTracker.displayError(mActivity, exceptionToBeThrown);
+		mActivity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 	}
 
-	public final void stopRefreshAnimation() {
-		if (menu != null) {
-			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-			refreshMenuItem.collapseActionView();
-			refreshMenuItem.setActionView(null);
-		}
-	}
-
-	private final class LoadArrivals extends AsyncTask<List<BusStop>, Void, SparseArray<Map<String, List<BusArrival>>>> {
+	private final class LoadArrivals extends AsyncTask<List<?>, Void, Void> {
 
 		private SparseArray<Map<String, List<BusArrival>>> busArrivalsMap;
+		private SparseArray<TrainArrival> trainArrivals;
 		private List<BusStop> busStops;
+		private List<Station> stations;
 
+		@SuppressWarnings("unchecked")
 		@Override
-		protected SparseArray<Map<String, List<BusArrival>>> doInBackground(List<BusStop>... params) {
-			busStops = params[0];
+		protected Void doInBackground(List<?>... params) {
+			busStops = (List<BusStop>) params[0];
+			stations = (List<Station>) params[1];
 			busArrivalsMap = new SparseArray<Map<String, List<BusArrival>>>();
-			
-			// Get info bus stop from CSV, to be able to add missing data to current stop get from web
-//			DataHolder dataHolder = DataHolder.getInstance();
-//			BusData busData = dataHolder.getBusData();
-			
+			trainArrivals = new SparseArray<TrainArrival>();
+
+			CtaConnect cta = CtaConnect.getInstance();
+
 			// Loop over bus stops around user
 			for (BusStop busStop : busStops) {
-				
 				Map<String, List<BusArrival>> tempMap;
-				
-				// Get current bus info from CSV
-//				BusStop currentBusStop = busData.readOneBus(busStop.getId());
-				// Get its name
-//				String name = currentBusStop.getName();
-				
-				// Create 
+
+				// Create
 				tempMap = busArrivalsMap.get(busStop.getId(), null);
 				if (tempMap == null) {
 					tempMap = new HashMap<String, List<BusArrival>>();
 					busArrivalsMap.put(busStop.getId(), tempMap);
 				}
 
+				// Buses
 				try {
-					CtaConnect cta = CtaConnect.getInstance();
+
 					MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
 					reqParams.put("stpid", busStop.getId().toString());
-					
+
 					String xmlRes = cta.connect(CtaRequestType.BUS_ARRIVALS, reqParams);
 					Xml xml = new Xml();
 					List<BusArrival> busArrivals = xml.parseBusArrivals(xmlRes);
@@ -240,12 +247,31 @@ public class NearbyFragment extends Fragment {
 					Log.e(TAG, e.getMessage(), e);
 				}
 			}
-			return busArrivalsMap;
+
+			// Train
+
+			for (Station station : stations) {
+				try {
+					MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
+					reqParams.put("mapid", String.valueOf(station.getId()));
+					String xmlRes = cta.connect(CtaRequestType.TRAIN_ARRIVALS, reqParams);
+					Xml xml = new Xml();
+					SparseArray<TrainArrival> temp = xml.parseArrivals(xmlRes, DataHolder.getInstance().getTrainData());
+					for (int j = 0; j < temp.size(); j++) {
+						trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
+					}
+				} catch (ConnectException e) {
+					Log.e(TAG, e.getMessage(), e);
+				} catch (ParserException e) {
+					Log.e(TAG, e.getMessage(), e);
+				}
+			}
+			return null;
 		}
 
 		@Override
-		protected final void onPostExecute(SparseArray<Map<String, List<BusArrival>>> result) {
-			load(busStops, busArrivalsMap);
+		protected final void onPostExecute(Void result) {
+			load(busStops, busArrivalsMap, stations, trainArrivals);
 		}
 	}
 
@@ -255,7 +281,7 @@ public class NearbyFragment extends Fragment {
 	 * @author Carl-Philipp Harmant
 	 * 
 	 */
-	private final class LoadNearby extends AsyncTask<Void, Void, List<BusStop>> implements LocationListener {
+	private final class LoadNearby extends AsyncTask<Void, Void, Void> implements LocationListener {
 
 		private static final String TAG = "LoadNearby";
 
@@ -273,14 +299,18 @@ public class NearbyFragment extends Fragment {
 		boolean canGetLocation = false;
 
 		private Location location;
-		private Position positon;
+		private Position position;
 		private double latitude; // latitude
 		private double longitude; // longitude
 
+		private List<BusStop> busStops;
+		private List<Station> trainStations;
+
 		@Override
-		protected final List<BusStop> doInBackground(final Void... params) {
+		protected final Void doInBackground(final Void... params) {
 			DataHolder dataHolder = DataHolder.getInstance();
 			BusData busData = dataHolder.getBusData();
+			TrainData trainData = dataHolder.getTrainData();
 
 			LocationManager locationManager = (LocationManager) mActivity.getSystemService(Context.LOCATION_SERVICE);
 
@@ -290,7 +320,6 @@ public class NearbyFragment extends Fragment {
 			// getting network status
 			isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-			List<BusStop> busStops = new ArrayList<BusStop>();
 			if (!isGPSEnabled && !isNetworkEnabled) {
 				// no network provider is enabled
 				showSettingsAlert();
@@ -321,20 +350,22 @@ public class NearbyFragment extends Fragment {
 						}
 					}
 				}
-				positon = new Position();
-				positon.setLatitude(latitude);
-				positon.setLongitude(longitude);
-				busStops = busData.readNearbyStops(positon);
-			}
+				position = new Position();
+				position.setLatitude(latitude);
+				position.setLongitude(longitude);
 
-			return busStops;
+				busStops = new ArrayList<BusStop>();
+				busStops = busData.readNearbyStops(position);
+				trainStations = new ArrayList<Station>();
+				trainStations = trainData.readNearbyStation(position);
+			}
+			return null;
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
-		protected final void onPostExecute(final List<BusStop> result) {
-			new LoadArrivals().execute(result);
-			centerMap(positon);
+		protected final void onPostExecute(Void result) {
+			new LoadArrivals().execute(busStops, trainStations);
+			centerMap(position);
 		}
 
 		@Override
@@ -386,33 +417,99 @@ public class NearbyFragment extends Fragment {
 	}
 
 	public final void centerMap(final Position positon) {
+		Log.i(TAG, "centerMap");
 		while (mapFragment.getMap() == null) {
 		}
 		map = mapFragment.getMap();
 		map.setMyLocationEnabled(true);
 		LatLng latLng = new LatLng(positon.getLatitude(), positon.getLongitude());
 		map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-		map.animateCamera(CameraUpdateFactory.zoomTo(14), 2000, null);
+		// map.animateCamera(CameraUpdateFactory.zoomTo(14), 2000, null);
 	}
 
-	private final void load(final List<BusStop> buses, final SparseArray<Map<String, List<BusArrival>>> busArrivals) {
+	private final void load(final List<BusStop> buses, final SparseArray<Map<String, List<BusArrival>>> busArrivals, final List<Station> stations,
+			final SparseArray<TrainArrival> trainArrivals) {
+		List<Marker> markers = new ArrayList<Marker>();
 		for (BusStop busStop : buses) {
 			LatLng point = new LatLng(busStop.getPosition().getLatitude(), busStop.getPosition().getLongitude());
-			map.addMarker(new MarkerOptions().position(point).title(busStop.getName()));
+			Marker marker = map.addMarker(new MarkerOptions().position(point).title(busStop.getName()).snippet(busStop.getId().toString())
+					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+			markers.add(marker);
 		}
-		ada.setBusStops(buses, busArrivals);
+		for (Station station : stations) {
+			for (Position position : station.getStopsPosition()) {
+				LatLng point = new LatLng(position.getLatitude(), position.getLongitude());
+				Marker marker = map.addMarker(new MarkerOptions().position(point).title(station.getName()).snippet(station.getId().toString())
+						.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
+				markers.add(marker);
+			}
+		}
+		addClickEventsToMarkers(buses, stations);
+		ada.updateData(buses, busArrivals, stations, trainArrivals, map, markers);
 		ada.notifyDataSetChanged();
+		listView.setVisibility(View.VISIBLE);
+		showProgress(false, null);
 	}
 
-	/**
-	 * Load error
-	 * 
-	 */
-	public final void displayError(final TrackerException exceptionToBeThrown) {
-		DataHolder.getInstance().setTrainData(null);
-		DataHolder.getInstance().setBusData(null);
-		ChicagoTracker.displayError(mActivity, exceptionToBeThrown);
+	private void addClickEventsToMarkers(final List<BusStop> busStops, final List<Station> stations) {
+		map.setOnMarkerClickListener(new OnMarkerClickListener() {
+
+			@Override
+			public boolean onMarkerClick(Marker marker) {
+				boolean found = false;
+				for (int i = 0; i < stations.size(); i++) {
+					if (marker.getSnippet().equals(stations.get(i).getId().toString())) {
+						listView.smoothScrollToPosition(i);
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					
+					for (int i = 0; i < busStops.size(); i++) {
+						int indice = i + stations.size();
+						if (marker.getSnippet().equals(busStops.get(i).getId().toString())) {
+							listView.smoothScrollToPosition(indice);
+							break;
+						}
+					}
+				}
+				return false;
+			}
+		});
+	}
+
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+	private final void showProgress(final boolean show, final String errorMessage) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+			int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+			loadLayout.setVisibility(View.VISIBLE);
+			loadLayout.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					loadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+				}
+			});
+		} else {
+			loadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+		}
 		mActivity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 	}
+
+	// private final void startRefreshAnimation() {
+	// if (menu != null) {
+	// MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+	// refreshMenuItem.setActionView(R.layout.progressbar);
+	// refreshMenuItem.expandActionView();
+	// }
+	// }
+	//
+	// private final void stopRefreshAnimation() {
+	// if (menu != null) {
+	// MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+	// refreshMenuItem.collapseActionView();
+	// refreshMenuItem.setActionView(null);
+	// }
+	// }
 
 }
