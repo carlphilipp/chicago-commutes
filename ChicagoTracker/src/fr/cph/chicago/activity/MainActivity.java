@@ -127,7 +127,6 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 					fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
 				}
 			}
-
 			break;
 		case 4:
 			Toast.makeText(this, "Not implemented yet", Toast.LENGTH_SHORT).show();
@@ -169,7 +168,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			// Only show items in the action bar relevant to this screen
 			// if the drawer is not showing. Otherwise, let the drawer
 			// decide what to show in the action bar.
-			if (currentPosition == 1 || currentPosition == 3) {
+			if (currentPosition == 1) {
 				getMenuInflater().inflate(R.menu.global, menu);
 			} else {
 				getMenuInflater().inflate(R.menu.main, menu);
@@ -194,32 +193,36 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		// case R.id.action_settings:
 		// return true;
 		case R.id.action_refresh:
-			MenuItem menuItem = item;
-			menuItem.setActionView(R.layout.progressbar);
-			menuItem.expandActionView();
+			if (currentPosition != 3) {
+				MenuItem menuItem = item;
+				menuItem.setActionView(R.layout.progressbar);
+				menuItem.expandActionView();
 
-			MultiMap<String, String> params = new MultiValueMap<String, String>();
-			List<Integer> trainFavorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
-			for (Integer fav : trainFavorites) {
-				params.put("mapid", String.valueOf(fav));
+				MultiMap<String, String> params = new MultiValueMap<String, String>();
+				List<Integer> trainFavorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
+				for (Integer fav : trainFavorites) {
+					params.put("mapid", String.valueOf(fav));
+				}
+				MultiMap<String, String> params2 = new MultiValueMap<String, String>();
+				List<String> busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+				for (String str : busFavorites) {
+					String[] fav = Util.decodeBusFavorite(str);
+					params2.put("rt", fav[0]);
+					params2.put("stpid", fav[1]);
+				}
+				CtaConnectTask task;
+				try {
+					task = new CtaConnectTask(favoritesFragment, FavoritesFragment.class, CtaRequestType.TRAIN_ARRIVALS, params,
+							CtaRequestType.BUS_ARRIVALS, params2);
+					task.execute((Void) null);
+				} catch (ParserException e) {
+					ChicagoTracker.displayError(this, e);
+					return true;
+				}
+				Toast.makeText(this, "Refresh...!", Toast.LENGTH_SHORT).show();
+			} else {
+				nearbyFragment.reloadData();
 			}
-			MultiMap<String, String> params2 = new MultiValueMap<String, String>();
-			List<String> busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
-			for (String str : busFavorites) {
-				String[] fav = Util.decodeBusFavorite(str);
-				params2.put("rt", fav[0]);
-				params2.put("stpid", fav[1]);
-			}
-			CtaConnectTask task;
-			try {
-				task = new CtaConnectTask(favoritesFragment, FavoritesFragment.class, CtaRequestType.TRAIN_ARRIVALS, params,
-						CtaRequestType.BUS_ARRIVALS, params2);
-				task.execute((Void) null);
-			} catch (ParserException e) {
-				ChicagoTracker.displayError(this, e);
-				return true;
-			}
-			Toast.makeText(this, "Refresh...!", Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.action_search:
 			return true;

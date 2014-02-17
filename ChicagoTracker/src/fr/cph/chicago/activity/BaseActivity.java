@@ -27,9 +27,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -136,17 +133,21 @@ public class BaseActivity extends Activity {
 	 */
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
 	private final void showProgress(final boolean show, final String errorMessage) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-			int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-			loadLayout.setVisibility(View.VISIBLE);
-			loadLayout.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-				@Override
-				public void onAnimationEnd(Animator animation) {
-					loadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
-				}
-			});
-		} else {
-			loadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+		try {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+				int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+				loadLayout.setVisibility(View.VISIBLE);
+				loadLayout.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+					@Override
+					public void onAnimationEnd(Animator animation) {
+						loadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+					}
+				});
+			} else {
+				loadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+			}
+		} catch (IllegalStateException e) {
+			Log.i(TAG, e.getMessage(), e);
 		}
 	}
 

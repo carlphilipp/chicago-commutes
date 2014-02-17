@@ -20,7 +20,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:baselineAligned="false"
+    android:orientation="horizontal"
     tools:context=".MainActivity" >
 
     <RelativeLayout
@@ -52,10 +53,9 @@
             style="?android:attr/progressBarStyleLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-			android:layout_centerInParent="true"
+            android:layout_centerInParent="true"
             android:focusable="false"
             android:focusableInTouchMode="false" />
-
     </RelativeLayout>
 
 </LinearLayout>

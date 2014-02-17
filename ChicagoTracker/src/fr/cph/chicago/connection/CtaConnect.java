@@ -72,8 +72,8 @@ public class CtaConnect {
 	private String connectUrl(final String adress) throws ConnectException {
 		String toreturn = null;
 		try {
-			client.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 30000);
-			client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 60000);
+			client.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 10000);
+			client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 10000);
 			Log.v(TAG, "adress: " + adress);
 			HttpGet get = new HttpGet(adress);
 			HttpResponse getResponse = client.execute(get);

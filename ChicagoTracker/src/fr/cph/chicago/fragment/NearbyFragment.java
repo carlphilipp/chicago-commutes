@@ -18,6 +18,7 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -112,7 +113,13 @@ public class NearbyFragment extends Fragment {
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		Log.i(TAG, "onCreateView");
-		View rootView = inflater.inflate(R.layout.fragment_nearby, container, false);
+		int orientation = getResources().getConfiguration().orientation;
+		View rootView = null;
+		if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+			rootView = inflater.inflate(R.layout.fragment_nearby_v, container, false);
+		} else {
+			rootView = inflater.inflate(R.layout.fragment_nearby_h, container, false);
+		}
 		ada = new NearbyAdapter(mActivity);
 		listView = (ListView) rootView.findViewById(R.id.fragment_nearby_list);
 		listView.setAdapter(ada);
@@ -417,7 +424,6 @@ public class NearbyFragment extends Fragment {
 	}
 
 	public final void centerMap(final Position positon) {
-		Log.i(TAG, "centerMap");
 		while (mapFragment.getMap() == null) {
 		}
 		map = mapFragment.getMap();
@@ -465,7 +471,6 @@ public class NearbyFragment extends Fragment {
 					}
 				}
 				if (!found) {
-					
 					for (int i = 0; i < busStops.size(); i++) {
 						int indice = i + stations.size();
 						if (marker.getSnippet().equals(busStops.get(i).getId().toString())) {
@@ -481,35 +486,30 @@ public class NearbyFragment extends Fragment {
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
 	private final void showProgress(final boolean show, final String errorMessage) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-			int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-			loadLayout.setVisibility(View.VISIBLE);
-			loadLayout.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-				@Override
-				public void onAnimationEnd(Animator animation) {
-					loadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
-				}
-			});
-		} else {
-			loadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+		try {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+				int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+				loadLayout.setVisibility(View.VISIBLE);
+				loadLayout.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+					@Override
+					public void onAnimationEnd(Animator animation) {
+						loadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+					}
+				});
+			} else {
+				loadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+			}
+			mActivity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+		} catch (IllegalStateException e) {
+			Log.i(TAG, e.getMessage(), e);
 		}
-		mActivity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 	}
-
-	// private final void startRefreshAnimation() {
-	// if (menu != null) {
-	// MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-	// refreshMenuItem.setActionView(R.layout.progressbar);
-	// refreshMenuItem.expandActionView();
-	// }
-	// }
-	//
-	// private final void stopRefreshAnimation() {
-	// if (menu != null) {
-	// MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-	// refreshMenuItem.collapseActionView();
-	// refreshMenuItem.setActionView(null);
-	// }
-	// }
+	
+	public final void reloadData(){
+		map.clear();
+		listView.setVisibility(View.GONE);
+		showProgress(true, null);
+		new LoadNearby().execute();
+	}
 
 }
