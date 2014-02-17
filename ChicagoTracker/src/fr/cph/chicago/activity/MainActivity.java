@@ -30,7 +30,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -42,6 +41,7 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.exception.ParserException;
+import fr.cph.chicago.fragment.AlertFragment;
 import fr.cph.chicago.fragment.BusFragment;
 import fr.cph.chicago.fragment.FavoritesFragment;
 import fr.cph.chicago.fragment.MapFragment;
@@ -68,6 +68,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	private BusFragment busFragment;
 
 	private NearbyFragment nearbyFragment;
+
+	private AlertFragment alertFragment;
 
 	private MapFragment mapFragment;
 
@@ -133,7 +135,10 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			}
 			break;
 		case 4:
-			Toast.makeText(this, "Not implemented yet", Toast.LENGTH_SHORT).show();
+			if (alertFragment == null) {
+				alertFragment = AlertFragment.newInstance(position + 1);
+			}
+			fragmentManager.beginTransaction().replace(R.id.container, alertFragment).commit();
 			break;
 		case 5:
 			if (mapFragment == null) {

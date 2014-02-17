@@ -25,7 +25,7 @@
     <string name="bus">Bus</string>
     <string name="nearby">Nearby</string>
     <string name="alerts">Alerts</string>
-    <string name="map">System Map</string>
+    <string name="map">Map</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_settings">Settings</string>

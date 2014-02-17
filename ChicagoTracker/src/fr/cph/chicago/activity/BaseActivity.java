@@ -36,6 +36,7 @@ import android.view.View;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaRequestType;
+import fr.cph.chicago.data.AlertData;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
@@ -88,6 +89,8 @@ public class BaseActivity extends Activity {
 		private BusData busData;
 		/** Train data **/
 		private TrainData trainData;
+		/** Alert data **/
+		private AlertData alertData;
 
 		@Override
 		protected final Void doInBackground(final Void... params) {
@@ -100,8 +103,18 @@ public class BaseActivity extends Activity {
 			this.busData = BusData.getInstance();
 			this.busData.readBusStops();
 
+			this.alertData = AlertData.getInstance();
+
 			try {
 				this.busData.loadBusRoutes();
+			} catch (ParserException e) {
+				Log.e(TAG, e.getMessage(), e);
+			} catch (ConnectException e) {
+				Log.e(TAG, e.getMessage(), e);
+			}
+
+			try {
+				this.alertData.loadGeneralAlerts();
 			} catch (ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			} catch (ConnectException e) {
@@ -115,6 +128,7 @@ public class BaseActivity extends Activity {
 			DataHolder dataHolder = DataHolder.getInstance();
 			dataHolder.setBusData(busData);
 			dataHolder.setTrainData(trainData);
+			dataHolder.setAlertData(alertData);
 			try {
 				loadData();
 			} catch (ParserException e) {

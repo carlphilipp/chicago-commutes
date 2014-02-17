@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.xmlpull.v1.XmlPullParser;
@@ -33,12 +34,14 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import android.annotation.SuppressLint;
 import android.util.SparseArray;
 import fr.cph.chicago.data.TrainData;
+import fr.cph.chicago.entity.Alert;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Position;
+import fr.cph.chicago.entity.Service;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.Stop;
 import fr.cph.chicago.entity.TrainArrival;
@@ -64,7 +67,6 @@ public class Xml {
 			dfTrain = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
 			dfBus = new SimpleDateFormat("yyyyMMdd HH:mm");
 		} catch (XmlPullParserException e) {
-			e.printStackTrace();
 			throw new ParserException("Parsing exception", e);
 		}
 	}
@@ -309,10 +311,8 @@ public class Xml {
 				eventType = parser.next();
 			}
 		} catch (XmlPullParserException e) {
-			e.printStackTrace();
 			throw new ParserException("Parse Exception", e);
 		} catch (IOException e) {
-			e.printStackTrace();
 			throw new ParserException("Parse Exception", e);
 		}
 		return routes;
@@ -386,10 +386,8 @@ public class Xml {
 				eventType = parser.next();
 			}
 		} catch (XmlPullParserException e) {
-			e.printStackTrace();
 			throw new ParserException("Parse Exception", e);
 		} catch (IOException e) {
-			e.printStackTrace();
 			throw new ParserException("Parse Exception", e);
 		}
 		return busStops;
@@ -447,15 +445,98 @@ public class Xml {
 				eventType = parser.next();
 			}
 		} catch (XmlPullParserException e) {
-			e.printStackTrace();
 			throw new ParserException("Parser Exception", e);
 		} catch (ParseException e) {
-			e.printStackTrace();
 			throw new ParserException("Parser Exception", e);
 		} catch (IOException e) {
-			e.printStackTrace();
 			throw new ParserException("Parser Exception", e);
 		}
 		return busArrivals;
+	}
+
+	public final List<Alert> parseAlertGeneral(final String xml) throws ParserException {
+		List<Alert> alerts = null;
+		String tagName = null;
+		Alert alert = null;
+		Service service = null;
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd", Locale.US);
+		InputStream is = new ByteArrayInputStream(xml.getBytes());
+		try {
+			parser.setInput(is, "UTF-8");
+			int eventType = parser.getEventType();
+			while (eventType != XmlPullParser.END_DOCUMENT) {
+				if (eventType == XmlPullParser.START_DOCUMENT) {
+					alerts = new ArrayList<Alert>();
+				} else if (eventType == XmlPullParser.START_TAG) {
+					tagName = parser.getName();
+					if (tagName.equals("Alert")) {
+						alert = new Alert();
+					}
+				} else if (eventType == XmlPullParser.END_TAG) {
+					tagName = null;
+					if (parser.getName().equals("Service")) {
+						service = null;
+					}
+				} else if (eventType == XmlPullParser.TEXT) {
+					String text = parser.getText();
+					if (tagName != null) {
+						if (tagName.equals("AlertId")) {
+							alert.setId(Integer.valueOf(text));
+							alerts.add(alert);
+						} else if (tagName.equals("Headline")) {
+							alert.setHeadline(text);
+						} else if (tagName.equals("ShortDescription")) {
+							alert.setShortDescription(text.trim());
+						} else if (tagName.equals("FullDescription")) {
+							alert.setFullDescription(text);
+						} else if (tagName.equals("SeverityScore")) {
+							alert.setSeverityScore(Integer.valueOf(text));
+						} else if (tagName.equals("SeverityColor")) {
+							alert.setSeverityColor(text);
+						} else if (tagName.equals("SeverityCSS")) {
+							alert.setSeverityCSS(text);
+						} else if (tagName.equals("Impact")) {
+							alert.setImpact(text);
+						} else if (tagName.equals("EventStart")) {
+							Date parsedDate = formatter.parse(text);
+							alert.setEventStart(parsedDate);
+						} else if (tagName.equals("EventEnd")) {
+							Date parsedDate = formatter.parse(text);
+							alert.setEventEnd(parsedDate);
+						} else if (tagName.equals("TBD")) {
+							alert.setTbd(Integer.valueOf(text));
+						} else if (tagName.equals("MajorAlert")) {
+							alert.setMajorAlert(Integer.valueOf(text));
+						} else if (tagName.equals("AlertURL")) {
+							alert.setAlertUrl(text);
+						} else if (tagName.equals("ServiceType")) {
+							service = new Service();
+							alert.addService(service);
+							service.setType(text);
+						} else if (tagName.equals("ServiceTypeDescription")) {
+							service.setTypeDescription(text);
+						} else if (tagName.equals("ServiceName")) {
+							service.setName(text);
+						} else if (tagName.equals("ServiceId")) {
+							service.setId(text);
+						} else if (tagName.equals("ServiceBackColor")) {
+							service.setBackColor(text);
+						} else if (tagName.equals("ServiceTextColor")) {
+							service.setTextColor(text);
+						} else if (tagName.equals("ServiceURL")) {
+							service.setUrl(text);
+						}
+					}
+				}
+				eventType = parser.next();
+			}
+		} catch (XmlPullParserException e) {
+			throw new ParserException("Parser Exception", e);
+		} catch (ParseException e) {
+			throw new ParserException("Parser Exception", e);
+		} catch (IOException e) {
+			throw new ParserException("Parser Exception", e);
+		}
+		return alerts;
 	}
 }
