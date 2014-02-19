@@ -22,6 +22,7 @@ import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
@@ -44,6 +45,9 @@ import fr.cph.chicago.R;
  * guidelines</a> for a complete explanation of the behaviors implemented here.
  */
 public class NavigationDrawerFragment extends Fragment {
+
+	/** Tag **/
+	private static final String TAG = "NavigationDrawerFragment";
 
 	/**
 	 * Remember the position of the selected item.
@@ -73,6 +77,8 @@ public class NavigationDrawerFragment extends Fragment {
 	private boolean mFromSavedInstanceState;
 	private boolean mUserLearnedDrawer;
 
+	private Runnable mPendingRunnable;
+
 	public NavigationDrawerFragment() {
 
 	}
@@ -92,7 +98,7 @@ public class NavigationDrawerFragment extends Fragment {
 		}
 
 		// Select either the default item (0) or the last selected item.
-		selectItem(mCurrentSelectedPosition);
+		selectItem(mCurrentSelectedPosition, false);
 
 		// Indicate that this fragment would like to influence the set of actions in the action bar.
 		setHasOptionsMenu(true);
@@ -104,12 +110,12 @@ public class NavigationDrawerFragment extends Fragment {
 		mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				selectItem(position);
+				selectItem(position, false);
 			}
 		});
 		mDrawerListView.setAdapter(new ArrayAdapter<String>(getActionBar().getThemedContext(), android.R.layout.simple_list_item_activated_1,
 				android.R.id.text1, new String[] { getString(R.string.favorites), getString(R.string.train), getString(R.string.bus),
-						getString(R.string.nearby), getString(R.string.alerts), getString(R.string.map)}));
+						getString(R.string.nearby), getString(R.string.alerts), getString(R.string.map) }));
 		mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
 		return mDrawerListView;
 	}
@@ -153,6 +159,12 @@ public class NavigationDrawerFragment extends Fragment {
 					return;
 				}
 
+				if (mPendingRunnable != null) {
+					Handler mHandler = new Handler();
+					mHandler.post(mPendingRunnable);
+					mPendingRunnable = null;
+				}
+
 				getActivity().invalidateOptionsMenu(); // calls onPrepareOptionsMenu()
 			}
 
@@ -191,17 +203,35 @@ public class NavigationDrawerFragment extends Fragment {
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
 	}
 
-	public void selectItem(int position) {
+	public void selectItem(final int position, boolean backPressed) {
 		mCurrentSelectedPosition = position;
+		mPendingRunnable = new Runnable() {
+			@Override
+			public void run() {
+				if (mCallbacks != null) {
+					mCallbacks.onNavigationDrawerItemSelected(position);
+				}
+			}
+		};
+
+		if (backPressed) {
+			Handler mHandler = new Handler();
+			mHandler.post(mPendingRunnable);
+			mPendingRunnable = null;
+		}
+
 		if (mDrawerListView != null) {
 			mDrawerListView.setItemChecked(position, true);
 		}
 		if (mDrawerLayout != null) {
 			mDrawerLayout.closeDrawer(mFragmentContainerView);
-		}
-		if (mCallbacks != null) {
+		} else {
 			mCallbacks.onNavigationDrawerItemSelected(position);
 		}
+
+		// if (mCallbacks != null) {
+		// mCallbacks.onNavigationDrawerItemSelected(position);
+		// }
 	}
 
 	@Override

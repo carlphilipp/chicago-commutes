@@ -66,19 +66,19 @@ public final class Preferences {
 		Collections.sort(favorites, new Comparator<String>() {
 			@Override
 			public int compare(String str1, String str2) {
-				String derp1 = Util.decodeBusFavorite(str1)[0];
-				String derp2 = Util.decodeBusFavorite(str2)[0];
+				String str1Decoded = Util.decodeBusFavorite(str1)[0];
+				String str2Decoded = Util.decodeBusFavorite(str2)[0];
 				Integer int1 = null;
 				Integer int2 = null;
 				try {
-					int1 = Integer.valueOf(derp1);
+					int1 = Integer.valueOf(str1Decoded);
 				} catch (NumberFormatException e) {
-					int1 = Integer.valueOf(derp1.substring(0, derp1.length() - 1));
+					int1 = Integer.valueOf(str1Decoded.substring(0, str1Decoded.length() - 1));
 				}
 				try {
-					int2 = Integer.valueOf(derp2);
+					int2 = Integer.valueOf(str2Decoded);
 				} catch (NumberFormatException e) {
-					int2 = Integer.valueOf(derp2.substring(0, derp2.length() - 1));
+					int2 = Integer.valueOf(str2Decoded.substring(0, str2Decoded.length() - 1));
 				}
 				return int1.compareTo(int2);
 			}

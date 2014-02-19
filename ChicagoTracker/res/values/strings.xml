@@ -63,7 +63,13 @@
      <string name="search_title">Search</string>
      <string name="search_hint">Train Stations or Bus Lines</string>
      
-     <!--  nearby -->
+     <!-- Nearby -->
      <string name="nearby_title">Nearby</string>
+     
+     <!-- Map -->
+     <string name="fragment_image_description">A nice description</string>
+     
+     <!-- Loading -->
+     <string name="loading_image_description">A nice description</string>
 
 </resources>

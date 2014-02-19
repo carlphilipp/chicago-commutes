@@ -18,7 +18,6 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -30,7 +29,6 @@ import android.provider.Settings;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -67,7 +65,7 @@ public class NearbyFragment extends Fragment {
 
 	private static final String TAG = "NearbyFragment";
 
-	private static MainActivity mActivity;
+	private MainActivity mActivity;
 
 	private MapFragment mapFragment;
 	private View loadLayout;
@@ -76,9 +74,6 @@ public class NearbyFragment extends Fragment {
 	private ListView listView;
 
 	private static final LatLng CHICAGO = new LatLng(41.8819, -87.6278);
-	private static final LatLng SKOKIE = new LatLng(41.883273, -88.309474);
-
-	private Menu menu;
 
 	/**
 	 * The fragment argument representing the section number for this fragment.
@@ -113,21 +108,13 @@ public class NearbyFragment extends Fragment {
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		Log.i(TAG, "onCreateView");
-		int orientation = getResources().getConfiguration().orientation;
-		View rootView = null;
-		if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-			rootView = inflater.inflate(R.layout.fragment_nearby_v, container, false);
-		} else {
-			rootView = inflater.inflate(R.layout.fragment_nearby_h, container, false);
-		}
+		View rootView = inflater.inflate(R.layout.fragment_nearby, container, false);
 		ada = new NearbyAdapter(mActivity);
 		listView = (ListView) rootView.findViewById(R.id.fragment_nearby_list);
 		listView.setAdapter(ada);
 		setHasOptionsMenu(true);
-
 		loadLayout = rootView.findViewById(R.id.loading_layout);
 		showProgress(true, null);
-
 		return rootView;
 	}
 
@@ -212,6 +199,7 @@ public class NearbyFragment extends Fragment {
 		protected Void doInBackground(List<?>... params) {
 			busStops = (List<BusStop>) params[0];
 			stations = (List<Station>) params[1];
+
 			busArrivalsMap = new SparseArray<Map<String, List<BusArrival>>>();
 			trainArrivals = new SparseArray<TrainArrival>();
 
@@ -256,7 +244,6 @@ public class NearbyFragment extends Fragment {
 			}
 
 			// Train
-
 			for (Station station : stations) {
 				try {
 					MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
@@ -315,6 +302,9 @@ public class NearbyFragment extends Fragment {
 
 		@Override
 		protected final Void doInBackground(final Void... params) {
+			busStops = new ArrayList<BusStop>();
+			trainStations = new ArrayList<Station>();
+
 			DataHolder dataHolder = DataHolder.getInstance();
 			BusData busData = dataHolder.getBusData();
 			TrainData trainData = dataHolder.getTrainData();
@@ -361,9 +351,8 @@ public class NearbyFragment extends Fragment {
 				position.setLatitude(latitude);
 				position.setLongitude(longitude);
 
-				busStops = new ArrayList<BusStop>();
 				busStops = busData.readNearbyStops(position);
-				trainStations = new ArrayList<Station>();
+
 				trainStations = trainData.readNearbyStation(position);
 			}
 			return null;
@@ -395,31 +384,29 @@ public class NearbyFragment extends Fragment {
 		 * Function to show settings alert dialog On pressing Settings button will lauch Settings Options
 		 * */
 		public void showSettingsAlert() {
-			AlertDialog.Builder alertDialog = new AlertDialog.Builder(ChicagoTracker.getAppContext());
-
-			// Setting Dialog Title
-			alertDialog.setTitle("GPS is settings");
-
-			// Setting Dialog Message
-			alertDialog.setMessage("GPS is not enabled. Do you want to go to settings menu?");
-
-			// On pressing Settings button
-			alertDialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int which) {
-					Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-					ChicagoTracker.getAppContext().startActivity(intent);
+			new Thread() {
+				public void run() {
+					NearbyFragment.this.mActivity.runOnUiThread(new Runnable() {
+						public void run() {
+							AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(NearbyFragment.this.getActivity());
+							alertDialogBuilder.setTitle("GPS is settings");
+							alertDialogBuilder.setMessage("GPS is not enabled. Do you want to go to settings menu?");
+							alertDialogBuilder.setCancelable(false).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog, int id) {
+									Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+									NearbyFragment.this.getActivity().startActivity(intent);
+								}
+							}).setNegativeButton("No", new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog, int id) {
+									dialog.cancel();
+								}
+							});
+							AlertDialog alertDialog = alertDialogBuilder.create();
+							alertDialog.show();
+						}
+					});
 				}
-			});
-
-			// on pressing cancel button
-			alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int which) {
-					dialog.cancel();
-				}
-			});
-
-			// Showing Alert Message
-			alertDialog.show();
+			}.start();
 		}
 	}
 
@@ -428,8 +415,15 @@ public class NearbyFragment extends Fragment {
 		}
 		map = mapFragment.getMap();
 		map.setMyLocationEnabled(true);
-		LatLng latLng = new LatLng(positon.getLatitude(), positon.getLongitude());
-		map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+		LatLng latLng = null;
+		if (positon != null) {
+			latLng = new LatLng(positon.getLatitude(), positon.getLongitude());
+			map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+		} else {
+			latLng = CHICAGO;
+			map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
+		}
+
 		// map.animateCamera(CameraUpdateFactory.zoomTo(14), 2000, null);
 	}
 
@@ -453,8 +447,9 @@ public class NearbyFragment extends Fragment {
 		addClickEventsToMarkers(buses, stations);
 		ada.updateData(buses, busArrivals, stations, trainArrivals, map, markers);
 		ada.notifyDataSetChanged();
-		listView.setVisibility(View.VISIBLE);
 		showProgress(false, null);
+		listView.setVisibility(View.VISIBLE);
+
 	}
 
 	private void addClickEventsToMarkers(final List<BusStop> busStops, final List<Station> stations) {
@@ -501,14 +496,14 @@ public class NearbyFragment extends Fragment {
 			}
 			mActivity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 		} catch (IllegalStateException e) {
-			Log.i(TAG, e.getMessage(), e);
+			Log.w(TAG, e.getMessage(), e);
 		}
 	}
-	
-	public final void reloadData(){
+
+	public final void reloadData() {
 		map.clear();
-		listView.setVisibility(View.GONE);
 		showProgress(true, null);
+		listView.setVisibility(View.GONE);
 		new LoadNearby().execute();
 	}
 

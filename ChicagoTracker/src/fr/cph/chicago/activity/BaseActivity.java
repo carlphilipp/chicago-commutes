@@ -70,12 +70,22 @@ public class BaseActivity extends Activity {
 		setContentView(R.layout.loading);
 		loadLayout = findViewById(R.id.loading_layout);
 
-		if (DataHolder.getInstance().getBusData() == null || DataHolder.getInstance().getTrainData() == null) {
+		Bundle extras = getIntent().getExtras();
+		boolean error = false;
+		if (extras != null) {
+			error = extras.getBoolean("error");
+		}
+
+		if (error) {
+			showProgress(true, null);
+			new LoadData().execute();
+		} else if (DataHolder.getInstance().getBusData() == null || DataHolder.getInstance().getTrainData() == null) {
 			showProgress(true, null);
 			new LoadData().execute();
 		} else {
 			reloadData(null, null);
 		}
+
 	}
 
 	/**
@@ -150,7 +160,7 @@ public class BaseActivity extends Activity {
 		try {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
 				int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-				loadLayout.setVisibility(View.VISIBLE);
+				// loadLayout.setVisibility(View.VISIBLE);
 				loadLayout.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
 					@Override
 					public void onAnimationEnd(Animator animation) {

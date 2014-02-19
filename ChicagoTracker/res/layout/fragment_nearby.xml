@@ -21,7 +21,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:baselineAligned="false"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     tools:context=".MainActivity" >
 
     <RelativeLayout
@@ -31,31 +31,40 @@
         android:layout_weight="1" >
     </RelativeLayout>
 
-    <ListView
-        android:id="@+id/fragment_nearby_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:visibility="gone" >
-    </ListView>
-
-    <RelativeLayout
-        android:id="@+id/loading_layout"
+    <LinearLayout
+        android:id="@+id/loading_layout_container"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:visibility="gone" >
+        android:orientation="vertical"
+        android:visibility="visible" >
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleLarge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+        <ListView
+            android:id="@+id/fragment_nearby_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" >
+        </ListView>
+
+        <RelativeLayout
+            android:id="@+id/loading_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:focusable="false"
-            android:focusableInTouchMode="false" />
-    </RelativeLayout>
+            android:focusableInTouchMode="false"
+            android:visibility="gone" >
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:focusable="false"
+                android:focusableInTouchMode="false" />
+        </RelativeLayout>
+    </LinearLayout>
 
 </LinearLayout>

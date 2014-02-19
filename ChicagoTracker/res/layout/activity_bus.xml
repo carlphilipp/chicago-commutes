@@ -146,7 +146,10 @@
                 android:layout_height="wrap_content"
                 android:layout_alignBaseline="@+id/activity_bus_T"
                 android:layout_toRightOf="@+id/activity_bus_color"
+                android:ellipsize="end"
+                android:lines="1"
                 android:paddingLeft="@+dimen/activity_station_stops_line1_padding_color"
+                android:scrollHorizontally="true"
                 android:textColor="@+color/black"
                 android:textIsSelectable="false"
                 android:textStyle="bold" />

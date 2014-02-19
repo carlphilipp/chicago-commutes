@@ -207,11 +207,11 @@ public class StationActivity extends Activity {
 			textView2.setPadding(line1PaddingColor, 0, 0, 0);
 			textView2.setTextColor(getResources().getColor(R.color.grey));
 
-			RelativeLayout.LayoutParams derp = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-			derp.addRule(RelativeLayout.ALIGN_BASELINE, id);
-			derp.addRule(RelativeLayout.RIGHT_OF, id2);
+			RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+			layoutParams.addRule(RelativeLayout.ALIGN_BASELINE, id);
+			layoutParams.addRule(RelativeLayout.RIGHT_OF, id2);
 
-			textView2.setLayoutParams(derp);
+			textView2.setLayoutParams(layoutParams);
 			line1.addView(textView2);
 
 			stopsView.addView(line1);
@@ -485,9 +485,6 @@ public class StationActivity extends Activity {
 					refreshMenuItem.setActionView(null);
 				}
 			} else {
-//				Intent intent = new Intent(ChicagoTracker.getAppContext(), ErrorActivity.class);
-//				finish();
-//				startActivity(intent);
 				ChicagoTracker.displayError(StationActivity.this, trackerException);
 			}
 		}

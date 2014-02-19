@@ -50,7 +50,6 @@ public class BusFragment extends Fragment {
 
 	private BusAdapter ada;
 
-	private Menu menu;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -78,31 +77,32 @@ public class BusFragment extends Fragment {
 		mActivity = (MainActivity) activity;
 		((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
+	
 
-	@Override
-	public final void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
-		this.menu = menu;
-		MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-		refreshMenuItem.setActionView(R.layout.progressbar);
-		refreshMenuItem.expandActionView();
-		super.onCreateOptionsMenu(menu, inflater);
-	}
+//	@Override
+//	public final void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
+//		this.menu = menu;
+//		MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+//		refreshMenuItem.setActionView(R.layout.progressbar);
+//		refreshMenuItem.expandActionView();
+//		super.onCreateOptionsMenu(menu, inflater);
+//	}
 
-	@Override
-	public final boolean onOptionsItemSelected(final MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		switch (item.getItemId()) {
-//		case R.id.action_settings:
+//	@Override
+//	public final boolean onOptionsItemSelected(final MenuItem item) {
+//		// Handle action bar item clicks here. The action bar will
+//		// automatically handle clicks on the Home/Up button, so long
+//		// as you specify a parent activity in AndroidManifest.xml.
+//		switch (item.getItemId()) {
+////		case R.id.action_settings:
+////			return true;
+//		case R.id.action_refresh:
+//			MenuItem menuItem = item;
+//			menuItem.setActionView(R.layout.progressbar);
+//			menuItem.expandActionView();
+//			Toast.makeText(this.getActivity(), "Refresh...!", Toast.LENGTH_SHORT).show();
 //			return true;
-		case R.id.action_refresh:
-			MenuItem menuItem = item;
-			menuItem.setActionView(R.layout.progressbar);
-			menuItem.expandActionView();
-			Toast.makeText(this.getActivity(), "Refresh...!", Toast.LENGTH_SHORT).show();
-			return true;
-		}
-		return true;
-	}
+//		}
+//		return true;
+//	}
 }

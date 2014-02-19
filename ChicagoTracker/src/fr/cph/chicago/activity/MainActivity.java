@@ -25,6 +25,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -102,35 +103,44 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		int oldPosition = currentPosition;
 		currentPosition = position;
 		// update the main content by replacing fragments
-		FragmentManager fragmentManager = getFragmentManager();
+		final FragmentManager fragmentManager = getFragmentManager();
+		final FragmentTransaction ft = fragmentManager.beginTransaction();
+		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+//		ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out,android.R.anim.fade_in, android.R.anim.fade_out); 
+		// ft.addToBackStack(null);
 		switch (position) {
 		case 0:
 			if (favoritesFragment == null) {
 				favoritesFragment = FavoritesFragment.newInstance(position + 1);
 			}
-			fragmentManager.beginTransaction().replace(R.id.container, favoritesFragment).commit();
+			//fragmentManager.beginTransaction().replace(R.id.container, favoritesFragment).commit();
+			ft.replace(R.id.container, favoritesFragment).commit();
 			break;
 		case 1:
 			if (trainFragment == null) {
 				trainFragment = TrainFragment.newInstance(position + 1);
 			}
-			fragmentManager.beginTransaction().replace(R.id.container, trainFragment).commit();
+			//fragmentManager.beginTransaction().replace(R.id.container, trainFragment).commit();
+			ft.replace(R.id.container, trainFragment).commit();
 			break;
 		case 2:
 			if (busFragment == null) {
 				busFragment = BusFragment.newInstance(position + 1);
 			}
-			fragmentManager.beginTransaction().replace(R.id.container, busFragment).commit();
+			//fragmentManager.beginTransaction().replace(R.id.container, busFragment).commit();
+			ft.replace(R.id.container, busFragment).commit();
 			break;
 		case 3:
 			if (nearbyFragment == null) {
 				nearbyFragment = NearbyFragment.newInstance(position + 1);
-				fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
+				//fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
+				ft.replace(R.id.container, nearbyFragment).commit();
 			} else {
 				if (oldPosition == 3) {
 					fragmentManager.beginTransaction().commit();
 				} else {
-					fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
+					//fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
+					ft.replace(R.id.container, nearbyFragment).commit();
 				}
 			}
 			break;
@@ -138,13 +148,15 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			if (alertFragment == null) {
 				alertFragment = AlertFragment.newInstance(position + 1);
 			}
-			fragmentManager.beginTransaction().replace(R.id.container, alertFragment).commit();
+			//fragmentManager.beginTransaction().replace(R.id.container, alertFragment).commit();
+			 ft.replace(R.id.container, alertFragment).commit();
 			break;
 		case 5:
 			if (mapFragment == null) {
 				mapFragment = MapFragment.newInstance(position + 1);
 			}
-			fragmentManager.beginTransaction().replace(R.id.container, mapFragment).commit();
+//			fragmentManager.beginTransaction().replace(R.id.container, mapFragment).commit();
+			ft.replace(R.id.container, mapFragment).commit();
 			break;
 		}
 	}
@@ -170,6 +182,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			mTitle = getString(R.string.map);
 			break;
 		}
+		restoreActionBar();
 	}
 
 	public final void restoreActionBar() {
@@ -182,24 +195,24 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	@Override
 	public boolean onCreateOptionsMenu(final Menu menu) {
 		this.menu = menu;
-		if (!mNavigationDrawerFragment.isDrawerOpen()) {
+//		if (!mNavigationDrawerFragment.isDrawerOpen()) {
 			// Only show items in the action bar relevant to this screen
 			// if the drawer is not showing. Otherwise, let the drawer
 			// decide what to show in the action bar.
-			if (currentPosition == 1 || currentPosition == 5) {
-				getMenuInflater().inflate(R.menu.global, menu);
-			} else {
+//			if (currentPosition == 1 || currentPosition == 5) {
+//				getMenuInflater().inflate(R.menu.global, menu);
+//			} else {
 				getMenuInflater().inflate(R.menu.main, menu);
-			}
+//			}
 			// Associate searchable configuration with the SearchView
 			SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 			SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
 			searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
-			restoreActionBar();
+//			restoreActionBar();
 			return true;
-		}
-		return super.onCreateOptionsMenu(menu);
+//		}
+//		return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
@@ -251,10 +264,10 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	@Override
 	public final void onBackPressed() {
 		if (currentPosition != 0 && currentPosition != 5) {
-			mNavigationDrawerFragment.selectItem(0);
+			mNavigationDrawerFragment.selectItem(0, true);
 		} else if (currentPosition == 5) {
 			if (mapFragment.isCenteredAlready()) {
-				mNavigationDrawerFragment.selectItem(0);
+				mNavigationDrawerFragment.selectItem(0, true);
 			} else {
 				mapFragment.resetImage();
 			}

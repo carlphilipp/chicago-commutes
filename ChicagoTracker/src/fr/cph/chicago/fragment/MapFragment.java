@@ -4,8 +4,11 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.graphics.Matrix;
 import android.graphics.PointF;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.FloatMath;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,13 +20,15 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 
 public class MapFragment extends Fragment implements OnTouchListener {
-	
+
 	private static final String TAG = "MapFragment";
 
 	/**
 	 * The fragment argument representing the section number for this fragment.
 	 */
 	private static final String ARG_SECTION_NUMBER = "section_number";
+
+	private MainActivity activity;
 
 	// These matrices will be used to move and zoom image
 	Matrix matrix = new Matrix();
@@ -57,16 +62,29 @@ public class MapFragment extends Fragment implements OnTouchListener {
 		View rootView = inflater.inflate(R.layout.fragment_map, container, false);
 		view = (ImageView) rootView.findViewById(R.id.imageView);
 		view.setOnTouchListener(this);
-
+//		Handler handler = new Handler(); 
+//	    handler.postDelayed(new Runnable() { 
+//	         public void run() { 
+//	        	 view.setImageResource(R.drawable.ctamap);
+//	         } 
+//	    }, 250); 
+	    
+	    view.setImageResource(R.drawable.ctamap);
 		return rootView;
 	}
-	
+
 	@Override
 	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
+		this.activity = (MainActivity) activity;
 		((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 
+//	@Override
+//	public final void onResume(){
+//		
+//	}
+	
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 		ImageView view = (ImageView) v;
@@ -141,5 +159,4 @@ public class MapFragment extends Fragment implements OnTouchListener {
 		float y = event.getY(0) + event.getY(1);
 		point.set(x / 2, y / 2);
 	}
-
 }
