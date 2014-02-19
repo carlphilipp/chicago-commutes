@@ -94,20 +94,12 @@ public class NearbyFragment extends Fragment {
 	@Override
 	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
-		Log.i(TAG, "onAttach");
 		mActivity = (MainActivity) activity;
 		((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 
 	@Override
-	public final void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		Log.i(TAG, "onCreate");
-	}
-
-	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-		Log.i(TAG, "onCreateView");
 		View rootView = inflater.inflate(R.layout.fragment_nearby, container, false);
 		ada = new NearbyAdapter(mActivity);
 		listView = (ListView) rootView.findViewById(R.id.fragment_nearby_list);
@@ -119,16 +111,8 @@ public class NearbyFragment extends Fragment {
 	}
 
 	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		Log.i(TAG, "onActivityCreated");
-		super.onActivityCreated(savedInstanceState);
-
-	}
-
-	@Override
 	public void onStart() {
 		super.onStart();
-		Log.i(TAG, "onStart");
 		FragmentManager fm = getFragmentManager();
 		mapFragment = (MapFragment) fm.findFragmentById(R.id.map);
 		mapFragment = MapFragment.newInstance();
@@ -139,41 +123,10 @@ public class NearbyFragment extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		Log.i(TAG, "onResume");
 		if (map == null) {
 			map = mapFragment.getMap();
 		}
 		new LoadNearby().execute();
-	}
-
-	@Override
-	public final void onPause() {
-		super.onPause();
-		Log.i(TAG, "onPause");
-	}
-
-	@Override
-	public final void onStop() {
-		super.onStop();
-		Log.i(TAG, "onStop");
-	}
-
-	@Override
-	public final void onDestroyView() {
-		super.onDestroyView();
-		Log.i(TAG, "onDestroyView");
-	}
-
-	@Override
-	public final void onDestroy() {
-		super.onDestroy();
-		Log.i(TAG, "onDestroy");
-	}
-
-	@Override
-	public final void onDetach() {
-		super.onDetach();
-		Log.i(TAG, "onDetach");
 	}
 
 	/**
@@ -423,7 +376,6 @@ public class NearbyFragment extends Fragment {
 			latLng = CHICAGO;
 			map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
 		}
-
 		// map.animateCamera(CameraUpdateFactory.zoomTo(14), 2000, null);
 	}
 

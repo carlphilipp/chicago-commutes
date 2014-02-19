@@ -210,7 +210,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
 //			restoreActionBar();
-			return true;
+			return super.onCreateOptionsMenu(menu);
 //		}
 //		return super.onCreateOptionsMenu(menu);
 	}

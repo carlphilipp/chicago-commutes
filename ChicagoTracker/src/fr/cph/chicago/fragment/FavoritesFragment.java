@@ -81,9 +81,6 @@ public class FavoritesFragment extends Fragment {
 		ListView listView = (ListView) rootView.findViewById(R.id.favorites_list);
 		listView.setAdapter(ada);
 
-		// Force onCreateOptionsMenu being called
-		setHasOptionsMenu(true);
-
 		startRefreshTask();
 
 		return rootView;
