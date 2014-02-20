@@ -24,11 +24,7 @@
     <dimen name="navigation_drawer_width">240dp</dimen>
     
     <!-- Font activity station -->
-    <dimen name="activity_station_title_width">150dp</dimen>
-    <dimen name="activity_station_title_height">30dp</dimen>
     <dimen name="activity_station_title_text_size">18sp</dimen>
-    <dimen name="activity_station_line_width">8dp</dimen>
-    <dimen name="activity_station_line_height">24dp</dimen>
     <dimen name="activity_station_stops_padding_top">5dp</dimen>
     <dimen name="activity_station_stops_line1_padding_top">14dp</dimen>
     <dimen name="activity_station_stops_line1_padding_color">4dp</dimen>
@@ -44,7 +40,6 @@
     <dimen name="activity_train_line_padding_bottom">8dp</dimen>
     <dimen name="activity_train_line_padding_right">10dp</dimen>
     <!-- Activity list train station for one line -->
-    <dimen name="activity_list_station_name">20sp</dimen>
     <dimen name="activity_list_station_colors">8dp</dimen>
     <dimen name="activity_list_station_colors_space">2dp</dimen>
      <!-- Bus Adapter -->

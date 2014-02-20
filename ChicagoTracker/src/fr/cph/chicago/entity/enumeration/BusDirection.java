@@ -16,15 +16,30 @@
 
 package fr.cph.chicago.entity.enumeration;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public enum BusDirection {
 	NORTHBOUND("Northbound"), WESTBOUND("Westbound"), SOUTHBOUND("Southbound"), EASTBOUND("Eastbound");
-	
+
+	/** **/
 	private String text;
-	
-	BusDirection(String text) {
+
+	/**
+	 * 
+	 * @param text
+	 */
+	private BusDirection(String text) {
 		this.text = text;
 	}
-	
+
+	/**
+	 * 
+	 * @param text
+	 * @return
+	 */
 	public static final BusDirection fromString(final String text) {
 		if (text != null) {
 			for (BusDirection b : BusDirection.values()) {
@@ -35,10 +50,10 @@ public enum BusDirection {
 		}
 		return null;
 	}
-	
+
 	@Override
-	public final String toString(){
+	public final String toString() {
 		return text;
 	}
-	
+
 }

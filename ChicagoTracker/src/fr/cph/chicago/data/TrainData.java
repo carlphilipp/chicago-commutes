@@ -39,23 +39,37 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.entity.factory.StationFactory;
 import fr.cph.chicago.entity.factory.StopFactory;
 
+/**
+ * 
+ * @author carl
+ *
+ */
 public class TrainData {
 
 	/** Tag **/
 	private static final String TAG = "TrainData";
-
+	/** **/
 	private SparseArray<Station> stations;
+	/** **/
 	private List<Station> stationsOrderByName;
+	/** **/
 	private List<Station> stationsOrderByLine;
+	/** **/
 	private Map<TrainLine, List<Station>> stationsOrderByLineMap;
-
+	/** **/
 	private SparseArray<Stop> stops;
 
+	/**
+	 * 
+	 */
 	public TrainData() {
 		this.stations = new SparseArray<Station>();
 		this.stops = new SparseArray<Stop>();
 	}
 
+	/**
+	 * 
+	 */
 	public final void read() {
 		if (stations.size() == 0 && stops.size() == 0) {
 			try {
@@ -142,6 +156,9 @@ public class TrainData {
 		}
 	}
 
+	/**
+	 * 
+	 */
 	private final void order() {
 		List<Station> vals = new ArrayList<Station>();
 		for (int i = 0; i < stations.size(); i++) {
@@ -176,15 +193,29 @@ public class TrainData {
 		}
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final Map<TrainLine, List<Station>> getAllStations() {
 		return stationsOrderByLineMap;
 	}
 
+	/**
+	 * 
+	 * @param line
+	 * @return
+	 */
 	public final List<Station> getStationsForLine(final TrainLine line) {
 		List<Station> res = stationsOrderByLineMap.get(line);
 		return res;
 	}
 
+	/**
+	 * 
+	 * @param id
+	 * @return
+	 */
 	public final Stop getStop(final Integer id) {
 		if (stops.size() != 0) {
 			return stops.get(id);
@@ -193,6 +224,11 @@ public class TrainData {
 		}
 	}
 
+	/**
+	 * 
+	 * @param position
+	 * @return
+	 */
 	public final Stop getStopByPosition(final int position) {
 		if (stops.size() != 0) {
 			return stops.valueAt(position);
@@ -201,10 +237,19 @@ public class TrainData {
 		}
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final int getStopsSize() {
 		return stops.size();
 	}
 
+	/**
+	 * 
+	 * @param id
+	 * @return
+	 */
 	public final Station getStation(final Integer id) {
 		if (stations.size() != 0) {
 			return stations.get(id);
@@ -213,6 +258,11 @@ public class TrainData {
 		}
 	}
 
+	/**
+	 * 
+	 * @param position
+	 * @return
+	 */
 	public final Station getStationByPosition(final int position) {
 		if (stations.size() != 0 && position <= stations.size()) {
 			return stations.valueAt(position);
@@ -221,6 +271,11 @@ public class TrainData {
 		}
 	}
 
+	/**
+	 * 
+	 * @param position
+	 * @return
+	 */
 	public final Station getStationByPositionAndName(final int position) {
 		if (stationsOrderByName.size() != 0 && position <= stationsOrderByName.size()) {
 			return stationsOrderByName.get(position);
@@ -229,6 +284,11 @@ public class TrainData {
 		}
 	}
 
+	/**
+	 * 
+	 * @param position
+	 * @return
+	 */
 	public final Station getStationByPositionAndLine(final int position) {
 		if (stationsOrderByLine.size() != 0 && position <= stationsOrderByLine.size()) {
 			return stationsOrderByLine.get(position);
@@ -237,14 +297,27 @@ public class TrainData {
 		}
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final int getStationsSize() {
 		return stations.size();
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final int getStationsSizeByLine() {
 		return stationsOrderByLine.size();
 	}
 
+	/**
+	 * 
+	 * @param desc
+	 * @return
+	 */
 	public final Stop getStopByDesc(final String desc) {
 		int index = 0;
 		while (index < stops.size()) {
@@ -256,6 +329,11 @@ public class TrainData {
 		return null;
 	}
 
+	/**
+	 * 
+	 * @param name
+	 * @return
+	 */
 	public final Station getStationByName(final String name) {
 		int index = 0;
 		while (index < stations.size()) {
@@ -267,8 +345,13 @@ public class TrainData {
 		return null;
 	}
 	
-	public final List<Station> readNearbyStation(Position position) {
-
+	/**
+	 * 
+	 * @param position
+	 * @return
+	 */
+	public final List<Station> readNearbyStation(final Position position) {
+		/** **/
 		final double dist = 0.004472;
 
 		List<Station> res = new ArrayList<Station>();

@@ -21,59 +21,117 @@ import java.util.List;
 import fr.cph.chicago.entity.enumeration.TrainDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public class Stop implements Comparable<Stop> {
+	/** **/
 	private Integer id;
+	/** **/
 	private String description;
+	/** **/
 	private TrainDirection direction;
+	/** **/
 	private Position position;
-
+	/** **/
 	private Boolean ada;
+	/** **/
 	private List<TrainLine> lines;
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final Integer getId() {
 		return id;
 	}
 
+	/**
+	 * 
+	 * @param id
+	 */
 	public final void setId(final Integer id) {
 		this.id = id;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final String getDescription() {
 		return description;
 	}
 
+	/**
+	 * 
+	 * @param description
+	 */
 	public final void setDescription(final String description) {
 		this.description = description;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final TrainDirection getDirection() {
 		return direction;
 	}
 
+	/**
+	 * 
+	 * @param direction
+	 */
 	public final void setDirection(final TrainDirection direction) {
 		this.direction = direction;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final Position getPosition() {
 		return position;
 	}
 
+	/**
+	 * 
+	 * @param position
+	 */
 	public final void setPosition(final Position position) {
 		this.position = position;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final List<TrainLine> getLines() {
 		return lines;
 	}
 
+	/**
+	 * 
+	 * @param lines
+	 */
 	public final void setLines(final List<TrainLine> lines) {
 		this.lines = lines;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final Boolean getAda() {
 		return ada;
 	}
 
+	/**
+	 * 
+	 * @param ada
+	 */
 	public final void setAda(final Boolean ada) {
 		this.ada = ada;
 	}

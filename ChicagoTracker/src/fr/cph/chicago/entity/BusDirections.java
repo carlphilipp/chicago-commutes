@@ -21,30 +21,60 @@ import java.util.List;
 
 import fr.cph.chicago.entity.enumeration.BusDirection;
 
+/**
+ * 
+ * @author carl
+ *
+ */
 public final class BusDirections {
+	/** **/
 	private String id;
+	/** **/
 	private List<BusDirection> lBusDirection;
 	
+	/**
+	 * 
+	 */
 	public BusDirections(){
 		lBusDirection = new ArrayList<BusDirection>();
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final String getId() {
 		return id;
 	}
 
+	/**
+	 * 
+	 * @param id
+	 */
 	public final void setId(final String id) {
 		this.id = id;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final List<BusDirection> getlBusDirection() {
 		return lBusDirection;
 	}
 
+	/**
+	 * 
+	 * @param lBusDirection
+	 */
 	public final void setlBusDirection(final List<BusDirection> lBusDirection) {
 		this.lBusDirection = lBusDirection;
 	}
 	
+	/**
+	 * 
+	 * @param dir
+	 */
 	public final void addBusDirection(final BusDirection dir){
 		lBusDirection.add(dir);
 	}

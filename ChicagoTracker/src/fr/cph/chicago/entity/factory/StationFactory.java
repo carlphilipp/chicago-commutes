@@ -21,11 +21,26 @@ import java.util.List;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.Stop;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public class StationFactory {
+	/**
+	 * 
+	 */
 	private StationFactory() {
 
 	}
 
+	/**
+	 * 
+	 * @param id
+	 * @param name
+	 * @param stops
+	 * @return
+	 */
 	public static final Station buildStation(final Integer id, final String name, final List<Stop> stops) {
 		Station station = new Station();
 		station.setId(id);

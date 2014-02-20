@@ -22,44 +22,90 @@ import java.util.List;
 
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public class TrainArrival {
+	/** **/
 	private Date timeStamp;
+	/** **/
 	private Integer errorCode;
+	/** **/
 	private String errorMessage;
+	/** **/
 	private List<Eta> etas;
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final Date getTimeStamp() {
 		return timeStamp;
 	}
 
+	/**
+	 * 
+	 * @param timeStamp
+	 */
 	public final void setTimeStamp(final Date timeStamp) {
 		this.timeStamp = timeStamp;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final Integer getErrorCode() {
 		return errorCode;
 	}
 
+	/**
+	 * 
+	 * @param errorCode
+	 */
 	public final void setErrorCode(final Integer errorCode) {
 		this.errorCode = errorCode;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final String getErrorMessage() {
 		return errorMessage;
 	}
 
+	/**
+	 * 
+	 * @param errorMessage
+	 */
 	public final void setErrorMessage(final String errorMessage) {
 		this.errorMessage = errorMessage;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final List<Eta> getEtas() {
 		return etas;
 	}
 
+	/**
+	 * 
+	 * @param etas
+	 */
 	public final void setEtas(final List<Eta> etas) {
 		this.etas = etas;
 	}
 
+	/**
+	 * 
+	 * @param line
+	 * @return
+	 */
 	public final List<Eta> getEtas(final TrainLine line) {
 		List<Eta> etas = new ArrayList<Eta>();
 		for (Eta eta : getEtas()) {

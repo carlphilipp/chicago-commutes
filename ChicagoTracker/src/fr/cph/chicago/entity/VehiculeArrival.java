@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import android.util.Log;
 import android.util.SparseArray;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.data.BusData;
@@ -33,21 +32,30 @@ import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.util.Util;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public class VehiculeArrival {
-
-	/** Tag **/
-	private static final String TAG = "VehiculeArrival";
-
+	/** **/
 	private SparseArray<TrainArrival> trainArrivals;
+	/** **/
 	private List<BusArrival> busArrivals;
-
+	/** **/
 	private List<Integer> trainFavorites;
+	/** **/
 	private List<String> busFavorites;
+	/** **/
 	private List<String> fakeBusFavorites;
-
+	/** **/
 	private TrainData trainData;
+	/** **/
 	private BusData busData;
 
+	/**
+	 * 
+	 */
 	public VehiculeArrival() {
 		this.trainArrivals = new SparseArray<TrainArrival>();
 		this.busArrivals = new ArrayList<BusArrival>();
@@ -60,10 +68,19 @@ public class VehiculeArrival {
 		this.busData = DataHolder.getInstance().getBusData();
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final int size() {
 		return trainFavorites.size() + fakeBusFavorites.size();
 	}
 
+	/**
+	 * 
+	 * @param position
+	 * @return
+	 */
 	public final Object getObject(final int position) {
 		Object result = null;
 		if (position < trainFavorites.size()) {
@@ -79,10 +96,20 @@ public class VehiculeArrival {
 		return result;
 	}
 
+	/**
+	 * 
+	 * @param stationId
+	 * @return
+	 */
 	public final TrainArrival getTrainArrival(final Integer stationId) {
 		return trainArrivals.get(stationId);
 	}
 
+	/**
+	 * 
+	 * @param routeId
+	 * @return
+	 */
 	public final List<BusArrival> getBusArrivals(final String routeId) {
 		List<BusArrival> res = new ArrayList<BusArrival>();
 		for (BusArrival busArrival : busArrivals) {
@@ -93,6 +120,11 @@ public class VehiculeArrival {
 		return res;
 	}
 
+	/**
+	 * 
+	 * @param routeId
+	 * @return
+	 */
 	public final BusArrival getOneBusArrival(final String routeId) {
 		BusArrival bus = null;
 		for (BusArrival busArrival : busArrivals) {
@@ -104,6 +136,11 @@ public class VehiculeArrival {
 		return bus;
 	}
 
+	/**
+	 * 
+	 * @param routeId
+	 * @return
+	 */
 	public final Map<String, Map<String, List<BusArrival>>> getBusArrivalsMapped(final String routeId) {
 		Map<String, Map<String, List<BusArrival>>> res = new TreeMap<String, Map<String, List<BusArrival>>>(new Comparator<String>() {
 			@Override
@@ -140,6 +177,13 @@ public class VehiculeArrival {
 		return res;
 	}
 
+	/**
+	 * 
+	 * @param routeId
+	 * @param stopId
+	 * @param bound
+	 * @return
+	 */
 	private final boolean isInFavorites(final String routeId, final Integer stopId, final String bound) {
 		boolean res = false;
 		for (String fav : busFavorites) {
@@ -153,20 +197,36 @@ public class VehiculeArrival {
 		return res;
 	}
 
+	/**
+	 * 
+	 * @param trainArrival
+	 */
 	public final void setTrainArrival(final SparseArray<TrainArrival> trainArrival) {
 		this.trainArrivals = trainArrival;
 	}
 
+	/**
+	 * 
+	 * @param busArrivals
+	 */
 	public final void setBusArrivals(final List<BusArrival> busArrivals) {
 		this.busArrivals = busArrivals;
 	}
 
+	/**
+	 * 
+	 */
 	public final void setFavorites() {
 		this.trainFavorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
 		this.busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
 		this.fakeBusFavorites = calculateaActualRouteNumberBusFavorites();
 	}
 
+	/**
+	 * 
+	 * @param trainArrivals
+	 * @param busArrivals
+	 */
 	public final void setArrivals(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals) {
 		this.trainArrivals.clear();
 		this.trainArrivals = trainArrivals;
@@ -176,12 +236,10 @@ public class VehiculeArrival {
 		setFavorites();
 	}
 
-	private final void removeDuplicates(final List<BusArrival> busArrivals) {
-		Set<BusArrival> stBusArrivals = new LinkedHashSet<BusArrival>(busArrivals);
-		busArrivals.clear();
-		busArrivals.addAll(stBusArrivals);
-	}
-
+	/**
+	 * 
+	 * @return
+	 */
 	public final List<String> calculateaActualRouteNumberBusFavorites() {
 		List<String> found = new ArrayList<String>();
 		List<String> favs = new ArrayList<String>();
@@ -193,5 +251,15 @@ public class VehiculeArrival {
 			}
 		}
 		return favs;
+	}
+
+	/**
+	 * 
+	 * @param busArrivals
+	 */
+	private final void removeDuplicates(final List<BusArrival> busArrivals) {
+		Set<BusArrival> stBusArrivals = new LinkedHashSet<BusArrival>(busArrivals);
+		busArrivals.clear();
+		busArrivals.addAll(stBusArrivals);
 	}
 }

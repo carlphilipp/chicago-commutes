@@ -25,32 +25,63 @@ import java.util.TreeSet;
 
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public class Station implements Comparable<Station> {
+	/** **/
 	private Integer id;
+	/** **/
 	private String name;
+	/** **/
 	private List<Stop> stops;
-	private List<Position> stopsPosition;
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final Integer getId() {
 		return id;
 	}
 
+	/**
+	 * 
+	 * @param id
+	 */
 	public final void setId(final Integer id) {
 		this.id = id;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final String getName() {
 		return name;
 	}
 
+	/**
+	 * 
+	 * @param name
+	 */
 	public final void setName(final String name) {
 		this.name = name;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final List<Stop> getStops() {
 		return stops;
 	}
 
+	/**
+	 * 
+	 * @param stops
+	 */
 	public final void setStops(final List<Stop> stops) {
 		this.stops = stops;
 	}
@@ -70,6 +101,10 @@ public class Station implements Comparable<Station> {
 		return stb.toString();
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final Set<TrainLine> getLines() {
 		if (stops != null) {
 			Set<TrainLine> lines = new TreeSet<TrainLine>();
@@ -112,7 +147,7 @@ public class Station implements Comparable<Station> {
 
 	public List<Position> getStopsPosition() {
 		List<Position> positions = new ArrayList<Position>();
-		for(Stop stop : stops){
+		for (Stop stop : stops) {
 			positions.add(stop.getPosition());
 		}
 		return positions;

@@ -16,15 +16,30 @@
 
 package fr.cph.chicago.entity.enumeration;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public enum PredictionType {
 	ARRIVAL("A"), DEPARTURE("D");
 
+	/** **/
 	private String message;
 
+	/**
+	 * 
+	 * @param message
+	 */
 	private PredictionType(String message) {
 		this.message = message;
 	}
 
+	/**
+	 * 
+	 * @param text
+	 * @return
+	 */
 	public static final PredictionType fromString(final String text) {
 		if (text != null) {
 			for (PredictionType b : PredictionType.values()) {

@@ -31,10 +31,17 @@ import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public class TrainStationActivity extends ListActivity {
 
+	/** **/
 	private TrainData data;
 
+	@Override
 	public final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 

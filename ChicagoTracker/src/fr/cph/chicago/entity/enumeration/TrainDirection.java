@@ -16,17 +16,34 @@
 
 package fr.cph.chicago.entity.enumeration;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public enum TrainDirection {
 	NORTH("N", "North"), SOUTH("S", "South"), EAST("E", "East"), WEST("W", "West");
 
+	/** **/
 	private String text;
+	/** **/
 	private String formattedText;
 
-	TrainDirection(final String text, final String formattedText) {
+	/**
+	 * 
+	 * @param text
+	 * @param formattedText
+	 */
+	private TrainDirection(final String text, final String formattedText) {
 		this.text = text;
 		this.formattedText = formattedText;
 	}
 
+	/**
+	 * 
+	 * @param text
+	 * @return
+	 */
 	public static final TrainDirection fromString(final String text) {
 		if (text != null) {
 			for (TrainDirection b : TrainDirection.values()) {

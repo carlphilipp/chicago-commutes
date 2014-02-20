@@ -1,3 +1,19 @@
+/**
+ * Copyright 2014 Carl-Philipp Harmant
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package fr.cph.chicago.activity;
 
 import java.util.ArrayList;
@@ -25,9 +41,16 @@ import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public class SearchActivity extends ListActivity {
 
+	/** **/
 	private Menu menu;
+	/** **/
 	private SearchAdapter ada;
 
 	@Override
@@ -60,6 +83,10 @@ public class SearchActivity extends ListActivity {
 		return super.onCreateOptionsMenu(menu);
 	}
 
+	/**
+	 * 
+	 * @param intent
+	 */
 	private void handleIntent(Intent intent) {
 		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 			String query = intent.getStringExtra(SearchManager.QUERY);
@@ -97,6 +124,9 @@ public class SearchActivity extends ListActivity {
 		}
 	}
 
+	/**
+	 * 
+	 */
 	public final void startRefreshAnimation() {
 		if (menu != null) {
 			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
@@ -105,6 +135,9 @@ public class SearchActivity extends ListActivity {
 		}
 	}
 
+	/**
+	 * 
+	 */
 	public final void stopRefreshAnimation() {
 		if (menu != null) {
 			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);

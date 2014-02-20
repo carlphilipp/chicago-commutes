@@ -29,11 +29,22 @@ import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.entity.BusStop;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public class BusBoundAdapter extends BaseAdapter {
 
+	/** **/
 	private List<BusStop> busStops;
+	/** **/
 	private String stopId;
 
+	/**
+	 * 
+	 * @param stopId
+	 */
 	public BusBoundAdapter(final String stopId) {
 		this.busStops = new ArrayList<BusStop>();
 		this.stopId = stopId;
@@ -79,18 +90,27 @@ public class BusBoundAdapter extends BaseAdapter {
 			routNumberView = viewHolder.routNumberView;
 			routNameView = viewHolder.routNameView;
 		}
-		
+
 		routNumberView.setText(stopId);
 		routNameView.setText(busStop.getName());
-		
+
 		return convertView;
 	}
 
+	/**
+	 * 
+	 * @author carl
+	 * 
+	 */
 	static class ViewHolder {
 		TextView routNumberView;
 		TextView routNameView;
 	}
 
+	/**
+	 * 
+	 * @param result
+	 */
 	public final void update(final List<BusStop> result) {
 		this.busStops = null;
 		this.busStops = result;

@@ -25,24 +25,37 @@ import android.util.Log;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.util.Util;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public class GStreetViewConnect {
 
+	/** **/
 	private static final String TAG = "GStreetViewConnect";
-
+	/** **/
 	private static final String BASE_URL = "http://maps.googleapis.com/maps/api/streetview";
-
+	/** **/
 	private String GOOGLE_KEY;
-
+	/** **/
 	private static final int WIDTH = 1000;
-
+	/** **/
 	private static final int HEIGTH = 300;
-
+	/** **/
 	private static GStreetViewConnect instance = null;
 
+	/**
+	 * 
+	 */
 	private GStreetViewConnect() {
 		GOOGLE_KEY = Util.getProperty("google.streetmap.key");
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public static GStreetViewConnect getInstance() {
 		if (instance == null) {
 			instance = new GStreetViewConnect();
@@ -50,6 +63,12 @@ public class GStreetViewConnect {
 		return instance;
 	}
 
+	/**
+	 * 
+	 * @param adress
+	 * @return
+	 * @throws IOException
+	 */
 	private Drawable connectUrl(final String adress) throws IOException {
 		Log.v(TAG, "adress: " + adress);
 		try {
@@ -61,6 +80,12 @@ public class GStreetViewConnect {
 		}
 	}
 
+	/**
+	 * 
+	 * @param position
+	 * @return
+	 * @throws IOException
+	 */
 	public final Drawable connect(final Position position) throws IOException {
 		StringBuilder adress = new StringBuilder(BASE_URL);
 		adress.append("?key=" + GOOGLE_KEY);

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!--  
+<!--
   Copyright 2014 Carl-Philipp Harmant
  
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,18 +14,21 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
- -->
- 
+-->
+
 <resources>
 
     <color name="grey">#808080</color>
     <color name="grey_light">#D8D8D8</color>
-    <color name="green">#00A000</color>
     <color name="black">#000000</color>
-    <color name="red">#A00000</color>
     <color name="grey_M_B">#5e5e5e</color>
-	<color name="grey_5">#555555</color>
-	<color name="white">#FFFFFF</color>
-	<color name="grey_again">#A8A8A8</color>
-	
+    <color name="grey_5">#555555</color>
+    <color name="white">#FFFFFF</color>
+
+    <!--
+	 <color name="green">#00A000</color>
+	 <color name="red">#A00000</color>
+	 <color name="grey_again">#A8A8A8</color>
+    -->
+
 </resources>

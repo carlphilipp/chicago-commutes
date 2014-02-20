@@ -76,35 +76,33 @@ import fr.cph.chicago.xml.Xml;
 
 public class StationActivity extends Activity {
 
-	/** Tag **/
-	private static final String TAG = "StationActivity";
-
+	/** **/
 	private TrainData data;
-
+	/** **/
 	private Integer stationId;
-
+	/** **/
 	private ImageView streetViewImage;
-
+	/** **/
 	private TextView streetViewText;
-
+	/** **/
 	private ImageView mapImage;
-
+	/** **/
 	private ImageView directionImage;
-
+	/** **/
 	private ImageView favoritesImage;
-
+	/** **/
 	private boolean isFavorite;
-
+	/** **/
 	private TrainArrival arrival;
-
+	/** **/
 	private Map<String, Integer> ids;
-
+	/** **/
 	private Station station;
-
+	/** **/
 	private LinearLayout.LayoutParams paramsStop;
-
+	/** **/
 	private Menu menu;
-
+	/** **/
 	private boolean firstLoad = true;
 
 	@SuppressWarnings("unchecked")
@@ -146,8 +144,8 @@ public class StationActivity extends Activity {
 
 		directionImage = (ImageView) findViewById(R.id.activity_station_map_direction);
 
-		int width = (int) getResources().getDimension(R.dimen.activity_station_line_width);
-		int height = (int) getResources().getDimension(R.dimen.activity_station_line_height);
+//		int width = (int) getResources().getDimension(R.dimen.activity_station_line_width);
+//		int height = (int) getResources().getDimension(R.dimen.activity_station_line_height);
 		int line1PaddingColor = (int) getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
 		int line1PaddingTop = (int) getResources().getDimension(R.dimen.activity_station_stops_line1_padding_top);
 
@@ -298,21 +296,10 @@ public class StationActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	protected final void switchFavorite() {
-		if (isFavorite) {
-			Util.removeFromTrainFavorites(stationId, ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
-			isFavorite = false;
-		} else {
-			Util.addToTrainFavorites(stationId, ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
-			isFavorite = true;
-		}
-		if (isFavorite) {
-			favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_active));
-		} else {
-			favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_disabled));
-		}
-	}
-
+	/**
+	 * 
+	 * @return
+	 */
 	public final boolean isFavorite() {
 		boolean isFavorite = false;
 		List<Integer> favorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
@@ -325,7 +312,13 @@ public class StationActivity extends Activity {
 		return isFavorite;
 	}
 
+	/**
+	 * 
+	 * @author carl
+	 * 
+	 */
 	private final class DisplayGoogleStreetPicture extends AsyncTask<Position, Void, Drawable> {
+		/** **/
 		private Position position;
 
 		@Override
@@ -400,8 +393,14 @@ public class StationActivity extends Activity {
 		}
 	}
 
+	/**
+	 * 
+	 * @author carl
+	 * 
+	 */
 	private class LoadData extends AsyncTask<MultiMap<String, String>, Void, TrainArrival> {
 
+		/** **/
 		private TrackerException trackerException;
 
 		@Override
@@ -490,6 +489,10 @@ public class StationActivity extends Activity {
 		}
 	}
 
+	/**
+	 * 
+	 * @param station
+	 */
 	private final void reset(final Station station) {
 		Set<TrainLine> setTL = station.getLines();
 		for (TrainLine tl : setTL) {
@@ -514,7 +517,11 @@ public class StationActivity extends Activity {
 		}
 	}
 
-	protected final void drawLine3(final Eta eta) {
+	/**
+	 * 
+	 * @param eta
+	 */
+	private final void drawLine3(final Eta eta) {
 		TrainLine line = eta.getRouteName();
 		Stop stop = eta.getStop();
 		int line3Padding = (int) getResources().getDimension(R.dimen.activity_station_stops_line3);
@@ -549,5 +556,23 @@ public class StationActivity extends Activity {
 			timing.setText(timing.getText() + eta.getTimeLeftDueDelay() + " ");
 		}
 		line3View.setVisibility(View.VISIBLE);
+	}
+
+	/**
+	 * 
+	 */
+	private final void switchFavorite() {
+		if (isFavorite) {
+			Util.removeFromTrainFavorites(stationId, ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
+			isFavorite = false;
+		} else {
+			Util.addToTrainFavorites(stationId, ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
+			isFavorite = true;
+		}
+		if (isFavorite) {
+			favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_active));
+		} else {
+			favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_disabled));
+		}
 	}
 }

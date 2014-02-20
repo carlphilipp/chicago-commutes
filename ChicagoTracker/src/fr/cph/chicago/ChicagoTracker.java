@@ -32,36 +32,69 @@ import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.exception.TrackerException;
 
+/**
+ * 
+ * @author carl
+ *
+ */
 public class ChicagoTracker extends Application {
-
-	private static Context context;
-	private static Date lastTrainUpdate = null;
+	
+	/** **/
 	public static final String PREFERENCE_FAVORITES = "ChicagoTrackerFavorites";
+	/** **/
 	public static final String PREFERENCE_FAVORITES_TRAIN = "ChicagoTrackerFavoritesTrain";
+	/** **/
 	public static final String PREFERENCE_FAVORITES_BUS = "ChicagoTrackerFavoritesBus";
+	/** **/
+	private static Context context;
+	/** **/
+	private static Date lastTrainUpdate;
+	/** **/
 	private static SparseArray<TrainArrival> trainArrivals;
+	/** **/
 	private static List<BusArrival> busArrivals;
+	/** **/
 	private static List<BusStop> geoBusStops;
-
+	/** **/
 	public static FrameLayout container;
 
+	/**
+	 * 
+	 */
 	public final void onCreate() {
 		super.onCreate();
 		ChicagoTracker.context = getApplicationContext();
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public static Context getAppContext() {
 		return ChicagoTracker.context;
 	}
 
+	/**
+	 * 
+	 * @param date
+	 */
 	public static void modifyLastUpdate(final Date date) {
 		lastTrainUpdate = date;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public static Date getLastTrainUpdate() {
 		return lastTrainUpdate;
 	}
 
+	/**
+	 * 
+	 * @param activity
+	 * @param ex
+	 */
 	public static void displayError(Activity activity, TrackerException ex) {
 		Intent intent = new Intent(activity, ErrorActivity.class);
 		Bundle extras = new Bundle();
@@ -71,26 +104,50 @@ public class ChicagoTracker extends Application {
 		activity.startActivity(intent);
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public static SparseArray<TrainArrival> getTrainArrivals() {
 		return trainArrivals;
 	}
 
+	/**
+	 * 
+	 * @param trainArrivals
+	 */
 	public static void setTrainArrivals(SparseArray<TrainArrival> trainArrivals) {
 		ChicagoTracker.trainArrivals = trainArrivals;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public static List<BusArrival> getBusArrivals() {
 		return busArrivals;
 	}
 
+	/**
+	 * 
+	 * @param busArrivals
+	 */
 	public static void setBusArrivals(List<BusArrival> busArrivals) {
 		ChicagoTracker.busArrivals = busArrivals;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public static List<BusStop> getGeoBusStops() {
 		return geoBusStops;
 	}
 
+	/**
+	 * 
+	 * @param geoBusStops
+	 */
 	public static void setGeoBusStops(List<BusStop> geoBusStops) {
 		ChicagoTracker.geoBusStops = geoBusStops;
 	}

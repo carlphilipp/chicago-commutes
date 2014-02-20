@@ -24,7 +24,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -37,12 +36,20 @@ import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public class BusBoundActivity extends ListActivity {
 
-	private static final String TAG = "BusBoundActivity";
+	/** **/
 	private String busRouteId;
+	/** **/
 	private String busRouteName;
+	/** **/
 	private String bound;
+	/** **/
 	private BusBoundAdapter ada;
 
 	@Override
@@ -101,8 +108,14 @@ public class BusBoundActivity extends ListActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	/**
+	 * 
+	 * @author carl
+	 * 
+	 */
 	private class BusBoundAsyncTask extends AsyncTask<Void, Void, List<BusStop>> {
 
+		/** **/
 		private TrackerException trackerException;
 
 		@Override

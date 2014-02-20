@@ -16,17 +16,32 @@
 
 package fr.cph.chicago.data;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public class DataHolder {
 
+	/** **/
 	private static DataHolder dataHolder;
-
+	/** **/
 	private TrainData trainData;
+	/** **/
 	private BusData busData;
+	/** **/
 	private AlertData alertData;
 
+	/**
+	 * 
+	 */
 	private DataHolder() {
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public static final DataHolder getInstance() {
 		if (dataHolder == null) {
 			dataHolder = new DataHolder();
@@ -34,26 +49,50 @@ public class DataHolder {
 		return dataHolder;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final TrainData getTrainData() {
 		return trainData;
 	}
 
+	/**
+	 * 
+	 * @param data
+	 */
 	public final void setTrainData(final TrainData data) {
 		this.trainData = data;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final BusData getBusData() {
 		return busData;
 	}
 
+	/**
+	 * 
+	 * @param busData
+	 */
 	public final void setBusData(final BusData busData) {
 		this.busData = busData;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final AlertData getAlertData() {
 		return alertData;
 	}
 
+	/**
+	 * 
+	 * @param alertData
+	 */
 	public final void setAlertData(final AlertData alertData) {
 		this.alertData = alertData;
 	}

@@ -16,31 +16,61 @@
 
 package fr.cph.chicago.entity;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public class Position {
-
+	/** **/
 	private Double latitude;
+	/** **/
 	private Double longitude;
 
+	/**
+	 * 
+	 */
 	public Position() {
 	}
 
+	/**
+	 * 
+	 * @param latitude
+	 * @param longitude
+	 */
 	public Position(final Double latitude, final Double longitude) {
 		this.latitude = latitude;
 		this.longitude = longitude;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final Double getLatitude() {
 		return latitude;
 	}
 
+	/**
+	 * 
+	 * @param latitude
+	 */
 	public final void setLatitude(final Double latitude) {
 		this.latitude = latitude;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final Double getLongitude() {
 		return longitude;
 	}
 
+	/**
+	 * 
+	 * @param longitude
+	 */
 	public final void setLongitude(final Double longitude) {
 		this.longitude = longitude;
 	}

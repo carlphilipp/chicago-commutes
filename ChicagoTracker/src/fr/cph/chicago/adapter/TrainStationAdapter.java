@@ -26,13 +26,12 @@ import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public final class TrainStationAdapter extends BaseAdapter {
-
-	/** Tag **/
-	private static final String TAG = "TrainStationAdapter";
-
-	public TrainStationAdapter() {
-	}
 
 	@Override
 	public final int getCount() {

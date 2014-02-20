@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -35,7 +36,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils.TruncateAt;
 import android.util.SparseArray;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -70,22 +70,30 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.util.Util;
 
+/**
+ * 
+ * @author carl
+ *
+ */
 public final class FavoritesAdapter extends BaseAdapter {
 
-	/** Tag **/
-	private static final String TAG = "FavoritesAdapter";
-
+	/** **/
 	private MainActivity activity;
+	/** **/
 	private Context context;
+	/** **/
 	private FrameLayout firstLayout;
-
+	/** **/
 	private VehiculeArrival arrival;
-
+	/** **/
 	private Map<String, Integer> ids;
+	/** **/
 	private Map<Integer, LinearLayout> layouts;
+	/** **/
 	private Map<Integer, View> views;
+	/** **/
 	private Map<String, TextView> mUpdated;
-
+	/** **/
 	private String lastUpdate;
 
 	@SuppressLint("UseSparseArrays")
@@ -330,7 +338,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 						llh.setLayoutParams(paramsLayout);
 						llh.setOrientation(LinearLayout.HORIZONTAL);
 						llh.setPadding(line1PaddingColor, stopsPaddingTop, 0, 0);
-						
+
 						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 							llh.setBackground(context.getResources().getDrawable(R.drawable.any_selector));
 						}
@@ -436,11 +444,21 @@ public final class FavoritesAdapter extends BaseAdapter {
 		return convertView;
 	}
 
+	/**
+	 * 
+	 * @author carl
+	 * 
+	 */
 	static class TrainViewHolder {
 		TextView stationNameView;
 		TextView updatedView;
 	}
 
+	/**
+	 * 
+	 * @param lastUpdate
+	 * @return
+	 */
 	private final String getLastUpdateInMinutes(final Date lastUpdate) {
 		String res = null;
 		if (lastUpdate != null) {
@@ -462,54 +480,32 @@ public final class FavoritesAdapter extends BaseAdapter {
 		return res;
 	}
 
-	public static long[] getTimeDifference(final Date d1, final Date d2) {
-		long[] result = new long[2];
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(d1);
-
-		long t1 = cal.getTimeInMillis();
-		cal.setTime(d2);
-
-		long diff = Math.abs(cal.getTimeInMillis() - t1);
-		final int ONE_DAY = 1000 * 60 * 60 * 24;
-		final int ONE_HOUR = ONE_DAY / 24;
-		final int ONE_MINUTE = ONE_HOUR / 60;
-		// final int ONE_SECOND = ONE_MINUTE / 60;
-
-		// long d = diff / ONE_DAY;
-		diff %= ONE_DAY;
-
-		long h = diff / ONE_HOUR;
-		diff %= ONE_HOUR;
-
-		long m = diff / ONE_MINUTE;
-		diff %= ONE_MINUTE;
-
-		// long s = diff / ONE_SECOND;
-		// long ms = diff % ONE_SECOND;
-		// result[0] = d;
-		// result[1] = h;
-		// result[2] = m;
-		// result[3] = s;
-		// result[4] = ms;
-		result[0] = h;
-		result[1] = m;
-
-		return result;
-	}
-
+	/**
+	 * 
+	 * @param arrivals
+	 * @param busArrivals
+	 */
 	public final void setArrivals(final SparseArray<TrainArrival> arrivals, final List<BusArrival> busArrivals) {
 		arrival.setArrivals(arrivals, busArrivals);
 	}
 
+	/**
+	 * 
+	 */
 	public final void setFavorites() {
 		arrival.setFavorites();
 	}
 
+	/**
+	 * 
+	 */
 	public final void refreshUpdated() {
 		ChicagoTracker.modifyLastUpdate(Calendar.getInstance().getTime());
 	}
 
+	/**
+	 * 
+	 */
 	public final void refreshUpdatedView() {
 		Date lastUpdate = ChicagoTracker.getLastTrainUpdate();
 		if (!String.valueOf(getLastUpdateInMinutes(lastUpdate)).equals(this.lastUpdate)) {
@@ -518,6 +514,11 @@ public final class FavoritesAdapter extends BaseAdapter {
 		}
 	}
 
+	/**
+	 * 
+	 * @author carl
+	 * 
+	 */
 	private class BusBoundAsyncTask extends AsyncTask<String, Void, BusStop> {
 
 		private String busRouteId;
@@ -575,5 +576,31 @@ public final class FavoritesAdapter extends BaseAdapter {
 				ChicagoTracker.displayError(activity, trackerException);
 			}
 		}
+	}
+
+	/**
+	 * 
+	 * @param d1
+	 * @param d2
+	 * @return
+	 */
+	private final long[] getTimeDifference(final Date d1, final Date d2) {
+		long[] result = new long[2];
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(d1);
+		long t1 = cal.getTimeInMillis();
+		cal.setTime(d2);
+		long diff = Math.abs(cal.getTimeInMillis() - t1);
+		final int ONE_DAY = 1000 * 60 * 60 * 24;
+		final int ONE_HOUR = ONE_DAY / 24;
+		final int ONE_MINUTE = ONE_HOUR / 60;
+		diff %= ONE_DAY;
+		long h = diff / ONE_HOUR;
+		diff %= ONE_HOUR;
+		long m = diff / ONE_MINUTE;
+		diff %= ONE_MINUTE;
+		result[0] = h;
+		result[1] = m;
+		return result;
 	}
 }

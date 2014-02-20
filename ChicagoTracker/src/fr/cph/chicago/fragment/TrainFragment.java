@@ -16,10 +16,6 @@
 
 package fr.cph.chicago.fragment;
 
-/**
- * Created by carl on 11/15/13.
- */
-
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
@@ -35,16 +31,23 @@ import fr.cph.chicago.activity.TrainStationActivity;
 import fr.cph.chicago.adapter.TrainStationAdapter;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
+/**
+ * 
+ * @author carl
+ *
+ */
 public final class TrainFragment extends Fragment {
-	/**
-	 * The fragment argument representing the section number for this fragment.
-	 */
+
+	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
+	 * 
+	 * @param sectionNumber
+	 * @return
 	 */
-	public static final TrainFragment newInstance(int sectionNumber) {
+	public static final TrainFragment newInstance(final int sectionNumber) {
 		TrainFragment fragment = new TrainFragment();
 		Bundle args = new Bundle();
 		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
@@ -52,14 +55,9 @@ public final class TrainFragment extends Fragment {
 		return fragment;
 	}
 
-	public TrainFragment() {
-	}
-
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-
 		View rootView = inflater.inflate(R.layout.fragment_train, container, false);
-		
 		TrainStationAdapter ada = new TrainStationAdapter();
 		ListView listView = (ListView) rootView.findViewById(R.id.train_list);
 		listView.setAdapter(ada);

@@ -14,13 +14,19 @@ import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.Alert;
 import fr.cph.chicago.entity.Service;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public final class AlertAdapter extends BaseAdapter {
 
-	/** Tag **/
-	private static final String TAG = "AlertAdapter";
-
+	/** **/
 	private List<Alert> alerts;
 
+	/**
+	 * 
+	 */
 	public AlertAdapter() {
 		alerts = DataHolder.getInstance().getAlertData().getAlerts();
 	}
@@ -76,6 +82,11 @@ public final class AlertAdapter extends BaseAdapter {
 		return convertView;
 	}
 
+	/**
+	 * 
+	 * @author carl
+	 * 
+	 */
 	static class ViewHolder {
 		TextView lineView;
 		TextView headLineView;

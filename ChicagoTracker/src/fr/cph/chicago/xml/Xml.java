@@ -50,15 +50,26 @@ import fr.cph.chicago.entity.enumeration.PredictionType;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ParserException;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public class Xml {
 
 	/** Tag **/
 	private static final String TAG = "Xml";
-
+	/** **/
 	private XmlPullParser parser;
+	/** **/
 	private SimpleDateFormat dfTrain;
+	/** **/
 	private SimpleDateFormat dfBus;
 
+	/**
+	 * 
+	 * @throws ParserException
+	 */
 	@SuppressLint("SimpleDateFormat")
 	public Xml() throws ParserException {
 		try {
@@ -71,6 +82,13 @@ public class Xml {
 		}
 	}
 
+	/**
+	 * 
+	 * @param xml
+	 * @param data
+	 * @return
+	 * @throws ParserException
+	 */
 	public final SparseArray<TrainArrival> parseArrivals(final String xml, final TrainData data) throws ParserException {
 		InputStream is = new ByteArrayInputStream(xml.getBytes());
 		SparseArray<TrainArrival> arrivals = null;
@@ -264,6 +282,12 @@ public class Xml {
 		return arrivals;
 	}
 
+	/**
+	 * 
+	 * @param xml
+	 * @return
+	 * @throws ParserException
+	 */
 	public final List<BusRoute> parseBusRoutes(final String xml) throws ParserException {
 		List<BusRoute> routes = null;
 		try {
@@ -318,6 +342,13 @@ public class Xml {
 		return routes;
 	}
 
+	/**
+	 * 
+	 * @param xml
+	 * @param id
+	 * @return
+	 * @throws ParserException
+	 */
 	public final BusDirections parseBusDirections(final String xml, final String id) throws ParserException {
 		BusDirections directions = null;
 		try {
@@ -349,6 +380,12 @@ public class Xml {
 		return directions;
 	}
 
+	/**
+	 * 
+	 * @param xml
+	 * @return
+	 * @throws ParserException
+	 */
 	public final List<BusStop> parseBusBounds(final String xml) throws ParserException {
 		List<BusStop> busStops = null;
 		String tagName = null;
@@ -393,6 +430,12 @@ public class Xml {
 		return busStops;
 	}
 
+	/**
+	 * 
+	 * @param xml
+	 * @return
+	 * @throws ParserException
+	 */
 	public final List<BusArrival> parseBusArrivals(final String xml) throws ParserException {
 		List<BusArrival> busArrivals = null;
 		String tagName = null;
@@ -454,6 +497,12 @@ public class Xml {
 		return busArrivals;
 	}
 
+	/**
+	 * 
+	 * @param xml
+	 * @return
+	 * @throws ParserException
+	 */
 	public final List<Alert> parseAlertGeneral(final String xml) throws ParserException {
 		List<Alert> alerts = null;
 		String tagName = null;

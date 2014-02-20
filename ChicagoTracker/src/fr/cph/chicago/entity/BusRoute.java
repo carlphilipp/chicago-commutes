@@ -16,26 +16,51 @@
 
 package fr.cph.chicago.entity;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public final class BusRoute {
-
+	/** **/
 	private String id;
+	/** **/
 	private String name;
 
+	/**
+	 * 
+	 */
 	public BusRoute() {
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final String getId() {
 		return id;
 	}
 
+	/**
+	 * 
+	 * @param id
+	 */
 	public final void setId(final String id) {
 		this.id = id;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final String getName() {
 		return name;
 	}
 
+	/**
+	 * 
+	 * @param name
+	 */
 	public final void setName(final String name) {
 		this.name = name;
 	}

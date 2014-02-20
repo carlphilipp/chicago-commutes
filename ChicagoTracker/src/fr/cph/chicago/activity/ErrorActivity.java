@@ -3,7 +3,6 @@ package fr.cph.chicago.activity;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
-import android.opengl.Visibility;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,15 +12,20 @@ import android.widget.Button;
 import android.widget.TextView;
 import fr.cph.chicago.R;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public class ErrorActivity extends Activity {
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.error);
-		
+
 		View loadLayout = findViewById(R.id.loading_layout);
 		loadLayout.setVisibility(View.GONE);
-		
+
 		Intent intent = getIntent();
 		String error = intent.getExtras().getString("error");
 		TextView errorText = (TextView) findViewById(R.id.error_message);

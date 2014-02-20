@@ -1,14 +1,26 @@
+/**
+ * Copyright 2014 Carl-Philipp Harmant
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package fr.cph.chicago.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
 import android.graphics.Matrix;
 import android.graphics.PointF;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.FloatMath;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,36 +31,42 @@ import android.widget.ImageView.ScaleType;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public class MapFragment extends Fragment implements OnTouchListener {
 
-	private static final String TAG = "MapFragment";
-
-	/**
-	 * The fragment argument representing the section number for this fragment.
-	 */
+	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
+	/** **/
+	private Matrix matrix = new Matrix();
+	/** **/
+	private Matrix savedMatrix = new Matrix();
+	/** **/
+	private static final int NONE = 0;
+	/** **/
+	private static final int DRAG = 1;
+	/** **/
+	private static final int ZOOM = 2;
+	/** **/
+	private int mode = NONE;
 
-	private MainActivity activity;
-
-	// These matrices will be used to move and zoom image
-	Matrix matrix = new Matrix();
-	Matrix savedMatrix = new Matrix();
-
-	// We can be in one of these 3 states
-	static final int NONE = 0;
-	static final int DRAG = 1;
-	static final int ZOOM = 2;
-	int mode = NONE;
-
-	// Remember some things for zooming
-	PointF start = new PointF();
-	PointF mid = new PointF();
-	float oldDist = 1f;
-
-	float mCurrentScale = 1.0f;
-
+	/** **/
+	private PointF start = new PointF();
+	/** **/
+	private PointF mid = new PointF();
+	/** **/
+	private float oldDist = 1f;
+	/** **/
 	private ImageView view;
 
+	/**
+	 * 
+	 * @param sectionNumber
+	 * @return
+	 */
 	public static final MapFragment newInstance(final int sectionNumber) {
 		MapFragment fragment = new MapFragment();
 		Bundle args = new Bundle();
@@ -62,29 +80,16 @@ public class MapFragment extends Fragment implements OnTouchListener {
 		View rootView = inflater.inflate(R.layout.fragment_map, container, false);
 		view = (ImageView) rootView.findViewById(R.id.imageView);
 		view.setOnTouchListener(this);
-//		Handler handler = new Handler(); 
-//	    handler.postDelayed(new Runnable() { 
-//	         public void run() { 
-//	        	 view.setImageResource(R.drawable.ctamap);
-//	         } 
-//	    }, 250); 
-	    
-	    view.setImageResource(R.drawable.ctamap);
+		view.setImageResource(R.drawable.ctamap);
 		return rootView;
 	}
 
 	@Override
 	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
-		this.activity = (MainActivity) activity;
 		((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 
-//	@Override
-//	public final void onResume(){
-//		
-//	}
-	
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 		ImageView view = (ImageView) v;
@@ -132,6 +137,10 @@ public class MapFragment extends Fragment implements OnTouchListener {
 		return true; // indicate event was handled
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final boolean isCenteredAlready() {
 		boolean res = false;
 		if (view.getScaleType().equals(ScaleType.FIT_CENTER)) {
@@ -140,6 +149,9 @@ public class MapFragment extends Fragment implements OnTouchListener {
 		return res;
 	}
 
+	/**
+	 * 
+	 */
 	public final void resetImage() {
 		view.setScaleType(ScaleType.FIT_CENTER);
 	}
@@ -150,7 +162,7 @@ public class MapFragment extends Fragment implements OnTouchListener {
 	private float spacing(MotionEvent event) {
 		float x = event.getX(0) - event.getX(1);
 		float y = event.getY(0) - event.getY(1);
-		return FloatMath.sqrt(x * x + y * y);
+		return (float) java.lang.Math.sqrt(x * x + y * y);
 	}
 
 	/** Calculate the mid point of the first two fingers */

@@ -1,3 +1,19 @@
+/**
+ * Copyright 2014 Carl-Philipp Harmant
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package fr.cph.chicago.fragment;
 
 import java.util.ArrayList;
@@ -61,27 +77,37 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.xml.Xml;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public class NearbyFragment extends Fragment {
 
+	/** Tag **/
 	private static final String TAG = "NearbyFragment";
-
+	/** The fragment argument representing the section number for this fragment. **/
+	private static final String ARG_SECTION_NUMBER = "section_number";
+	/** **/
 	private MainActivity mActivity;
-
+	/** **/
 	private MapFragment mapFragment;
+	/** **/
 	private View loadLayout;
+	/** **/
 	private GoogleMap map;
+	/** **/
 	private NearbyAdapter ada;
+	/** **/
 	private ListView listView;
-
+	/** **/
 	private static final LatLng CHICAGO = new LatLng(41.8819, -87.6278);
 
 	/**
-	 * The fragment argument representing the section number for this fragment.
-	 */
-	private static final String ARG_SECTION_NUMBER = "section_number";
-
-	/**
 	 * Returns a new instance of this fragment for the given section number.
+	 * 
+	 * @param sectionNumber
+	 * @return
 	 */
 	public static NearbyFragment newInstance(final int sectionNumber) {
 		NearbyFragment fragment = new NearbyFragment();
@@ -111,7 +137,7 @@ public class NearbyFragment extends Fragment {
 	}
 
 	@Override
-	public void onStart() {
+	public final void onStart() {
 		super.onStart();
 		FragmentManager fm = getFragmentManager();
 		mapFragment = (MapFragment) fm.findFragmentById(R.id.map);
@@ -121,7 +147,7 @@ public class NearbyFragment extends Fragment {
 	}
 
 	@Override
-	public void onResume() {
+	public final void onResume() {
 		super.onResume();
 		if (map == null) {
 			map = mapFragment.getMap();
@@ -140,16 +166,25 @@ public class NearbyFragment extends Fragment {
 		mActivity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 	}
 
-	private final class LoadArrivals extends AsyncTask<List<?>, Void, Void> {
+	/**
+	 * 
+	 * @author carl
+	 * 
+	 */
+	private class LoadArrivals extends AsyncTask<List<?>, Void, Void> {
 
+		/** **/
 		private SparseArray<Map<String, List<BusArrival>>> busArrivalsMap;
+		/** **/
 		private SparseArray<TrainArrival> trainArrivals;
+		/** **/
 		private List<BusStop> busStops;
+		/** **/
 		private List<Station> stations;
 
 		@SuppressWarnings("unchecked")
 		@Override
-		protected Void doInBackground(List<?>... params) {
+		protected final Void doInBackground(final List<?>... params) {
 			busStops = (List<BusStop>) params[0];
 			stations = (List<Station>) params[1];
 
@@ -217,7 +252,7 @@ public class NearbyFragment extends Fragment {
 		}
 
 		@Override
-		protected final void onPostExecute(Void result) {
+		protected final void onPostExecute(final Void result) {
 			load(busStops, busArrivalsMap, stations, trainArrivals);
 		}
 	}
@@ -230,28 +265,28 @@ public class NearbyFragment extends Fragment {
 	 */
 	private final class LoadNearby extends AsyncTask<Void, Void, Void> implements LocationListener {
 
-		private static final String TAG = "LoadNearby";
-
 		// The minimum distance to change Updates in meters
 		private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
-
 		// The minimum time between updates in milliseconds
 		private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
-
 		// flag for GPS status
-		boolean isGPSEnabled = false;
+		private boolean isGPSEnabled = false;
 		// flag for network status
-		boolean isNetworkEnabled = false;
-
-		boolean canGetLocation = false;
-
+		private boolean isNetworkEnabled = false;
+		/** **/
 		private Location location;
+		/** **/
 		private Position position;
-		private double latitude; // latitude
-		private double longitude; // longitude
-
+		/** **/
+		private double latitude;
+		/** **/
+		private double longitude;
+		/** **/
 		private List<BusStop> busStops;
+		/** **/
 		private List<Station> trainStations;
+		/** **/
+		private LocationManager locationManager;
 
 		@Override
 		protected final Void doInBackground(final Void... params) {
@@ -262,7 +297,7 @@ public class NearbyFragment extends Fragment {
 			BusData busData = dataHolder.getBusData();
 			TrainData trainData = dataHolder.getTrainData();
 
-			LocationManager locationManager = (LocationManager) mActivity.getSystemService(Context.LOCATION_SERVICE);
+			locationManager = (LocationManager) mActivity.getSystemService(Context.LOCATION_SERVICE);
 
 			// getting GPS status
 			isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -274,7 +309,6 @@ public class NearbyFragment extends Fragment {
 				// no network provider is enabled
 				showSettingsAlert();
 			} else {
-				this.canGetLocation = true;
 				if (isNetworkEnabled) {
 					locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES,
 							this, Looper.getMainLooper());
@@ -305,16 +339,16 @@ public class NearbyFragment extends Fragment {
 				position.setLongitude(longitude);
 
 				busStops = busData.readNearbyStops(position);
-
 				trainStations = trainData.readNearbyStation(position);
 			}
 			return null;
 		}
 
 		@Override
-		protected final void onPostExecute(Void result) {
+		protected final void onPostExecute(final Void result) {
 			new LoadArrivals().execute(busStops, trainStations);
 			centerMap(position);
+			locationManager.removeUpdates(LoadNearby.this);
 		}
 
 		@Override
@@ -334,9 +368,9 @@ public class NearbyFragment extends Fragment {
 		}
 
 		/**
-		 * Function to show settings alert dialog On pressing Settings button will lauch Settings Options
-		 * */
-		public void showSettingsAlert() {
+		 * Function to show settings alert dialog
+		 */
+		private void showSettingsAlert() {
 			new Thread() {
 				public void run() {
 					NearbyFragment.this.mActivity.runOnUiThread(new Runnable() {
@@ -363,7 +397,11 @@ public class NearbyFragment extends Fragment {
 		}
 	}
 
-	public final void centerMap(final Position positon) {
+	/**
+	 * 
+	 * @param positon
+	 */
+	private void centerMap(final Position positon) {
 		while (mapFragment.getMap() == null) {
 		}
 		map = mapFragment.getMap();
@@ -379,7 +417,14 @@ public class NearbyFragment extends Fragment {
 		// map.animateCamera(CameraUpdateFactory.zoomTo(14), 2000, null);
 	}
 
-	private final void load(final List<BusStop> buses, final SparseArray<Map<String, List<BusArrival>>> busArrivals, final List<Station> stations,
+	/**
+	 * 
+	 * @param buses
+	 * @param busArrivals
+	 * @param stations
+	 * @param trainArrivals
+	 */
+	private void load(final List<BusStop> buses, final SparseArray<Map<String, List<BusArrival>>> busArrivals, final List<Station> stations,
 			final SparseArray<TrainArrival> trainArrivals) {
 		List<Marker> markers = new ArrayList<Marker>();
 		for (BusStop busStop : buses) {
@@ -404,6 +449,11 @@ public class NearbyFragment extends Fragment {
 
 	}
 
+	/**
+	 * 
+	 * @param busStops
+	 * @param stations
+	 */
 	private void addClickEventsToMarkers(final List<BusStop> busStops, final List<Station> stations) {
 		map.setOnMarkerClickListener(new OnMarkerClickListener() {
 
@@ -431,6 +481,11 @@ public class NearbyFragment extends Fragment {
 		});
 	}
 
+	/**
+	 * 
+	 * @param show
+	 * @param errorMessage
+	 */
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
 	private final void showProgress(final boolean show, final String errorMessage) {
 		try {
@@ -452,6 +507,9 @@ public class NearbyFragment extends Fragment {
 		}
 	}
 
+	/**
+	 * 
+	 */
 	public final void reloadData() {
 		map.clear();
 		showProgress(true, null);

@@ -1,3 +1,19 @@
+/**
+ * Copyright 2014 Carl-Philipp Harmant
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package fr.cph.chicago.adapter;
 
 import java.util.ArrayList;
@@ -41,32 +57,39 @@ import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.Util;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public final class NearbyAdapter extends BaseAdapter {
 
-	private static final String TAG = "NearbyAdapter";
-
+	/** **/
 	private Context context;
-	private MainActivity activity;
+	/** **/
 	private BusData busData;
-
+	/** **/
 	private List<BusStop> busStops;
+	/** **/
 	private SparseArray<Map<String, List<BusArrival>>> busArrivals;
+	/** **/
 	private SparseArray<TrainArrival> trainArrivals;
+	/** **/
 	private List<Station> stations;
-
 	/** Google map **/
 	private GoogleMap map;
+	/** **/
 	private List<Marker> markers;
-
 	/** Layouts **/
 	private Map<String, Integer> ids;
+	/** **/
 	private Map<Integer, LinearLayout> layouts;
+	/** **/
 	private Map<Integer, View> views;
 
 	@SuppressLint("UseSparseArrays")
 	public NearbyAdapter(final MainActivity activity) {
 		this.context = ChicagoTracker.getAppContext();
-		this.activity = activity;
 		this.busStops = new ArrayList<BusStop>();
 		this.busArrivals = new SparseArray<Map<String, List<BusArrival>>>();
 		this.stations = new ArrayList<Station>();
@@ -153,7 +176,7 @@ public final class NearbyAdapter extends BaseAdapter {
 			LinearLayout.LayoutParams paramsArrival = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
 			Set<TrainLine> setTL = station.getLines();
-			
+
 			// Reset ETAs
 			for (int i = 0; i < resultLayout.getChildCount(); i++) {
 				LinearLayout layout = (LinearLayout) resultLayout.getChildAt(i);
@@ -331,11 +354,25 @@ public final class NearbyAdapter extends BaseAdapter {
 		return convertView;
 	}
 
+	/**
+	 * 
+	 * @author carl
+	 * 
+	 */
 	static class TrainViewHolder {
 		TextView stationNameView;
 		TextView type;
 	}
 
+	/**
+	 * 
+	 * @param busStops
+	 * @param busArrivals
+	 * @param stations
+	 * @param trainArrivals
+	 * @param map
+	 * @param markers
+	 */
 	public final void updateData(final List<BusStop> busStops, final SparseArray<Map<String, List<BusArrival>>> busArrivals,
 			final List<Station> stations, final SparseArray<TrainArrival> trainArrivals, final GoogleMap map, final List<Marker> markers) {
 		this.busStops = busStops;
@@ -345,5 +382,4 @@ public final class NearbyAdapter extends BaseAdapter {
 		this.map = map;
 		this.markers = markers;
 	}
-
 }

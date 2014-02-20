@@ -38,16 +38,34 @@ import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.xml.Xml;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public class BusData {
 
 	/** Tag **/
 	private static final String TAG = "BusData";
-
+	/** **/
+	private static BusData busData;
+	/** **/
 	private List<BusRoute> routes;
+	/** **/
 	private List<BusStop> stops;
 
-	private static BusData busData;
+	/**
+	 * 
+	 */
+	private BusData() {
+		this.routes = new ArrayList<BusRoute>();
+		this.stops = new ArrayList<BusStop>();
+	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public static BusData getInstance() {
 		if (busData == null) {
 			busData = new BusData();
@@ -55,11 +73,10 @@ public class BusData {
 		return busData;
 	}
 
-	private BusData() {
-		this.routes = new ArrayList<BusRoute>();
-		this.stops = new ArrayList<BusStop>();
-	}
-
+	/**
+	 * 
+	 * @return
+	 */
 	public final List<BusStop> readBusStops() {
 		if (stops.size() == 0) {
 			try {
@@ -98,12 +115,12 @@ public class BusData {
 		return stops;
 	}
 
-	private void order() {
-		if (stops.size() != 0) {
-			Collections.sort(stops);
-		}
-	}
-
+	/**
+	 * 
+	 * @return
+	 * @throws ParserException
+	 * @throws ConnectException
+	 */
 	public final List<BusRoute> loadBusRoutes() throws ParserException, ConnectException {
 		if (routes.size() == 0) {
 			MultiMap<String, String> params = new MultiValueMap<String, String>();
@@ -115,18 +132,36 @@ public class BusData {
 		return routes;
 	}
 
-	public List<BusRoute> getRoutes() {
+	/**
+	 * 
+	 * @return
+	 */
+	public final List<BusRoute> getRoutes() {
 		return routes;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final int getRouteSize() {
 		return routes.size();
 	}
 
+	/**
+	 * 
+	 * @param position
+	 * @return
+	 */
 	public final BusRoute getRoute(final int position) {
 		return routes.get(position);
 	}
 
+	/**
+	 * 
+	 * @param routeId
+	 * @return
+	 */
 	public final BusRoute getRoute(final String routeId) {
 		BusRoute result = null;
 		for (BusRoute br : routes) {
@@ -138,6 +173,14 @@ public class BusData {
 		return result;
 	}
 
+	/**
+	 * 
+	 * @param stopId
+	 * @param bound
+	 * @return
+	 * @throws ConnectException
+	 * @throws ParserException
+	 */
 	public final List<BusStop> loadBusStop(final String stopId, final String bound) throws ConnectException, ParserException {
 		CtaConnect connect = CtaConnect.getInstance();
 		MultiMap<String, String> param = new MultiValueMap<String, String>();
@@ -150,11 +193,20 @@ public class BusData {
 		return busStops;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final List<BusStop> readAllBusStops() {
 		return this.stops;
 	}
 
-	public final BusStop readOneBus(int id) {
+	/**
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public final BusStop readOneBus(final int id) {
 		BusStop res = null;
 		for (BusStop busStop : stops) {
 			if (busStop.getId().intValue() == id) {
@@ -165,7 +217,12 @@ public class BusData {
 		return res;
 	}
 
-	public final List<BusStop> readNearbyStops(Position position) {
+	/**
+	 * 
+	 * @param position
+	 * @return
+	 */
+	public final List<BusStop> readNearbyStops(final Position position) {
 
 		final double dist = 0.004472;
 
@@ -194,5 +251,14 @@ public class BusData {
 			}
 		});
 		return res;
+	}
+
+	/**
+	 * 
+	 */
+	private void order() {
+		if (stops.size() != 0) {
+			Collections.sort(stops);
+		}
 	}
 }

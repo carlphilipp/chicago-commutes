@@ -16,10 +16,6 @@
 
 package fr.cph.chicago.fragment;
 
-/**
- * Created by carl on 11/15/13.
- */
-
 import java.util.List;
 
 import android.app.Activity;
@@ -42,25 +38,28 @@ import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.exception.TrackerException;
 
 /**
- * A placeholder fragment containing a simple view.
+ * 
+ * @author carl
+ * 
  */
 public class FavoritesFragment extends Fragment {
-	/**
-	 * The fragment argument representing the section number for this fragment.
-	 */
-	private static final String ARG_SECTION_NUMBER = "section_number";
 
+	/** The fragment argument representing the section number for this fragment. **/
+	private static final String ARG_SECTION_NUMBER = "section_number";
 	/** Tag **/
 	private static final String TAG = "FavoritesFragment";
-
-	private static MainActivity mActivity;
-
-	private static FavoritesAdapter ada;
-
+	/** **/
+	private MainActivity mActivity;
+	/** **/
+	private FavoritesAdapter ada;
+	/** **/
 	private RefreshTask refreshTimingTask;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
+	 * 
+	 * @param sectionNumber
+	 * @return
 	 */
 	public static final FavoritesFragment newInstance(final int sectionNumber) {
 		FavoritesFragment fragment = new FavoritesFragment();
@@ -74,7 +73,10 @@ public class FavoritesFragment extends Fragment {
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
+		Log.i(TAG, "Train arrival null ? " + (ChicagoTracker.getTrainArrivals() == null));
+		Log.i(TAG, "Bus arrival null ? " + (ChicagoTracker.getBusArrivals() == null));
 		if (ada == null) {
+			Log.i(TAG, "Load ada");
 			ada = new FavoritesAdapter(mActivity);
 			ada.setArrivals(ChicagoTracker.getTrainArrivals(), ChicagoTracker.getBusArrivals());
 		}
@@ -84,11 +86,6 @@ public class FavoritesFragment extends Fragment {
 		startRefreshTask();
 
 		return rootView;
-	}
-
-	private void startRefreshTask() {
-		refreshTimingTask = (RefreshTask) new RefreshTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-		ada.refreshUpdatedView();
 	}
 
 	@Override
@@ -127,7 +124,14 @@ public class FavoritesFragment extends Fragment {
 		((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 
+	/**
+	 * 
+	 * @param trainArrivals
+	 * @param busArrivals
+	 */
 	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals) {
+		Log.i(TAG, "Reload data, Train arrival null ? " + (ChicagoTracker.getTrainArrivals() == null));
+		Log.i(TAG, "Reload data, Bus arrival null ? " + (ChicagoTracker.getBusArrivals() == null));
 		// startRefreshTask();
 		ada.setArrivals(trainArrivals, busArrivals);
 		ada.refreshUpdated();
@@ -136,14 +140,27 @@ public class FavoritesFragment extends Fragment {
 		((MainActivity) mActivity).stopRefreshAnimation();
 	}
 
-	public static final void displayError(TrackerException trackerException) {
+	/**
+	 * 
+	 * @param trackerException
+	 */
+	public final void displayError(TrackerException trackerException) {
 		ChicagoTracker.displayError(mActivity, trackerException);
 	}
 
-	public static final void updateFavorites() {
-		ada.setFavorites();
+	/**
+	 * 
+	 */
+	private void startRefreshTask() {
+		refreshTimingTask = (RefreshTask) new RefreshTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		ada.refreshUpdatedView();
 	}
 
+	/**
+	 * 
+	 * @author carl
+	 * 
+	 */
 	private class RefreshTask extends AsyncTask<Void, Void, Void> {
 
 		@Override

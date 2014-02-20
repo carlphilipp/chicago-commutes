@@ -25,6 +25,11 @@ import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.data.Preferences;
 
+/**
+ * 
+ * @author carl
+ *
+ */
 public class Util {
 	/** **/
 	private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);

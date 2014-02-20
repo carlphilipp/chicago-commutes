@@ -43,22 +43,46 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.xml.Xml;
 
+/**
+ * 
+ * @author carl
+ *
+ */
 public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 
 	/** Tag **/
 	private static final String TAG = "CtaConnectTask";
-
+	 /** **/
 	private Object instance;
+	 /** **/
 	private Class<?> classe;
+	 /** **/
 	private CtaRequestType requestType, requestType2;
+	 /** **/
 	private MultiMap<String, String> params, params2;
+	 /** **/
 	private Xml xml;
+	 /** **/
 	private SparseArray<TrainArrival> trainArrivals;
+	 /** **/
 	private TrainData data;
+	 /** **/
 	private TrackerException trackerTrainException;
+	 /** **/
 	private TrackerException trackerBusException;
+	 /** **/
 	private List<BusArrival> busArrivals;
 
+	/**
+	 * 
+	 * @param instance
+	 * @param classe
+	 * @param requestType
+	 * @param params
+	 * @param requestType2
+	 * @param params2
+	 * @throws ParserException
+	 */
 	public CtaConnectTask(final Object instance, final Class<?> classe, final CtaRequestType requestType, final MultiMap<String, String> params,
 			final CtaRequestType requestType2, final MultiMap<String, String> params2
 

@@ -24,35 +24,30 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toast;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.BusAdapter;
 
 /**
- * A placeholder fragment containing a simple view.
+ * 
+ * @author carl
+ * 
  */
 public class BusFragment extends Fragment {
 
-	private static final String TAG = "BusFragment";
-	
-	private static MainActivity mActivity;
-	/**
-	 * The fragment argument representing the section number for this fragment.
-	 */
+	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
-
-	private BusAdapter ada;
-
+	/** **/
+	private MainActivity mActivity;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
+	 * 
+	 * @param sectionNumber
+	 * @return
 	 */
 	public static BusFragment newInstance(final int sectionNumber) {
 		BusFragment fragment = new BusFragment();
@@ -63,46 +58,18 @@ public class BusFragment extends Fragment {
 	}
 
 	@Override
-	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.fragment_bus, container, false);
-		ada = new BusAdapter(mActivity);
-		ListView listView = (ListView) rootView.findViewById(R.id.bus_list);
-		listView.setAdapter(ada);
-		return rootView;
-	}
-
-	@Override
 	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
 		mActivity = (MainActivity) activity;
 		((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
-	
 
-//	@Override
-//	public final void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
-//		this.menu = menu;
-//		MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-//		refreshMenuItem.setActionView(R.layout.progressbar);
-//		refreshMenuItem.expandActionView();
-//		super.onCreateOptionsMenu(menu, inflater);
-//	}
-
-//	@Override
-//	public final boolean onOptionsItemSelected(final MenuItem item) {
-//		// Handle action bar item clicks here. The action bar will
-//		// automatically handle clicks on the Home/Up button, so long
-//		// as you specify a parent activity in AndroidManifest.xml.
-//		switch (item.getItemId()) {
-////		case R.id.action_settings:
-////			return true;
-//		case R.id.action_refresh:
-//			MenuItem menuItem = item;
-//			menuItem.setActionView(R.layout.progressbar);
-//			menuItem.expandActionView();
-//			Toast.makeText(this.getActivity(), "Refresh...!", Toast.LENGTH_SHORT).show();
-//			return true;
-//		}
-//		return true;
-//	}
+	@Override
+	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+		View rootView = inflater.inflate(R.layout.fragment_bus, container, false);
+		BusAdapter ada = new BusAdapter(mActivity);
+		ListView listView = (ListView) rootView.findViewById(R.id.bus_list);
+		listView.setAdapter(ada);
+		return rootView;
+	}
 }

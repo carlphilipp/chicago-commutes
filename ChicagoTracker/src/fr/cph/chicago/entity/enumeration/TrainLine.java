@@ -18,6 +18,11 @@ package fr.cph.chicago.entity.enumeration;
 
 import android.graphics.Color;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public enum TrainLine {
 	BLUE("Blue", "Blue", "Blue line", Color.rgb(0, 0, 204)), BROWN("Brn", "Brown", "Brown line", Color.rgb(102, 51, 0)), GREEN("G", "Green",
 			"Green line", Color.rgb(0, 153, 0)), ORANGE("Org", "Orange", "Orange line", Color.rgb(255, 128, 0)), PINK("Pink", "Pink", "Pink line",
@@ -25,18 +30,34 @@ public enum TrainLine {
 	// PURPLE_EXPRESS("Pexp", "Purple Express","Purple line express", Color.rgb(102, 0, 102)),
 	RED("Red", "Red", "Red line", Color.rgb(240, 0, 0)), YELLOW("Y", "Yellow", "Yellow line", Color.rgb(255, 255, 0));
 
+	/** **/
 	private String text;
+	/** **/
 	private String name;
+	/** **/
 	private String withLine;
+	/** **/
 	private int color;
 
-	TrainLine(final String text, final String name, final String withLine, final int color) {
+	/**
+	 * 
+	 * @param text
+	 * @param name
+	 * @param withLine
+	 * @param color
+	 */
+	private TrainLine(final String text, final String name, final String withLine, final int color) {
 		this.text = text;
 		this.name = name;
 		this.withLine = withLine;
 		this.color = color;
 	}
 
+	/**
+	 * 
+	 * @param text
+	 * @return
+	 */
 	public static final TrainLine fromXmlString(final String text) {
 		if (text != null) {
 			for (TrainLine b : TrainLine.values()) {
@@ -48,6 +69,11 @@ public enum TrainLine {
 		return null;
 	}
 
+	/**
+	 * 
+	 * @param text
+	 * @return
+	 */
 	public static final TrainLine fromString(final String text) {
 		if (text != null) {
 			for (TrainLine b : TrainLine.values()) {
@@ -59,16 +85,24 @@ public enum TrainLine {
 		return null;
 	}
 
-	@Override
-	public final String toString() {
-		return name;
-	}
-
+	/**
+	 * 
+	 * @return
+	 */
 	public final String toStringWithLine() {
 		return withLine;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final int getColor() {
 		return color;
+	}
+
+	@Override
+	public final String toString() {
+		return name;
 	}
 }

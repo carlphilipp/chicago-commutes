@@ -31,7 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:paddingRight="@+dimen/activity_station_stops_line1_padding_color"
-        android:text="T"
+        android:text="@string/T"
         android:textColor="@+color/grey_M_B"
         android:textIsSelectable="false"
         android:textSize="@+dimen/activity_train_line_M"
@@ -44,7 +44,7 @@
         android:layout_alignBaseline="@+id/train_bus_type"
         android:layout_toRightOf="@+id/train_bus_type"
         android:background="@color/grey_5"
-        android:text=" "
+        android:text="@string/empty_string"
         android:textIsSelectable="false"
         android:textSize="@+dimen/activity_train_line_M" />
 
@@ -75,7 +75,7 @@
         android:layout_below="@+id/train_bus_type"
         android:paddingLeft="30dp"
         android:paddingTop="5dp"
-        android:text="Loading..."
+        android:text="@string/progress_message"
         android:textColor="@color/black"
         android:textIsSelectable="false"
         android:textStyle="bold"

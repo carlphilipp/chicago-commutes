@@ -26,8 +26,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import fr.cph.chicago.R;
 import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.R;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.Station;
@@ -35,13 +35,15 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 
 public final class TrainAdapter extends BaseAdapter {
 
-	/** Tag **/
-	private static final String TAG = "TrainAdapter";
-
+	/** **/
 	private List<Station> stations;
-
+	/** **/
 	private Context context;
 
+	/**
+	 * 
+	 * @param line
+	 */
 	public TrainAdapter(final TrainLine line) {
 		// Load data
 		DataHolder dataHolder = DataHolder.getInstance();

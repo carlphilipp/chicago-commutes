@@ -57,23 +57,36 @@ import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public class BusActivity extends Activity {
 
-	/** Tag **/
-	private static final String TAG = "BusActivity";
-
-	List<BusArrival> busArrivals;
-
+	/** **/
+	private List<BusArrival> busArrivals;
+	/** **/
 	private String busRouteName;
+	/** **/
 	private String busRouteId;
+	/** **/
 	private String bound;
+	/** **/
 	private Integer busStopId;
+	/** **/
 	private ImageView streetViewImage, mapImage, directionImage, favoritesImage;
+	/** **/
 	private Position position;
+	/** **/
 	private Menu menu;
+	/** **/
 	private LinearLayout stopsView;
+	/** **/
 	private boolean firstLoad = true;
+	/** **/
 	private boolean isFavorite;
+	/** **/
 	private TextView streetViewText;
 
 	@Override
@@ -152,7 +165,7 @@ public class BusActivity extends Activity {
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			finish();
-//			overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+			// overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 			return true;
 		case R.id.action_refresh:
 			MenuItem menuItem = item;
@@ -286,7 +299,10 @@ public class BusActivity extends Activity {
 		}
 	}
 
-	protected final void switchFavorite() {
+	/**
+	 * 
+	 */
+	private final void switchFavorite() {
 		if (isFavorite) {
 			Util.removeFromBusFavorites(busRouteId, String.valueOf(busStopId), bound, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
 			isFavorite = false;
@@ -301,6 +317,9 @@ public class BusActivity extends Activity {
 		}
 	}
 
+	/**
+	 * 
+	 */
 	public final void buildArrivals() {
 		if (busArrivals != null) {
 			Map<String, TextView> mapRes = new HashMap<String, TextView>();
@@ -325,6 +344,10 @@ public class BusActivity extends Activity {
 		}
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final boolean isFavorite() {
 		boolean isFavorite = false;
 		List<String> favorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);

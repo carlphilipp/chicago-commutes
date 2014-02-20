@@ -22,121 +22,242 @@ import java.util.concurrent.TimeUnit;
 
 import fr.cph.chicago.entity.enumeration.PredictionType;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public final class BusArrival {
+	/** **/
 	private Date timeStamp;
+	/** **/
 	private String errorMessage;
+	/** **/
 	private PredictionType predictionType;
+	/** **/
 	private String stopName;
+	/** **/
 	private Integer stopId;
+	/** **/
 	private Integer busId;
+	/** **/
 	private Integer distanceToStop; // feets
+	/** **/
 	private String routeId;
+	/** **/
 	private String routeDirection;
+	/** **/
 	private String busDestination;
+	/** **/
 	private Date predictionTime;
+	/** **/
 	private Boolean isDly = false;
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final Date getTimeStamp() {
 		return timeStamp;
 	}
 
+	/**
+	 * 
+	 * @param timeStamp
+	 */
 	public final void setTimeStamp(final Date timeStamp) {
 		this.timeStamp = timeStamp;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final String getErrorMessage() {
 		return errorMessage;
 	}
 
+	/**
+	 * 
+	 * @param errorMessage
+	 */
 	public final void setErrorMessage(final String errorMessage) {
 		this.errorMessage = errorMessage;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final PredictionType getPredictionType() {
 		return predictionType;
 	}
 
+	/**
+	 * 
+	 * @param predictionType
+	 */
 	public final void setPredictionType(final PredictionType predictionType) {
 		this.predictionType = predictionType;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final String getStopName() {
 		return stopName;
 	}
 
+	/**
+	 * 
+	 * @param stopName
+	 */
 	public final void setStopName(final String stopName) {
 		this.stopName = stopName;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final Integer getStopId() {
 		return stopId;
 	}
 
+	/**
+	 * 
+	 * @param stopId
+	 */
 	public final void setStopId(final Integer stopId) {
 		this.stopId = stopId;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final Integer getBusId() {
 		return busId;
 	}
 
+	/**
+	 * 
+	 * @param busId
+	 */
 	public final void setBusId(final Integer busId) {
 		this.busId = busId;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final Integer getDistanceToStop() {
 		return distanceToStop;
 	}
 
+	/**
+	 * 
+	 * @param distanceToStop
+	 */
 	public final void setDistanceToStop(final Integer distanceToStop) {
 		this.distanceToStop = distanceToStop;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final String getRouteId() {
 		return routeId;
 	}
 
+	/**
+	 * 
+	 * @param routeId
+	 */
 	public final void setRouteId(final String routeId) {
 		this.routeId = routeId;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final String getRouteDirection() {
 		return routeDirection;
 	}
 
+	/**
+	 * 
+	 * @param routeDirection
+	 */
 	public final void setRouteDirection(final String routeDirection) {
 		this.routeDirection = routeDirection;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final String getBusDestination() {
 		return busDestination;
 	}
 
+	/**
+	 * 
+	 * @param busDestination
+	 */
 	public final void setBusDestination(final String busDestination) {
 		this.busDestination = busDestination;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final Date getPredictionTime() {
 		return predictionTime;
 	}
 
+	/**
+	 * 
+	 * @param predictionTime
+	 */
 	public final void setPredictionTime(final Date predictionTime) {
 		this.predictionTime = predictionTime;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final Boolean getIsDly() {
 		return isDly;
 	}
 
+	/**
+	 * 
+	 * @param isDly
+	 */
 	public final void setIsDly(final Boolean isDly) {
 		this.isDly = isDly;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final String getTimeLeft() {
 		long time = predictionTime.getTime() - timeStamp.getTime();
 		return String.format(Locale.ENGLISH, "%d min", TimeUnit.MILLISECONDS.toMinutes(time));
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final String getTimeLeftDueDelay() {
 		String result;
 		if (getIsDly()) {

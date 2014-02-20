@@ -52,32 +52,32 @@ import fr.cph.chicago.fragment.TrainFragment;
 import fr.cph.chicago.task.CtaConnectTask;
 import fr.cph.chicago.util.Util;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public class MainActivity extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
-	/** Tag **/
-	private static final String TAG = "MainActivity";
-
-	/**
-	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
-	 */
+	/** Fragment managing the behaviors, interactions and presentation of the navigation drawer. **/
 	private NavigationDrawerFragment mNavigationDrawerFragment;
-
+	/** **/
 	private FavoritesFragment favoritesFragment;
-
+	/** **/
 	private TrainFragment trainFragment;
-
+	/** **/
 	private BusFragment busFragment;
-
+	/** **/
 	private NearbyFragment nearbyFragment;
-
+	/** **/
 	private AlertFragment alertFragment;
-
+	/** **/
 	private MapFragment mapFragment;
-
+	/** **/
 	private CharSequence mTitle;
-
+	/** **/
 	private Menu menu;
-
+	/** **/
 	private int currentPosition;
 
 	@Override
@@ -106,40 +106,40 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		final FragmentManager fragmentManager = getFragmentManager();
 		final FragmentTransaction ft = fragmentManager.beginTransaction();
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-//		ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out,android.R.anim.fade_in, android.R.anim.fade_out); 
+		// ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out,android.R.anim.fade_in, android.R.anim.fade_out);
 		// ft.addToBackStack(null);
 		switch (position) {
 		case 0:
 			if (favoritesFragment == null) {
 				favoritesFragment = FavoritesFragment.newInstance(position + 1);
 			}
-			//fragmentManager.beginTransaction().replace(R.id.container, favoritesFragment).commit();
+			// fragmentManager.beginTransaction().replace(R.id.container, favoritesFragment).commit();
 			ft.replace(R.id.container, favoritesFragment).commit();
 			break;
 		case 1:
 			if (trainFragment == null) {
 				trainFragment = TrainFragment.newInstance(position + 1);
 			}
-			//fragmentManager.beginTransaction().replace(R.id.container, trainFragment).commit();
+			// fragmentManager.beginTransaction().replace(R.id.container, trainFragment).commit();
 			ft.replace(R.id.container, trainFragment).commit();
 			break;
 		case 2:
 			if (busFragment == null) {
 				busFragment = BusFragment.newInstance(position + 1);
 			}
-			//fragmentManager.beginTransaction().replace(R.id.container, busFragment).commit();
+			// fragmentManager.beginTransaction().replace(R.id.container, busFragment).commit();
 			ft.replace(R.id.container, busFragment).commit();
 			break;
 		case 3:
 			if (nearbyFragment == null) {
 				nearbyFragment = NearbyFragment.newInstance(position + 1);
-				//fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
+				// fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
 				ft.replace(R.id.container, nearbyFragment).commit();
 			} else {
 				if (oldPosition == 3) {
 					fragmentManager.beginTransaction().commit();
 				} else {
-					//fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
+					// fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
 					ft.replace(R.id.container, nearbyFragment).commit();
 				}
 			}
@@ -148,19 +148,23 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			if (alertFragment == null) {
 				alertFragment = AlertFragment.newInstance(position + 1);
 			}
-			//fragmentManager.beginTransaction().replace(R.id.container, alertFragment).commit();
-			 ft.replace(R.id.container, alertFragment).commit();
+			// fragmentManager.beginTransaction().replace(R.id.container, alertFragment).commit();
+			ft.replace(R.id.container, alertFragment).commit();
 			break;
 		case 5:
 			if (mapFragment == null) {
 				mapFragment = MapFragment.newInstance(position + 1);
 			}
-//			fragmentManager.beginTransaction().replace(R.id.container, mapFragment).commit();
+			// fragmentManager.beginTransaction().replace(R.id.container, mapFragment).commit();
 			ft.replace(R.id.container, mapFragment).commit();
 			break;
 		}
 	}
 
+	/**
+	 * 
+	 * @param number
+	 */
 	public final void onSectionAttached(final int number) {
 		switch (number) {
 		case 1:
@@ -185,6 +189,9 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		restoreActionBar();
 	}
 
+	/**
+	 * 
+	 */
 	public final void restoreActionBar() {
 		ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
@@ -195,24 +202,24 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	@Override
 	public boolean onCreateOptionsMenu(final Menu menu) {
 		this.menu = menu;
-//		if (!mNavigationDrawerFragment.isDrawerOpen()) {
-			// Only show items in the action bar relevant to this screen
-			// if the drawer is not showing. Otherwise, let the drawer
-			// decide what to show in the action bar.
-//			if (currentPosition == 1 || currentPosition == 5) {
-//				getMenuInflater().inflate(R.menu.global, menu);
-//			} else {
-				getMenuInflater().inflate(R.menu.main, menu);
-//			}
-			// Associate searchable configuration with the SearchView
-			SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-			SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-			searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+		// if (!mNavigationDrawerFragment.isDrawerOpen()) {
+		// Only show items in the action bar relevant to this screen
+		// if the drawer is not showing. Otherwise, let the drawer
+		// decide what to show in the action bar.
+		// if (currentPosition == 1 || currentPosition == 5) {
+		// getMenuInflater().inflate(R.menu.global, menu);
+		// } else {
+		getMenuInflater().inflate(R.menu.main, menu);
+		// }
+		// Associate searchable configuration with the SearchView
+		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+		SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+		searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
-//			restoreActionBar();
-			return super.onCreateOptionsMenu(menu);
-//		}
-//		return super.onCreateOptionsMenu(menu);
+		// restoreActionBar();
+		return super.onCreateOptionsMenu(menu);
+		// }
+		// return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
@@ -276,6 +283,31 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		}
 	}
 
+	/**
+	 * 
+	 */
+	public final void startRefreshAnimation() {
+		if (menu != null) {
+			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+			refreshMenuItem.setActionView(R.layout.progressbar);
+			refreshMenuItem.expandActionView();
+		}
+	}
+
+	/**
+	 * 
+	 */
+	public final void stopRefreshAnimation() {
+		if (menu != null) {
+			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+			refreshMenuItem.collapseActionView();
+			refreshMenuItem.setActionView(null);
+		}
+	}
+
+	/**
+	 * 
+	 */
 	private final void exitAlertDialog() {
 		new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_alert).setTitle("Exit application")
 				.setMessage("Are you sure you want to exit?").setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -285,21 +317,5 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 					}
 
 				}).setNegativeButton("No", null).show();
-	}
-
-	public final void startRefreshAnimation() {
-		if (menu != null) {
-			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-			refreshMenuItem.setActionView(R.layout.progressbar);
-			refreshMenuItem.expandActionView();
-		}
-	}
-
-	public final void stopRefreshAnimation() {
-		if (menu != null) {
-			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-			refreshMenuItem.collapseActionView();
-			refreshMenuItem.setActionView(null);
-		}
 	}
 }

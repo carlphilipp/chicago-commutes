@@ -16,31 +16,63 @@
 
 package fr.cph.chicago.entity;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public final class BusStop implements Comparable<BusStop> {
+	/** **/
 	private Integer id;
+	/** **/
 	private String name;
+	/** **/
 	private Position position;
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final Integer getId() {
 		return id;
 	}
 
+	/**
+	 * 
+	 * @param id
+	 */
 	public final void setId(final Integer id) {
 		this.id = id;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final String getName() {
 		return name;
 	}
 
+	/**
+	 * 
+	 * @param name
+	 */
 	public final void setName(final String name) {
 		this.name = name;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final Position getPosition() {
 		return position;
 	}
 
+	/**
+	 * 
+	 * @param position
+	 */
 	public final void setPosition(final Position position) {
 		this.position = position;
 	}

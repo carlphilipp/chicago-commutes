@@ -36,35 +36,55 @@ import android.util.Log;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.util.Util;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public class CtaConnect {
 
+	/** **/
 	private static final String TAG = "CtaConnect";
-
+	/** **/
 	private static CtaConnect instance = null;
-
+	/** **/
 	private static final String BASE_URL_TRAIN_ARRIVALS = "http://lapi.transitchicago.com/api/1.0/ttarrivals.aspx";
+	/** **/
 	private static final String BASE_URL_TRAIN_FOLLOW = "http://lapi.transitchicago.com/api/1.0/ttfollow.aspx";
+	/** **/
 	private static final String BASE_URL_TRAIN_LOCATION = "http://lapi.transitchicago.com/api/1.0/ttpositions.aspx";
-
+	/** **/
 	private static final String BASE_URL_BUS_ROUTES = "http://www.ctabustracker.com/bustime/api/v1/getroutes";
+	/** **/
 	private static final String BASE_URL_BUS_DIRECTION = "http://www.ctabustracker.com/bustime/api/v1/getdirections";
+	/** **/
 	private static final String BASE_URL_BUS_STOPS = "http://www.ctabustracker.com/bustime/api/v1/getstops";
+	/** **/
 	private static final String BASE_URL_BUS_ARRIVAL = "http://www.ctabustracker.com/bustime/api/v1/getpredictions";
-
+	/** **/
 	private static final String BASE_URL_ALERT_GENERAL = "http://www.transitchicago.com/api/1.0/alerts.aspx";
+	/** **/
 	private static final String BASE_URL_ALERT_ROUTES = "http://www.transitchicago.com/api/1.0/routes.aspx";
-
+	/** **/
 	private String CTA_BUS_KEY;
+	/** **/
 	private String CTA_TRAIN_KEY;
-
+	/** **/
 	private DefaultHttpClient client;
 
+	/**
+	 * 
+	 */
 	private CtaConnect() {
 		this.client = new DefaultHttpClient();
 		CTA_TRAIN_KEY = Util.getProperty("cta.train.key");
 		CTA_BUS_KEY = Util.getProperty("cta.bus.key");
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public final static CtaConnect getInstance() {
 		if (instance == null) {
 			instance = new CtaConnect();
@@ -72,6 +92,12 @@ public class CtaConnect {
 		return instance;
 	}
 
+	/**
+	 * 
+	 * @param adress
+	 * @return
+	 * @throws ConnectException
+	 */
 	private String connectUrl(final String adress) throws ConnectException {
 		String toreturn = null;
 		try {
@@ -107,6 +133,13 @@ public class CtaConnect {
 		return toreturn;
 	}
 
+	/**
+	 * 
+	 * @param requestType
+	 * @param params
+	 * @return
+	 * @throws ConnectException
+	 */
 	public final String connect(final CtaRequestType requestType, final MultiMap<String, String> params) throws ConnectException {
 		StringBuilder adress = null;
 		switch (requestType) {
@@ -132,7 +165,6 @@ public class CtaConnect {
 			adress = new StringBuilder(BASE_URL_BUS_ARRIVAL + "?key=" + CTA_BUS_KEY);
 			break;
 		case ALERTS_GENERAL:
-//			adress = new StringBuilder(BASE_URL_ALERT_GENERAL + "?activeonly=true");
 			adress = new StringBuilder(BASE_URL_ALERT_GENERAL + "?activeonly=false");
 			break;
 		case ALERTS_ROUTES:

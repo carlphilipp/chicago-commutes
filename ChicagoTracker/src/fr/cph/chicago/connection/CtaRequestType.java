@@ -16,6 +16,11 @@
 
 package fr.cph.chicago.connection;
 
+/**
+ * 
+ * @author carl
+ *
+ */
 public enum CtaRequestType {
 	TRAIN_ARRIVALS, TRAIN_FOLLOW, TRAIN_LOCATION, BUS_ROUTES, BUS_DIRECTION, BUS_STOP_LIST, BUS_ARRIVALS, ALERTS_GENERAL, ALERTS_ROUTES
 }

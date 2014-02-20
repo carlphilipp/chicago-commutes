@@ -21,7 +21,6 @@ import java.util.List;
 import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.map.MultiValueMap;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -54,16 +53,24 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.xml.Xml;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public final class BusAdapter extends BaseAdapter {
 
-	/** Tag **/
-	private static final String TAG = "BusAdapter";
-
+	/** **/
 	private MainActivity activity;
-
+	/** **/
 	private BusData busData;
+	/** **/
 	private FrameLayout firstLayout;
 
+	/**
+	 * 
+	 * @param activity
+	 */
 	public BusAdapter(final MainActivity activity) {
 		this.activity = activity;
 		this.busData = DataHolder.getInstance().getBusData();
@@ -123,7 +130,7 @@ public final class BusAdapter extends BaseAdapter {
 			routeNameView = holder.routeNameView;
 			routeNumberView = holder.routeNumberView;
 			detailsLayout = holder.detailsLayout;
-			
+
 			convertView.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -133,19 +140,29 @@ public final class BusAdapter extends BaseAdapter {
 				}
 			});
 		}
-		
+
 		routeNameView.setText(route.getName());
 		routeNumberView.setText(route.getId());
 
 		return convertView;
 	}
 
+	/**
+	 * 
+	 * @author carl
+	 * 
+	 */
 	static class ViewHolder {
 		TextView routeNameView;
 		TextView routeNumberView;
 		LinearLayout detailsLayout;
 	}
 
+	/**
+	 * 
+	 * @author carl
+	 * 
+	 */
 	private class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 
 		private BusRoute busRoute;

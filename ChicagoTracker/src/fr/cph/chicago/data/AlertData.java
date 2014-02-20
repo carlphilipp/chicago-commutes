@@ -13,19 +13,28 @@ import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.xml.Xml;
 
+/**
+ * 
+ * @author carl
+ * 
+ */
 public class AlertData {
-
-	/** Tag **/
-	private static final String TAG = "AlertData";
-
+	/** **/
 	private static AlertData alertData;
-
+	/** **/
 	private List<Alert> alerts;
 
+	/**
+	 * 
+	 */
 	private AlertData() {
 		alerts = new ArrayList<Alert>();
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public static AlertData getInstance() {
 		if (alertData == null) {
 			alertData = new AlertData();
@@ -33,6 +42,12 @@ public class AlertData {
 		return alertData;
 	}
 
+	/**
+	 * 
+	 * @return
+	 * @throws ParserException
+	 * @throws ConnectException
+	 */
 	public final List<Alert> loadGeneralAlerts() throws ParserException, ConnectException {
 		if (alerts.size() == 0) {
 			MultiMap<String, String> params = new MultiValueMap<String, String>();
@@ -43,8 +58,12 @@ public class AlertData {
 		}
 		return alerts;
 	}
-	
-	public final List<Alert> getAlerts(){
+
+	/**
+	 * 
+	 * @return
+	 */
+	public final List<Alert> getAlerts() {
 		return this.alerts;
 	}
 

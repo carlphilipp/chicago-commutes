@@ -38,20 +38,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import fr.cph.chicago.R;
 
-;
-
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer. See the <a href="https://developer.android.com/design/patterns/navigation-drawer.html#Interaction"> design
  * guidelines</a> for a complete explanation of the behaviors implemented here.
  */
 public class NavigationDrawerFragment extends Fragment {
 
-	/** Tag **/
-	private static final String TAG = "NavigationDrawerFragment";
-
-	/**
-	 * Remember the position of the selected item.
-	 */
+	/** Remember the position of the selected item. **/
 	private static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
 
 	/**
@@ -68,20 +61,20 @@ public class NavigationDrawerFragment extends Fragment {
 	 * Helper component that ties the action bar to the navigation drawer.
 	 */
 	private ActionBarDrawerToggle mDrawerToggle;
-
+	/** **/
 	private DrawerLayout mDrawerLayout;
+	/** **/
 	private ListView mDrawerListView;
+	/** **/
 	private View mFragmentContainerView;
-
+	/** **/
 	private int mCurrentSelectedPosition = 0;
+	/** **/
 	private boolean mFromSavedInstanceState;
+	/** **/
 	private boolean mUserLearnedDrawer;
-
+	/** **/
 	private Runnable mPendingRunnable;
-
-	public NavigationDrawerFragment() {
-
-	}
 
 	@Override
 	public final void onCreate(final Bundle savedInstanceState) {
@@ -203,6 +196,11 @@ public class NavigationDrawerFragment extends Fragment {
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
 	}
 
+	/**
+	 * 
+	 * @param position
+	 * @param backPressed
+	 */
 	public void selectItem(final int position, boolean backPressed) {
 		mCurrentSelectedPosition = position;
 		mPendingRunnable = new Runnable() {
@@ -292,6 +290,10 @@ public class NavigationDrawerFragment extends Fragment {
 		actionBar.setTitle(R.string.app_name);
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	private final ActionBar getActionBar() {
 		return getActivity().getActionBar();
 	}

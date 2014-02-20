@@ -83,7 +83,7 @@ public class BaseActivity extends Activity {
 			showProgress(true, null);
 			new LoadData().execute();
 		} else {
-			reloadData(null, null);
+			startMainActivity();
 		}
 
 	}
@@ -207,14 +207,18 @@ public class BaseActivity extends Activity {
 		task.execute((Void) null);
 	}
 
-	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals) {
-		ChicagoTracker.setBusArrivals(busArrivals);
-		ChicagoTracker.setTrainArrivals(trainArrivals);
-		ChicagoTracker.modifyLastUpdate(Calendar.getInstance().getTime());
+	public final void startMainActivity() {
 		Intent intent = new Intent(this, MainActivity.class);
 		showProgress(false, null);
 		finish();
 		startActivity(intent);
 		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+	}
+
+	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals) {
+		ChicagoTracker.setBusArrivals(busArrivals);
+		ChicagoTracker.setTrainArrivals(trainArrivals);
+		ChicagoTracker.modifyLastUpdate(Calendar.getInstance().getTime());
+		startMainActivity();
 	}
 }
