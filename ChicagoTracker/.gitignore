@@ -1,3 +1,5 @@
 /proguard-project.txt
 /gen
 /bin
+/proguard.cfg
+/proguard

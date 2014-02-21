@@ -46,31 +46,31 @@ import fr.cph.chicago.xml.Xml;
 /**
  * 
  * @author carl
- *
+ * 
  */
 public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 
 	/** Tag **/
 	private static final String TAG = "CtaConnectTask";
-	 /** **/
+	/** **/
 	private Object instance;
-	 /** **/
+	/** **/
 	private Class<?> classe;
-	 /** **/
+	/** **/
 	private CtaRequestType requestType, requestType2;
-	 /** **/
+	/** **/
 	private MultiMap<String, String> params, params2;
-	 /** **/
+	/** **/
 	private Xml xml;
-	 /** **/
+	/** **/
 	private SparseArray<TrainArrival> trainArrivals;
-	 /** **/
+	/** **/
 	private TrainData data;
-	 /** **/
+	/** **/
 	private TrackerException trackerTrainException;
-	 /** **/
+	/** **/
 	private TrackerException trackerBusException;
-	 /** **/
+	/** **/
 	private List<BusArrival> busArrivals;
 
 	/**
@@ -221,6 +221,13 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 		} catch (ParserException e) {
 			busBoolean = false;
 			this.trackerBusException = e;
+		} finally {
+			if (params2.size() == 0 && busBoolean) {
+				busBoolean = false;
+			}
+			if (params.size() == 0 && trainBoolean) {
+				trainBoolean = false;
+			}
 		}
 		return trainBoolean || busBoolean;
 	}

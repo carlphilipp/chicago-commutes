@@ -40,6 +40,7 @@ import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaRequestType;
+import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.fragment.AlertFragment;
@@ -313,6 +314,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				.setMessage("Are you sure you want to exit?").setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
+						DataHolder.getInstance().setBusData(null);
+						DataHolder.getInstance().setTrainData(null);
 						finish();
 					}
 
