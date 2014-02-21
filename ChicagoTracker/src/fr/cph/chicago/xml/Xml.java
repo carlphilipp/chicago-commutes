@@ -49,16 +49,15 @@ import fr.cph.chicago.entity.enumeration.BusDirection;
 import fr.cph.chicago.entity.enumeration.PredictionType;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ParserException;
+import fr.cph.chicago.exception.TrackerException;
 
 /**
  * 
  * @author carl
  * 
  */
-public class Xml {
+public final class Xml {
 
-	/** Tag **/
-	private static final String TAG = "Xml";
 	/** **/
 	private XmlPullParser parser;
 	/** **/
@@ -78,7 +77,7 @@ public class Xml {
 			dfTrain = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
 			dfBus = new SimpleDateFormat("yyyyMMdd HH:mm");
 		} catch (XmlPullParserException e) {
-			throw new ParserException("Parsing exception", e);
+			throw new ParserException(TrackerException.ERROR, e);
 		}
 	}
 
@@ -273,11 +272,11 @@ public class Xml {
 				eventType = parser.next();
 			}
 		} catch (XmlPullParserException e) {
-			throw new ParserException("Parsing exception", e);
+			throw new ParserException(TrackerException.ERROR, e);
 		} catch (ParseException e) {
-			throw new ParserException("Parsing exception", e);
+			throw new ParserException(TrackerException.ERROR, e);
 		} catch (IOException e) {
-			throw new ParserException("Parsing exception", e);
+			throw new ParserException(TrackerException.ERROR, e);
 		}
 		return arrivals;
 	}
@@ -335,9 +334,9 @@ public class Xml {
 				eventType = parser.next();
 			}
 		} catch (XmlPullParserException e) {
-			throw new ParserException("Parse Exception", e);
+			throw new ParserException(TrackerException.ERROR, e);
 		} catch (IOException e) {
-			throw new ParserException("Parse Exception", e);
+			throw new ParserException(TrackerException.ERROR, e);
 		}
 		return routes;
 	}
@@ -373,9 +372,9 @@ public class Xml {
 				eventType = parser.next();
 			}
 		} catch (XmlPullParserException e) {
-			throw new ParserException("Parcer Exception", e);
+			throw new ParserException(TrackerException.ERROR, e);
 		} catch (IOException e) {
-			throw new ParserException("Parcer Exception", e);
+			throw new ParserException(TrackerException.ERROR, e);
 		}
 		return directions;
 	}
@@ -423,9 +422,9 @@ public class Xml {
 				eventType = parser.next();
 			}
 		} catch (XmlPullParserException e) {
-			throw new ParserException("Parse Exception", e);
+			throw new ParserException(TrackerException.ERROR, e);
 		} catch (IOException e) {
-			throw new ParserException("Parse Exception", e);
+			throw new ParserException(TrackerException.ERROR, e);
 		}
 		return busStops;
 	}
@@ -488,11 +487,11 @@ public class Xml {
 				eventType = parser.next();
 			}
 		} catch (XmlPullParserException e) {
-			throw new ParserException("Parser Exception", e);
+			throw new ParserException(TrackerException.ERROR, e);
 		} catch (ParseException e) {
-			throw new ParserException("Parser Exception", e);
+			throw new ParserException(TrackerException.ERROR, e);
 		} catch (IOException e) {
-			throw new ParserException("Parser Exception", e);
+			throw new ParserException(TrackerException.ERROR, e);
 		}
 		return busArrivals;
 	}
@@ -580,11 +579,11 @@ public class Xml {
 				eventType = parser.next();
 			}
 		} catch (XmlPullParserException e) {
-			throw new ParserException("Parser Exception", e);
+			throw new ParserException(TrackerException.ERROR, e);
 		} catch (ParseException e) {
-			throw new ParserException("Parser Exception", e);
+			throw new ParserException(TrackerException.ERROR, e);
 		} catch (IOException e) {
-			throw new ParserException("Parser Exception", e);
+			throw new ParserException(TrackerException.ERROR, e);
 		}
 		return alerts;
 	}

@@ -20,6 +20,8 @@ public class ConnectException extends TrackerException {
 
 	/** **/
 	private static final long serialVersionUID = 1L;
+	
+	public static final String ERROR = "Can't connect, please check your connection";
 
 	/**
 	 * 

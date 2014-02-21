@@ -119,16 +119,16 @@ public class CtaConnect {
 			toreturn = build.toString();
 		} catch (ConnectTimeoutException e) {
 			Log.e(TAG, e.getMessage(), e);
-			throw new ConnectException("Connect exception", e);
+			throw new ConnectException(ConnectException.ERROR, e);
 		} catch (UnknownHostException e) {
 			Log.e(TAG, e.getMessage(), e);
-			throw new ConnectException("Connect exception", e);
+			throw new ConnectException(ConnectException.ERROR, e);
 		} catch (ClientProtocolException e) {
 			Log.e(TAG, e.getMessage(), e);
-			throw new ConnectException("Connect exception", e);
+			throw new ConnectException(ConnectException.ERROR, e);
 		} catch (IOException e) {
 			Log.e(TAG, e.getMessage(), e);
-			throw new ConnectException("Connect exception", e);
+			throw new ConnectException(ConnectException.ERROR, e);
 		}
 		return toreturn;
 	}
