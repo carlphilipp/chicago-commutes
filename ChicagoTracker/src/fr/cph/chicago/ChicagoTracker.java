@@ -34,8 +34,9 @@ import fr.cph.chicago.exception.TrackerException;
 
 /**
  * 
- * @author carl
- *
+ * 
+ * @author Carl-Philipp Harmant
+ * 
  */
 public class ChicagoTracker extends Application {
 	
