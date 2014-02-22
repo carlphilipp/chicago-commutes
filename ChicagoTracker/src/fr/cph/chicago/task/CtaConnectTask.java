@@ -222,11 +222,13 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 			busBoolean = false;
 			this.trackerBusException = e;
 		} finally {
-			if (params2.size() == 0 && busBoolean) {
-				busBoolean = false;
-			}
-			if (params.size() == 0 && trainBoolean) {
-				trainBoolean = false;
+			if (!(busBoolean && trainBoolean)) {
+				if (params2.size() == 0 && busBoolean) {
+					busBoolean = false;
+				}
+				if (params.size() == 0 && trainBoolean) {
+					trainBoolean = false;
+				}
 			}
 		}
 		return trainBoolean || busBoolean;
@@ -243,9 +245,11 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 			if (success) {
 				classe.getMethod("reloadData", SparseArray.class, List.class).invoke(instance, this.trainArrivals, this.busArrivals);
 			} else {
-				// call static function
 				TrackerException ex = trackerBusException == null ? trackerTrainException : trackerBusException;
-				Log.e(TAG, ex.getMessage(), ex);
+				if (ex != null) {
+					// because both can be null
+					Log.e(TAG, ex.getMessage(), ex);
+				}
 				classe.getMethod("displayError", TrackerException.class).invoke(instance, ex);
 			}
 		} catch (Exception e) {
