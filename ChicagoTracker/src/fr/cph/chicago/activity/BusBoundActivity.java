@@ -37,19 +37,20 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 
 /**
+ * Activity that represents the bus bound activity
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class BusBoundActivity extends ListActivity {
 
-	/** **/
+	/** Bus route id **/
 	private String busRouteId;
-	/** **/
+	/** Bus route name **/
 	private String busRouteName;
-	/** **/
+	/** Bound **/
 	private String bound;
-	/** **/
+	/** Adapter **/
 	private BusBoundAdapter ada;
 
 	@Override
@@ -109,13 +110,14 @@ public class BusBoundActivity extends ListActivity {
 	}
 
 	/**
+	 * Task that connect to API to get the bound of the selected stop
 	 * 
-	 * @author carl
-	 * 
+	 * @author Carl-Philipp Harmant
+	 * @version 1
 	 */
 	private class BusBoundAsyncTask extends AsyncTask<Void, Void, List<BusStop>> {
 
-		/** **/
+		/** The exception that could potentially been thrown during request **/
 		private TrackerException trackerException;
 
 		@Override

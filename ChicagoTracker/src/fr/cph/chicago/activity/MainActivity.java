@@ -54,31 +54,32 @@ import fr.cph.chicago.task.CtaConnectTask;
 import fr.cph.chicago.util.Util;
 
 /**
+ * Activity that is the using loading fragments as needed.
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class MainActivity extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
 	/** Fragment managing the behaviors, interactions and presentation of the navigation drawer. **/
 	private NavigationDrawerFragment mNavigationDrawerFragment;
-	/** **/
+	/** Favorites fragment **/
 	private FavoritesFragment favoritesFragment;
-	/** **/
+	/** Train fragment **/
 	private TrainFragment trainFragment;
-	/** **/
+	/** Bus Fragment **/
 	private BusFragment busFragment;
-	/** **/
+	/** Nearby fragment **/
 	private NearbyFragment nearbyFragment;
-	/** **/
+	/** Alert Fragment **/
 	private AlertFragment alertFragment;
-	/** **/
+	/** Map fragment **/
 	private MapFragment mapFragment;
-	/** **/
+	/** Title **/
 	private CharSequence mTitle;
-	/** **/
+	/** Menu **/
 	private Menu menu;
-	/** **/
+	/** Current position **/
 	private int currentPosition;
 
 	@Override
@@ -107,40 +108,33 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		final FragmentManager fragmentManager = getFragmentManager();
 		final FragmentTransaction ft = fragmentManager.beginTransaction();
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-		// ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out,android.R.anim.fade_in, android.R.anim.fade_out);
-		// ft.addToBackStack(null);
 		switch (position) {
 		case 0:
 			if (favoritesFragment == null) {
 				favoritesFragment = FavoritesFragment.newInstance(position + 1);
 			}
-			// fragmentManager.beginTransaction().replace(R.id.container, favoritesFragment).commit();
 			ft.replace(R.id.container, favoritesFragment).commit();
 			break;
 		case 1:
 			if (trainFragment == null) {
 				trainFragment = TrainFragment.newInstance(position + 1);
 			}
-			// fragmentManager.beginTransaction().replace(R.id.container, trainFragment).commit();
 			ft.replace(R.id.container, trainFragment).commit();
 			break;
 		case 2:
 			if (busFragment == null) {
 				busFragment = BusFragment.newInstance(position + 1);
 			}
-			// fragmentManager.beginTransaction().replace(R.id.container, busFragment).commit();
 			ft.replace(R.id.container, busFragment).commit();
 			break;
 		case 3:
 			if (nearbyFragment == null) {
 				nearbyFragment = NearbyFragment.newInstance(position + 1);
-				// fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
 				ft.replace(R.id.container, nearbyFragment).commit();
 			} else {
 				if (oldPosition == 3) {
 					fragmentManager.beginTransaction().commit();
 				} else {
-					// fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
 					ft.replace(R.id.container, nearbyFragment).commit();
 				}
 			}
@@ -149,22 +143,22 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			if (alertFragment == null) {
 				alertFragment = AlertFragment.newInstance(position + 1);
 			}
-			// fragmentManager.beginTransaction().replace(R.id.container, alertFragment).commit();
 			ft.replace(R.id.container, alertFragment).commit();
 			break;
 		case 5:
 			if (mapFragment == null) {
 				mapFragment = MapFragment.newInstance(position + 1);
 			}
-			// fragmentManager.beginTransaction().replace(R.id.container, mapFragment).commit();
 			ft.replace(R.id.container, mapFragment).commit();
 			break;
 		}
 	}
 
 	/**
+	 * Change title
 	 * 
 	 * @param number
+	 *            the tab number
 	 */
 	public final void onSectionAttached(final int number) {
 		switch (number) {
@@ -191,7 +185,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	}
 
 	/**
-	 * 
+	 * Restore action bar
 	 */
 	public final void restoreActionBar() {
 		ActionBar actionBar = getActionBar();
@@ -225,12 +219,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
 	@Override
 	public final boolean onOptionsItemSelected(final MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
 		switch (item.getItemId()) {
-		// case R.id.action_settings:
-		// return true;
 		case R.id.action_refresh:
 			if (currentPosition != 3) {
 				MenuItem menuItem = item;
@@ -285,7 +274,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	}
 
 	/**
-	 * 
+	 * Load animation in menu
 	 */
 	public final void startRefreshAnimation() {
 		if (menu != null) {
@@ -296,7 +285,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	}
 
 	/**
-	 * 
+	 * Stop animation in men
 	 */
 	public final void stopRefreshAnimation() {
 		if (menu != null) {
@@ -307,7 +296,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	}
 
 	/**
-	 * 
+	 * Show a dialog
 	 */
 	private final void exitAlertDialog() {
 		new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_alert).setTitle("Exit application")
@@ -318,7 +307,6 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 						DataHolder.getInstance().setTrainData(null);
 						finish();
 					}
-
 				}).setNegativeButton("No", null).show();
 	}
 }

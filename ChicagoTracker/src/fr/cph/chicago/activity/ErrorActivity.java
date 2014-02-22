@@ -13,9 +13,10 @@ import android.widget.TextView;
 import fr.cph.chicago.R;
 
 /**
+ * Error activity that can be thrown from anywhere in the app
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class ErrorActivity extends Activity {
 	@Override
