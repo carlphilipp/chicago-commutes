@@ -30,9 +30,10 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.entity.BusStop;
 
 /**
+ * Adapter that will handle buses bound
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class BusBoundAdapter extends BaseAdapter {
 
@@ -42,8 +43,10 @@ public class BusBoundAdapter extends BaseAdapter {
 	private String stopId;
 
 	/**
+	 * Constructor
 	 * 
 	 * @param stopId
+	 *            the stop id of the bu
 	 */
 	public BusBoundAdapter(final String stopId) {
 		this.busStops = new ArrayList<BusStop>();
@@ -98,9 +101,10 @@ public class BusBoundAdapter extends BaseAdapter {
 	}
 
 	/**
+	 * DP view holder
 	 * 
-	 * @author carl
-	 * 
+	 * @author Carl-Philipp Harmant
+	 * @version 1
 	 */
 	static class ViewHolder {
 		TextView routNumberView;
@@ -108,8 +112,10 @@ public class BusBoundAdapter extends BaseAdapter {
 	}
 
 	/**
+	 * Update of the bus stops
 	 * 
 	 * @param result
+	 *            the list of bus stops
 	 */
 	public final void update(final List<BusStop> result) {
 		this.busStops = null;

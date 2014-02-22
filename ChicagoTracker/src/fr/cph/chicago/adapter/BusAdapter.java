@@ -54,22 +54,25 @@ import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.xml.Xml;
 
 /**
+ * Adapter that will handle buses
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public final class BusAdapter extends BaseAdapter {
 
-	/** **/
+	/** Main activity **/
 	private MainActivity activity;
-	/** **/
+	/** Bus data **/
 	private BusData busData;
-	/** **/
+	/** Layout that you can use as a black fade background **/
 	private FrameLayout firstLayout;
 
 	/**
+	 * Constructor
 	 * 
 	 * @param activity
+	 *            the main activity
 	 */
 	public BusAdapter(final MainActivity activity) {
 		this.activity = activity;
@@ -148,25 +151,30 @@ public final class BusAdapter extends BaseAdapter {
 	}
 
 	/**
+	 * DP view holder
 	 * 
-	 * @author carl
-	 * 
+	 * @author Carl-Philipp Harmant
+	 * @version 1
 	 */
-	static class ViewHolder {
+	private static class ViewHolder {
 		TextView routeNameView;
 		TextView routeNumberView;
 		LinearLayout detailsLayout;
 	}
 
 	/**
+	 * Task to get the directions of the stop
 	 * 
-	 * @author carl
-	 * 
+	 * @author Carl-Philipp Harmant
+	 * @version 1
 	 */
 	private class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 
+		/** Bus route **/
 		private BusRoute busRoute;
+		/** **/
 		private LinearLayout convertView;
+		/** **/
 		private TrackerException trackerException;
 
 		@Override

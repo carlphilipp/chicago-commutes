@@ -58,33 +58,34 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.Util;
 
 /**
+ * Adapter that will handle nearby
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public final class NearbyAdapter extends BaseAdapter {
 
-	/** **/
+	/** The context **/
 	private Context context;
-	/** **/
+	/** The bus data **/
 	private BusData busData;
-	/** **/
+	/** List of bus stop **/
 	private List<BusStop> busStops;
-	/** **/
+	/** Bus arrivals **/
 	private SparseArray<Map<String, List<BusArrival>>> busArrivals;
-	/** **/
+	/** Trian arrivals **/
 	private SparseArray<TrainArrival> trainArrivals;
-	/** **/
+	/** List of stations **/
 	private List<Station> stations;
 	/** Google map **/
 	private GoogleMap map;
-	/** **/
+	/** Markers on the map **/
 	private List<Marker> markers;
-	/** Layouts **/
+	/** Layout ids **/
 	private Map<String, Integer> ids;
-	/** **/
+	/** Layouts **/
 	private Map<Integer, LinearLayout> layouts;
-	/** **/
+	/** View **/
 	private Map<Integer, View> views;
 
 	@SuppressLint("UseSparseArrays")
@@ -108,14 +109,26 @@ public final class NearbyAdapter extends BaseAdapter {
 
 	@Override
 	public final Object getItem(int position) {
-		// return busStops.get(position);
-		return null;
+		Object res = null;
+		if (position < stations.size()) {
+			res = stations.get(position);
+		} else {
+			int indice = position - stations.size();
+			res = busStops.get(indice);
+		}
+		return res;
 	}
 
 	@Override
 	public final long getItemId(int position) {
-		// return busStops.get(position).getId();
-		return 0;
+		int id = 0;
+		if (position < stations.size()) {
+			id = stations.get(position).getId();
+		} else {
+			int indice = position - stations.size();
+			id = busStops.get(indice).getId();
+		}
+		return id;
 	}
 
 	@SuppressLint("NewApi")
@@ -258,7 +271,8 @@ public final class NearbyAdapter extends BaseAdapter {
 
 								llv.addView(insideLayout);
 							} else {
-								// llv can be null sometimes (after a remove from favorites for example)
+								// llv can be null sometimes (after a remove from favorites for
+								// example)
 								if (llv != null) {
 									LinearLayout insideLayout = (LinearLayout) llv.findViewById(idLayout3);
 									// InsideLayout can be null too if removed before
@@ -355,9 +369,10 @@ public final class NearbyAdapter extends BaseAdapter {
 	}
 
 	/**
+	 * DP view holder
 	 * 
-	 * @author carl
-	 * 
+	 * @author Carl-Philipp Harmant
+	 * @version 1
 	 */
 	static class TrainViewHolder {
 		TextView stationNameView;
@@ -365,13 +380,20 @@ public final class NearbyAdapter extends BaseAdapter {
 	}
 
 	/**
+	 * Update data
 	 * 
 	 * @param busStops
+	 *            the bus stops
 	 * @param busArrivals
+	 *            the bus arrivals
 	 * @param stations
+	 *            the stations
 	 * @param trainArrivals
+	 *            the train arrivals
 	 * @param map
+	 *            the map
 	 * @param markers
+	 *            the markers
 	 */
 	public final void updateData(final List<BusStop> busStops, final SparseArray<Map<String, List<BusArrival>>> busArrivals,
 			final List<Station> stations, final SparseArray<TrainArrival> trainArrivals, final GoogleMap map, final List<Marker> markers) {

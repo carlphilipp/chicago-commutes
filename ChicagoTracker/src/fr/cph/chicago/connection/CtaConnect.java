@@ -37,43 +37,44 @@ import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.util.Util;
 
 /**
+ * Class that build url and connect to CTA API
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class CtaConnect {
 
-	/** **/
+	/** Tag **/
 	private static final String TAG = "CtaConnect";
-	/** **/
+	/** Singleton **/
 	private static CtaConnect instance = null;
-	/** **/
+	/** The train arrival address **/
 	private static final String BASE_URL_TRAIN_ARRIVALS = "http://lapi.transitchicago.com/api/1.0/ttarrivals.aspx";
-	/** **/
+	/** The train follow address **/
 	private static final String BASE_URL_TRAIN_FOLLOW = "http://lapi.transitchicago.com/api/1.0/ttfollow.aspx";
-	/** **/
+	/** The train location address **/
 	private static final String BASE_URL_TRAIN_LOCATION = "http://lapi.transitchicago.com/api/1.0/ttpositions.aspx";
-	/** **/
+	/** The buses routes address **/
 	private static final String BASE_URL_BUS_ROUTES = "http://www.ctabustracker.com/bustime/api/v1/getroutes";
-	/** **/
+	/** The buses direction address **/
 	private static final String BASE_URL_BUS_DIRECTION = "http://www.ctabustracker.com/bustime/api/v1/getdirections";
-	/** **/
+	/** The buses stops address **/
 	private static final String BASE_URL_BUS_STOPS = "http://www.ctabustracker.com/bustime/api/v1/getstops";
-	/** **/
+	/** The buses arrival address **/
 	private static final String BASE_URL_BUS_ARRIVAL = "http://www.ctabustracker.com/bustime/api/v1/getpredictions";
-	/** **/
+	/** The alert general address **/
 	private static final String BASE_URL_ALERT_GENERAL = "http://www.transitchicago.com/api/1.0/alerts.aspx";
-	/** **/
+	/** The alert routes address **/
 	private static final String BASE_URL_ALERT_ROUTES = "http://www.transitchicago.com/api/1.0/routes.aspx";
-	/** **/
+	/** The cta bus API key **/
 	private String CTA_BUS_KEY;
-	/** **/
+	/** The cta train API key **/
 	private String CTA_TRAIN_KEY;
-	/** **/
+	/** The http client **/
 	private DefaultHttpClient client;
 
 	/**
-	 * 
+	 * Private constructor
 	 */
 	private CtaConnect() {
 		this.client = new DefaultHttpClient();
@@ -82,8 +83,9 @@ public class CtaConnect {
 	}
 
 	/**
+	 * Get a singleton access to this class
 	 * 
-	 * @return
+	 * @return a CtaConnect instance
 	 */
 	public final static CtaConnect getInstance() {
 		if (instance == null) {
@@ -93,51 +95,13 @@ public class CtaConnect {
 	}
 
 	/**
-	 * 
-	 * @param adress
-	 * @return
-	 * @throws ConnectException
-	 */
-	private String connectUrl(final String adress) throws ConnectException {
-		String toreturn = null;
-		try {
-			client.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 10000);
-			client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 10000);
-			Log.v(TAG, "adress: " + adress);
-			HttpGet get = new HttpGet(adress);
-			HttpResponse getResponse = client.execute(get);
-			HttpEntity responseEntity = getResponse.getEntity();
-
-			Charset charset = Charset.forName("UTF8");
-			InputStreamReader in = new InputStreamReader(responseEntity.getContent(), charset);
-			int c = in.read();
-			StringBuilder build = new StringBuilder();
-			while (c != -1) {
-				build.append((char) c);
-				c = in.read();
-			}
-			toreturn = build.toString();
-		} catch (ConnectTimeoutException e) {
-			Log.e(TAG, e.getMessage(), e);
-			throw new ConnectException(ConnectException.ERROR, e);
-		} catch (UnknownHostException e) {
-			Log.e(TAG, e.getMessage(), e);
-			throw new ConnectException(ConnectException.ERROR, e);
-		} catch (ClientProtocolException e) {
-			Log.e(TAG, e.getMessage(), e);
-			throw new ConnectException(ConnectException.ERROR, e);
-		} catch (IOException e) {
-			Log.e(TAG, e.getMessage(), e);
-			throw new ConnectException(ConnectException.ERROR, e);
-		}
-		return toreturn;
-	}
-
-	/**
+	 * Connect
 	 * 
 	 * @param requestType
+	 *            the type of request
 	 * @param params
-	 * @return
+	 *            the params
+	 * @return a string
 	 * @throws ConnectException
 	 */
 	public final String connect(final CtaRequestType requestType, final MultiMap<String, String> params) throws ConnectException {
@@ -187,5 +151,48 @@ public class CtaConnect {
 		String xml = connectUrl(adress.toString());
 		Log.v(TAG, "Result: " + xml);
 		return xml;
+	}
+
+	/**
+	 * Connect url
+	 * 
+	 * @param address
+	 *            the address
+	 * @return the answer
+	 * @throws ConnectException
+	 */
+	private String connectUrl(final String address) throws ConnectException {
+		String toreturn = null;
+		try {
+			client.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 10000);
+			client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 10000);
+			Log.v(TAG, "adress: " + address);
+			HttpGet get = new HttpGet(address);
+			HttpResponse getResponse = client.execute(get);
+			HttpEntity responseEntity = getResponse.getEntity();
+
+			Charset charset = Charset.forName("UTF8");
+			InputStreamReader in = new InputStreamReader(responseEntity.getContent(), charset);
+			int c = in.read();
+			StringBuilder build = new StringBuilder();
+			while (c != -1) {
+				build.append((char) c);
+				c = in.read();
+			}
+			toreturn = build.toString();
+		} catch (ConnectTimeoutException e) {
+			Log.e(TAG, e.getMessage(), e);
+			throw new ConnectException(ConnectException.ERROR, e);
+		} catch (UnknownHostException e) {
+			Log.e(TAG, e.getMessage(), e);
+			throw new ConnectException(ConnectException.ERROR, e);
+		} catch (ClientProtocolException e) {
+			Log.e(TAG, e.getMessage(), e);
+			throw new ConnectException(ConnectException.ERROR, e);
+		} catch (IOException e) {
+			Log.e(TAG, e.getMessage(), e);
+			throw new ConnectException(ConnectException.ERROR, e);
+		}
+		return toreturn;
 	}
 }

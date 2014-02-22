@@ -15,18 +15,17 @@ import fr.cph.chicago.entity.Alert;
 import fr.cph.chicago.entity.Service;
 
 /**
+ * Adapter that will handle alerts
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public final class AlertAdapter extends BaseAdapter {
 
-	/** **/
+	/** The list of alerts **/
 	private List<Alert> alerts;
 
-	/**
-	 * 
-	 */
+	/** The constructor **/
 	public AlertAdapter() {
 		alerts = DataHolder.getInstance().getAlertData().getAlerts();
 	}
@@ -83,9 +82,10 @@ public final class AlertAdapter extends BaseAdapter {
 	}
 
 	/**
+	 * DP View holder
 	 * 
-	 * @author carl
-	 * 
+	 * @author Carl-Philipp Harmant
+	 * @version 1
 	 */
 	static class ViewHolder {
 		TextView lineView;

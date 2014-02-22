@@ -35,7 +35,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils.TruncateAt;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -72,39 +71,38 @@ import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.util.Util;
 
 /**
+ * Adapter that will handle favorites
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public final class FavoritesAdapter extends BaseAdapter {
-	
-	/** Tag **/
-	private static final String TAG = "FavoritesAdapter";
-	/** **/
+
+	/** Main activity **/
 	private MainActivity activity;
-	/** **/
+	/** The context **/
 	private Context context;
-	/** **/
+	/** The layout that is used to display a fade black background **/
 	private FrameLayout firstLayout;
-	/** **/
+	/** The model **/
 	private VehiculeArrival arrival;
-	/** **/
+	/** Ids of layouts **/
 	private Map<String, Integer> ids;
-	/** **/
+	/** Layouts **/
 	private Map<Integer, LinearLayout> layouts;
-	/** **/
+	/** Views **/
 	private Map<Integer, View> views;
-	/** **/
+	/** Map of textview that holds updates **/
 	private Map<String, TextView> mUpdated;
-	/** **/
+	/** List update **/
 	private String lastUpdate;
-	/** **/
+	/** Params layout **/
 	private LinearLayout.LayoutParams paramsLayout;
-	/** **/
+	/** Params text view **/
 	private LinearLayout.LayoutParams paramsTextView;
-	/** **/
+	/** Padding color **/
 	private int line1PaddingColor;
-	/** **/
+	/** Stops padding top **/
 	private int stopsPaddingTop;
 
 	@SuppressLint("UseSparseArrays")
@@ -283,7 +281,8 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 									llv.addView(insideLayout);
 								} else {
-									// llv can be null sometimes (after a remove from favorites for example)
+									// llv can be null sometimes (after a remove from favorites for
+									// example)
 									if (llv != null) {
 										LinearLayout insideLayout = (LinearLayout) llv.findViewById(idLayout3);
 										// InsideLayout can be null too if removed before
@@ -449,14 +448,15 @@ public final class FavoritesAdapter extends BaseAdapter {
 					}
 				}
 			}
-		} 
+		}
 		return convertView;
 	}
 
 	/**
+	 * DP view holder
 	 * 
-	 * @author carl
-	 * 
+	 * @author Carl-Philipp Harmant
+	 * @version 1
 	 */
 	static class TrainViewHolder {
 		TextView stationNameView;
@@ -464,56 +464,33 @@ public final class FavoritesAdapter extends BaseAdapter {
 	}
 
 	/**
-	 * 
-	 * @param lastUpdate
-	 * @return
-	 */
-	private final String getLastUpdateInMinutes(final Date lastUpdate) {
-		String res = null;
-		if (lastUpdate != null) {
-			Date currentCDate = Calendar.getInstance().getTime();
-			long[] diff = getTimeDifference(lastUpdate, currentCDate);
-			if (diff[0] == 0 && diff[1] == 0) {
-				res = "now";
-			} else {
-				if (diff[0] == 0) {
-					res = String.valueOf(diff[1]) + " min";
-				} else {
-					res = String.valueOf(diff[0]) + " h " + String.valueOf(diff[1]) + " min";
-				}
-
-			}
-		} else {
-			res = "";
-		}
-		return res;
-	}
-
-	/**
+	 * St arrivals
 	 * 
 	 * @param arrivals
+	 *            the trains arrivals
 	 * @param busArrivals
+	 *            the buses arrivals
 	 */
 	public final void setArrivals(final SparseArray<TrainArrival> arrivals, final List<BusArrival> busArrivals) {
 		arrival.setArrivals(arrivals, busArrivals);
 	}
 
 	/**
-	 * 
+	 * Set favorites
 	 */
 	public final void setFavorites() {
 		arrival.setFavorites();
 	}
 
 	/**
-	 * 
+	 * Refresh date update
 	 */
 	public final void refreshUpdated() {
 		ChicagoTracker.modifyLastUpdate(Calendar.getInstance().getTime());
 	}
 
 	/**
-	 * 
+	 * Refresh udpdated view
 	 */
 	public final void refreshUpdatedView() {
 		Date lastUpdate = ChicagoTracker.getLastUpdate();
@@ -524,9 +501,10 @@ public final class FavoritesAdapter extends BaseAdapter {
 	}
 
 	/**
+	 * Bus bound task. Start bus activity
 	 * 
-	 * @author carl
-	 * 
+	 * @author Carl-Philipp Harmant
+	 * @version 1
 	 */
 	private class BusBoundAsyncTask extends AsyncTask<String, Void, BusStop> {
 
@@ -588,10 +566,13 @@ public final class FavoritesAdapter extends BaseAdapter {
 	}
 
 	/**
+	 * Get time difference between 2 dates
 	 * 
 	 * @param d1
+	 *            the date one
 	 * @param d2
-	 * @return
+	 *            the date two
+	 * @return a tab containing in 0 the hour and in 1 the minutes
 	 */
 	private final long[] getTimeDifference(final Date d1, final Date d2) {
 		long[] result = new long[2];
@@ -611,5 +592,33 @@ public final class FavoritesAdapter extends BaseAdapter {
 		result[0] = h;
 		result[1] = m;
 		return result;
+	}
+
+	/**
+	 * Get last update in minutes
+	 * 
+	 * @param lastUpdate
+	 *            the last update
+	 * @return a string
+	 */
+	private final String getLastUpdateInMinutes(final Date lastUpdate) {
+		String res = null;
+		if (lastUpdate != null) {
+			Date currentCDate = Calendar.getInstance().getTime();
+			long[] diff = getTimeDifference(lastUpdate, currentCDate);
+			if (diff[0] == 0 && diff[1] == 0) {
+				res = "now";
+			} else {
+				if (diff[0] == 0) {
+					res = String.valueOf(diff[1]) + " min";
+				} else {
+					res = String.valueOf(diff[0]) + " h " + String.valueOf(diff[1]) + " min";
+				}
+
+			}
+		} else {
+			res = "";
+		}
+		return res;
 	}
 }

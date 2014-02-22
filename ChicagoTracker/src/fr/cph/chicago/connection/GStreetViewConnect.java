@@ -26,33 +26,35 @@ import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.util.Util;
 
 /**
+ * Class that access google street api. Singleton
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class GStreetViewConnect {
 
-	/** **/
+	/** The tag **/
 	private static final String TAG = "GStreetViewConnect";
-	/** **/
+	/** The base url of API **/
 	private static final String BASE_URL = "http://maps.googleapis.com/maps/api/streetview";
-	/** **/
+	/** The google key **/
 	private String GOOGLE_KEY;
-	/** **/
+	/** Width of the picture **/
 	private static final int WIDTH = 1000;
-	/** **/
+	/** Height of the picture **/
 	private static final int HEIGTH = 300;
-	/** **/
+	/** This class is a singleton **/
 	private static GStreetViewConnect instance = null;
 
 	/**
-	 * 
+	 * Private constructor, that get the API key from property file
 	 */
 	private GStreetViewConnect() {
 		GOOGLE_KEY = Util.getProperty("google.streetmap.key");
 	}
 
 	/**
+	 * Get instance of this class
 	 * 
 	 * @return
 	 */
@@ -64,27 +66,13 @@ public class GStreetViewConnect {
 	}
 
 	/**
-	 * 
-	 * @param adress
-	 * @return
-	 * @throws IOException
-	 */
-	private Drawable connectUrl(final String adress) throws IOException {
-		Log.v(TAG, "adress: " + adress);
-		try {
-			InputStream is = (InputStream) new URL(adress).getContent();
-			Drawable d = Drawable.createFromStream(is, "src name");
-			return d;
-		} catch (Exception e) {
-			return null;
-		}
-	}
-
-	/**
+	 * Build Url
 	 * 
 	 * @param position
-	 * @return
+	 *            position that we want to access
+	 * @return a drawable
 	 * @throws IOException
+	 *             an exception
 	 */
 	public final Drawable connect(final Position position) throws IOException {
 		StringBuilder adress = new StringBuilder(BASE_URL);
@@ -94,5 +82,24 @@ public class GStreetViewConnect {
 		adress.append("&fov=120");
 		adress.append("&location=" + position.getLatitude() + "," + position.getLongitude());
 		return connectUrl(adress.toString());
+	}
+
+	/**
+	 * Connect to the API and get the MAP
+	 * 
+	 * @param address
+	 *            the address to connect to
+	 * @return a drawable map
+	 * @throws IOException
+	 */
+	private Drawable connectUrl(final String address) throws IOException {
+		Log.v(TAG, "adress: " + address);
+		try {
+			InputStream is = (InputStream) new URL(address).getContent();
+			Drawable d = Drawable.createFromStream(is, "src name");
+			return d;
+		} catch (Exception e) {
+			return null;
+		}
 	}
 }

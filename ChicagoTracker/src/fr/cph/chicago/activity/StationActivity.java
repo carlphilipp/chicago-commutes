@@ -74,35 +74,41 @@ import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
 
+/**
+ * Activity that represents the train station
+ * 
+ * @author Carl-Philipp Harmant
+ * @version 1
+ */
 public class StationActivity extends Activity {
 
-	/** **/
+	/** Train data **/
 	private TrainData data;
-	/** **/
-	private Integer stationId;
-	/** **/
-	private ImageView streetViewImage;
-	/** **/
-	private TextView streetViewText;
-	/** **/
-	private ImageView mapImage;
-	/** **/
-	private ImageView directionImage;
-	/** **/
-	private ImageView favoritesImage;
-	/** **/
-	private boolean isFavorite;
-	/** **/
+	/** Train arrival **/
 	private TrainArrival arrival;
-	/** **/
-	private Map<String, Integer> ids;
-	/** **/
+	/** The station id **/
+	private Integer stationId;
+	/** The station **/
 	private Station station;
-	/** **/
+	/** Street view image **/
+	private ImageView streetViewImage;
+	/** Street view text **/
+	private TextView streetViewText;
+	/** Map image **/
+	private ImageView mapImage;
+	/** Direction image **/
+	private ImageView directionImage;
+	/** Favorite image **/
+	private ImageView favoritesImage;
+	/** Is favorite **/
+	private boolean isFavorite;
+	/** Map of ids **/
+	private Map<String, Integer> ids;
+	/** Params stops **/
 	private LinearLayout.LayoutParams paramsStop;
-	/** **/
+	/** The menu **/
 	private Menu menu;
-	/** **/
+	/** The first load **/
 	private boolean firstLoad = true;
 
 	@SuppressWarnings("unchecked")
@@ -144,8 +150,6 @@ public class StationActivity extends Activity {
 
 		directionImage = (ImageView) findViewById(R.id.activity_station_map_direction);
 
-//		int width = (int) getResources().getDimension(R.dimen.activity_station_line_width);
-//		int height = (int) getResources().getDimension(R.dimen.activity_station_line_height);
 		int line1PaddingColor = (int) getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
 		int line1PaddingTop = (int) getResources().getDimension(R.dimen.activity_station_stops_line1_padding_top);
 
@@ -297,10 +301,11 @@ public class StationActivity extends Activity {
 	}
 
 	/**
+	 * Is favorite or not ?
 	 * 
-	 * @return
+	 * @return if the station is favorite
 	 */
-	public final boolean isFavorite() {
+	private boolean isFavorite() {
 		boolean isFavorite = false;
 		List<Integer> favorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
 		for (Integer fav : favorites) {
@@ -313,9 +318,10 @@ public class StationActivity extends Activity {
 	}
 
 	/**
+	 * Display google street view image
 	 * 
-	 * @author carl
-	 * 
+	 * @author Carl-Philipp Harmant
+	 * @version 1
 	 */
 	private final class DisplayGoogleStreetPicture extends AsyncTask<Position, Void, Drawable> {
 		/** **/
@@ -394,13 +400,14 @@ public class StationActivity extends Activity {
 	}
 
 	/**
+	 * Load train arrivals
 	 * 
-	 * @author carl
-	 * 
+	 * @author Carl-Philipp Harmant
+	 * @version 1
 	 */
 	private class LoadData extends AsyncTask<MultiMap<String, String>, Void, TrainArrival> {
 
-		/** **/
+		/** The exception that might be thrown **/
 		private TrackerException trackerException;
 
 		@Override
@@ -421,7 +428,8 @@ public class StationActivity extends Activity {
 					List<Eta> etas = arri.getEtas();
 					// Sort Eta by arriving time
 					Collections.sort(etas);
-					// Copy data into new list to be able to avoid looping on a list that we want to modify
+					// Copy data into new list to be able to avoid looping on a list that we want to
+					// modify
 					List<Eta> etas2 = new ArrayList<Eta>();
 					etas2.addAll(etas);
 					int j = 0;
@@ -490,8 +498,10 @@ public class StationActivity extends Activity {
 	}
 
 	/**
+	 * Reset arrival layouts
 	 * 
 	 * @param station
+	 *            the station
 	 */
 	private final void reset(final Station station) {
 		Set<TrainLine> setTL = station.getLines();
@@ -518,8 +528,10 @@ public class StationActivity extends Activity {
 	}
 
 	/**
+	 * Draw line
 	 * 
 	 * @param eta
+	 *            the eta
 	 */
 	private final void drawLine3(final Eta eta) {
 		TrainLine line = eta.getRouteName();
@@ -559,7 +571,7 @@ public class StationActivity extends Activity {
 	}
 
 	/**
-	 * 
+	 * Add/remove favorites
 	 */
 	private final void switchFavorite() {
 		if (isFavorite) {

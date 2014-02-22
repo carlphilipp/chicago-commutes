@@ -33,16 +33,24 @@ import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
+/**
+ * Adapter that will handle trains
+ * 
+ * @author Carl-Philipp Harmant
+ * @version 1
+ */
 public final class TrainAdapter extends BaseAdapter {
 
-	/** **/
+	/** List of stations **/
 	private List<Station> stations;
-	/** **/
+	/** The context **/
 	private Context context;
 
 	/**
+	 * Constructor
 	 * 
 	 * @param line
+	 *            the train line
 	 */
 	public TrainAdapter(final TrainLine line) {
 		// Load data

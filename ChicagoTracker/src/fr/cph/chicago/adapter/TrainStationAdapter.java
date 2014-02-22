@@ -27,9 +27,10 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
 /**
+ * Adapter that will handle Train station list
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public final class TrainStationAdapter extends BaseAdapter {
 

@@ -32,13 +32,14 @@ import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
 /**
+ * Activity the list of train stations
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class TrainStationActivity extends ListActivity {
 
-	/** **/
+	/** The train data **/
 	private TrainData data;
 
 	@Override

@@ -17,28 +17,30 @@
 package fr.cph.chicago.data;
 
 /**
+ * Class that hold bus train and alerts data. Singleton
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class DataHolder {
 
-	/** **/
+	/** Singleton **/
 	private static DataHolder dataHolder;
-	/** **/
+	/** Train data **/
 	private TrainData trainData;
-	/** **/
+	/** Bus data **/
 	private BusData busData;
-	/** **/
+	/** Alert data **/
 	private AlertData alertData;
 
 	/**
-	 * 
+	 * Private constructor
 	 */
 	private DataHolder() {
 	}
 
 	/**
+	 * Get instance of the class. Singleton
 	 * 
 	 * @return
 	 */
@@ -50,48 +52,57 @@ public class DataHolder {
 	}
 
 	/**
+	 * Get Train data
 	 * 
-	 * @return
+	 * @return train data
 	 */
 	public final TrainData getTrainData() {
 		return trainData;
 	}
 
 	/**
+	 * Set train data
 	 * 
 	 * @param data
+	 *            train data
 	 */
 	public final void setTrainData(final TrainData data) {
 		this.trainData = data;
 	}
 
 	/**
+	 * Get bus data
 	 * 
-	 * @return
+	 * @return bus data
 	 */
 	public final BusData getBusData() {
 		return busData;
 	}
 
 	/**
+	 * Set bus data
 	 * 
 	 * @param busData
+	 *            bus data
 	 */
 	public final void setBusData(final BusData busData) {
 		this.busData = busData;
 	}
 
 	/**
+	 * Get alert data
 	 * 
-	 * @return
+	 * @return alert data
 	 */
 	public final AlertData getAlertData() {
 		return alertData;
 	}
 
 	/**
+	 * Set alert data
 	 * 
 	 * @param alertData
+	 *            alert data
 	 */
 	public final void setAlertData(final AlertData alertData) {
 		this.alertData = alertData;

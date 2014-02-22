@@ -285,7 +285,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	}
 
 	/**
-	 * Stop animation in men
+	 * Stop animation in menu
 	 */
 	public final void stopRefreshAnimation() {
 		if (menu != null) {

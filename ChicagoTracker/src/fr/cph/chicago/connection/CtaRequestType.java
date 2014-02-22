@@ -17,9 +17,10 @@
 package fr.cph.chicago.connection;
 
 /**
+ * Enum that store the different kind of query we can do
  * 
- * @author carl
- *
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public enum CtaRequestType {
 	TRAIN_ARRIVALS, TRAIN_FOLLOW, TRAIN_LOCATION, BUS_ROUTES, BUS_DIRECTION, BUS_STOP_LIST, BUS_ARRIVALS, ALERTS_GENERAL, ALERTS_ROUTES

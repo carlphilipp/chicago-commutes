@@ -34,32 +34,45 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.Util;
 
 /**
+ * Class that store user preferences into phoneO
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public final class Preferences {
 
 	/** Tag **/
 	private static final String TAG = "Preferences";
 
+	/**
+	 * Check if the user has favorites already
+	 * 
+	 * @param trains
+	 *            the trains preference string
+	 * @param bus
+	 *            the bus preference string
+	 * @return a boolean
+	 */
 	public static final boolean hasFavorites(final String trains, final String bus) {
 		Context context = ChicagoTracker.getAppContext();
 		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
 		Set<String> setPref1 = sharedPref.getStringSet(trains, null);
 		Set<String> setPref2 = sharedPref.getStringSet(bus, null);
-		Log.i(TAG, setPref1 + " "+ setPref2);
+		Log.i(TAG, setPref1 + " " + setPref2);
 		boolean res = true;
-		if((setPref1 == null || setPref1.size() == 0) && (setPref2 == null || setPref2.size() == 0)){
+		if ((setPref1 == null || setPref1.size() == 0) && (setPref2 == null || setPref2.size() == 0)) {
 			res = false;
 		}
 		return res;
 	}
 
 	/**
+	 * Save bus into favorites
 	 * 
 	 * @param name
+	 *            the name of the bus preference string
 	 * @param favorites
+	 *            the list of favorites to save
 	 */
 	public static final void saveBusFavorites(final String name, final List<String> favorites) {
 		Context context = ChicagoTracker.getAppContext();
@@ -75,9 +88,11 @@ public final class Preferences {
 	}
 
 	/**
+	 * Get favorites bus
 	 * 
 	 * @param name
-	 * @return
+	 *            the name of the bus preference string
+	 * @return a list of favorites bus
 	 */
 	public static final List<String> getBusFavorites(final String name) {
 		Context context = ChicagoTracker.getAppContext();
@@ -116,9 +131,12 @@ public final class Preferences {
 	}
 
 	/**
+	 * Save train favorites
 	 * 
 	 * @param name
+	 *            the name of the train preference string
 	 * @param favorites
+	 *            the favorites
 	 */
 	public static final void saveTrainFavorites(final String name, final List<Integer> favorites) {
 		Context context = ChicagoTracker.getAppContext();
@@ -134,9 +152,11 @@ public final class Preferences {
 	}
 
 	/**
+	 * Get train favorites
 	 * 
 	 * @param name
-	 * @return
+	 *            the name of the train preference string
+	 * @return the favorites
 	 */
 	public static final List<Integer> getTrainFavorites(final String name) {
 		Context context = ChicagoTracker.getAppContext();
@@ -166,11 +186,16 @@ public final class Preferences {
 	}
 
 	/**
+	 * Save train filter
 	 * 
 	 * @param stationId
+	 *            the station id
 	 * @param line
+	 *            the line
 	 * @param direction
+	 *            the direction
 	 * @param value
+	 *            the value
 	 */
 	public static final void saveTrainFilter(final Integer stationId, final TrainLine line, final TrainDirection direction, final boolean value) {
 		Context context = ChicagoTracker.getAppContext();
@@ -181,11 +206,15 @@ public final class Preferences {
 	}
 
 	/**
+	 * Get train filter
 	 * 
 	 * @param stationId
+	 *            the station id
 	 * @param line
+	 *            the line
 	 * @param direction
-	 * @return
+	 *            the direction
+	 * @return if a train is filtered
 	 */
 	public static final boolean getTrainFilter(final Integer stationId, final TrainLine line, final TrainDirection direction) {
 		Context context = ChicagoTracker.getAppContext();

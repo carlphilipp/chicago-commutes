@@ -42,15 +42,16 @@ import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
 /**
+ * Activity that display search result
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class SearchActivity extends ListActivity {
 
-	/** **/
+	/** The menu **/
 	private Menu menu;
-	/** **/
+	/** The adapter **/
 	private SearchAdapter ada;
 
 	@Override
@@ -84,8 +85,32 @@ public class SearchActivity extends ListActivity {
 	}
 
 	/**
+	 * Load animation in menu
+	 */
+	public final void startRefreshAnimation() {
+		if (menu != null) {
+			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+			refreshMenuItem.setActionView(R.layout.progressbar);
+			refreshMenuItem.expandActionView();
+		}
+	}
+
+	/**
+	 * Stop animation in menu
+	 */
+	public final void stopRefreshAnimation() {
+		if (menu != null) {
+			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+			refreshMenuItem.collapseActionView();
+			refreshMenuItem.setActionView(null);
+		}
+	}
+
+	/**
+	 * Reload adapter with correct data
 	 * 
 	 * @param intent
+	 *            the intent
 	 */
 	private void handleIntent(Intent intent) {
 		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
@@ -121,28 +146,6 @@ public class SearchActivity extends ListActivity {
 
 			ada.updateData(foundStations, foundBusRoutes);
 			ada.notifyDataSetChanged();
-		}
-	}
-
-	/**
-	 * 
-	 */
-	public final void startRefreshAnimation() {
-		if (menu != null) {
-			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-			refreshMenuItem.setActionView(R.layout.progressbar);
-			refreshMenuItem.expandActionView();
-		}
-	}
-
-	/**
-	 * 
-	 */
-	public final void stopRefreshAnimation() {
-		if (menu != null) {
-			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-			refreshMenuItem.collapseActionView();
-			refreshMenuItem.setActionView(null);
 		}
 	}
 }

@@ -40,27 +40,28 @@ import fr.cph.chicago.entity.factory.StationFactory;
 import fr.cph.chicago.entity.factory.StopFactory;
 
 /**
+ * Class that handle train data
  * 
- * @author carl
- *
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class TrainData {
 
 	/** Tag **/
 	private static final String TAG = "TrainData";
-	/** **/
+	/** List of stations **/
 	private SparseArray<Station> stations;
-	/** **/
+	/** List of stations ordered by name **/
 	private List<Station> stationsOrderByName;
-	/** **/
+	/** List of stations ordered by line and name **/
 	private List<Station> stationsOrderByLine;
-	/** **/
+	/** Map of stations ordered by line and map **/
 	private Map<TrainLine, List<Station>> stationsOrderByLineMap;
-	/** **/
+	/** List of stops **/
 	private SparseArray<Stop> stops;
 
 	/**
-	 * 
+	 * Constructor
 	 */
 	public TrainData() {
 		this.stations = new SparseArray<Station>();
@@ -68,7 +69,7 @@ public class TrainData {
 	}
 
 	/**
-	 * 
+	 * Read train data from CSV file.
 	 */
 	public final void read() {
 		if (stations.size() == 0 && stops.size() == 0) {
@@ -157,7 +158,214 @@ public class TrainData {
 	}
 
 	/**
+	 * Get all stations
 	 * 
+	 * @return a map containing all the stations ordered line
+	 */
+	public final Map<TrainLine, List<Station>> getAllStations() {
+		return stationsOrderByLineMap;
+	}
+
+	/**
+	 * Get a list of station for a given line
+	 * 
+	 * @param line
+	 *            the train line
+	 * @return a list of station
+	 */
+	public final List<Station> getStationsForLine(final TrainLine line) {
+		List<Station> res = stationsOrderByLineMap.get(line);
+		return res;
+	}
+	
+	/**
+	 * get a station
+	 * 
+	 * @param id
+	 *            the id of the station
+	 * @return
+	 */
+	public final Station getStation(final Integer id) {
+		if (stations.size() != 0) {
+			return stations.get(id);
+		} else {
+			return null;
+		}
+	}
+	
+	/**
+	 * Get a station with its position in the list
+	 * 
+	 * @param position
+	 *            the position of the station in the list
+	 * @return a station
+	 */
+	public final Station getStationByPosition(final int position) {
+		if (stations.size() != 0 && position <= stations.size()) {
+			return stations.valueAt(position);
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Get a station with its position in the ordered by name list
+	 * 
+	 * @param position
+	 *            the position
+	 * @return a station
+	 */
+	public final Station getStationByPositionAndName(final int position) {
+		if (stationsOrderByName.size() != 0 && position <= stationsOrderByName.size()) {
+			return stationsOrderByName.get(position);
+		} else {
+			return null;
+		}
+	}
+	
+	/**
+	 * Get station by position and line
+	 * 
+	 * @param position
+	 *            the position
+	 * @return a station
+	 */
+	public final Station getStationByPositionAndLine(final int position) {
+		if (stationsOrderByLine.size() != 0 && position <= stationsOrderByLine.size()) {
+			return stationsOrderByLine.get(position);
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Get stations size
+	 * 
+	 * @return the size of the stations list
+	 */
+	public final int getStationsSize() {
+		return stations.size();
+	}
+
+	/**
+	 * Get station size from the ordered by line
+	 * 
+	 * @return the size
+	 */
+	public final int getStationsSizeByLine() {
+		return stationsOrderByLine.size();
+	}
+	
+	/**
+	 * Get station by name
+	 * 
+	 * @param name
+	 *            the name of the station
+	 * @return a station
+	 */
+	public final Station getStationByName(final String name) {
+		int index = 0;
+		while (index < stations.size()) {
+			Station station = stations.valueAt(index++);
+			if (station.getName().equals(name)) {
+				return station;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Get a stop
+	 * 
+	 * @param id
+	 *            the id of the stop
+	 * @return a stop
+	 */
+	public final Stop getStop(final Integer id) {
+		if (stops.size() != 0) {
+			return stops.get(id);
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Get a stop from the list
+	 * 
+	 * @param position
+	 *            the position of the stop in the list
+	 * @return a stop
+	 */
+	public final Stop getStopByPosition(final int position) {
+		if (stops.size() != 0) {
+			return stops.valueAt(position);
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Get the size of the stops found
+	 * 
+	 * @return a size
+	 */
+	public final int getStopsSize() {
+		return stops.size();
+	}
+
+	/**
+	 * Get stop by desc
+	 * 
+	 * @param desc
+	 *            the desription of stop
+	 * @return a stop
+	 */
+	public final Stop getStopByDesc(final String desc) {
+		int index = 0;
+		while (index < stops.size()) {
+			Stop stop = stops.valueAt(index++);
+			if (stop.getDescription().equals(desc) || stop.getDescription().split(" ")[0].equals(desc)) {
+				return stop;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Read near by station
+	 * 
+	 * @param position
+	 *            the position
+	 * @return a list of station
+	 */
+	public final List<Station> readNearbyStation(final Position position) {
+
+		final double dist = 0.004472;
+
+		List<Station> res = new ArrayList<Station>();
+		double latitude = position.getLatitude();
+		double longitude = position.getLongitude();
+
+		double latMax = latitude + dist;
+		double latMin = latitude - dist;
+		double lonMax = longitude + dist;
+		double lonMin = longitude - dist;
+
+		for (Station station : stationsOrderByName) {
+			for (Position stopPosition : station.getStopsPosition()) {
+				double trainLatitude = stopPosition.getLatitude();
+				double trainLongitude = stopPosition.getLongitude();
+				if (trainLatitude <= latMax && trainLatitude >= latMin && trainLongitude <= lonMax && trainLongitude >= lonMin) {
+					res.add(station);
+					break;
+				}
+			}
+		}
+		return res;
+	}
+
+	/**
+	 * Order stations
 	 */
 	private final void order() {
 		List<Station> vals = new ArrayList<Station>();
@@ -191,188 +399,5 @@ public class TrainData {
 			List<Station> temp = e.getValue();
 			stationsOrderByLine.addAll(temp);
 		}
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public final Map<TrainLine, List<Station>> getAllStations() {
-		return stationsOrderByLineMap;
-	}
-
-	/**
-	 * 
-	 * @param line
-	 * @return
-	 */
-	public final List<Station> getStationsForLine(final TrainLine line) {
-		List<Station> res = stationsOrderByLineMap.get(line);
-		return res;
-	}
-
-	/**
-	 * 
-	 * @param id
-	 * @return
-	 */
-	public final Stop getStop(final Integer id) {
-		if (stops.size() != 0) {
-			return stops.get(id);
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * 
-	 * @param position
-	 * @return
-	 */
-	public final Stop getStopByPosition(final int position) {
-		if (stops.size() != 0) {
-			return stops.valueAt(position);
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public final int getStopsSize() {
-		return stops.size();
-	}
-
-	/**
-	 * 
-	 * @param id
-	 * @return
-	 */
-	public final Station getStation(final Integer id) {
-		if (stations.size() != 0) {
-			return stations.get(id);
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * 
-	 * @param position
-	 * @return
-	 */
-	public final Station getStationByPosition(final int position) {
-		if (stations.size() != 0 && position <= stations.size()) {
-			return stations.valueAt(position);
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * 
-	 * @param position
-	 * @return
-	 */
-	public final Station getStationByPositionAndName(final int position) {
-		if (stationsOrderByName.size() != 0 && position <= stationsOrderByName.size()) {
-			return stationsOrderByName.get(position);
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * 
-	 * @param position
-	 * @return
-	 */
-	public final Station getStationByPositionAndLine(final int position) {
-		if (stationsOrderByLine.size() != 0 && position <= stationsOrderByLine.size()) {
-			return stationsOrderByLine.get(position);
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public final int getStationsSize() {
-		return stations.size();
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public final int getStationsSizeByLine() {
-		return stationsOrderByLine.size();
-	}
-
-	/**
-	 * 
-	 * @param desc
-	 * @return
-	 */
-	public final Stop getStopByDesc(final String desc) {
-		int index = 0;
-		while (index < stops.size()) {
-			Stop stop = stops.valueAt(index++);
-			if (stop.getDescription().equals(desc) || stop.getDescription().split(" ")[0].equals(desc)) {
-				return stop;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public final Station getStationByName(final String name) {
-		int index = 0;
-		while (index < stations.size()) {
-			Station station = stations.valueAt(index++);
-			if (station.getName().equals(name)) {
-				return station;
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * 
-	 * @param position
-	 * @return
-	 */
-	public final List<Station> readNearbyStation(final Position position) {
-		/** **/
-		final double dist = 0.004472;
-
-		List<Station> res = new ArrayList<Station>();
-		double latitude = position.getLatitude();
-		double longitude = position.getLongitude();
-
-		double latMax = latitude + dist;
-		double latMin = latitude - dist;
-		double lonMax = longitude + dist;
-		double lonMin = longitude - dist;
-
-		for (Station station : stationsOrderByName) {
-			for(Position stopPosition : station.getStopsPosition()){
-				double trainLatitude = stopPosition.getLatitude();
-				double trainLongitude = stopPosition.getLongitude();
-				if (trainLatitude <= latMax && trainLatitude >= latMin && trainLongitude <= lonMax && trainLongitude >= lonMin) {
-					res.add(station);
-					break;
-				}
-			}
-		}
-		return res;
 	}
 }

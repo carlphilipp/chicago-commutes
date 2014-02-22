@@ -39,23 +39,24 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.xml.Xml;
 
 /**
+ * Class that handle bus data. Singleton
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class BusData {
 
 	/** Tag **/
 	private static final String TAG = "BusData";
-	/** **/
+	/** Singleton **/
 	private static BusData busData;
-	/** **/
+	/** List of bus routes **/
 	private List<BusRoute> routes;
-	/** **/
+	/** List of bus stop **/
 	private List<BusStop> stops;
 
 	/**
-	 * 
+	 * Private constuctor
 	 */
 	private BusData() {
 		this.routes = new ArrayList<BusRoute>();
@@ -63,8 +64,9 @@ public class BusData {
 	}
 
 	/**
+	 * Get instance of the class
 	 * 
-	 * @return
+	 * @return a bus data instance
 	 */
 	public static BusData getInstance() {
 		if (busData == null) {
@@ -74,8 +76,9 @@ public class BusData {
 	}
 
 	/**
+	 * Method that read bus stops from CSV
 	 * 
-	 * @return
+	 * @return a list of bus stops
 	 */
 	public final List<BusStop> readBusStops() {
 		if (stops.size() == 0) {
@@ -116,10 +119,13 @@ public class BusData {
 	}
 
 	/**
+	 * Load bus routes from CTA API
 	 * 
-	 * @return
+	 * @return a list of bus route
 	 * @throws ParserException
+	 *             a parser exception
 	 * @throws ConnectException
+	 *             a connect exception
 	 */
 	public final List<BusRoute> loadBusRoutes() throws ParserException, ConnectException {
 		if (routes.size() == 0) {
@@ -133,34 +139,40 @@ public class BusData {
 	}
 
 	/**
+	 * Get bus routes
 	 * 
-	 * @return
+	 * @return a list of bus route
 	 */
 	public final List<BusRoute> getRoutes() {
 		return routes;
 	}
 
 	/**
+	 * Get number of route
 	 * 
-	 * @return
+	 * @return a number
 	 */
 	public final int getRouteSize() {
 		return routes.size();
 	}
 
 	/**
+	 * Get a route
 	 * 
 	 * @param position
-	 * @return
+	 *            the position in the list
+	 * @return a bus route
 	 */
 	public final BusRoute getRoute(final int position) {
 		return routes.get(position);
 	}
 
 	/**
+	 * Get a route
 	 * 
 	 * @param routeId
-	 * @return
+	 *            the id of the bus route
+	 * @return a bus route
 	 */
 	public final BusRoute getRoute(final String routeId) {
 		BusRoute result = null;
@@ -174,12 +186,17 @@ public class BusData {
 	}
 
 	/**
+	 * Load from CTA API a bus stop list
 	 * 
 	 * @param stopId
+	 *            the stop id
 	 * @param bound
-	 * @return
+	 *            the direction
+	 * @return a bus stop list
 	 * @throws ConnectException
+	 *             a connect exception
 	 * @throws ParserException
+	 *             a parser exception
 	 */
 	public final List<BusStop> loadBusStop(final String stopId, final String bound) throws ConnectException, ParserException {
 		CtaConnect connect = CtaConnect.getInstance();
@@ -194,17 +211,20 @@ public class BusData {
 	}
 
 	/**
+	 * Get all bus stops from CSV
 	 * 
-	 * @return
+	 * @return a list of bus stops
 	 */
 	public final List<BusStop> readAllBusStops() {
 		return this.stops;
 	}
 
 	/**
+	 * Get one bus from CSV
 	 * 
 	 * @param id
-	 * @return
+	 *            the id of the bus
+	 * @return a bus stop
 	 */
 	public final BusStop readOneBus(final int id) {
 		BusStop res = null;
@@ -218,9 +238,11 @@ public class BusData {
 	}
 
 	/**
+	 * Get a list of bus stop within a a distance and position
 	 * 
 	 * @param position
-	 * @return
+	 *            the position
+	 * @return a list of bus stop
 	 */
 	public final List<BusStop> readNearbyStops(final Position position) {
 
@@ -254,7 +276,7 @@ public class BusData {
 	}
 
 	/**
-	 * 
+	 * Sort stops list
 	 */
 	private void order() {
 		if (stops.size() != 0) {

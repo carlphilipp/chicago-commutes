@@ -57,27 +57,31 @@ import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.xml.Xml;
 
 /**
+ * Adapter that will handle search
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public final class SearchAdapter extends BaseAdapter {
 
-	/** **/
+	/** List of train stations **/
 	private List<Station> trains;
-	/** **/
+	/** List of buses route **/
 	private List<BusRoute> buses;
-	/** **/
+	/** The context **/
 	private Context context;
-	/** **/
+	/** The search activity **/
 	private SearchActivity activity;
-	/** **/
+	/** The layout that is used to display a fade black background **/
 	private FrameLayout container;
 
 	/**
+	 * Constructor
 	 * 
 	 * @param activity
+	 *            the search activity
 	 * @param container
+	 *            the layout container
 	 */
 	public SearchAdapter(final SearchActivity activity, final FrameLayout container) {
 		this.context = ChicagoTracker.getAppContext();
@@ -173,14 +177,18 @@ public final class SearchAdapter extends BaseAdapter {
 	}
 
 	/**
+	 * Direction task
 	 * 
-	 * @author carl
-	 * 
+	 * @author Carl-Philipp Harmant
+	 * @version 1
 	 */
 	private class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 
+		/** **/
 		private BusRoute busRoute;
+		/** **/
 		private TextView convertView;
+		/** **/
 		private TrackerException trackerException;
 
 		@Override
@@ -243,9 +251,12 @@ public final class SearchAdapter extends BaseAdapter {
 	}
 
 	/**
+	 * Update data
 	 * 
 	 * @param trains
+	 *            the list of train stations
 	 * @param buses
+	 *            the list of bus routes
 	 */
 	public void updateData(List<Station> trains, List<BusRoute> buses) {
 		this.trains = trains;
