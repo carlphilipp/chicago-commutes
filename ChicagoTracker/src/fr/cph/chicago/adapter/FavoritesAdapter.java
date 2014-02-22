@@ -35,6 +35,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils.TruncateAt;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -73,10 +74,12 @@ import fr.cph.chicago.util.Util;
 /**
  * 
  * @author carl
- *
+ * 
  */
 public final class FavoritesAdapter extends BaseAdapter {
-
+	
+	/** Tag **/
+	private static final String TAG = "FavoritesAdapter";
 	/** **/
 	private MainActivity activity;
 	/** **/
@@ -95,6 +98,14 @@ public final class FavoritesAdapter extends BaseAdapter {
 	private Map<String, TextView> mUpdated;
 	/** **/
 	private String lastUpdate;
+	/** **/
+	private LinearLayout.LayoutParams paramsLayout;
+	/** **/
+	private LinearLayout.LayoutParams paramsTextView;
+	/** **/
+	private int line1PaddingColor;
+	/** **/
+	private int stopsPaddingTop;
 
 	@SuppressLint("UseSparseArrays")
 	public FavoritesAdapter(final MainActivity activity) {
@@ -108,6 +119,11 @@ public final class FavoritesAdapter extends BaseAdapter {
 		this.layouts = new HashMap<Integer, LinearLayout>();
 		this.views = new HashMap<Integer, View>();
 		this.mUpdated = new HashMap<String, TextView>();
+
+		this.paramsLayout = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		this.paramsTextView = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
+		this.line1PaddingColor = (int) context.getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
+		this.stopsPaddingTop = (int) context.getResources().getDimension(R.dimen.activity_station_stops_padding_top);
 	}
 
 	@Override
@@ -128,14 +144,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	@Override
 	public final View getView(final int position, View convertView, final ViewGroup parent) {
-
-		LinearLayout.LayoutParams paramsLayout = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-		LinearLayout.LayoutParams paramsTextView = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
-		int line1PaddingColor = (int) context.getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
-		int stopsPaddingTop = (int) context.getResources().getDimension(R.dimen.activity_station_stops_padding_top);
-
-		Date lastUpdate = ChicagoTracker.getLastTrainUpdate();
-
+		Date lastUpdate = ChicagoTracker.getLastUpdate();
 		Object object = arrival.getObject(position);
 		if (object != null) {
 			if (object instanceof Station) {
@@ -440,7 +449,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 					}
 				}
 			}
-		}
+		} 
 		return convertView;
 	}
 
@@ -507,7 +516,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 	 * 
 	 */
 	public final void refreshUpdatedView() {
-		Date lastUpdate = ChicagoTracker.getLastTrainUpdate();
+		Date lastUpdate = ChicagoTracker.getLastUpdate();
 		if (!String.valueOf(getLastUpdateInMinutes(lastUpdate)).equals(this.lastUpdate)) {
 			this.lastUpdate = String.valueOf(getLastUpdateInMinutes(lastUpdate));
 			this.notifyDataSetChanged();
