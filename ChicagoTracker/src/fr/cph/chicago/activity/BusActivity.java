@@ -34,6 +34,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -41,6 +42,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
@@ -58,36 +60,35 @@ import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
 
 /**
+ * Activity that represents the bus stop
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class BusActivity extends Activity {
 
-	/** **/
+	/** Tag **/
+	private static final String TAG = "BusActivity";
+	/** List of bus arrivals **/
 	private List<BusArrival> busArrivals;
-	/** **/
-	private String busRouteName;
-	/** **/
+	/** Buse route id **/
 	private String busRouteId;
-	/** **/
+	/** Bound **/
 	private String bound;
-	/** **/
+	/** Bus stop id **/
 	private Integer busStopId;
-	/** **/
+	/** Images **/
 	private ImageView streetViewImage, mapImage, directionImage, favoritesImage;
-	/** **/
-	private Position position;
-	/** **/
-	private Menu menu;
-	/** **/
-	private LinearLayout stopsView;
-	/** **/
-	private boolean firstLoad = true;
-	/** **/
-	private boolean isFavorite;
-	/** **/
+	/** Street view text **/
 	private TextView streetViewText;
+	/** Stop view **/
+	private LinearLayout stopsView;
+	/** First time the activity is loaded **/
+	private boolean firstLoad = true;
+	/** Is added as favorite **/
+	private boolean isFavorite;
+	/** Menu **/
+	private Menu menu;
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
@@ -96,18 +97,20 @@ public class BusActivity extends Activity {
 		// Load right xml
 		setContentView(R.layout.activity_bus);
 
-		busStopId = getIntent().getExtras().getInt("busStopId");
+		this.busStopId = getIntent().getExtras().getInt("busStopId");
+		this.busRouteId = getIntent().getExtras().getString("busRouteId");
+		this.bound = getIntent().getExtras().getString("bound");
+
 		String busStopName = getIntent().getExtras().getString("busStopName");
-		busRouteId = getIntent().getExtras().getString("busRouteId");
-		busRouteName = getIntent().getExtras().getString("busRouteName");
-		bound = getIntent().getExtras().getString("bound");
-		position = new Position();
+		String busRouteName = getIntent().getExtras().getString("busRouteName");
+
+		Position position = new Position();
 		position.setLatitude(getIntent().getExtras().getDouble("latitude"));
 		position.setLongitude(getIntent().getExtras().getDouble("longitude"));
 
 		this.isFavorite = isFavorite();
 
-		stopsView = (LinearLayout) findViewById(R.id.activity_bus_stops);
+		this.stopsView = (LinearLayout) findViewById(R.id.activity_bus_stops);
 
 		TextView busRouteNameView = (TextView) findViewById(R.id.activity_bus_station_name);
 		busRouteNameView.setText(busStopName);
@@ -116,9 +119,7 @@ public class BusActivity extends Activity {
 		busRouteNameView2.setText(busRouteName + " (" + bound + ")");
 
 		streetViewImage = (ImageView) findViewById(R.id.activity_bus_streetview_image);
-
 		streetViewText = (TextView) findViewById(R.id.activity_bus_steetview_text);
-
 		mapImage = (ImageView) findViewById(R.id.activity_bus_map_image);
 
 		directionImage = (ImageView) findViewById(R.id.activity_bus_map_direction);
@@ -145,14 +146,18 @@ public class BusActivity extends Activity {
 	public final boolean onCreateOptionsMenu(final Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		this.menu = menu;
+
+		// Inflate menu with no search
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main_no_search, menu);
 
+		// Modify action bar title
 		ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		actionBar.setDisplayShowTitleEnabled(true);
 		actionBar.setTitle("Bus");
 
+		// Load top bar animation
 		MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
 		refreshMenuItem.setActionView(R.layout.progressbar);
 		refreshMenuItem.expandActionView();
@@ -168,10 +173,16 @@ public class BusActivity extends Activity {
 			// overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 			return true;
 		case R.id.action_refresh:
+
+			// Load top bar animation
 			MenuItem menuItem = item;
 			menuItem.setActionView(R.layout.progressbar);
 			menuItem.expandActionView();
+
+			// Load data
 			(new LoadData()).execute();
+
+			// Display a toast message
 			Toast.makeText(this, "Refresh...!", Toast.LENGTH_SHORT).show();
 			return true;
 		}
@@ -179,148 +190,10 @@ public class BusActivity extends Activity {
 
 	}
 
-	private final class LoadData extends AsyncTask<Void, Void, List<BusArrival>> {
-		private TrackerException trackerException;
-
-		@Override
-		protected List<BusArrival> doInBackground(final Void... params) {
-			MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
-			reqParams.put("rt", busRouteId);
-			reqParams.put("stpid", String.valueOf(busStopId));
-			CtaConnect connect = CtaConnect.getInstance();
-			try {
-				Xml xml = new Xml();
-				String xmlResult = connect.connect(CtaRequestType.BUS_ARRIVALS, reqParams);
-				return xml.parseBusArrivals(xmlResult);
-			} catch (ParserException e) {
-				this.trackerException = e;
-			} catch (ConnectException e) {
-				this.trackerException = e;
-			}
-			return null;
-		}
-
-		@Override
-		protected final void onProgressUpdate(final Void... values) {
-			// Get menu item and put it to loading mod
-			if (menu != null) {
-				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-				refreshMenuItem.setActionView(R.layout.progressbar);
-				refreshMenuItem.expandActionView();
-			}
-		}
-
-		@Override
-		protected final void onPostExecute(final List<BusArrival> result) {
-			if (trackerException == null) {
-				BusActivity.this.busArrivals = result;
-				BusActivity.this.buildArrivals();
-			} else {
-				ChicagoTracker.displayError(BusActivity.this, trackerException);
-			}
-
-			if (!firstLoad || trackerException != null) {
-				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-				refreshMenuItem.collapseActionView();
-				refreshMenuItem.setActionView(null);
-			}
-		}
-
-	}
-
-	private final class DisplayGoogleStreetPicture extends AsyncTask<Position, Void, Drawable> {
-		private Position position;
-
-		@Override
-		protected final Drawable doInBackground(final Position... params) {
-			GStreetViewConnect connect = GStreetViewConnect.getInstance();
-			try {
-				this.position = params[0];
-				return connect.connect(params[0]);
-			} catch (IOException e) {
-				e.printStackTrace();
-				return null;
-			}
-		}
-
-		@Override
-		protected final void onPostExecute(final Drawable result) {
-			int height = (int) getResources().getDimension(R.dimen.activity_station_street_map_height);
-			android.widget.RelativeLayout.LayoutParams params = (android.widget.RelativeLayout.LayoutParams) BusActivity.this.streetViewImage
-					.getLayoutParams();
-			ViewGroup.LayoutParams params2 = BusActivity.this.streetViewImage.getLayoutParams();
-			params2.height = height;
-			params2.width = params.width;
-			BusActivity.this.streetViewText.setText("Street view");
-			BusActivity.this.streetViewImage.setLayoutParams(params2);
-			BusActivity.this.streetViewImage.setImageDrawable(result);
-			BusActivity.this.streetViewImage.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					String uri = String.format(Locale.ENGLISH, "google.streetview:cbll=%f,%f&cbp=1,180,,0,1&mz=1", position.getLatitude(),
-							position.getLongitude());
-					Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-					intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
-					try {
-						startActivity(intent);
-					} catch (ActivityNotFoundException ex) {
-						uri = String.format(Locale.ENGLISH, "http://maps.google.com/maps?q=&layer=c&cbll=%f,%f&cbp=11,0,0,0,0",
-								position.getLatitude(), position.getLongitude());
-						Intent unrestrictedIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-						startActivity(unrestrictedIntent);
-					}
-				}
-			});
-			BusActivity.this.mapImage.setImageDrawable(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.da_turn_arrive));
-			BusActivity.this.mapImage.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					String uri = "http://maps.google.com/maps?z=12&t=m&q=loc:" + position.getLatitude() + "+" + position.getLongitude();
-					Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-					i.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
-					startActivity(i);
-				}
-			});
-			BusActivity.this.directionImage.setImageDrawable(ChicagoTracker.getAppContext().getResources()
-					.getDrawable(R.drawable.ic_directions_walking));
-			BusActivity.this.directionImage.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					String uri = "http://maps.google.com/?f=d&daddr=" + position.getLatitude() + "," + position.getLongitude() + "&dirflg=w";
-					Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-					i.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
-					startActivity(i);
-				}
-			});
-			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-			refreshMenuItem.collapseActionView();
-			refreshMenuItem.setActionView(null);
-			firstLoad = false;
-		}
-	}
-
 	/**
-	 * 
+	 * Draw arrivals in current layout
 	 */
-	private final void switchFavorite() {
-		if (isFavorite) {
-			Util.removeFromBusFavorites(busRouteId, String.valueOf(busStopId), bound, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
-			isFavorite = false;
-		} else {
-			Util.addToBusFavorites(busRouteId, String.valueOf(busStopId), bound, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
-			isFavorite = true;
-		}
-		if (isFavorite) {
-			favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_active));
-		} else {
-			favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_disabled));
-		}
-	}
-
-	/**
-	 * 
-	 */
-	public final void buildArrivals() {
+	public final void drawArrivals() {
 		if (busArrivals != null) {
 			Map<String, TextView> mapRes = new HashMap<String, TextView>();
 			for (BusArrival arrival : this.busArrivals) {
@@ -358,5 +231,165 @@ public class BusActivity extends Activity {
 			}
 		}
 		return isFavorite;
+	}
+
+	/**
+	 * Load data class. Contact Bus CTA api to get arrival buses
+	 * 
+	 * @author Carl-Philipp Harmant
+	 * @version 1
+	 */
+	private final class LoadData extends AsyncTask<Void, Void, List<BusArrival>> {
+
+		/** The exception that could potentially been thrown during request **/
+		private TrackerException trackerException;
+
+		@Override
+		protected List<BusArrival> doInBackground(final Void... params) {
+			MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
+			reqParams.put("rt", busRouteId);
+			reqParams.put("stpid", String.valueOf(busStopId));
+			CtaConnect connect = CtaConnect.getInstance();
+			try {
+				Xml xml = new Xml();
+
+				// Connect to CTA API bus to get XML result of inc buses
+				String xmlResult = connect.connect(CtaRequestType.BUS_ARRIVALS, reqParams);
+
+				// Parse and return arrival buses
+				return xml.parseBusArrivals(xmlResult);
+			} catch (ParserException e) {
+				this.trackerException = e;
+			} catch (ConnectException e) {
+				this.trackerException = e;
+			}
+			return null;
+		}
+
+		@Override
+		protected final void onProgressUpdate(final Void... values) {
+			// Get menu item and put it to loading mod
+			if (menu != null) {
+				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+				refreshMenuItem.setActionView(R.layout.progressbar);
+				refreshMenuItem.expandActionView();
+			}
+		}
+
+		@Override
+		protected final void onPostExecute(final List<BusArrival> result) {
+			if (trackerException == null) {
+				BusActivity.this.busArrivals = result;
+				BusActivity.this.drawArrivals();
+			} else {
+				ChicagoTracker.displayError(BusActivity.this, trackerException);
+			}
+
+			if (!firstLoad || trackerException != null) {
+				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+				refreshMenuItem.collapseActionView();
+				refreshMenuItem.setActionView(null);
+			}
+		}
+
+	}
+
+	/**
+	 * Load image from google street
+	 * 
+	 * @author Carl-Philipp Harmant
+	 * @version 1
+	 */
+	private final class DisplayGoogleStreetPicture extends AsyncTask<Position, Void, Drawable> {
+
+		/** Position of the stop **/
+		private Position position;
+
+		@Override
+		protected final Drawable doInBackground(final Position... params) {
+			GStreetViewConnect connect = GStreetViewConnect.getInstance();
+			try {
+				this.position = params[0];
+				return connect.connect(params[0]);
+			} catch (IOException e) {
+				Log.e(TAG, e.getMessage(), e);
+				return null;
+			}
+		}
+
+		@Override
+		protected final void onPostExecute(final Drawable result) {
+			int height = (int) getResources().getDimension(R.dimen.activity_station_street_map_height);
+			LayoutParams params = (LayoutParams) BusActivity.this.streetViewImage.getLayoutParams();
+			ViewGroup.LayoutParams params2 = BusActivity.this.streetViewImage.getLayoutParams();
+			params2.height = height;
+			params2.width = params.width;
+			BusActivity.this.streetViewText.setText("Street view");
+			BusActivity.this.streetViewImage.setLayoutParams(params2);
+			BusActivity.this.streetViewImage.setImageDrawable(result);
+			BusActivity.this.streetViewImage.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					String uri = String.format(Locale.ENGLISH, "google.streetview:cbll=%f,%f&cbp=1,180,,0,1&mz=1", position.getLatitude(),
+							position.getLongitude());
+					Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+					intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+					try {
+						startActivity(intent);
+					} catch (ActivityNotFoundException ex) {
+						// Redirect to browser if the user does not have google map installed
+						uri = String.format(Locale.ENGLISH, "http://maps.google.com/maps?q=&layer=c&cbll=%f,%f&cbp=11,0,0,0,0",
+								position.getLatitude(), position.getLongitude());
+						Intent unrestrictedIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+						startActivity(unrestrictedIntent);
+					}
+				}
+			});
+			BusActivity.this.mapImage.setImageDrawable(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.da_turn_arrive));
+			BusActivity.this.mapImage.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					String uri = "http://maps.google.com/maps?z=12&t=m&q=loc:" + position.getLatitude() + "+" + position.getLongitude();
+					Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+					i.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+					startActivity(i);
+				}
+			});
+			BusActivity.this.directionImage.setImageDrawable(ChicagoTracker.getAppContext().getResources()
+					.getDrawable(R.drawable.ic_directions_walking));
+			BusActivity.this.directionImage.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					String uri = "http://maps.google.com/?f=d&daddr=" + position.getLatitude() + "," + position.getLongitude() + "&dirflg=w";
+					Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+					i.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+					startActivity(i);
+				}
+			});
+
+			// Stop menu refresh animation
+			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+			refreshMenuItem.collapseActionView();
+			refreshMenuItem.setActionView(null);
+			firstLoad = false;
+		}
+	}
+
+	/**
+	 * Add or remove from favoritesO
+	 */
+	private final void switchFavorite() {
+		if (isFavorite) {
+			Util.removeFromBusFavorites(busRouteId, String.valueOf(busStopId), bound, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+			isFavorite = false;
+		} else {
+			Util.addToBusFavorites(busRouteId, String.valueOf(busStopId), bound, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+			isFavorite = true;
+		}
+		if (isFavorite) {
+			favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_active));
+		} else {
+			favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_disabled));
+		}
 	}
 }
