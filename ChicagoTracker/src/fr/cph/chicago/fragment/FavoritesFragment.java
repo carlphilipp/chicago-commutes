@@ -29,10 +29,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.FavoritesAdapter;
+import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.exception.TrackerException;
@@ -48,11 +50,11 @@ public class FavoritesFragment extends Fragment {
 	private static final String ARG_SECTION_NUMBER = "section_number";
 	/** Tag **/
 	private static final String TAG = "FavoritesFragment";
-	/** **/
+	/** The activity **/
 	private MainActivity mActivity;
-	/** **/
+	/** The adapter of the fragment **/
 	private FavoritesAdapter ada;
-	/** **/
+	/** A refresh task **/
 	private RefreshTask refreshTimingTask;
 
 	/**
@@ -72,11 +74,12 @@ public class FavoritesFragment extends Fragment {
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
-		Log.i(TAG, "Train arrival null ? " + (ChicagoTracker.getTrainArrivals() == null));
-		Log.i(TAG, "Bus arrival null ? " + (ChicagoTracker.getBusArrivals() == null));
+		RelativeLayout welcome = (RelativeLayout) rootView.findViewById(R.id.welcome);
+		boolean hasFav = Preferences.hasFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+		if (!hasFav) {
+			welcome.setVisibility(View.VISIBLE);
+		}
 		if (ada == null) {
-			Log.i(TAG, "Load ada");
 			ada = new FavoritesAdapter(mActivity);
 			ada.setArrivals(ChicagoTracker.getTrainArrivals(), ChicagoTracker.getBusArrivals());
 		}
@@ -130,8 +133,6 @@ public class FavoritesFragment extends Fragment {
 	 * @param busArrivals
 	 */
 	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals) {
-		Log.i(TAG, "Reload data, Train arrival null ? " + (ChicagoTracker.getTrainArrivals() == null));
-		Log.i(TAG, "Reload data, Bus arrival null ? " + (ChicagoTracker.getBusArrivals() == null));
 		// startRefreshTask();
 		ada.setArrivals(trainArrivals, busArrivals);
 		ada.refreshUpdated();
