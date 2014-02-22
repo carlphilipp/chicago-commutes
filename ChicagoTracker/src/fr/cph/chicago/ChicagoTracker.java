@@ -28,73 +28,76 @@ import android.util.SparseArray;
 import android.widget.FrameLayout;
 import fr.cph.chicago.activity.ErrorActivity;
 import fr.cph.chicago.entity.BusArrival;
-import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.exception.TrackerException;
 
 /**
  * 
+ * Main class that extends Application. Mainly used to get the context from anywhere in the app.
  * 
  * @author Carl-Philipp Harmant
- * 
+ * @version 1
  */
 public class ChicagoTracker extends Application {
-	
-	/** **/
+
+	/** Preference string that is used to in shared preference of the phone **/
 	public static final String PREFERENCE_FAVORITES = "ChicagoTrackerFavorites";
-	/** **/
+	/** Train preference string **/
 	public static final String PREFERENCE_FAVORITES_TRAIN = "ChicagoTrackerFavoritesTrain";
-	/** **/
+	/** Bus preference string **/
 	public static final String PREFERENCE_FAVORITES_BUS = "ChicagoTrackerFavoritesBus";
-	/** **/
+	/** Application context **/
 	private static Context context;
-	/** **/
-	private static Date lastTrainUpdate;
-	/** **/
+	/** Last update of favorites **/
+	private static Date lastUpdate;
+	/** List of train arrivals. Only used from BaseActivity to FavoritesFragment **/
 	private static SparseArray<TrainArrival> trainArrivals;
-	/** **/
+	/** List of bus arrivals. Only used from BaseActivity to FavoritesFragment **/
 	private static List<BusArrival> busArrivals;
-	/** **/
-	private static List<BusStop> geoBusStops;
-	/** **/
+	/** Container that is used to get a faded black background **/
 	public static FrameLayout container;
 
-	/**
-	 * 
-	 */
+	@Override
 	public final void onCreate() {
 		super.onCreate();
 		ChicagoTracker.context = getApplicationContext();
 	}
 
 	/**
+	 * Get Application context
 	 * 
-	 * @return
+	 * @return the context
 	 */
 	public static Context getAppContext() {
 		return ChicagoTracker.context;
 	}
 
 	/**
+	 * Modify last update date.
 	 * 
 	 * @param date
+	 *            the last update of favorites
 	 */
 	public static void modifyLastUpdate(final Date date) {
-		lastTrainUpdate = date;
+		lastUpdate = date;
 	}
 
 	/**
+	 * Get last update
 	 * 
-	 * @return
+	 * @return the last update
 	 */
-	public static Date getLastTrainUpdate() {
-		return lastTrainUpdate;
+	public static Date getLastUpdate() {
+		return lastUpdate;
 	}
 
 	/**
+	 * Function that is used all over the application. Display error message and provide a way to retry
 	 * 
 	 * @param activity
+	 *            that is needed to lunch a new one
 	 * @param ex
+	 *            the kind of exception. Used to display the error message
 	 */
 	public static void displayError(Activity activity, TrackerException ex) {
 		Intent intent = new Intent(activity, ErrorActivity.class);
@@ -106,50 +109,41 @@ public class ChicagoTracker extends Application {
 	}
 
 	/**
+	 * Get a list of train arrivals
 	 * 
-	 * @return
+	 * @return the list of train arrivals
 	 */
 	public static SparseArray<TrainArrival> getTrainArrivals() {
 		return trainArrivals;
 	}
 
 	/**
+	 * Set train arrivals
 	 * 
 	 * @param trainArrivals
+	 *            a list of train arrivals
 	 */
 	public static void setTrainArrivals(SparseArray<TrainArrival> trainArrivals) {
 		ChicagoTracker.trainArrivals = trainArrivals;
 	}
 
 	/**
+	 * Get bus arrivals
 	 * 
-	 * @return
+	 * @return a list of bus arrivals
 	 */
 	public static List<BusArrival> getBusArrivals() {
 		return busArrivals;
 	}
 
 	/**
+	 * Set bus arrivals
 	 * 
 	 * @param busArrivals
+	 *            a list of bus arrivals
 	 */
 	public static void setBusArrivals(List<BusArrival> busArrivals) {
 		ChicagoTracker.busArrivals = busArrivals;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
-	public static List<BusStop> getGeoBusStops() {
-		return geoBusStops;
-	}
-
-	/**
-	 * 
-	 * @param geoBusStops
-	 */
-	public static void setGeoBusStops(List<BusStop> geoBusStops) {
-		ChicagoTracker.geoBusStops = geoBusStops;
-	}
 }
