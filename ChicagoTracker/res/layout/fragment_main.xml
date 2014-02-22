@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+
 <!--
   Copyright 2014 Carl-Philipp Harmant
  
@@ -21,6 +23,34 @@
     android:layout_height="match_parent"
     android:background="@drawable/station_selector"
     tools:context=".MainActivity$PlaceholderFragment" >
+
+    <RelativeLayout
+        android:id="@+id/welcome"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" >
+
+        <TextView
+            android:id="@+id/no_fav"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:paddingTop="20dp"
+            android:text="@string/no_fav"
+            android:textIsSelectable="false"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/no_fav"
+            android:layout_centerHorizontal="true"
+            android:text="@string/add_fav"
+            android:textIsSelectable="false"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
 
     <ListView
         android:id="@+id/favorites_list"

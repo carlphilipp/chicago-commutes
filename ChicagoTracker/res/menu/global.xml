@@ -1,4 +1,6 @@
-<!--  
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
   Copyright 2014 Carl-Philipp Harmant
  
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,21 +14,16 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
- -->
- 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+-->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
     <item
         android:id="@+id/action_search"
         android:actionViewClass="android.widget.SearchView"
-        android:orderInCategory="100"
         android:icon="@drawable/ic_action_search"
+        android:orderInCategory="100"
         android:showAsAction="collapseActionView|ifRoom"
         android:title="@string/search_title"/>
-    <!--  
-    <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never" />
-        -->
 
 </menu>
