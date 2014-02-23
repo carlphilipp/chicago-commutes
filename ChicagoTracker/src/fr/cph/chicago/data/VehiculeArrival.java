@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.entity;
+package fr.cph.chicago.data;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -26,35 +26,34 @@ import java.util.TreeMap;
 
 import android.util.SparseArray;
 import fr.cph.chicago.ChicagoTracker;
-import fr.cph.chicago.data.BusData;
-import fr.cph.chicago.data.DataHolder;
-import fr.cph.chicago.data.Preferences;
-import fr.cph.chicago.data.TrainData;
+import fr.cph.chicago.entity.BusArrival;
+import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.util.Util;
 
 /**
+ * Vehicule Arrival entity
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class VehiculeArrival {
-	/** **/
+	/** The list of train arrival **/
 	private SparseArray<TrainArrival> trainArrivals;
-	/** **/
+	/** The list of bus arrival **/
 	private List<BusArrival> busArrivals;
-	/** **/
+	/** The list of train favorites **/
 	private List<Integer> trainFavorites;
-	/** **/
+	/** THe list of bus favorites **/
 	private List<String> busFavorites;
-	/** **/
+	/** The list of fake bus favorites **/
 	private List<String> fakeBusFavorites;
-	/** **/
+	/** Train data **/
 	private TrainData trainData;
-	/** **/
+	/** Bus data **/
 	private BusData busData;
 
 	/**
-	 * 
+	 * Public constructor
 	 */
 	public VehiculeArrival() {
 		this.trainArrivals = new SparseArray<TrainArrival>();
