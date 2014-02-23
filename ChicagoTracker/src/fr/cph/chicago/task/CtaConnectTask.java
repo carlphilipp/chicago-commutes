@@ -44,44 +44,53 @@ import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.xml.Xml;
 
 /**
+ * CTA connect task
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 
 	/** Tag **/
 	private static final String TAG = "CtaConnectTask";
-	/** **/
+	/** Instance of the class where the we will callback **/
 	private Object instance;
-	/** **/
+	/** The class **/
 	private Class<?> classe;
-	/** **/
+	/** Request type **/
 	private CtaRequestType requestType, requestType2;
-	/** **/
+	/** The params of the requests **/
 	private MultiMap<String, String> params, params2;
-	/** **/
+	/** The XML parser **/
 	private Xml xml;
-	/** **/
+	/** List of train arrivals **/
 	private SparseArray<TrainArrival> trainArrivals;
-	/** **/
+	/** Train data **/
 	private TrainData data;
-	/** **/
+	/** Train exception **/
 	private TrackerException trackerTrainException;
-	/** **/
+	/** Bus exception **/
 	private TrackerException trackerBusException;
-	/** **/
+	/** Bus arrivals **/
 	private List<BusArrival> busArrivals;
 
 	/**
+	 * Constructor
 	 * 
 	 * @param instance
+	 *            Instance of the object
 	 * @param classe
+	 *            The class
 	 * @param requestType
+	 *            the request type
 	 * @param params
+	 *            the params
 	 * @param requestType2
+	 *            the request type
 	 * @param params2
+	 *            the params
 	 * @throws ParserException
+	 *             the parser exception
 	 */
 	public CtaConnectTask(final Object instance, final Class<?> classe, final CtaRequestType requestType, final MultiMap<String, String> params,
 			final CtaRequestType requestType2, final MultiMap<String, String> params2
@@ -158,7 +167,8 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 				List<Eta> etas = arri.getEtas();
 				// Sort Eta by arriving time
 				Collections.sort(etas);
-				// Copy data into new list to be able to avoid looping on a list that we want to modify
+				// Copy data into new list to be able to avoid looping on a list that we want to
+				// modify
 				List<Eta> etas2 = new ArrayList<Eta>();
 				etas2.addAll(etas);
 				int j = 0;

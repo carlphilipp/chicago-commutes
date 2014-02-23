@@ -17,17 +17,19 @@
 package fr.cph.chicago.entity.enumeration;
 
 /**
+ * Enumeration, prediction type
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public enum PredictionType {
 	ARRIVAL("A"), DEPARTURE("D");
 
-	/** **/
+	/** The message **/
 	private String message;
 
 	/**
+	 * Private constructor
 	 * 
 	 * @param message
 	 */
@@ -36,9 +38,11 @@ public enum PredictionType {
 	}
 
 	/**
+	 * Get Prediction type from string
 	 * 
 	 * @param text
-	 * @return
+	 *            the text
+	 * @return a prediction type
 	 */
 	public static final PredictionType fromString(final String text) {
 		if (text != null) {

@@ -39,7 +39,8 @@ import android.widget.ListView;
 import fr.cph.chicago.R;
 
 /**
- * Fragment used for managing interactions for and presentation of a navigation drawer. See the <a href="https://developer.android.com/design/patterns/navigation-drawer.html#Interaction"> design
+ * Fragment used for managing interactions for and presentation of a navigation drawer. See the <a
+ * href="https://developer.android.com/design/patterns/navigation-drawer.html#Interaction"> design
  * guidelines</a> for a complete explanation of the behaviors implemented here.
  */
 public class NavigationDrawerFragment extends Fragment {
@@ -48,7 +49,8 @@ public class NavigationDrawerFragment extends Fragment {
 	private static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
 
 	/**
-	 * Per the design guidelines, you should show the drawer on launch until the user manually expands it. This shared preference tracks this.
+	 * Per the design guidelines, you should show the drawer on launch until the user manually
+	 * expands it. This shared preference tracks this.
 	 */
 	private static final String PREF_USER_LEARNED_DRAWER = "navigation_drawer_learned";
 
@@ -61,19 +63,19 @@ public class NavigationDrawerFragment extends Fragment {
 	 * Helper component that ties the action bar to the navigation drawer.
 	 */
 	private ActionBarDrawerToggle mDrawerToggle;
-	/** **/
+	/** The drawer layout **/
 	private DrawerLayout mDrawerLayout;
-	/** **/
+	/** the drawer list view **/
 	private ListView mDrawerListView;
-	/** **/
+	/** The fragment container **/
 	private View mFragmentContainerView;
-	/** **/
+	/** The current selected position **/
 	private int mCurrentSelectedPosition = 0;
-	/** **/
+	/** The saved instance **/
 	private boolean mFromSavedInstanceState;
-	/** **/
+	/** The user learned drawer **/
 	private boolean mUserLearnedDrawer;
-	/** **/
+	/** The pending runnable thread **/
 	private Runnable mPendingRunnable;
 
 	@Override
@@ -197,9 +199,12 @@ public class NavigationDrawerFragment extends Fragment {
 	}
 
 	/**
+	 * Select item
 	 * 
 	 * @param position
+	 *            the position
 	 * @param backPressed
+	 *            if back pressed
 	 */
 	public void selectItem(final int position, boolean backPressed) {
 		mCurrentSelectedPosition = position;
@@ -281,7 +286,8 @@ public class NavigationDrawerFragment extends Fragment {
 	}
 
 	/**
-	 * Per the navigation drawer design guidelines, updates the action bar to show the global app 'context', rather than just what's in the current screen.
+	 * Per the navigation drawer design guidelines, updates the action bar to show the global app
+	 * 'context', rather than just what's in the current screen.
 	 */
 	private final void showGlobalContextActionBar() {
 		ActionBar actionBar = getActionBar();
@@ -291,8 +297,9 @@ public class NavigationDrawerFragment extends Fragment {
 	}
 
 	/**
+	 * Get action bar
 	 * 
-	 * @return
+	 * @return the action bar
 	 */
 	private final ActionBar getActionBar() {
 		return getActivity().getActionBar();

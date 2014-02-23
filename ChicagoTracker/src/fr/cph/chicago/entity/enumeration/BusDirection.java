@@ -17,28 +17,33 @@
 package fr.cph.chicago.entity.enumeration;
 
 /**
+ * Enumeration, bus direction
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public enum BusDirection {
 	NORTHBOUND("Northbound"), WESTBOUND("Westbound"), SOUTHBOUND("Southbound"), EASTBOUND("Eastbound");
 
-	/** **/
+	/** The text **/
 	private String text;
 
 	/**
+	 * Private constructor
 	 * 
 	 * @param text
+	 *            the text
 	 */
 	private BusDirection(String text) {
 		this.text = text;
 	}
 
 	/**
+	 * Get bus direction from string
 	 * 
-	 * @param text
-	 * @return
+	 * @param textthe
+	 *            text
+	 * @return a bus direction
 	 */
 	public static final BusDirection fromString(final String text) {
 		if (text != null) {

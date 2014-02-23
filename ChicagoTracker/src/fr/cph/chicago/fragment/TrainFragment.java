@@ -32,9 +32,10 @@ import fr.cph.chicago.adapter.TrainStationAdapter;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
 /**
+ * Train Fragment
  * 
- * @author carl
- *
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public final class TrainFragment extends Fragment {
 

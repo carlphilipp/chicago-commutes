@@ -17,19 +17,23 @@
 package fr.cph.chicago.exception;
 
 /**
+ * Parser exception
  * 
- * @author carl
- *
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class ParserException extends TrackerException {
 
-	/** **/
+	/** Serializable **/
 	private static final long serialVersionUID = 1L;
 
 	/**
+	 * The constructor
 	 * 
 	 * @param message
+	 *            the message
 	 * @param e
+	 *            the exception
 	 */
 	public ParserException(String message, Exception e) {
 		super(message, e);

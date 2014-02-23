@@ -16,17 +16,27 @@
 
 package fr.cph.chicago.exception;
 
+/**
+ * Connect exception
+ * 
+ * @author Carl-Philipp Harmant
+ * @version 1
+ */
 public class ConnectException extends TrackerException {
 
-	/** **/
+	/** Serializable **/
 	private static final long serialVersionUID = 1L;
-	
+
+	/** The error string **/
 	public static final String ERROR = "Can't connect, please check your connection";
 
 	/**
+	 * The constructor
 	 * 
 	 * @param message
+	 *            the message
 	 * @param e
+	 *            the exception
 	 */
 	public ConnectException(String message, Exception e) {
 		super(message, e);

@@ -56,7 +56,7 @@ import fr.cph.chicago.activity.BusActivity;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.activity.StationActivity;
 import fr.cph.chicago.data.DataHolder;
-import fr.cph.chicago.data.VehiculeArrival;
+import fr.cph.chicago.data.VehicleArrival;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
@@ -85,7 +85,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 	/** The layout that is used to display a fade black background **/
 	private FrameLayout firstLayout;
 	/** The model **/
-	private VehiculeArrival arrival;
+	private VehicleArrival arrival;
 	/** Ids of layouts **/
 	private Map<String, Integer> ids;
 	/** Layouts **/
@@ -111,7 +111,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 		this.activity = activity;
 		this.firstLayout = ChicagoTracker.container;
-		this.arrival = new VehiculeArrival();
+		this.arrival = new VehicleArrival();
 
 		this.ids = new HashMap<String, Integer>();
 		this.layouts = new HashMap<Integer, LinearLayout>();

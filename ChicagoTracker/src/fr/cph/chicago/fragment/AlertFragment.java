@@ -28,9 +28,10 @@ import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.AlertAdapter;
 
 /**
+ * Alert Fragment
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class AlertFragment extends Fragment {
 
@@ -41,7 +42,8 @@ public class AlertFragment extends Fragment {
 	 * Returns a new instance of this fragment for the given section number.
 	 * 
 	 * @param sectionNumber
-	 * @return
+	 *            the section number
+	 * @return the fragment
 	 */
 	public static final AlertFragment newInstance(final int sectionNumber) {
 		AlertFragment fragment = new AlertFragment();

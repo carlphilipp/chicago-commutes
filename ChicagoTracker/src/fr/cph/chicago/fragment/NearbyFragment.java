@@ -78,9 +78,10 @@ import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.xml.Xml;
 
 /**
+ * Map Fragment
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class NearbyFragment extends Fragment {
 
@@ -88,19 +89,19 @@ public class NearbyFragment extends Fragment {
 	private static final String TAG = "NearbyFragment";
 	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
-	/** **/
+	/** The main activity **/
 	private MainActivity mActivity;
-	/** **/
+	/** The map fragment from google api **/
 	private MapFragment mapFragment;
-	/** **/
+	/** The load layout **/
 	private View loadLayout;
-	/** **/
+	/** The map **/
 	private GoogleMap map;
-	/** **/
+	/** The adapter **/
 	private NearbyAdapter ada;
-	/** **/
+	/** The list view **/
 	private ListView listView;
-	/** **/
+	/** The chicago position **/
 	private static final LatLng CHICAGO = new LatLng(41.8819, -87.6278);
 
 	/**
@@ -132,7 +133,7 @@ public class NearbyFragment extends Fragment {
 		listView.setAdapter(ada);
 		setHasOptionsMenu(true);
 		loadLayout = rootView.findViewById(R.id.loading_layout);
-		showProgress(true, null);
+		showProgress(true);
 		return rootView;
 	}
 
@@ -167,19 +168,20 @@ public class NearbyFragment extends Fragment {
 	}
 
 	/**
+	 * Load arrivals
 	 * 
-	 * @author carl
-	 * 
+	 * @author Carl-Philipp Harmant
+	 * @version 1
 	 */
 	private class LoadArrivals extends AsyncTask<List<?>, Void, Void> {
 
-		/** **/
+		/** Bus arrival map **/
 		private SparseArray<Map<String, List<BusArrival>>> busArrivalsMap;
-		/** **/
+		/** Train arrivals **/
 		private SparseArray<TrainArrival> trainArrivals;
-		/** **/
+		/** Bus stops **/
 		private List<BusStop> busStops;
-		/** **/
+		/** Stations **/
 		private List<Station> stations;
 
 		@SuppressWarnings("unchecked")
@@ -273,19 +275,19 @@ public class NearbyFragment extends Fragment {
 		private boolean isGPSEnabled = false;
 		// flag for network status
 		private boolean isNetworkEnabled = false;
-		/** **/
+		/** The location **/
 		private Location location;
-		/** **/
+		/** The position **/
 		private Position position;
-		/** **/
+		/** The latitude **/
 		private double latitude;
-		/** **/
+		/** THe longitude **/
 		private double longitude;
-		/** **/
+		/** The list of bus stops **/
 		private List<BusStop> busStops;
-		/** **/
+		/** The list of train stations **/
 		private List<Station> trainStations;
-		/** **/
+		/** The location manager **/
 		private LocationManager locationManager;
 
 		@Override
@@ -398,8 +400,10 @@ public class NearbyFragment extends Fragment {
 	}
 
 	/**
+	 * Center map
 	 * 
 	 * @param positon
+	 *            the position we want to center on
 	 */
 	private void centerMap(final Position positon) {
 		while (mapFragment.getMap() == null) {
@@ -418,11 +422,16 @@ public class NearbyFragment extends Fragment {
 	}
 
 	/**
+	 * Load data
 	 * 
 	 * @param buses
+	 *            the list of buses
 	 * @param busArrivals
+	 *            the list of bus arrivals
 	 * @param stations
+	 *            the list of station
 	 * @param trainArrivals
+	 *            the list of train arrival
 	 */
 	private void load(final List<BusStop> buses, final SparseArray<Map<String, List<BusArrival>>> busArrivals, final List<Station> stations,
 			final SparseArray<TrainArrival> trainArrivals) {
@@ -444,15 +453,18 @@ public class NearbyFragment extends Fragment {
 		addClickEventsToMarkers(buses, stations);
 		ada.updateData(buses, busArrivals, stations, trainArrivals, map, markers);
 		ada.notifyDataSetChanged();
-		showProgress(false, null);
+		showProgress(false);
 		listView.setVisibility(View.VISIBLE);
 
 	}
 
 	/**
+	 * Add click events to markers
 	 * 
 	 * @param busStops
+	 *            the list of bus stops
 	 * @param stations
+	 *            the list of stations
 	 */
 	private void addClickEventsToMarkers(final List<BusStop> busStops, final List<Station> stations) {
 		map.setOnMarkerClickListener(new OnMarkerClickListener() {
@@ -482,12 +494,13 @@ public class NearbyFragment extends Fragment {
 	}
 
 	/**
+	 * Show progress bar
 	 * 
 	 * @param show
-	 * @param errorMessage
+	 *            true or falseO
 	 */
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-	private final void showProgress(final boolean show, final String errorMessage) {
+	private final void showProgress(final boolean show) {
 		try {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
 				int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
@@ -508,11 +521,11 @@ public class NearbyFragment extends Fragment {
 	}
 
 	/**
-	 * 
+	 * Reload data
 	 */
 	public final void reloadData() {
 		map.clear();
-		showProgress(true, null);
+		showProgress(true);
 		listView.setVisibility(View.GONE);
 		new LoadNearby().execute();
 	}

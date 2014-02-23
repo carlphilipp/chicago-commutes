@@ -26,16 +26,18 @@ import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.data.Preferences;
 
 /**
+ * Util class
  * 
- * @author carl
- *
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class Util {
 	/** **/
 	private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
 
 	/**
-	 * Generate a value suitable for use in {@link #setId(int)}. This value will not collide with ID values generated at build time by aapt for R.id.
+	 * Generate a value suitable for use in {@link #setId(int)}. This value will not collide with ID
+	 * values generated at build time by aapt for R.id.
 	 * 
 	 * @return a generated ID value
 	 */
@@ -53,9 +55,11 @@ public class Util {
 	}
 
 	/**
+	 * Get property from file
 	 * 
 	 * @param property
-	 * @return
+	 *            the property to get
+	 * @return the value of the property
 	 */
 	public static final String getProperty(final String property) {
 		Properties prop = new Properties();
@@ -69,9 +73,12 @@ public class Util {
 	}
 
 	/**
+	 * Add to train favorites
 	 * 
 	 * @param stationId
+	 *            the station id
 	 * @param preference
+	 *            the preference
 	 */
 	public static final void addToTrainFavorites(final Integer stationId, final String preference) {
 		List<Integer> favorites = Preferences.getTrainFavorites(preference);
@@ -83,9 +90,12 @@ public class Util {
 	}
 
 	/**
+	 * Remove train from favorites
 	 * 
 	 * @param stationId
+	 *            the station id
 	 * @param preference
+	 *            the preference
 	 */
 	public static final void removeFromTrainFavorites(final Integer stationId, final String preference) {
 		List<Integer> favorites = Preferences.getTrainFavorites(preference);
@@ -95,11 +105,16 @@ public class Util {
 	}
 
 	/**
+	 * Remove from bus favorites
 	 * 
 	 * @param busRouteId
+	 *            the bus route id
 	 * @param busStopId
+	 *            the bus stop id
 	 * @param bound
+	 *            the bus bound
 	 * @param preference
+	 *            the preference
 	 */
 	public static final void removeFromBusFavorites(final String busRouteId, final String busStopId, final String bound, final String preference) {
 		String id = busRouteId + "_" + busStopId + "_" + bound;
@@ -110,11 +125,16 @@ public class Util {
 	}
 
 	/**
+	 * Add to bus favorites
 	 * 
 	 * @param busRouteId
+	 *            the bus route id
 	 * @param busStopId
+	 *            the bus stop id
 	 * @param bound
+	 *            the bus bound
 	 * @param preference
+	 *            the preference
 	 */
 	public static final void addToBusFavorites(final String busRouteId, final String busStopId, final String bound, final String preference) {
 		String id = busRouteId + "_" + busStopId + "_" + bound;
@@ -127,9 +147,11 @@ public class Util {
 	}
 
 	/**
+	 * Decode bus favorites
 	 * 
 	 * @param fav
-	 * @return
+	 *            the favorites
+	 * @return a tab containing the route id, the stop id and the bound
 	 */
 	public static final String[] decodeBusFavorite(final String fav) {
 		String[] res = new String[3];

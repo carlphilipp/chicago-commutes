@@ -17,9 +17,10 @@
 package fr.cph.chicago.xml;
 
 /**
+ * Enum arrival train tag
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public enum XmlArrivalTrainTag {
 	TMST, ERRCD, ERRNM, ETA, OTHER

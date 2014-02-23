@@ -20,20 +20,25 @@ import fr.cph.chicago.entity.Stop;
 import fr.cph.chicago.entity.enumeration.TrainDirection;
 
 /**
+ * Factory that build a stop
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public final class StopFactory {
 	private StopFactory() {
 	}
 
 	/**
+	 * Build a stop
 	 * 
 	 * @param id
+	 *            the id
 	 * @param description
+	 *            the description
 	 * @param direction
-	 * @return
+	 *            the direction
+	 * @return a stop
 	 */
 	public static final Stop buildStop(final Integer id, final String description, final TrainDirection direction) {
 		Stop stop = new Stop();

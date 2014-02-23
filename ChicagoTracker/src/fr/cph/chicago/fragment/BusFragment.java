@@ -32,22 +32,24 @@ import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.BusAdapter;
 
 /**
+ * Bus Fragment
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class BusFragment extends Fragment {
 
 	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
-	/** **/
+	/** The main actvity **/
 	private MainActivity mActivity;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
 	 * 
 	 * @param sectionNumber
-	 * @return
+	 *            the section number
+	 * @return the fragment
 	 */
 	public static BusFragment newInstance(final int sectionNumber) {
 		BusFragment fragment = new BusFragment();

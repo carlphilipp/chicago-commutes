@@ -31,12 +31,12 @@ import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.util.Util;
 
 /**
- * Vehicule Arrival entity
+ * Vehicle Arrival. Hold data for favorites adapter.
  * 
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class VehiculeArrival {
+public class VehicleArrival {
 	/** The list of train arrival **/
 	private SparseArray<TrainArrival> trainArrivals;
 	/** The list of bus arrival **/
@@ -55,7 +55,7 @@ public class VehiculeArrival {
 	/**
 	 * Public constructor
 	 */
-	public VehiculeArrival() {
+	public VehicleArrival() {
 		this.trainArrivals = new SparseArray<TrainArrival>();
 		this.busArrivals = new ArrayList<BusArrival>();
 
@@ -68,17 +68,20 @@ public class VehiculeArrival {
 	}
 
 	/**
+	 * Get the size of the current model
 	 * 
-	 * @return
+	 * @return a size
 	 */
 	public final int size() {
 		return trainFavorites.size() + fakeBusFavorites.size();
 	}
 
 	/**
+	 * Get the object depending on position
 	 * 
 	 * @param position
-	 * @return
+	 *            the position
+	 * @return an object, station or bus route
 	 */
 	public final Object getObject(final int position) {
 		Object result = null;
@@ -96,18 +99,22 @@ public class VehiculeArrival {
 	}
 
 	/**
+	 * Get the train arrival
 	 * 
 	 * @param stationId
-	 * @return
+	 *            the station id
+	 * @return a train arrival
 	 */
 	public final TrainArrival getTrainArrival(final Integer stationId) {
 		return trainArrivals.get(stationId);
 	}
 
 	/**
+	 * A list of bus arrival
 	 * 
 	 * @param routeId
-	 * @return
+	 *            the route id
+	 * @return a listof bus arrival
 	 */
 	public final List<BusArrival> getBusArrivals(final String routeId) {
 		List<BusArrival> res = new ArrayList<BusArrival>();
@@ -120,9 +127,11 @@ public class VehiculeArrival {
 	}
 
 	/**
+	 * Get on bus arrival
 	 * 
 	 * @param routeId
-	 * @return
+	 *            the route id
+	 * @return the bus arrival
 	 */
 	public final BusArrival getOneBusArrival(final String routeId) {
 		BusArrival bus = null;
@@ -136,9 +145,11 @@ public class VehiculeArrival {
 	}
 
 	/**
+	 * Get bus arrival mapped
 	 * 
 	 * @param routeId
-	 * @return
+	 *            the route id
+	 * @return a nice map
 	 */
 	public final Map<String, Map<String, List<BusArrival>>> getBusArrivalsMapped(final String routeId) {
 		Map<String, Map<String, List<BusArrival>>> res = new TreeMap<String, Map<String, List<BusArrival>>>(new Comparator<String>() {
@@ -177,11 +188,15 @@ public class VehiculeArrival {
 	}
 
 	/**
+	 * Is in favorites
 	 * 
 	 * @param routeId
+	 *            the route id
 	 * @param stopId
+	 *            the stop id
 	 * @param bound
-	 * @return
+	 *            the bound
+	 * @return a boolean
 	 */
 	private final boolean isInFavorites(final String routeId, final Integer stopId, final String bound) {
 		boolean res = false;
@@ -218,7 +233,7 @@ public class VehiculeArrival {
 	public final void setFavorites() {
 		this.trainFavorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
 		this.busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
-		this.fakeBusFavorites = calculateaActualRouteNumberBusFavorites();
+		this.fakeBusFavorites = calculateActualRouteNumberBusFavorites();
 	}
 
 	/**
@@ -239,7 +254,7 @@ public class VehiculeArrival {
 	 * 
 	 * @return
 	 */
-	public final List<String> calculateaActualRouteNumberBusFavorites() {
+	private List<String> calculateActualRouteNumberBusFavorites() {
 		List<String> found = new ArrayList<String>();
 		List<String> favs = new ArrayList<String>();
 		for (String fav : busFavorites) {

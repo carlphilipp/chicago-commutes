@@ -17,22 +17,26 @@
 package fr.cph.chicago.entity.enumeration;
 
 /**
+ * Enumeration, train direction
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public enum TrainDirection {
 	NORTH("N", "North"), SOUTH("S", "South"), EAST("E", "East"), WEST("W", "West");
 
-	/** **/
+	/** The text **/
 	private String text;
-	/** **/
+	/** The formatted text **/
 	private String formattedText;
 
 	/**
+	 * Private constructor
 	 * 
 	 * @param text
+	 *            the text
 	 * @param formattedText
+	 *            the formatted text
 	 */
 	private TrainDirection(final String text, final String formattedText) {
 		this.text = text;
@@ -40,9 +44,11 @@ public enum TrainDirection {
 	}
 
 	/**
+	 * Get train direction from string
 	 * 
 	 * @param text
-	 * @return
+	 *            the text
+	 * @return the train direction
 	 */
 	public static final TrainDirection fromString(final String text) {
 		if (text != null) {

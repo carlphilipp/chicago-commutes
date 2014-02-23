@@ -17,21 +17,26 @@
 package fr.cph.chicago.exception;
 
 /**
+ * Tracker exception
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class TrackerException extends Exception {
 
-	/** **/
+	/** Serializable **/
 	private static final long serialVersionUID = 1L;
-	
+
+	/** The error string **/
 	public static final String ERROR = "Error, please try again later";
 
 	/**
+	 * The constructor
 	 * 
 	 * @param message
+	 *            the message
 	 * @param e
+	 *            the exception
 	 */
 	public TrackerException(String message, Exception e) {
 		super(message, e);

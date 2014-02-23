@@ -40,9 +40,10 @@ import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.exception.TrackerException;
 
 /**
+ * Favorites Fragment
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class FavoritesFragment extends Fragment {
 
@@ -128,9 +129,12 @@ public class FavoritesFragment extends Fragment {
 	}
 
 	/**
+	 * Reload data
 	 * 
 	 * @param trainArrivals
+	 *            the train arrivals list
 	 * @param busArrivals
+	 *            the bus arrivals list
 	 */
 	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals) {
 		// startRefreshTask();
@@ -142,15 +146,17 @@ public class FavoritesFragment extends Fragment {
 	}
 
 	/**
+	 * Display error
 	 * 
 	 * @param trackerException
+	 *            the exception
 	 */
 	public final void displayError(TrackerException trackerException) {
 		ChicagoTracker.displayError(mActivity, trackerException);
 	}
 
 	/**
-	 * 
+	 * Start refresh task
 	 */
 	private void startRefreshTask() {
 		refreshTimingTask = (RefreshTask) new RefreshTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -158,9 +164,10 @@ public class FavoritesFragment extends Fragment {
 	}
 
 	/**
+	 * RefreshTask
 	 * 
-	 * @author carl
-	 * 
+	 * @author Carl-Philipp Harmant
+	 * @version 1
 	 */
 	private class RefreshTask extends AsyncTask<Void, Void, Void> {
 

@@ -22,9 +22,10 @@ import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.Stop;
 
 /**
+ * Factory that build a station
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class StationFactory {
 	/**
@@ -35,11 +36,15 @@ public class StationFactory {
 	}
 
 	/**
+	 * Build a station
 	 * 
 	 * @param id
+	 *            the id
 	 * @param name
+	 *            the name
 	 * @param stops
-	 * @return
+	 *            the stops
+	 * @return a station
 	 */
 	public static final Station buildStation(final Integer id, final String name, final List<Stop> stops) {
 		Station station = new Station();

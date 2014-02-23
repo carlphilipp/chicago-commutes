@@ -32,40 +32,42 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 
 /**
+ * Mao Fragment
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class MapFragment extends Fragment implements OnTouchListener {
 
 	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
-	/** **/
+	/** The matrix **/
 	private Matrix matrix = new Matrix();
-	/** **/
+	/** The saved matrix **/
 	private Matrix savedMatrix = new Matrix();
-	/** **/
+	/** Mode none **/
 	private static final int NONE = 0;
-	/** **/
+	/** Mode drag **/
 	private static final int DRAG = 1;
-	/** **/
+	/** Mode zoon **/
 	private static final int ZOOM = 2;
-	/** **/
+	/** Default mode **/
 	private int mode = NONE;
-
-	/** **/
+	/** Start point **/
 	private PointF start = new PointF();
-	/** **/
+	/** Mid point **/
 	private PointF mid = new PointF();
-	/** **/
+	/** Old distance **/
 	private float oldDist = 1f;
-	/** **/
+	/** Image view **/
 	private ImageView view;
 
 	/**
+	 * Returns a new instance of this fragment for the given section number.
 	 * 
 	 * @param sectionNumber
-	 * @return
+	 *            the section number
+	 * @return the fragment
 	 */
 	public static final MapFragment newInstance(final int sectionNumber) {
 		MapFragment fragment = new MapFragment();
@@ -138,8 +140,9 @@ public class MapFragment extends Fragment implements OnTouchListener {
 	}
 
 	/**
+	 * Is centered already
 	 * 
-	 * @return
+	 * @return a boolean
 	 */
 	public final boolean isCenteredAlready() {
 		boolean res = false;
@@ -150,22 +153,29 @@ public class MapFragment extends Fragment implements OnTouchListener {
 	}
 
 	/**
-	 * 
+	 * Reset image
 	 */
 	public final void resetImage() {
 		view.setScaleType(ScaleType.FIT_CENTER);
 	}
 
-	/** Show an event in the LogCat view, for debugging */
-
-	/** Determine the space between the first two fingers */
+	/**
+	 * Determine the space between the first two fingers
+	 */
 	private float spacing(MotionEvent event) {
 		float x = event.getX(0) - event.getX(1);
 		float y = event.getY(0) - event.getY(1);
 		return (float) java.lang.Math.sqrt(x * x + y * y);
 	}
 
-	/** Calculate the mid point of the first two fingers */
+	/**
+	 * Calculate the mid point of the first two fingers
+	 * 
+	 * @param point
+	 *            the point
+	 * @param event
+	 *            the event
+	 */
 	private void midPoint(PointF point, MotionEvent event) {
 		float x = event.getX(0) + event.getX(1);
 		float y = event.getY(0) + event.getY(1);
