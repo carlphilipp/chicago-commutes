@@ -5,42 +5,43 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * Alert entity
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class Alert {
-	/** **/
+	/** The id **/
 	private Integer id;
-	/** **/
+	/** The headline **/
 	private String headline;
-	/** **/
+	/** The short description **/
 	private String shortDescription;
-	/** **/
+	/** The full description **/
 	private String fullDescription;
-	/** **/
+	/** The severity score **/
 	private Integer severityScore;
-	/** **/
+	/** The severity color **/
 	private String severityColor;
-	/** **/
+	/** The severity css **/
 	private String severityCSS;
-	/** **/
+	/** THe impact **/
 	private String impact;
-	/** **/
+	/** Beginning of the alert **/
 	private Date eventStart;
-	/** **/
+	/** End of the alert **/
 	private Date eventEnd;
-	/** **/
+	/** Tbd ? **/
 	private Integer tbd;
-	/** **/
+	/** Level of alert **/
 	private Integer majorAlert;
-	/** **/
+	/** Alert URL **/
 	private String alertUrl;
-	/** **/
+	/** List of service impacted **/
 	private List<Service> impactedServices;
 
 	/**
-	 * 
+	 * Constructor
 	 */
 	public Alert() {
 		this.impactedServices = new ArrayList<Service>();
@@ -48,7 +49,7 @@ public class Alert {
 
 	/**
 	 * 
-	 * @return
+	 * @return the id
 	 */
 	public final Integer getId() {
 		return id;
@@ -57,6 +58,7 @@ public class Alert {
 	/**
 	 * 
 	 * @param id
+	 *            the id
 	 */
 	public final void setId(final Integer id) {
 		this.id = id;
@@ -64,7 +66,7 @@ public class Alert {
 
 	/**
 	 * 
-	 * @return
+	 * @return the headline
 	 */
 	public final String getHeadline() {
 		return headline;

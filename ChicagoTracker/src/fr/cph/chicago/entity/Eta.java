@@ -23,42 +23,43 @@ import java.util.concurrent.TimeUnit;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
 /**
+ * Eta entity
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public final class Eta implements Comparable<Eta> {
-	/** **/
+	/** The station **/
 	private Station station;
-	/** **/
+	/** The stop **/
 	private Stop stop;
-	/** **/
+	/** The bus number **/
 	private Integer runNumber;
-	/** **/
+	/** The route name **/
 	private TrainLine routeName;
-	/** **/
+	/** The destination station **/
 	private Integer destSt;
-	/** **/
+	/** The destination name **/
 	private String destName;
-	/** **/
+	/** The train route direction code **/
 	private Integer trainRouteDirectionCode;
-	/** **/
+	/** The prediction date **/
 	private Date predictionDate;
-	/** **/
+	/** The arrival departure date **/
 	private Date arrivalDepartureDate;
-	/** **/
+	/** Is approaching **/
 	private Boolean isApp;
-	/** **/
+	/** Is scheduled **/
 	private Boolean isSch;
 	/** **/
 	private Boolean isFlt;
-	/** **/
+	/** Is delayed **/
 	private Boolean isDly;
-	/** **/
+	/** Is flag **/
 	private String flags;
-	/** **/
+	/** The position **/
 	private Position position;
-	/** **/
+	/** Heading **/
 	private Integer heading;
 
 	/**

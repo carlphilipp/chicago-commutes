@@ -22,22 +22,23 @@ import fr.cph.chicago.entity.enumeration.TrainDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
 /**
+ * Station entity
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class Stop implements Comparable<Stop> {
-	/** **/
+	/** The id **/
 	private Integer id;
-	/** **/
+	/** The description **/
 	private String description;
-	/** **/
+	/** The train direction **/
 	private TrainDirection direction;
-	/** **/
+	/** The position **/
 	private Position position;
-	/** **/
+	/** Ada **/
 	private Boolean ada;
-	/** **/
+	/** The list of train line **/
 	private List<TrainLine> lines;
 
 	/**

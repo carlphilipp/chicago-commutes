@@ -22,20 +22,21 @@ import java.util.List;
 import fr.cph.chicago.entity.enumeration.BusDirection;
 
 /**
+ * Bus directions entity
  * 
- * @author carl
- *
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public final class BusDirections {
-	/** **/
+	/** The id **/
 	private String id;
-	/** **/
+	/** List of bus direction **/
 	private List<BusDirection> lBusDirection;
-	
+
 	/**
-	 * 
+	 * Constructor
 	 */
-	public BusDirections(){
+	public BusDirections() {
 		lBusDirection = new ArrayList<BusDirection>();
 	}
 
@@ -70,12 +71,12 @@ public final class BusDirections {
 	public final void setlBusDirection(final List<BusDirection> lBusDirection) {
 		this.lBusDirection = lBusDirection;
 	}
-	
+
 	/**
 	 * 
 	 * @param dir
 	 */
-	public final void addBusDirection(final BusDirection dir){
+	public final void addBusDirection(final BusDirection dir) {
 		lBusDirection.add(dir);
 	}
 

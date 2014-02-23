@@ -17,16 +17,17 @@
 package fr.cph.chicago.entity;
 
 /**
+ * Bus stop entity
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public final class BusStop implements Comparable<BusStop> {
-	/** **/
+	/** The id **/
 	private Integer id;
-	/** **/
+	/** The name **/
 	private String name;
-	/** **/
+	/** The position **/
 	private Position position;
 
 	/**

@@ -26,16 +26,17 @@ import java.util.TreeSet;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
 /**
+ * Station entity
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class Station implements Comparable<Station> {
-	/** **/
+	/** The id **/
 	private Integer id;
-	/** **/
+	/** The name **/
 	private String name;
-	/** **/
+	/** The stops list **/
 	private List<Stop> stops;
 
 	/**

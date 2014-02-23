@@ -17,26 +17,30 @@
 package fr.cph.chicago.entity;
 
 /**
+ * The position
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class Position {
-	/** **/
+	/** The latitude **/
 	private Double latitude;
-	/** **/
+	/** The longitude **/
 	private Double longitude;
 
 	/**
-	 * 
+	 * Public constructor
 	 */
 	public Position() {
 	}
 
 	/**
+	 * Public constructor
 	 * 
 	 * @param latitude
+	 *            the latitude
 	 * @param longitude
+	 *            the longitude
 	 */
 	public Position(final Double latitude, final Double longitude) {
 		this.latitude = latitude;

@@ -23,34 +23,35 @@ import java.util.concurrent.TimeUnit;
 import fr.cph.chicago.entity.enumeration.PredictionType;
 
 /**
+ * Bus Arrival entity
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public final class BusArrival {
-	/** **/
+	/** Timestamp **/
 	private Date timeStamp;
-	/** **/
+	/** Error message **/
 	private String errorMessage;
-	/** **/
+	/** TYpe of prediction **/
 	private PredictionType predictionType;
-	/** **/
+	/** Stop name **/
 	private String stopName;
-	/** **/
+	/** Stop id **/
 	private Integer stopId;
-	/** **/
+	/** Bus id **/
 	private Integer busId;
-	/** **/
+	/** Distance to stop **/
 	private Integer distanceToStop; // feets
-	/** **/
+	/** Route id **/
 	private String routeId;
-	/** **/
+	/** Route direction **/
 	private String routeDirection;
-	/** **/
+	/** Bus destination **/
 	private String busDestination;
-	/** **/
+	/** Prediction time **/
 	private Date predictionTime;
-	/** **/
+	/** Is delayed **/
 	private Boolean isDly = false;
 
 	/**

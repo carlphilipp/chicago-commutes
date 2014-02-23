@@ -40,7 +40,7 @@
     <string name="station_name">Station: </string>
     <string name="route_name">RouteName</string>
     <string name="no_fav">Welcome to ChitownX!</string>
-    <string name="add_fav">Add favorites from stations or bus tab</string>
+    <string name="add_fav">Add favorites from train or bus tab</string>
 
     <!-- Station -->
     <string name="station_activity">Station</string>

@@ -17,21 +17,16 @@
 package fr.cph.chicago.entity;
 
 /**
+ * Bus route entity
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public final class BusRoute {
-	/** **/
+	/** The id **/
 	private String id;
-	/** **/
+	/** The name **/
 	private String name;
-
-	/**
-	 * 
-	 */
-	public BusRoute() {
-	}
 
 	/**
 	 * 

@@ -17,24 +17,25 @@
 package fr.cph.chicago.entity;
 
 /**
+ * Service entity
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class Service {
-	/** **/
+	/** The service type **/
 	private String type;
-	/** **/
+	/** The description type **/
 	private String typeDescription;
-	/** **/
+	/** The name **/
 	private String name;
-	/** **/
+	/** The id **/
 	private String id;
-	/** **/
+	/** The back color **/
 	private String backColor;
-	/** **/
+	/** The text color **/
 	private String textColor;
-	/** **/
+	/** The url **/
 	private String url;
 
 	/**

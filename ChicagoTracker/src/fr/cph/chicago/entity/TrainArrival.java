@@ -23,18 +23,19 @@ import java.util.List;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
 /**
+ * Train Arrival entity
  * 
- * @author carl
- * 
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
 public class TrainArrival {
-	/** **/
+	/** The timestamp **/
 	private Date timeStamp;
-	/** **/
+	/** The error code **/
 	private Integer errorCode;
-	/** **/
+	/** The error message **/
 	private String errorMessage;
-	/** **/
+	/** A list of Eta **/
 	private List<Eta> etas;
 
 	/**
