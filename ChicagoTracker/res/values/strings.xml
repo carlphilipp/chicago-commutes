@@ -53,6 +53,7 @@
     <string name="bus_station_activity">Bus</string>
     <string name="bus_activity_google_map_link_desc">Link to google map</string>
     <string name="bus_activity_street_view">Street view</string>
+    <string name="bus_fragment_filter">Filter</string>
 
     <!-- Bus Bound -->
     <string name="bus_bound_activity">Bus Bound</string>

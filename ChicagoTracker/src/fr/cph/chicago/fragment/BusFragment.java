@@ -20,16 +20,27 @@ package fr.cph.chicago.fragment;
  * Created by carl on 11/15/13.
  */
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ListView;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.BusAdapter;
+import fr.cph.chicago.data.BusData;
+import fr.cph.chicago.data.DataHolder;
+import fr.cph.chicago.entity.BusRoute;
 
 /**
  * Bus Fragment
@@ -69,9 +80,36 @@ public class BusFragment extends Fragment {
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_bus, container, false);
-		BusAdapter ada = new BusAdapter(mActivity);
+		EditText filter = (EditText) rootView.findViewById(R.id.bus_filter);
 		ListView listView = (ListView) rootView.findViewById(R.id.bus_list);
+		final BusAdapter ada = new BusAdapter(mActivity);
 		listView.setAdapter(ada);
+		filter.addTextChangedListener(new TextWatcher() {
+
+			private BusData busData = DataHolder.getInstance().getBusData();
+			private List<BusRoute> busRoutes = null;
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+				busRoutes = new ArrayList<BusRoute>();
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				List<BusRoute> busRoutes = busData.getRoutes();
+				for (BusRoute busRoute : busRoutes) {
+					if (StringUtils.containsIgnoreCase(busRoute.getId(), s) || StringUtils.containsIgnoreCase(busRoute.getName(), s)) {
+						this.busRoutes.add(busRoute);
+					}
+				}
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				ada.setRoutes(busRoutes);
+				ada.notifyDataSetChanged();
+			}
+		});
 		return rootView;
 	}
 }

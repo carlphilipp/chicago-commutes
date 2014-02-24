@@ -16,17 +16,24 @@
 
 package fr.cph.chicago.activity;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 
 import android.app.ActionBar;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.adapter.BusBoundAdapter;
@@ -52,6 +59,8 @@ public class BusBoundActivity extends ListActivity {
 	private String bound;
 	/** Adapter **/
 	private BusBoundAdapter ada;
+	/** List of bus stop get via API **/
+	private List<BusStop> busStops;
 
 	@Override
 	public final void onCreate(final Bundle savedInstanceState) {
@@ -84,8 +93,37 @@ public class BusBoundActivity extends ListActivity {
 				overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 			}
 		});
+
+		EditText filter = (EditText) findViewById(R.id.bus_filter);
+		filter.addTextChangedListener(new TextWatcher() {
+			List<BusStop> busStopsFiltered;
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+				busStopsFiltered = new ArrayList<BusStop>();
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				for (BusStop busStop : busStops) {
+					if (StringUtils.containsIgnoreCase(busStop.getName(), s)) {
+						this.busStopsFiltered.add(busStop);
+					}
+				}
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				ada.update(busStopsFiltered);
+				ada.notifyDataSetChanged();
+			}
+		});
+
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		new BusBoundAsyncTask().execute();
+
+		// Preventing keyboard from moving background when showing up
+		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 	}
 
 	@Override
@@ -135,6 +173,7 @@ public class BusBoundActivity extends ListActivity {
 
 		@Override
 		protected final void onPostExecute(final List<BusStop> result) {
+			BusBoundActivity.this.busStops = result;
 			if (trackerException == null) {
 				ada.update(result);
 				ada.notifyDataSetChanged();

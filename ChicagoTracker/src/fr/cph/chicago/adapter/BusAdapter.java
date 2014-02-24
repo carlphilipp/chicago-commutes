@@ -64,7 +64,7 @@ public final class BusAdapter extends BaseAdapter {
 	/** Main activity **/
 	private MainActivity activity;
 	/** Bus data **/
-	private BusData busData;
+	private List<BusRoute> busRoutes;
 	/** Layout that you can use as a black fade background **/
 	private FrameLayout firstLayout;
 
@@ -76,18 +76,19 @@ public final class BusAdapter extends BaseAdapter {
 	 */
 	public BusAdapter(final MainActivity activity) {
 		this.activity = activity;
-		this.busData = DataHolder.getInstance().getBusData();
+		BusData busData = DataHolder.getInstance().getBusData();
+		this.busRoutes = busData.getRoutes();
 		this.firstLayout = ChicagoTracker.container;
 	}
 
 	@Override
 	public final int getCount() {
-		return busData.getRouteSize();
+		return busRoutes.size();
 	}
 
 	@Override
 	public final Object getItem(final int position) {
-		return busData.getRoute(position);
+		return busRoutes.get(position);
 	}
 
 	@Override
@@ -98,7 +99,7 @@ public final class BusAdapter extends BaseAdapter {
 	@Override
 	public final View getView(final int position, View convertView, final ViewGroup parent) {
 
-		final BusRoute route = busData.getRoute(position);
+		final BusRoute route = (BusRoute) getItem(position);
 
 		TextView routeNameView = null;
 		TextView routeNumberView = null;
@@ -148,6 +149,10 @@ public final class BusAdapter extends BaseAdapter {
 		routeNumberView.setText(route.getId());
 
 		return convertView;
+	}
+	
+	public void setRoutes(List<BusRoute> busRoutes){
+		this.busRoutes = busRoutes;
 	}
 
 	/**
