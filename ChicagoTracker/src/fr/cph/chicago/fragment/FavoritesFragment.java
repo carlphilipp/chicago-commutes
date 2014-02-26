@@ -20,6 +20,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
+import fr.cph.chicago.activity.BaseActivity;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.FavoritesAdapter;
 import fr.cph.chicago.data.Preferences;
@@ -73,6 +75,22 @@ public class FavoritesFragment extends Fragment {
 	}
 
 	@Override
+	public final void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		if (ada == null) {
+			if (ChicagoTracker.getTrainArrivals() == null && ChicagoTracker.getBusArrivals() == null) {
+				Intent intent = new Intent(mActivity, BaseActivity.class);
+				intent.putExtra("error", true);
+				mActivity.finish();
+				startActivity(intent);
+			}
+			ada = new FavoritesAdapter(mActivity);
+			ada.setArrivals(ChicagoTracker.getTrainArrivals(), ChicagoTracker.getBusArrivals());
+		}
+
+	}
+
+	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 		RelativeLayout welcome = (RelativeLayout) rootView.findViewById(R.id.welcome);
@@ -80,10 +98,7 @@ public class FavoritesFragment extends Fragment {
 		if (!hasFav) {
 			welcome.setVisibility(View.VISIBLE);
 		}
-		if (ada == null) {
-			ada = new FavoritesAdapter(mActivity);
-			ada.setArrivals(ChicagoTracker.getTrainArrivals(), ChicagoTracker.getBusArrivals());
-		}
+
 		ListView listView = (ListView) rootView.findViewById(R.id.favorites_list);
 		listView.setAdapter(ada);
 
