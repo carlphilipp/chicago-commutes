@@ -60,9 +60,10 @@ public class BaseActivity extends Activity {
 
 	/** Tag **/
 	private static final String TAG = "BaseActivity";
-
 	/** Layout loaded **/
 	private View loadLayout;
+	/** Error state **/
+	private Boolean error;
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
@@ -72,9 +73,11 @@ public class BaseActivity extends Activity {
 		loadLayout = findViewById(R.id.loading_layout);
 
 		Bundle extras = getIntent().getExtras();
-		boolean error = false;
-		if (extras != null) {
+
+		if (extras != null && error == null) {
 			error = extras.getBoolean("error");
+		} else {
+			error = false;
 		}
 
 		if (error) {
@@ -86,7 +89,18 @@ public class BaseActivity extends Activity {
 		} else {
 			startMainActivity();
 		}
+	}
 
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		error = savedInstanceState.getBoolean("error");
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		savedInstanceState.putBoolean("error", error);
+		super.onSaveInstanceState(savedInstanceState);
 	}
 
 	/**
@@ -200,7 +214,7 @@ public class BaseActivity extends Activity {
 	 * @param exceptionToBeThrown
 	 *            the exception that has been thrown
 	 */
-	private void displayError(final TrackerException exceptionToBeThrown) {
+	public void displayError(final TrackerException exceptionToBeThrown) {
 		DataHolder.getInstance().setTrainData(null);
 		DataHolder.getInstance().setBusData(null);
 		// Stop of the laoding

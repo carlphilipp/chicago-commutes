@@ -126,7 +126,10 @@ public class StationActivity extends Activity {
 		setContentView(R.layout.activity_station);
 
 		// Get station id from bundle extra
-		stationId = getIntent().getExtras().getInt("stationId");
+		if(stationId == null){
+			stationId = getIntent().getExtras().getInt("stationId");
+		}
+
 		// Get station from station id
 		station = data.getStation(stationId);
 
@@ -261,6 +264,18 @@ public class StationActivity extends Activity {
 	}
 
 	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		stationId = savedInstanceState.getInt("stationId");
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		savedInstanceState.putInt("stationId", stationId);
+		super.onSaveInstanceState(savedInstanceState);
+	}
+
+	@Override
 	public final boolean onCreateOptionsMenu(final Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		this.menu = menu;
@@ -392,9 +407,11 @@ public class StationActivity extends Activity {
 			StationActivity.this.streetViewText.setText(ChicagoTracker.getAppContext().getResources()
 					.getString(R.string.station_activity_street_view));
 
-			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-			refreshMenuItem.collapseActionView();
-			refreshMenuItem.setActionView(null);
+			if (menu != null) {
+				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+				refreshMenuItem.collapseActionView();
+				refreshMenuItem.setActionView(null);
+			}
 			firstLoad = false;
 		}
 	}

@@ -42,6 +42,10 @@ public class TrainStationActivity extends ListActivity {
 	/** The train data **/
 	private TrainData data;
 
+	private TrainLine line;
+
+	private String lineParam;
+
 	@Override
 	public final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -50,8 +54,11 @@ public class TrainStationActivity extends ListActivity {
 		DataHolder dataHolder = DataHolder.getInstance();
 		this.data = dataHolder.getTrainData();
 
-		final TrainLine line = TrainLine.fromString(getIntent().getExtras().getString("line"));
-
+		if (line == null && lineParam == null) {
+			lineParam = getIntent().getExtras().getString("line");
+			line = TrainLine.fromString(lineParam);
+		}
+		
 		this.setTitle(line.toStringWithLine());
 
 		setContentView(R.layout.activity_train_station);
@@ -70,6 +77,19 @@ public class TrainStationActivity extends ListActivity {
 				overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 			}
 		});
+	}
+
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		lineParam = savedInstanceState.getString("line");
+		line = TrainLine.fromString(lineParam);
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		savedInstanceState.putString("line", lineParam);
+		super.onSaveInstanceState(savedInstanceState);
 	}
 
 	@Override

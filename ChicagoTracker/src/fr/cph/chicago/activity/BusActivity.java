@@ -77,6 +77,12 @@ public class BusActivity extends Activity {
 	private String bound;
 	/** Bus stop id **/
 	private Integer busStopId;
+	/** Bus stop name **/
+	private String busStopName;
+	/** Bus route name **/
+	private String busRouteName;
+	/** Position **/
+	private Double latitude, longitude;
 	/** Images **/
 	private ImageView streetViewImage, mapImage, directionImage, favoritesImage;
 	/** Street view text **/
@@ -97,16 +103,22 @@ public class BusActivity extends Activity {
 		// Load right xml
 		setContentView(R.layout.activity_bus);
 
-		this.busStopId = getIntent().getExtras().getInt("busStopId");
-		this.busRouteId = getIntent().getExtras().getString("busRouteId");
-		this.bound = getIntent().getExtras().getString("bound");
+		if (busStopId == null && busRouteId == null && bound == null && busStopName == null && busRouteName == null && latitude == null
+				&& longitude == null) {
+			this.busStopId = getIntent().getExtras().getInt("busStopId");
+			this.busRouteId = getIntent().getExtras().getString("busRouteId");
+			this.bound = getIntent().getExtras().getString("bound");
 
-		String busStopName = getIntent().getExtras().getString("busStopName");
-		String busRouteName = getIntent().getExtras().getString("busRouteName");
+			this.busStopName = getIntent().getExtras().getString("busStopName");
+			this.busRouteName = getIntent().getExtras().getString("busRouteName");
+
+			this.latitude = getIntent().getExtras().getDouble("latitude");
+			this.longitude = getIntent().getExtras().getDouble("longitude");
+		}
 
 		Position position = new Position();
-		position.setLatitude(getIntent().getExtras().getDouble("latitude"));
-		position.setLongitude(getIntent().getExtras().getDouble("longitude"));
+		position.setLatitude(latitude);
+		position.setLongitude(longitude);
 
 		this.isFavorite = isFavorite();
 
@@ -140,6 +152,30 @@ public class BusActivity extends Activity {
 		(new LoadData()).execute();
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
+	}
+
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		busStopId = savedInstanceState.getInt("busStopId");
+		busRouteId = savedInstanceState.getString("busRouteId");
+		bound = savedInstanceState.getString("bound");
+		busStopName = savedInstanceState.getString("busStopName");
+		busRouteName = savedInstanceState.getString("busRouteName");
+		latitude = savedInstanceState.getDouble("latitude");
+		longitude = savedInstanceState.getDouble("longitude");
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		savedInstanceState.putInt("busStopId", busStopId);
+		savedInstanceState.putString("busRouteId", busRouteId);
+		savedInstanceState.putString("bound", bound);
+		savedInstanceState.putString("busStopName", busStopName);
+		savedInstanceState.putString("busRouteName", busRouteName);
+		savedInstanceState.putDouble("latitude", latitude);
+		savedInstanceState.putDouble("longitude", longitude);
+		super.onSaveInstanceState(savedInstanceState);
 	}
 
 	@Override

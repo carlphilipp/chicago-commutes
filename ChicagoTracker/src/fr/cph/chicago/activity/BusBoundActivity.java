@@ -66,10 +66,11 @@ public class BusBoundActivity extends ListActivity {
 	public final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_bus_bound);
-		busRouteId = getIntent().getExtras().getString("busRouteId");
-		busRouteName = getIntent().getExtras().getString("busRouteName");
-		bound = getIntent().getExtras().getString("bound");
-
+		if (busRouteId == null && busRouteName == null && bound == null) {
+			busRouteId = getIntent().getExtras().getString("busRouteId");
+			busRouteName = getIntent().getExtras().getString("busRouteName");
+			bound = getIntent().getExtras().getString("bound");
+		}
 		ada = new BusBoundAdapter(busRouteId);
 		setListAdapter(ada);
 		getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -124,6 +125,22 @@ public class BusBoundActivity extends ListActivity {
 
 		// Preventing keyboard from moving background when showing up
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+	}
+
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		busRouteId = savedInstanceState.getString("busRouteId");
+		busRouteName = savedInstanceState.getString("busRouteName");
+		bound = savedInstanceState.getString("bound");
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		savedInstanceState.putString("busRouteId", busRouteId);
+		savedInstanceState.putString("busRouteName", busRouteName);
+		savedInstanceState.putString("bound", bound);
+		super.onSaveInstanceState(savedInstanceState);
 	}
 
 	@Override

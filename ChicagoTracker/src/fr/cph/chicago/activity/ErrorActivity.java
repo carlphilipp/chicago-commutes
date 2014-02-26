@@ -19,6 +19,9 @@ import fr.cph.chicago.R;
  * @version 1
  */
 public class ErrorActivity extends Activity {
+
+	private String error;
+
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -26,9 +29,9 @@ public class ErrorActivity extends Activity {
 
 		View loadLayout = findViewById(R.id.loading_layout);
 		loadLayout.setVisibility(View.GONE);
-
-		Intent intent = getIntent();
-		String error = intent.getExtras().getString("error");
+		if (error == null) {
+			error = getIntent().getExtras().getString("error");
+		}
 		TextView errorText = (TextView) findViewById(R.id.error_message);
 		errorText.setText(error);
 		Button button = (Button) findViewById(R.id.retry_button);
@@ -41,6 +44,18 @@ public class ErrorActivity extends Activity {
 				startActivity(intent);
 			}
 		});
+	}
+
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		error = savedInstanceState.getString("error");
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		savedInstanceState.putString("error", error);
+		super.onSaveInstanceState(savedInstanceState);
 	}
 
 	@Override
