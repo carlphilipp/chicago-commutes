@@ -58,7 +58,6 @@ public final class Preferences {
 		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
 		Set<String> setPref1 = sharedPref.getStringSet(trains, null);
 		Set<String> setPref2 = sharedPref.getStringSet(bus, null);
-		Log.i(TAG, setPref1 + " " + setPref2);
 		boolean res = true;
 		if ((setPref1 == null || setPref1.size() == 0) && (setPref2 == null || setPref2.size() == 0)) {
 			res = false;
