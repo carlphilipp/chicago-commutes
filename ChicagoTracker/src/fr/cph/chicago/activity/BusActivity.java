@@ -412,7 +412,7 @@ public class BusActivity extends Activity {
 	}
 
 	/**
-	 * Add or remove from favoritesO
+	 * Add or remove from favorites
 	 */
 	private final void switchFavorite() {
 		if (isFavorite) {

@@ -22,17 +22,12 @@ import java.util.List;
 import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.map.MultiValueMap;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
-import android.view.View;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaRequestType;
@@ -60,8 +55,6 @@ public class BaseActivity extends Activity {
 
 	/** Tag **/
 	private static final String TAG = "BaseActivity";
-	/** Layout loaded **/
-	private View loadLayout;
 	/** Error state **/
 	private Boolean error;
 
@@ -70,7 +63,6 @@ public class BaseActivity extends Activity {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.loading);
-		loadLayout = findViewById(R.id.loading_layout);
 
 		Bundle extras = getIntent().getExtras();
 
@@ -81,10 +73,8 @@ public class BaseActivity extends Activity {
 		}
 
 		if (error) {
-			showProgress(true);
 			new LoadData().execute();
 		} else if (DataHolder.getInstance().getBusData() == null || DataHolder.getInstance().getTrainData() == null) {
-			showProgress(true);
 			new LoadData().execute();
 		} else {
 			startMainActivity();
@@ -183,32 +173,6 @@ public class BaseActivity extends Activity {
 	}
 
 	/**
-	 * Show progress bar
-	 * 
-	 * @param show
-	 *            show the bar or not
-	 */
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-	private final void showProgress(final boolean show) {
-		try {
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-				int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-				// loadLayout.setVisibility(View.VISIBLE);
-				loadLayout.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-					@Override
-					public void onAnimationEnd(Animator animation) {
-						loadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
-					}
-				});
-			} else {
-				loadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
-			}
-		} catch (IllegalStateException e) {
-			Log.i(TAG, e.getMessage(), e);
-		}
-	}
-
-	/**
 	 * Display error. Set train and bus data to null before running the error activity
 	 * 
 	 * @param exceptionToBeThrown
@@ -217,8 +181,6 @@ public class BaseActivity extends Activity {
 	public void displayError(final TrackerException exceptionToBeThrown) {
 		DataHolder.getInstance().setTrainData(null);
 		DataHolder.getInstance().setBusData(null);
-		// Stop of the laoding
-		showProgress(false);
 		ChicagoTracker.displayError(this, exceptionToBeThrown);
 		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 	}
@@ -254,7 +216,6 @@ public class BaseActivity extends Activity {
 	 */
 	private void startMainActivity() {
 		Intent intent = new Intent(this, MainActivity.class);
-		showProgress(false);
 		finish();
 		startActivity(intent);
 		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
