@@ -78,7 +78,7 @@ public class FavoritesFragment extends Fragment {
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (ada == null) {
-			if (ChicagoTracker.getTrainArrivals() == null && ChicagoTracker.getBusArrivals() == null) {
+			if (ChicagoTracker.getTrainArrivals() == null || ChicagoTracker.getBusArrivals() == null) {
 				Intent intent = new Intent(mActivity, BaseActivity.class);
 				intent.putExtra("error", true);
 				mActivity.finish();
