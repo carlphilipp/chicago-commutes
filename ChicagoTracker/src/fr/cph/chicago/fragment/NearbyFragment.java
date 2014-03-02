@@ -47,7 +47,11 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -66,6 +70,7 @@ import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
+import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusStop;
@@ -95,12 +100,18 @@ public class NearbyFragment extends Fragment {
 	private MapFragment mapFragment;
 	/** The load layout **/
 	private View loadLayout;
+	/** The list layout **/
+	private RelativeLayout nearbyContainer;
 	/** The map **/
 	private GoogleMap map;
 	/** The adapter **/
 	private NearbyAdapter ada;
 	/** The list view **/
 	private ListView listView;
+	/** The only check box **/
+	private CheckBox checkBox;
+	/** Hide empty stations/stops **/
+	private boolean hideStationsStops;
 	/** The chicago position **/
 	private static final LatLng CHICAGO = new LatLng(41.8819, -87.6278);
 
@@ -133,6 +144,20 @@ public class NearbyFragment extends Fragment {
 		listView.setAdapter(ada);
 		setHasOptionsMenu(true);
 		loadLayout = rootView.findViewById(R.id.loading_layout);
+		nearbyContainer = (RelativeLayout) rootView.findViewById(R.id.nerby_list_container);
+		checkBox = (CheckBox) rootView.findViewById(R.id.hideEmptyStops);
+		hideStationsStops = Preferences.getHideShowNearby();
+		checkBox.setChecked(hideStationsStops);
+		checkBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				Preferences.saveHideShowNearby(isChecked);
+				hideStationsStops = isChecked;
+				/*new LoadNearby().execute();
+				showProgress(true);*/
+				reloadData();
+			}
+		});
 		showProgress(true);
 		return rootView;
 	}
@@ -255,6 +280,29 @@ public class NearbyFragment extends Fragment {
 
 		@Override
 		protected final void onPostExecute(final Void result) {
+			if (hideStationsStops) {
+				List<BusStop> busStopTmp = new ArrayList<BusStop>();
+				for (BusStop busStop : busStops) {
+					if (busArrivalsMap.get(busStop.getId()).size() == 0) {
+						busArrivalsMap.remove(busStop.getId());
+					} else {
+						busStopTmp.add(busStop);
+					}
+				}
+				busStops.clear();
+				busStops = busStopTmp;
+
+				List<Station> busStationTmp = new ArrayList<Station>();
+				for (Station station : stations) {
+					if (trainArrivals.get(station.getId()).getEtas().size() == 0) {
+						trainArrivals.remove(station.getId());
+					} else {
+						busStationTmp.add(station);
+					}
+				}
+				stations.clear();
+				stations = busStationTmp;
+			}
 			load(busStops, busArrivalsMap, stations, trainArrivals);
 		}
 	}
@@ -441,6 +489,7 @@ public class NearbyFragment extends Fragment {
 			Marker marker = map.addMarker(new MarkerOptions().position(point).title(busStop.getName()).snippet(busStop.getId().toString())
 					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
 			markers.add(marker);
+
 		}
 		for (Station station : stations) {
 			for (Position position : station.getStopsPosition()) {
@@ -454,7 +503,7 @@ public class NearbyFragment extends Fragment {
 		ada.updateData(buses, busArrivals, stations, trainArrivals, map, markers);
 		ada.notifyDataSetChanged();
 		showProgress(false);
-		listView.setVisibility(View.VISIBLE);
+		nearbyContainer.setVisibility(View.VISIBLE);
 
 	}
 
@@ -526,7 +575,7 @@ public class NearbyFragment extends Fragment {
 	public final void reloadData() {
 		map.clear();
 		showProgress(true);
-		listView.setVisibility(View.GONE);
+		nearbyContainer.setVisibility(View.GONE);
 		new LoadNearby().execute();
 	}
 

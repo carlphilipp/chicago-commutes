@@ -221,4 +221,20 @@ public final class Preferences {
 		boolean result = sharedPref.getBoolean(String.valueOf(stationId) + "_" + line + "_" + direction, true);
 		return result;
 	}
+	
+	
+	public static void saveHideShowNearby(boolean hide){
+		Context context = ChicagoTracker.getAppContext();
+		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = sharedPref.edit();
+		editor.putBoolean("hideNearby", hide);
+		editor.commit();
+	}
+	
+	public static boolean getHideShowNearby(){
+		Context context = ChicagoTracker.getAppContext();
+		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+		boolean result = sharedPref.getBoolean("hideNearby", true);
+		return result;
+	}
 }

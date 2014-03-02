@@ -68,6 +68,7 @@
      
      <!-- Nearby -->
      <string name="nearby_title">Nearby</string>
+     <string name="nearby_check_box">Hide stations/stops with no results</string>
      
      <!-- Map -->
      <string name="fragment_image_description">A nice description</string>

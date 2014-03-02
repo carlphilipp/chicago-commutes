@@ -39,6 +39,8 @@ import fr.cph.chicago.activity.MainActivity;
  */
 public class MapFragment extends Fragment implements OnTouchListener {
 
+	/** Tag **/
+	private static final String TAG = "MapFragment";
 	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
 	/** The matrix **/
@@ -61,6 +63,17 @@ public class MapFragment extends Fragment implements OnTouchListener {
 	private float oldDist = 1f;
 	/** Image view **/
 	private ImageView view;
+
+	boolean first_time = true;
+	Long currentClickTime = (long) 0;
+	Long startTime = (long) 0;
+	Long endTime = (long) 0;
+	Long previousUpTime = (long) 0;
+	Long consecutiveTwoClickTime = (long) 0;
+	Long timeBetweenTwoClick = (long) 0;
+	Long previousClickTime = (long) 0;
+	final Long doubleClickTimeDiffrence = (long) 500;
+	Long upCounter = (long) 0;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -99,6 +112,12 @@ public class MapFragment extends Fragment implements OnTouchListener {
 
 		switch (event.getAction() & MotionEvent.ACTION_MASK) {
 		case MotionEvent.ACTION_DOWN:
+
+			startTime = System.currentTimeMillis();
+			if (upCounter != 0) {
+				timeBetweenTwoClick = startTime - endTime;
+			}
+
 			savedMatrix.set(matrix);
 			start.set(event.getX(), event.getY());
 			mode = DRAG;
@@ -113,6 +132,23 @@ public class MapFragment extends Fragment implements OnTouchListener {
 			break;
 		case MotionEvent.ACTION_UP:
 		case MotionEvent.ACTION_POINTER_UP:
+
+			endTime = System.currentTimeMillis();
+			currentClickTime = endTime - startTime;
+			consecutiveTwoClickTime = currentClickTime + previousClickTime;
+
+			if (upCounter == 0) {
+				++upCounter;
+				previousClickTime = currentClickTime;
+			} else {
+				previousClickTime = currentClickTime;
+				if ((consecutiveTwoClickTime + timeBetweenTwoClick) <= doubleClickTimeDiffrence) {
+					savedMatrix.set(matrix);
+					matrix.set(savedMatrix);
+					matrix.postScale((float) 2, (float) 2, event.getX(0), event.getY(0));
+
+				}
+			}
 			mode = NONE;
 			break;
 		case MotionEvent.ACTION_MOVE:
@@ -125,10 +161,9 @@ public class MapFragment extends Fragment implements OnTouchListener {
 				float newDist = spacing(event);
 				if (newDist > 5f) {
 					matrix.set(savedMatrix);
-					float scale = newDist / oldDist; // setting the scaling of the
-					// matrix...if scale > 1 means
-					// zoom in...if scale < 1 means
-					// zoom out
+					float scale = newDist / oldDist; // setting the scaling of the matrix...if scale
+														// > 1 means zoom in...if scale < 1 means
+														// zoom out
 					matrix.postScale(scale, scale, mid.x, mid.y);
 				}
 			}
