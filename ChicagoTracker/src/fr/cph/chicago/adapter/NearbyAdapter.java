@@ -146,7 +146,6 @@ public final class NearbyAdapter extends BaseAdapter {
 			final Station station = stations.get(position);
 
 			convertView.setOnClickListener(new OnClickListener() {
-
 				@Override
 				public void onClick(View v) {
 					if (map != null) {
