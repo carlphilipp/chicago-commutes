@@ -65,4 +65,12 @@ public enum TrainDirection {
 	public final String toString() {
 		return this.formattedText;
 	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public final String toTextString(){
+		return this.text;
+	}
 }

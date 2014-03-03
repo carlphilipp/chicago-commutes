@@ -47,8 +47,6 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -91,7 +89,6 @@ import fr.cph.chicago.xml.Xml;
  * @version 1
  */
 public class NearbyFragment extends Fragment {
-
 	/** Tag **/
 	private static final String TAG = "NearbyFragment";
 	/** The fragment argument representing the section number for this fragment. **/
@@ -155,8 +152,9 @@ public class NearbyFragment extends Fragment {
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				Preferences.saveHideShowNearby(isChecked);
 				hideStationsStops = isChecked;
-				/*new LoadNearby().execute();
-				showProgress(true);*/
+				/*
+				 * new LoadNearby().execute(); showProgress(true);
+				 */
 				reloadData();
 			}
 		});

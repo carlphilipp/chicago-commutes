@@ -16,11 +16,11 @@
 
 package fr.cph.chicago.fragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
@@ -33,7 +33,6 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
-import fr.cph.chicago.activity.BaseActivity;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.FavoritesAdapter;
 import fr.cph.chicago.data.Preferences;
@@ -48,7 +47,6 @@ import fr.cph.chicago.exception.TrackerException;
  * @version 1
  */
 public class FavoritesFragment extends Fragment {
-
 	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
 	/** Tag **/
@@ -59,6 +57,10 @@ public class FavoritesFragment extends Fragment {
 	private FavoritesAdapter ada;
 	/** A refresh task **/
 	private RefreshTask refreshTimingTask;
+
+	private List<BusArrival> busArrivals;
+
+	private SparseArray<TrainArrival> trainArrivals;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -78,14 +80,11 @@ public class FavoritesFragment extends Fragment {
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (ada == null) {
-			if (ChicagoTracker.getTrainArrivals() == null || ChicagoTracker.getBusArrivals() == null) {
-				Intent intent = new Intent(mActivity, BaseActivity.class);
-				intent.putExtra("error", true);
-				mActivity.finish();
-				startActivity(intent);
-			}
 			ada = new FavoritesAdapter(mActivity);
-			ada.setArrivals(ChicagoTracker.getTrainArrivals(), ChicagoTracker.getBusArrivals());
+			Bundle bundle = mActivity.getIntent().getExtras();
+			busArrivals = bundle.getParcelableArrayList("busArrivals");
+			trainArrivals = bundle.getSparseParcelableArray("trainArrivals");
+			ada.setArrivals(trainArrivals, busArrivals);
 		}
 
 	}
@@ -141,6 +140,13 @@ public class FavoritesFragment extends Fragment {
 		super.onAttach(activity);
 		mActivity = (MainActivity) activity;
 		((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
+	}
+
+	@Override
+	public final void onSaveInstanceState(final Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putParcelableArrayList("busArrivals", (ArrayList<BusArrival>) busArrivals);
+		outState.putSparseParcelableArray("trainArrivals", trainArrivals);
 	}
 
 	/**

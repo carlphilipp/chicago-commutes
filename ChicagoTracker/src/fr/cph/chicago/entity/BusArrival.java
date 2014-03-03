@@ -20,6 +20,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import fr.cph.chicago.entity.enumeration.PredictionType;
 
 /**
@@ -28,7 +30,7 @@ import fr.cph.chicago.entity.enumeration.PredictionType;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public final class BusArrival {
+public final class BusArrival implements Parcelable {
 	/** Timestamp **/
 	private Date timeStamp;
 	/** Error message **/
@@ -53,6 +55,21 @@ public final class BusArrival {
 	private Date predictionTime;
 	/** Is delayed **/
 	private Boolean isDly = false;
+
+	/**
+	 * 
+	 */
+	public BusArrival() {
+
+	}
+
+	/**
+	 * 
+	 * @param in
+	 */
+	private BusArrival(Parcel in) {
+		readFromParcel(in);
+	}
 
 	/**
 	 * 
@@ -360,5 +377,51 @@ public final class BusArrival {
 			return false;
 		return true;
 	}
+
+	@Override
+	public final int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public final void writeToParcel(final Parcel dest, final int flags) {
+		dest.writeLong(timeStamp.getTime());
+		dest.writeString(errorMessage);
+		dest.writeString(predictionType.toString());
+		dest.writeString(stopName);
+		dest.writeInt(stopId);
+		dest.writeInt(busId);
+		dest.writeInt(distanceToStop);
+		dest.writeString(routeId);
+		dest.writeString(routeDirection);
+		dest.writeString(busDestination);
+		dest.writeLong(predictionTime.getTime());
+		dest.writeString(isDly.toString());
+	}
+
+	private void readFromParcel(final Parcel in) {
+		timeStamp = new Date(in.readLong());
+		errorMessage = in.readString();
+		predictionType = PredictionType.fromString(in.readString());
+		stopName = in.readString();
+		stopId = in.readInt();
+		busId = in.readInt();
+		distanceToStop = in.readInt();
+		routeId = in.readString();
+		routeDirection = in.readString();
+		busDestination = in.readString();
+		predictionTime = new Date(in.readLong());
+		isDly = Boolean.valueOf(in.readString());
+	}
+
+	public static final Parcelable.Creator<BusArrival> CREATOR = new Parcelable.Creator<BusArrival>() {
+		public BusArrival createFromParcel(Parcel in) {
+			return new BusArrival(in);
+		}
+
+		public BusArrival[] newArray(int size) {
+			return new BusArrival[size];
+		}
+	};
 
 }

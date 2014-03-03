@@ -16,8 +16,11 @@
 
 package fr.cph.chicago.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import fr.cph.chicago.entity.enumeration.TrainDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
@@ -27,7 +30,7 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class Stop implements Comparable<Stop> {
+public class Stop implements Comparable<Stop>, Parcelable {
 	/** The id **/
 	private Integer id;
 	/** The description **/
@@ -40,6 +43,21 @@ public class Stop implements Comparable<Stop> {
 	private Boolean ada;
 	/** The list of train line **/
 	private List<TrainLine> lines;
+
+	/**
+	 * 
+	 */
+	public Stop() {
+
+	}
+
+	/**
+	 * 
+	 * @param in
+	 */
+	private Stop(Parcel in) {
+		readFromParcel(in);
+	}
 
 	/**
 	 * 
@@ -164,4 +182,47 @@ public class Stop implements Comparable<Stop> {
 	public final int compareTo(final Stop anotherStop) {
 		return this.direction.compareTo(anotherStop.getDirection());
 	}
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeInt(id);
+		dest.writeString(description);
+		dest.writeString(direction.toTextString());
+		dest.writeParcelable(position, PARCELABLE_WRITE_RETURN_VALUE);
+		dest.writeString(ada.toString());
+		List<String> linesString = new ArrayList<String>();
+		for (TrainLine line : lines) {
+			linesString.add(line.toTextString());
+		}
+		dest.writeStringList(linesString);
+	}
+
+	private void readFromParcel(Parcel in) {
+		id = in.readInt();
+		description = in.readString();
+		direction = TrainDirection.fromString(in.readString());
+		position = in.readParcelable(Position.class.getClassLoader());
+		ada = Boolean.valueOf(in.readString());
+		List<String> linesString = new ArrayList<String>();
+		in.readStringList(linesString);
+		lines = new ArrayList<TrainLine>();
+		for (String line : linesString) {
+			lines.add(TrainLine.fromXmlString(line));
+		}
+	}
+
+	public static final Parcelable.Creator<Stop> CREATOR = new Parcelable.Creator<Stop>() {
+		public Stop createFromParcel(Parcel in) {
+			return new Stop(in);
+		}
+
+		public Stop[] newArray(int size) {
+			return new Stop[size];
+		}
+	};
 }

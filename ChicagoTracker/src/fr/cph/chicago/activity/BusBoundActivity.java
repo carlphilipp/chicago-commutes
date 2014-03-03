@@ -50,7 +50,6 @@ import fr.cph.chicago.exception.TrackerException;
  * @version 1
  */
 public class BusBoundActivity extends ListActivity {
-
 	/** Bus route id **/
 	private String busRouteId;
 	/** Bus route name **/

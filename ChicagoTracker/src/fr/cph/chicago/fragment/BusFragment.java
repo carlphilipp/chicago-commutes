@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -36,6 +37,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ListView;
 import fr.cph.chicago.R;
+import fr.cph.chicago.activity.BaseActivity;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.BusAdapter;
 import fr.cph.chicago.data.BusData;
@@ -49,11 +51,12 @@ import fr.cph.chicago.entity.BusRoute;
  * @version 1
  */
 public class BusFragment extends Fragment {
-
 	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
 	/** The main actvity **/
 	private MainActivity mActivity;
+	/** Adapter **/
+	private BusAdapter ada;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -78,11 +81,25 @@ public class BusFragment extends Fragment {
 	}
 
 	@Override
+	public final void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		if (ada == null) {
+			if (DataHolder.getInstance().getBusData() == null) {
+				Intent intent = new Intent(mActivity, BaseActivity.class);
+				intent.putExtra("error", true);
+				mActivity.finish();
+				// startActivity(intent);
+			} else {
+				ada = new BusAdapter(mActivity);
+			}
+		}
+	}
+
+	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_bus, container, false);
 		EditText filter = (EditText) rootView.findViewById(R.id.bus_filter);
 		ListView listView = (ListView) rootView.findViewById(R.id.bus_list);
-		final BusAdapter ada = new BusAdapter(mActivity);
 		listView.setAdapter(ada);
 		filter.addTextChangedListener(new TextWatcher() {
 
@@ -110,6 +127,13 @@ public class BusFragment extends Fragment {
 				ada.notifyDataSetChanged();
 			}
 		});
+
 		return rootView;
+	}
+
+	@Override
+	public final void onSaveInstanceState(final Bundle outState) {
+		super.onSaveInstanceState(outState);
+		DataHolder.getInstance().setBusData(null);
 	}
 }

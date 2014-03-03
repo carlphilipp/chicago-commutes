@@ -38,12 +38,11 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
  * @version 1
  */
 public class TrainStationActivity extends ListActivity {
-
 	/** The train data **/
 	private TrainData data;
-
+	/** **/
 	private TrainLine line;
-
+	/** **/
 	private String lineParam;
 
 	@Override
@@ -58,7 +57,7 @@ public class TrainStationActivity extends ListActivity {
 			lineParam = getIntent().getExtras().getString("line");
 			line = TrainLine.fromString(lineParam);
 		}
-		
+
 		this.setTitle(line.toStringWithLine());
 
 		setContentView(R.layout.activity_train_station);

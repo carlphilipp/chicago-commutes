@@ -23,6 +23,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
 /**
@@ -31,13 +33,25 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class Station implements Comparable<Station> {
+public class Station implements Comparable<Station>, Parcelable {
 	/** The id **/
 	private Integer id;
 	/** The name **/
 	private String name;
 	/** The stops list **/
 	private List<Stop> stops;
+
+	public Station() {
+
+	}
+
+	/**
+	 * 
+	 * @param in
+	 */
+	private Station(Parcel in) {
+		readFromParcel(in);
+	}
 
 	/**
 	 * 
@@ -153,5 +167,34 @@ public class Station implements Comparable<Station> {
 		}
 		return positions;
 	}
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeInt(id);
+		dest.writeString(name);
+		dest.writeList(stops);
+	}
+
+	private void readFromParcel(Parcel in) {
+		id = in.readInt();
+		name = in.readString();
+		stops = new ArrayList<Stop>();
+		in.readList(stops, Stop.class.getClassLoader());
+	}
+
+	public static final Parcelable.Creator<Station> CREATOR = new Parcelable.Creator<Station>() {
+		public Station createFromParcel(Parcel in) {
+			return new Station(in);
+		}
+
+		public Station[] newArray(int size) {
+			return new Station[size];
+		}
+	};
 
 }

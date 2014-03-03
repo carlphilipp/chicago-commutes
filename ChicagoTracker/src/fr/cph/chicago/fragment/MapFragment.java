@@ -38,9 +38,6 @@ import fr.cph.chicago.activity.MainActivity;
  * @version 1
  */
 public class MapFragment extends Fragment implements OnTouchListener {
-
-	/** Tag **/
-	private static final String TAG = "MapFragment";
 	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
 	/** The matrix **/

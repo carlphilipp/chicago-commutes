@@ -16,6 +16,7 @@
 
 package fr.cph.chicago.activity;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -58,6 +59,10 @@ public class BaseActivity extends Activity {
 	/** Error state **/
 	private Boolean error;
 
+	private SparseArray<TrainArrival> trainArrivals;
+
+	private List<BusArrival> busArrivals;
+
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -74,7 +79,7 @@ public class BaseActivity extends Activity {
 
 		if (error) {
 			new LoadData().execute();
-		} else if (DataHolder.getInstance().getBusData() == null || DataHolder.getInstance().getTrainData() == null) {
+		} else if (trainArrivals == null || busArrivals == null) {
 			new LoadData().execute();
 		} else {
 			startMainActivity();
@@ -84,11 +89,13 @@ public class BaseActivity extends Activity {
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
+		Log.i(TAG, "onRestoreInstanceState");
 		error = savedInstanceState.getBoolean("error");
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
+		Log.i(TAG, "onSaveInstanceState");
 		savedInstanceState.putBoolean("error", error);
 		super.onSaveInstanceState(savedInstanceState);
 	}
@@ -103,8 +110,8 @@ public class BaseActivity extends Activity {
 	 *            list of bus arrivals
 	 */
 	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals) {
-		ChicagoTracker.setBusArrivals(busArrivals);
-		ChicagoTracker.setTrainArrivals(trainArrivals);
+		this.trainArrivals = trainArrivals;
+		this.busArrivals = busArrivals;
 		ChicagoTracker.modifyLastUpdate(Calendar.getInstance().getTime());
 		startMainActivity();
 	}
@@ -216,6 +223,12 @@ public class BaseActivity extends Activity {
 	 */
 	private void startMainActivity() {
 		Intent intent = new Intent(this, MainActivity.class);
+
+		Bundle bundle = new Bundle();
+		bundle.putParcelableArrayList("busArrivals", (ArrayList<BusArrival>) busArrivals);
+		bundle.putSparseParcelableArray("trainArrivals", trainArrivals);
+		intent.putExtras(bundle);
+
 		finish();
 		startActivity(intent);
 		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);

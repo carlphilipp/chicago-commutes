@@ -17,18 +17,14 @@
 package fr.cph.chicago;
 
 import java.util.Date;
-import java.util.List;
 
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.SparseArray;
 import android.widget.FrameLayout;
 import fr.cph.chicago.activity.ErrorActivity;
-import fr.cph.chicago.entity.BusArrival;
-import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.exception.TrackerException;
 
 /**
@@ -50,10 +46,6 @@ public class ChicagoTracker extends Application {
 	private static Context context;
 	/** Last update of favorites **/
 	private static Date lastUpdate;
-	/** List of train arrivals. Only used from BaseActivity to FavoritesFragment **/
-	private static SparseArray<TrainArrival> trainArrivals;
-	/** List of bus arrivals. Only used from BaseActivity to FavoritesFragment **/
-	private static List<BusArrival> busArrivals;
 	/** Container that is used to get a faded black background **/
 	public static FrameLayout container;
 
@@ -106,44 +98,6 @@ public class ChicagoTracker extends Application {
 		intent.putExtras(extras);
 		activity.finish();
 		activity.startActivity(intent);
-	}
-
-	/**
-	 * Get a list of train arrivals
-	 * 
-	 * @return the list of train arrivals
-	 */
-	public static SparseArray<TrainArrival> getTrainArrivals() {
-		return trainArrivals;
-	}
-
-	/**
-	 * Set train arrivals
-	 * 
-	 * @param trainArrivals
-	 *            a list of train arrivals
-	 */
-	public static void setTrainArrivals(SparseArray<TrainArrival> trainArrivals) {
-		ChicagoTracker.trainArrivals = trainArrivals;
-	}
-
-	/**
-	 * Get bus arrivals
-	 * 
-	 * @return a list of bus arrivals
-	 */
-	public static List<BusArrival> getBusArrivals() {
-		return busArrivals;
-	}
-
-	/**
-	 * Set bus arrivals
-	 * 
-	 * @param busArrivals
-	 *            a list of bus arrivals
-	 */
-	public static void setBusArrivals(List<BusArrival> busArrivals) {
-		ChicagoTracker.busArrivals = busArrivals;
 	}
 
 }

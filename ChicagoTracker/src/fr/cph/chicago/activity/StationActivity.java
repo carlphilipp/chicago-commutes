@@ -81,7 +81,6 @@ import fr.cph.chicago.xml.Xml;
  * @version 1
  */
 public class StationActivity extends Activity {
-
 	/** Train data **/
 	private TrainData data;
 	/** Train arrival **/
@@ -126,7 +125,7 @@ public class StationActivity extends Activity {
 		setContentView(R.layout.activity_station);
 
 		// Get station id from bundle extra
-		if(stationId == null){
+		if (stationId == null) {
 			stationId = getIntent().getExtras().getInt("stationId");
 		}
 

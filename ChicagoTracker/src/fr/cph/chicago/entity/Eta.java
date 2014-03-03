@@ -20,6 +20,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
 /**
@@ -28,7 +30,7 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public final class Eta implements Comparable<Eta> {
+public final class Eta implements Comparable<Eta>, Parcelable {
 	/** The station **/
 	private Station station;
 	/** The stop **/
@@ -61,6 +63,21 @@ public final class Eta implements Comparable<Eta> {
 	private Position position;
 	/** Heading **/
 	private Integer heading;
+
+	/**
+	 * 
+	 */
+	public Eta() {
+
+	}
+
+	/**
+	 * 
+	 * @param in
+	 */
+	private Eta(Parcel in) {
+		readFromParcel(in);
+	}
 
 	/**
 	 * 
@@ -351,4 +368,84 @@ public final class Eta implements Comparable<Eta> {
 		Long time2 = another.getArrivalDepartureDate().getTime() - another.getPredictionDate().getTime();
 		return time1.compareTo(time2);
 	}
+
+	@Override
+	public final String toString() {
+		StringBuilder res = new StringBuilder();
+		res.append("[Eta: [Station " + station.getName() + "]");
+		res.append("[Stop " + stop.getId() + "]");
+		res.append("[runNumber " + runNumber + "]");
+		res.append("[routeName " + routeName + "]");
+		res.append("[destSt " + destSt + "]");
+		res.append("[destName " + destName + "]");
+		res.append("[trainRouteDirectionCode " + trainRouteDirectionCode + "]");
+		res.append("[predictionDate " + predictionDate + "]");
+		res.append("[arrivalDepartureDate " + arrivalDepartureDate + "]");
+		// res.append("[isApp " + isApp + "]");
+		// res.append("[isFlt " + isFlt + "]");
+		// res.append("[isDly " + isDly + "]");
+		// res.append("[flags " + flags + "]");
+		// res.append("[position " + position + "]");
+		// res.append("[heading " + heading + "]");
+		res.append("]");
+		return res.toString();
+	}
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeParcelable(station, flags);
+		dest.writeParcelable(stop, flags);
+		dest.writeInt(runNumber);
+		dest.writeString(routeName.toTextString());
+		dest.writeInt(destSt);
+		dest.writeString(destName);
+		dest.writeInt(trainRouteDirectionCode);
+		dest.writeLong(predictionDate.getTime());
+		dest.writeLong(arrivalDepartureDate.getTime());
+		dest.writeString(isApp.toString());
+		dest.writeString(isSch.toString());
+		dest.writeString(isFlt.toString());
+		dest.writeString(isDly.toString());
+		dest.writeString(this.flags);
+		dest.writeParcelable(position, flags);
+		if (heading != null) {
+			dest.writeInt(heading);
+		} else {
+			dest.writeInt(0);
+		}
+	}
+
+	private void readFromParcel(Parcel in) {
+		station = in.readParcelable(Station.class.getClassLoader());
+		stop = in.readParcelable(Stop.class.getClassLoader());
+		runNumber = in.readInt();
+		routeName = TrainLine.fromXmlString(in.readString());
+		destSt = in.readInt();
+		destName = in.readString();
+		trainRouteDirectionCode = in.readInt();
+		predictionDate = new Date(in.readLong());
+		arrivalDepartureDate = new Date(in.readLong());
+		isApp = Boolean.valueOf(in.readString());
+		isSch = Boolean.valueOf(in.readString());
+		isFlt = Boolean.valueOf(in.readString());
+		isDly = Boolean.valueOf(in.readString());
+		this.flags = in.readString();
+		position = in.readParcelable(Position.class.getClassLoader());
+		heading = in.readInt();
+	}
+
+	public static final Parcelable.Creator<Eta> CREATOR = new Parcelable.Creator<Eta>() {
+		public Eta createFromParcel(Parcel in) {
+			return new Eta(in);
+		}
+
+		public Eta[] newArray(int size) {
+			return new Eta[size];
+		}
+	};
 }

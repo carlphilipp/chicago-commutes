@@ -122,4 +122,12 @@ public enum TrainLine {
 	public final String toString() {
 		return name;
 	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public final String toTextString() {
+		return text;
+	}
 }

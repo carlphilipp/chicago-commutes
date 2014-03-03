@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
 /**
@@ -28,7 +30,7 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class TrainArrival {
+public class TrainArrival implements Parcelable {
 	/** The timestamp **/
 	private Date timeStamp;
 	/** The error code **/
@@ -37,6 +39,21 @@ public class TrainArrival {
 	private String errorMessage;
 	/** A list of Eta **/
 	private List<Eta> etas;
+
+	/**
+	 * 
+	 */
+	public TrainArrival() {
+
+	}
+
+	/**
+	 * 
+	 * @param in
+	 */
+	private TrainArrival(Parcel in) {
+		readFromParcel(in);
+	}
 
 	/**
 	 * 
@@ -116,4 +133,35 @@ public class TrainArrival {
 		}
 		return etas;
 	}
+
+	@Override
+	public final int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public final void writeToParcel(final Parcel dest, final int flags) {
+		dest.writeLong(timeStamp.getTime());
+		dest.writeInt(errorCode);
+		dest.writeString(errorMessage);
+		dest.writeList(etas);
+	}
+
+	private void readFromParcel(final Parcel in) {
+		timeStamp = new Date(in.readLong());
+		errorCode = in.readInt();
+		errorMessage = in.readString();
+		etas = new ArrayList<Eta>();
+		in.readList(etas, Eta.class.getClassLoader());
+	}
+
+	public static final Parcelable.Creator<TrainArrival> CREATOR = new Parcelable.Creator<TrainArrival>() {
+		public TrainArrival createFromParcel(Parcel in) {
+			return new TrainArrival(in);
+		}
+
+		public TrainArrival[] newArray(int size) {
+			return new TrainArrival[size];
+		}
+	};
 }

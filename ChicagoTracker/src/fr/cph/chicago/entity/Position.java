@@ -16,13 +16,16 @@
 
 package fr.cph.chicago.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * The position
  * 
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class Position {
+public class Position implements Parcelable {
 	/** The latitude **/
 	private Double latitude;
 	/** The longitude **/
@@ -45,6 +48,10 @@ public class Position {
 	public Position(final Double latitude, final Double longitude) {
 		this.latitude = latitude;
 		this.longitude = longitude;
+	}
+
+	private Position(Parcel in) {
+		readFromParcel(in);
 	}
 
 	/**
@@ -83,5 +90,31 @@ public class Position {
 	public final String toString() {
 		return "[lattitude=" + latitude + ";longitude=" + longitude + "]";
 	}
+
+	@Override
+	public final int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public final void writeToParcel(final Parcel dest, final int flags) {
+		dest.writeDouble(latitude);
+		dest.writeDouble(longitude);
+	}
+
+	private void readFromParcel(final Parcel in) {
+		latitude = in.readDouble();
+		longitude = in.readDouble();
+	}
+
+	public static final Parcelable.Creator<Position> CREATOR = new Parcelable.Creator<Position>() {
+		public Position createFromParcel(Parcel in) {
+			return new Position(in);
+		}
+
+		public Position[] newArray(int size) {
+			return new Position[size];
+		}
+	};
 
 }

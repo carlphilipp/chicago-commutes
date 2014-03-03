@@ -20,6 +20,7 @@ import fr.cph.chicago.R;
  */
 public class ErrorActivity extends Activity {
 
+	/** Error **/
 	private String error;
 
 	@Override
