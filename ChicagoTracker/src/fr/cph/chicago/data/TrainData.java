@@ -46,7 +46,6 @@ import fr.cph.chicago.entity.factory.StopFactory;
  * @version 1
  */
 public class TrainData {
-
 	/** Tag **/
 	private static final String TAG = "TrainData";
 	/** List of stations **/
@@ -177,7 +176,7 @@ public class TrainData {
 		List<Station> res = stationsOrderByLineMap.get(line);
 		return res;
 	}
-	
+
 	/**
 	 * get a station
 	 * 
@@ -192,7 +191,7 @@ public class TrainData {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Get a station with its position in the list
 	 * 
@@ -222,7 +221,7 @@ public class TrainData {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Get station by position and line
 	 * 
@@ -255,7 +254,7 @@ public class TrainData {
 	public final int getStationsSizeByLine() {
 		return stationsOrderByLine.size();
 	}
-	
+
 	/**
 	 * Get station by name
 	 * 

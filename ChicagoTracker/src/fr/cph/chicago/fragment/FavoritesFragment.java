@@ -57,9 +57,9 @@ public class FavoritesFragment extends Fragment {
 	private FavoritesAdapter ada;
 	/** A refresh task **/
 	private RefreshTask refreshTimingTask;
-
+	/** List of bus arrivals **/
 	private List<BusArrival> busArrivals;
-
+	/** Train arrivals **/
 	private SparseArray<TrainArrival> trainArrivals;
 
 	/**
@@ -79,12 +79,13 @@ public class FavoritesFragment extends Fragment {
 	@Override
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if (ada == null) {
-			ada = new FavoritesAdapter(mActivity);
+		if (savedInstanceState == null) {
 			Bundle bundle = mActivity.getIntent().getExtras();
 			busArrivals = bundle.getParcelableArrayList("busArrivals");
 			trainArrivals = bundle.getSparseParcelableArray("trainArrivals");
-			ada.setArrivals(trainArrivals, busArrivals);
+		} else {
+			busArrivals = savedInstanceState.getParcelableArrayList("busArrivals");
+			trainArrivals = savedInstanceState.getSparseParcelableArray("trainArrivals");
 		}
 
 	}
@@ -93,16 +94,18 @@ public class FavoritesFragment extends Fragment {
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 		RelativeLayout welcome = (RelativeLayout) rootView.findViewById(R.id.welcome);
+		if (ada == null) {
+			ada = new FavoritesAdapter(mActivity);
+			ada.setArrivals(trainArrivals, busArrivals);
+		}
+
 		boolean hasFav = Preferences.hasFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
 		if (!hasFav) {
 			welcome.setVisibility(View.VISIBLE);
 		}
-
 		ListView listView = (ListView) rootView.findViewById(R.id.favorites_list);
 		listView.setAdapter(ada);
-
 		startRefreshTask();
-
 		return rootView;
 	}
 

@@ -152,9 +152,6 @@ public class NearbyFragment extends Fragment {
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				Preferences.saveHideShowNearby(isChecked);
 				hideStationsStops = isChecked;
-				/*
-				 * new LoadNearby().execute(); showProgress(true);
-				 */
 				reloadData();
 			}
 		});
@@ -578,5 +575,4 @@ public class NearbyFragment extends Fragment {
 		nearbyContainer.setVisibility(View.GONE);
 		new LoadNearby().execute();
 	}
-
 }

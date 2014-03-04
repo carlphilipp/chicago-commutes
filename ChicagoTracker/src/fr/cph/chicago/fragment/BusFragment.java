@@ -27,7 +27,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -37,7 +36,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ListView;
 import fr.cph.chicago.R;
-import fr.cph.chicago.activity.BaseActivity;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.BusAdapter;
 import fr.cph.chicago.data.BusData;
@@ -84,14 +82,7 @@ public class BusFragment extends Fragment {
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (ada == null) {
-			if (DataHolder.getInstance().getBusData() == null) {
-				Intent intent = new Intent(mActivity, BaseActivity.class);
-				intent.putExtra("error", true);
-				mActivity.finish();
-				// startActivity(intent);
-			} else {
-				ada = new BusAdapter(mActivity);
-			}
+			ada = new BusAdapter(mActivity);
 		}
 	}
 
@@ -127,13 +118,6 @@ public class BusFragment extends Fragment {
 				ada.notifyDataSetChanged();
 			}
 		});
-
 		return rootView;
-	}
-
-	@Override
-	public final void onSaveInstanceState(final Bundle outState) {
-		super.onSaveInstanceState(outState);
-		DataHolder.getInstance().setBusData(null);
 	}
 }

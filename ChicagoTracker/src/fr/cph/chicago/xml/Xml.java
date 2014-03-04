@@ -58,7 +58,6 @@ import fr.cph.chicago.exception.TrackerException;
  * @version 1
  */
 public final class Xml {
-
 	/** The parser **/
 	private XmlPullParser parser;
 	/** The train date format **/
