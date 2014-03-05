@@ -26,7 +26,6 @@ import android.os.Bundle;
 import android.widget.FrameLayout;
 import fr.cph.chicago.activity.BaseActivity;
 import fr.cph.chicago.activity.ErrorActivity;
-import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.exception.TrackerException;
 
