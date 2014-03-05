@@ -18,7 +18,6 @@ package fr.cph.chicago.data;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -27,8 +26,6 @@ import java.util.List;
 import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.map.MultiValueMap;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.util.Log;
 import au.com.bytecode.opencsv.CSVReader;
 import fr.cph.chicago.ChicagoTracker;
@@ -47,12 +44,7 @@ import fr.cph.chicago.xml.Xml;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class BusData implements Parcelable, Serializable {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 0L;
+public class BusData {
 	/** Tag **/
 	private static final String TAG = "BusData";
 	/** Singleton **/
@@ -61,14 +53,6 @@ public class BusData implements Parcelable, Serializable {
 	private List<BusRoute> routes;
 	/** List of bus stop **/
 	private List<BusStop> stops;
-
-	/**
-	 * 
-	 * @param in
-	 */
-	private BusData(Parcel in) {
-		readFromParcel(in);
-	}
 
 	/**
 	 * Private constuctor
@@ -298,34 +282,4 @@ public class BusData implements Parcelable, Serializable {
 			Collections.sort(stops);
 		}
 	}
-
-	@Override
-	public final int describeContents() {
-		return 0;
-	}
-
-	@Override
-	public final void writeToParcel(final Parcel dest, final int flags) {
-		dest.writeList(routes);
-		Log.i(TAG, "writeToParcel routes.size: " + routes.size());
-		// dest.writeList(stops);
-	}
-
-	private void readFromParcel(final Parcel in) {
-		routes = new ArrayList<BusRoute>();
-		in.readList(routes, BusRoute.class.getClassLoader());
-		Log.i(TAG, "readFromParcel routes.size: " + routes.size());
-		// stops = new ArrayList<BusStop>();
-		// in.readList(stops, BusStop.class.getClassLoader());
-	}
-
-	public static final Parcelable.Creator<BusData> CREATOR = new Parcelable.Creator<BusData>() {
-		public BusData createFromParcel(Parcel in) {
-			return new BusData(in);
-		}
-
-		public BusData[] newArray(int size) {
-			return new BusData[size];
-		}
-	};;
 }
