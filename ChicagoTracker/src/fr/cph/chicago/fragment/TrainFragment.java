@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.activity.TrainStationActivity;
@@ -38,9 +39,10 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
  * @version 1
  */
 public final class TrainFragment extends Fragment {
-
 	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
+	/** The activity **/
+	private MainActivity mActivity;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -54,6 +56,12 @@ public final class TrainFragment extends Fragment {
 		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
 		fragment.setArguments(args);
 		return fragment;
+	}
+
+	@Override
+	public final void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		ChicagoTracker.checkData(mActivity);
 	}
 
 	@Override
@@ -77,8 +85,14 @@ public final class TrainFragment extends Fragment {
 	}
 
 	@Override
+	public final void onSaveInstanceState(final Bundle outState) {
+		super.onSaveInstanceState(outState);
+	}
+
+	@Override
 	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
+		mActivity = (MainActivity) activity;
 		((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 }

@@ -35,6 +35,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ListView;
+import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.BusAdapter;
@@ -81,43 +82,51 @@ public class BusFragment extends Fragment {
 	@Override
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if (ada == null) {
-			ada = new BusAdapter(mActivity);
-		}
+		ChicagoTracker.checkData(mActivity);
 	}
 
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_bus, container, false);
-		EditText filter = (EditText) rootView.findViewById(R.id.bus_filter);
-		ListView listView = (ListView) rootView.findViewById(R.id.bus_list);
-		listView.setAdapter(ada);
-		filter.addTextChangedListener(new TextWatcher() {
-
-			private BusData busData = DataHolder.getInstance().getBusData();
-			private List<BusRoute> busRoutes = null;
-
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-				busRoutes = new ArrayList<BusRoute>();
+		if (!mActivity.isFinishing()) {
+			EditText filter = (EditText) rootView.findViewById(R.id.bus_filter);
+			ListView listView = (ListView) rootView.findViewById(R.id.bus_list);
+			if (ada == null) {
+				ada = new BusAdapter(mActivity);
 			}
+			listView.setAdapter(ada);
+			filter.addTextChangedListener(new TextWatcher() {
 
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				List<BusRoute> busRoutes = busData.getRoutes();
-				for (BusRoute busRoute : busRoutes) {
-					if (StringUtils.containsIgnoreCase(busRoute.getId(), s) || StringUtils.containsIgnoreCase(busRoute.getName(), s)) {
-						this.busRoutes.add(busRoute);
+				private BusData busData = DataHolder.getInstance().getBusData();
+				private List<BusRoute> busRoutes = null;
+
+				@Override
+				public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+					busRoutes = new ArrayList<BusRoute>();
+				}
+
+				@Override
+				public void onTextChanged(CharSequence s, int start, int before, int count) {
+					List<BusRoute> busRoutes = busData.getRoutes();
+					for (BusRoute busRoute : busRoutes) {
+						if (StringUtils.containsIgnoreCase(busRoute.getId(), s) || StringUtils.containsIgnoreCase(busRoute.getName(), s)) {
+							this.busRoutes.add(busRoute);
+						}
 					}
 				}
-			}
 
-			@Override
-			public void afterTextChanged(Editable s) {
-				ada.setRoutes(busRoutes);
-				ada.notifyDataSetChanged();
-			}
-		});
+				@Override
+				public void afterTextChanged(Editable s) {
+					ada.setRoutes(busRoutes);
+					ada.notifyDataSetChanged();
+				}
+			});
+		}
 		return rootView;
+	}
+
+	@Override
+	public final void onSaveInstanceState(final Bundle outState) {
+		super.onSaveInstanceState(outState);
 	}
 }

@@ -16,19 +16,43 @@
 
 package fr.cph.chicago.entity;
 
+import java.io.Serializable;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Bus stop entity
  * 
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public final class BusStop implements Comparable<BusStop> {
+public final class BusStop implements Comparable<BusStop>, Parcelable, Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 0L;
 	/** The id **/
 	private Integer id;
 	/** The name **/
 	private String name;
 	/** The position **/
 	private Position position;
+
+	/**
+	 * 
+	 */
+	public BusStop() {
+
+	}
+
+	/**
+	 * 
+	 * @param in
+	 */
+	private BusStop(Parcel in) {
+		readFromParcel(in);
+	}
 
 	/**
 	 * 
@@ -90,4 +114,31 @@ public final class BusStop implements Comparable<BusStop> {
 		return latitude == 0 ? getPosition().getLongitude().compareTo(position.getLongitude()) : latitude;
 	}
 
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public final void writeToParcel(final Parcel dest, final int flags) {
+		dest.writeInt(id);
+		dest.writeString(name);
+		dest.writeParcelable(position, flags);
+	}
+
+	private void readFromParcel(final Parcel in) {
+		id = in.readInt();
+		name = in.readString();
+		position = in.readParcelable(Position.class.getClassLoader());
+	}
+
+	public static final Parcelable.Creator<BusStop> CREATOR = new Parcelable.Creator<BusStop>() {
+		public BusStop createFromParcel(Parcel in) {
+			return new BusStop(in);
+		}
+
+		public BusStop[] newArray(int size) {
+			return new BusStop[size];
+		}
+	};
 }

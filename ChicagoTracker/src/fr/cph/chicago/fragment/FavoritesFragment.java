@@ -86,26 +86,28 @@ public class FavoritesFragment extends Fragment {
 		} else {
 			busArrivals = savedInstanceState.getParcelableArrayList("busArrivals");
 			trainArrivals = savedInstanceState.getSparseParcelableArray("trainArrivals");
+			ChicagoTracker.checkData(mActivity);
 		}
-
 	}
 
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-		RelativeLayout welcome = (RelativeLayout) rootView.findViewById(R.id.welcome);
-		if (ada == null) {
-			ada = new FavoritesAdapter(mActivity);
-			ada.setArrivals(trainArrivals, busArrivals);
-		}
+		if (!mActivity.isFinishing()) {
+			RelativeLayout welcome = (RelativeLayout) rootView.findViewById(R.id.welcome);
+			if (ada == null) {
+				ada = new FavoritesAdapter(mActivity);
+				ada.setArrivals(trainArrivals, busArrivals);
+			}
 
-		boolean hasFav = Preferences.hasFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
-		if (!hasFav) {
-			welcome.setVisibility(View.VISIBLE);
+			boolean hasFav = Preferences.hasFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+			if (!hasFav) {
+				welcome.setVisibility(View.VISIBLE);
+			}
+			ListView listView = (ListView) rootView.findViewById(R.id.favorites_list);
+			listView.setAdapter(ada);
+			startRefreshTask();
 		}
-		ListView listView = (ListView) rootView.findViewById(R.id.favorites_list);
-		listView.setAdapter(ada);
-		startRefreshTask();
 		return rootView;
 	}
 
@@ -124,7 +126,14 @@ public class FavoritesFragment extends Fragment {
 	@Override
 	public final void onDestroy() {
 		super.onDestroy();
-		refreshTimingTask.cancel(true);
+		if (refreshTimingTask != null) {
+			refreshTimingTask.cancel(true);
+		}
+	}
+
+	@Override
+	public final void onDestroyView() {
+		super.onDestroyView();
 	}
 
 	@Override

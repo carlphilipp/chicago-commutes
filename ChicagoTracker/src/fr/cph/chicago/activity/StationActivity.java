@@ -114,152 +114,154 @@ public class StationActivity extends Activity {
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		ChicagoTracker.checkData(this);
+		if (!this.isFinishing()) {
+			// Load data
+			DataHolder dataHolder = DataHolder.getInstance();
+			this.data = dataHolder.getTrainData();
 
-		// Load data
-		DataHolder dataHolder = DataHolder.getInstance();
-		this.data = dataHolder.getTrainData();
+			ids = new HashMap<String, Integer>();
 
-		ids = new HashMap<String, Integer>();
+			// Load right xml
+			setContentView(R.layout.activity_station);
 
-		// Load right xml
-		setContentView(R.layout.activity_station);
-
-		// Get station id from bundle extra
-		if (stationId == null) {
-			stationId = getIntent().getExtras().getInt("stationId");
-		}
-
-		// Get station from station id
-		station = data.getStation(stationId);
-
-		MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
-		reqParams.put("mapid", String.valueOf(station.getId()));
-		new LoadData().execute(reqParams);
-
-		// Call google street api to load image
-		new DisplayGoogleStreetPicture().execute(station.getStops().get(0).getPosition());
-
-		this.isFavorite = isFavorite();
-
-		TextView textView = (TextView) findViewById(R.id.activity_station_station_name);
-		textView.setText(station.getName().toString());
-
-		streetViewImage = (ImageView) findViewById(R.id.activity_station_streetview_image);
-
-		streetViewText = (TextView) findViewById(R.id.activity_station_steetview_text);
-
-		mapImage = (ImageView) findViewById(R.id.activity_station_map_image);
-
-		directionImage = (ImageView) findViewById(R.id.activity_station_map_direction);
-
-		int line1PaddingColor = (int) getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
-		int line1PaddingTop = (int) getResources().getDimension(R.dimen.activity_station_stops_line1_padding_top);
-
-		favoritesImage = (ImageView) findViewById(R.id.activity_station_favorite_star);
-		if (isFavorite) {
-			favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_active));
-		}
-		favoritesImage.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				StationActivity.this.switchFavorite();
-			}
-		});
-
-		LinearLayout stopsView = (LinearLayout) findViewById(R.id.activity_station_stops);
-
-		Map<TrainLine, List<Stop>> stops = station.getStopByLines();
-		CheckBox checkBox = null;
-		for (Entry<TrainLine, List<Stop>> e : stops.entrySet()) {
-
-			RelativeLayout line1 = new RelativeLayout(this);
-			line1.setPadding(0, line1PaddingTop, 0, 0);
-
-			paramsStop = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-			line1.setLayoutParams(paramsStop);
-
-			final TrainLine line = e.getKey();
-			List<Stop> stopss = e.getValue();
-			Collections.sort(stopss);
-
-			TextView textView2 = new TextView(this);
-			textView2.setText(ChicagoTracker.getAppContext().getResources().getString(R.string.T));
-			textView2.setTypeface(Typeface.DEFAULT_BOLD);
-			textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
-			textView2.setTextColor(getResources().getColor(R.color.grey_M_B));
-			int id = Util.generateViewId();
-			textView2.setId(id);
-			textView2.setPadding(0, 0, line1PaddingColor, 0);
-			line1.addView(textView2);
-
-			textView2 = new TextView(this);
-			textView2.setBackgroundColor(line.getColor());
-			int id2 = Util.generateViewId();
-			textView2.setId(id2);
-
-			RelativeLayout.LayoutParams layoutParam = new RelativeLayout.LayoutParams(stopsView.getLayoutParams());
-			layoutParam.addRule(RelativeLayout.RIGHT_OF, id);
-			layoutParam.addRule(RelativeLayout.ALIGN_BASELINE, id);
-			layoutParam.width = 15;
-			textView2.setTextSize(ChicagoTracker.getAppContext().getResources().getDimension(R.dimen.activity_train_line_color));
-			textView2.setLayoutParams(layoutParam);
-			line1.addView(textView2);
-
-			textView2 = new TextView(this);
-			textView2.setText(line.toStringWithLine());
-			textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-			textView2.setPadding(line1PaddingColor, 0, 0, 0);
-			textView2.setTextColor(getResources().getColor(R.color.grey));
-
-			RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-			layoutParams.addRule(RelativeLayout.ALIGN_BASELINE, id);
-			layoutParams.addRule(RelativeLayout.RIGHT_OF, id2);
-
-			textView2.setLayoutParams(layoutParams);
-			line1.addView(textView2);
-
-			stopsView.addView(line1);
-
-			for (final Stop stop : stopss) {
-				LinearLayout line2 = new LinearLayout(this);
-				line2.setOrientation(LinearLayout.HORIZONTAL);
-				line2.setLayoutParams(paramsStop);
-
-				checkBox = new CheckBox(this);
-				checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-					@Override
-					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-						Preferences.saveTrainFilter(stationId, line, stop.getDirection(), isChecked);
-					}
-				});
-				checkBox.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						// Update timing
-						MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
-						reqParams.put("mapid", String.valueOf(station.getId()));
-						new LoadData().execute(reqParams);
-					}
-				});
-				checkBox.setChecked(Preferences.getTrainFilter(stationId, line, stop.getDirection()));
-				checkBox.setText(stop.getDirection().toString());
-				checkBox.setTextColor(getResources().getColor(R.color.grey));
-
-				line2.addView(checkBox);
-				stopsView.addView(line2);
-
-				LinearLayout line3 = new LinearLayout(this);
-				line3.setOrientation(LinearLayout.VERTICAL);
-				line3.setLayoutParams(paramsStop);
-				int id3 = Util.generateViewId();
-				line3.setId(id3);
-				ids.put(line.toString() + "_" + stop.getDirection().toString(), id3);
-
-				stopsView.addView(line3);
+			// Get station id from bundle extra
+			if (stationId == null) {
+				stationId = getIntent().getExtras().getInt("stationId");
 			}
 
+			// Get station from station id
+			station = data.getStation(stationId);
+
+			MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
+			reqParams.put("mapid", String.valueOf(station.getId()));
+			new LoadData().execute(reqParams);
+
+			// Call google street api to load image
+			new DisplayGoogleStreetPicture().execute(station.getStops().get(0).getPosition());
+
+			this.isFavorite = isFavorite();
+
+			TextView textView = (TextView) findViewById(R.id.activity_station_station_name);
+			textView.setText(station.getName().toString());
+
+			streetViewImage = (ImageView) findViewById(R.id.activity_station_streetview_image);
+
+			streetViewText = (TextView) findViewById(R.id.activity_station_steetview_text);
+
+			mapImage = (ImageView) findViewById(R.id.activity_station_map_image);
+
+			directionImage = (ImageView) findViewById(R.id.activity_station_map_direction);
+
+			int line1PaddingColor = (int) getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
+			int line1PaddingTop = (int) getResources().getDimension(R.dimen.activity_station_stops_line1_padding_top);
+
+			favoritesImage = (ImageView) findViewById(R.id.activity_station_favorite_star);
+			if (isFavorite) {
+				favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_active));
+			}
+			favoritesImage.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					StationActivity.this.switchFavorite();
+				}
+			});
+
+			LinearLayout stopsView = (LinearLayout) findViewById(R.id.activity_station_stops);
+
+			Map<TrainLine, List<Stop>> stops = station.getStopByLines();
+			CheckBox checkBox = null;
+			for (Entry<TrainLine, List<Stop>> e : stops.entrySet()) {
+
+				RelativeLayout line1 = new RelativeLayout(this);
+				line1.setPadding(0, line1PaddingTop, 0, 0);
+
+				paramsStop = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+				line1.setLayoutParams(paramsStop);
+
+				final TrainLine line = e.getKey();
+				List<Stop> stopss = e.getValue();
+				Collections.sort(stopss);
+
+				TextView textView2 = new TextView(this);
+				textView2.setText(ChicagoTracker.getAppContext().getResources().getString(R.string.T));
+				textView2.setTypeface(Typeface.DEFAULT_BOLD);
+				textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+				textView2.setTextColor(getResources().getColor(R.color.grey_M_B));
+				int id = Util.generateViewId();
+				textView2.setId(id);
+				textView2.setPadding(0, 0, line1PaddingColor, 0);
+				line1.addView(textView2);
+
+				textView2 = new TextView(this);
+				textView2.setBackgroundColor(line.getColor());
+				int id2 = Util.generateViewId();
+				textView2.setId(id2);
+
+				RelativeLayout.LayoutParams layoutParam = new RelativeLayout.LayoutParams(stopsView.getLayoutParams());
+				layoutParam.addRule(RelativeLayout.RIGHT_OF, id);
+				layoutParam.addRule(RelativeLayout.ALIGN_BASELINE, id);
+				layoutParam.width = 15;
+				textView2.setTextSize(ChicagoTracker.getAppContext().getResources().getDimension(R.dimen.activity_train_line_color));
+				textView2.setLayoutParams(layoutParam);
+				line1.addView(textView2);
+
+				textView2 = new TextView(this);
+				textView2.setText(line.toStringWithLine());
+				textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				textView2.setPadding(line1PaddingColor, 0, 0, 0);
+				textView2.setTextColor(getResources().getColor(R.color.grey));
+
+				RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+				layoutParams.addRule(RelativeLayout.ALIGN_BASELINE, id);
+				layoutParams.addRule(RelativeLayout.RIGHT_OF, id2);
+
+				textView2.setLayoutParams(layoutParams);
+				line1.addView(textView2);
+
+				stopsView.addView(line1);
+
+				for (final Stop stop : stopss) {
+					LinearLayout line2 = new LinearLayout(this);
+					line2.setOrientation(LinearLayout.HORIZONTAL);
+					line2.setLayoutParams(paramsStop);
+
+					checkBox = new CheckBox(this);
+					checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+						@Override
+						public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+							Preferences.saveTrainFilter(stationId, line, stop.getDirection(), isChecked);
+						}
+					});
+					checkBox.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							// Update timing
+							MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
+							reqParams.put("mapid", String.valueOf(station.getId()));
+							new LoadData().execute(reqParams);
+						}
+					});
+					checkBox.setChecked(Preferences.getTrainFilter(stationId, line, stop.getDirection()));
+					checkBox.setText(stop.getDirection().toString());
+					checkBox.setTextColor(getResources().getColor(R.color.grey));
+
+					line2.addView(checkBox);
+					stopsView.addView(line2);
+
+					LinearLayout line3 = new LinearLayout(this);
+					line3.setOrientation(LinearLayout.VERTICAL);
+					line3.setLayoutParams(paramsStop);
+					int id3 = Util.generateViewId();
+					line3.setId(id3);
+					ids.put(line.toString() + "_" + stop.getDirection().toString(), id3);
+
+					stopsView.addView(line3);
+				}
+
+			}
+			getActionBar().setDisplayHomeAsUpEnabled(true);
 		}
-		getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
 	@Override

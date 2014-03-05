@@ -60,7 +60,6 @@ import fr.cph.chicago.util.Util;
  * @version 1
  */
 public class MainActivity extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
-
 	/** Fragment managing the behaviors, interactions and presentation of the navigation drawer. **/
 	private NavigationDrawerFragment mNavigationDrawerFragment;
 	/** Favorites fragment **/
@@ -113,29 +112,39 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			if (favoritesFragment == null) {
 				favoritesFragment = FavoritesFragment.newInstance(position + 1);
 			}
-			ft.replace(R.id.container, favoritesFragment).commit();
+			if (!this.isFinishing()) {
+				ft.replace(R.id.container, favoritesFragment).commit();
+			}
 			break;
 		case 1:
 			if (trainFragment == null) {
 				trainFragment = TrainFragment.newInstance(position + 1);
 			}
-			ft.replace(R.id.container, trainFragment).commit();
+			if (!this.isFinishing()) {
+				ft.replace(R.id.container, trainFragment).commit();
+			}
 			break;
 		case 2:
 			if (busFragment == null) {
 				busFragment = BusFragment.newInstance(position + 1);
 			}
-			ft.replace(R.id.container, busFragment).commit();
+			if (!this.isFinishing()) {
+				ft.replace(R.id.container, busFragment).commit();
+			}
 			break;
 		case 3:
 			if (nearbyFragment == null) {
 				nearbyFragment = NearbyFragment.newInstance(position + 1);
-				ft.replace(R.id.container, nearbyFragment).commit();
+				if (!this.isFinishing()) {
+					ft.replace(R.id.container, nearbyFragment).commit();
+				}
 			} else {
 				if (oldPosition == 3) {
 					fragmentManager.beginTransaction().commit();
 				} else {
-					ft.replace(R.id.container, nearbyFragment).commit();
+					if (!this.isFinishing()) {
+						ft.replace(R.id.container, nearbyFragment).commit();
+					}
 				}
 			}
 			break;
@@ -143,13 +152,17 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			if (alertFragment == null) {
 				alertFragment = AlertFragment.newInstance(position + 1);
 			}
-			ft.replace(R.id.container, alertFragment).commit();
+			if (!this.isFinishing()) {
+				ft.replace(R.id.container, alertFragment).commit();
+			}
 			break;
 		case 5:
 			if (mapFragment == null) {
 				mapFragment = MapFragment.newInstance(position + 1);
 			}
-			ft.replace(R.id.container, mapFragment).commit();
+			if (!this.isFinishing()) {
+				ft.replace(R.id.container, mapFragment).commit();
+			}
 			break;
 		}
 	}

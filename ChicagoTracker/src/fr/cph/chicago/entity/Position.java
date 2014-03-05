@@ -16,6 +16,8 @@
 
 package fr.cph.chicago.entity;
 
+import java.io.Serializable;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -25,7 +27,9 @@ import android.os.Parcelable;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class Position implements Parcelable {
+public class Position implements Parcelable, Serializable {
+	/** Serializable **/
+	private static final long serialVersionUID = 0L;
 	/** The latitude **/
 	private Double latitude;
 	/** The longitude **/

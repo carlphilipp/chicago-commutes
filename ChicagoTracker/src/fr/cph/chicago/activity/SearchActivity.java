@@ -32,6 +32,7 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.SearchView;
+import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.adapter.SearchAdapter;
 import fr.cph.chicago.data.BusData;
@@ -57,15 +58,18 @@ public class SearchActivity extends ListActivity {
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_search);
-		FrameLayout container = (FrameLayout) findViewById(R.id.container);
-		container.getForeground().setAlpha(0);
-		ada = new SearchAdapter(this, container);
-		handleIntent(getIntent());
-		setListAdapter(ada);
+		ChicagoTracker.checkData(this);
+		if (!this.isFinishing()) {
+			setContentView(R.layout.activity_search);
+			FrameLayout container = (FrameLayout) findViewById(R.id.container);
+			container.getForeground().setAlpha(0);
+			ada = new SearchAdapter(this, container);
+			handleIntent(getIntent());
+			setListAdapter(ada);
 
-		// Preventing keyboard from moving background when showing up
-		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+			// Preventing keyboard from moving background when showing up
+			getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+		}
 	}
 
 	@Override
@@ -104,6 +108,11 @@ public class SearchActivity extends ListActivity {
 			refreshMenuItem.collapseActionView();
 			refreshMenuItem.setActionView(null);
 		}
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
 	}
 
 	/**

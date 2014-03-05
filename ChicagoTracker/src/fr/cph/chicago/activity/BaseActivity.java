@@ -89,13 +89,11 @@ public class BaseActivity extends Activity {
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		Log.i(TAG, "onRestoreInstanceState");
 		error = savedInstanceState.getBoolean("error");
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-		Log.i(TAG, "onSaveInstanceState");
 		savedInstanceState.putBoolean("error", error);
 		super.onSaveInstanceState(savedInstanceState);
 	}
@@ -223,7 +221,6 @@ public class BaseActivity extends Activity {
 	 */
 	private void startMainActivity() {
 		Intent intent = new Intent(this, MainActivity.class);
-
 		Bundle bundle = new Bundle();
 		bundle.putParcelableArrayList("busArrivals", (ArrayList<BusArrival>) busArrivals);
 		bundle.putSparseParcelableArray("trainArrivals", trainArrivals);

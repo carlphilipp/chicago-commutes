@@ -23,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.AlertAdapter;
@@ -34,9 +35,10 @@ import fr.cph.chicago.adapter.AlertAdapter;
  * @version 1
  */
 public class AlertFragment extends Fragment {
-
 	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
+	/** The main activity **/
+	private MainActivity mActivity;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -56,9 +58,16 @@ public class AlertFragment extends Fragment {
 	@Override
 	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
+		mActivity = (MainActivity) activity;
 		((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 
+	@Override
+	public final void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		ChicagoTracker.checkData(mActivity);
+	}
+	
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_alert, container, false);
@@ -66,5 +75,10 @@ public class AlertFragment extends Fragment {
 		ListView listView = (ListView) rootView.findViewById(R.id.alert_list);
 		listView.setAdapter(ada);
 		return rootView;
+	}
+	
+	@Override
+	public final void onSaveInstanceState(final Bundle outState) {
+		super.onSaveInstanceState(outState);
 	}
 }

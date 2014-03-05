@@ -48,34 +48,36 @@ public class TrainStationActivity extends ListActivity {
 	@Override
 	public final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		ChicagoTracker.checkData(this);
+		if (!this.isFinishing()) {
+			// Load data
+			DataHolder dataHolder = DataHolder.getInstance();
+			this.data = dataHolder.getTrainData();
 
-		// Load data
-		DataHolder dataHolder = DataHolder.getInstance();
-		this.data = dataHolder.getTrainData();
-
-		if (line == null && lineParam == null) {
-			lineParam = getIntent().getExtras().getString("line");
-			line = TrainLine.fromString(lineParam);
-		}
-
-		this.setTitle(line.toStringWithLine());
-
-		setContentView(R.layout.activity_train_station);
-
-		TrainAdapter ada = new TrainAdapter(line);
-		setListAdapter(ada);
-		ListView listView = getListView();
-		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
-				Intent intent = new Intent(ChicagoTracker.getAppContext(), StationActivity.class);
-				Bundle extras = new Bundle();
-				extras.putInt("stationId", data.getStationsForLine(line).get(position).getId());
-				intent.putExtras(extras);
-				startActivity(intent);
-				overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+			if (line == null && lineParam == null) {
+				lineParam = getIntent().getExtras().getString("line");
+				line = TrainLine.fromString(lineParam);
 			}
-		});
+
+			this.setTitle(line.toStringWithLine());
+
+			setContentView(R.layout.activity_train_station);
+
+			TrainAdapter ada = new TrainAdapter(line);
+			setListAdapter(ada);
+			ListView listView = getListView();
+			listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
+					Intent intent = new Intent(ChicagoTracker.getAppContext(), StationActivity.class);
+					Bundle extras = new Bundle();
+					extras.putInt("stationId", data.getStationsForLine(line).get(position).getId());
+					intent.putExtras(extras);
+					startActivity(intent);
+					overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+				}
+			});
+		}
 	}
 
 	@Override

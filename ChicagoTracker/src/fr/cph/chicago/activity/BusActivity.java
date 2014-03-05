@@ -99,59 +99,61 @@ public class BusActivity extends Activity {
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		ChicagoTracker.checkData(this);
+		if (!this.isFinishing()) {
+			// Load right xml
+			setContentView(R.layout.activity_bus);
 
-		// Load right xml
-		setContentView(R.layout.activity_bus);
+			if (busStopId == null && busRouteId == null && bound == null && busStopName == null && busRouteName == null && latitude == null
+					&& longitude == null) {
+				this.busStopId = getIntent().getExtras().getInt("busStopId");
+				this.busRouteId = getIntent().getExtras().getString("busRouteId");
+				this.bound = getIntent().getExtras().getString("bound");
 
-		if (busStopId == null && busRouteId == null && bound == null && busStopName == null && busRouteName == null && latitude == null
-				&& longitude == null) {
-			this.busStopId = getIntent().getExtras().getInt("busStopId");
-			this.busRouteId = getIntent().getExtras().getString("busRouteId");
-			this.bound = getIntent().getExtras().getString("bound");
+				this.busStopName = getIntent().getExtras().getString("busStopName");
+				this.busRouteName = getIntent().getExtras().getString("busRouteName");
 
-			this.busStopName = getIntent().getExtras().getString("busStopName");
-			this.busRouteName = getIntent().getExtras().getString("busRouteName");
-
-			this.latitude = getIntent().getExtras().getDouble("latitude");
-			this.longitude = getIntent().getExtras().getDouble("longitude");
-		}
-
-		Position position = new Position();
-		position.setLatitude(latitude);
-		position.setLongitude(longitude);
-
-		this.isFavorite = isFavorite();
-
-		this.stopsView = (LinearLayout) findViewById(R.id.activity_bus_stops);
-
-		TextView busRouteNameView = (TextView) findViewById(R.id.activity_bus_station_name);
-		busRouteNameView.setText(busStopName);
-
-		TextView busRouteNameView2 = (TextView) findViewById(R.id.activity_bus_value);
-		busRouteNameView2.setText(busRouteName + " (" + bound + ")");
-
-		streetViewImage = (ImageView) findViewById(R.id.activity_bus_streetview_image);
-		streetViewText = (TextView) findViewById(R.id.activity_bus_steetview_text);
-		mapImage = (ImageView) findViewById(R.id.activity_bus_map_image);
-
-		directionImage = (ImageView) findViewById(R.id.activity_bus_map_direction);
-
-		favoritesImage = (ImageView) findViewById(R.id.activity_bus_favorite_star);
-		if (isFavorite) {
-			favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_active));
-		}
-		favoritesImage.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				BusActivity.this.switchFavorite();
+				this.latitude = getIntent().getExtras().getDouble("latitude");
+				this.longitude = getIntent().getExtras().getDouble("longitude");
 			}
-		});
 
-		new DisplayGoogleStreetPicture().execute(position);
+			Position position = new Position();
+			position.setLatitude(latitude);
+			position.setLongitude(longitude);
 
-		(new LoadData()).execute();
+			this.isFavorite = isFavorite();
 
-		getActionBar().setDisplayHomeAsUpEnabled(true);
+			this.stopsView = (LinearLayout) findViewById(R.id.activity_bus_stops);
+
+			TextView busRouteNameView = (TextView) findViewById(R.id.activity_bus_station_name);
+			busRouteNameView.setText(busStopName);
+
+			TextView busRouteNameView2 = (TextView) findViewById(R.id.activity_bus_value);
+			busRouteNameView2.setText(busRouteName + " (" + bound + ")");
+
+			streetViewImage = (ImageView) findViewById(R.id.activity_bus_streetview_image);
+			streetViewText = (TextView) findViewById(R.id.activity_bus_steetview_text);
+			mapImage = (ImageView) findViewById(R.id.activity_bus_map_image);
+
+			directionImage = (ImageView) findViewById(R.id.activity_bus_map_direction);
+
+			favoritesImage = (ImageView) findViewById(R.id.activity_bus_favorite_star);
+			if (isFavorite) {
+				favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_active));
+			}
+			favoritesImage.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					BusActivity.this.switchFavorite();
+				}
+			});
+
+			new DisplayGoogleStreetPicture().execute(position);
+
+			(new LoadData()).execute();
+
+			getActionBar().setDisplayHomeAsUpEnabled(true);
+		}
 	}
 
 	@Override

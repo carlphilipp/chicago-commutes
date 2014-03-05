@@ -136,27 +136,40 @@ public class NearbyFragment extends Fragment {
 	}
 
 	@Override
+	public final void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		ChicagoTracker.checkData(mActivity);
+	}
+
+	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_nearby, container, false);
-		ada = new NearbyAdapter(mActivity);
-		listView = (ListView) rootView.findViewById(R.id.fragment_nearby_list);
-		listView.setAdapter(ada);
-		setHasOptionsMenu(true);
-		loadLayout = rootView.findViewById(R.id.loading_layout);
-		nearbyContainer = (RelativeLayout) rootView.findViewById(R.id.nerby_list_container);
-		checkBox = (CheckBox) rootView.findViewById(R.id.hideEmptyStops);
-		hideStationsStops = Preferences.getHideShowNearby();
-		checkBox.setChecked(hideStationsStops);
-		checkBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				Preferences.saveHideShowNearby(isChecked);
-				hideStationsStops = isChecked;
-				reloadData();
-			}
-		});
-		showProgress(true);
+		if (!mActivity.isFinishing()) {
+			ada = new NearbyAdapter(mActivity);
+			listView = (ListView) rootView.findViewById(R.id.fragment_nearby_list);
+			listView.setAdapter(ada);
+			setHasOptionsMenu(true);
+			loadLayout = rootView.findViewById(R.id.loading_layout);
+			nearbyContainer = (RelativeLayout) rootView.findViewById(R.id.nerby_list_container);
+			checkBox = (CheckBox) rootView.findViewById(R.id.hideEmptyStops);
+			hideStationsStops = Preferences.getHideShowNearby();
+			checkBox.setChecked(hideStationsStops);
+			checkBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+				@Override
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					Preferences.saveHideShowNearby(isChecked);
+					hideStationsStops = isChecked;
+					reloadData();
+				}
+			});
+			showProgress(true);
+		}
 		return rootView;
+	}
+
+	@Override
+	public final void onSaveInstanceState(final Bundle outState) {
+		super.onSaveInstanceState(outState);
 	}
 
 	@Override

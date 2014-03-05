@@ -64,66 +64,69 @@ public class BusBoundActivity extends ListActivity {
 	@Override
 	public final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_bus_bound);
-		if (busRouteId == null && busRouteName == null && bound == null) {
-			busRouteId = getIntent().getExtras().getString("busRouteId");
-			busRouteName = getIntent().getExtras().getString("busRouteName");
-			bound = getIntent().getExtras().getString("bound");
-		}
-		ada = new BusBoundAdapter(busRouteId);
-		setListAdapter(ada);
-		getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-				BusStop busStop = (BusStop) ada.getItem(position);
-				Intent intent = new Intent(ChicagoTracker.getAppContext(), BusActivity.class);
-
-				Bundle extras = new Bundle();
-				extras.putInt("busStopId", busStop.getId());
-				extras.putString("busStopName", busStop.getName());
-				extras.putString("busRouteId", busRouteId);
-				extras.putString("busRouteName", busRouteName);
-				extras.putString("bound", bound);
-				extras.putDouble("latitude", busStop.getPosition().getLatitude());
-				extras.putDouble("longitude", busStop.getPosition().getLongitude());
-
-				intent.putExtras(extras);
-				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(intent);
-				overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+		ChicagoTracker.checkData(this);
+		if (!this.isFinishing()) {
+			setContentView(R.layout.activity_bus_bound);
+			if (busRouteId == null && busRouteName == null && bound == null) {
+				busRouteId = getIntent().getExtras().getString("busRouteId");
+				busRouteName = getIntent().getExtras().getString("busRouteName");
+				bound = getIntent().getExtras().getString("bound");
 			}
-		});
+			ada = new BusBoundAdapter(busRouteId);
+			setListAdapter(ada);
+			getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+					BusStop busStop = (BusStop) ada.getItem(position);
+					Intent intent = new Intent(ChicagoTracker.getAppContext(), BusActivity.class);
 
-		EditText filter = (EditText) findViewById(R.id.bus_filter);
-		filter.addTextChangedListener(new TextWatcher() {
-			List<BusStop> busStopsFiltered;
+					Bundle extras = new Bundle();
+					extras.putInt("busStopId", busStop.getId());
+					extras.putString("busStopName", busStop.getName());
+					extras.putString("busRouteId", busRouteId);
+					extras.putString("busRouteName", busRouteName);
+					extras.putString("bound", bound);
+					extras.putDouble("latitude", busStop.getPosition().getLatitude());
+					extras.putDouble("longitude", busStop.getPosition().getLongitude());
 
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-				busStopsFiltered = new ArrayList<BusStop>();
-			}
+					intent.putExtras(extras);
+					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					startActivity(intent);
+					overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+				}
+			});
 
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				for (BusStop busStop : busStops) {
-					if (StringUtils.containsIgnoreCase(busStop.getName(), s)) {
-						this.busStopsFiltered.add(busStop);
+			EditText filter = (EditText) findViewById(R.id.bus_filter);
+			filter.addTextChangedListener(new TextWatcher() {
+				List<BusStop> busStopsFiltered;
+
+				@Override
+				public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+					busStopsFiltered = new ArrayList<BusStop>();
+				}
+
+				@Override
+				public void onTextChanged(CharSequence s, int start, int before, int count) {
+					for (BusStop busStop : busStops) {
+						if (StringUtils.containsIgnoreCase(busStop.getName(), s)) {
+							this.busStopsFiltered.add(busStop);
+						}
 					}
 				}
-			}
 
-			@Override
-			public void afterTextChanged(Editable s) {
-				ada.update(busStopsFiltered);
-				ada.notifyDataSetChanged();
-			}
-		});
+				@Override
+				public void afterTextChanged(Editable s) {
+					ada.update(busStopsFiltered);
+					ada.notifyDataSetChanged();
+				}
+			});
 
-		getActionBar().setDisplayHomeAsUpEnabled(true);
-		new BusBoundAsyncTask().execute();
+			getActionBar().setDisplayHomeAsUpEnabled(true);
+			new BusBoundAsyncTask().execute();
 
-		// Preventing keyboard from moving background when showing up
-		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+			// Preventing keyboard from moving background when showing up
+			getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+		}
 	}
 
 	@Override
