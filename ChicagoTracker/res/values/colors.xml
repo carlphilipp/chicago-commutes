@@ -24,7 +24,8 @@
     <color name="grey_M_B">#5e5e5e</color>
     <color name="grey_5">#555555</color>
     <color name="white">#FFFFFF</color>
-
+	<color name="green">#00A000</color>
+	<color name="red">#A00000</color>
     <!--
 	 <color name="green">#00A000</color>
 	 <color name="red">#A00000</color>

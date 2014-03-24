@@ -32,6 +32,10 @@
     <string name="action_refresh">Refresh</string>
     <string name="action_search">Search</string>
     <string name="progress_message">Loading...</string>
+    <string name="progress_train">Train data</string>
+    <string name="progress_bus">Bus data</string>
+    <string name="progress_alert">Alert data</string>
+     <string name="progress_favorites">Favorites</string>
     <string name="M">M</string>
     <string name="B">B</string>
     <string name="T">T</string>

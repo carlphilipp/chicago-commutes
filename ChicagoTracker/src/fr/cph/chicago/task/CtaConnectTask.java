@@ -73,6 +73,10 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 	private TrackerException trackerBusException;
 	/** Bus arrivals **/
 	private List<BusArrival> busArrivals;
+	/** Error train */
+	private boolean trainBoolean;
+	/** Error bus **/
+	private boolean busBoolean;
 
 	/**
 	 * Constructor
@@ -93,9 +97,7 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 	 *             the parser exception
 	 */
 	public CtaConnectTask(final Object instance, final Class<?> classe, final CtaRequestType requestType, final MultiMap<String, String> params,
-			final CtaRequestType requestType2, final MultiMap<String, String> params2
-
-	) throws ParserException {
+			final CtaRequestType requestType2, final MultiMap<String, String> params2) throws ParserException {
 		this.instance = instance;
 		this.classe = classe;
 		this.requestType = requestType;
@@ -113,8 +115,8 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 
 	@Override
 	protected final Boolean doInBackground(final Void... connects) {
-		boolean trainBoolean = true;
-		boolean busBoolean = true;
+		trainBoolean = true;
+		busBoolean = true;
 		CtaConnect connect = CtaConnect.getInstance();
 		try {
 			for (Entry<String, Object> entry : params.entrySet()) {
@@ -253,7 +255,7 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 	protected final void onPostExecute(final Boolean success) {
 		try {
 			if (success) {
-				classe.getMethod("reloadData", SparseArray.class, List.class).invoke(instance, this.trainArrivals, this.busArrivals);
+				classe.getMethod("reloadData", SparseArray.class, List.class, Boolean.class, Boolean.class).invoke(instance, this.trainArrivals, this.busArrivals, this.trainBoolean, this.busBoolean);
 			} else {
 				TrackerException ex = trackerBusException == null ? trackerTrainException : trackerBusException;
 				if (ex != null) {

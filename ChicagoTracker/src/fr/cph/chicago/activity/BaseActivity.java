@@ -29,6 +29,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
+import android.widget.TextView;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaRequestType;
@@ -46,8 +47,7 @@ import fr.cph.chicago.task.CtaConnectTask;
 import fr.cph.chicago.util.Util;
 
 /**
- * This class represents the base activity of the application It will load the loading screen and/or
- * the main activity
+ * This class represents the base activity of the application It will load the loading screen and/or the main activity
  * 
  * @author Carl-Philipp Harmant
  * @version 1
@@ -63,11 +63,21 @@ public class BaseActivity extends Activity {
 
 	private List<BusArrival> busArrivals;
 
+	private TextView trainMessage, busMessage, alertMessage, favoritesMessage;
+
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.loading);
+
+		trainMessage = (TextView) findViewById(R.id.loadingTrainView);
+
+		busMessage = (TextView) findViewById(R.id.loadingBusView);
+
+		alertMessage = (TextView) findViewById(R.id.loadingAlertView);
+
+		favoritesMessage = (TextView) findViewById(R.id.loadingFavoritesView);
 
 		Bundle extras = getIntent().getExtras();
 
@@ -99,30 +109,31 @@ public class BaseActivity extends Activity {
 	}
 
 	/**
-	 * Called via reflection from CtaConnectTask. It load arrivals data into ChicagoTracker object.
-	 * Update last update time. Start main activity
+	 * Called via reflection from CtaConnectTask. It load arrivals data into ChicagoTracker object. Update last update time. Start main activity
 	 * 
 	 * @param trainArrivals
 	 *            list of train arrivals
 	 * @param busArrivals
 	 *            list of bus arrivals
 	 */
-	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals) {
+	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals, final Boolean trainBoolean,
+			final Boolean busBoolean) {
 		this.trainArrivals = trainArrivals;
 		this.busArrivals = busArrivals;
+		favoritesMessage.setText(favoritesMessage.getText() + " - OK");
+		favoritesMessage.setTextColor(getResources().getColor(R.color.green));
 		ChicagoTracker.modifyLastUpdate(Calendar.getInstance().getTime());
 		startMainActivity();
 	}
 
 	/**
-	 * Load Bus and train data into DataHolder. The data are load in a sequence mode. It means that
-	 * if one of the url contacted does not response, we will still process the other data, and
-	 * won't throw any exception
+	 * Load Bus and train data into DataHolder. The data are load in a sequence mode. It means that if one of the url contacted does not response, we
+	 * will still process the other data, and won't throw any exception
 	 * 
 	 * @author Carl-Philipp Harmant
 	 * 
 	 */
-	private final class LoadData extends AsyncTask<Void, Void, Void> {
+	private final class LoadData extends AsyncTask<Void, String, Void> {
 		/** Bus data **/
 		private BusData busData;
 		/** Train data **/
@@ -132,33 +143,75 @@ public class BaseActivity extends Activity {
 
 		@Override
 		protected final Void doInBackground(final Void... params) {
-
+			
 			// Load local CSV
 			this.trainData = new TrainData();
 			this.trainData.read();
 
-			// Load bus API data
+			publishProgress(new String[] { "t", "true" });
+
 			this.busData = BusData.getInstance();
 			this.busData.readBusStops();
 
+			// Load bus API data
 			try {
 				this.busData.loadBusRoutes();
+				publishProgress(new String[] { "b", "true" });
 			} catch (ParserException e) {
+				publishProgress(new String[] { "b", "false" });
 				Log.e(TAG, e.getMessage(), e);
 			} catch (ConnectException e) {
+				publishProgress(new String[] { "b", "false" });
 				Log.e(TAG, e.getMessage(), e);
 			}
 
 			// Load alert API data
-			this.alertData = AlertData.getInstance();
 			try {
+				this.alertData = AlertData.getInstance();
 				this.alertData.loadGeneralAlerts();
+				publishProgress(new String[] { "a", "true" });
 			} catch (ParserException e) {
+				publishProgress(new String[] { "a", "false" });
 				Log.e(TAG, e.getMessage(), e);
 			} catch (ConnectException e) {
+				publishProgress(new String[] { "a", "false" });
 				Log.e(TAG, e.getMessage(), e);
 			}
 			return null;
+		}
+
+		@Override
+		protected final void onProgressUpdate(String... progress) {
+			String type = progress[0];
+			boolean passed = Boolean.valueOf(progress[1]);
+			if (type.equals("t")) {
+				trainMessage.setVisibility(TextView.VISIBLE);
+				if (!passed) {
+					trainMessage.setText(trainMessage.getText() + " - FAIL");
+					trainMessage.setTextColor(getResources().getColor(R.color.red));
+				} else {
+					trainMessage.setText(trainMessage.getText() + " - OK");
+					trainMessage.setTextColor(getResources().getColor(R.color.green));
+				}
+				busMessage.setVisibility(TextView.VISIBLE);
+			} else if (type.equals("b")) {
+				if (!passed) {
+					busMessage.setText(busMessage.getText() + " - FAIL");
+					busMessage.setTextColor(getResources().getColor(R.color.red));
+				} else {
+					busMessage.setText(busMessage.getText() + " - OK");
+					busMessage.setTextColor(getResources().getColor(R.color.green));
+				}
+				alertMessage.setVisibility(TextView.VISIBLE);
+			} else if (type.equals("a")) {
+				if (!passed) {
+					alertMessage.setText(alertMessage.getText() + " - FAIL");
+					alertMessage.setTextColor(getResources().getColor(R.color.red));
+				} else {
+					alertMessage.setText(alertMessage.getText() + " - OK");
+					alertMessage.setTextColor(getResources().getColor(R.color.green));
+				}
+			}
 		}
 
 		@Override
@@ -169,6 +222,7 @@ public class BaseActivity extends Activity {
 			dataHolder.setTrainData(trainData);
 			dataHolder.setAlertData(alertData);
 			try {
+				favoritesMessage.setVisibility(TextView.VISIBLE);
 				// Load favorites data
 				loadData();
 			} catch (ParserException e) {
