@@ -103,6 +103,8 @@ public class FavoritesFragment extends Fragment {
 			boolean hasFav = Preferences.hasFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
 			if (!hasFav) {
 				welcome.setVisibility(View.VISIBLE);
+			}else{
+				welcome.setVisibility(View.GONE);
 			}
 			ListView listView = (ListView) rootView.findViewById(R.id.favorites_list);
 			listView.setAdapter(ada);
@@ -169,7 +171,8 @@ public class FavoritesFragment extends Fragment {
 	 * @param busArrivals
 	 *            the bus arrivals list
 	 */
-	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals) {
+	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals, final Boolean trainBoolean,
+			final Boolean busBoolean) {
 		// startRefreshTask();
 		ada.setArrivals(trainArrivals, busArrivals);
 		ada.refreshUpdated();
