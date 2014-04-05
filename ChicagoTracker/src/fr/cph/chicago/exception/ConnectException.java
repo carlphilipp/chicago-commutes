@@ -35,6 +35,16 @@ public class ConnectException extends TrackerException {
 	 * 
 	 * @param message
 	 *            the message
+	 */
+	public ConnectException(String message) {
+		super(message);
+	}
+
+	/**
+	 * The constructor
+	 * 
+	 * @param message
+	 *            the message
 	 * @param e
 	 *            the exception
 	 */

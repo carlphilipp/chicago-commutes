@@ -61,6 +61,8 @@ public class FavoritesFragment extends Fragment {
 	private List<BusArrival> busArrivals;
 	/** Train arrivals **/
 	private SparseArray<TrainArrival> trainArrivals;
+	/** Welcome layout **/
+	private RelativeLayout welcome;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -94,17 +96,10 @@ public class FavoritesFragment extends Fragment {
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 		if (!mActivity.isFinishing()) {
-			RelativeLayout welcome = (RelativeLayout) rootView.findViewById(R.id.welcome);
+			welcome = (RelativeLayout) rootView.findViewById(R.id.welcome);
 			if (ada == null) {
 				ada = new FavoritesAdapter(mActivity);
 				ada.setArrivals(trainArrivals, busArrivals);
-			}
-
-			boolean hasFav = Preferences.hasFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
-			if (!hasFav) {
-				welcome.setVisibility(View.VISIBLE);
-			}else{
-				welcome.setVisibility(View.GONE);
 			}
 			ListView listView = (ListView) rootView.findViewById(R.id.favorites_list);
 			listView.setAdapter(ada);
@@ -146,7 +141,14 @@ public class FavoritesFragment extends Fragment {
 		if (refreshTimingTask.getStatus() == Status.FINISHED) {
 			startRefreshTask();
 		}
-
+		if (welcome != null) {
+			boolean hasFav = Preferences.hasFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+			if (!hasFav) {
+				welcome.setVisibility(View.VISIBLE);
+			} else {
+				welcome.setVisibility(View.GONE);
+			}
+		}
 	}
 
 	@Override

@@ -120,8 +120,13 @@ public class BaseActivity extends Activity {
 			final Boolean busBoolean) {
 		this.trainArrivals = trainArrivals;
 		this.busArrivals = busArrivals;
-		favoritesMessage.setText(favoritesMessage.getText() + " - OK");
-		favoritesMessage.setTextColor(getResources().getColor(R.color.green));
+		if (trainBoolean && busBoolean) {
+			favoritesMessage.setText(favoritesMessage.getText() + " - OK");
+			favoritesMessage.setTextColor(getResources().getColor(R.color.green));
+		} else {
+			favoritesMessage.setText(favoritesMessage.getText() + " - FAIL");
+			favoritesMessage.setTextColor(getResources().getColor(R.color.red));
+		}
 		ChicagoTracker.modifyLastUpdate(Calendar.getInstance().getTime());
 		startMainActivity();
 	}
@@ -143,7 +148,7 @@ public class BaseActivity extends Activity {
 
 		@Override
 		protected final Void doInBackground(final Void... params) {
-			
+
 			// Load local CSV
 			this.trainData = new TrainData();
 			this.trainData.read();

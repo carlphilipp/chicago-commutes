@@ -256,6 +256,7 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 		try {
 			if (success) {
 				classe.getMethod("reloadData", SparseArray.class, List.class, Boolean.class, Boolean.class).invoke(instance, this.trainArrivals, this.busArrivals, this.trainBoolean, this.busBoolean);
+				//classe.getMethod("reloadData", SparseArray.class, List.class, Boolean.class, Boolean.class).invoke(instance, new SparseArray<String>(), new ArrayList<String>(), false, false);
 			} else {
 				TrackerException ex = trackerBusException == null ? trackerTrainException : trackerBusException;
 				if (ex != null) {

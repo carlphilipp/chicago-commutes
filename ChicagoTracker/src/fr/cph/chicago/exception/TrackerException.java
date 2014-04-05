@@ -35,6 +35,16 @@ public class TrackerException extends Exception {
 	 * 
 	 * @param message
 	 *            the message
+	 */
+	public TrackerException(String message) {
+		super(message);
+	}
+
+	/**
+	 * The constructor
+	 * 
+	 * @param message
+	 *            the message
 	 * @param e
 	 *            the exception
 	 */

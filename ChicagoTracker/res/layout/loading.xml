@@ -49,10 +49,11 @@
         android:layout_centerHorizontal="true"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:fontFamily="sans-serif-light"
         android:text="@string/progress_message"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/black" />
+        android:textColor="@color/black"
+        android:textSize="22sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/loadingTrainView"
@@ -62,10 +63,10 @@
         android:layout_centerHorizontal="true"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:fontFamily="sans-serif-light"
         android:text="@string/progress_train"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/black"
+        android:textStyle="italic"
         android:visibility="invisible" />
 
     <TextView
@@ -76,10 +77,10 @@
         android:layout_centerHorizontal="true"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:fontFamily="sans-serif-light"
         android:text="@string/progress_bus"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/black"
+        android:textStyle="italic"
         android:visibility="invisible" />
 
     <TextView
@@ -90,13 +91,13 @@
         android:layout_centerHorizontal="true"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:fontFamily="sans-serif-light"
         android:text="@string/progress_alert"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/black"
+        android:textStyle="italic"
         android:visibility="invisible" />
-    
-     <TextView
+
+    <TextView
         android:id="@+id/loadingFavoritesView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -104,10 +105,10 @@
         android:layout_centerHorizontal="true"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:fontFamily="sans-serif-light"
         android:text="@string/progress_favorites"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/black"
+        android:textStyle="italic"
         android:visibility="invisible" />
 
 </RelativeLayout>
