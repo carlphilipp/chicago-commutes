@@ -40,8 +40,8 @@ import fr.cph.chicago.R;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer. See the <a
- * href="https://developer.android.com/design/patterns/navigation-drawer.html#Interaction"> design
- * guidelines</a> for a complete explanation of the behaviors implemented here.
+ * href="https://developer.android.com/design/patterns/navigation-drawer.html#Interaction"> design guidelines</a> for a complete explanation of the
+ * behaviors implemented here.
  */
 public class NavigationDrawerFragment extends Fragment {
 
@@ -49,8 +49,7 @@ public class NavigationDrawerFragment extends Fragment {
 	private static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
 
 	/**
-	 * Per the design guidelines, you should show the drawer on launch until the user manually
-	 * expands it. This shared preference tracks this.
+	 * Per the design guidelines, you should show the drawer on launch until the user manually expands it. This shared preference tracks this.
 	 */
 	private static final String PREF_USER_LEARNED_DRAWER = "navigation_drawer_learned";
 
@@ -109,8 +108,13 @@ public class NavigationDrawerFragment extends Fragment {
 			}
 		});
 		mDrawerListView.setAdapter(new ArrayAdapter<String>(getActionBar().getThemedContext(), android.R.layout.simple_list_item_activated_1,
-				android.R.id.text1, new String[] { getString(R.string.favorites), getString(R.string.train), getString(R.string.bus),
-						getString(R.string.nearby), getString(R.string.alerts), getString(R.string.map) }));
+				android.R.id.text1, new String[] { 
+						getString(R.string.favorites), 
+						getString(R.string.train), 
+						getString(R.string.bus),
+						getString(R.string.nearby), 
+						getString(R.string.alerts), 
+						getString(R.string.map) }));
 		mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
 		return mDrawerListView;
 	}
@@ -286,8 +290,8 @@ public class NavigationDrawerFragment extends Fragment {
 	}
 
 	/**
-	 * Per the navigation drawer design guidelines, updates the action bar to show the global app
-	 * 'context', rather than just what's in the current screen.
+	 * Per the navigation drawer design guidelines, updates the action bar to show the global app 'context', rather than just what's in the current
+	 * screen.
 	 */
 	private final void showGlobalContextActionBar() {
 		ActionBar actionBar = getActionBar();
