@@ -556,9 +556,9 @@ public class StationActivity extends Activity {
 		Stop stop = eta.getStop();
 		int line3Padding = (int) getResources().getDimension(R.dimen.activity_station_stops_line3);
 		Integer viewId = ids.get(line.toString() + "_" + stop.getDirection().toString());
+		// viewId might be not there if CTA API provide wrong data
 		if (viewId != null) {
 			LinearLayout line3View = (LinearLayout) findViewById(viewId);
-
 			Integer id = ids.get(line.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName());
 			if (id == null) {
 				LinearLayout insideLayout = new LinearLayout(this);
