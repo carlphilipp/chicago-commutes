@@ -555,37 +555,40 @@ public class StationActivity extends Activity {
 		TrainLine line = eta.getRouteName();
 		Stop stop = eta.getStop();
 		int line3Padding = (int) getResources().getDimension(R.dimen.activity_station_stops_line3);
-		LinearLayout line3View = (LinearLayout) findViewById(ids.get(line.toString() + "_" + stop.getDirection().toString()));
+		Integer viewId = ids.get(line.toString() + "_" + stop.getDirection().toString());
+		if (viewId != null) {
+			LinearLayout line3View = (LinearLayout) findViewById(viewId);
 
-		Integer id = ids.get(line.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName());
-		if (id == null) {
-			LinearLayout insideLayout = new LinearLayout(this);
-			insideLayout.setOrientation(LinearLayout.HORIZONTAL);
-			insideLayout.setLayoutParams(paramsStop);
-			int newId = Util.generateViewId();
-			insideLayout.setId(newId);
-			ids.put(line.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName(), newId);
+			Integer id = ids.get(line.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName());
+			if (id == null) {
+				LinearLayout insideLayout = new LinearLayout(this);
+				insideLayout.setOrientation(LinearLayout.HORIZONTAL);
+				insideLayout.setLayoutParams(paramsStop);
+				int newId = Util.generateViewId();
+				insideLayout.setId(newId);
+				ids.put(line.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName(), newId);
 
-			TextView stopName = new TextView(this);
-			stopName.setText(eta.getDestName() + ": ");
-			stopName.setTextColor(getResources().getColor(R.color.grey));
-			stopName.setPadding(line3Padding, 0, 0, 0);
-			insideLayout.addView(stopName);
+				TextView stopName = new TextView(this);
+				stopName.setText(eta.getDestName() + ": ");
+				stopName.setTextColor(getResources().getColor(R.color.grey));
+				stopName.setPadding(line3Padding, 0, 0, 0);
+				insideLayout.addView(stopName);
 
-			TextView timing = new TextView(this);
-			timing.setText(eta.getTimeLeftDueDelay() + " ");
-			timing.setTextColor(getResources().getColor(R.color.grey));
-			timing.setLines(1);
-			timing.setEllipsize(TruncateAt.END);
-			insideLayout.addView(timing);
+				TextView timing = new TextView(this);
+				timing.setText(eta.getTimeLeftDueDelay() + " ");
+				timing.setTextColor(getResources().getColor(R.color.grey));
+				timing.setLines(1);
+				timing.setEllipsize(TruncateAt.END);
+				insideLayout.addView(timing);
 
-			line3View.addView(insideLayout);
-		} else {
-			LinearLayout insideLayout = (LinearLayout) findViewById(id);
-			TextView timing = (TextView) insideLayout.getChildAt(1);
-			timing.setText(timing.getText() + eta.getTimeLeftDueDelay() + " ");
+				line3View.addView(insideLayout);
+			} else {
+				LinearLayout insideLayout = (LinearLayout) findViewById(id);
+				TextView timing = (TextView) insideLayout.getChildAt(1);
+				timing.setText(timing.getText() + eta.getTimeLeftDueDelay() + " ");
+			}
+			line3View.setVisibility(View.VISIBLE);
 		}
-		line3View.setVisibility(View.VISIBLE);
 	}
 
 	/**
