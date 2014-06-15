@@ -7,7 +7,6 @@ package fr.cph.chicago.entity;
  * @version 1
  */
 public final class BikeStation {
-
 	/** Station id **/
 	private int id;
 	/** Station name **/
