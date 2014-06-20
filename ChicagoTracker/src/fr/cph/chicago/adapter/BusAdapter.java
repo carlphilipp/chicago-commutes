@@ -110,10 +110,10 @@ public final class BusAdapter extends BaseAdapter {
 			convertView = vi.inflate(R.layout.list_bus, null);
 
 			final ViewHolder holder = new ViewHolder();
-			routeNameView = (TextView) convertView.findViewById(R.id.route_name_value);
+			routeNameView = (TextView) convertView.findViewById(R.id.bus_station_name_value);
 			holder.routeNameView = routeNameView;
 
-			routeNumberView = (TextView) convertView.findViewById(R.id.route_number_value);
+			routeNumberView = (TextView) convertView.findViewById(R.id.bike_availability);
 			holder.routeNumberView = routeNumberView;
 
 			detailsLayout = (LinearLayout) convertView.findViewById(R.id.route_details);

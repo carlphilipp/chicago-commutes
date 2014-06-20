@@ -43,6 +43,8 @@ public class ChicagoTracker extends Application {
 	public static final String PREFERENCE_FAVORITES_TRAIN = "ChicagoTrackerFavoritesTrain";
 	/** Bus preference string **/
 	public static final String PREFERENCE_FAVORITES_BUS = "ChicagoTrackerFavoritesBus";
+	/** Bike preference string **/
+	public static final String PREFERENCE_FAVORITES_BIKE = "ChicagoTrackerFavoritesBike";
 	/** Application context **/
 	private static Context context;
 	/** Last update of favorites **/

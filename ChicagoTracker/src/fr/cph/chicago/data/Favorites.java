@@ -17,6 +17,7 @@
 package fr.cph.chicago.data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -24,8 +25,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import android.util.Log;
 import android.util.SparseArray;
 import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.util.Util;
@@ -36,17 +39,23 @@ import fr.cph.chicago.util.Util;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class VehicleArrival {
+public class Favorites {
 	/** The list of train arrival **/
 	private SparseArray<TrainArrival> trainArrivals;
 	/** The list of bus arrival **/
 	private List<BusArrival> busArrivals;
+	/** Bike stations **/
+	private List<BikeStation> bikeStations;
+
 	/** The list of train favorites **/
 	private List<Integer> trainFavorites;
 	/** THe list of bus favorites **/
 	private List<String> busFavorites;
+	/** The list of bike favorites **/
+	private List<Integer> bikeFavorites;
 	/** The list of fake bus favorites **/
 	private List<String> fakeBusFavorites;
+
 	/** Train data **/
 	private TrainData trainData;
 	/** Bus data **/
@@ -55,13 +64,15 @@ public class VehicleArrival {
 	/**
 	 * Public constructor
 	 */
-	public VehicleArrival() {
+	public Favorites() {
 		this.trainArrivals = new SparseArray<TrainArrival>();
 		this.busArrivals = new ArrayList<BusArrival>();
+		this.bikeStations = new ArrayList<BikeStation>();
 
 		this.trainFavorites = new ArrayList<Integer>();
 		this.busFavorites = new ArrayList<String>();
 		this.fakeBusFavorites = new ArrayList<String>();
+		this.bikeFavorites = new ArrayList<Integer>();
 
 		this.trainData = DataHolder.getInstance().getTrainData();
 		this.busData = DataHolder.getInstance().getBusData();
@@ -73,7 +84,7 @@ public class VehicleArrival {
 	 * @return a size
 	 */
 	public final int size() {
-		return trainFavorites.size() + fakeBusFavorites.size();
+		return trainFavorites.size() + fakeBusFavorites.size() + bikeFavorites.size();
 	}
 
 	/**
@@ -84,15 +95,25 @@ public class VehicleArrival {
 	 * @return an object, station or bus route
 	 */
 	public final Object getObject(final int position) {
+		Log.i("Favorites", "trainFavorites.size(): " + trainFavorites.size() + " / fakeBusFavorites.size(): " + fakeBusFavorites.size());
+		Log.i("Favorites", "position: " + position);
 		Object result = null;
 		if (position < trainFavorites.size()) {
 			Integer stationId = trainFavorites.get(position);
 			result = trainData.getStation(stationId);
-		} else {
+		} else if (position < trainFavorites.size() + fakeBusFavorites.size()) {
 			int indice = position - trainFavorites.size();
 			if (indice < fakeBusFavorites.size()) {
 				String res[] = Util.decodeBusFavorite(fakeBusFavorites.get(indice));
 				return busData.getRoute(res[0]);
+			}
+		} else {
+			int indice = position - (trainFavorites.size() + fakeBusFavorites.size());
+			Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
+			for (BikeStation bikeStation : bikeStations) {
+				if (bikeStation.getId() == bikeFavorites.get(indice)) {
+					return bikeStation;
+				}
 			}
 		}
 		return result;
@@ -234,6 +255,21 @@ public class VehicleArrival {
 		this.trainFavorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
 		this.busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
 		this.fakeBusFavorites = calculateActualRouteNumberBusFavorites();
+		this.bikeFavorites.clear();
+		List<Integer> bikeFavoritesTemp = Preferences.getBikeFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
+		List<BikeStation> bikeStationsFavoritesTemp = new ArrayList<BikeStation>();
+		for (Integer bikeStationId : bikeFavoritesTemp) {
+			for (BikeStation station : bikeStations) {
+				if (station.getId() == bikeStationId.intValue()) {
+					bikeStationsFavoritesTemp.add(station);
+					break;
+				}
+			}
+		}
+		Collections.sort(bikeStationsFavoritesTemp, Util.BIKE_COMPARATOR_NAME);
+		for (BikeStation station : bikeStationsFavoritesTemp) {
+			this.bikeFavorites.add(station.getId());
+		}
 	}
 
 	/**
@@ -241,12 +277,15 @@ public class VehicleArrival {
 	 * @param trainArrivals
 	 * @param busArrivals
 	 */
-	public final void setArrivals(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals) {
+	public final void setArrivalsAndBikeStations(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals,
+			final List<BikeStation> bikeStations) {
 		this.trainArrivals.clear();
 		this.trainArrivals = trainArrivals;
 		removeDuplicates(busArrivals);
 		this.busArrivals.clear();
 		this.busArrivals = busArrivals;
+		this.bikeStations.clear();
+		this.bikeStations = bikeStations;
 		setFavorites();
 	}
 

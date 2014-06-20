@@ -36,6 +36,7 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.FavoritesAdapter;
 import fr.cph.chicago.data.Preferences;
+import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.exception.TrackerException;
@@ -61,6 +62,9 @@ public class FavoritesFragment extends Fragment {
 	private List<BusArrival> busArrivals;
 	/** Train arrivals **/
 	private SparseArray<TrainArrival> trainArrivals;
+
+	/** List of bus arrivals **/
+	private List<BikeStation> bikeStations;
 	/** Welcome layout **/
 	private RelativeLayout welcome;
 
@@ -85,9 +89,11 @@ public class FavoritesFragment extends Fragment {
 			Bundle bundle = mActivity.getIntent().getExtras();
 			busArrivals = bundle.getParcelableArrayList("busArrivals");
 			trainArrivals = bundle.getSparseParcelableArray("trainArrivals");
+			bikeStations = bundle.getParcelableArrayList("bikeStations");
 		} else {
 			busArrivals = savedInstanceState.getParcelableArrayList("busArrivals");
 			trainArrivals = savedInstanceState.getSparseParcelableArray("trainArrivals");
+			bikeStations = savedInstanceState.getParcelableArrayList("bikeStations");
 			ChicagoTracker.checkData(mActivity);
 		}
 	}
@@ -99,7 +105,7 @@ public class FavoritesFragment extends Fragment {
 			welcome = (RelativeLayout) rootView.findViewById(R.id.welcome);
 			if (ada == null) {
 				ada = new FavoritesAdapter(mActivity);
-				ada.setArrivals(trainArrivals, busArrivals);
+				ada.setArrivalsAndBikeStations(trainArrivals, busArrivals, bikeStations);
 			}
 			ListView listView = (ListView) rootView.findViewById(R.id.favorites_list);
 			listView.setAdapter(ada);
@@ -142,7 +148,8 @@ public class FavoritesFragment extends Fragment {
 			startRefreshTask();
 		}
 		if (welcome != null) {
-			boolean hasFav = Preferences.hasFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+			boolean hasFav = Preferences.hasFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN, ChicagoTracker.PREFERENCE_FAVORITES_BUS,
+					ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
 			if (!hasFav) {
 				welcome.setVisibility(View.VISIBLE);
 			} else {
@@ -163,6 +170,7 @@ public class FavoritesFragment extends Fragment {
 		super.onSaveInstanceState(outState);
 		outState.putParcelableArrayList("busArrivals", (ArrayList<BusArrival>) busArrivals);
 		outState.putSparseParcelableArray("trainArrivals", trainArrivals);
+		outState.putParcelableArrayList("bikeStations", (ArrayList<BikeStation>) bikeStations);
 	}
 
 	/**
@@ -173,10 +181,10 @@ public class FavoritesFragment extends Fragment {
 	 * @param busArrivals
 	 *            the bus arrivals list
 	 */
-	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals, final Boolean trainBoolean,
-			final Boolean busBoolean) {
+	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals,
+			final List<BikeStation> bikeStations, final Boolean trainBoolean, final Boolean busBoolean, final Boolean bikeBoolean) {
 		// startRefreshTask();
-		ada.setArrivals(trainArrivals, busArrivals);
+		ada.setArrivalsAndBikeStations(trainArrivals, busArrivals, bikeStations);
 		ada.refreshUpdated();
 		ada.refreshUpdatedView();
 		ada.notifyDataSetChanged();

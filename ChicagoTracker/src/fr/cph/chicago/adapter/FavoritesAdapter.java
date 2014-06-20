@@ -52,11 +52,13 @@ import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.TextView;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
+import fr.cph.chicago.activity.BikeStationActivity;
 import fr.cph.chicago.activity.BusActivity;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.activity.StationActivity;
 import fr.cph.chicago.data.DataHolder;
-import fr.cph.chicago.data.VehicleArrival;
+import fr.cph.chicago.data.Favorites;
+import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
@@ -85,7 +87,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 	/** The layout that is used to display a fade black background **/
 	private FrameLayout firstLayout;
 	/** The model **/
-	private VehicleArrival arrival;
+	private Favorites fav;
 	/** Ids of layouts **/
 	private Map<String, Integer> ids;
 	/** Layouts **/
@@ -111,7 +113,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 		this.activity = activity;
 		this.firstLayout = ChicagoTracker.container;
-		this.arrival = new VehicleArrival();
+		this.fav = new Favorites();
 
 		this.ids = new HashMap<String, Integer>();
 		this.layouts = new HashMap<Integer, LinearLayout>();
@@ -126,12 +128,12 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 	@Override
 	public final int getCount() {
-		return arrival.size();
+		return fav.size();
 	}
 
 	@Override
 	public final Object getItem(final int position) {
-		return arrival.getObject(position);
+		return fav.getObject(position);
 	}
 
 	@Override
@@ -143,7 +145,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 	@Override
 	public final View getView(final int position, View convertView, final ViewGroup parent) {
 		Date lastUpdate = ChicagoTracker.getLastUpdate();
-		Object object = arrival.getObject(position);
+		Object object = fav.getObject(position);
 		if (object != null) {
 			if (object instanceof Station) {
 				Station station = (Station) object;
@@ -214,8 +216,8 @@ public final class FavoritesAdapter extends BaseAdapter {
 				}
 
 				for (TrainLine tl : setTL) {
-					if (arrival.getTrainArrival(stationId) != null) {
-						List<Eta> etas = arrival.getTrainArrival(stationId).getEtas(tl);
+					if (fav.getTrainArrival(stationId) != null) {
+						List<Eta> etas = fav.getTrainArrival(stationId).getEtas(tl);
 						if (etas.size() != 0) {
 							String key = station.getName() + "_" + tl.toString() + "_h";
 							String key2 = station.getName() + "_" + tl.toString() + "_v";
@@ -318,14 +320,14 @@ public final class FavoritesAdapter extends BaseAdapter {
 						}
 					}
 				}
-			} else {
+			} else if (object instanceof BusRoute) {
 				final BusRoute busRoute = (BusRoute) object;
 				LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				convertView = vi.inflate(R.layout.list_favorites_bus, null);
 				TextView routeIdView = (TextView) convertView.findViewById(R.id.route_id);
 				routeIdView.setText(busRoute.getId());
 
-				TextView routeNameView = (TextView) convertView.findViewById(R.id.route_name_value);
+				TextView routeNameView = (TextView) convertView.findViewById(R.id.bus_station_name_value);
 				routeNameView.setText(" " + busRoute.getName());
 
 				final LinearLayout favoritesLayout = (LinearLayout) convertView.findViewById(R.id.favorites_list);
@@ -338,7 +340,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 					updated.setText(this.lastUpdate);
 				}
 
-				Map<String, Map<String, List<BusArrival>>> busArrivals = arrival.getBusArrivalsMapped(busRoute.getId());
+				Map<String, Map<String, List<BusArrival>>> busArrivals = fav.getBusArrivalsMapped(busRoute.getId());
 				if (busArrivals.size() > 0) {
 					// arrow.setImageDrawable(activity.getResources().getDrawable(R.drawable.down_arrow));
 					for (Entry<String, Map<String, List<BusArrival>>> entry : busArrivals.entrySet()) {
@@ -447,6 +449,68 @@ public final class FavoritesAdapter extends BaseAdapter {
 						favoritesLayout.addView(llh);
 					}
 				}
+			} else {
+				final BikeStation bikeStation = (BikeStation) object;
+				LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				convertView = vi.inflate(R.layout.list_favorites_bike, null);
+				TextView bikeStationName = (TextView) convertView.findViewById(R.id.bike_station_name);
+				bikeStationName.setText(bikeStation.getName());
+
+				TextView updatedView = (TextView) convertView.findViewById(R.id.station_updated);
+				if (lastUpdate != null) {
+					updatedView.setText(this.lastUpdate);
+				}
+
+				LinearLayout favoritesData = (LinearLayout) convertView.findViewById(R.id.favorites_bikes_list);
+
+				LinearLayout llh = new LinearLayout(context);
+				llh.setLayoutParams(paramsLayout);
+				llh.setOrientation(LinearLayout.HORIZONTAL);
+				llh.setPadding(line1PaddingColor, stopsPaddingTop, 0, 0);
+
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+					llh.setBackground(context.getResources().getDrawable(R.drawable.any_selector));
+				}
+
+				TextView tlView = new TextView(context);
+				tlView.setBackgroundColor(context.getResources().getColor(R.color.black));
+				tlView.setText("   ");
+				tlView.setLayoutParams(paramsTextView);
+				llh.addView(tlView);
+
+				LinearLayout stopLayout = new LinearLayout(context);
+				stopLayout.setOrientation(LinearLayout.HORIZONTAL);
+				stopLayout.setPadding(line1PaddingColor, 0, 0, 0);
+
+				TextView availableBike = new TextView(context);
+				availableBike.setText("Available bikes: ");
+				availableBike.setTextColor(context.getResources().getColor(R.color.grey_5));
+				stopLayout.addView(availableBike);
+
+				TextView amountBike = new TextView(context);
+				amountBike.setText(bikeStation.getAvailableBikes() + "/" + bikeStation.getTotalDocks());
+				if (bikeStation.getAvailableBikes() == bikeStation.getTotalDocks()) {
+					amountBike.setTextColor(context.getResources().getColor(R.color.red));
+				} else {
+					amountBike.setTextColor(context.getResources().getColor(R.color.green));
+				}
+				stopLayout.addView(amountBike);
+
+				llh.addView(stopLayout);
+
+				favoritesData.addView(llh);
+
+				convertView.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						Intent intent = new Intent(ChicagoTracker.getAppContext(), BikeStationActivity.class);
+						Bundle extras = new Bundle();
+						extras.putParcelable("station", bikeStation);
+						intent.putExtras(extras);
+						activity.startActivity(intent);
+						activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+					}
+				});
 			}
 		}
 		return convertView;
@@ -464,22 +528,23 @@ public final class FavoritesAdapter extends BaseAdapter {
 	}
 
 	/**
-	 * St arrivals
+	 * Set favorites
 	 * 
 	 * @param arrivals
 	 *            the trains arrivals
 	 * @param busArrivals
 	 *            the buses arrivals
 	 */
-	public final void setArrivals(final SparseArray<TrainArrival> arrivals, final List<BusArrival> busArrivals) {
-		arrival.setArrivals(arrivals, busArrivals);
+	public final void setArrivalsAndBikeStations(final SparseArray<TrainArrival> arrivals, final List<BusArrival> busArrivals,
+			final List<BikeStation> bikeStations) {
+		fav.setArrivalsAndBikeStations(arrivals, busArrivals, bikeStations);
 	}
 
 	/**
 	 * Set favorites
 	 */
 	public final void setFavorites() {
-		arrival.setFavorites();
+		fav.setFavorites();
 	}
 
 	/**

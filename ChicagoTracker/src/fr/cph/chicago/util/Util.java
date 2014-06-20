@@ -17,13 +17,16 @@
 package fr.cph.chicago.util;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import android.util.Log;
 import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.data.Preferences;
+import fr.cph.chicago.entity.BikeStation;
 
 /**
  * Util class
@@ -36,8 +39,7 @@ public class Util {
 	private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
 
 	/**
-	 * Generate a value suitable for use in {@link #setId(int)}. This value will not collide with ID
-	 * values generated at build time by aapt for R.id.
+	 * Generate a value suitable for use in {@link #setId(int)}. This value will not collide with ID values generated at build time by aapt for R.id.
 	 * 
 	 * @return a generated ID value
 	 */
@@ -146,6 +148,22 @@ public class Util {
 		Toast.makeText(ChicagoTracker.getAppContext(), "Adding to favorites", Toast.LENGTH_SHORT).show();
 	}
 
+	public static final void addToBikeFavorites(final int stationId, final String preference) {
+		List<Integer> favorites = Preferences.getBikeFavorites(preference);
+		if (!favorites.contains(stationId)) {
+			favorites.add(stationId);
+			Preferences.saveBikeFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BIKE, favorites);
+		}
+		Toast.makeText(ChicagoTracker.getAppContext(), "Adding to favorites", Toast.LENGTH_SHORT).show();
+	}
+
+	public static final void removeFromBikeFavorites(final int stationId, final String preference) {
+		List<Integer> favorites = Preferences.getBikeFavorites(preference);
+		favorites.remove(Integer.valueOf(stationId));
+		Preferences.saveBikeFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BIKE, favorites);
+		Toast.makeText(ChicagoTracker.getAppContext(), "Removing from favorites", Toast.LENGTH_SHORT).show();
+	}
+
 	/**
 	 * Decode bus favorites
 	 * 
@@ -164,5 +182,15 @@ public class Util {
 		res[1] = stopId;
 		res[2] = bound;
 		return res;
+	}
+	
+	public static final Comparator<BikeStation> BIKE_COMPARATOR_NAME  = new BikeStationComparator();
+
+	public static final class BikeStationComparator implements Comparator<BikeStation> {
+		@Override
+		public int compare(BikeStation station1, BikeStation station2) {
+			return station1.getName().compareTo(station2.getName());
+		}
+
 	}
 }

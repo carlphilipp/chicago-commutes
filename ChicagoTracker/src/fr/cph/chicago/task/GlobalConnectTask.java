@@ -29,9 +29,11 @@ import android.util.Log;
 import android.util.SparseArray;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.CtaRequestType;
+import fr.cph.chicago.connection.DivvyConnect;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.data.TrainData;
+import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Station;
@@ -41,6 +43,8 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
+import fr.cph.chicago.json.Json;
+import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
 
 /**
@@ -49,10 +53,10 @@ import fr.cph.chicago.xml.Xml;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
+public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 
 	/** Tag **/
-	private static final String TAG = "CtaConnectTask";
+	private static final String TAG = "GlobalConnectTask";
 	/** Instance of the class where the we will callback **/
 	private Object instance;
 	/** The class **/
@@ -63,6 +67,8 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 	private MultiMap<String, String> params, params2;
 	/** The XML parser **/
 	private Xml xml;
+	/** The Json parser **/
+	private Json json;
 	/** List of train arrivals **/
 	private SparseArray<TrainArrival> trainArrivals;
 	/** Train data **/
@@ -71,12 +77,20 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 	private TrackerException trackerTrainException;
 	/** Bus exception **/
 	private TrackerException trackerBusException;
+	/** Bike exception **/
+	private TrackerException trackerBikeException;
 	/** Bus arrivals **/
 	private List<BusArrival> busArrivals;
+	/** Bike stations **/
+	private List<BikeStation> bikeStations;
 	/** Error train */
 	private boolean trainBoolean;
 	/** Error bus **/
 	private boolean busBoolean;
+	/** Error bike **/
+	private boolean bikeBoolean;
+	/** Load bikes or not **/
+	private boolean loadBikes;
 
 	/**
 	 * Constructor
@@ -96,8 +110,8 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 	 * @throws ParserException
 	 *             the parser exception
 	 */
-	public CtaConnectTask(final Object instance, final Class<?> classe, final CtaRequestType requestType, final MultiMap<String, String> params,
-			final CtaRequestType requestType2, final MultiMap<String, String> params2) throws ParserException {
+	public GlobalConnectTask(final Object instance, final Class<?> classe, final CtaRequestType requestType, final MultiMap<String, String> params,
+			final CtaRequestType requestType2, final MultiMap<String, String> params2, boolean loadBikes) throws ParserException {
 		this.instance = instance;
 		this.classe = classe;
 		this.requestType = requestType;
@@ -109,28 +123,33 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 
 		this.trainArrivals = new SparseArray<TrainArrival>();
 		this.busArrivals = new ArrayList<BusArrival>();
+		this.bikeStations = new ArrayList<BikeStation>();
 
 		this.xml = new Xml();
+		this.json = new Json();
+		this.loadBikes = loadBikes;
 	}
 
 	@Override
 	protected final Boolean doInBackground(final Void... connects) {
 		trainBoolean = true;
 		busBoolean = true;
-		CtaConnect connect = CtaConnect.getInstance();
+		bikeBoolean = true;
+		CtaConnect ctaConnect = CtaConnect.getInstance();
+		DivvyConnect divvyConnect = DivvyConnect.getInstance();
 		try {
 			for (Entry<String, Object> entry : params.entrySet()) {
 				String key = entry.getKey();
 				if (key.equals("mapid")) {
 					Object value = entry.getValue();
 					if (value instanceof String) {
-						String xmlResult = connect.connect(requestType, params);
+						String xmlResult = ctaConnect.connect(requestType, params);
 						this.trainArrivals = xml.parseArrivals(xmlResult, data);
 					} else if (value instanceof List) {
 						@SuppressWarnings("unchecked")
 						List<String> list = (List<String>) value;
 						if (list.size() < 5) {
-							String xmlResult = connect.connect(requestType, params);
+							String xmlResult = ctaConnect.connect(requestType, params);
 							this.trainArrivals = xml.parseArrivals(xmlResult, data);
 						} else {
 							int size = list.size();
@@ -144,7 +163,7 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 									paramsTemp.put(key, sub);
 								}
 
-								String xmlResult = connect.connect(requestType, paramsTemp);
+								String xmlResult = ctaConnect.connect(requestType, paramsTemp);
 								SparseArray<TrainArrival> temp = xml.parseArrivals(xmlResult, data);
 								for (int j = 0; j < temp.size(); j++) {
 									tempArrivals.put(temp.keyAt(j), temp.valueAt(j));
@@ -224,7 +243,7 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 				MultiMap<String, String> para = new MultiValueMap<String, String>();
 				para.put("rt", rts.get(i));
 				para.put("stpid", stpids.get(i));
-				String xmlResult = connect.connect(requestType2, para);
+				String xmlResult = ctaConnect.connect(requestType2, para);
 				this.busArrivals.addAll(xml.parseBusArrivals(xmlResult));
 			}
 		} catch (ConnectException e) {
@@ -233,17 +252,31 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 		} catch (ParserException e) {
 			busBoolean = false;
 			this.trackerBusException = e;
-		} finally {
-			if (!(busBoolean && trainBoolean)) {
-				if (params2.size() == 0 && busBoolean) {
-					busBoolean = false;
-				}
-				if (params.size() == 0 && trainBoolean) {
-					trainBoolean = false;
+		}
+
+		if (loadBikes) {
+			try {
+				String bikeContent = divvyConnect.connect();
+				this.bikeStations = json.parseStations(bikeContent);
+				Collections.sort(this.bikeStations, Util.BIKE_COMPARATOR_NAME);
+			} catch (ParserException e) {
+				bikeBoolean = false;
+				this.trackerBikeException = e;
+			} catch (ConnectException e) {
+				bikeBoolean = false;
+				this.trackerBikeException = e;
+			} finally {
+				if (!(busBoolean && trainBoolean)) {
+					if (params2.size() == 0 && busBoolean) {
+						busBoolean = false;
+					}
+					if (params.size() == 0 && trainBoolean) {
+						trainBoolean = false;
+					}
 				}
 			}
 		}
-		return trainBoolean || busBoolean;
+		return trainBoolean || busBoolean || bikeBoolean;
 	}
 
 	@Override
@@ -255,10 +288,13 @@ public class CtaConnectTask extends AsyncTask<Void, Void, Boolean> {
 	protected final void onPostExecute(final Boolean success) {
 		try {
 			if (success) {
-				classe.getMethod("reloadData", SparseArray.class, List.class, Boolean.class, Boolean.class).invoke(instance, this.trainArrivals, this.busArrivals, this.trainBoolean, this.busBoolean);
-				//classe.getMethod("reloadData", SparseArray.class, List.class, Boolean.class, Boolean.class).invoke(instance, new SparseArray<String>(), new ArrayList<String>(), false, false);
+				classe.getMethod("reloadData", SparseArray.class, List.class, List.class, Boolean.class, Boolean.class, Boolean.class).invoke(
+						instance, this.trainArrivals, this.busArrivals, this.bikeStations, this.trainBoolean, this.busBoolean, this.bikeBoolean);
+				// classe.getMethod("reloadData", SparseArray.class, List.class, Boolean.class, Boolean.class).invoke(instance, new
+				// SparseArray<String>(), new ArrayList<String>(), false, false);
 			} else {
-				TrackerException ex = trackerBusException == null ? trackerTrainException : trackerBusException;
+				TrackerException ex = trackerBusException == null ? (trackerBikeException == null ? trackerTrainException : trackerBikeException)
+						: trackerBusException;
 				if (ex != null) {
 					// because both can be null
 					Log.e(TAG, ex.getMessage(), ex);

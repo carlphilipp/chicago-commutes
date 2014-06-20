@@ -46,7 +46,7 @@
         android:textSize="@+dimen/activity_train_line_M" />
 
     <TextView
-        android:id="@+id/route_name_value"
+        android:id="@+id/bus_station_name_value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/route_number"

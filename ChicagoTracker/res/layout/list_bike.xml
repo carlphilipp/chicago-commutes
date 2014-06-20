@@ -25,12 +25,12 @@
     android:paddingRight="@+dimen/activity_train_line_padding_right" >
 
     <TextView
-        android:id="@+id/route_b"
+        android:id="@+id/route_d"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:paddingRight="@+dimen/activity_station_stops_line1_padding_color"
-        android:text="@string/B"
+        android:text="@string/D"
         android:textColor="@+color/grey_M_B"
         android:textIsSelectable="false"
         android:textSize="@+dimen/activity_train_line_M"
@@ -40,8 +40,8 @@
         android:id="@+id/route_color_value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/route_b"
-        android:layout_toRightOf="@+id/route_b"
+        android:layout_alignBaseline="@+id/route_d"
+        android:layout_toRightOf="@+id/route_d"
         android:background="@color/grey_5"
         android:text="@string/empty_string"
         android:textIsSelectable="false"
@@ -51,7 +51,7 @@
         android:id="@+id/bus_station_name_value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/route_b"
+        android:layout_alignBaseline="@+id/route_d"
         android:layout_toRightOf="@+id/route_color_value"
         android:paddingLeft="@+dimen/activity_station_stops_line1_padding_color"
         android:textColor="@+color/black"
@@ -62,47 +62,9 @@
         android:id="@+id/bike_availability"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/route_b"
+        android:layout_alignBaseline="@+id/route_d"
         android:layout_alignParentRight="true"
-        android:textColor="@color/black"
+        android:textColor="@color/green"
         android:textIsSelectable="false"
         android:textStyle="bold" />
-
-    <LinearLayout
-        android:id="@+id/route_details"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/route_b"
-        android:orientation="horizontal"
-        android:visibility="gone" >
-
-        <TextView
-            android:id="@+id/loading_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="30dp"
-            android:paddingTop="5dp"
-            android:text="@string/progress_message"
-            android:textColor="@color/black"
-            android:textIsSelectable="false"
-            android:textStyle="bold" />
-
-        <!--  TextView
-            android:id="@+id/route_directions"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="30dp"
-            android:paddingTop="5dp"
-            android:textColor="@color/black"
-            android:textIsSelectable="false"
-            android:textStyle="bold" /-->
-
-        <LinearLayout
-            android:id="@+id/route_directions"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
-        </LinearLayout>
-    </LinearLayout>
-
 </RelativeLayout>

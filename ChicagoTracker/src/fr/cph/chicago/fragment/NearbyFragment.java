@@ -198,6 +198,7 @@ public class NearbyFragment extends Fragment {
 	public final void displayError(final TrackerException exceptionToBeThrown) {
 		DataHolder.getInstance().setTrainData(null);
 		DataHolder.getInstance().setBusData(null);
+		DataHolder.getInstance().setAlertData(null);
 		ChicagoTracker.displayError(mActivity, exceptionToBeThrown);
 		mActivity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 	}

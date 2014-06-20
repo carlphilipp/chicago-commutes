@@ -19,10 +19,12 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="en">
 
     <string name="empty_string">&#160;</string>
+    <string name="double_empty_string">&#160;&#160;</string>
     <string name="app_name">ChitownX</string>
     <string name="favorites">Favorites</string>
     <string name="train">Train</string>
     <string name="bus">Bus</string>
+    <string name="divvy">Divvy</string>
     <string name="nearby">Nearby</string>
     <string name="alerts">Alerts</string>
     <string name="map">Map</string>
@@ -32,13 +34,15 @@
     <string name="action_refresh">Refresh</string>
     <string name="action_search">Search</string>
     <string name="progress_message">Loading...</string>
+    <string name="progress_bike">Bike data</string>
     <string name="progress_train">Train data</string>
     <string name="progress_bus">Bus data</string>
     <string name="progress_alert">Alert data</string>
-     <string name="progress_favorites">Favorites</string>
+    <string name="progress_favorites">Favorites</string>
     <string name="M">M</string>
     <string name="B">B</string>
     <string name="T">T</string>
+    <string name="D">D</string>
 
     <!-- Favorites -->
     <string name="station_name">Station: </string>
@@ -79,5 +83,8 @@
      
      <!-- Loading -->
      <string name="loading_image_description">A nice description</string>
+     
+     <!-- Bike -->
+     <string name="bike_activity">Divvy</string>
 
 </resources>

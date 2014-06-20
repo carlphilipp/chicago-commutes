@@ -18,6 +18,7 @@ package fr.cph.chicago.activity;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections4.MultiMap;
@@ -30,20 +31,24 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
 import android.widget.TextView;
+import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaRequestType;
+import fr.cph.chicago.connection.DivvyConnect;
 import fr.cph.chicago.data.AlertData;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.data.TrainData;
+import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
-import fr.cph.chicago.task.CtaConnectTask;
+import fr.cph.chicago.json.Json;
+import fr.cph.chicago.task.GlobalConnectTask;
 import fr.cph.chicago.util.Util;
 
 /**
@@ -62,8 +67,10 @@ public class BaseActivity extends Activity {
 	private SparseArray<TrainArrival> trainArrivals;
 
 	private List<BusArrival> busArrivals;
+	
+	private List<BikeStation> bikeStations;
 
-	private TextView trainMessage, busMessage, alertMessage, favoritesMessage;
+	private TextView trainMessage, busMessage, alertMessage, bikeMessage, favoritesMessage;
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
@@ -76,6 +83,8 @@ public class BaseActivity extends Activity {
 		busMessage = (TextView) findViewById(R.id.loadingBusView);
 
 		alertMessage = (TextView) findViewById(R.id.loadingAlertView);
+		
+		bikeMessage = (TextView) findViewById(R.id.loadingBikeView);
 
 		favoritesMessage = (TextView) findViewById(R.id.loadingFavoritesView);
 
@@ -89,7 +98,7 @@ public class BaseActivity extends Activity {
 
 		if (error) {
 			new LoadData().execute();
-		} else if (trainArrivals == null || busArrivals == null) {
+		} else if (trainArrivals == null || busArrivals == null || bikeStations == null) {
 			new LoadData().execute();
 		} else {
 			startMainActivity();
@@ -116,8 +125,8 @@ public class BaseActivity extends Activity {
 	 * @param busArrivals
 	 *            list of bus arrivals
 	 */
-	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals, final Boolean trainBoolean,
-			final Boolean busBoolean) {
+	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals,
+			final List<BikeStation> bikeStations, final Boolean trainBoolean, final Boolean busBoolean, final Boolean bikeBoolean) {
 		this.trainArrivals = trainArrivals;
 		this.busArrivals = busArrivals;
 		if (trainBoolean && busBoolean) {
@@ -182,13 +191,27 @@ public class BaseActivity extends Activity {
 				publishProgress(new String[] { "a", "false" });
 				Log.e(TAG, e.getMessage(), e);
 			}
+			// Load divvy
+			BaseActivity.this.bikeStations = new ArrayList<BikeStation>();
+			try {
+				Json json = new Json();
+				DivvyConnect divvyConnect = DivvyConnect.getInstance();
+				String bikeContent = divvyConnect.connect();
+				BaseActivity.this.bikeStations = json.parseStations(bikeContent);
+				Collections.sort(BaseActivity.this.bikeStations, Util.BIKE_COMPARATOR_NAME);
+				publishProgress(new String[] { "d", "true" });
+			} catch (ConnectException e) {
+				publishProgress(new String[] { "d", "false" });
+			} catch (ParserException e) {
+				publishProgress(new String[] { "d", "false" });
+			}
 			return null;
 		}
 
 		@Override
 		protected final void onProgressUpdate(String... progress) {
 			String type = progress[0];
-			boolean passed = Boolean.valueOf(progress[1]);
+			boolean passed = Boolean.valueOf(progress[1]);				
 			if (type.equals("t")) {
 				trainMessage.setVisibility(TextView.VISIBLE);
 				if (!passed) {
@@ -215,6 +238,15 @@ public class BaseActivity extends Activity {
 				} else {
 					alertMessage.setText(alertMessage.getText() + " - OK");
 					alertMessage.setTextColor(getResources().getColor(R.color.green));
+				}
+				bikeMessage.setVisibility(TextView.VISIBLE);
+			} else if (type.equals("d")) {
+				if (!passed) {
+					bikeMessage.setText(bikeMessage.getText() + " - FAIL");
+					bikeMessage.setTextColor(getResources().getColor(R.color.red));
+				} else {
+					bikeMessage.setText(bikeMessage.getText() + " - OK");
+					bikeMessage.setTextColor(getResources().getColor(R.color.green));
 				}
 			}
 		}
@@ -245,6 +277,7 @@ public class BaseActivity extends Activity {
 	public void displayError(final TrackerException exceptionToBeThrown) {
 		DataHolder.getInstance().setTrainData(null);
 		DataHolder.getInstance().setBusData(null);
+		DataHolder.getInstance().setAlertData(null);
 		ChicagoTracker.displayError(this, exceptionToBeThrown);
 		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 	}
@@ -270,8 +303,8 @@ public class BaseActivity extends Activity {
 			params2.put("stpid", fav[1]);
 		}
 
-		CtaConnectTask task = new CtaConnectTask(this, BaseActivity.class, CtaRequestType.TRAIN_ARRIVALS, params, CtaRequestType.BUS_ARRIVALS,
-				params2);
+		GlobalConnectTask task = new GlobalConnectTask(this, BaseActivity.class, CtaRequestType.TRAIN_ARRIVALS, params, CtaRequestType.BUS_ARRIVALS,
+				params2, false);
 		task.execute((Void) null);
 	}
 
@@ -283,6 +316,7 @@ public class BaseActivity extends Activity {
 		Bundle bundle = new Bundle();
 		bundle.putParcelableArrayList("busArrivals", (ArrayList<BusArrival>) busArrivals);
 		bundle.putSparseParcelableArray("trainArrivals", trainArrivals);
+		bundle.putParcelableArrayList("bikeStations", (ArrayList<BikeStation>) bikeStations);
 		intent.putExtras(bundle);
 
 		finish();

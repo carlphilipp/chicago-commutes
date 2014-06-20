@@ -128,7 +128,7 @@ public class BusActivity extends Activity {
 			TextView busRouteNameView = (TextView) findViewById(R.id.activity_bus_station_name);
 			busRouteNameView.setText(busStopName);
 
-			TextView busRouteNameView2 = (TextView) findViewById(R.id.activity_bus_value);
+			TextView busRouteNameView2 = (TextView) findViewById(R.id.activity_bus_station_value);
 			busRouteNameView2.setText(busRouteName + " (" + bound + ")");
 
 			streetViewImage = (ImageView) findViewById(R.id.activity_bus_streetview_image);

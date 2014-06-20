@@ -112,6 +112,7 @@ public class NavigationDrawerFragment extends Fragment {
 						getString(R.string.favorites), 
 						getString(R.string.train), 
 						getString(R.string.bus),
+						getString(R.string.divvy),
 						getString(R.string.nearby), 
 						getString(R.string.alerts), 
 						getString(R.string.map) }));

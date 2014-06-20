@@ -54,6 +54,8 @@
         android:textColor="@color/black"
         android:textSize="22sp"
         android:textStyle="bold" />
+    
+
 
     <TextView
         android:id="@+id/loadingTrainView"
@@ -96,12 +98,26 @@
         android:textColor="@color/black"
         android:textStyle="italic"
         android:visibility="invisible" />
+    
+    <TextView
+        android:id="@+id/loadingBikeView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/loadingAlertView"
+        android:layout_centerHorizontal="true"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:text="@string/progress_bike"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/black"
+        android:textStyle="italic"
+        android:visibility="invisible" />
 
     <TextView
         android:id="@+id/loadingFavoritesView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/loadingAlertView"
+        android:layout_below="@+id/loadingBikeView"
         android:layout_centerHorizontal="true"
         android:focusable="false"
         android:focusableInTouchMode="false"

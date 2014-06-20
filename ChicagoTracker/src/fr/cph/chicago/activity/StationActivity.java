@@ -142,21 +142,21 @@ public class StationActivity extends Activity {
 
 			this.isFavorite = isFavorite();
 
-			TextView textView = (TextView) findViewById(R.id.activity_station_station_name);
+			TextView textView = (TextView) findViewById(R.id.activity_bike_station_station_name);
 			textView.setText(station.getName().toString());
 
-			streetViewImage = (ImageView) findViewById(R.id.activity_station_streetview_image);
+			streetViewImage = (ImageView) findViewById(R.id.activity_bike_station_streetview_image);
 
-			streetViewText = (TextView) findViewById(R.id.activity_station_steetview_text);
+			streetViewText = (TextView) findViewById(R.id.activity_bike_station_steetview_text);
 
-			mapImage = (ImageView) findViewById(R.id.activity_station_map_image);
+			mapImage = (ImageView) findViewById(R.id.activity_bike_station_map_image);
 
-			directionImage = (ImageView) findViewById(R.id.activity_station_map_direction);
+			directionImage = (ImageView) findViewById(R.id.activity_bike_station_map_direction);
 
 			int line1PaddingColor = (int) getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
 			int line1PaddingTop = (int) getResources().getDimension(R.dimen.activity_station_stops_line1_padding_top);
 
-			favoritesImage = (ImageView) findViewById(R.id.activity_station_favorite_star);
+			favoritesImage = (ImageView) findViewById(R.id.activity_bike_station_favorite_star);
 			if (isFavorite) {
 				favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_active));
 			}
@@ -167,7 +167,7 @@ public class StationActivity extends Activity {
 				}
 			});
 
-			LinearLayout stopsView = (LinearLayout) findViewById(R.id.activity_station_stops);
+			LinearLayout stopsView = (LinearLayout) findViewById(R.id.activity_bike_station_details);
 
 			Map<TrainLine, List<Stop>> stops = station.getStopByLines();
 			CheckBox checkBox = null;

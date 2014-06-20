@@ -17,7 +17,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="fr.cph.chicago"
     android:versionCode="18"
-    android:versionName="2.0.5" >
+    android:versionName="2.1.0" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -105,6 +105,11 @@
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
+        </activity>
+         <activity
+            android:name="fr.cph.chicago.activity.BikeStationActivity"
+            android:label="@string/bike_activity"
+            android:screenOrientation="portrait" >
         </activity>
 
         <meta-data

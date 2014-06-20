@@ -44,13 +44,14 @@ import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.fragment.AlertFragment;
+import fr.cph.chicago.fragment.BikeFragment;
 import fr.cph.chicago.fragment.BusFragment;
 import fr.cph.chicago.fragment.FavoritesFragment;
 import fr.cph.chicago.fragment.MapFragment;
 import fr.cph.chicago.fragment.NavigationDrawerFragment;
 import fr.cph.chicago.fragment.NearbyFragment;
 import fr.cph.chicago.fragment.TrainFragment;
-import fr.cph.chicago.task.CtaConnectTask;
+import fr.cph.chicago.task.GlobalConnectTask;
 import fr.cph.chicago.util.Util;
 
 /**
@@ -68,6 +69,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	private TrainFragment trainFragment;
 	/** Bus Fragment **/
 	private BusFragment busFragment;
+	/** Bike Fragment **/
+	private BikeFragment bikeFragment;
 	/** Nearby fragment **/
 	private NearbyFragment nearbyFragment;
 	/** Alert Fragment **/
@@ -133,6 +136,14 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			}
 			break;
 		case 3:
+			if (bikeFragment == null) {
+				bikeFragment = BikeFragment.newInstance(position + 1);
+			}
+			if (!this.isFinishing()) {
+				ft.replace(R.id.container, bikeFragment).commit();
+			}
+			break;
+		case 4:
 			if (nearbyFragment == null) {
 				nearbyFragment = NearbyFragment.newInstance(position + 1);
 				if (!this.isFinishing()) {
@@ -148,7 +159,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				}
 			}
 			break;
-		case 4:
+		case 5:
 			if (alertFragment == null) {
 				alertFragment = AlertFragment.newInstance(position + 1);
 			}
@@ -156,7 +167,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				ft.replace(R.id.container, alertFragment).commit();
 			}
 			break;
-		case 5:
+		case 6:
 			if (mapFragment == null) {
 				mapFragment = MapFragment.newInstance(position + 1);
 			}
@@ -185,12 +196,15 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			mTitle = getString(R.string.bus);
 			break;
 		case 4:
-			mTitle = getString(R.string.nearby);
+			mTitle = getString(R.string.divvy);
 			break;
 		case 5:
-			mTitle = getString(R.string.alerts);
+			mTitle = getString(R.string.nearby);
 			break;
 		case 6:
+			mTitle = getString(R.string.alerts);
+			break;
+		case 7:
 			mTitle = getString(R.string.map);
 			break;
 		}
@@ -234,7 +248,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	public final boolean onOptionsItemSelected(final MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_refresh:
-			if (currentPosition != 3) {
+			if (currentPosition != 4 && currentPosition !=3) {
 				MenuItem menuItem = item;
 				menuItem.setActionView(R.layout.progressbar);
 				menuItem.expandActionView();
@@ -251,20 +265,20 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 					params2.put("rt", fav[0]);
 					params2.put("stpid", fav[1]);
 				}
-				CtaConnectTask task;
+				GlobalConnectTask task;
 				try {
-					task = new CtaConnectTask(favoritesFragment, FavoritesFragment.class, CtaRequestType.TRAIN_ARRIVALS, params,
-							CtaRequestType.BUS_ARRIVALS, params2);
+					task = new GlobalConnectTask(favoritesFragment, FavoritesFragment.class, CtaRequestType.TRAIN_ARRIVALS, params,
+							CtaRequestType.BUS_ARRIVALS, params2, true);
 					task.execute((Void) null);
 				} catch (ParserException e) {
 					ChicagoTracker.displayError(this, e);
 					return true;
 				}
 				Toast.makeText(this, "Refresh...!", Toast.LENGTH_SHORT).show();
-			} else {
+			} else if(currentPosition == 4){
 				nearbyFragment.reloadData();
 			}
-			return true;
+			return false;
 		case R.id.action_search:
 			return true;
 		}
@@ -318,6 +332,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 					public void onClick(DialogInterface dialog, int which) {
 						DataHolder.getInstance().setBusData(null);
 						DataHolder.getInstance().setTrainData(null);
+						DataHolder.getInstance().setAlertData(null);
 						finish();
 					}
 				}).setNegativeButton("No", null).show();

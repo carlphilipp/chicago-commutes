@@ -53,16 +53,47 @@ public final class Preferences {
 	 *            the bus preference string
 	 * @return a boolean
 	 */
-	public static final boolean hasFavorites(final String trains, final String bus) {
+	public static final boolean hasFavorites(final String trains, final String bus, final String bike) {
 		Context context = ChicagoTracker.getAppContext();
 		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
 		Set<String> setPref1 = sharedPref.getStringSet(trains, null);
 		Set<String> setPref2 = sharedPref.getStringSet(bus, null);
+		Set<String> setPref3 = sharedPref.getStringSet(bike, null);
 		boolean res = true;
-		if ((setPref1 == null || setPref1.size() == 0) && (setPref2 == null || setPref2.size() == 0)) {
+		if ((setPref1 == null || setPref1.size() == 0) && (setPref2 == null || setPref2.size() == 0) && (setPref3 == null || setPref3.size() == 0)) {
 			res = false;
 		}
 		return res;
+	}
+
+	public static final void saveBikeFavorites(final String name, final List<Integer> favorites) {
+		Context context = ChicagoTracker.getAppContext();
+		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = sharedPref.edit();
+		Set<String> set = new LinkedHashSet<String>();
+		for (Integer fav : favorites) {
+			set.add(fav.toString());
+		}
+		Log.v(TAG, "Put bike favorites: " + favorites.toString());
+		editor.putStringSet(name, set);
+		editor.commit();
+	}
+
+	public static final List<Integer> getBikeFavorites(final String name) {
+		Context context = ChicagoTracker.getAppContext();
+		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+		Set<String> setPref = sharedPref.getStringSet(name, null);
+		List<Integer> favorites = new ArrayList<Integer>();
+		if (setPref != null) {
+			Iterator<String> it = setPref.iterator();
+			while (it.hasNext()) {
+				String value = it.next();
+				favorites.add(Integer.valueOf(value));
+			}
+		}
+		Collections.sort(favorites);
+		Log.v(TAG, "Read bike favorites : " + favorites);
+		return favorites;
 	}
 
 	/**

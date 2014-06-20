@@ -1,12 +1,15 @@
 package fr.cph.chicago.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Bike station entity
  * 
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public final class BikeStation {
+public final class BikeStation implements Parcelable {
 	/** Station id **/
 	private int id;
 	/** Station name **/
@@ -22,7 +25,7 @@ public final class BikeStation {
 	/** Status key **/
 	private String statusKey;
 	/** Available bikes **/
-	private String availableBikes;
+	private int availableBikes;
 	/** Street address 1 **/
 	private String stAddress1;
 	/** Street address 2 **/
@@ -41,6 +44,18 @@ public final class BikeStation {
 	private String lastCommunicationTime;
 	/** Land mark **/
 	private int landMark;
+
+	public BikeStation() {
+
+	}
+
+	/**
+	 * 
+	 * @param in
+	 */
+	private BikeStation(Parcel in) {
+		readFromParcel(in);
+	}
 
 	public final int getId() {
 		return id;
@@ -98,11 +113,11 @@ public final class BikeStation {
 		this.statusKey = statusKey;
 	}
 
-	public final String getAvailableBikes() {
+	public final int getAvailableBikes() {
 		return availableBikes;
 	}
 
-	public final void setAvailableBikes(final String availableBikes) {
+	public final void setAvailableBikes(final int availableBikes) {
 		this.availableBikes = availableBikes;
 	}
 
@@ -177,4 +192,65 @@ public final class BikeStation {
 	public final void setLandMark(final int landMark) {
 		this.landMark = landMark;
 	}
+
+	@Override
+	public final String toString() {
+		return "[" + id + " " + name + " " + availableBikes + "/" + totalDocks + "]";
+	}
+
+	@Override
+	public final int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public final void writeToParcel(final Parcel dest, final int flags) {
+		dest.writeInt(id);
+		dest.writeString(name);
+		dest.writeInt(availableDocks);
+		dest.writeInt(totalDocks);
+		dest.writeParcelable(position, PARCELABLE_WRITE_RETURN_VALUE);
+		dest.writeString(statusValue);
+		dest.writeString(statusKey);
+		dest.writeInt(availableBikes);
+		dest.writeString(stAddress1);
+		dest.writeString(stAddress2);
+		dest.writeString(city);
+		dest.writeString(postalCode);
+		dest.writeString(location);
+		dest.writeString(altitude);
+		dest.writeString(String.valueOf(testStation));
+		dest.writeString(lastCommunicationTime);
+		dest.writeInt(landMark);
+	}
+
+	private void readFromParcel(final Parcel in) {
+		id = in.readInt();
+		name = in.readString();
+		availableDocks = in.readInt();
+		totalDocks = in.readInt();
+		position = in.readParcelable(Position.class.getClassLoader());
+		statusValue = in.readString();
+		statusKey = in.readString();
+		availableBikes = in.readInt();
+		stAddress1 = in.readString();
+		stAddress2 = in.readString();
+		city = in.readString();
+		postalCode = in.readString();
+		location = in.readString();
+		altitude = in.readString();
+		testStation = Boolean.valueOf(in.readString());
+		lastCommunicationTime = in.readString();
+		landMark = in.readInt();
+	}
+
+	public static final Parcelable.Creator<BikeStation> CREATOR = new Parcelable.Creator<BikeStation>() {
+		public BikeStation createFromParcel(Parcel in) {
+			return new BikeStation(in);
+		}
+
+		public BikeStation[] newArray(int size) {
+			return new BikeStation[size];
+		}
+	};
 }
