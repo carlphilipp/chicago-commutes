@@ -133,7 +133,7 @@ public class SearchActivity extends ListActivity {
 
 			for (Entry<TrainLine, List<Station>> e : trainData.getAllStations().entrySet()) {
 				for (Station station : e.getValue()) {
-					boolean res = StringUtils.containsIgnoreCase(station.getName(), query);
+					boolean res = StringUtils.containsIgnoreCase(station.getName(), query.trim());
 					if (res) {
 						if (!foundStations.contains(station)) {
 							foundStations.add(station);
@@ -145,7 +145,7 @@ public class SearchActivity extends ListActivity {
 			List<BusRoute> foundBusRoutes = new ArrayList<BusRoute>();
 
 			for (BusRoute busRoute : busData.getRoutes()) {
-				boolean res = StringUtils.containsIgnoreCase(busRoute.getId(), query) || StringUtils.containsIgnoreCase(busRoute.getName(), query);
+				boolean res = StringUtils.containsIgnoreCase(busRoute.getId(), query.trim()) || StringUtils.containsIgnoreCase(busRoute.getName(), query.trim());
 				if (res) {
 					if (!foundBusRoutes.contains(busRoute)) {
 						foundBusRoutes.add(busRoute);
