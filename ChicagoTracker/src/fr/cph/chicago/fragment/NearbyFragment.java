@@ -332,16 +332,16 @@ public class NearbyFragment extends Fragment {
 				busStops.clear();
 				busStops = busStopTmp;
 
-				List<Station> busStationTmp = new ArrayList<Station>();
+				List<Station> trainStationTmp = new ArrayList<Station>();
 				for (Station station : stations) {
-					if (trainArrivals.get(station.getId()).getEtas().size() == 0) {
+					if (trainArrivals.get(station.getId()) == null || trainArrivals.get(station.getId()).getEtas().size() == 0) {
 						trainArrivals.remove(station.getId());
 					} else {
-						busStationTmp.add(station);
+						trainStationTmp.add(station);
 					}
 				}
 				stations.clear();
-				stations = busStationTmp;
+				stations = trainStationTmp;
 			}
 			load(busStops, busArrivalsMap, stations, trainArrivals, bikeStationsRes);
 		}
