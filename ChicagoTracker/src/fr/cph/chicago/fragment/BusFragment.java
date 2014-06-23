@@ -109,7 +109,8 @@ public class BusFragment extends Fragment {
 				public void onTextChanged(CharSequence s, int start, int before, int count) {
 					List<BusRoute> busRoutes = busData.getRoutes();
 					for (BusRoute busRoute : busRoutes) {
-						if (StringUtils.containsIgnoreCase(busRoute.getId(), s) || StringUtils.containsIgnoreCase(busRoute.getName(), s)) {
+						if (StringUtils.containsIgnoreCase(busRoute.getId(), s.toString().trim())
+								|| StringUtils.containsIgnoreCase(busRoute.getName(), s.toString().trim())) {
 							this.busRoutes.add(busRoute);
 						}
 					}

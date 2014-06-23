@@ -19,6 +19,7 @@
 
 <!-- Scroll view wrapping the layout to allow to scroll -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrollViewBusStop"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_selector"
@@ -112,7 +113,7 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/activity_bus_title"
+            android:id="@+id/activity_bike_title2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/activity_bus_streetview_container"
@@ -159,7 +160,7 @@
             android:id="@+id/activity_bus_stops"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/activity_bus_title"
+            android:layout_below="@+id/activity_bike_title2"
             android:orientation="vertical" >
         </LinearLayout>
     </RelativeLayout>

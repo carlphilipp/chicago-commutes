@@ -52,7 +52,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
@@ -109,6 +108,8 @@ public class StationActivity extends Activity {
 	private Menu menu;
 	/** The first load **/
 	private boolean firstLoad = true;
+	/** Root view **/
+	private View rootView;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -124,6 +125,8 @@ public class StationActivity extends Activity {
 
 			// Load right xml
 			setContentView(R.layout.activity_station);
+
+			rootView = findViewById(R.id.scrollViewTrainStation);
 
 			// Get station id from bundle extra
 			if (stationId == null) {
@@ -310,7 +313,7 @@ public class StationActivity extends Activity {
 			MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
 			reqParams.put("mapid", String.valueOf(station.getId()));
 			new LoadData().execute(reqParams);
-			Toast.makeText(this, "Refresh...!", Toast.LENGTH_SHORT).show();
+			// Toast.makeText(this, "Refresh...!", Toast.LENGTH_SHORT).show();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -505,14 +508,25 @@ public class StationActivity extends Activity {
 					drawLine3(eta);
 				}
 				if (!firstLoad) {
-					MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-					refreshMenuItem.collapseActionView();
-					refreshMenuItem.setActionView(null);
+					highLightBackground();
 				}
 			} else {
 				ChicagoTracker.displayError(StationActivity.this, trackerException);
 			}
 		}
+	}
+
+	private void highLightBackground() {
+		// Highlight background and stop loading animation
+		rootView.setBackgroundResource(R.drawable.highlight_selector);
+		rootView.postDelayed(new Runnable() {
+			public void run() {
+				rootView.setBackgroundResource(R.drawable.bg_selector);
+				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+				refreshMenuItem.collapseActionView();
+				refreshMenuItem.setActionView(null);
+			}
+		}, 100);
 	}
 
 	/**

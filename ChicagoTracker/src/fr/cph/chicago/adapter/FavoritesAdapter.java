@@ -327,7 +327,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 				TextView routeIdView = (TextView) convertView.findViewById(R.id.route_id);
 				routeIdView.setText(busRoute.getId());
 
-				TextView routeNameView = (TextView) convertView.findViewById(R.id.bus_station_name_value);
+				TextView routeNameView = (TextView) convertView.findViewById(R.id.station_name_value_search);
 				routeNameView.setText(" " + busRoute.getName());
 
 				final LinearLayout favoritesLayout = (LinearLayout) convertView.findViewById(R.id.favorites_list);
@@ -468,35 +468,57 @@ public final class FavoritesAdapter extends BaseAdapter {
 				llh.setOrientation(LinearLayout.HORIZONTAL);
 				llh.setPadding(line1PaddingColor, stopsPaddingTop, 0, 0);
 
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-					llh.setBackground(context.getResources().getDrawable(R.drawable.any_selector));
-				}
-
 				TextView tlView = new TextView(context);
 				tlView.setBackgroundColor(context.getResources().getColor(R.color.black));
 				tlView.setText("   ");
 				tlView.setLayoutParams(paramsTextView);
 				llh.addView(tlView);
+				
+				LinearLayout availableLayout = new LinearLayout(context);
+				availableLayout.setOrientation(LinearLayout.VERTICAL);
+				
 
-				LinearLayout stopLayout = new LinearLayout(context);
-				stopLayout.setOrientation(LinearLayout.HORIZONTAL);
-				stopLayout.setPadding(line1PaddingColor, 0, 0, 0);
+				LinearLayout availableBikes = new LinearLayout(context);
+				availableBikes.setOrientation(LinearLayout.HORIZONTAL);
+				availableBikes.setPadding(line1PaddingColor, 0, 0, 0);
 
 				TextView availableBike = new TextView(context);
 				availableBike.setText("Available bikes: ");
 				availableBike.setTextColor(context.getResources().getColor(R.color.grey_5));
-				stopLayout.addView(availableBike);
+				availableBikes.addView(availableBike);
 
 				TextView amountBike = new TextView(context);
-				amountBike.setText(bikeStation.getAvailableBikes() + "/" + bikeStation.getTotalDocks());
-				if (bikeStation.getAvailableBikes() == bikeStation.getTotalDocks()) {
+				amountBike.setText("" + bikeStation.getAvailableBikes());
+				if (bikeStation.getAvailableBikes() == 0) {
 					amountBike.setTextColor(context.getResources().getColor(R.color.red));
 				} else {
 					amountBike.setTextColor(context.getResources().getColor(R.color.green));
 				}
-				stopLayout.addView(amountBike);
+				availableBikes.addView(amountBike);
 
-				llh.addView(stopLayout);
+				availableLayout.addView(availableBikes);
+
+				LinearLayout availableDocks = new LinearLayout(context);
+				availableDocks.setOrientation(LinearLayout.HORIZONTAL);
+				availableDocks.setPadding(line1PaddingColor, 0, 0, 0);
+
+				TextView availableDock = new TextView(context);
+				availableDock.setText("Available docks: ");
+				availableDock.setTextColor(context.getResources().getColor(R.color.grey_5));
+				availableDocks.addView(availableDock);
+
+				TextView amountDock = new TextView(context);
+				amountDock.setText("" + bikeStation.getAvailableDocks());
+				if (bikeStation.getAvailableDocks() == 0) {
+					amountDock.setTextColor(context.getResources().getColor(R.color.red));
+				} else {
+					amountDock.setTextColor(context.getResources().getColor(R.color.green));
+				}
+				availableDocks.addView(amountDock);
+
+				availableLayout.addView(availableDocks);
+				
+				llh.addView(availableLayout);
 
 				favoritesData.addView(llh);
 

@@ -1,5 +1,8 @@
 package fr.cph.chicago.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -244,6 +247,45 @@ public final class BikeStation implements Parcelable {
 		landMark = in.readInt();
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((altitude == null) ? 0 : altitude.hashCode());
+		result = prime * result + availableBikes;
+		result = prime * result + availableDocks;
+		result = prime * result + ((city == null) ? 0 : city.hashCode());
+		result = prime * result + id;
+		result = prime * result + landMark;
+		result = prime * result + ((lastCommunicationTime == null) ? 0 : lastCommunicationTime.hashCode());
+		result = prime * result + ((location == null) ? 0 : location.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((position == null) ? 0 : position.hashCode());
+		result = prime * result + ((postalCode == null) ? 0 : postalCode.hashCode());
+		result = prime * result + ((stAddress1 == null) ? 0 : stAddress1.hashCode());
+		result = prime * result + ((stAddress2 == null) ? 0 : stAddress2.hashCode());
+		result = prime * result + ((statusKey == null) ? 0 : statusKey.hashCode());
+		result = prime * result + ((statusValue == null) ? 0 : statusValue.hashCode());
+		result = prime * result + (testStation ? 1231 : 1237);
+		result = prime * result + totalDocks;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		BikeStation other = (BikeStation) obj;
+		if (id != other.id) {
+			return false;
+		}
+		return true;
+	}
+
 	public static final Parcelable.Creator<BikeStation> CREATOR = new Parcelable.Creator<BikeStation>() {
 		public BikeStation createFromParcel(Parcel in) {
 			return new BikeStation(in);
@@ -253,4 +295,25 @@ public final class BikeStation implements Parcelable {
 			return new BikeStation[size];
 		}
 	};
+
+	public static final List<BikeStation> readNearbyStation(List<BikeStation> bikeStations, Position position) {
+		final double dist = 0.004472;
+		double latitude = position.getLatitude();
+		double longitude = position.getLongitude();
+
+		double latMax = latitude + dist;
+		double latMin = latitude - dist;
+		double lonMax = longitude + dist;
+		double lonMin = longitude - dist;
+
+		List<BikeStation> bikeStationsRes = new ArrayList<BikeStation>();
+		for (BikeStation station : bikeStations) {
+			double trainLatitude = station.getPosition().getLatitude();
+			double trainLongitude = station.getPosition().getLongitude();
+			if (trainLatitude <= latMax && trainLatitude >= latMin && trainLongitude <= lonMax && trainLongitude >= lonMin) {
+				bikeStationsRes.add(station);
+			}
+		}
+		return bikeStationsRes;
+	}
 }

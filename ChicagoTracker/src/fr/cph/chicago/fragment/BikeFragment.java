@@ -22,7 +22,6 @@ package fr.cph.chicago.fragment;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -89,15 +88,21 @@ public class BikeFragment extends Fragment {
 	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
 		mActivity = (MainActivity) activity;
-		((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
+		mActivity.onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 
 	@Override
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		ChicagoTracker.checkData(mActivity);
-		Bundle bundle = mActivity.getIntent().getExtras();
-		this.bikeStations = bundle.getParcelableArrayList("bikeStations");
+		if (savedInstanceState != null) {
+			this.bikeStations = savedInstanceState.getParcelableArrayList("bikeStations");
+		} else {
+			Bundle bundle = mActivity.getIntent().getExtras();
+			this.bikeStations = bundle.getParcelableArrayList("bikeStations");
+		}
+		if (this.bikeStations == null) {
+			this.bikeStations = new ArrayList<BikeStation>();
+		}
 		setHasOptionsMenu(true);
 	}
 
@@ -123,7 +128,7 @@ public class BikeFragment extends Fragment {
 				@Override
 				public void onTextChanged(CharSequence s, int start, int before, int count) {
 					for (BikeStation bikeStation : BikeFragment.this.bikeStations) {
-						if (StringUtils.containsIgnoreCase(bikeStation.getName(), s)) {
+						if (StringUtils.containsIgnoreCase(bikeStation.getName(), s.toString().trim())) {
 							this.bikeStations.add(bikeStation);
 						}
 					}
@@ -140,8 +145,8 @@ public class BikeFragment extends Fragment {
 	}
 
 	@Override
-	public final void onSaveInstanceState(final Bundle outState) {
-		super.onSaveInstanceState(outState);
+	public final void onSaveInstanceState(final Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
 	}
 
 	@Override
@@ -153,7 +158,6 @@ public class BikeFragment extends Fragment {
 			menuItem.expandActionView();
 
 			new DivvyAsyncTask().execute();
-			Toast.makeText(ChicagoTracker.getAppContext(), "Refresh...!", Toast.LENGTH_SHORT).show();
 			return false;
 		}
 		return super.onOptionsItemSelected(item);
@@ -170,7 +174,8 @@ public class BikeFragment extends Fragment {
 				String bikeContent = divvyConnect.connect();
 				bikeStations = json.parseStations(bikeContent);
 				Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
-
+				bikeStations = new ArrayList<BikeStation>();
+				throw new ConnectException("derp");
 			} catch (ConnectException e) {
 				BikeFragment.this.mActivity.runOnUiThread(new Runnable() {
 					public void run() {
@@ -186,17 +191,21 @@ public class BikeFragment extends Fragment {
 				});
 				Log.e(TAG, "Parser error", e);
 			}
-			Bundle bundle = BikeFragment.this.mActivity.getIntent().getExtras();
-			bundle.putParcelableArrayList("bikeStations", (ArrayList<BikeStation>) bikeStations);
 			return bikeStations;
 		}
 
 		@Override
 		protected final void onPostExecute(final List<BikeStation> result) {
-			BikeFragment.this.bikeStations = result;
-			BikeFragment.this.ada.setBikeStations(result);
-			BikeFragment.this.ada.notifyDataSetChanged();
+			if (result.size() != 0) {
+				BikeFragment.this.bikeStations = result;
+				BikeFragment.this.ada.setBikeStations(result);
+				BikeFragment.this.ada.notifyDataSetChanged();
+				// Put in main activity the new list of bikes
+				BikeFragment.this.mActivity.getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) result);
+				BikeFragment.this.mActivity.onNewIntent(mActivity.getIntent());
+			}
 			BikeFragment.this.mActivity.stopRefreshAnimation();
 		}
 	}
+
 }

@@ -44,7 +44,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
-import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
@@ -91,10 +90,14 @@ public class BusActivity extends Activity {
 	private LinearLayout stopsView;
 	/** First time the activity is loaded **/
 	private boolean firstLoad = true;
+	/** First time the activity is loaded count **/
+	private int firstLoadCount;
 	/** Is added as favorite **/
 	private boolean isFavorite;
 	/** Menu **/
 	private Menu menu;
+	/** Root view **/
+	private View rootView;
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
@@ -103,6 +106,8 @@ public class BusActivity extends Activity {
 		if (!this.isFinishing()) {
 			// Load right xml
 			setContentView(R.layout.activity_bus);
+
+			rootView = findViewById(R.id.scrollViewBusStop);
 
 			if (busStopId == null && busRouteId == null && bound == null && busStopName == null && busRouteName == null && latitude == null
 					&& longitude == null) {
@@ -150,7 +155,7 @@ public class BusActivity extends Activity {
 
 			new DisplayGoogleStreetPicture().execute(position);
 
-			(new LoadData()).execute();
+			new LoadData().execute();
 
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 		}
@@ -221,7 +226,7 @@ public class BusActivity extends Activity {
 			(new LoadData()).execute();
 
 			// Display a toast message
-			Toast.makeText(this, "Refresh...!", Toast.LENGTH_SHORT).show();
+			// Toast.makeText(this, "Refresh...!", Toast.LENGTH_SHORT).show();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -322,14 +327,24 @@ public class BusActivity extends Activity {
 			} else {
 				ChicagoTracker.displayError(BusActivity.this, trackerException);
 			}
-
-			if (!firstLoad || trackerException != null) {
+			if (!firstLoad) {
+				// Highlight background
+				rootView.setBackgroundResource(R.drawable.highlight_selector);
+				rootView.postDelayed(new Runnable() {
+					public void run() {
+						rootView.setBackgroundResource(R.drawable.bg_selector);
+						MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+						refreshMenuItem.collapseActionView();
+						refreshMenuItem.setActionView(null);
+					}
+				}, 100);
+			} else {
+				setFirstLoad();
 				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
 				refreshMenuItem.collapseActionView();
 				refreshMenuItem.setActionView(null);
 			}
 		}
-
 	}
 
 	/**
@@ -409,8 +424,16 @@ public class BusActivity extends Activity {
 			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
 			refreshMenuItem.collapseActionView();
 			refreshMenuItem.setActionView(null);
+			setFirstLoad();
+
+		}
+	}
+
+	private void setFirstLoad() {
+		if (firstLoad && firstLoadCount == 1) {
 			firstLoad = false;
 		}
+		firstLoadCount++;
 	}
 
 	/**

@@ -16,12 +16,12 @@
 
 package fr.cph.chicago.adapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,10 +31,7 @@ import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BikeStationActivity;
 import fr.cph.chicago.activity.MainActivity;
-import fr.cph.chicago.activity.TrainStationActivity;
 import fr.cph.chicago.entity.BikeStation;
-import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.fragment.TrainFragment;
 
 /**
  * Adapter that will handle bikes
@@ -43,8 +40,6 @@ import fr.cph.chicago.fragment.TrainFragment;
  * @version 1
  */
 public final class BikeAdapter extends BaseAdapter {
-	/** Tag **/
-	private static final String TAG = "BikeAdapter";
 	/** Main activity **/
 	private MainActivity activity;
 	/** Bike data **/
@@ -60,6 +55,9 @@ public final class BikeAdapter extends BaseAdapter {
 		this.activity = activity;
 		Bundle bundle = activity.getIntent().getExtras();
 		this.bikeStations = bundle.getParcelableArrayList("bikeStations");
+		if(this.bikeStations == null){
+			this.bikeStations = new ArrayList<BikeStation>();
+		}
 	}
 
 	@Override
@@ -89,21 +87,14 @@ public final class BikeAdapter extends BaseAdapter {
 			convertView = vi.inflate(R.layout.list_bike, null);
 
 			holder = new ViewHolder();
-			holder.stationNameView = (TextView) convertView.findViewById(R.id.bus_station_name_value);
-			holder.bikeAvailabilityView = (TextView) convertView.findViewById(R.id.bike_availability);
+			holder.stationNameView = (TextView) convertView.findViewById(R.id.station_name_value_search);
 
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
 		holder.stationNameView.setText(station.getName());
-		holder.bikeAvailabilityView.setText(station.getAvailableBikes() + "/" + station.getTotalDocks());
-		if (station.getAvailableBikes() == station.getTotalDocks()) {
-			holder.bikeAvailabilityView.setTextColor(ChicagoTracker.getAppContext().getResources().getColor(R.color.red));
-		} else {
-			holder.bikeAvailabilityView.setTextColor(ChicagoTracker.getAppContext().getResources().getColor(R.color.green));
-		}
-		
+
 		convertView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -112,6 +103,7 @@ public final class BikeAdapter extends BaseAdapter {
 				extras.putParcelable("station", station);
 				intent.putExtras(extras);
 				activity.startActivity(intent);
+				activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 			}
 		});
 		return convertView;
@@ -129,6 +121,5 @@ public final class BikeAdapter extends BaseAdapter {
 	 */
 	private static class ViewHolder {
 		TextView stationNameView;
-		TextView bikeAvailabilityView;
 	}
 }

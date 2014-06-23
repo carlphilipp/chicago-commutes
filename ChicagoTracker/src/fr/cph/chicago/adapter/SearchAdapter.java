@@ -41,11 +41,13 @@ import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.TextView;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
+import fr.cph.chicago.activity.BikeStationActivity;
 import fr.cph.chicago.activity.BusBoundActivity;
 import fr.cph.chicago.activity.SearchActivity;
 import fr.cph.chicago.activity.StationActivity;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.CtaRequestType;
+import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.Station;
@@ -68,6 +70,8 @@ public final class SearchAdapter extends BaseAdapter {
 	private List<Station> trains;
 	/** List of buses route **/
 	private List<BusRoute> buses;
+	/** List of bikes stations **/
+	private List<BikeStation> bikes;
 	/** The context **/
 	private Context context;
 	/** The search activity **/
@@ -91,7 +95,7 @@ public final class SearchAdapter extends BaseAdapter {
 
 	@Override
 	public final int getCount() {
-		return trains.size() + buses.size();
+		return trains.size() + buses.size() + bikes.size();
 	}
 
 	@Override
@@ -99,8 +103,10 @@ public final class SearchAdapter extends BaseAdapter {
 		Object object = null;
 		if (position < trains.size()) {
 			object = trains.get(position);
-		} else {
+		} else if (position < trains.size() + buses.size()) {
 			object = buses.get(position - trains.size());
+		} else {
+			object = bikes.get(position - (trains.size() + buses.size()));
 		}
 		return object;
 	}
@@ -116,10 +122,10 @@ public final class SearchAdapter extends BaseAdapter {
 		LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		convertView = vi.inflate(R.layout.list_search, null);
 
-		TextView rounteName = (TextView) convertView.findViewById(R.id.bus_station_name_value);
+		TextView rounteName = (TextView) convertView.findViewById(R.id.station_name_value_search);
 
 		if (position < trains.size()) {
-			final Station station = trains.get(position);
+			final Station station = (Station) getItem(position);
 			Set<TrainLine> lines = station.getLines();
 
 			rounteName.setText(station.getName());
@@ -154,8 +160,8 @@ public final class SearchAdapter extends BaseAdapter {
 					activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 				}
 			});
-		} else {
-			final BusRoute busRoute = buses.get(position - trains.size());
+		} else if (position < trains.size() + buses.size()) {
+			final BusRoute busRoute = (BusRoute) getItem(position);
 
 			TextView type = (TextView) convertView.findViewById(R.id.train_bus_type);
 			type.setText("B");
@@ -169,6 +175,25 @@ public final class SearchAdapter extends BaseAdapter {
 					loadingTextView.setVisibility(LinearLayout.VISIBLE);
 					activity.startRefreshAnimation();
 					new DirectionAsyncTask().execute(busRoute, loadingTextView);
+				}
+			});
+		} else {
+			final BikeStation bikeStation = (BikeStation) getItem(position);
+			
+			TextView type = (TextView) convertView.findViewById(R.id.train_bus_type);
+			type.setText("D");
+			
+			rounteName.setText(bikeStation.getName());
+			
+			convertView.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Intent intent = new Intent(ChicagoTracker.getAppContext(), BikeStationActivity.class);
+					Bundle extras = new Bundle();
+					extras.putParcelable("station", bikeStation);
+					intent.putExtras(extras);
+					activity.startActivity(intent);
+					activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 				}
 			});
 		}
@@ -258,8 +283,9 @@ public final class SearchAdapter extends BaseAdapter {
 	 * @param buses
 	 *            the list of bus routes
 	 */
-	public void updateData(List<Station> trains, List<BusRoute> buses) {
+	public void updateData(List<Station> trains, List<BusRoute> buses, List<BikeStation> bikes) {
 		this.trains = trains;
 		this.buses = buses;
+		this.bikes = bikes;
 	}
 }

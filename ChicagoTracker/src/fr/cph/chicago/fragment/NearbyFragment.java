@@ -68,10 +68,12 @@ import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.NearbyAdapter;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.CtaRequestType;
+import fr.cph.chicago.connection.DivvyConnect;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.data.TrainData;
+import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Position;
@@ -80,6 +82,7 @@ import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
+import fr.cph.chicago.json.Json;
 import fr.cph.chicago.xml.Xml;
 
 /**
@@ -219,12 +222,18 @@ public class NearbyFragment extends Fragment {
 		private List<BusStop> busStops;
 		/** Stations **/
 		private List<Station> stations;
+		/** List of bike stations result **/
+		private List<BikeStation> bikeStationsRes;
+		/** List of bike stations result **/
+		private List<BikeStation> bikeStationsTemp;
 
 		@SuppressWarnings("unchecked")
 		@Override
 		protected final Void doInBackground(final List<?>... params) {
 			busStops = (List<BusStop>) params[0];
 			stations = (List<Station>) params[1];
+			bikeStationsRes = new ArrayList<BikeStation>();
+			bikeStationsTemp = (List<BikeStation>) params[2];
 
 			busArrivalsMap = new SparseArray<Map<String, List<BusArrival>>>();
 			trainArrivals = new SparseArray<TrainArrival>();
@@ -286,6 +295,23 @@ public class NearbyFragment extends Fragment {
 					Log.e(TAG, e.getMessage(), e);
 				}
 			}
+			// Bike
+			DivvyConnect connect = DivvyConnect.getInstance();
+			try {
+				Json json = new Json();
+				String content = connect.connect();
+				List<BikeStation> bikeStationUpdated = json.parseStations(content);
+				for (BikeStation station : bikeStationUpdated) {
+					if (bikeStationsTemp.contains(station)) {
+						bikeStationsRes.add(station);
+					}
+				}
+			} catch (ConnectException e) {
+				Log.e(TAG, e.getMessage(), e);
+			} catch (ParserException e) {
+				Log.e(TAG, e.getMessage(), e);
+			}
+
 			return null;
 		}
 
@@ -314,7 +340,7 @@ public class NearbyFragment extends Fragment {
 				stations.clear();
 				stations = busStationTmp;
 			}
-			load(busStops, busArrivalsMap, stations, trainArrivals);
+			load(busStops, busArrivalsMap, stations, trainArrivals, bikeStationsRes);
 		}
 	}
 
@@ -346,6 +372,8 @@ public class NearbyFragment extends Fragment {
 		private List<BusStop> busStops;
 		/** The list of train stations **/
 		private List<Station> trainStations;
+		/** List of bike stations **/
+		private List<BikeStation> bikeStations;
 		/** The location manager **/
 		private LocationManager locationManager;
 
@@ -353,6 +381,7 @@ public class NearbyFragment extends Fragment {
 		protected final Void doInBackground(final Void... params) {
 			busStops = new ArrayList<BusStop>();
 			trainStations = new ArrayList<Station>();
+			bikeStations = NearbyFragment.this.mActivity.getIntent().getExtras().getParcelableArrayList("bikeStations");
 
 			DataHolder dataHolder = DataHolder.getInstance();
 			BusData busData = dataHolder.getBusData();
@@ -401,13 +430,14 @@ public class NearbyFragment extends Fragment {
 
 				busStops = busData.readNearbyStops(position);
 				trainStations = trainData.readNearbyStation(position);
+				bikeStations = BikeStation.readNearbyStation(bikeStations, position);
 			}
 			return null;
 		}
 
 		@Override
 		protected final void onPostExecute(final Void result) {
-			new LoadArrivals().execute(busStops, trainStations);
+			new LoadArrivals().execute(busStops, trainStations, bikeStations);
 			centerMap(position);
 			locationManager.removeUpdates(LoadNearby.this);
 		}
@@ -437,7 +467,7 @@ public class NearbyFragment extends Fragment {
 					NearbyFragment.this.mActivity.runOnUiThread(new Runnable() {
 						public void run() {
 							AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(NearbyFragment.this.getActivity());
-							alertDialogBuilder.setTitle("GPS is settings");
+							alertDialogBuilder.setTitle("GPS settings");
 							alertDialogBuilder.setMessage("GPS is not enabled. Do you want to go to settings menu?");
 							alertDialogBuilder.setCancelable(false).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog, int id) {
@@ -493,7 +523,7 @@ public class NearbyFragment extends Fragment {
 	 *            the list of train arrival
 	 */
 	private void load(final List<BusStop> buses, final SparseArray<Map<String, List<BusArrival>>> busArrivals, final List<Station> stations,
-			final SparseArray<TrainArrival> trainArrivals) {
+			final SparseArray<TrainArrival> trainArrivals, final List<BikeStation> bikeStations) {
 		List<Marker> markers = new ArrayList<Marker>();
 		for (BusStop busStop : buses) {
 			LatLng point = new LatLng(busStop.getPosition().getLatitude(), busStop.getPosition().getLongitude());
@@ -510,8 +540,14 @@ public class NearbyFragment extends Fragment {
 				markers.add(marker);
 			}
 		}
-		addClickEventsToMarkers(buses, stations);
-		ada.updateData(buses, busArrivals, stations, trainArrivals, map, markers);
+		for (BikeStation station : bikeStations) {
+			LatLng point = new LatLng(station.getPosition().getLatitude(), station.getPosition().getLongitude());
+			Marker marker = map.addMarker(new MarkerOptions().position(point).title(station.getName()).snippet(station.getId() + "")
+					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+			markers.add(marker);
+		}
+		addClickEventsToMarkers(buses, stations, bikeStations);
+		ada.updateData(buses, busArrivals, stations, trainArrivals, bikeStations, map, markers);
 		ada.notifyDataSetChanged();
 		showProgress(false);
 		nearbyContainer.setVisibility(View.VISIBLE);
@@ -526,7 +562,7 @@ public class NearbyFragment extends Fragment {
 	 * @param stations
 	 *            the list of stations
 	 */
-	private void addClickEventsToMarkers(final List<BusStop> busStops, final List<Station> stations) {
+	private void addClickEventsToMarkers(final List<BusStop> busStops, final List<Station> stations, final List<BikeStation> bikeStations) {
 		map.setOnMarkerClickListener(new OnMarkerClickListener() {
 
 			@Override
@@ -546,6 +582,13 @@ public class NearbyFragment extends Fragment {
 							listView.smoothScrollToPosition(indice);
 							break;
 						}
+					}
+				}
+				for (int i = 0; i < bikeStations.size(); i++) {
+					int indice = i + stations.size() + busStops.size();
+					if (marker.getSnippet().equals(bikeStations.get(i).getId() + "")) {
+						listView.smoothScrollToPosition(indice);
+						break;
 					}
 				}
 				return false;

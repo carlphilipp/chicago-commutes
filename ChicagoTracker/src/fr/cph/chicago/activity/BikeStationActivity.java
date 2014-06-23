@@ -19,12 +19,12 @@ package fr.cph.chicago.activity;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -37,6 +37,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
@@ -66,8 +67,6 @@ public class BikeStationActivity extends Activity {
 	private ImageView streetViewImage;
 	/** Street view text **/
 	private TextView streetViewText;
-	/** Available bike **/
-	private TextView bikeAvail;
 	/** Map image **/
 	private ImageView mapImage;
 	/** Direction image **/
@@ -119,20 +118,52 @@ public class BikeStationActivity extends Activity {
 			TextView bikeStationValue = (TextView) findViewById(R.id.activity_bike_station_value);
 			bikeStationValue.setText(station.getStAddress1());
 
-			bikeAvail = (TextView) findViewById(R.id.activity_bike_station_availaible);
-			setValue(bikeAvail);
+			setValue();
 
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 		}
 	}
 
-	private void setValue(TextView bikeAvail) {
-		if (station.getAvailableBikes() == station.getTotalDocks()) {
-			bikeAvail.setTextColor(ChicagoTracker.getAppContext().getResources().getColor(R.color.red));
+	private void setValue() {
+		Context context = ChicagoTracker.getAppContext();
+		LinearLayout favoritesData = (LinearLayout) findViewById(R.id.favorites_bikes_list);
+		favoritesData.removeAllViews();
+		LinearLayout llh = new LinearLayout(context);
+		llh.setOrientation(LinearLayout.HORIZONTAL);
+		LinearLayout availableLayout = new LinearLayout(context);
+		availableLayout.setOrientation(LinearLayout.VERTICAL);
+		LinearLayout availableBikes = new LinearLayout(context);
+		availableBikes.setOrientation(LinearLayout.HORIZONTAL);
+		TextView availableBike = new TextView(context);
+		availableBike.setText("Available bikes: ");
+		availableBike.setTextColor(context.getResources().getColor(R.color.grey_5));
+		availableBikes.addView(availableBike);
+		TextView amountBike = new TextView(context);
+		amountBike.setText("" + station.getAvailableBikes());
+		if (station.getAvailableBikes() == 0) {
+			amountBike.setTextColor(context.getResources().getColor(R.color.red));
 		} else {
-			bikeAvail.setTextColor(ChicagoTracker.getAppContext().getResources().getColor(R.color.green));
+			amountBike.setTextColor(context.getResources().getColor(R.color.green));
 		}
-		bikeAvail.setText(station.getAvailableBikes() + "/" + station.getTotalDocks());
+		availableBikes.addView(amountBike);
+		availableLayout.addView(availableBikes);
+		LinearLayout availableDocks = new LinearLayout(context);
+		availableDocks.setOrientation(LinearLayout.HORIZONTAL);
+		TextView availableDock = new TextView(context);
+		availableDock.setText("Available docks: ");
+		availableDock.setTextColor(context.getResources().getColor(R.color.grey_5));
+		availableDocks.addView(availableDock);
+		TextView amountDock = new TextView(context);
+		amountDock.setText("" + station.getAvailableDocks());
+		if (station.getAvailableDocks() == 0) {
+			amountDock.setTextColor(context.getResources().getColor(R.color.red));
+		} else {
+			amountDock.setTextColor(context.getResources().getColor(R.color.green));
+		}
+		availableDocks.addView(amountDock);
+		availableLayout.addView(availableDocks);
+		llh.addView(availableLayout);
+		favoritesData.addView(llh);
 	}
 
 	@Override
@@ -173,7 +204,7 @@ public class BikeStationActivity extends Activity {
 			menuItem.expandActionView();
 
 			new DivvyAsyncTask().execute();
-			Toast.makeText(this, "Refresh...!", Toast.LENGTH_SHORT).show();
+			//Toast.makeText(this, "Refresh...!", Toast.LENGTH_SHORT).show();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -198,7 +229,8 @@ public class BikeStationActivity extends Activity {
 
 	public final void refreshStation(BikeStation station) {
 		this.station = station;
-		setValue(bikeAvail);
+		// setValue(bikeAvail);
+		setValue();
 		MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
 		refreshMenuItem.collapseActionView();
 		refreshMenuItem.setActionView(null);

@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import android.util.Log;
 import android.util.SparseArray;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.entity.BikeStation;
@@ -95,8 +94,6 @@ public class Favorites {
 	 * @return an object, station or bus route
 	 */
 	public final Object getObject(final int position) {
-		Log.i("Favorites", "trainFavorites.size(): " + trainFavorites.size() + " / fakeBusFavorites.size(): " + fakeBusFavorites.size());
-		Log.i("Favorites", "position: " + position);
 		Object result = null;
 		if (position < trainFavorites.size()) {
 			Integer stationId = trainFavorites.get(position);

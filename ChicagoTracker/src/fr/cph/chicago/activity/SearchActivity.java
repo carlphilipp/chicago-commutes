@@ -27,6 +27,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -38,6 +39,7 @@ import fr.cph.chicago.adapter.SearchAdapter;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
+import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.enumeration.TrainLine;
@@ -61,6 +63,7 @@ public class SearchActivity extends ListActivity {
 		ChicagoTracker.checkData(this);
 		if (!this.isFinishing()) {
 			setContentView(R.layout.activity_search);
+			
 			FrameLayout container = (FrameLayout) findViewById(R.id.container);
 			container.getForeground().setAlpha(0);
 			ada = new SearchAdapter(this, container);
@@ -128,6 +131,8 @@ public class SearchActivity extends ListActivity {
 			DataHolder dataHolder = DataHolder.getInstance();
 			BusData busData = dataHolder.getBusData();
 			TrainData trainData = dataHolder.getTrainData();
+			
+			
 
 			List<Station> foundStations = new ArrayList<Station>();
 
@@ -152,8 +157,19 @@ public class SearchActivity extends ListActivity {
 					}
 				}
 			}
-
-			ada.updateData(foundStations, foundBusRoutes);
+			
+			List<BikeStation> bikeStations = intent.getExtras().getParcelableArrayList("bikeStations");
+			List<BikeStation> foundBikeStations = new ArrayList<BikeStation>();
+			for(BikeStation bikeStation: bikeStations){
+				boolean res = StringUtils.containsIgnoreCase(bikeStation.getName(), query.trim()) || StringUtils.containsIgnoreCase(bikeStation.getStAddress1(), query.trim());
+				if (res) {
+					if (!foundBikeStations.contains(bikeStation)) {
+						foundBikeStations.add(bikeStation);
+					}
+				}
+			}
+			
+			ada.updateData(foundStations, foundBusRoutes, foundBikeStations);
 			ada.notifyDataSetChanged();
 		}
 	}

@@ -14,8 +14,8 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
--->
 
+-->
 
 <!-- Scroll view wrapping the layout to allow to scroll -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -112,9 +112,9 @@
                 android:layout_marginLeft="4dp"
                 android:textColor="@color/white" />
         </RelativeLayout>
-        
-		<RelativeLayout
-            android:id="@+id/activity_bus_title"
+
+        <RelativeLayout
+            android:id="@+id/activity_bike_title2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/activity_bike_station_streetview_container"
@@ -155,19 +155,15 @@
                 android:textColor="@+color/black"
                 android:textIsSelectable="false"
                 android:textStyle="bold" />
-            
-             <TextView
-                android:id="@+id/activity_bike_station_availaible"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/activity_bus_T"
-                android:ellipsize="end"
-                android:lines="1"
-                android:layout_alignParentRight="true"
-                android:scrollHorizontally="true"
-                android:textIsSelectable="false"
-                android:textStyle="bold" />
         </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/favorites_bikes_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/activity_bike_title2"
+            android:orientation="vertical" >
+        </LinearLayout>
     </RelativeLayout>
 
 </ScrollView>

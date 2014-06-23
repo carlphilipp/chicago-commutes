@@ -48,6 +48,7 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
+import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Eta;
@@ -87,6 +88,8 @@ public final class NearbyAdapter extends BaseAdapter {
 	private Map<Integer, LinearLayout> layouts;
 	/** View **/
 	private Map<Integer, View> views;
+	/** List of bike stations **/
+	private List<BikeStation> bikeStations;
 
 	@SuppressLint("UseSparseArrays")
 	public NearbyAdapter(final MainActivity activity) {
@@ -94,6 +97,7 @@ public final class NearbyAdapter extends BaseAdapter {
 		this.busStops = new ArrayList<BusStop>();
 		this.busArrivals = new SparseArray<Map<String, List<BusArrival>>>();
 		this.stations = new ArrayList<Station>();
+		this.bikeStations = new ArrayList<BikeStation>();
 		this.trainArrivals = new SparseArray<TrainArrival>();
 		this.busData = DataHolder.getInstance().getBusData();
 
@@ -104,7 +108,7 @@ public final class NearbyAdapter extends BaseAdapter {
 
 	@Override
 	public final int getCount() {
-		return busStops.size() + stations.size();
+		return busStops.size() + stations.size() + bikeStations.size();
 	}
 
 	@Override
@@ -112,9 +116,12 @@ public final class NearbyAdapter extends BaseAdapter {
 		Object res = null;
 		if (position < stations.size()) {
 			res = stations.get(position);
-		} else {
+		} else if (position < stations.size() + busStops.size()) {
 			int indice = position - stations.size();
 			res = busStops.get(indice);
+		} else {
+			int indice = position - (stations.size() + busStops.size());
+			res = bikeStations.get(indice);
 		}
 		return res;
 	}
@@ -124,9 +131,12 @@ public final class NearbyAdapter extends BaseAdapter {
 		int id = 0;
 		if (position < stations.size()) {
 			id = stations.get(position).getId();
-		} else {
+		} else if (position < stations.size() + busStops.size()) {
 			int indice = position - stations.size();
 			id = busStops.get(indice).getId();
+		} else {
+			int indice = position - (stations.size() + busStops.size());
+			id = bikeStations.get(indice).getId();
 		}
 		return id;
 	}
@@ -174,7 +184,7 @@ public final class NearbyAdapter extends BaseAdapter {
 
 				TrainViewHolder holder = new TrainViewHolder();
 
-				TextView routeView = (TextView) convertView.findViewById(R.id.bus_station_name_value);
+				TextView routeView = (TextView) convertView.findViewById(R.id.station_name_value_search);
 				routeView.setText(station.getName());
 				holder.stationNameView = routeView;
 
@@ -283,14 +293,14 @@ public final class NearbyAdapter extends BaseAdapter {
 					}
 				}
 			}
-		} else {
+		} else if (position < stations.size() + busStops.size()) {
 			int indice = position - stations.size();
 			final BusStop busStop = busStops.get(indice);
 
 			TextView typeView = (TextView) convertView.findViewById(R.id.train_bus_type);
 			typeView.setText("B");
 
-			TextView routeView = (TextView) convertView.findViewById(R.id.bus_station_name_value);
+			TextView routeView = (TextView) convertView.findViewById(R.id.station_name_value_search);
 			routeView.setText(busStop.getName());
 
 			convertView.setOnClickListener(new OnClickListener() {
@@ -362,6 +372,93 @@ public final class NearbyAdapter extends BaseAdapter {
 					resultLayout.addView(llh);
 				}
 			}
+		} else {
+			int indice = position - (stations.size() + busStops.size());
+			final BikeStation bikeStation = (BikeStation) bikeStations.get(indice);
+
+			LinearLayout favoritesData = (LinearLayout) convertView.findViewById(R.id.nearby_results);
+			
+			TextView typeView = (TextView) convertView.findViewById(R.id.train_bus_type);
+			typeView.setText("D");
+			
+			TextView routeView = (TextView) convertView.findViewById(R.id.station_name_value_search);
+			routeView.setText(bikeStation.getName());
+
+			LinearLayout llh = new LinearLayout(context);
+			llh.setLayoutParams(paramsLayout);
+			llh.setOrientation(LinearLayout.HORIZONTAL);
+			llh.setPadding(line1PaddingColor, stopsPaddingTop, 0, 0);
+
+			TextView tlView = new TextView(context);
+			tlView.setBackgroundColor(context.getResources().getColor(R.color.black));
+			tlView.setText("   ");
+			tlView.setLayoutParams(paramsTextView);
+			llh.addView(tlView);
+
+			LinearLayout availableLayout = new LinearLayout(context);
+			availableLayout.setOrientation(LinearLayout.VERTICAL);
+
+			LinearLayout availableBikes = new LinearLayout(context);
+			availableBikes.setOrientation(LinearLayout.HORIZONTAL);
+			availableBikes.setPadding(line1PaddingColor, 0, 0, 0);
+
+			TextView availableBike = new TextView(context);
+			availableBike.setText("Available bikes: ");
+			availableBike.setTextColor(context.getResources().getColor(R.color.grey_5));
+			availableBikes.addView(availableBike);
+
+			TextView amountBike = new TextView(context);
+			amountBike.setText("" + bikeStation.getAvailableBikes());
+			if (bikeStation.getAvailableBikes() == 0) {
+				amountBike.setTextColor(context.getResources().getColor(R.color.red));
+			} else {
+				amountBike.setTextColor(context.getResources().getColor(R.color.green));
+			}
+			availableBikes.addView(amountBike);
+
+			availableLayout.addView(availableBikes);
+
+			LinearLayout availableDocks = new LinearLayout(context);
+			availableDocks.setOrientation(LinearLayout.HORIZONTAL);
+			availableDocks.setPadding(line1PaddingColor, 0, 0, 0);
+
+			TextView availableDock = new TextView(context);
+			availableDock.setText("Available docks: ");
+			availableDock.setTextColor(context.getResources().getColor(R.color.grey_5));
+			availableDocks.addView(availableDock);
+
+			TextView amountDock = new TextView(context);
+			amountDock.setText("" + bikeStation.getAvailableDocks());
+			if (bikeStation.getAvailableDocks() == 0) {
+				amountDock.setTextColor(context.getResources().getColor(R.color.red));
+			} else {
+				amountDock.setTextColor(context.getResources().getColor(R.color.green));
+			}
+			availableDocks.addView(amountDock);
+
+			availableLayout.addView(availableDocks);
+
+			llh.addView(availableLayout);
+
+			favoritesData.addView(llh);
+
+			convertView.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					if (map != null) {
+						LatLng latLng = new LatLng(bikeStation.getPosition().getLatitude(), bikeStation.getPosition().getLongitude());
+						CameraPosition current = new CameraPosition.Builder().target(latLng).zoom(15.5f).bearing(0).tilt(0).build();
+						map.animateCamera(CameraUpdateFactory.newCameraPosition(current), Math.max(1000, 1), null);
+						for (Marker marker : markers) {
+							if (marker.getSnippet().equals(bikeStation.getId() + "")) {
+								marker.showInfoWindow();
+								break;
+							}
+						}
+					}
+				}
+			});
 		}
 
 		return convertView;
@@ -395,11 +492,13 @@ public final class NearbyAdapter extends BaseAdapter {
 	 *            the markers
 	 */
 	public final void updateData(final List<BusStop> busStops, final SparseArray<Map<String, List<BusArrival>>> busArrivals,
-			final List<Station> stations, final SparseArray<TrainArrival> trainArrivals, final GoogleMap map, final List<Marker> markers) {
+			final List<Station> stations, final SparseArray<TrainArrival> trainArrivals, final List<BikeStation> bikeStations, final GoogleMap map,
+			final List<Marker> markers) {
 		this.busStops = busStops;
 		this.busArrivals = busArrivals;
 		this.stations = stations;
 		this.trainArrivals = trainArrivals;
+		this.bikeStations = bikeStations;
 		this.map = map;
 		this.markers = markers;
 	}

@@ -31,7 +31,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
 import android.widget.TextView;
-import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaRequestType;
@@ -67,7 +66,7 @@ public class BaseActivity extends Activity {
 	private SparseArray<TrainArrival> trainArrivals;
 
 	private List<BusArrival> busArrivals;
-	
+
 	private List<BikeStation> bikeStations;
 
 	private TextView trainMessage, busMessage, alertMessage, bikeMessage, favoritesMessage;
@@ -83,7 +82,7 @@ public class BaseActivity extends Activity {
 		busMessage = (TextView) findViewById(R.id.loadingBusView);
 
 		alertMessage = (TextView) findViewById(R.id.loadingAlertView);
-		
+
 		bikeMessage = (TextView) findViewById(R.id.loadingBikeView);
 
 		favoritesMessage = (TextView) findViewById(R.id.loadingFavoritesView);
@@ -202,8 +201,10 @@ public class BaseActivity extends Activity {
 				publishProgress(new String[] { "d", "true" });
 			} catch (ConnectException e) {
 				publishProgress(new String[] { "d", "false" });
+				Log.e(TAG, e.getMessage(), e);
 			} catch (ParserException e) {
 				publishProgress(new String[] { "d", "false" });
+				Log.e(TAG, e.getMessage(), e);
 			}
 			return null;
 		}
@@ -211,7 +212,7 @@ public class BaseActivity extends Activity {
 		@Override
 		protected final void onProgressUpdate(String... progress) {
 			String type = progress[0];
-			boolean passed = Boolean.valueOf(progress[1]);				
+			boolean passed = Boolean.valueOf(progress[1]);
 			if (type.equals("t")) {
 				trainMessage.setVisibility(TextView.VISIBLE);
 				if (!passed) {

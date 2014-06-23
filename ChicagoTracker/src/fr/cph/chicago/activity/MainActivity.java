@@ -16,6 +16,7 @@
 
 package fr.cph.chicago.activity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.MultiMap;
@@ -29,8 +30,10 @@ import android.app.FragmentTransaction;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -42,6 +45,7 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
+import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.fragment.AlertFragment;
 import fr.cph.chicago.fragment.BikeFragment;
@@ -248,7 +252,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	public final boolean onOptionsItemSelected(final MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_refresh:
-			if (currentPosition != 4 && currentPosition !=3) {
+			if (currentPosition != 4 && currentPosition != 3) {
 				MenuItem menuItem = item;
 				menuItem.setActionView(R.layout.progressbar);
 				menuItem.expandActionView();
@@ -274,8 +278,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 					ChicagoTracker.displayError(this, e);
 					return true;
 				}
-				Toast.makeText(this, "Refresh...!", Toast.LENGTH_SHORT).show();
-			} else if(currentPosition == 4){
+				//Toast.makeText(this, "Refresh...!", Toast.LENGTH_SHORT).show();
+			} else if (currentPosition == 4) {
 				nearbyFragment.reloadData();
 			}
 			return false;
@@ -337,4 +341,28 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 					}
 				}).setNegativeButton("No", null).show();
 	}
+
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onNewIntent(android.content.Intent)
+	 */
+	@Override
+	public void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		this.setIntent(intent);
+	}
+	
+	/* (non-Javadoc)
+	 * @see android.app.Activity#startActivity(android.content.Intent)
+	 */
+	@Override
+	public void startActivity(Intent intent) {
+		// check if search intent
+		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+			ArrayList<BikeStation> bikeStations = getIntent().getExtras().getParcelableArrayList("bikeStations");
+			intent.putParcelableArrayListExtra("bikeStations", bikeStations);
+			intent.putExtra("KEY", "VALUE");
+		}
+		super.startActivity(intent);
+	}
+	
 }
