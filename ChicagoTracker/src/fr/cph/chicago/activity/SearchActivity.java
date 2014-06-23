@@ -27,7 +27,6 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -63,7 +62,7 @@ public class SearchActivity extends ListActivity {
 		ChicagoTracker.checkData(this);
 		if (!this.isFinishing()) {
 			setContentView(R.layout.activity_search);
-			
+
 			FrameLayout container = (FrameLayout) findViewById(R.id.container);
 			container.getForeground().setAlpha(0);
 			ada = new SearchAdapter(this, container);
@@ -131,8 +130,6 @@ public class SearchActivity extends ListActivity {
 			DataHolder dataHolder = DataHolder.getInstance();
 			BusData busData = dataHolder.getBusData();
 			TrainData trainData = dataHolder.getTrainData();
-			
-			
 
 			List<Station> foundStations = new ArrayList<Station>();
 
@@ -150,25 +147,27 @@ public class SearchActivity extends ListActivity {
 			List<BusRoute> foundBusRoutes = new ArrayList<BusRoute>();
 
 			for (BusRoute busRoute : busData.getRoutes()) {
-				boolean res = StringUtils.containsIgnoreCase(busRoute.getId(), query.trim()) || StringUtils.containsIgnoreCase(busRoute.getName(), query.trim());
+				boolean res = StringUtils.containsIgnoreCase(busRoute.getId(), query.trim())
+						|| StringUtils.containsIgnoreCase(busRoute.getName(), query.trim());
 				if (res) {
 					if (!foundBusRoutes.contains(busRoute)) {
 						foundBusRoutes.add(busRoute);
 					}
 				}
 			}
-			
+
 			List<BikeStation> bikeStations = intent.getExtras().getParcelableArrayList("bikeStations");
 			List<BikeStation> foundBikeStations = new ArrayList<BikeStation>();
-			for(BikeStation bikeStation: bikeStations){
-				boolean res = StringUtils.containsIgnoreCase(bikeStation.getName(), query.trim()) || StringUtils.containsIgnoreCase(bikeStation.getStAddress1(), query.trim());
+			for (BikeStation bikeStation : bikeStations) {
+				boolean res = StringUtils.containsIgnoreCase(bikeStation.getName(), query.trim())
+						|| StringUtils.containsIgnoreCase(bikeStation.getStAddress1(), query.trim());
 				if (res) {
 					if (!foundBikeStations.contains(bikeStation)) {
 						foundBikeStations.add(bikeStation);
 					}
 				}
 			}
-			
+
 			ada.updateData(foundStations, foundBusRoutes, foundBikeStations);
 			ada.notifyDataSetChanged();
 		}

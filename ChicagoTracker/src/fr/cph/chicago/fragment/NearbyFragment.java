@@ -17,6 +17,7 @@
 package fr.cph.chicago.fragment;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,6 +84,7 @@ import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.json.Json;
+import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
 
 /**
@@ -306,6 +308,7 @@ public class NearbyFragment extends Fragment {
 						bikeStationsRes.add(station);
 					}
 				}
+				Collections.sort(bikeStationsRes, Util.BIKE_COMPARATOR_NAME);
 			} catch (ConnectException e) {
 				Log.e(TAG, e.getMessage(), e);
 			} catch (ParserException e) {

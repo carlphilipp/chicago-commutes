@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import android.util.Log;
 import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.data.Preferences;
@@ -183,10 +182,10 @@ public class Util {
 		res[2] = bound;
 		return res;
 	}
-	
-	public static final Comparator<BikeStation> BIKE_COMPARATOR_NAME  = new BikeStationComparator();
 
-	public static final class BikeStationComparator implements Comparator<BikeStation> {
+	public static final Comparator<BikeStation> BIKE_COMPARATOR_NAME = new BikeStationComparator();
+
+	private static final class BikeStationComparator implements Comparator<BikeStation> {
 		@Override
 		public int compare(BikeStation station1, BikeStation station2) {
 			return station1.getName().compareTo(station2.getName());
