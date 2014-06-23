@@ -96,8 +96,6 @@ public class BusActivity extends Activity {
 	private boolean isFavorite;
 	/** Menu **/
 	private Menu menu;
-	/** Root view **/
-	private View rootView;
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
@@ -106,8 +104,6 @@ public class BusActivity extends Activity {
 		if (!this.isFinishing()) {
 			// Load right xml
 			setContentView(R.layout.activity_bus);
-
-			rootView = findViewById(R.id.scrollViewBusStop);
 
 			if (busStopId == null && busRouteId == null && bound == null && busStopName == null && busRouteName == null && latitude == null
 					&& longitude == null) {
@@ -223,10 +219,7 @@ public class BusActivity extends Activity {
 			menuItem.expandActionView();
 
 			// Load data
-			(new LoadData()).execute();
-
-			// Display a toast message
-			// Toast.makeText(this, "Refresh...!", Toast.LENGTH_SHORT).show();
+			new LoadData().execute();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -328,16 +321,10 @@ public class BusActivity extends Activity {
 				ChicagoTracker.displayError(BusActivity.this, trackerException);
 			}
 			if (!firstLoad) {
-				// Highlight background
-				rootView.setBackgroundResource(R.drawable.highlight_selector);
-				rootView.postDelayed(new Runnable() {
-					public void run() {
-						rootView.setBackgroundResource(R.drawable.bg_selector);
-						MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-						refreshMenuItem.collapseActionView();
-						refreshMenuItem.setActionView(null);
-					}
-				}, 100);
+				// Stop refresh animation
+				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+				refreshMenuItem.collapseActionView();
+				refreshMenuItem.setActionView(null);
 			} else {
 				setFirstLoad();
 				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);

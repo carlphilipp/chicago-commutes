@@ -33,13 +33,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.SearchView;
-import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaRequestType;
@@ -154,7 +152,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 					ft.replace(R.id.container, nearbyFragment).commit();
 				}
 			} else {
-				if (oldPosition == 3) {
+				if (oldPosition == 4) {
 					fragmentManager.beginTransaction().commit();
 				} else {
 					if (!this.isFinishing()) {
@@ -278,7 +276,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 					ChicagoTracker.displayError(this, e);
 					return true;
 				}
-				//Toast.makeText(this, "Refresh...!", Toast.LENGTH_SHORT).show();
+				// Toast.makeText(this, "Refresh...!", Toast.LENGTH_SHORT).show();
 			} else if (currentPosition == 4) {
 				nearbyFragment.reloadData();
 			}
@@ -342,7 +340,9 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				}).setNegativeButton("No", null).show();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onNewIntent(android.content.Intent)
 	 */
 	@Override
@@ -350,8 +350,10 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		super.onNewIntent(intent);
 		this.setIntent(intent);
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#startActivity(android.content.Intent)
 	 */
 	@Override
@@ -364,5 +366,5 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		}
 		super.startActivity(intent);
 	}
-	
+
 }
