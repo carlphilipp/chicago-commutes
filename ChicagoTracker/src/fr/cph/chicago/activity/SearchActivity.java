@@ -55,6 +55,8 @@ public class SearchActivity extends ListActivity {
 	private Menu menu;
 	/** The adapter **/
 	private SearchAdapter ada;
+	
+	List<BikeStation> bikeStations;
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
@@ -66,6 +68,7 @@ public class SearchActivity extends ListActivity {
 			FrameLayout container = (FrameLayout) findViewById(R.id.container);
 			container.getForeground().setAlpha(0);
 			ada = new SearchAdapter(this, container);
+			bikeStations = getIntent().getExtras().getParcelableArrayList("bikeStations");
 			handleIntent(getIntent());
 			setListAdapter(ada);
 
@@ -156,7 +159,7 @@ public class SearchActivity extends ListActivity {
 				}
 			}
 
-			List<BikeStation> bikeStations = intent.getExtras().getParcelableArrayList("bikeStations");
+			//List<BikeStation> bikeStations = intent.getExtras().getParcelableArrayList("bikeStations");
 			List<BikeStation> foundBikeStations = new ArrayList<BikeStation>();
 			for (BikeStation bikeStation : bikeStations) {
 				boolean res = StringUtils.containsIgnoreCase(bikeStation.getName(), query.trim())
