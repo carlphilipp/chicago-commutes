@@ -56,9 +56,11 @@ import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -117,7 +119,7 @@ public class NearbyFragment extends Fragment {
 	/** Hide empty stations/stops **/
 	private boolean hideStationsStops;
 	/** The chicago position **/
-	private static final LatLng CHICAGO = new LatLng(41.8819, -87.6278);
+	public static final LatLng CHICAGO = new LatLng(41.8819, -87.6278);
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -182,7 +184,10 @@ public class NearbyFragment extends Fragment {
 		super.onStart();
 		FragmentManager fm = getFragmentManager();
 		mapFragment = (MapFragment) fm.findFragmentById(R.id.map);
-		mapFragment = MapFragment.newInstance();
+		GoogleMapOptions options = new GoogleMapOptions();
+		CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 7, 0, 0);
+		options.camera(camera);
+		mapFragment = MapFragment.newInstance(options);
 		mapFragment.setRetainInstance(true);
 		fm.beginTransaction().replace(R.id.map, mapFragment).commit();
 	}
@@ -498,6 +503,7 @@ public class NearbyFragment extends Fragment {
 	 *            the position we want to center on
 	 */
 	private void centerMap(final Position positon) {
+		// Because the fragment can possibly not be ready
 		while (mapFragment.getMap() == null) {
 		}
 		map = mapFragment.getMap();
@@ -505,12 +511,12 @@ public class NearbyFragment extends Fragment {
 		LatLng latLng = null;
 		if (positon != null) {
 			latLng = new LatLng(positon.getLatitude(), positon.getLongitude());
-			map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+			map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
 		} else {
 			latLng = CHICAGO;
 			map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
 		}
-		// map.animateCamera(CameraUpdateFactory.zoomTo(14), 2000, null);
+		//map.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
 	}
 
 	/**

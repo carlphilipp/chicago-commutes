@@ -40,6 +40,8 @@ import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Eta;
+import fr.cph.chicago.entity.Pattern;
+import fr.cph.chicago.entity.PatternPoint;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Service;
 import fr.cph.chicago.entity.Station;
@@ -606,5 +608,76 @@ public final class Xml {
 			throw new ParserException(TrackerException.ERROR, e);
 		}
 		return alerts;
+	}
+	
+	/**
+	 * Parse alert general
+	 * 
+	 * @param xml
+	 *            the xml to parse
+	 * @return a list of alert
+	 * @throws ParserException
+	 *             a parser exception
+	 */
+	public final List<Pattern> parsePatterns(final String xml) throws ParserException {
+		List<Pattern> patterns = null;
+		String tagName = null;
+		Pattern pattern = null;
+		PatternPoint patternPoint = null;
+		Position position = null;
+		InputStream is = new ByteArrayInputStream(xml.getBytes());
+		try {
+			parser.setInput(is, "UTF-8");
+			int eventType = parser.getEventType();
+			while (eventType != XmlPullParser.END_DOCUMENT) {
+				if (eventType == XmlPullParser.START_DOCUMENT) {
+					patterns = new ArrayList<Pattern>();
+				} else if (eventType == XmlPullParser.START_TAG) {
+					tagName = parser.getName();
+					if (tagName.equals("ptr")) {
+						pattern = new Pattern();
+					}
+				} else if (eventType == XmlPullParser.END_TAG) {
+					tagName = null;
+				} else if (eventType == XmlPullParser.TEXT) {
+					String text = parser.getText();
+					if (tagName != null) {
+						if (tagName.equals("pid")) {
+							pattern.setId(Integer.valueOf(text));
+							patterns.add(pattern);
+						} else if (tagName.equals("ln")) {
+							pattern.setLength(Double.valueOf(text));
+						} else if (tagName.equals("rtdir")) {
+							pattern.setDirection(text);
+						} else if (tagName.equals("pt")) {
+							patternPoint = new PatternPoint();
+							pattern.addPoint(patternPoint);
+						} else if (tagName.equals("seq")) {
+							patternPoint.setSequence(Integer.valueOf(text));
+						} else if (tagName.equals("lat")) {
+							position = new Position();
+							patternPoint.setPosition(position);
+							position.setLatitude(Double.valueOf(text));
+						} else if (tagName.equals("lon")) {
+							position.setLongitude(Double.valueOf(text));
+						} else if (tagName.equals("typ")) {
+							patternPoint.setType(text);
+						} else if (tagName.equals("stpid")) {
+							patternPoint.setStopId(Integer.valueOf(text));
+						} else if (tagName.equals("stpnm")) {
+							patternPoint.setStopName(text);
+						} else if (tagName.equals("pdist")) {
+							patternPoint.setDistance(Double.valueOf(text));
+						}
+					}
+				}
+				eventType = parser.next();
+			}
+		} catch (XmlPullParserException e) {
+			throw new ParserException(TrackerException.ERROR, e);
+		} catch (IOException e) {
+			throw new ParserException(TrackerException.ERROR, e);
+		}
+		return patterns;
 	}
 }

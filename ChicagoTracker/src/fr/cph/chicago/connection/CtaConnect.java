@@ -62,6 +62,8 @@ public class CtaConnect {
 	private static final String BASE_URL_BUS_STOPS = "http://www.ctabustracker.com/bustime/api/v1/getstops";
 	/** The buses arrival address **/
 	private static final String BASE_URL_BUS_ARRIVAL = "http://www.ctabustracker.com/bustime/api/v1/getpredictions";
+	/** The buses pattern address **/
+	private static final String BASE_URL_BUS_PATTERN = "http://www.ctabustracker.com/bustime/api/v1/getpatterns";
 	/** The alert general address **/
 	private static final String BASE_URL_ALERT_GENERAL = "http://www.transitchicago.com/api/1.0/alerts.aspx";
 	/** The alert routes address **/
@@ -127,6 +129,9 @@ public class CtaConnect {
 			break;
 		case BUS_ARRIVALS:
 			adress = new StringBuilder(BASE_URL_BUS_ARRIVAL + "?key=" + CTA_BUS_KEY);
+			break;
+		case BUS_PATTERN:
+			adress = new StringBuilder(BASE_URL_BUS_PATTERN + "?key=" + CTA_BUS_KEY);
 			break;
 		case ALERTS_GENERAL:
 			adress = new StringBuilder(BASE_URL_ALERT_GENERAL + "?activeonly=false");

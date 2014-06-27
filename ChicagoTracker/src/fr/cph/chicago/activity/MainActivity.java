@@ -24,12 +24,10 @@ import org.apache.commons.collections4.map.MultiValueMap;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
@@ -85,6 +83,20 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	private Menu menu;
 	/** Current position **/
 	private int currentPosition;
+	/** **/
+	private static final int POSITION_FAVORITES = 0;
+	/** **/
+	private static final int POSITION_TRAIN = 1;
+	/** **/
+	private static final int POSITION_BUS = 2;
+	/** **/
+	private static final int POSITION_DIVVY = 3;
+	/** **/
+	private static final int POSITION_NEARBY = 4;
+	/** **/
+	private static final int POSITION_ALERTS = 5;
+	/** **/
+	private static final int POSITION_MAP = 6;
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
@@ -113,7 +125,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		final FragmentTransaction ft = fragmentManager.beginTransaction();
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		switch (position) {
-		case 0:
+		case POSITION_FAVORITES:
 			if (favoritesFragment == null) {
 				favoritesFragment = FavoritesFragment.newInstance(position + 1);
 			}
@@ -121,7 +133,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				ft.replace(R.id.container, favoritesFragment).commit();
 			}
 			break;
-		case 1:
+		case POSITION_TRAIN:
 			if (trainFragment == null) {
 				trainFragment = TrainFragment.newInstance(position + 1);
 			}
@@ -129,7 +141,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				ft.replace(R.id.container, trainFragment).commit();
 			}
 			break;
-		case 2:
+		case POSITION_BUS:
 			if (busFragment == null) {
 				busFragment = BusFragment.newInstance(position + 1);
 			}
@@ -137,7 +149,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				ft.replace(R.id.container, busFragment).commit();
 			}
 			break;
-		case 3:
+		case POSITION_DIVVY:
 			if (bikeFragment == null) {
 				bikeFragment = BikeFragment.newInstance(position + 1);
 			}
@@ -145,7 +157,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				ft.replace(R.id.container, bikeFragment).commit();
 			}
 			break;
-		case 4:
+		case POSITION_NEARBY:
 			if (nearbyFragment == null) {
 				nearbyFragment = NearbyFragment.newInstance(position + 1);
 				if (!this.isFinishing()) {
@@ -161,7 +173,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				}
 			}
 			break;
-		case 5:
+		case POSITION_ALERTS:
 			if (alertFragment == null) {
 				alertFragment = AlertFragment.newInstance(position + 1);
 			}
@@ -169,7 +181,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				ft.replace(R.id.container, alertFragment).commit();
 			}
 			break;
-		case 6:
+		case POSITION_MAP:
 			if (mapFragment == null) {
 				mapFragment = MapFragment.newInstance(position + 1);
 			}
@@ -250,7 +262,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	public final boolean onOptionsItemSelected(final MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_refresh:
-			if (currentPosition != 4 && currentPosition != 3) {
+			if (currentPosition != POSITION_DIVVY && currentPosition != POSITION_NEARBY) {
 				MenuItem menuItem = item;
 				menuItem.setActionView(R.layout.progressbar);
 				menuItem.expandActionView();
@@ -276,8 +288,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 					ChicagoTracker.displayError(this, e);
 					return true;
 				}
-				// Toast.makeText(this, "Refresh...!", Toast.LENGTH_SHORT).show();
-			} else if (currentPosition == 4) {
+			} else if (currentPosition == POSITION_NEARBY) {
 				nearbyFragment.reloadData();
 			}
 			return false;
@@ -289,16 +300,19 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
 	@Override
 	public final void onBackPressed() {
-		if (currentPosition != 0 && currentPosition != 5) {
+		if (currentPosition != POSITION_FAVORITES && currentPosition != POSITION_MAP) {
 			mNavigationDrawerFragment.selectItem(0, true);
-		} else if (currentPosition == 5) {
+		} else if (currentPosition == POSITION_MAP) {
 			if (mapFragment.isCenteredAlready()) {
 				mNavigationDrawerFragment.selectItem(0, true);
 			} else {
 				mapFragment.resetImage();
 			}
 		} else {
-			exitAlertDialog();
+			DataHolder.getInstance().setBusData(null);
+			DataHolder.getInstance().setTrainData(null);
+			DataHolder.getInstance().setAlertData(null);
+			finish();
 		}
 	}
 
@@ -324,22 +338,6 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		}
 	}
 
-	/**
-	 * Show a dialog
-	 */
-	private final void exitAlertDialog() {
-		new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_alert).setTitle("Exit application")
-				.setMessage("Are you sure you want to exit?").setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						DataHolder.getInstance().setBusData(null);
-						DataHolder.getInstance().setTrainData(null);
-						DataHolder.getInstance().setAlertData(null);
-						finish();
-					}
-				}).setNegativeButton("No", null).show();
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -362,7 +360,6 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 			ArrayList<BikeStation> bikeStations = getIntent().getExtras().getParcelableArrayList("bikeStations");
 			intent.putParcelableArrayListExtra("bikeStations", bikeStations);
-			intent.putExtra("KEY", "VALUE");
 		}
 		super.startActivity(intent);
 	}

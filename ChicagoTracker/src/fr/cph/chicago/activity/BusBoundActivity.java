@@ -19,29 +19,58 @@ package fr.cph.chicago.activity;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections4.MultiMap;
+import org.apache.commons.collections4.map.MultiValueMap;
 import org.apache.commons.lang3.StringUtils;
 
 import android.app.ActionBar;
+import android.app.FragmentManager;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.CancelableCallback;
+import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
+import com.google.android.gms.maps.GoogleMapOptions;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.adapter.BusBoundAdapter;
+import fr.cph.chicago.connection.CtaConnect;
+import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BusStop;
+import fr.cph.chicago.entity.Pattern;
+import fr.cph.chicago.entity.PatternPoint;
+import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
+import fr.cph.chicago.fragment.NearbyFragment;
+import fr.cph.chicago.xml.Xml;
 
 /**
  * Activity that represents the bus bound activity
@@ -50,6 +79,8 @@ import fr.cph.chicago.exception.TrackerException;
  * @version 1
  */
 public class BusBoundActivity extends ListActivity {
+	/** Tag **/
+	private static final String TAG = "BusBoundActivity";
 	/** Bus route id **/
 	private String busRouteId;
 	/** Bus route name **/
@@ -60,13 +91,18 @@ public class BusBoundActivity extends ListActivity {
 	private BusBoundAdapter ada;
 	/** List of bus stop get via API **/
 	private List<BusStop> busStops;
+	/** The map fragment from google api **/
+	private MapFragment mapFragment;
+	/** The map **/
+	private GoogleMap map;
 
 	@Override
 	public final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		ChicagoTracker.checkData(this);
 		if (!this.isFinishing()) {
-			setContentView(R.layout.activity_bus_bound);
+			setContentView(R.layout.activity_bus_bound);			
+
 			if (busRouteId == null && busRouteName == null && bound == null) {
 				busRouteId = getIntent().getExtras().getString("busRouteId");
 				busRouteName = getIntent().getExtras().getString("busRouteName");
@@ -127,6 +163,28 @@ public class BusBoundActivity extends ListActivity {
 			// Preventing keyboard from moving background when showing up
 			getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 		}
+	}
+	
+	@Override
+	public final void onStart() {
+		super.onStart();
+		FragmentManager fm = getFragmentManager();
+		mapFragment = (MapFragment) fm.findFragmentById(R.id.map);
+		GoogleMapOptions options = new GoogleMapOptions();
+		CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 7, 0, 0);
+		options.camera(camera);
+		mapFragment = MapFragment.newInstance(options);
+		mapFragment.setRetainInstance(true);
+		fm.beginTransaction().replace(R.id.map, mapFragment).commit();
+	}
+
+	@Override
+	public final void onResume() {
+		super.onResume();
+		if (map == null) {
+			map = mapFragment.getMap();
+		}
+		new LoadPattern().execute();
 	}
 
 	@Override
@@ -200,5 +258,128 @@ public class BusBoundActivity extends ListActivity {
 				ChicagoTracker.displayError(BusBoundActivity.this, trackerException);
 			}
 		}
+	}
+
+	/**
+	 * Load nearby data
+	 * 
+	 * @author Carl-Philipp Harmant
+	 * 
+	 */
+	private final class LoadPattern extends AsyncTask<Void, Void, Pattern> implements LocationListener {
+
+		private Pattern pattern;
+
+		@Override
+		protected final Pattern doInBackground(final Void... params) {
+			CtaConnect connect = CtaConnect.getInstance();
+			MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
+			connectParam.put("rt", busRouteId);
+			try {
+				String content = connect.connect(CtaRequestType.BUS_PATTERN, connectParam);
+				Xml xml = new Xml();
+				List<Pattern> patterns = xml.parsePatterns(content);
+				for (Pattern pattern : patterns) {
+					if (pattern.getDirection().equals(bound)) {
+						this.pattern = pattern;
+						break;
+					}
+				}
+			} catch (ConnectException e) {
+				Log.e(TAG, e.getMessage(), e);
+			} catch (ParserException e) {
+				Log.e(TAG, e.getMessage(), e);
+			}
+			return this.pattern;
+		}
+
+		@Override
+		protected final void onPostExecute(final Pattern result) {
+			if(result != null){
+				int center = result.getPoints().size() / 2;
+				centerMap(result.getPoints().get(center).getPosition());
+				drawPattern(result);
+			}else{
+				Toast.makeText(BusBoundActivity.this, "Sorry, could not load the path!", Toast.LENGTH_SHORT).show();
+			}
+		}
+
+		@Override
+		public final void onLocationChanged(final Location location) {
+		}
+
+		@Override
+		public final void onProviderDisabled(final String provider) {
+		}
+
+		@Override
+		public final void onProviderEnabled(final String provider) {
+		}
+
+		@Override
+		public final void onStatusChanged(final String provider, final int status, final Bundle extras) {
+		}
+	}
+
+	/**
+	 * Center map
+	 * 
+	 * @param positon
+	 *            the position we want to center on
+	 */
+	private void centerMap(final Position positon) {
+		// Because the fragment can possibly not be ready
+		while (mapFragment.getMap() == null) {
+		}
+		map = mapFragment.getMap();
+		map.setMyLocationEnabled(true);
+		LatLng latLng = new LatLng(positon.getLatitude(), positon.getLongitude());
+		map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
+		// Needed to avoid freeze of the app in case of pressing back
+		GoogleMap.CancelableCallback callback = new CancelableCallback() {
+			@Override
+			public void onFinish() {
+			}
+			@Override
+			public void onCancel() {
+			}
+		};
+		map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, callback);
+	}
+
+	private void drawPattern(final Pattern pattern) {
+		final List<Marker> markers = new ArrayList<Marker>();
+		PolylineOptions poly = new PolylineOptions();
+		poly.geodesic(true).color(Color.BLUE);
+		for (PatternPoint patternPoint : pattern.getPoints()) {
+			LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
+			poly.add(point);
+			if (patternPoint.getStopId() != null) {
+				Marker marker = map.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName())
+						.snippet(patternPoint.getSequence() + "").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+				markers.add(marker);
+				marker.setVisible(false);
+			}
+		}
+		map.addPolyline(poly);
+
+		map.setOnCameraChangeListener(new OnCameraChangeListener() {
+			private float currentZoom = -1;
+			@Override
+			public void onCameraChange(CameraPosition pos) {
+				if (pos.zoom != currentZoom) {
+					currentZoom = pos.zoom;
+					if (currentZoom >= 14) {
+						for (Marker marker : markers) {
+							marker.setVisible(true);
+						}
+					} else {
+						for (Marker marker : markers) {
+							marker.setVisible(false);
+						}
+					}
+				}
+			}
+		});
 	}
 }
