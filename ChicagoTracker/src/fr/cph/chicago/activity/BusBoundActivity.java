@@ -45,7 +45,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.CancelableCallback;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
@@ -334,17 +333,20 @@ public class BusBoundActivity extends ListActivity {
 		map = mapFragment.getMap();
 		map.setMyLocationEnabled(true);
 		LatLng latLng = new LatLng(positon.getLatitude(), positon.getLongitude());
-		map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
+		//map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
 		// Needed to avoid freeze of the app in case of pressing back
-		GoogleMap.CancelableCallback callback = new CancelableCallback() {
+/*		GoogleMap.CancelableCallback callback = new CancelableCallback() {
 			@Override
 			public void onFinish() {
+				Log.i(TAG, "onFinish");
 			}
 			@Override
 			public void onCancel() {
+				Log.i(TAG, "onCancel");
 			}
-		};
-		map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, callback);
+		};*/
+		//map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, callback);
+		map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
 	}
 
 	private void drawPattern(final Pattern pattern) {
