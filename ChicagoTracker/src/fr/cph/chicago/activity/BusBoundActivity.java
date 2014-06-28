@@ -334,7 +334,7 @@ public class BusBoundActivity extends ListActivity {
 		map = mapFragment.getMap();
 		map.setMyLocationEnabled(true);
 		LatLng latLng = new LatLng(positon.getLatitude(), positon.getLongitude());
-		map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
+		//map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
 		// Needed to avoid freeze of the app in case of pressing back
 /*		GoogleMap.CancelableCallback callback = new CancelableCallback() {
 			@Override
@@ -347,7 +347,7 @@ public class BusBoundActivity extends ListActivity {
 			}
 		};*/
 		//map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, callback);
-		map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
+		map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
 	}
 
 	private void drawPattern(final Pattern pattern) {
