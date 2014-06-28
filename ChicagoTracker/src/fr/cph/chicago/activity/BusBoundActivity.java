@@ -347,7 +347,7 @@ public class BusBoundActivity extends ListActivity {
 			}
 		};*/
 		//map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, callback);
-		map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
+		map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
 	}
 
 	private void drawPattern(final Pattern pattern) {
