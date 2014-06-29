@@ -161,13 +161,13 @@ public class BaseActivity extends Activity {
 			this.trainData = new TrainData();
 			this.trainData.read();
 
-			publishProgress(new String[] { "t", "true" });
+			//publishProgress(new String[] { "t", "true" });
 
 			this.busData = BusData.getInstance();
 			this.busData.readBusStops();
 
 			// Load bus API data
-			try {
+			/*try {
 				this.busData.loadBusRoutes();
 				publishProgress(new String[] { "b", "true" });
 			} catch (ParserException e) {
@@ -176,10 +176,10 @@ public class BaseActivity extends Activity {
 			} catch (ConnectException e) {
 				publishProgress(new String[] { "b", "false" });
 				Log.e(TAG, e.getMessage(), e);
-			}
+			}*/
 
 			// Load alert API data
-			try {
+/*			try {
 				this.alertData = AlertData.getInstance();
 				this.alertData.loadGeneralAlerts();
 				publishProgress(new String[] { "a", "true" });
@@ -189,10 +189,10 @@ public class BaseActivity extends Activity {
 			} catch (ConnectException e) {
 				publishProgress(new String[] { "a", "false" });
 				Log.e(TAG, e.getMessage(), e);
-			}
+			}*/
 			// Load divvy
 			BaseActivity.this.bikeStations = new ArrayList<BikeStation>();
-			try {
+/*			try {
 				Json json = new Json();
 				DivvyConnect divvyConnect = DivvyConnect.getInstance();
 				String bikeContent = divvyConnect.connect();
@@ -205,7 +205,7 @@ public class BaseActivity extends Activity {
 			} catch (ParserException e) {
 				publishProgress(new String[] { "d", "false" });
 				Log.e(TAG, e.getMessage(), e);
-			}
+			}*/
 			return null;
 		}
 

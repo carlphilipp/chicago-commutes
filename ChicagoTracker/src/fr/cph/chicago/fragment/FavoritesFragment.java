@@ -218,6 +218,12 @@ public class FavoritesFragment extends Fragment {
 	public final void displayError(TrackerException trackerException) {
 		ChicagoTracker.displayError(mActivity, trackerException);
 	}
+	
+	public final void setBikeStations(List<BikeStation> bikeStations){
+		this.bikeStations =  bikeStations;
+		ada.setBikeStations(bikeStations);
+		ada.notifyDataSetChanged();
+	}
 
 	/**
 	 * Start refresh task

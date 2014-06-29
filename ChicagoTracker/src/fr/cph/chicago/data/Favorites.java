@@ -29,6 +29,7 @@ import android.util.SparseArray;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
+import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.util.Util;
 
@@ -39,6 +40,8 @@ import fr.cph.chicago.util.Util;
  * @version 1
  */
 public class Favorites {
+	/** Tag **/
+	private static final String TAG = "Favorites";
 	/** The list of train arrival **/
 	private SparseArray<TrainArrival> trainArrivals;
 	/** The list of bus arrival **/
@@ -51,7 +54,7 @@ public class Favorites {
 	/** THe list of bus favorites **/
 	private List<String> busFavorites;
 	/** The list of bike favorites **/
-	private List<Integer> bikeFavorites;
+	private List<String> bikeFavorites;
 	/** The list of fake bus favorites **/
 	private List<String> fakeBusFavorites;
 
@@ -71,7 +74,7 @@ public class Favorites {
 		this.trainFavorites = new ArrayList<Integer>();
 		this.busFavorites = new ArrayList<String>();
 		this.fakeBusFavorites = new ArrayList<String>();
-		this.bikeFavorites = new ArrayList<Integer>();
+		this.bikeFavorites = new ArrayList<String>();
 
 		this.trainData = DataHolder.getInstance().getTrainData();
 		this.busData = DataHolder.getInstance().getBusData();
@@ -102,16 +105,27 @@ public class Favorites {
 			int indice = position - trainFavorites.size();
 			if (indice < fakeBusFavorites.size()) {
 				String res[] = Util.decodeBusFavorite(fakeBusFavorites.get(indice));
-				return busData.getRoute(res[0]);
+				if (busData.containsRoute(res[0])) {
+					return busData.getRoute(res[0]);
+				} else {
+					BusRoute busRoute = new BusRoute();
+					busRoute.setId(res[0]);
+					busRoute.setName("");
+					return busRoute;
+				}
+
 			}
 		} else {
 			int indice = position - (trainFavorites.size() + fakeBusFavorites.size());
 			Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
 			for (BikeStation bikeStation : bikeStations) {
-				if (bikeStation.getId() == bikeFavorites.get(indice)) {
+				if (String.valueOf(bikeStation.getId()).equals(bikeFavorites.get(indice))) {
 					return bikeStation;
 				}
 			}
+			BikeStation bikeStation = new BikeStation();
+			bikeStation.setName(bikeFavorites.get(indice) + "");
+			return bikeStation;
 		}
 		return result;
 	}
@@ -253,19 +267,23 @@ public class Favorites {
 		this.busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
 		this.fakeBusFavorites = calculateActualRouteNumberBusFavorites();
 		this.bikeFavorites.clear();
-		List<Integer> bikeFavoritesTemp = Preferences.getBikeFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
+		List<String> bikeFavoritesTemp = Preferences.getBikeFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
 		List<BikeStation> bikeStationsFavoritesTemp = new ArrayList<BikeStation>();
-		for (Integer bikeStationId : bikeFavoritesTemp) {
-			for (BikeStation station : bikeStations) {
-				if (station.getId() == bikeStationId.intValue()) {
-					bikeStationsFavoritesTemp.add(station);
-					break;
+		if (this.bikeStations.size() != 0) {
+			for (String bikeStationId : bikeFavoritesTemp) {
+				for (BikeStation station : bikeStations) {
+					if (String.valueOf(station.getId()).equals(bikeStationId)) {
+						bikeStationsFavoritesTemp.add(station);
+						break;
+					}
 				}
 			}
-		}
-		Collections.sort(bikeStationsFavoritesTemp, Util.BIKE_COMPARATOR_NAME);
-		for (BikeStation station : bikeStationsFavoritesTemp) {
-			this.bikeFavorites.add(station.getId());
+			Collections.sort(bikeStationsFavoritesTemp, Util.BIKE_COMPARATOR_NAME);
+			for (BikeStation station : bikeStationsFavoritesTemp) {
+				this.bikeFavorites.add(String.valueOf(station.getId()));
+			}
+		} else {
+			bikeFavorites.addAll(bikeFavoritesTemp);
 		}
 	}
 
@@ -281,6 +299,11 @@ public class Favorites {
 		removeDuplicates(busArrivals);
 		this.busArrivals.clear();
 		this.busArrivals = busArrivals;
+		this.bikeStations.clear();
+		this.bikeStations = bikeStations;
+	}
+
+	public final void setBikeStations(List<BikeStation> bikeStations) {
 		this.bikeStations.clear();
 		this.bikeStations = bikeStations;
 		setFavorites();

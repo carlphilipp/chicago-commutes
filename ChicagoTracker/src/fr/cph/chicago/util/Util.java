@@ -148,17 +148,17 @@ public class Util {
 	}
 
 	public static final void addToBikeFavorites(final int stationId, final String preference) {
-		List<Integer> favorites = Preferences.getBikeFavorites(preference);
-		if (!favorites.contains(stationId)) {
-			favorites.add(stationId);
+		List<String> favorites = Preferences.getBikeFavorites(preference);
+		if (!favorites.contains(String.valueOf(stationId))) {
+			favorites.add(String.valueOf(stationId));
 			Preferences.saveBikeFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BIKE, favorites);
 		}
 		Toast.makeText(ChicagoTracker.getAppContext(), "Adding to favorites", Toast.LENGTH_SHORT).show();
 	}
 
 	public static final void removeFromBikeFavorites(final int stationId, final String preference) {
-		List<Integer> favorites = Preferences.getBikeFavorites(preference);
-		favorites.remove(Integer.valueOf(stationId));
+		List<String> favorites = Preferences.getBikeFavorites(preference);
+		favorites.remove(String.valueOf(stationId));
 		Preferences.saveBikeFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BIKE, favorites);
 		Toast.makeText(ChicagoTracker.getAppContext(), "Removing from favorites", Toast.LENGTH_SHORT).show();
 	}

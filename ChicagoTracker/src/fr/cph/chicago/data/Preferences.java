@@ -66,29 +66,29 @@ public final class Preferences {
 		return res;
 	}
 
-	public static final void saveBikeFavorites(final String name, final List<Integer> favorites) {
+	public static final void saveBikeFavorites(final String name, final List<String> favorites) {
 		Context context = ChicagoTracker.getAppContext();
 		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
 		Set<String> set = new LinkedHashSet<String>();
-		for (Integer fav : favorites) {
+		for (String fav : favorites) {
 			set.add(fav.toString());
 		}
-		Log.v(TAG, "Put bike favorites: " + favorites.toString());
+		Log.v(TAG, "Put bike favorites: " + set.toString());
 		editor.putStringSet(name, set);
 		editor.commit();
 	}
 
-	public static final List<Integer> getBikeFavorites(final String name) {
+	public static final List<String> getBikeFavorites(final String name) {
 		Context context = ChicagoTracker.getAppContext();
 		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
 		Set<String> setPref = sharedPref.getStringSet(name, null);
-		List<Integer> favorites = new ArrayList<Integer>();
+		List<String> favorites = new ArrayList<String>();
 		if (setPref != null) {
 			Iterator<String> it = setPref.iterator();
 			while (it.hasNext()) {
 				String value = it.next();
-				favorites.add(Integer.valueOf(value));
+				favorites.add(value);
 			}
 		}
 		Collections.sort(favorites);

@@ -100,7 +100,7 @@ public class BusBoundActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		ChicagoTracker.checkData(this);
 		if (!this.isFinishing()) {
-			setContentView(R.layout.activity_bus_bound);			
+			setContentView(R.layout.activity_bus_bound);
 
 			if (busRouteId == null && busRouteName == null && bound == null) {
 				busRouteId = getIntent().getExtras().getString("busRouteId");
@@ -163,7 +163,7 @@ public class BusBoundActivity extends ListActivity {
 			getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 		}
 	}
-	
+
 	@Override
 	public final void onStart() {
 		super.onStart();
@@ -175,6 +175,12 @@ public class BusBoundActivity extends ListActivity {
 		mapFragment = MapFragment.newInstance(options);
 		mapFragment.setRetainInstance(true);
 		fm.beginTransaction().replace(R.id.map, mapFragment).commit();
+	}
+
+	@Override
+	public final void onStop() {
+		super.onStop();
+		map = null;
 	}
 
 	@Override
@@ -294,12 +300,12 @@ public class BusBoundActivity extends ListActivity {
 
 		@Override
 		protected final void onPostExecute(final Pattern result) {
-			if(result != null){
+			if (result != null) {
 				int center = result.getPoints().size() / 2;
 				centerMap(result.getPoints().get(center).getPosition());
 				drawPattern(result);
-			}else{
-				Toast.makeText(BusBoundActivity.this, "Sorry, could not load the path!", Toast.LENGTH_SHORT).show();
+			} else {
+				Toast.makeText(BusBoundActivity.this, "Sorry, could not load the path!", Toast.LENGTH_LONG).show();
 			}
 		}
 
@@ -328,60 +334,56 @@ public class BusBoundActivity extends ListActivity {
 	 */
 	private void centerMap(final Position positon) {
 		// Because the fragment can possibly not be ready
-		while (mapFragment.getMap() == null) {
+		int i = 0;
+		while (map == null && i < 20) {
+			map = mapFragment.getMap();
+			i++;
 		}
-		map = mapFragment.getMap();
-		map.setMyLocationEnabled(true);
-		LatLng latLng = new LatLng(positon.getLatitude(), positon.getLongitude());
-		//map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
-		// Needed to avoid freeze of the app in case of pressing back
-/*		GoogleMap.CancelableCallback callback = new CancelableCallback() {
-			@Override
-			public void onFinish() {
-				Log.i(TAG, "onFinish");
-			}
-			@Override
-			public void onCancel() {
-				Log.i(TAG, "onCancel");
-			}
-		};*/
-		//map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, callback);
-		map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
+		if (map != null) {
+			map.setMyLocationEnabled(true);
+			LatLng latLng = new LatLng(positon.getLatitude(), positon.getLongitude());
+			map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
+			map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
+		}
+
 	}
 
 	private void drawPattern(final Pattern pattern) {
-		final List<Marker> markers = new ArrayList<Marker>();
-		PolylineOptions poly = new PolylineOptions();
-		poly.geodesic(true).color(Color.BLUE);
-		for (PatternPoint patternPoint : pattern.getPoints()) {
-			LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
-			poly.add(point);
-			if (patternPoint.getStopId() != null) {
-				Marker marker = map.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName())
-						.snippet(patternPoint.getSequence() + "").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-				markers.add(marker);
-				marker.setVisible(false);
+		if (map != null) {
+			final List<Marker> markers = new ArrayList<Marker>();
+			PolylineOptions poly = new PolylineOptions();
+			poly.geodesic(true).color(Color.BLUE);
+			for (PatternPoint patternPoint : pattern.getPoints()) {
+				LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
+				poly.add(point);
+				if (patternPoint.getStopId() != null) {
+					Marker marker = map.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName())
+							.snippet(patternPoint.getSequence() + "").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+					markers.add(marker);
+					marker.setVisible(false);
+				}
 			}
-		}
-		map.addPolyline(poly);
+			map.addPolyline(poly);
 
-		map.setOnCameraChangeListener(new OnCameraChangeListener() {
-			private float currentZoom = -1;
-			@Override
-			public void onCameraChange(CameraPosition pos) {
-				if (pos.zoom != currentZoom) {
-					currentZoom = pos.zoom;
-					if (currentZoom >= 14) {
-						for (Marker marker : markers) {
-							marker.setVisible(true);
-						}
-					} else {
-						for (Marker marker : markers) {
-							marker.setVisible(false);
+			map.setOnCameraChangeListener(new OnCameraChangeListener() {
+				private float currentZoom = -1;
+
+				@Override
+				public void onCameraChange(CameraPosition pos) {
+					if (pos.zoom != currentZoom) {
+						currentZoom = pos.zoom;
+						if (currentZoom >= 14) {
+							for (Marker marker : markers) {
+								marker.setVisible(true);
+							}
+						} else {
+							for (Marker marker : markers) {
+								marker.setVisible(false);
+							}
 						}
 					}
 				}
-			}
-		});
+			});
+		}
 	}
 }

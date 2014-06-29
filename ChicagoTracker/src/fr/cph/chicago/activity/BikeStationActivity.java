@@ -217,9 +217,9 @@ public class BikeStationActivity extends Activity {
 	 */
 	private final boolean isFavorite() {
 		boolean isFavorite = false;
-		List<Integer> favorites = Preferences.getBikeFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
-		for (Integer fav : favorites) {
-			if (fav.intValue() == station.getId()) {
+		List<String> favorites = Preferences.getBikeFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
+		for (String fav : favorites) {
+			if (Integer.valueOf(fav) == station.getId()) {
 				isFavorite = true;
 				break;
 			}

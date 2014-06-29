@@ -561,6 +561,10 @@ public final class FavoritesAdapter extends BaseAdapter {
 			final List<BikeStation> bikeStations) {
 		fav.setArrivalsAndBikeStations(arrivals, busArrivals, bikeStations);
 	}
+	
+	public final void setBikeStations(List<BikeStation> bikeStations){
+		fav.setBikeStations(bikeStations);
+	}
 
 	/**
 	 * Set favorites

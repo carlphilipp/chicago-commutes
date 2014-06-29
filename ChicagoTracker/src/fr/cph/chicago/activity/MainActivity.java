@@ -17,6 +17,7 @@
 package fr.cph.chicago.activity;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections4.MultiMap;
@@ -29,8 +30,10 @@ import android.app.FragmentTransaction;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -39,9 +42,14 @@ import android.widget.SearchView;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaRequestType;
+import fr.cph.chicago.connection.DivvyConnect;
+import fr.cph.chicago.data.AlertData;
+import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
+import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BikeStation;
+import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.fragment.AlertFragment;
 import fr.cph.chicago.fragment.BikeFragment;
@@ -51,6 +59,7 @@ import fr.cph.chicago.fragment.MapFragment;
 import fr.cph.chicago.fragment.NavigationDrawerFragment;
 import fr.cph.chicago.fragment.NearbyFragment;
 import fr.cph.chicago.fragment.TrainFragment;
+import fr.cph.chicago.json.Json;
 import fr.cph.chicago.task.GlobalConnectTask;
 import fr.cph.chicago.util.Util;
 
@@ -61,6 +70,8 @@ import fr.cph.chicago.util.Util;
  * @version 1
  */
 public class MainActivity extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+	/** Tag **/
+	private static final String TAG = "MainActivity";
 	/** Fragment managing the behaviors, interactions and presentation of the navigation drawer. **/
 	private NavigationDrawerFragment mNavigationDrawerFragment;
 	/** Favorites fragment **/
@@ -101,6 +112,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		new LoadData().execute();
 
 		setContentView(R.layout.activity_main);
 
@@ -362,6 +375,73 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			intent.putParcelableArrayListExtra("bikeStations", bikeStations);
 		}
 		super.startActivity(intent);
+	}
+
+	private final class LoadData extends AsyncTask<Void, String, Void> {
+		/** Bus data **/
+		private BusData busData;
+		/** Train data **/
+		private TrainData trainData;
+		/** Alert data **/
+		private AlertData alertData;
+		/** **/
+		private List<BikeStation> bikeStations;
+
+		@Override
+		protected final Void doInBackground(final Void... params) {
+
+			DataHolder dataHolder = DataHolder.getInstance();
+			this.busData = dataHolder.getBusData();
+			this.trainData = dataHolder.getTrainData();
+
+			// Load bus API data
+			try {
+				this.busData.loadBusRoutes();
+			} catch (ParserException e) {
+				Log.e(TAG, e.getMessage(), e);
+			} catch (ConnectException e) {
+				Log.e(TAG, e.getMessage(), e);
+			}
+
+			// Load alert API data
+			try {
+				this.alertData = AlertData.getInstance();
+				this.alertData.loadGeneralAlerts();
+			} catch (ParserException e) {
+				Log.e(TAG, e.getMessage(), e);
+			} catch (ConnectException e) {
+				Log.e(TAG, e.getMessage(), e);
+			}
+			// Load divvy
+			this.bikeStations = new ArrayList<BikeStation>();
+			try {
+				Json json = new Json();
+				DivvyConnect divvyConnect = DivvyConnect.getInstance();
+				String bikeContent = divvyConnect.connect();
+				this.bikeStations = json.parseStations(bikeContent);
+				Collections.sort(this.bikeStations, Util.BIKE_COMPARATOR_NAME);
+				publishProgress(new String[] { "d", "true" });
+			} catch (ConnectException e) {
+				Log.e(TAG, e.getMessage(), e);
+			} catch (ParserException e) {
+				Log.e(TAG, e.getMessage(), e);
+			}
+			return null;
+		}
+
+		@Override
+		protected final void onPostExecute(final Void result) {
+			// Put data into data holder
+			DataHolder dataHolder = DataHolder.getInstance();
+			dataHolder.setBusData(busData);
+			dataHolder.setTrainData(trainData);
+			dataHolder.setAlertData(alertData);
+
+			getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
+			onNewIntent(getIntent());
+
+			favoritesFragment.setBikeStations(bikeStations);
+		}
 	}
 
 }
