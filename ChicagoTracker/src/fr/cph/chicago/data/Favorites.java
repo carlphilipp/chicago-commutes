@@ -40,8 +40,6 @@ import fr.cph.chicago.util.Util;
  * @version 1
  */
 public class Favorites {
-	/** Tag **/
-	private static final String TAG = "Favorites";
 	/** The list of train arrival **/
 	private SparseArray<TrainArrival> trainArrivals;
 	/** The list of bus arrival **/
@@ -108,9 +106,15 @@ public class Favorites {
 				if (busData.containsRoute(res[0])) {
 					return busData.getRoute(res[0]);
 				} else {
+					// Get name in the preferences if null
+					String routeName = Preferences.getBusRouteNameMapping(res[1]);
 					BusRoute busRoute = new BusRoute();
 					busRoute.setId(res[0]);
-					busRoute.setName("");
+					if (routeName == null) {
+						busRoute.setName("");
+					} else {
+						busRoute.setName(routeName);
+					}
 					return busRoute;
 				}
 
@@ -124,7 +128,8 @@ public class Favorites {
 				}
 			}
 			BikeStation bikeStation = new BikeStation();
-			bikeStation.setName(bikeFavorites.get(indice) + "");
+			String stationName = Preferences.getBikeRouteNameMapping(bikeFavorites.get(indice));
+			bikeStation.setName(stationName);
 			return bikeStation;
 		}
 		return result;

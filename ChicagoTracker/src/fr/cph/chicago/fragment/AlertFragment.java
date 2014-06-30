@@ -18,15 +18,18 @@ package fr.cph.chicago.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import fr.cph.chicago.ChicagoTracker;
+import android.widget.RelativeLayout;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.AlertAdapter;
+import fr.cph.chicago.data.DataHolder;
 
 /**
  * Alert Fragment
@@ -35,10 +38,17 @@ import fr.cph.chicago.adapter.AlertAdapter;
  * @version 1
  */
 public class AlertFragment extends Fragment {
+	/** Tag **/
+	private static final String TAG = "AlertFragment";
 	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
-	/** The main activity **/
-	private MainActivity mActivity;
+
+	/** Root view **/
+	private View rootView;
+	/** Loading layout **/
+	private RelativeLayout loadingLayout;
+	/** The list view **/
+	private ListView listView;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -58,27 +68,72 @@ public class AlertFragment extends Fragment {
 	@Override
 	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
-		mActivity = (MainActivity) activity;
-		((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
+		MainActivity mActivity = (MainActivity) activity;
+		mActivity.onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 
 	@Override
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		ChicagoTracker.checkData(mActivity);
 	}
-	
+
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.fragment_alert, container, false);
-		AlertAdapter ada = new AlertAdapter();
-		ListView listView = (ListView) rootView.findViewById(R.id.alert_list);
-		listView.setAdapter(ada);
+		rootView = inflater.inflate(R.layout.fragment_alert, container, false);
+		listView = (ListView) rootView.findViewById(R.id.alert_list);
+		if (DataHolder.getInstance().getAlertData() != null) {
+			AlertAdapter ada = new AlertAdapter();
+			listView.setAdapter(ada);
+		} else {
+			loadingLayout = (RelativeLayout) rootView.findViewById(R.id.loading_relativeLayout);
+			loadingLayout.setVisibility(RelativeLayout.VISIBLE);
+			listView.setVisibility(ListView.INVISIBLE);
+			new WaitForRefreshData().execute();
+		}
 		return rootView;
 	}
-	
+
 	@Override
 	public final void onSaveInstanceState(final Bundle outState) {
 		super.onSaveInstanceState(outState);
+	}
+
+	private final class WaitForRefreshData extends AsyncTask<Void, Void, Boolean> {
+		@Override
+		protected Boolean doInBackground(Void... args) {
+			int i = 0;
+			while (DataHolder.getInstance().getAlertData() == null && i < 10) {
+				try {
+					Thread.sleep(100);
+					i++;
+				} catch (InterruptedException e) {
+					Log.e(TAG, e.getMessage(), e);
+				}
+			}
+			return DataHolder.getInstance().getAlertData() == null;
+		}
+
+		@Override
+		protected final void onPostExecute(final Boolean result) {
+			if (result) {
+				loadError();
+			} else {
+				loadList();
+			}
+		}
+	}
+
+	private final void loadError() {
+		loadingLayout.setVisibility(RelativeLayout.INVISIBLE);
+		RelativeLayout loadingLayout = (RelativeLayout) rootView.findViewById(R.id.error_layout);
+		loadingLayout.setVisibility(RelativeLayout.VISIBLE);
+		loadingLayout.setVisibility(RelativeLayout.INVISIBLE);
+	}
+
+	private final void loadList() {
+		AlertAdapter ada = new AlertAdapter();
+		listView.setAdapter(ada);
+		listView.setVisibility(ListView.VISIBLE);
+		loadingLayout.setVisibility(RelativeLayout.INVISIBLE);
 	}
 }

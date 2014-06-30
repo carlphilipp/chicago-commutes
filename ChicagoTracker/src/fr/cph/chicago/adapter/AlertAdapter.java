@@ -1,5 +1,6 @@
 package fr.cph.chicago.adapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
@@ -27,7 +28,11 @@ public final class AlertAdapter extends BaseAdapter {
 
 	/** The constructor **/
 	public AlertAdapter() {
-		alerts = DataHolder.getInstance().getAlertData().getAlerts();
+		if (DataHolder.getInstance().getAlertData() != null) {
+			alerts = DataHolder.getInstance().getAlertData().getAlerts();
+		} else {
+			alerts = new ArrayList<Alert>();
+		}
 	}
 
 	@Override

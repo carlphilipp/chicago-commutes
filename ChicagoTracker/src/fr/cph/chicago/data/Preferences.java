@@ -95,6 +95,23 @@ public final class Preferences {
 		Log.v(TAG, "Read bike favorites : " + favorites);
 		return favorites;
 	}
+	
+	public static final void addBikeRouteNameMapping(final String bikeId, final String bikeName){
+		Context context = ChicagoTracker.getAppContext();
+		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BIKE_NAME_MAPPING, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = sharedPref.edit();
+		editor.putString(bikeId, bikeName);
+		Log.v(TAG, "Add bike name mapping : " + bikeId + " => " + bikeName);
+		editor.commit();
+	}
+	
+	public static final String getBikeRouteNameMapping(final String bikeId){
+		Context context = ChicagoTracker.getAppContext();
+		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BIKE_NAME_MAPPING, Context.MODE_PRIVATE);
+		String bikeName = sharedPref.getString(bikeId, null);
+		Log.v(TAG, "Get bike name mapping : " + bikeId + " => " + bikeName);
+		return bikeName;
+	}
 
 	/**
 	 * Save bus into favorites
@@ -158,6 +175,23 @@ public final class Preferences {
 		});
 		Log.v(TAG, "Read bus favorites : " + favorites.toString());
 		return favorites;
+	}
+	
+	public static final void addBusRouteNameMapping(final String busStopId, final String routeName){
+		Context context = ChicagoTracker.getAppContext();
+		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_NAME_MAPPING, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = sharedPref.edit();
+		editor.putString(busStopId, routeName);
+		Log.v(TAG, "Add bus name mapping : " + busStopId + " => " + routeName);
+		editor.commit();
+	}
+	
+	public static final String getBusRouteNameMapping(final String busStopId){
+		Context context = ChicagoTracker.getAppContext();
+		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_NAME_MAPPING, Context.MODE_PRIVATE);
+		String routeName = sharedPref.getString(busStopId, null);
+		Log.v(TAG, "Get bus name mapping : " + busStopId + " => " + routeName);
+		return routeName;
 	}
 
 	/**

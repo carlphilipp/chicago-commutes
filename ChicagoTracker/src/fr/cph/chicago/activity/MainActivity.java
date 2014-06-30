@@ -127,6 +127,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
 		// Preventing keyboard from moving background when showing up
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
 	}
 
 	@Override
@@ -377,7 +378,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		super.startActivity(intent);
 	}
 
-	private final class LoadData extends AsyncTask<Void, String, Void> {
+	private final class LoadData extends AsyncTask<Void, Integer, Void> {
 		/** Bus data **/
 		private BusData busData;
 		/** Train data **/
@@ -397,6 +398,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			// Load bus API data
 			try {
 				this.busData.loadBusRoutes();
+				publishProgress(33);
 			} catch (ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			} catch (ConnectException e) {
@@ -407,6 +409,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			try {
 				this.alertData = AlertData.getInstance();
 				this.alertData.loadGeneralAlerts();
+				publishProgress(66);
 			} catch (ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			} catch (ConnectException e) {
@@ -420,13 +423,18 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				String bikeContent = divvyConnect.connect();
 				this.bikeStations = json.parseStations(bikeContent);
 				Collections.sort(this.bikeStations, Util.BIKE_COMPARATOR_NAME);
-				publishProgress(new String[] { "d", "true" });
+				publishProgress(100);
 			} catch (ConnectException e) {
 				Log.e(TAG, e.getMessage(), e);
 			} catch (ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
 			return null;
+		}
+
+		@Override
+		protected final void onProgressUpdate(Integer... progress) {
+			startRefreshAnimation();
 		}
 
 		@Override
@@ -441,6 +449,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			onNewIntent(getIntent());
 
 			favoritesFragment.setBikeStations(bikeStations);
+			stopRefreshAnimation();
 		}
 	}
 

@@ -371,8 +371,8 @@ public class BikeStationActivity extends Activity {
 			Util.removeFromBikeFavorites(station.getId(), ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
 			isFavorite = false;
 		} else {
-			Log.i(TAG, "Add to bike fav " + station.getId());
 			Util.addToBikeFavorites(station.getId(), ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
+			Preferences.addBikeRouteNameMapping(String.valueOf(station.getId()), station.getName());
 			isFavorite = true;
 		}
 		if (isFavorite) {

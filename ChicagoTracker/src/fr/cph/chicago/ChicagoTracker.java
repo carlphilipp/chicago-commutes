@@ -43,8 +43,12 @@ public class ChicagoTracker extends Application {
 	public static final String PREFERENCE_FAVORITES_TRAIN = "ChicagoTrackerFavoritesTrain";
 	/** Bus preference string **/
 	public static final String PREFERENCE_FAVORITES_BUS = "ChicagoTrackerFavoritesBus";
+	/** Bus mapping name string **/
+	public static final String PREFERENCE_FAVORITES_BUS_NAME_MAPPING = "ChicagoTrackerFavoritesBusNameMapping";
 	/** Bike preference string **/
 	public static final String PREFERENCE_FAVORITES_BIKE = "ChicagoTrackerFavoritesBike";
+	/** Bike mapping name string **/
+	public static final String PREFERENCE_FAVORITES_BIKE_NAME_MAPPING = "ChicagoTrackerFavoritesBikeNameMapping";
 	/** Application context **/
 	private static Context context;
 	/** Last update of favorites **/
@@ -107,10 +111,32 @@ public class ChicagoTracker extends Application {
 	public static void checkData(Activity mActivity) {
 		if (DataHolder.getInstance().getBusData() == null || DataHolder.getInstance().getTrainData() == null
 				|| DataHolder.getInstance().getAlertData() == null) {
-			Intent intent = new Intent(mActivity, BaseActivity.class);
-			intent.putExtra("error", true);
-			mActivity.startActivity(intent);
-			mActivity.finish();
+			startErrorActivity(mActivity);
 		}
+	}
+	
+	public static void checkTrainData(Activity mActivity) {
+		if(DataHolder.getInstance().getTrainData() == null){
+			startErrorActivity(mActivity);
+		}
+	}
+	
+	public static void checkBusData(Activity mActivity) {
+		if(DataHolder.getInstance().getBusData() == null){
+			startErrorActivity(mActivity);
+		}
+	}
+	
+	public static void checkAlertData(Activity mActivity) {
+		if(DataHolder.getInstance().getAlertData() == null){
+			startErrorActivity(mActivity);
+		}
+	}
+	
+	private static void startErrorActivity(Activity mActivity){
+		Intent intent = new Intent(mActivity, BaseActivity.class);
+		intent.putExtra("error", true);
+		mActivity.startActivity(intent);
+		mActivity.finish();
 	}
 }

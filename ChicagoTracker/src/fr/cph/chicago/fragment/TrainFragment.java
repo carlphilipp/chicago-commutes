@@ -61,7 +61,6 @@ public final class TrainFragment extends Fragment {
 	@Override
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		ChicagoTracker.checkData(mActivity);
 	}
 
 	@Override

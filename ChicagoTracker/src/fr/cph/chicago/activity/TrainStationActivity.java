@@ -48,7 +48,7 @@ public class TrainStationActivity extends ListActivity {
 	@Override
 	public final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		ChicagoTracker.checkData(this);
+		//ChicagoTracker.checkData(this);
 		if (!this.isFinishing()) {
 			// Load data
 			DataHolder dataHolder = DataHolder.getInstance();

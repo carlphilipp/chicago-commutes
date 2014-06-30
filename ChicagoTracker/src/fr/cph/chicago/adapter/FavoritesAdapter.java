@@ -50,6 +50,7 @@ import android.widget.PopupMenu;
 import android.widget.PopupMenu.OnDismissListener;
 import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.TextView;
+import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BikeStationActivity;
@@ -79,7 +80,6 @@ import fr.cph.chicago.util.Util;
  * @version 1
  */
 public final class FavoritesAdapter extends BaseAdapter {
-
 	/** Main activity **/
 	private MainActivity activity;
 	/** The context **/
@@ -369,7 +369,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 									BusArrival busArrival = value.entrySet().iterator().next().getValue().get(0);
 									activity.startRefreshAnimation();
 									new BusBoundAsyncTask().execute(busArrival.getRouteId(), busArrival.getRouteDirection(),
-											String.valueOf(busArrival.getStopId()), key);
+											String.valueOf(busArrival.getStopId()), busRoute.getName());
 								} else {
 									List<String> menuTitles = new ArrayList<String>();
 									for (Entry<String, List<BusArrival>> entry : value.entrySet()) {
@@ -395,7 +395,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 											}
 											BusArrival busArrival = iterator.next().getValue().get(0);
 											new BusBoundAsyncTask().execute(busArrival.getRouteId(), busArrival.getRouteDirection(),
-													String.valueOf(busArrival.getStopId()), key);
+													String.valueOf(busArrival.getStopId()), busRoute.getName());
 											activity.startRefreshAnimation();
 											return false;
 										}
@@ -473,10 +473,9 @@ public final class FavoritesAdapter extends BaseAdapter {
 				tlView.setText("   ");
 				tlView.setLayoutParams(paramsTextView);
 				llh.addView(tlView);
-				
+
 				LinearLayout availableLayout = new LinearLayout(context);
 				availableLayout.setOrientation(LinearLayout.VERTICAL);
-				
 
 				LinearLayout availableBikes = new LinearLayout(context);
 				availableBikes.setOrientation(LinearLayout.HORIZONTAL);
@@ -488,11 +487,16 @@ public final class FavoritesAdapter extends BaseAdapter {
 				availableBikes.addView(availableBike);
 
 				TextView amountBike = new TextView(context);
-				amountBike.setText("" + bikeStation.getAvailableBikes());
-				if (bikeStation.getAvailableBikes() == 0) {
-					amountBike.setTextColor(context.getResources().getColor(R.color.red));
+				if (bikeStation.getAvailableBikes() == null) {
+					amountBike.setText("?");
+					amountBike.setTextColor(context.getResources().getColor(R.color.orange));
 				} else {
-					amountBike.setTextColor(context.getResources().getColor(R.color.green));
+					amountBike.setText("" + bikeStation.getAvailableBikes());
+					if (bikeStation.getAvailableBikes() == 0) {
+						amountBike.setTextColor(context.getResources().getColor(R.color.red));
+					} else {
+						amountBike.setTextColor(context.getResources().getColor(R.color.green));
+					}
 				}
 				availableBikes.addView(amountBike);
 
@@ -508,31 +512,45 @@ public final class FavoritesAdapter extends BaseAdapter {
 				availableDocks.addView(availableDock);
 
 				TextView amountDock = new TextView(context);
-				amountDock.setText("" + bikeStation.getAvailableDocks());
-				if (bikeStation.getAvailableDocks() == 0) {
-					amountDock.setTextColor(context.getResources().getColor(R.color.red));
+				if (bikeStation.getAvailableDocks() == null) {
+					amountDock.setText("?");
+					amountDock.setTextColor(context.getResources().getColor(R.color.orange));
 				} else {
-					amountDock.setTextColor(context.getResources().getColor(R.color.green));
+					amountDock.setText("" + bikeStation.getAvailableDocks());
+					if (bikeStation.getAvailableDocks() == 0) {
+						amountDock.setTextColor(context.getResources().getColor(R.color.red));
+					} else {
+						amountDock.setTextColor(context.getResources().getColor(R.color.green));
+					}
 				}
 				availableDocks.addView(amountDock);
 
 				availableLayout.addView(availableDocks);
-				
+
 				llh.addView(availableLayout);
 
 				favoritesData.addView(llh);
 
-				convertView.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						Intent intent = new Intent(ChicagoTracker.getAppContext(), BikeStationActivity.class);
-						Bundle extras = new Bundle();
-						extras.putParcelable("station", bikeStation);
-						intent.putExtras(extras);
-						activity.startActivity(intent);
-						activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
-					}
-				});
+				if (bikeStation.getPosition() != null) {
+					convertView.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							Intent intent = new Intent(ChicagoTracker.getAppContext(), BikeStationActivity.class);
+							Bundle extras = new Bundle();
+							extras.putParcelable("station", bikeStation);
+							intent.putExtras(extras);
+							activity.startActivity(intent);
+							activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+						}
+					});
+				} else {
+					convertView.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							Toast.makeText(activity, "Not ready yet. Please try again in few seconds!", Toast.LENGTH_SHORT).show();
+						}
+					});
+				}
 			}
 		}
 		return convertView;
@@ -561,8 +579,8 @@ public final class FavoritesAdapter extends BaseAdapter {
 			final List<BikeStation> bikeStations) {
 		fav.setArrivalsAndBikeStations(arrivals, busArrivals, bikeStations);
 	}
-	
-	public final void setBikeStations(List<BikeStation> bikeStations){
+
+	public final void setBikeStations(List<BikeStation> bikeStations) {
 		fav.setBikeStations(bikeStations);
 	}
 
@@ -705,7 +723,6 @@ public final class FavoritesAdapter extends BaseAdapter {
 				} else {
 					res = String.valueOf(diff[0]) + " h " + String.valueOf(diff[1]) + " min";
 				}
-
 			}
 		} else {
 			res = "";

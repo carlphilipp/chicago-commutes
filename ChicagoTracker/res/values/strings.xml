@@ -33,7 +33,9 @@
     <string name="action_settings">Settings</string>
     <string name="action_refresh">Refresh</string>
     <string name="action_search">Search</string>
+    <string name="progress_error">Sorry it did not work. Try again later</string>
     <string name="progress_message">Loading...</string>
+    <string name="progress_wait">Please wait</string>
     <string name="progress_bike">Bike data</string>
     <string name="progress_train">Train data</string>
     <string name="progress_bus">Bus data</string>

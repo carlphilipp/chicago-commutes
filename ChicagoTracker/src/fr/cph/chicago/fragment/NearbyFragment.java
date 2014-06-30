@@ -145,7 +145,8 @@ public class NearbyFragment extends Fragment {
 	@Override
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		ChicagoTracker.checkData(mActivity);
+		ChicagoTracker.checkTrainData(mActivity);
+		ChicagoTracker.checkBusData(mActivity);
 	}
 
 	@Override

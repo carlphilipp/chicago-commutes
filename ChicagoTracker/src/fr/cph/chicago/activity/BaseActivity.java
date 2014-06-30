@@ -18,7 +18,6 @@ package fr.cph.chicago.activity;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections4.MultiMap;
@@ -28,13 +27,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.SparseArray;
 import android.widget.TextView;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaRequestType;
-import fr.cph.chicago.connection.DivvyConnect;
 import fr.cph.chicago.data.AlertData;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
@@ -43,10 +40,8 @@ import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
-import fr.cph.chicago.json.Json;
 import fr.cph.chicago.task.GlobalConnectTask;
 import fr.cph.chicago.util.Util;
 
@@ -260,7 +255,7 @@ public class BaseActivity extends Activity {
 			dataHolder.setTrainData(trainData);
 			dataHolder.setAlertData(alertData);
 			try {
-				favoritesMessage.setVisibility(TextView.VISIBLE);
+				//favoritesMessage.setVisibility(TextView.VISIBLE);
 				// Load favorites data
 				loadData();
 			} catch (ParserException e) {

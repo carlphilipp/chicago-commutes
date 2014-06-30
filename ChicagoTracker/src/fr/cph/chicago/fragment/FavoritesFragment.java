@@ -62,14 +62,14 @@ public class FavoritesFragment extends Fragment {
 	private List<BusArrival> busArrivals;
 	/** Train arrivals **/
 	private SparseArray<TrainArrival> trainArrivals;
-
 	/** List of bus arrivals **/
 	private List<BikeStation> bikeStations;
 	/** Welcome layout **/
 	private RelativeLayout welcome;
-
 	/** Root view **/
 	private View rootView;
+
+	// private ProgressBar progressBar;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -97,7 +97,8 @@ public class FavoritesFragment extends Fragment {
 			busArrivals = savedInstanceState.getParcelableArrayList("busArrivals");
 			trainArrivals = savedInstanceState.getSparseParcelableArray("trainArrivals");
 			bikeStations = savedInstanceState.getParcelableArrayList("bikeStations");
-			ChicagoTracker.checkData(mActivity);
+			ChicagoTracker.checkTrainData(mActivity);
+			ChicagoTracker.checkBusData(mActivity);
 		}
 		if (bikeStations == null) {
 			bikeStations = new ArrayList<BikeStation>();
@@ -116,6 +117,33 @@ public class FavoritesFragment extends Fragment {
 			ListView listView = (ListView) rootView.findViewById(R.id.favorites_list);
 			listView.setAdapter(ada);
 			startRefreshTask();
+
+			// progressBar = (ProgressBar) rootView.findViewById(R.id.progressbar);
+			/*
+			 * progressBar = new ProgressBar(mActivity); progressBar.setIndeterminateDrawable(new
+			 * SmoothProgressDrawable.Builder(mActivity).interpolator(new DecelerateInterpolator()).build());
+			 * 
+			 * progressBar.setVisibility(ProgressBar.INVISIBLE); //progressBar.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, 10));
+			 * 
+			 * 
+			 * final FrameLayout decorView = (FrameLayout) mActivity.getWindow().getDecorView(); decorView.addView(progressBar); ViewTreeObserver
+			 * observer = progressBar.getViewTreeObserver(); observer.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+			 * 
+			 * @SuppressLint("NewApi")
+			 * 
+			 * @SuppressWarnings("deprecation")
+			 * 
+			 * @Override public void onGlobalLayout() { View contentView = decorView.findViewById(android.R.id.content);
+			 * FavoritesFragment.this.progressBar.setY(contentView.getY() - 882);
+			 * 
+			 * ViewTreeObserver observer = FavoritesFragment.this.progressBar.getViewTreeObserver(); int currentapiVersion =
+			 * android.os.Build.VERSION.SDK_INT; if (currentapiVersion < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+			 * observer.removeGlobalOnLayoutListener(this); } else { observer.removeOnGlobalLayoutListener(this); }
+			 * 
+			 * } });
+			 * 
+			 * progressBar.setProgressDrawable(getResources().getDrawable(R.drawable.progress_horizontal_top));
+			 */
 		}
 		return rootView;
 	}
@@ -218,9 +246,9 @@ public class FavoritesFragment extends Fragment {
 	public final void displayError(TrackerException trackerException) {
 		ChicagoTracker.displayError(mActivity, trackerException);
 	}
-	
-	public final void setBikeStations(List<BikeStation> bikeStations){
-		this.bikeStations =  bikeStations;
+
+	public final void setBikeStations(List<BikeStation> bikeStations) {
+		this.bikeStations = bikeStations;
 		ada.setBikeStations(bikeStations);
 		ada.notifyDataSetChanged();
 	}
@@ -261,4 +289,8 @@ public class FavoritesFragment extends Fragment {
 			return null;
 		}
 	}
+	/*
+	 * public final void showProgressBar() { progressBar.setVisibility(ProgressBar.VISIBLE); } public final void hideProgressBar() {
+	 * progressBar.setVisibility(ProgressBar.INVISIBLE); }
+	 */
 }

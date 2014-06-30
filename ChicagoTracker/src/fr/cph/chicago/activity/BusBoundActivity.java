@@ -98,7 +98,7 @@ public class BusBoundActivity extends ListActivity {
 	@Override
 	public final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		ChicagoTracker.checkData(this);
+		ChicagoTracker.checkBusData(this);
 		if (!this.isFinishing()) {
 			setContentView(R.layout.activity_bus_bound);
 

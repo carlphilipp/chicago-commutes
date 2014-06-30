@@ -113,7 +113,7 @@ public class StationActivity extends Activity {
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		ChicagoTracker.checkData(this);
+		ChicagoTracker.checkTrainData(this);
 		if (!this.isFinishing()) {
 			// Load data
 			DataHolder dataHolder = DataHolder.getInstance();

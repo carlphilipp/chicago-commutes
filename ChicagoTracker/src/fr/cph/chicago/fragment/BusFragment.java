@@ -82,7 +82,7 @@ public class BusFragment extends Fragment {
 	@Override
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		ChicagoTracker.checkData(mActivity);
+		ChicagoTracker.checkBusData(mActivity);
 	}
 
 	@Override
