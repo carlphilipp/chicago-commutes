@@ -18,6 +18,7 @@ package fr.cph.chicago.activity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.map.MultiValueMap;
@@ -280,12 +281,14 @@ public class BusBoundActivity extends ListActivity {
 			CtaConnect connect = CtaConnect.getInstance();
 			MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
 			connectParam.put("rt", busRouteId);
+			String boundIgnoreCase = bound.toLowerCase(Locale.US);
 			try {
 				String content = connect.connect(CtaRequestType.BUS_PATTERN, connectParam);
 				Xml xml = new Xml();
 				List<Pattern> patterns = xml.parsePatterns(content);
 				for (Pattern pattern : patterns) {
-					if (pattern.getDirection().equals(bound)) {
+					String directionIgnoreCase = pattern.getDirection().toLowerCase(Locale.US);
+					if (pattern.getDirection().equals(bound) || boundIgnoreCase.indexOf(directionIgnoreCase) != -1) {
 						this.pattern = pattern;
 						break;
 					}

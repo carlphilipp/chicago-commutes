@@ -25,13 +25,14 @@ import org.apache.commons.collections4.map.MultiValueMap;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.SparseArray;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaRequestType;
-import fr.cph.chicago.data.AlertData;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
@@ -58,8 +59,6 @@ public class BaseActivity extends Activity {
 
 	private List<BusArrival> busArrivals;
 
-	private List<BikeStation> bikeStations;
-
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -76,7 +75,7 @@ public class BaseActivity extends Activity {
 
 		if (error) {
 			new LoadData().execute();
-		} else if (trainArrivals == null || busArrivals == null || bikeStations == null) {
+		} else if (trainArrivals == null || busArrivals == null) {
 			new LoadData().execute();
 		} else {
 			startMainActivity();
@@ -123,12 +122,9 @@ public class BaseActivity extends Activity {
 		private BusData busData;
 		/** Train data **/
 		private TrainData trainData;
-		/** Alert data **/
-		private AlertData alertData;
 
 		@Override
 		protected final Void doInBackground(final Void... params) {
-
 			// Load local CSV
 			this.trainData = new TrainData();
 			this.trainData.read();
@@ -136,8 +132,6 @@ public class BaseActivity extends Activity {
 			this.busData = BusData.getInstance();
 			this.busData.readBusStops();
 
-			// Load divvy
-			BaseActivity.this.bikeStations = new ArrayList<BikeStation>();
 			return null;
 		}
 
@@ -147,7 +141,6 @@ public class BaseActivity extends Activity {
 			DataHolder dataHolder = DataHolder.getInstance();
 			dataHolder.setBusData(busData);
 			dataHolder.setTrainData(trainData);
-			dataHolder.setAlertData(alertData);
 			try {
 				// Load favorites data
 				loadData();
@@ -192,8 +185,12 @@ public class BaseActivity extends Activity {
 			params2.put("stpid", fav[1]);
 		}
 
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+		boolean loadTrain = sharedPref.getBoolean("cta_train", true);
+		boolean loadBus = sharedPref.getBoolean("cta_bus", true);
+
 		GlobalConnectTask task = new GlobalConnectTask(this, BaseActivity.class, CtaRequestType.TRAIN_ARRIVALS, params, CtaRequestType.BUS_ARRIVALS,
-				params2, false);
+				params2, loadTrain, loadBus, false);
 		task.execute((Void) null);
 	}
 
@@ -205,7 +202,6 @@ public class BaseActivity extends Activity {
 		Bundle bundle = new Bundle();
 		bundle.putParcelableArrayList("busArrivals", (ArrayList<BusArrival>) busArrivals);
 		bundle.putSparseParcelableArray("trainArrivals", trainArrivals);
-		bundle.putParcelableArrayList("bikeStations", (ArrayList<BikeStation>) bikeStations);
 		intent.putExtras(bundle);
 
 		finish();

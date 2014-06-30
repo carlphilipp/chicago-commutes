@@ -18,8 +18,10 @@ package fr.cph.chicago.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,8 +49,12 @@ public class AlertFragment extends Fragment {
 	private View rootView;
 	/** Loading layout **/
 	private RelativeLayout loadingLayout;
+	/** Desactivated layout **/
+	private RelativeLayout desactivatedLayout;
 	/** The list view **/
 	private ListView listView;
+	/** The main activity **/
+	private MainActivity mActivity;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -68,7 +74,7 @@ public class AlertFragment extends Fragment {
 	@Override
 	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
-		MainActivity mActivity = (MainActivity) activity;
+		mActivity = (MainActivity) activity;
 		mActivity.onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 
@@ -81,14 +87,21 @@ public class AlertFragment extends Fragment {
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		rootView = inflater.inflate(R.layout.fragment_alert, container, false);
 		listView = (ListView) rootView.findViewById(R.id.alert_list);
-		if (DataHolder.getInstance().getAlertData() != null) {
-			AlertAdapter ada = new AlertAdapter();
-			listView.setAdapter(ada);
+		desactivatedLayout = (RelativeLayout) rootView.findViewById(R.id.desactivated_layout);
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mActivity);
+		boolean loadAlert = sharedPref.getBoolean("cta_alert", true);
+		if (loadAlert) {
+			if (DataHolder.getInstance().getAlertData() != null) {
+				AlertAdapter ada = new AlertAdapter();
+				listView.setAdapter(ada);
+			} else {
+				loadingLayout = (RelativeLayout) rootView.findViewById(R.id.loading_relativeLayout);
+				loadingLayout.setVisibility(RelativeLayout.VISIBLE);
+				listView.setVisibility(ListView.INVISIBLE);
+				new WaitForRefreshData().execute();
+			}
 		} else {
-			loadingLayout = (RelativeLayout) rootView.findViewById(R.id.loading_relativeLayout);
-			loadingLayout.setVisibility(RelativeLayout.VISIBLE);
-			listView.setVisibility(ListView.INVISIBLE);
-			new WaitForRefreshData().execute();
+			desactivatedLayout.setVisibility(RelativeLayout.VISIBLE);
 		}
 		return rootView;
 	}

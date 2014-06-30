@@ -30,8 +30,10 @@ import android.app.FragmentTransaction;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
@@ -58,6 +60,7 @@ import fr.cph.chicago.fragment.FavoritesFragment;
 import fr.cph.chicago.fragment.MapFragment;
 import fr.cph.chicago.fragment.NavigationDrawerFragment;
 import fr.cph.chicago.fragment.NearbyFragment;
+import fr.cph.chicago.fragment.SettingsFragment;
 import fr.cph.chicago.fragment.TrainFragment;
 import fr.cph.chicago.json.Json;
 import fr.cph.chicago.task.GlobalConnectTask;
@@ -88,26 +91,30 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	private AlertFragment alertFragment;
 	/** Map fragment **/
 	private MapFragment mapFragment;
+	/** Settings fragment **/
+	private SettingsFragment settingsFragment;
 	/** Title **/
 	private CharSequence mTitle;
 	/** Menu **/
 	private Menu menu;
 	/** Current position **/
 	private int currentPosition;
-	/** **/
+	/** Drawer favorites **/
 	private static final int POSITION_FAVORITES = 0;
-	/** **/
+	/** Drawer Train **/
 	private static final int POSITION_TRAIN = 1;
-	/** **/
+	/** Drawer Bus **/
 	private static final int POSITION_BUS = 2;
-	/** **/
+	/** Drawer Divvy **/
 	private static final int POSITION_DIVVY = 3;
-	/** **/
+	/** Drawer Nearby **/
 	private static final int POSITION_NEARBY = 4;
-	/** **/
+	/** Drawer Alerts **/
 	private static final int POSITION_ALERTS = 5;
-	/** **/
+	/** Drawer Map **/
 	private static final int POSITION_MAP = 6;
+	/** Drawer Settings **/
+	private static final int POSITION_SETTINGS = 7;
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
@@ -203,6 +210,14 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				ft.replace(R.id.container, mapFragment).commit();
 			}
 			break;
+		case POSITION_SETTINGS:
+			if (settingsFragment == null) {
+				settingsFragment = SettingsFragment.newInstance(position + 1);
+			}
+			if (!this.isFinishing()) {
+				ft.replace(R.id.container, settingsFragment).commit();
+			}
+			break;
 		}
 	}
 
@@ -214,26 +229,29 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	 */
 	public final void onSectionAttached(final int number) {
 		switch (number) {
-		case 1:
+		case POSITION_FAVORITES + 1:
 			mTitle = getString(R.string.favorites);
 			break;
-		case 2:
+		case POSITION_TRAIN + 1:
 			mTitle = getString(R.string.train);
 			break;
-		case 3:
+		case POSITION_BUS + 1:
 			mTitle = getString(R.string.bus);
 			break;
-		case 4:
+		case POSITION_DIVVY + 1:
 			mTitle = getString(R.string.divvy);
 			break;
-		case 5:
+		case POSITION_NEARBY + 1:
 			mTitle = getString(R.string.nearby);
 			break;
-		case 6:
+		case POSITION_ALERTS + 1:
 			mTitle = getString(R.string.alerts);
 			break;
-		case 7:
+		case POSITION_MAP + 1:
 			mTitle = getString(R.string.map);
+			break;
+		case POSITION_SETTINGS + 1:
+			mTitle = getString(R.string.settings);
 			break;
 		}
 		restoreActionBar();
@@ -280,6 +298,11 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				MenuItem menuItem = item;
 				menuItem.setActionView(R.layout.progressbar);
 				menuItem.expandActionView();
+				
+				SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+				boolean loadTrain = sharedPref.getBoolean("cta_train", true);
+				boolean loadBus = sharedPref.getBoolean("cta_bus", true);
+				boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
 
 				MultiMap<String, String> params = new MultiValueMap<String, String>();
 				List<Integer> trainFavorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
@@ -296,7 +319,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				GlobalConnectTask task;
 				try {
 					task = new GlobalConnectTask(favoritesFragment, FavoritesFragment.class, CtaRequestType.TRAIN_ARRIVALS, params,
-							CtaRequestType.BUS_ARRIVALS, params2, true);
+							CtaRequestType.BUS_ARRIVALS, params2, loadTrain, loadBus, loadBike);
 					task.execute((Void) null);
 				} catch (ParserException e) {
 					ChicagoTracker.displayError(this, e);
@@ -378,7 +401,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		super.startActivity(intent);
 	}
 
-	private final class LoadData extends AsyncTask<Void, Integer, Void> {
+	private final class LoadData extends AsyncTask<Void, Void, Void> {
 		/** Bus data **/
 		private BusData busData;
 		/** Train data **/
@@ -395,45 +418,57 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			this.busData = dataHolder.getBusData();
 			this.trainData = dataHolder.getTrainData();
 
+			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+			boolean loadBus = sharedPref.getBoolean("cta_bus", true);
+			boolean loadAlert = sharedPref.getBoolean("cta_alert", true);
+			boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
+
 			// Load bus API data
-			try {
-				this.busData.loadBusRoutes();
-				publishProgress(33);
-			} catch (ParserException e) {
-				Log.e(TAG, e.getMessage(), e);
-			} catch (ConnectException e) {
-				Log.e(TAG, e.getMessage(), e);
+			if (loadBus) {
+				try {
+					this.busData.loadBusRoutes();
+					publishProgress();
+				} catch (ParserException e) {
+					Log.e(TAG, e.getMessage(), e);
+				} catch (ConnectException e) {
+					Log.e(TAG, e.getMessage(), e);
+				}
 			}
 
 			// Load alert API data
-			try {
-				this.alertData = AlertData.getInstance();
-				this.alertData.loadGeneralAlerts();
-				publishProgress(66);
-			} catch (ParserException e) {
-				Log.e(TAG, e.getMessage(), e);
-			} catch (ConnectException e) {
-				Log.e(TAG, e.getMessage(), e);
+			if (loadAlert) {
+				try {
+					this.alertData = AlertData.getInstance();
+					this.alertData.loadGeneralAlerts();
+					publishProgress();
+				} catch (ParserException e) {
+					Log.e(TAG, e.getMessage(), e);
+				} catch (ConnectException e) {
+					Log.e(TAG, e.getMessage(), e);
+				}
 			}
+
 			// Load divvy
 			this.bikeStations = new ArrayList<BikeStation>();
-			try {
-				Json json = new Json();
-				DivvyConnect divvyConnect = DivvyConnect.getInstance();
-				String bikeContent = divvyConnect.connect();
-				this.bikeStations = json.parseStations(bikeContent);
-				Collections.sort(this.bikeStations, Util.BIKE_COMPARATOR_NAME);
-				publishProgress(100);
-			} catch (ConnectException e) {
-				Log.e(TAG, e.getMessage(), e);
-			} catch (ParserException e) {
-				Log.e(TAG, e.getMessage(), e);
+			if (loadBike) {
+				try {
+					Json json = new Json();
+					DivvyConnect divvyConnect = DivvyConnect.getInstance();
+					String bikeContent = divvyConnect.connect();
+					this.bikeStations = json.parseStations(bikeContent);
+					Collections.sort(this.bikeStations, Util.BIKE_COMPARATOR_NAME);
+					publishProgress();
+				} catch (ConnectException e) {
+					Log.e(TAG, e.getMessage(), e);
+				} catch (ParserException e) {
+					Log.e(TAG, e.getMessage(), e);
+				}
 			}
 			return null;
 		}
-
+		
 		@Override
-		protected final void onProgressUpdate(Integer... progress) {
+		protected final void onProgressUpdate(Void... progress) {
 			startRefreshAnimation();
 		}
 
@@ -452,5 +487,4 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			stopRefreshAnimation();
 		}
 	}
-
 }

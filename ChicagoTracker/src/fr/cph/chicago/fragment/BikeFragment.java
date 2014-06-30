@@ -28,8 +28,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -74,6 +76,8 @@ public class BikeFragment extends Fragment {
 	private View rootView;
 	/** Loading layout **/
 	private RelativeLayout loadingLayout;
+	/** Desactivated layout **/
+	private RelativeLayout desactivatedLayout;
 	/** The list view **/
 	private ListView listView;
 	/** The filter text view **/
@@ -121,16 +125,23 @@ public class BikeFragment extends Fragment {
 		rootView = inflater.inflate(R.layout.fragment_bus, container, false);
 		if (!mActivity.isFinishing()) {
 			loadingLayout = (RelativeLayout) rootView.findViewById(R.id.loading_relativeLayout);
+			desactivatedLayout = (RelativeLayout) rootView.findViewById(R.id.desactivated_layout);
 			listView = (ListView) rootView.findViewById(R.id.bus_list);
 			filterView = (TextView) rootView.findViewById(R.id.bus_filter);
-			Bundle bundle = mActivity.getIntent().getExtras();
-			if (bundle.getParcelableArrayList("bikeStations").size() != 0) {
-				loadList();
-			} else {
-				loadingLayout.setVisibility(RelativeLayout.VISIBLE);
-				listView.setVisibility(ListView.INVISIBLE);
+			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mActivity);
+			boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
+			if (loadBike) {
+				if (bikeStations == null && bikeStations.size() != 0) {
+					loadList();
+				} else {
+					loadingLayout.setVisibility(RelativeLayout.VISIBLE);
+					listView.setVisibility(ListView.INVISIBLE);
+					filterView.setVisibility(TextView.INVISIBLE);
+					new WaitForRefreshData().execute();
+				}
+			}else{
+				desactivatedLayout.setVisibility(RelativeLayout.VISIBLE);
 				filterView.setVisibility(TextView.INVISIBLE);
-				new WaitForRefreshData().execute();
 			}
 		}
 		return rootView;
@@ -196,7 +207,7 @@ public class BikeFragment extends Fragment {
 			Bundle bundle = BikeFragment.this.mActivity.getIntent().getExtras();
 			List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
 			int i = 0;
-			while (bikeStations.size() == 0 && i < 10) {
+			while ((bikeStations == null || bikeStations.size() == 0) && i < 10) {
 				try {
 					Thread.sleep(100);
 					bundle = BikeFragment.this.mActivity.getIntent().getExtras();

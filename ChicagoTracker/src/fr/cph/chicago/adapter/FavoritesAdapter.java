@@ -30,10 +30,12 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils.TruncateAt;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -530,6 +532,9 @@ public final class FavoritesAdapter extends BaseAdapter {
 				llh.addView(availableLayout);
 
 				favoritesData.addView(llh);
+				
+				SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(activity);
+				boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
 
 				if (bikeStation.getPosition() != null) {
 					convertView.setOnClickListener(new View.OnClickListener() {
@@ -543,11 +548,18 @@ public final class FavoritesAdapter extends BaseAdapter {
 							activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 						}
 					});
-				} else {
+				} else if(loadBike){
 					convertView.setOnClickListener(new View.OnClickListener() {
 						@Override
 						public void onClick(View v) {
 							Toast.makeText(activity, "Not ready yet. Please try again in few seconds!", Toast.LENGTH_SHORT).show();
+						}
+					});
+				}else{
+					convertView.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							Toast.makeText(activity, "You must activate divvy bikes data", Toast.LENGTH_SHORT).show();
 						}
 					});
 				}

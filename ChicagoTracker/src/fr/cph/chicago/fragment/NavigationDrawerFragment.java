@@ -115,7 +115,9 @@ public class NavigationDrawerFragment extends Fragment {
 						getString(R.string.divvy),
 						getString(R.string.nearby), 
 						getString(R.string.alerts), 
-						getString(R.string.map) }));
+						getString(R.string.map),
+						getString(R.string.settings)
+						}));
 		mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
 		return mDrawerListView;
 	}
