@@ -40,6 +40,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
@@ -75,6 +76,8 @@ public class BikeFragment extends Fragment {
 	private RelativeLayout loadingLayout;
 	/** The list view **/
 	private ListView listView;
+	/** The filter text view **/
+	private TextView filterView;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -119,12 +122,14 @@ public class BikeFragment extends Fragment {
 		if (!mActivity.isFinishing()) {
 			loadingLayout = (RelativeLayout) rootView.findViewById(R.id.loading_relativeLayout);
 			listView = (ListView) rootView.findViewById(R.id.bus_list);
+			filterView = (TextView) rootView.findViewById(R.id.bus_filter);
 			Bundle bundle = mActivity.getIntent().getExtras();
 			if (bundle.getParcelableArrayList("bikeStations").size() != 0) {
 				loadList();
 			} else {
 				loadingLayout.setVisibility(RelativeLayout.VISIBLE);
 				listView.setVisibility(ListView.INVISIBLE);
+				filterView.setVisibility(TextView.INVISIBLE);
 				new WaitForRefreshData().execute();
 			}
 		}
@@ -162,6 +167,7 @@ public class BikeFragment extends Fragment {
 			}
 		});
 		listView.setVisibility(ListView.VISIBLE);
+		filterView.setVisibility(ListView.VISIBLE);
 		loadingLayout.setVisibility(RelativeLayout.INVISIBLE);
 	}
 
@@ -188,16 +194,19 @@ public class BikeFragment extends Fragment {
 		@Override
 		protected Boolean doInBackground(Void... args) {
 			Bundle bundle = BikeFragment.this.mActivity.getIntent().getExtras();
+			List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
 			int i = 0;
-			while (bundle.getParcelableArrayList("bikeStations").size()  != 0 && i < 10) {
+			while (bikeStations.size() == 0 && i < 10) {
 				try {
 					Thread.sleep(100);
+					bundle = BikeFragment.this.mActivity.getIntent().getExtras();
+					bikeStations = bundle.getParcelableArrayList("bikeStations");
 					i++;
 				} catch (InterruptedException e) {
 					Log.e(TAG, e.getMessage(), e);
 				}
 			}
-			return bundle.getParcelableArrayList("bikeStations").size()  != 0;
+			return bundle.getParcelableArrayList("bikeStations").size() == 0;
 		}
 
 		@Override
@@ -214,7 +223,6 @@ public class BikeFragment extends Fragment {
 		loadingLayout.setVisibility(RelativeLayout.INVISIBLE);
 		RelativeLayout loadingLayout = (RelativeLayout) rootView.findViewById(R.id.error_layout);
 		loadingLayout.setVisibility(RelativeLayout.VISIBLE);
-		loadingLayout.setVisibility(RelativeLayout.INVISIBLE);
 	}
 
 	private final class DivvyAsyncTask extends AsyncTask<Void, Void, List<BikeStation>> {

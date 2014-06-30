@@ -28,7 +28,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.SparseArray;
-import android.widget.TextView;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaRequestType;
@@ -52,9 +51,6 @@ import fr.cph.chicago.util.Util;
  * @version 1
  */
 public class BaseActivity extends Activity {
-
-	/** Tag **/
-	private static final String TAG = "BaseActivity";
 	/** Error state **/
 	private Boolean error;
 
@@ -64,23 +60,11 @@ public class BaseActivity extends Activity {
 
 	private List<BikeStation> bikeStations;
 
-	private TextView trainMessage, busMessage, alertMessage, bikeMessage, favoritesMessage;
-
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.loading);
-
-		trainMessage = (TextView) findViewById(R.id.loadingTrainView);
-
-		busMessage = (TextView) findViewById(R.id.loadingBusView);
-
-		alertMessage = (TextView) findViewById(R.id.loadingAlertView);
-
-		bikeMessage = (TextView) findViewById(R.id.loadingBikeView);
-
-		favoritesMessage = (TextView) findViewById(R.id.loadingFavoritesView);
 
 		Bundle extras = getIntent().getExtras();
 
@@ -123,13 +107,6 @@ public class BaseActivity extends Activity {
 			final List<BikeStation> bikeStations, final Boolean trainBoolean, final Boolean busBoolean, final Boolean bikeBoolean) {
 		this.trainArrivals = trainArrivals;
 		this.busArrivals = busArrivals;
-		if (trainBoolean && busBoolean) {
-			favoritesMessage.setText(favoritesMessage.getText() + " - OK");
-			favoritesMessage.setTextColor(getResources().getColor(R.color.green));
-		} else {
-			favoritesMessage.setText(favoritesMessage.getText() + " - FAIL");
-			favoritesMessage.setTextColor(getResources().getColor(R.color.red));
-		}
 		ChicagoTracker.modifyLastUpdate(Calendar.getInstance().getTime());
 		startMainActivity();
 	}
@@ -156,95 +133,12 @@ public class BaseActivity extends Activity {
 			this.trainData = new TrainData();
 			this.trainData.read();
 
-			//publishProgress(new String[] { "t", "true" });
-
 			this.busData = BusData.getInstance();
 			this.busData.readBusStops();
 
-			// Load bus API data
-			/*try {
-				this.busData.loadBusRoutes();
-				publishProgress(new String[] { "b", "true" });
-			} catch (ParserException e) {
-				publishProgress(new String[] { "b", "false" });
-				Log.e(TAG, e.getMessage(), e);
-			} catch (ConnectException e) {
-				publishProgress(new String[] { "b", "false" });
-				Log.e(TAG, e.getMessage(), e);
-			}*/
-
-			// Load alert API data
-/*			try {
-				this.alertData = AlertData.getInstance();
-				this.alertData.loadGeneralAlerts();
-				publishProgress(new String[] { "a", "true" });
-			} catch (ParserException e) {
-				publishProgress(new String[] { "a", "false" });
-				Log.e(TAG, e.getMessage(), e);
-			} catch (ConnectException e) {
-				publishProgress(new String[] { "a", "false" });
-				Log.e(TAG, e.getMessage(), e);
-			}*/
 			// Load divvy
 			BaseActivity.this.bikeStations = new ArrayList<BikeStation>();
-/*			try {
-				Json json = new Json();
-				DivvyConnect divvyConnect = DivvyConnect.getInstance();
-				String bikeContent = divvyConnect.connect();
-				BaseActivity.this.bikeStations = json.parseStations(bikeContent);
-				Collections.sort(BaseActivity.this.bikeStations, Util.BIKE_COMPARATOR_NAME);
-				publishProgress(new String[] { "d", "true" });
-			} catch (ConnectException e) {
-				publishProgress(new String[] { "d", "false" });
-				Log.e(TAG, e.getMessage(), e);
-			} catch (ParserException e) {
-				publishProgress(new String[] { "d", "false" });
-				Log.e(TAG, e.getMessage(), e);
-			}*/
 			return null;
-		}
-
-		@Override
-		protected final void onProgressUpdate(String... progress) {
-			String type = progress[0];
-			boolean passed = Boolean.valueOf(progress[1]);
-			if (type.equals("t")) {
-				trainMessage.setVisibility(TextView.VISIBLE);
-				if (!passed) {
-					trainMessage.setText(trainMessage.getText() + " - FAIL");
-					trainMessage.setTextColor(getResources().getColor(R.color.red));
-				} else {
-					trainMessage.setText(trainMessage.getText() + " - OK");
-					trainMessage.setTextColor(getResources().getColor(R.color.green));
-				}
-				busMessage.setVisibility(TextView.VISIBLE);
-			} else if (type.equals("b")) {
-				if (!passed) {
-					busMessage.setText(busMessage.getText() + " - FAIL");
-					busMessage.setTextColor(getResources().getColor(R.color.red));
-				} else {
-					busMessage.setText(busMessage.getText() + " - OK");
-					busMessage.setTextColor(getResources().getColor(R.color.green));
-				}
-				alertMessage.setVisibility(TextView.VISIBLE);
-			} else if (type.equals("a")) {
-				if (!passed) {
-					alertMessage.setText(alertMessage.getText() + " - FAIL");
-					alertMessage.setTextColor(getResources().getColor(R.color.red));
-				} else {
-					alertMessage.setText(alertMessage.getText() + " - OK");
-					alertMessage.setTextColor(getResources().getColor(R.color.green));
-				}
-				bikeMessage.setVisibility(TextView.VISIBLE);
-			} else if (type.equals("d")) {
-				if (!passed) {
-					bikeMessage.setText(bikeMessage.getText() + " - FAIL");
-					bikeMessage.setTextColor(getResources().getColor(R.color.red));
-				} else {
-					bikeMessage.setText(bikeMessage.getText() + " - OK");
-					bikeMessage.setTextColor(getResources().getColor(R.color.green));
-				}
-			}
 		}
 
 		@Override
@@ -255,7 +149,6 @@ public class BaseActivity extends Activity {
 			dataHolder.setTrainData(trainData);
 			dataHolder.setAlertData(alertData);
 			try {
-				//favoritesMessage.setVisibility(TextView.VISIBLE);
 				// Load favorites data
 				loadData();
 			} catch (ParserException e) {
