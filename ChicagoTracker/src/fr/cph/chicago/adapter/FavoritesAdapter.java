@@ -344,7 +344,6 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 				Map<String, Map<String, List<BusArrival>>> busArrivals = fav.getBusArrivalsMapped(busRoute.getId());
 				if (busArrivals.size() > 0) {
-					// arrow.setImageDrawable(activity.getResources().getDrawable(R.drawable.down_arrow));
 					for (Entry<String, Map<String, List<BusArrival>>> entry : busArrivals.entrySet()) {
 						LinearLayout llh = new LinearLayout(context);
 						llh.setLayoutParams(paramsLayout);
