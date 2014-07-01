@@ -77,7 +77,9 @@ public final class BusDirections {
 	 * @param dir
 	 */
 	public final void addBusDirection(final BusDirection dir) {
-		lBusDirection.add(dir);
+		if (!lBusDirection.contains(dir)) {
+			lBusDirection.add(dir);
+		}
 	}
 
 }

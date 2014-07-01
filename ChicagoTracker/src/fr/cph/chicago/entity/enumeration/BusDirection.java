@@ -16,6 +16,8 @@
 
 package fr.cph.chicago.entity.enumeration;
 
+import java.util.Locale;
+
 /**
  * Enumeration, bus direction
  * 
@@ -49,6 +51,9 @@ public enum BusDirection {
 		if (text != null) {
 			for (BusDirection b : BusDirection.values()) {
 				if (text.equalsIgnoreCase(b.text)) {
+					return b;
+				}
+				else if (b.text.toLowerCase(Locale.US).contains(text.toLowerCase(Locale.US))) {
 					return b;
 				}
 			}

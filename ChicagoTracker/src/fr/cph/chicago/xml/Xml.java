@@ -454,7 +454,8 @@ public final class Xml {
 	 * @throws ParserException
 	 *             a parser exception
 	 */
-	public final List<BusArrival> parseBusArrivals(final String xml) throws ParserException {
+	public final List<BusArrival> parseBusArrivals(String xml) throws ParserException {
+		xml = xml.replaceAll("&", "&amp;");
 		List<BusArrival> busArrivals = null;
 		String tagName = null;
 		BusArrival busArrival = null;
@@ -479,6 +480,7 @@ public final class Xml {
 						} else if (tagName.equals("typ")) {
 							busArrival.setPredictionType(PredictionType.fromString(text));
 						} else if (tagName.equals("stpnm")) {
+							text = text.replaceAll("&amp;", "&");
 							busArrival.setStopName(text);
 						} else if (tagName.equals("stpid")) {
 							if (busArrival != null) {
@@ -493,6 +495,7 @@ public final class Xml {
 								busArrival.setRouteId(text);
 							}
 						} else if (tagName.equals("rtdir")) {
+							text = BusDirection.fromString(text).toString();
 							busArrival.setRouteDirection(text);
 						} else if (tagName.equals("des")) {
 							busArrival.setBusDestination(text);
@@ -648,6 +651,7 @@ public final class Xml {
 						} else if (tagName.equals("ln")) {
 							pattern.setLength(Double.valueOf(text));
 						} else if (tagName.equals("rtdir")) {
+							text = BusDirection.fromString(text).toString();
 							pattern.setDirection(text);
 						} else if (tagName.equals("pt")) {
 							patternPoint = new PatternPoint();
