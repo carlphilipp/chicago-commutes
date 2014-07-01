@@ -209,7 +209,6 @@ public class Favorites {
 							List<BusArrival> arrivals = new ArrayList<BusArrival>();
 							arrivals.add(busArrival);
 							tempMap.put(bound, arrivals);
-
 						}
 					} else {
 						Map<String, List<BusArrival>> tempMap = new TreeMap<String, List<BusArrival>>();
@@ -240,7 +239,7 @@ public class Favorites {
 		for (String fav : busFavorites) {
 			String decoded[] = Util.decodeBusFavorite(fav);
 			// TODO: Is that correct ? maybe remove stopId
-			if (routeId.equals(decoded[0]) && bound.equals(decoded[2]) && String.valueOf(stopId).equals(decoded[1])) {
+			if (routeId.equals(decoded[0]) && String.valueOf(stopId).equals(decoded[1]) && bound.equals(decoded[2])) {
 				res = true;
 				break;
 			}
