@@ -268,8 +268,12 @@ public final class BusArrival implements Parcelable {
 	 * @return
 	 */
 	public final String getTimeLeft() {
-		long time = predictionTime.getTime() - timeStamp.getTime();
-		return String.format(Locale.ENGLISH, "%d min", TimeUnit.MILLISECONDS.toMinutes(time));
+		if (predictionTime != null && timeStamp != null) {
+			long time = predictionTime.getTime() - timeStamp.getTime();
+			return String.format(Locale.ENGLISH, "%d min", TimeUnit.MILLISECONDS.toMinutes(time));
+		} else {
+			return "No service scheduled";
+		}
 	}
 
 	/**

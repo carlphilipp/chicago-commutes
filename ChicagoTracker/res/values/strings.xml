@@ -66,7 +66,7 @@
     <string name="bus_activity_street_view">Street view</string>
     <string name="bus_fragment_filter">Filter</string>
     <string name="bus_fragment_notloaded">Divvy data deactivated</string>
-    
+
     <!-- Alert -->
     <string name="alert_fragment_notloaded">Alert data deactivated</string>
 
@@ -76,22 +76,32 @@
     <!-- Error -->
     <string name="error_desc">Error</string>
     <string name="error_retry">Retry</string>
-    
-     <!-- Search -->
-     <string name="search_title">Search</string>
-     <string name="search_hint">Train Stations or Bus Lines</string>
-     
-     <!-- Nearby -->
-     <string name="nearby_title">Nearby</string>
-     <string name="nearby_check_box">Hide stations/stops with no results</string>
-     
-     <!-- Map -->
-     <string name="fragment_image_description">A nice description</string>
-     
-     <!-- Loading -->
-     <string name="loading_image_description">A nice description</string>
-     
-     <!-- Bike -->
-     <string name="bike_activity">Divvy</string>
+
+    <!-- Search -->
+    <string name="search_title">Search</string>
+    <string name="search_hint">Train Stations or Bus Lines</string>
+
+    <!-- Nearby -->
+    <string name="nearby_title">Nearby</string>
+    <string name="nearby_check_box">Hide stations/stops with no results</string>
+
+    <!-- Map -->
+    <string name="fragment_image_description">A nice description</string>
+
+    <!-- Loading -->
+    <string name="loading_image_description">A nice description</string>
+
+    <!-- Bike -->
+    <string name="bike_activity">Divvy</string>
+
+    <!-- Preferences -->
+    <string name="pref_trains_title">CTA trains</string>
+    <string name="pref_trains_summary">Use trains data</string>
+    <string name="pref_buses_title">CTA buses</string>
+    <string name="pref_buses_summary">Use buses data</string>
+    <string name="pref_alert_title">CTA alerts</string>
+    <string name="pref_alert_summary">Use alert data</string>
+    <string name="pref_bikes_title">Divvy bikes</string>
+    <string name="pref_bikes_summary">Use bikes data</string>
 
 </resources>

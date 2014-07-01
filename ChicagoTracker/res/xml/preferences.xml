@@ -21,23 +21,23 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="cta_train"
-            android:summary="Load trains"
-            android:title="CTA trains" />
+            android:summary="@string/pref_trains_summary"
+            android:title="@string/pref_trains_title" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="cta_bus"
-            android:summary="Load buses"
-            android:title="CTA buses" />
+            android:summary="@string/pref_buses_summary"
+            android:title="@string/pref_buses_title" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="cta_alert"
-            android:summary="Load alerts"
-            android:title="CTA alerts" />
+            android:summary="@string/pref_alert_summary"
+            android:title="@string/pref_alert_title" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="divvy_bike"
-            android:summary="Load bikes"
-            android:title="Divvy bikes" />
+            android:summary="@string/pref_bikes_summary"
+            android:title="@string/pref_bikes_title" />
     </PreferenceCategory>
 
 </PreferenceScreen>

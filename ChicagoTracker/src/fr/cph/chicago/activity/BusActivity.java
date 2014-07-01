@@ -443,6 +443,7 @@ public class BusActivity extends Activity {
 			Util.addToBusFavorites(busRouteId, String.valueOf(busStopId), bound, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
 			Log.i(TAG, "busRouteName: " + busRouteName);
 			Preferences.addBusRouteNameMapping(String.valueOf(busStopId), busRouteName);
+			Preferences.addBusStopNameMapping(String.valueOf(busStopId), busStopName);
 			isFavorite = true;
 		}
 		if (isFavorite) {

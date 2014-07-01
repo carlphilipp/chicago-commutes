@@ -44,7 +44,9 @@ public class ChicagoTracker extends Application {
 	/** Bus preference string **/
 	public static final String PREFERENCE_FAVORITES_BUS = "ChicagoTrackerFavoritesBus";
 	/** Bus mapping name string **/
-	public static final String PREFERENCE_FAVORITES_BUS_NAME_MAPPING = "ChicagoTrackerFavoritesBusNameMapping";
+	public static final String PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING = "ChicagoTrackerFavoritesBusNameMapping";
+	/** Bus mapping name string **/
+	public static final String PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING = "ChicagoTrackerFavoritesBusStopNameMapping";
 	/** Bike preference string **/
 	public static final String PREFERENCE_FAVORITES_BIKE = "ChicagoTrackerFavoritesBike";
 	/** Bike mapping name string **/

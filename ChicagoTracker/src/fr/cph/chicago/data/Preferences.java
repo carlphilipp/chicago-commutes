@@ -179,19 +179,36 @@ public final class Preferences {
 	
 	public static final void addBusRouteNameMapping(final String busStopId, final String routeName){
 		Context context = ChicagoTracker.getAppContext();
-		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_NAME_MAPPING, Context.MODE_PRIVATE);
+		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
 		editor.putString(busStopId, routeName);
-		Log.v(TAG, "Add bus name mapping : " + busStopId + " => " + routeName);
+		Log.v(TAG, "Add bus route name mapping : " + busStopId + " => " + routeName);
 		editor.commit();
 	}
 	
 	public static final String getBusRouteNameMapping(final String busStopId){
 		Context context = ChicagoTracker.getAppContext();
-		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_NAME_MAPPING, Context.MODE_PRIVATE);
+		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING, Context.MODE_PRIVATE);
 		String routeName = sharedPref.getString(busStopId, null);
-		Log.v(TAG, "Get bus name mapping : " + busStopId + " => " + routeName);
+		Log.v(TAG, "Get bus route name mapping : " + busStopId + " => " + routeName);
 		return routeName;
+	}
+	
+	public static final void addBusStopNameMapping(final String busStopId, final String stopName){
+		Context context = ChicagoTracker.getAppContext();
+		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = sharedPref.edit();
+		editor.putString(busStopId, stopName);
+		Log.v(TAG, "Add bus stop name mapping : " + busStopId + " => " + stopName);
+		editor.commit();
+	}
+	
+	public static final String getBusStopNameMapping(final String busStopId){
+		Context context = ChicagoTracker.getAppContext();
+		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING, Context.MODE_PRIVATE);
+		String stopName = sharedPref.getString(busStopId, null);
+		Log.v(TAG, "Get bus stop name mapping : " + busStopId + " => " + stopName);
+		return stopName;
 	}
 
 	/**
