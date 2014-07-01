@@ -264,7 +264,6 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 				this.trackerBusException = e;
 			}
 		}
-
 		if (loadBikes) {
 			try {
 				String bikeContent = divvyConnect.connect();
