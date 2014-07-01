@@ -29,12 +29,12 @@
             android:summary="Load buses"
             android:title="CTA buses" />
         <CheckBoxPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:key="cta_alert"
             android:summary="Load alerts"
             android:title="CTA alerts" />
         <CheckBoxPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:key="divvy_bike"
             android:summary="Load bikes"
             android:title="Divvy bikes" />
