@@ -55,6 +55,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -169,7 +170,9 @@ public class NearbyFragment extends Fragment {
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 					Preferences.saveHideShowNearby(isChecked);
 					hideStationsStops = isChecked;
-					reloadData();
+					if (Util.isNetworkAvailable()) {
+						reloadData();
+					}
 				}
 			});
 			showProgress(true);
@@ -201,7 +204,12 @@ public class NearbyFragment extends Fragment {
 		if (map == null) {
 			map = mapFragment.getMap();
 		}
-		new LoadNearby().execute();
+		if (Util.isNetworkAvailable()) {
+			new LoadNearby().execute();
+		} else {
+			Toast.makeText(mActivity, "No network connection detected!", Toast.LENGTH_LONG).show();
+			showProgress(false);
+		}
 	}
 
 	/**
@@ -660,9 +668,14 @@ public class NearbyFragment extends Fragment {
 	 * Reload data
 	 */
 	public final void reloadData() {
-		map.clear();
-		showProgress(true);
-		nearbyContainer.setVisibility(View.GONE);
-		new LoadNearby().execute();
+		if (Util.isNetworkAvailable()) {
+			map.clear();
+			showProgress(true);
+			nearbyContainer.setVisibility(View.GONE);
+			new LoadNearby().execute();
+		} else {
+			Toast.makeText(mActivity, "No network connection detected!", Toast.LENGTH_LONG).show();
+			showProgress(false);
+		}
 	}
 }

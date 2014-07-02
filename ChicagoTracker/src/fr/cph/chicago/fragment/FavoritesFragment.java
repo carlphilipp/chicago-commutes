@@ -31,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
@@ -68,8 +69,6 @@ public class FavoritesFragment extends Fragment {
 	private RelativeLayout welcome;
 	/** Root view **/
 	private View rootView;
-
-	// private ProgressBar progressBar;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -189,17 +188,20 @@ public class FavoritesFragment extends Fragment {
 	 *            the bus arrivals list
 	 */
 	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals,
-			final List<BikeStation> bikeStations, final Boolean trainBoolean, final Boolean busBoolean, final Boolean bikeBoolean) {
-		// startRefreshTask();
-		// Put into intent new bike stations data
-		mActivity.getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
-		mActivity.onNewIntent(mActivity.getIntent());
+			final List<BikeStation> bikeStations, final Boolean trainBoolean, final Boolean busBoolean, final Boolean bikeBoolean,
+			final Boolean networkAvailable) {
+		if (!networkAvailable) {
+			Toast.makeText(mActivity, "No network connection detected!", Toast.LENGTH_LONG).show();
+		} else {
+			// Put into intent new bike stations data
+			mActivity.getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
+			mActivity.onNewIntent(mActivity.getIntent());
 
-		ada.setArrivalsAndBikeStations(trainArrivals, busArrivals, bikeStations);
-		ada.refreshUpdated();
-		ada.refreshUpdatedView();
-		ada.notifyDataSetChanged();
-
+			ada.setArrivalsAndBikeStations(trainArrivals, busArrivals, bikeStations);
+			ada.refreshUpdated();
+			ada.refreshUpdatedView();
+			ada.notifyDataSetChanged();
+		}
 		// Highlight background
 		rootView.setBackgroundResource(R.drawable.highlight_selector);
 		rootView.postDelayed(new Runnable() {

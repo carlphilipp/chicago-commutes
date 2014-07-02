@@ -95,6 +95,8 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 	private boolean loadBuses;
 	/** Load bikes or not **/
 	private boolean loadBikes;
+	/** **/
+	private boolean networkAvailable;
 
 	/**
 	 * Constructor
@@ -142,151 +144,156 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 		trainBoolean = true;
 		busBoolean = true;
 		bikeBoolean = true;
-		CtaConnect ctaConnect = CtaConnect.getInstance();
-		DivvyConnect divvyConnect = DivvyConnect.getInstance();
-		if (loadTrains) {
-			try {
-				for (Entry<String, Object> entry : params.entrySet()) {
-					String key = entry.getKey();
-					if (key.equals("mapid")) {
-						Object value = entry.getValue();
-						if (value instanceof String) {
-							String xmlResult = ctaConnect.connect(requestType, params);
-							this.trainArrivals = xml.parseArrivals(xmlResult, data);
-						} else if (value instanceof List) {
-							@SuppressWarnings("unchecked")
-							List<String> list = (List<String>) value;
-							if (list.size() < 5) {
+		networkAvailable = Util.isNetworkAvailable();
+		if (networkAvailable) {
+			CtaConnect ctaConnect = CtaConnect.getInstance();
+			DivvyConnect divvyConnect = DivvyConnect.getInstance();
+			if (loadTrains) {
+				try {
+					for (Entry<String, Object> entry : params.entrySet()) {
+						String key = entry.getKey();
+						if (key.equals("mapid")) {
+							Object value = entry.getValue();
+							if (value instanceof String) {
 								String xmlResult = ctaConnect.connect(requestType, params);
 								this.trainArrivals = xml.parseArrivals(xmlResult, data);
-							} else {
-								int size = list.size();
-								SparseArray<TrainArrival> tempArrivals = new SparseArray<TrainArrival>();
-								int start = 0;
-								int end = 4;
-								while (end < size + 1) {
-									List<String> subList = list.subList(start, end);
-									MultiMap<String, String> paramsTemp = new MultiValueMap<String, String>();
-									for (String sub : subList) {
-										paramsTemp.put(key, sub);
-									}
+							} else if (value instanceof List) {
+								@SuppressWarnings("unchecked")
+								List<String> list = (List<String>) value;
+								if (list.size() < 5) {
+									String xmlResult = ctaConnect.connect(requestType, params);
+									this.trainArrivals = xml.parseArrivals(xmlResult, data);
+								} else {
+									int size = list.size();
+									SparseArray<TrainArrival> tempArrivals = new SparseArray<TrainArrival>();
+									int start = 0;
+									int end = 4;
+									while (end < size + 1) {
+										List<String> subList = list.subList(start, end);
+										MultiMap<String, String> paramsTemp = new MultiValueMap<String, String>();
+										for (String sub : subList) {
+											paramsTemp.put(key, sub);
+										}
 
-									String xmlResult = ctaConnect.connect(requestType, paramsTemp);
-									SparseArray<TrainArrival> temp = xml.parseArrivals(xmlResult, data);
-									for (int j = 0; j < temp.size(); j++) {
-										tempArrivals.put(temp.keyAt(j), temp.valueAt(j));
+										String xmlResult = ctaConnect.connect(requestType, paramsTemp);
+										SparseArray<TrainArrival> temp = xml.parseArrivals(xmlResult, data);
+										for (int j = 0; j < temp.size(); j++) {
+											tempArrivals.put(temp.keyAt(j), temp.valueAt(j));
+										}
+										start = end;
+										if (end + 3 >= size - 1 && end != size) {
+											end = size;
+										} else {
+											end = end + 3;
+										}
 									}
-									start = end;
-									if (end + 3 >= size - 1 && end != size) {
-										end = size;
-									} else {
-										end = end + 3;
-									}
+									this.trainArrivals = tempArrivals;
 								}
-								this.trainArrivals = tempArrivals;
 							}
 						}
 					}
-				}
 
-				// Apply filters
-				int index = 0;
-				while (index < trainArrivals.size()) {
-					TrainArrival arri = trainArrivals.valueAt(index++);
-					List<Eta> etas = arri.getEtas();
-					// Sort Eta by arriving time
-					Collections.sort(etas);
-					// Copy data into new list to be able to avoid looping on a list that we want to
-					// modify
-					List<Eta> etas2 = new ArrayList<Eta>();
-					etas2.addAll(etas);
-					int j = 0;
-					Eta eta = null;
-					Station station = null;
-					TrainLine line = null;
-					TrainDirection direction = null;
-					for (int i = 0; i < etas2.size(); i++) {
-						eta = etas2.get(i);
-						station = eta.getStation();
-						line = eta.getRouteName();
-						direction = eta.getStop().getDirection();
-						boolean toRemove = Preferences.getTrainFilter(station.getId(), line, direction);
-						if (!toRemove) {
-							etas.remove(i - j++);
-						}
-					}
-				}
-
-			} catch (ConnectException e) {
-				trainBoolean = false;
-				this.trackerTrainException = e;
-			} catch (ParserException e) {
-				trainBoolean = false;
-				this.trackerTrainException = e;
-			}
-		}
-		if (loadBuses) {
-			try {
-				List<String> rts = new ArrayList<String>();
-				List<String> stpids = new ArrayList<String>();
-				for (Entry<String, Object> entry : params2.entrySet()) {
-					String key = entry.getKey();
-					StringBuilder str = new StringBuilder();
-					int i = 0;
-					@SuppressWarnings("unchecked")
-					List<String> values = (ArrayList<String>) entry.getValue();
-					for (String v : values) {
-						str.append(v + ",");
-						if (i == 9 || i == values.size() - 1) {
-							if (key.equals("rt")) {
-								rts.add(str.toString());
-							} else if (key.equals("stpid")) {
-								stpids.add(str.toString());
+					// Apply filters
+					int index = 0;
+					while (index < trainArrivals.size()) {
+						TrainArrival arri = trainArrivals.valueAt(index++);
+						List<Eta> etas = arri.getEtas();
+						// Sort Eta by arriving time
+						Collections.sort(etas);
+						// Copy data into new list to be able to avoid looping on a list that we want to
+						// modify
+						List<Eta> etas2 = new ArrayList<Eta>();
+						etas2.addAll(etas);
+						int j = 0;
+						Eta eta = null;
+						Station station = null;
+						TrainLine line = null;
+						TrainDirection direction = null;
+						for (int i = 0; i < etas2.size(); i++) {
+							eta = etas2.get(i);
+							station = eta.getStation();
+							line = eta.getRouteName();
+							direction = eta.getStop().getDirection();
+							boolean toRemove = Preferences.getTrainFilter(station.getId(), line, direction);
+							if (!toRemove) {
+								etas.remove(i - j++);
 							}
-							str = new StringBuilder();
-							i = -1;
 						}
-						i++;
 					}
-				}
-				for (int i = 0; i < rts.size(); i++) {
-					MultiMap<String, String> para = new MultiValueMap<String, String>();
-					para.put("rt", rts.get(i));
-					para.put("stpid", stpids.get(i));
-					String xmlResult = ctaConnect.connect(requestType2, para);
-					this.busArrivals.addAll(xml.parseBusArrivals(xmlResult));
-				}
-			} catch (ConnectException e) {
-				busBoolean = false;
-				this.trackerBusException = e;
-			} catch (ParserException e) {
-				busBoolean = false;
-				this.trackerBusException = e;
-			}
-		}
-		if (loadBikes) {
-			try {
-				String bikeContent = divvyConnect.connect();
-				this.bikeStations = json.parseStations(bikeContent);
-				Collections.sort(this.bikeStations, Util.BIKE_COMPARATOR_NAME);
-			} catch (ParserException e) {
-				bikeBoolean = false;
-				this.trackerBikeException = e;
-			} catch (ConnectException e) {
-				bikeBoolean = false;
-				this.trackerBikeException = e;
-			} finally {
-				if (!(busBoolean && trainBoolean)) {
-					if (params2.size() == 0 && busBoolean) {
-						busBoolean = false;
-					}
-					if (params.size() == 0 && trainBoolean) {
-						trainBoolean = false;
-					}
+
+				} catch (ConnectException e) {
+					trainBoolean = false;
+					this.trackerTrainException = e;
+				} catch (ParserException e) {
+					trainBoolean = false;
+					this.trackerTrainException = e;
 				}
 			}
+			if (loadBuses) {
+				try {
+					List<String> rts = new ArrayList<String>();
+					List<String> stpids = new ArrayList<String>();
+					for (Entry<String, Object> entry : params2.entrySet()) {
+						String key = entry.getKey();
+						StringBuilder str = new StringBuilder();
+						int i = 0;
+						@SuppressWarnings("unchecked")
+						List<String> values = (ArrayList<String>) entry.getValue();
+						for (String v : values) {
+							str.append(v + ",");
+							if (i == 9 || i == values.size() - 1) {
+								if (key.equals("rt")) {
+									rts.add(str.toString());
+								} else if (key.equals("stpid")) {
+									stpids.add(str.toString());
+								}
+								str = new StringBuilder();
+								i = -1;
+							}
+							i++;
+						}
+					}
+					for (int i = 0; i < rts.size(); i++) {
+						MultiMap<String, String> para = new MultiValueMap<String, String>();
+						para.put("rt", rts.get(i));
+						para.put("stpid", stpids.get(i));
+						String xmlResult = ctaConnect.connect(requestType2, para);
+						this.busArrivals.addAll(xml.parseBusArrivals(xmlResult));
+					}
+				} catch (ConnectException e) {
+					busBoolean = false;
+					this.trackerBusException = e;
+				} catch (ParserException e) {
+					busBoolean = false;
+					this.trackerBusException = e;
+				}
+			}
+			if (loadBikes) {
+				try {
+					String bikeContent = divvyConnect.connect();
+					this.bikeStations = json.parseStations(bikeContent);
+					Collections.sort(this.bikeStations, Util.BIKE_COMPARATOR_NAME);
+				} catch (ParserException e) {
+					bikeBoolean = false;
+					this.trackerBikeException = e;
+				} catch (ConnectException e) {
+					bikeBoolean = false;
+					this.trackerBikeException = e;
+				} finally {
+					if (!(busBoolean && trainBoolean)) {
+						if (params2.size() == 0 && busBoolean) {
+							busBoolean = false;
+						}
+						if (params.size() == 0 && trainBoolean) {
+							trainBoolean = false;
+						}
+					}
+				}
+			}
+			return trainBoolean || busBoolean || bikeBoolean;
+		} else {
+			return networkAvailable;
 		}
-		return trainBoolean || busBoolean || bikeBoolean;
 	}
 
 	@Override
@@ -298,10 +305,12 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 	protected final void onPostExecute(final Boolean success) {
 		try {
 			if (success) {
-				classe.getMethod("reloadData", SparseArray.class, List.class, List.class, Boolean.class, Boolean.class, Boolean.class).invoke(
-						instance, this.trainArrivals, this.busArrivals, this.bikeStations, this.trainBoolean, this.busBoolean, this.bikeBoolean);
-				// classe.getMethod("reloadData", SparseArray.class, List.class, Boolean.class, Boolean.class).invoke(instance, new
-				// SparseArray<String>(), new ArrayList<String>(), false, false);
+				classe.getMethod("reloadData", SparseArray.class, List.class, List.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class).invoke(
+						instance, this.trainArrivals, this.busArrivals, this.bikeStations, this.trainBoolean, this.busBoolean, this.bikeBoolean,
+						this.networkAvailable);
+			} else if (!networkAvailable) {
+				classe.getMethod("reloadData", SparseArray.class, List.class, List.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class).invoke(
+						instance, this.trainArrivals, this.busArrivals, this.bikeStations, false, false, false, this.networkAvailable);
 			} else {
 				TrackerException ex = trackerBusException == null ? (trackerBikeException == null ? trackerTrainException : trackerBikeException)
 						: trackerBusException;

@@ -294,7 +294,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	public final boolean onOptionsItemSelected(final MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_refresh:
-			if (currentPosition != POSITION_DIVVY && currentPosition != POSITION_NEARBY) {
+			if (currentPosition != POSITION_DIVVY && currentPosition != POSITION_NEARBY && currentPosition != POSITION_ALERTS) {
 				MenuItem menuItem = item;
 				menuItem.setActionView(R.layout.progressbar);
 				menuItem.expandActionView();

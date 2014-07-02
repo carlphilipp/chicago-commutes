@@ -24,14 +24,20 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.AlertAdapter;
+import fr.cph.chicago.data.AlertData;
 import fr.cph.chicago.data.DataHolder;
+import fr.cph.chicago.exception.ConnectException;
+import fr.cph.chicago.exception.ParserException;
+import fr.cph.chicago.util.Util;
 
 /**
  * Alert Fragment
@@ -55,6 +61,8 @@ public class AlertFragment extends Fragment {
 	private ListView listView;
 	/** The main activity **/
 	private MainActivity mActivity;
+	/** The adapter **/
+	private AlertAdapter ada;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -92,7 +100,7 @@ public class AlertFragment extends Fragment {
 		boolean loadAlert = sharedPref.getBoolean("cta_alert", true);
 		if (loadAlert) {
 			if (DataHolder.getInstance().getAlertData() != null) {
-				AlertAdapter ada = new AlertAdapter();
+				ada = new AlertAdapter();
 				listView.setAdapter(ada);
 			} else {
 				loadingLayout = (RelativeLayout) rootView.findViewById(R.id.loading_relativeLayout);
@@ -103,12 +111,70 @@ public class AlertFragment extends Fragment {
 		} else {
 			desactivatedLayout.setVisibility(RelativeLayout.VISIBLE);
 		}
+		setHasOptionsMenu(true);
 		return rootView;
 	}
 
 	@Override
 	public final void onSaveInstanceState(final Bundle outState) {
 		super.onSaveInstanceState(outState);
+	}
+
+	@Override
+	public final boolean onOptionsItemSelected(final MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.action_refresh:
+			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mActivity);
+			boolean loadAlerts = sharedPref.getBoolean("cta_alert", true);
+			if (loadAlerts) {
+				AlertFragment.this.mActivity.startRefreshAnimation();
+				new LoadData().execute();
+			}
+			return false;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
+	private final class LoadData extends AsyncTask<Void, Void, AlertData> {
+
+		@Override
+		protected AlertData doInBackground(Void... params) {
+			AlertData alertData = AlertData.getInstance();
+			if (Util.isNetworkAvailable()) {
+				try {
+					alertData.loadGeneralAlerts();
+				} catch (ParserException e) {
+					Log.e(TAG, "Parser error", e);
+					AlertFragment.this.mActivity.runOnUiThread(new Runnable() {
+						public void run() {
+							Toast.makeText(mActivity, "A surprising error has occured. Try again!", Toast.LENGTH_LONG).show();
+						}
+					});
+
+				} catch (ConnectException e) {
+					Log.e(TAG, "Connect error", e);
+					AlertFragment.this.mActivity.runOnUiThread(new Runnable() {
+						public void run() {
+							Toast.makeText(mActivity, "A surprising error has occured. Try again!", Toast.LENGTH_LONG).show();
+						}
+					});
+				}
+			} else {
+				AlertFragment.this.mActivity.runOnUiThread(new Runnable() {
+					public void run() {
+						Toast.makeText(mActivity, "No network connection detected!", Toast.LENGTH_LONG).show();
+					}
+				});
+			}
+			return alertData;
+		}
+
+		@Override
+		protected final void onPostExecute(final AlertData result) {
+			ada.setAlerts(result.getAlerts());
+			ada.notifyDataSetChanged();
+			AlertFragment.this.mActivity.stopRefreshAnimation();
+		}
 	}
 
 	private final class WaitForRefreshData extends AsyncTask<Void, Void, Boolean> {

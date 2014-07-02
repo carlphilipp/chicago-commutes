@@ -30,6 +30,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.SparseArray;
+import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaRequestType;
@@ -54,19 +55,16 @@ import fr.cph.chicago.util.Util;
 public class BaseActivity extends Activity {
 	/** Error state **/
 	private Boolean error;
-
+	/** Train arrivals **/
 	private SparseArray<TrainArrival> trainArrivals;
-
+	/** Bus arrivals **/
 	private List<BusArrival> busArrivals;
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		setContentView(R.layout.loading);
-
 		Bundle extras = getIntent().getExtras();
-
 		if (extras != null && error == null) {
 			error = extras.getBoolean("error");
 		} else {
@@ -78,18 +76,18 @@ public class BaseActivity extends Activity {
 		} else if (trainArrivals == null || busArrivals == null) {
 			new LoadData().execute();
 		} else {
-			startMainActivity();
+			startMainActivity(trainArrivals, busArrivals);
 		}
 	}
 
 	@Override
-	public void onRestoreInstanceState(Bundle savedInstanceState) {
+	public final void onRestoreInstanceState(final Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
 		error = savedInstanceState.getBoolean("error");
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle savedInstanceState) {
+	public final void onSaveInstanceState(final Bundle savedInstanceState) {
 		savedInstanceState.putBoolean("error", error);
 		super.onSaveInstanceState(savedInstanceState);
 	}
@@ -103,11 +101,33 @@ public class BaseActivity extends Activity {
 	 *            list of bus arrivals
 	 */
 	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals,
-			final List<BikeStation> bikeStations, final Boolean trainBoolean, final Boolean busBoolean, final Boolean bikeBoolean) {
-		this.trainArrivals = trainArrivals;
-		this.busArrivals = busArrivals;
+			final List<BikeStation> bikeStations, final Boolean trainBoolean, final Boolean busBoolean, final Boolean bikeBoolean,
+			final Boolean networkAvailable) {
+		if(!networkAvailable){
+			Toast.makeText(this, "No network connection detected!", Toast.LENGTH_LONG).show();
+		}
 		ChicagoTracker.modifyLastUpdate(Calendar.getInstance().getTime());
-		startMainActivity();
+		startMainActivity(trainArrivals, busArrivals);
+	}
+
+	/**
+	 * Finish current activity and start main activity with custom transition
+	 * 
+	 * @param trainArrivals
+	 *            the train arrivals
+	 * @param busArrivals
+	 *            the bus arrivals
+	 */
+	private void startMainActivity(SparseArray<TrainArrival> trainArrivals, List<BusArrival> busArrivals) {
+		Intent intent = new Intent(this, MainActivity.class);
+		Bundle bundle = new Bundle();
+		bundle.putParcelableArrayList("busArrivals", (ArrayList<BusArrival>) busArrivals);
+		bundle.putSparseParcelableArray("trainArrivals", trainArrivals);
+		intent.putExtras(bundle);
+
+		finish();
+		startActivity(intent);
+		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 	}
 
 	/**
@@ -131,7 +151,6 @@ public class BaseActivity extends Activity {
 
 			this.busData = BusData.getInstance();
 			this.busData.readBusStops();
-
 			return null;
 		}
 
@@ -159,7 +178,6 @@ public class BaseActivity extends Activity {
 	public void displayError(final TrackerException exceptionToBeThrown) {
 		DataHolder.getInstance().setTrainData(null);
 		DataHolder.getInstance().setBusData(null);
-		DataHolder.getInstance().setAlertData(null);
 		ChicagoTracker.displayError(this, exceptionToBeThrown);
 		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 	}
@@ -185,6 +203,7 @@ public class BaseActivity extends Activity {
 			params2.put("stpid", fav[1]);
 		}
 
+		// Get preferences to know if trains and buses need to be loaded
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 		boolean loadTrain = sharedPref.getBoolean("cta_train", true);
 		boolean loadBus = sharedPref.getBoolean("cta_bus", true);
@@ -192,20 +211,5 @@ public class BaseActivity extends Activity {
 		GlobalConnectTask task = new GlobalConnectTask(this, BaseActivity.class, CtaRequestType.TRAIN_ARRIVALS, params, CtaRequestType.BUS_ARRIVALS,
 				params2, loadTrain, loadBus, false);
 		task.execute((Void) null);
-	}
-
-	/**
-	 * Finish current activity and start main activity with custom transition
-	 */
-	private void startMainActivity() {
-		Intent intent = new Intent(this, MainActivity.class);
-		Bundle bundle = new Bundle();
-		bundle.putParcelableArrayList("busArrivals", (ArrayList<BusArrival>) busArrivals);
-		bundle.putSparseParcelableArray("trainArrivals", trainArrivals);
-		intent.putExtras(bundle);
-
-		finish();
-		startActivity(intent);
-		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 	}
 }

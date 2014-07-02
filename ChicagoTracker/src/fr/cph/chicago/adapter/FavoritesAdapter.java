@@ -190,12 +190,16 @@ public final class FavoritesAdapter extends BaseAdapter {
 				convertView.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						Intent intent = new Intent(ChicagoTracker.getAppContext(), StationActivity.class);
-						Bundle extras = new Bundle();
-						extras.putInt("stationId", stationId);
-						intent.putExtras(extras);
-						activity.startActivity(intent);
-						activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+						if (!Util.isNetworkAvailable()) {
+							Toast.makeText(activity, "No network connection detected!", Toast.LENGTH_LONG).show();
+						} else {
+							Intent intent = new Intent(ChicagoTracker.getAppContext(), StationActivity.class);
+							Bundle extras = new Bundle();
+							extras.putInt("stationId", stationId);
+							intent.putExtras(extras);
+							activity.startActivity(intent);
+							activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+						}
 					}
 				});
 
@@ -366,49 +370,53 @@ public final class FavoritesAdapter extends BaseAdapter {
 						llh.setOnClickListener(new OnClickListener() {
 							@Override
 							public void onClick(View v) {
-								if (value.entrySet().size() == 1) {
-									BusArrival busArrival = value.entrySet().iterator().next().getValue().get(0);
-									activity.startRefreshAnimation();
-									new BusBoundAsyncTask().execute(busArrival.getRouteId(), busArrival.getRouteDirection(),
-											String.valueOf(busArrival.getStopId()), busRoute.getName());
+								if (!Util.isNetworkAvailable()) {
+									Toast.makeText(activity, "No network connection detected!", Toast.LENGTH_LONG).show();
 								} else {
-									List<String> menuTitles = new ArrayList<String>();
-									for (Entry<String, List<BusArrival>> entry : value.entrySet()) {
-										menuTitles.add(entry.getKey());
-									}
-									PopupMenu popupMenu = new PopupMenu(context, v);
-									for (int i = 0; i < menuTitles.size(); i++) {
-										popupMenu.getMenu().add(Menu.NONE, i, Menu.NONE, menuTitles.get(i));
-									}
-									popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-										@Override
-										public boolean onMenuItemClick(MenuItem item) {
-											Iterator<Entry<String, List<BusArrival>>> iterator = value.entrySet().iterator();
-											if (item.getItemId() == 1) {
-												iterator.next();
-											} else if (item.getItemId() == 2) {
-												iterator.next();
-												iterator.next();
-											} else if (item.getItemId() == 3) {
-												iterator.next();
-												iterator.next();
-												iterator.next();
+									if (value.entrySet().size() == 1) {
+										BusArrival busArrival = value.entrySet().iterator().next().getValue().get(0);
+										activity.startRefreshAnimation();
+										new BusBoundAsyncTask().execute(busArrival.getRouteId(), busArrival.getRouteDirection(),
+												String.valueOf(busArrival.getStopId()), busRoute.getName());
+									} else {
+										List<String> menuTitles = new ArrayList<String>();
+										for (Entry<String, List<BusArrival>> entry : value.entrySet()) {
+											menuTitles.add(entry.getKey());
+										}
+										PopupMenu popupMenu = new PopupMenu(context, v);
+										for (int i = 0; i < menuTitles.size(); i++) {
+											popupMenu.getMenu().add(Menu.NONE, i, Menu.NONE, menuTitles.get(i));
+										}
+										popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+											@Override
+											public boolean onMenuItemClick(MenuItem item) {
+												Iterator<Entry<String, List<BusArrival>>> iterator = value.entrySet().iterator();
+												if (item.getItemId() == 1) {
+													iterator.next();
+												} else if (item.getItemId() == 2) {
+													iterator.next();
+													iterator.next();
+												} else if (item.getItemId() == 3) {
+													iterator.next();
+													iterator.next();
+													iterator.next();
+												}
+												BusArrival busArrival = iterator.next().getValue().get(0);
+												new BusBoundAsyncTask().execute(busArrival.getRouteId(), busArrival.getRouteDirection(),
+														String.valueOf(busArrival.getStopId()), busRoute.getName());
+												activity.startRefreshAnimation();
+												return false;
 											}
-											BusArrival busArrival = iterator.next().getValue().get(0);
-											new BusBoundAsyncTask().execute(busArrival.getRouteId(), busArrival.getRouteDirection(),
-													String.valueOf(busArrival.getStopId()), busRoute.getName());
-											activity.startRefreshAnimation();
-											return false;
-										}
-									});
-									popupMenu.setOnDismissListener(new OnDismissListener() {
-										@Override
-										public void onDismiss(PopupMenu menu) {
-											firstLayout.getForeground().setAlpha(0);
-										}
-									});
-									firstLayout.getForeground().setAlpha(210);
-									popupMenu.show();
+										});
+										popupMenu.setOnDismissListener(new OnDismissListener() {
+											@Override
+											public void onDismiss(PopupMenu menu) {
+												firstLayout.getForeground().setAlpha(0);
+											}
+										});
+										firstLayout.getForeground().setAlpha(210);
+										popupMenu.show();
+									}
 								}
 							}
 						});
@@ -531,37 +539,52 @@ public final class FavoritesAdapter extends BaseAdapter {
 				llh.addView(availableLayout);
 
 				favoritesData.addView(llh);
-				
+
 				SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(activity);
 				boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
 
+				final boolean isNetworkAvailable = Util.isNetworkAvailable();
 				if (bikeStation.getPosition() != null) {
+
 					convertView.setOnClickListener(new View.OnClickListener() {
 						@Override
 						public void onClick(View v) {
-							Intent intent = new Intent(ChicagoTracker.getAppContext(), BikeStationActivity.class);
-							Bundle extras = new Bundle();
-							extras.putParcelable("station", bikeStation);
-							intent.putExtras(extras);
-							activity.startActivity(intent);
-							activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+							if (!isNetworkAvailable) {
+								Toast.makeText(activity, "No network connection detected!", Toast.LENGTH_LONG).show();
+							} else {
+								Intent intent = new Intent(ChicagoTracker.getAppContext(), BikeStationActivity.class);
+								Bundle extras = new Bundle();
+								extras.putParcelable("station", bikeStation);
+								intent.putExtras(extras);
+								activity.startActivity(intent);
+								activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+							}
 						}
 					});
-				} else if(loadBike){
+				} else if (loadBike) {
 					convertView.setOnClickListener(new View.OnClickListener() {
 						@Override
 						public void onClick(View v) {
-							Toast.makeText(activity, "Not ready yet. Please try again in few seconds!", Toast.LENGTH_SHORT).show();
+							if (!isNetworkAvailable) {
+								Toast.makeText(activity, "No network connection detected!", Toast.LENGTH_LONG).show();
+							} else {
+								Toast.makeText(activity, "Not ready yet. Please try again in few seconds!", Toast.LENGTH_SHORT).show();
+							}
 						}
 					});
-				}else{
+				} else {
 					convertView.setOnClickListener(new View.OnClickListener() {
 						@Override
 						public void onClick(View v) {
-							Toast.makeText(activity, "You must activate divvy bikes data", Toast.LENGTH_SHORT).show();
+							if (!isNetworkAvailable) {
+								Toast.makeText(activity, "No network connection detected!", Toast.LENGTH_LONG).show();
+							} else {
+								Toast.makeText(activity, "You must activate divvy bikes data", Toast.LENGTH_SHORT).show();
+							}
 						}
 					});
 				}
+
 			}
 		}
 		return convertView;

@@ -247,8 +247,6 @@ public class BikeFragment extends Fragment {
 				String bikeContent = divvyConnect.connect();
 				bikeStations = json.parseStations(bikeContent);
 				Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
-				bikeStations = new ArrayList<BikeStation>();
-				throw new ConnectException("derp");
 			} catch (ConnectException e) {
 				BikeFragment.this.mActivity.runOnUiThread(new Runnable() {
 					public void run() {
@@ -280,5 +278,4 @@ public class BikeFragment extends Fragment {
 			BikeFragment.this.mActivity.stopRefreshAnimation();
 		}
 	}
-
 }

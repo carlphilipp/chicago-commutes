@@ -251,14 +251,14 @@ public class BikeStationActivity extends Activity {
 			} catch (ConnectException e) {
 				BikeStationActivity.this.runOnUiThread(new Runnable() {
 					public void run() {
-						Toast.makeText(ChicagoTracker.getAppContext(), "Error, try again later!", Toast.LENGTH_LONG).show();
+						Toast.makeText(ChicagoTracker.getAppContext(), "A surprising error has occured. Try again!", Toast.LENGTH_LONG).show();
 					}
 				});
 				Log.e(TAG, "Connect error", e);
 			} catch (ParserException e) {
 				BikeStationActivity.this.runOnUiThread(new Runnable() {
 					public void run() {
-						Toast.makeText(ChicagoTracker.getAppContext(), "Error, try again later!", Toast.LENGTH_LONG).show();
+						Toast.makeText(ChicagoTracker.getAppContext(), "A surprising error has occured. Try again!", Toast.LENGTH_LONG).show();
 					}
 				});
 				Log.e(TAG, "Parser error", e);

@@ -97,5 +97,9 @@ public final class AlertAdapter extends BaseAdapter {
 		TextView headLineView;
 		TextView descrView;
 	}
+	
+	public final void setAlerts(final List<Alert> alerts){
+		this.alerts = alerts;
+	}
 
 }
