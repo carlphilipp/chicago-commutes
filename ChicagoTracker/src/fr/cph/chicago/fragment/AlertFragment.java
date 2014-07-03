@@ -16,6 +16,8 @@
 
 package fr.cph.chicago.fragment;
 
+import java.util.List;
+
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.SharedPreferences;
@@ -30,11 +32,14 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.AlertAdapter;
 import fr.cph.chicago.data.AlertData;
+import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
+import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.util.Util;
@@ -96,20 +101,24 @@ public class AlertFragment extends Fragment {
 		rootView = inflater.inflate(R.layout.fragment_alert, container, false);
 		listView = (ListView) rootView.findViewById(R.id.alert_list);
 		desactivatedLayout = (RelativeLayout) rootView.findViewById(R.id.desactivated_layout);
+		loadingLayout = (RelativeLayout) rootView.findViewById(R.id.loading_relativeLayout);
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mActivity);
 		boolean loadAlert = sharedPref.getBoolean("cta_alert", true);
-		if (loadAlert) {
-			if (DataHolder.getInstance().getAlertData() != null) {
-				ada = new AlertAdapter();
-				listView.setAdapter(ada);
+		if (Util.isNetworkAvailable()) {
+			if (loadAlert) {
+				if (DataHolder.getInstance().getAlertData() != null) {
+					ada = new AlertAdapter();
+					listView.setAdapter(ada);
+				} else {
+					loadingLayout.setVisibility(RelativeLayout.VISIBLE);
+					listView.setVisibility(ListView.INVISIBLE);
+					new WaitForRefreshData().execute();
+				}
 			} else {
-				loadingLayout = (RelativeLayout) rootView.findViewById(R.id.loading_relativeLayout);
-				loadingLayout.setVisibility(RelativeLayout.VISIBLE);
-				listView.setVisibility(ListView.INVISIBLE);
-				new WaitForRefreshData().execute();
+				desactivatedLayout.setVisibility(RelativeLayout.VISIBLE);
 			}
 		} else {
-			desactivatedLayout.setVisibility(RelativeLayout.VISIBLE);
+			Toast.makeText(ChicagoTracker.getAppContext(), "No network connection detected!", Toast.LENGTH_SHORT).show();
 		}
 		setHasOptionsMenu(true);
 		return rootView;
@@ -127,8 +136,19 @@ public class AlertFragment extends Fragment {
 			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mActivity);
 			boolean loadAlerts = sharedPref.getBoolean("cta_alert", true);
 			if (loadAlerts) {
-				AlertFragment.this.mActivity.startRefreshAnimation();
-				new LoadData().execute();
+
+				DataHolder dataHolder = DataHolder.getInstance();
+				BusData busData = dataHolder.getBusData();
+				AlertData alertData = dataHolder.getAlertData();
+				Bundle bundle = mActivity.getIntent().getExtras();
+				List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
+				if (busData.getRoutes().size() == 0 || alertData.getAlerts().size() == 0 || bikeStations == null) {
+					mActivity.startRefreshAnimation();
+					mActivity.new LoadData().execute();
+				} else {
+					AlertFragment.this.mActivity.startRefreshAnimation();
+					new LoadData().execute();
+				}
 			}
 			return false;
 		}
@@ -147,7 +167,7 @@ public class AlertFragment extends Fragment {
 					Log.e(TAG, "Parser error", e);
 					AlertFragment.this.mActivity.runOnUiThread(new Runnable() {
 						public void run() {
-							Toast.makeText(mActivity, "A surprising error has occured. Try again!", Toast.LENGTH_LONG).show();
+							Toast.makeText(mActivity, "A surprising error has occured. Try again!", Toast.LENGTH_SHORT).show();
 						}
 					});
 
@@ -155,14 +175,14 @@ public class AlertFragment extends Fragment {
 					Log.e(TAG, "Connect error", e);
 					AlertFragment.this.mActivity.runOnUiThread(new Runnable() {
 						public void run() {
-							Toast.makeText(mActivity, "A surprising error has occured. Try again!", Toast.LENGTH_LONG).show();
+							Toast.makeText(mActivity, "A surprising error has occured. Try again!", Toast.LENGTH_SHORT).show();
 						}
 					});
 				}
 			} else {
 				AlertFragment.this.mActivity.runOnUiThread(new Runnable() {
 					public void run() {
-						Toast.makeText(mActivity, "No network connection detected!", Toast.LENGTH_LONG).show();
+						Toast.makeText(mActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
 					}
 				});
 			}
@@ -171,8 +191,10 @@ public class AlertFragment extends Fragment {
 
 		@Override
 		protected final void onPostExecute(final AlertData result) {
-			ada.setAlerts(result.getAlerts());
-			ada.notifyDataSetChanged();
+			if (ada != null) {
+				ada.setAlerts(result.getAlerts());
+				ada.notifyDataSetChanged();
+			}
 			AlertFragment.this.mActivity.stopRefreshAnimation();
 		}
 	}
@@ -209,7 +231,7 @@ public class AlertFragment extends Fragment {
 		loadingLayout.setVisibility(RelativeLayout.INVISIBLE);
 	}
 
-	private final void loadList() {
+	public final void loadList() {
 		AlertAdapter ada = new AlertAdapter();
 		listView.setAdapter(ada);
 		listView.setVisibility(ListView.VISIBLE);

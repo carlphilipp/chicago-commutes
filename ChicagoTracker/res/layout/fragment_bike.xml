@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   Copyright 2014 Carl-Philipp Harmant
  
@@ -13,9 +12,9 @@
   distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
-  limitations under the License.
--->
+  limitations under the License.
 
+-->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -59,7 +58,7 @@
             android:layout_marginTop="20dp"
             android:focusable="false"
             android:focusableInTouchMode="false"
-            android:text="@string/bus_fragment_notloaded"
+            android:text="@string/bike_fragment_notloaded"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/orange"
             android:textSize="22sp"
@@ -113,18 +112,18 @@
     </RelativeLayout>
 
     <EditText
-        android:id="@+id/bus_filter"
+        android:id="@+id/bike_filter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/bus_fragment_filter"
+        android:hint="@string/bike_fragment_filter"
         android:visibility="invisible" >
     </EditText>
 
     <ListView
-        android:id="@+id/bus_list"
+        android:id="@+id/bike_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/bus_filter" >
+        android:layout_below="@+id/bike_filter" >
     </ListView>
 
 </RelativeLayout>

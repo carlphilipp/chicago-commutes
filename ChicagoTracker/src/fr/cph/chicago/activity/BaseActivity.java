@@ -104,7 +104,7 @@ public class BaseActivity extends Activity {
 			final List<BikeStation> bikeStations, final Boolean trainBoolean, final Boolean busBoolean, final Boolean bikeBoolean,
 			final Boolean networkAvailable) {
 		if(!networkAvailable){
-			Toast.makeText(this, "No network connection detected!", Toast.LENGTH_LONG).show();
+			Toast.makeText(this, "No network connection detected!", Toast.LENGTH_SHORT).show();
 		}
 		ChicagoTracker.modifyLastUpdate(Calendar.getInstance().getTime());
 		startMainActivity(trainArrivals, busArrivals);

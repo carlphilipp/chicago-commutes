@@ -207,7 +207,7 @@ public class NearbyFragment extends Fragment {
 		if (Util.isNetworkAvailable()) {
 			new LoadNearby().execute();
 		} else {
-			Toast.makeText(mActivity, "No network connection detected!", Toast.LENGTH_LONG).show();
+			Toast.makeText(mActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
 			showProgress(false);
 		}
 	}
@@ -674,7 +674,7 @@ public class NearbyFragment extends Fragment {
 			nearbyContainer.setVisibility(View.GONE);
 			new LoadNearby().execute();
 		} else {
-			Toast.makeText(mActivity, "No network connection detected!", Toast.LENGTH_LONG).show();
+			Toast.makeText(mActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
 			showProgress(false);
 		}
 	}

@@ -49,7 +49,6 @@ import fr.cph.chicago.data.AlertData;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
-import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
@@ -298,7 +297,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				MenuItem menuItem = item;
 				menuItem.setActionView(R.layout.progressbar);
 				menuItem.expandActionView();
-				
+
 				SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
 				boolean loadTrain = sharedPref.getBoolean("cta_train", true);
 				boolean loadBus = sharedPref.getBoolean("cta_bus", true);
@@ -324,6 +323,17 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				} catch (ParserException e) {
 					ChicagoTracker.displayError(this, e);
 					return true;
+				}
+				// Check if bus/bike or alert data are not loaded. If not, load them.
+				// Can happen when the app has been loaded without any data connection
+				DataHolder dataHolder = DataHolder.getInstance();
+				BusData busData = dataHolder.getBusData();
+				AlertData alertData = dataHolder.getAlertData();
+				Bundle bundle = getIntent().getExtras();
+				List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
+				if (busData.getRoutes().size() == 0 || alertData.getAlerts().size() == 0 || bikeStations == null) {
+					startRefreshAnimation();
+					new LoadData().execute();
 				}
 			} else if (currentPosition == POSITION_NEARBY) {
 				nearbyFragment.reloadData();
@@ -401,11 +411,9 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		super.startActivity(intent);
 	}
 
-	private final class LoadData extends AsyncTask<Void, Void, Void> {
+	public final class LoadData extends AsyncTask<Void, Void, Void> {
 		/** Bus data **/
 		private BusData busData;
-		/** Train data **/
-		private TrainData trainData;
 		/** Alert data **/
 		private AlertData alertData;
 		/** **/
@@ -416,7 +424,6 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
 			DataHolder dataHolder = DataHolder.getInstance();
 			this.busData = dataHolder.getBusData();
-			this.trainData = dataHolder.getTrainData();
 
 			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
 			boolean loadBus = sharedPref.getBoolean("cta_bus", true);
@@ -466,7 +473,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			}
 			return null;
 		}
-		
+
 		@Override
 		protected final void onProgressUpdate(Void... progress) {
 			startRefreshAnimation();
@@ -477,13 +484,18 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			// Put data into data holder
 			DataHolder dataHolder = DataHolder.getInstance();
 			dataHolder.setBusData(busData);
-			dataHolder.setTrainData(trainData);
 			dataHolder.setAlertData(alertData);
 
 			getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
 			onNewIntent(getIntent());
 
 			favoritesFragment.setBikeStations(bikeStations);
+			if (currentPosition == POSITION_BUS && busFragment != null) {
+				busFragment.update();
+			}
+			if (currentPosition == POSITION_ALERTS && alertFragment != null) {
+				alertFragment.loadList();
+			}
 			stopRefreshAnimation();
 		}
 	}

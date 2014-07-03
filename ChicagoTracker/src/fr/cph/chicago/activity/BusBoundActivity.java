@@ -308,7 +308,7 @@ public class BusBoundActivity extends ListActivity {
 				centerMap(result.getPoints().get(center).getPosition());
 				drawPattern(result);
 			} else {
-				Toast.makeText(BusBoundActivity.this, "Sorry, could not load the path!", Toast.LENGTH_LONG).show();
+				Toast.makeText(BusBoundActivity.this, "Sorry, could not load the path!", Toast.LENGTH_SHORT).show();
 			}
 		}
 

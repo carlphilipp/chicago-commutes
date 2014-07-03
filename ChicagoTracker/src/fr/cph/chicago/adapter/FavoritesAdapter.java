@@ -566,7 +566,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 						@Override
 						public void onClick(View v) {
 							if (!isNetworkAvailable) {
-								Toast.makeText(activity, "No network connection detected!", Toast.LENGTH_LONG).show();
+								Toast.makeText(activity, "No network connection detected!", Toast.LENGTH_SHORT).show();
 							} else {
 								Toast.makeText(activity, "Not ready yet. Please try again in few seconds!", Toast.LENGTH_SHORT).show();
 							}
@@ -577,7 +577,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 						@Override
 						public void onClick(View v) {
 							if (!isNetworkAvailable) {
-								Toast.makeText(activity, "No network connection detected!", Toast.LENGTH_LONG).show();
+								Toast.makeText(activity, "No network connection detected!", Toast.LENGTH_SHORT).show();
 							} else {
 								Toast.makeText(activity, "You must activate divvy bikes data", Toast.LENGTH_SHORT).show();
 							}

@@ -204,7 +204,6 @@ public class BikeStationActivity extends Activity {
 			menuItem.expandActionView();
 
 			new DivvyAsyncTask().execute();
-			//Toast.makeText(this, "Refresh...!", Toast.LENGTH_SHORT).show();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -251,14 +250,14 @@ public class BikeStationActivity extends Activity {
 			} catch (ConnectException e) {
 				BikeStationActivity.this.runOnUiThread(new Runnable() {
 					public void run() {
-						Toast.makeText(ChicagoTracker.getAppContext(), "A surprising error has occured. Try again!", Toast.LENGTH_LONG).show();
+						Toast.makeText(ChicagoTracker.getAppContext(), "A surprising error has occured. Try again!", Toast.LENGTH_SHORT).show();
 					}
 				});
 				Log.e(TAG, "Connect error", e);
 			} catch (ParserException e) {
 				BikeStationActivity.this.runOnUiThread(new Runnable() {
 					public void run() {
-						Toast.makeText(ChicagoTracker.getAppContext(), "A surprising error has occured. Try again!", Toast.LENGTH_LONG).show();
+						Toast.makeText(ChicagoTracker.getAppContext(), "A surprising error has occured. Try again!", Toast.LENGTH_SHORT).show();
 					}
 				});
 				Log.e(TAG, "Parser error", e);

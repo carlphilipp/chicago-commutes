@@ -191,7 +191,7 @@ public class FavoritesFragment extends Fragment {
 			final List<BikeStation> bikeStations, final Boolean trainBoolean, final Boolean busBoolean, final Boolean bikeBoolean,
 			final Boolean networkAvailable) {
 		if (!networkAvailable) {
-			Toast.makeText(mActivity, "No network connection detected!", Toast.LENGTH_LONG).show();
+			Toast.makeText(mActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
 		} else {
 			// Put into intent new bike stations data
 			mActivity.getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
