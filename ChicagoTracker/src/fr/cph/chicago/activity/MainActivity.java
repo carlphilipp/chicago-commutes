@@ -58,10 +58,10 @@ import fr.cph.chicago.fragment.BikeFragment;
 import fr.cph.chicago.fragment.BusFragment;
 import fr.cph.chicago.fragment.FavoritesFragment;
 import fr.cph.chicago.fragment.MapFragment;
-import fr.cph.chicago.fragment.NavigationDrawerFragment;
 import fr.cph.chicago.fragment.NearbyFragment;
 import fr.cph.chicago.fragment.SettingsFragment;
 import fr.cph.chicago.fragment.TrainFragment;
+import fr.cph.chicago.fragment.drawer.NavigationDrawerFragment;
 import fr.cph.chicago.json.Json;
 import fr.cph.chicago.task.GlobalConnectTask;
 import fr.cph.chicago.util.Util;
@@ -533,7 +533,6 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				alertFragment.loadList();
 			}
 			stopRefreshAnimation();
-			// }
 		}
 	}
 }

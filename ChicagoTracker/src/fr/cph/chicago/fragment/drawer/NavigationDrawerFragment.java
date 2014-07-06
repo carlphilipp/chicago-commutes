@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.fragment;
+package fr.cph.chicago.fragment.drawer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -36,6 +39,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 
 /**
@@ -54,7 +58,7 @@ public class NavigationDrawerFragment extends Fragment {
 	private static final String PREF_USER_LEARNED_DRAWER = "navigation_drawer_learned";
 
 	/**
-	 * A pointer to the current callbacks instance (the Activity).
+	 * A pointer to the current callback instance (the Activity).
 	 */
 	private NavigationDrawerCallbacks mCallbacks;
 
@@ -107,18 +111,27 @@ public class NavigationDrawerFragment extends Fragment {
 				selectItem(position, false);
 			}
 		});
-		mDrawerListView.setAdapter(new ArrayAdapter<String>(getActionBar().getThemedContext(), android.R.layout.simple_list_item_activated_1,
-				android.R.id.text1, new String[] { 
-						getString(R.string.favorites), 
-						getString(R.string.train), 
-						getString(R.string.bus),
-						getString(R.string.divvy),
-						getString(R.string.nearby), 
-						getString(R.string.alerts), 
-						getString(R.string.map),
-						getString(R.string.settings)
-						}));
+		List<DrawerItem> drawerItems = new ArrayList<DrawerItem>();
+		DrawerItem item1 = new DrawerItem(getString(R.string.favorites), R.drawable.ic_action_favorite);
+		DrawerItem item2 = new DrawerItem(getString(R.string.train), R.drawable.ic_action_settings);
+		DrawerItem item3 = new DrawerItem(getString(R.string.bus), R.drawable.ic_action_settings);
+		DrawerItem item4 = new DrawerItem(getString(R.string.divvy), R.drawable.ic_action_settings);
+		DrawerItem item5 = new DrawerItem(getString(R.string.nearby), R.drawable.ic_action_settings);
+		DrawerItem item6 = new DrawerItem(getString(R.string.alerts), android.R.drawable.ic_dialog_alert);
+		DrawerItem item7 = new DrawerItem(getString(R.string.map), R.drawable.ic_action_map);
+		DrawerItem item8 = new DrawerItem(getString(R.string.settings), R.drawable.ic_action_settings);
+		drawerItems.add(item1);
+		drawerItems.add(item2);
+		drawerItems.add(item3);
+		drawerItems.add(item4);
+		drawerItems.add(item5);
+		drawerItems.add(item6);
+		drawerItems.add(item7);
+		drawerItems.add(item8);
+		CustomDrawerAdapter ada = new CustomDrawerAdapter(getActivity(), R.layout.custom_drawer_item, drawerItems);
+		mDrawerListView.setAdapter(ada);
 		mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
+		mDrawerListView.setSelector(R.drawable.drawer_selector);
 		return mDrawerListView;
 	}
 
