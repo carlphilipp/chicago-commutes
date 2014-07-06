@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 
 public class CustomDrawerAdapter extends ArrayAdapter<DrawerItem> {

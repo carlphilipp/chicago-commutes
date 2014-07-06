@@ -37,9 +37,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 
 /**
@@ -113,11 +111,11 @@ public class NavigationDrawerFragment extends Fragment {
 		});
 		List<DrawerItem> drawerItems = new ArrayList<DrawerItem>();
 		DrawerItem item1 = new DrawerItem(getString(R.string.favorites), R.drawable.ic_action_favorite);
-		DrawerItem item2 = new DrawerItem(getString(R.string.train), R.drawable.ic_action_settings);
-		DrawerItem item3 = new DrawerItem(getString(R.string.bus), R.drawable.ic_action_settings);
-		DrawerItem item4 = new DrawerItem(getString(R.string.divvy), R.drawable.ic_action_settings);
-		DrawerItem item5 = new DrawerItem(getString(R.string.nearby), R.drawable.ic_action_settings);
-		DrawerItem item6 = new DrawerItem(getString(R.string.alerts), android.R.drawable.ic_dialog_alert);
+		DrawerItem item2 = new DrawerItem(getString(R.string.train), R.drawable.ic_action_train);
+		DrawerItem item3 = new DrawerItem(getString(R.string.bus), R.drawable.ic_action_bus);
+		DrawerItem item4 = new DrawerItem(getString(R.string.divvy), R.drawable.ic_action_bike);
+		DrawerItem item5 = new DrawerItem(getString(R.string.nearby), R.drawable.ic_action_nearby);
+		DrawerItem item6 = new DrawerItem(getString(R.string.alerts), R.drawable.ic_dialog_alert);
 		DrawerItem item7 = new DrawerItem(getString(R.string.map), R.drawable.ic_action_map);
 		DrawerItem item8 = new DrawerItem(getString(R.string.settings), R.drawable.ic_action_settings);
 		drawerItems.add(item1);
