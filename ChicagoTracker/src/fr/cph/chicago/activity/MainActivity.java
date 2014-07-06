@@ -49,6 +49,7 @@ import fr.cph.chicago.data.AlertData;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
+import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
@@ -118,6 +119,21 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		// Handle onStop event where bus data has been switched to null
+		if (savedInstanceState != null) {
+			boolean first = savedInstanceState.getBoolean("first", false);
+			if (!first) {
+				BusData busData = BusData.getInstance();
+				busData.readBusStops();
+				TrainData trainData = new TrainData();
+				trainData.read();
+
+				DataHolder dataHolder = DataHolder.getInstance();
+				dataHolder.setBusData(busData);
+				dataHolder.setTrainData(trainData);
+			}
+		}
 
 		new LoadData().execute();
 
@@ -302,6 +318,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				boolean loadTrain = sharedPref.getBoolean("cta_train", true);
 				boolean loadBus = sharedPref.getBoolean("cta_bus", true);
 				boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
+				boolean loadAlert = sharedPref.getBoolean("cta_alert", true);
 
 				MultiMap<String, String> params = new MultiValueMap<String, String>();
 				List<Integer> trainFavorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
@@ -326,12 +343,25 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				}
 				// Check if bus/bike or alert data are not loaded. If not, load them.
 				// Can happen when the app has been loaded without any data connection
+				boolean loadData = false;
 				DataHolder dataHolder = DataHolder.getInstance();
+
 				BusData busData = dataHolder.getBusData();
 				AlertData alertData = dataHolder.getAlertData();
+
 				Bundle bundle = getIntent().getExtras();
 				List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
-				if (busData.getRoutes().size() == 0 || alertData.getAlerts().size() == 0 || bikeStations == null) {
+
+				if (loadBus && busData.getRoutes() != null && busData.getRoutes().size() == 0) {
+					loadData = true;
+				}
+				if (!loadData && loadAlert && alertData.getAlerts() != null && alertData.getAlerts().size() == 0) {
+					loadData = true;
+				}
+				if (!loadData && loadBike && bikeStations == null) {
+					loadData = true;
+				}
+				if (loadData) {
 					startRefreshAnimation();
 					new LoadData().execute();
 				}
@@ -411,12 +441,18 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		super.startActivity(intent);
 	}
 
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		outState.putBoolean("first", false);
+		super.onSaveInstanceState(outState);
+	}
+
 	public final class LoadData extends AsyncTask<Void, Void, Void> {
 		/** Bus data **/
 		private BusData busData;
 		/** Alert data **/
 		private AlertData alertData;
-		/** **/
+		/** Bike stations **/
 		private List<BikeStation> bikeStations;
 
 		@Override
@@ -497,6 +533,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				alertFragment.loadList();
 			}
 			stopRefreshAnimation();
+			// }
 		}
 	}
 }

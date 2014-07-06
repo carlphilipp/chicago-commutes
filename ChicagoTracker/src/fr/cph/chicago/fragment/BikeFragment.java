@@ -49,9 +49,6 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.BikeAdapter;
 import fr.cph.chicago.connection.DivvyConnect;
-import fr.cph.chicago.data.AlertData;
-import fr.cph.chicago.data.BusData;
-import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
@@ -198,22 +195,27 @@ public class BikeFragment extends Fragment {
 	public final boolean onOptionsItemSelected(final MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_refresh:
-			MenuItem menuItem = item;
-			menuItem.setActionView(R.layout.progressbar);
-			menuItem.expandActionView();
+			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mActivity);
+			boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
+			if (loadBike) {
+				MenuItem menuItem = item;
+				menuItem.setActionView(R.layout.progressbar);
+				menuItem.expandActionView();
 
-			new DivvyAsyncTask().execute();
-			
-			DataHolder dataHolder = DataHolder.getInstance();
-			BusData busData = dataHolder.getBusData();
-			AlertData alertData = dataHolder.getAlertData();
-			Bundle bundle = mActivity.getIntent().getExtras();
-			List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
-			if (busData.getRoutes().size() == 0 || alertData.getAlerts().size() == 0 || bikeStations == null) {
-				mActivity.startRefreshAnimation();
-				mActivity.new LoadData().execute();
+				new DivvyAsyncTask().execute();
+
+				Bundle bundle = mActivity.getIntent().getExtras();
+				List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
+
+				boolean loadData = false;
+				if (!loadData && loadBike && bikeStations == null) {
+					loadData = true;
+				}
+				if (loadData) {
+					mActivity.startRefreshAnimation();
+					mActivity.new LoadData().execute();
+				}
 			}
-			
 			return false;
 		}
 		return super.onOptionsItemSelected(item);
