@@ -117,22 +117,28 @@ public class ChicagoTracker extends Application {
 		}
 	}
 	
-	public static void checkTrainData(Activity mActivity) {
+	public static boolean checkTrainData(Activity mActivity) {
 		if(DataHolder.getInstance().getTrainData() == null){
 			startErrorActivity(mActivity);
+			return false;
 		}
+		return true;
 	}
 	
-	public static void checkBusData(Activity mActivity) {
+	public static boolean checkBusData(Activity mActivity) {
 		if(DataHolder.getInstance().getBusData() == null){
 			startErrorActivity(mActivity);
+			return false;
 		}
+		return true;
 	}
 	
-	public static void checkAlertData(Activity mActivity) {
+	public static boolean checkAlertData(Activity mActivity) {
 		if(DataHolder.getInstance().getAlertData() == null){
 			startErrorActivity(mActivity);
+			return false;
 		}
+		return true;
 	}
 	
 	private static void startErrorActivity(Activity mActivity){

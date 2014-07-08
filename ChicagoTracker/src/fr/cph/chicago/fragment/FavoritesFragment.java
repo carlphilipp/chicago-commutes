@@ -21,7 +21,6 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
@@ -35,7 +34,6 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
-import fr.cph.chicago.activity.BaseActivity;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.FavoritesAdapter;
 import fr.cph.chicago.data.Preferences;
@@ -98,8 +96,10 @@ public class FavoritesFragment extends Fragment {
 			busArrivals = savedInstanceState.getParcelableArrayList("busArrivals");
 			trainArrivals = savedInstanceState.getSparseParcelableArray("trainArrivals");
 			bikeStations = savedInstanceState.getParcelableArrayList("bikeStations");
-			ChicagoTracker.checkTrainData(mActivity);
-			ChicagoTracker.checkBusData(mActivity);
+			boolean boolTrain = ChicagoTracker.checkTrainData(mActivity);
+			if(boolTrain){
+				ChicagoTracker.checkBusData(mActivity);
+			}
 		}
 		if (bikeStations == null) {
 			bikeStations = new ArrayList<BikeStation>();
@@ -226,13 +226,6 @@ public class FavoritesFragment extends Fragment {
 
 	public final void setBikeStations(List<BikeStation> bikeStations) {
 		this.bikeStations = bikeStations;
-		// Not sure if needed/if works
-		if(ada == null){
-			Intent intent = new Intent(mActivity, BaseActivity.class);
-			intent.putExtra("error", true);
-			mActivity.startActivity(intent);
-			mActivity.finish();
-		}
 		ada.setBikeStations(bikeStations);
 		ada.notifyDataSetChanged();
 	}
