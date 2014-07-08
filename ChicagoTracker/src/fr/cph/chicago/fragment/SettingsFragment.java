@@ -3,13 +3,15 @@ package fr.cph.chicago.fragment;
 import android.app.Activity;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
+import android.view.Menu;
+import android.view.MenuInflater;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 
 public class SettingsFragment extends PreferenceFragment {
 	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
-	
+
 	private MainActivity mActivity;
 
 	/**
@@ -38,11 +40,20 @@ public class SettingsFragment extends PreferenceFragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);
-/*		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mActivity);
-		boolean loadTrain = sharedPref.getBoolean("cta_train", true);
-		boolean loadBus = sharedPref.getBoolean("cta_bus", true);
-		boolean loadAlert = sharedPref.getBoolean("cta_alert", true);
-		boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
-		Log.i(TAG, "loadTrain:" + loadTrain + " loadBus:" + loadBus +" loadAlert:" + loadAlert+" loadBike:" + loadBike);*/
+		setHasOptionsMenu(true);
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		super.onCreateOptionsMenu(menu, inflater);
+	}
+
+	@Override
+	public void onPrepareOptionsMenu(Menu menu) {
+		for (int i = 0; i <= menu.size(); i++) {
+			int id = menu.getItem(0).getItemId();
+			menu.removeItem(id);
+		}
+		super.onPrepareOptionsMenu(menu);
 	}
 }
