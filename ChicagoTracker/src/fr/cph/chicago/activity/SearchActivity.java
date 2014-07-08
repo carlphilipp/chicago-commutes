@@ -176,9 +176,9 @@ public class SearchActivity extends ListActivity {
 						}
 					}
 				}
-				ada.updateData(foundStations, foundBusRoutes, foundBikeStations);
-				ada.notifyDataSetChanged();
 			}
+			ada.updateData(foundStations, foundBusRoutes, foundBikeStations);
+			ada.notifyDataSetChanged();
 		}
 	}
 }
