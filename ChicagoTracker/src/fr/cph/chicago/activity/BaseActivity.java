@@ -103,7 +103,7 @@ public class BaseActivity extends Activity {
 	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals,
 			final List<BikeStation> bikeStations, final Boolean trainBoolean, final Boolean busBoolean, final Boolean bikeBoolean,
 			final Boolean networkAvailable) {
-		if(!networkAvailable){
+		if (!networkAvailable) {
 			Toast.makeText(this, "No network connection detected!", Toast.LENGTH_SHORT).show();
 		}
 		ChicagoTracker.modifyLastUpdate(Calendar.getInstance().getTime());
@@ -119,15 +119,17 @@ public class BaseActivity extends Activity {
 	 *            the bus arrivals
 	 */
 	private void startMainActivity(SparseArray<TrainArrival> trainArrivals, List<BusArrival> busArrivals) {
-		Intent intent = new Intent(this, MainActivity.class);
-		Bundle bundle = new Bundle();
-		bundle.putParcelableArrayList("busArrivals", (ArrayList<BusArrival>) busArrivals);
-		bundle.putSparseParcelableArray("trainArrivals", trainArrivals);
-		intent.putExtras(bundle);
+		if (!isFinishing()) {
+			Intent intent = new Intent(this, MainActivity.class);
+			Bundle bundle = new Bundle();
+			bundle.putParcelableArrayList("busArrivals", (ArrayList<BusArrival>) busArrivals);
+			bundle.putSparseParcelableArray("trainArrivals", trainArrivals);
+			intent.putExtras(bundle);
 
-		finish();
-		startActivity(intent);
-		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+			finish();
+			startActivity(intent);
+			overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+		}
 	}
 
 	/**
