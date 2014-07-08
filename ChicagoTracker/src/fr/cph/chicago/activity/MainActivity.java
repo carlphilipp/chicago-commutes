@@ -289,11 +289,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		// Only show items in the action bar relevant to this screen
 		// if the drawer is not showing. Otherwise, let the drawer
 		// decide what to show in the action bar.
-		// if (currentPosition == 1 || currentPosition == 5) {
-		// getMenuInflater().inflate(R.menu.global, menu);
-		// } else {
 		getMenuInflater().inflate(R.menu.main, menu);
-		// }
 		// Associate searchable configuration with the SearchView
 		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 		SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
@@ -301,7 +297,6 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
 		// restoreActionBar();
 		return super.onCreateOptionsMenu(menu);
-		// }
 		// return super.onCreateOptionsMenu(menu);
 	}
 
@@ -454,6 +449,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		private AlertData alertData;
 		/** Bike stations **/
 		private List<BikeStation> bikeStations;
+		/** Load bikes **/
+		private boolean loadBike;
 
 		@Override
 		protected final Void doInBackground(final Void... params) {
@@ -464,7 +461,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
 			boolean loadBus = sharedPref.getBoolean("cta_bus", true);
 			boolean loadAlert = sharedPref.getBoolean("cta_alert", true);
-			boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
+			loadBike = sharedPref.getBoolean("divvy_bike", true);
 
 			// Load bus API data
 			if (loadBus) {
@@ -522,10 +519,11 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			dataHolder.setBusData(busData);
 			dataHolder.setAlertData(alertData);
 
-			getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
-			onNewIntent(getIntent());
-
-			favoritesFragment.setBikeStations(bikeStations);
+			if (loadBike) {
+				getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
+				onNewIntent(getIntent());
+				favoritesFragment.setBikeStations(bikeStations);
+			}
 			if (currentPosition == POSITION_BUS && busFragment != null) {
 				busFragment.update();
 			}
