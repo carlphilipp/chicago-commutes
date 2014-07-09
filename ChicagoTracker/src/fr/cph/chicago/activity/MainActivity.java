@@ -456,10 +456,10 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	}
 
 	private void displayUpdatePanel() {
-		SharedPreferences sharedPref2 = PreferenceManager.getDefaultSharedPreferences(this);
+/*		SharedPreferences sharedPref2 = PreferenceManager.getDefaultSharedPreferences(this);
 		SharedPreferences.Editor editor2 = sharedPref2.edit();
 		editor2.putString("version.name", null);
-		editor2.commit();
+		editor2.commit();*/
 
 		try {
 			String versionName = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName;
