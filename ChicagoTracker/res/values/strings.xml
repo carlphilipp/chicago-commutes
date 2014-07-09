@@ -87,6 +87,9 @@
 
     <!-- Map -->
     <string name="fragment_image_description">A nice description</string>
+    <string name="fragment_train">Train</string>
+    <string name="fragment_bus">Bus</string>
+    <string name="fragment_bike">Bike</string>
 
     <!-- Loading -->
     <string name="loading_image_description">A nice description</string>

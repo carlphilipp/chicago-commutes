@@ -385,7 +385,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
 	@Override
 	public final void onBackPressed() {
-		if (currentPosition != POSITION_FAVORITES && currentPosition != POSITION_MAP) {
+		/*if (currentPosition != POSITION_FAVORITES && currentPosition != POSITION_MAP) {
 			mNavigationDrawerFragment.selectItem(0, true);
 		} else if (currentPosition == POSITION_MAP) {
 			if (mapFragment.isCenteredAlready()) {
@@ -393,6 +393,15 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			} else {
 				mapFragment.resetImage();
 			}
+		} else {
+			DataHolder.getInstance().setBusData(null);
+			DataHolder.getInstance().setTrainData(null);
+			DataHolder.getInstance().setAlertData(null);
+			finish();
+		}*/
+		
+		if (currentPosition != POSITION_FAVORITES) {
+			mNavigationDrawerFragment.selectItem(0, true);
 		} else {
 			DataHolder.getInstance().setBusData(null);
 			DataHolder.getInstance().setTrainData(null);
@@ -463,7 +472,6 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
 		try {
 			String versionName = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName;
-			Log.i(TAG, versionName);
 			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 			String versionNamePreferences = sharedPref.getString("version.name", null);
 			if (versionNamePreferences == null || !versionNamePreferences.equals(versionName)) {
