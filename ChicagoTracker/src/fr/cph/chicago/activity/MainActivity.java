@@ -16,6 +16,9 @@
 
 package fr.cph.chicago.activity;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -25,22 +28,30 @@ import org.apache.commons.collections4.map.MultiValueMap;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.SearchView;
+import android.widget.TextView;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaRequestType;
@@ -149,6 +160,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
 		// Preventing keyboard from moving background when showing up
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
+		displayUpdatePanel();
 
 	}
 
@@ -440,6 +453,66 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	protected void onSaveInstanceState(Bundle outState) {
 		outState.putBoolean("first", false);
 		super.onSaveInstanceState(outState);
+	}
+
+	private void displayUpdatePanel() {
+		SharedPreferences sharedPref2 = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences.Editor editor2 = sharedPref2.edit();
+		editor2.putString("version.name", null);
+		editor2.commit();
+
+		try {
+			String versionName = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName;
+			Log.i(TAG, versionName);
+			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+			String versionNamePreferences = sharedPref.getString("version.name", null);
+			if (versionNamePreferences == null || !versionNamePreferences.equals(versionName)) {
+				SharedPreferences.Editor editor = sharedPref.edit();
+				editor.putString("version.name", versionName);
+				editor.commit();
+
+				final Dialog dialog = new Dialog(this);
+				dialog.setContentView(R.layout.update);
+				dialog.setTitle("Update");
+
+				InputStreamReader is = new InputStreamReader(ChicagoTracker.getAppContext().getAssets().open("update.txt"));
+				BufferedReader br = new BufferedReader(is);
+				String read = br.readLine();
+				StringBuilder sb = new StringBuilder();
+				while (read != null) {
+					sb.append(read + "\n");
+					read = br.readLine();
+				}
+
+				TextView text = (TextView) dialog.findViewById(R.id.updateText);
+				text.setText(sb.toString());
+
+				Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonOK);
+				dialogButton.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						dialog.dismiss();
+					}
+				});
+
+				Display display = getWindowManager().getDefaultDisplay();
+				Point size = new Point();
+				display.getSize(size);
+				int width = size.x;
+				int newWidth = width - (width * 20 / 100);
+				int height = size.y;
+				int newHeight = height - (height * 20 / 100);
+
+				dialog.getWindow().setLayout(newWidth, newHeight);
+
+				dialog.show();
+			}
+
+		} catch (NameNotFoundException e) {
+			Log.w(TAG, e.getMessage(), e);
+		} catch (IOException e) {
+			Log.w(TAG, e.getMessage(), e);
+		}
 	}
 
 	public final class LoadData extends AsyncTask<Void, Void, Void> {
