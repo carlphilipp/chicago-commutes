@@ -130,16 +130,18 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		// Handle onStop event where bus data has been switched to null
 		if (savedInstanceState != null) {
 			boolean first = savedInstanceState.getBoolean("first", false);
 			if (!first) {
 				BusData busData = BusData.getInstance();
-				busData.readBusStops();
+				if (busData.readAllBusStops() == null || busData.readAllBusStops().size() == 0) {
+					busData.readBusStops();
+				}
 				TrainData trainData = new TrainData();
-				trainData.read();
-
+				if (trainData.isStationNull() || trainData.isStopsNull()) {
+					trainData.read();
+				}
 				DataHolder dataHolder = DataHolder.getInstance();
 				dataHolder.setBusData(busData);
 				dataHolder.setTrainData(trainData);
@@ -385,21 +387,6 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
 	@Override
 	public final void onBackPressed() {
-		/*if (currentPosition != POSITION_FAVORITES && currentPosition != POSITION_MAP) {
-			mNavigationDrawerFragment.selectItem(0, true);
-		} else if (currentPosition == POSITION_MAP) {
-			if (mapFragment.isCenteredAlready()) {
-				mNavigationDrawerFragment.selectItem(0, true);
-			} else {
-				mapFragment.resetImage();
-			}
-		} else {
-			DataHolder.getInstance().setBusData(null);
-			DataHolder.getInstance().setTrainData(null);
-			DataHolder.getInstance().setAlertData(null);
-			finish();
-		}*/
-		
 		if (currentPosition != POSITION_FAVORITES) {
 			mNavigationDrawerFragment.selectItem(0, true);
 		} else {
@@ -465,10 +452,10 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	}
 
 	private void displayUpdatePanel() {
-/*		SharedPreferences sharedPref2 = PreferenceManager.getDefaultSharedPreferences(this);
-		SharedPreferences.Editor editor2 = sharedPref2.edit();
-		editor2.putString("version.name", null);
-		editor2.commit();*/
+		/*
+		 * SharedPreferences sharedPref2 = PreferenceManager.getDefaultSharedPreferences(this); SharedPreferences.Editor editor2 = sharedPref2.edit();
+		 * editor2.putString("version.name", null); editor2.commit();
+		 */
 
 		try {
 			String versionName = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName;

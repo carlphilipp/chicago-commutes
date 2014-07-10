@@ -17,83 +17,16 @@
 
 -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:baselineAligned="false"
-    android:orientation="vertical"
-    tools:context=".MainActivity" >
-	
-    <RelativeLayout
-        android:id="@+id/map"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="0.2" >
-    </RelativeLayout>
-    
-   <LinearLayout
-        android:id="@+id/loading_layout_container"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <ImageView
+        android:id="@+id/imageView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_weight="0.8"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:orientation="vertical"
-        android:background="@drawable/bg_selector"
-        android:visibility="visible" >
+        android:contentDescription="@string/fragment_image_description"
+        android:scaleType="fitCenter" >
+    </ImageView>
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="@+dimen/activity_train_line_padding_left" >
-
-            <CheckBox
-                android:id="@+id/trains_check_box"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" >
-            </CheckBox>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/trains_check_box"
-                android:layout_toRightOf="@+id/trains_check_box"
-                android:ellipsize="end"
-                android:lines="1"
-                android:text="@string/fragment_train" />
-            
-            <CheckBox
-                android:id="@+id/buses_check_box"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" 
-                android:layout_below="@+id/trains_check_box">
-            </CheckBox>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/buses_check_box"
-                android:layout_toRightOf="@+id/buses_check_box"
-                android:ellipsize="end"
-                android:lines="1"
-                android:text="@string/fragment_bus" />
-            
-            <CheckBox
-                android:id="@+id/bikes_check_box"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" 
-                android:layout_below="@+id/buses_check_box">
-            </CheckBox>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/bikes_check_box"
-                android:layout_toRightOf="@+id/bikes_check_box"
-                android:ellipsize="end"
-                android:lines="1"
-                android:text="@string/fragment_bike" />
-        </RelativeLayout>
-    </LinearLayout>
-</LinearLayout>
+</FrameLayout>
