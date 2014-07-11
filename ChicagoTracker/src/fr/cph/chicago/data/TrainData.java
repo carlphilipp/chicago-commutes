@@ -245,6 +245,10 @@ public class TrainData {
 	public final int getStationsSize() {
 		return stations.size();
 	}
+	
+	public final boolean isStationNull(){
+		return stations == null;
+	}
 
 	/**
 	 * Get station size from the ordered by line
@@ -271,6 +275,10 @@ public class TrainData {
 			}
 		}
 		return null;
+	}
+	
+	public final boolean isStopsNull(){
+		return stops == null;
 	}
 
 	/**

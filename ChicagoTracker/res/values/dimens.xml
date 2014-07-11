@@ -48,4 +48,7 @@
      <dimen name="bus_adapter_button_text_size">30sp</dimen>
      <dimen name="bus_adapter_button_width">100dp</dimen>
      <dimen name="bus_adapter_button_height">5dp</dimen>
+     <!-- Drawer -->
+     <dimen name="drawer_text_size_main">15dp</dimen>
+     <dimen name="drawer_text_size_extra">5dp</dimen>
 </resources>

@@ -28,8 +28,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -39,6 +41,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
@@ -68,6 +72,16 @@ public class BikeFragment extends Fragment {
 	private BikeAdapter ada;
 	/** Bike data **/
 	private List<BikeStation> bikeStations;
+	/** Root view **/
+	private View rootView;
+	/** Loading layout **/
+	private RelativeLayout loadingLayout;
+	/** Desactivated layout **/
+	private RelativeLayout desactivatedLayout;
+	/** The list view **/
+	private ListView listView;
+	/** The filter text view **/
+	private TextView filterView;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -108,40 +122,68 @@ public class BikeFragment extends Fragment {
 
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.fragment_bus, container, false);
+		rootView = inflater.inflate(R.layout.fragment_bike, container, false);
 		if (!mActivity.isFinishing()) {
-			EditText filter = (EditText) rootView.findViewById(R.id.bus_filter);
-			ListView listView = (ListView) rootView.findViewById(R.id.bus_list);
-			if (ada == null) {
-				ada = new BikeAdapter(mActivity);
-			}
-			listView.setAdapter(ada);
-			filter.addTextChangedListener(new TextWatcher() {
-
-				private List<BikeStation> bikeStations = null;
-
-				@Override
-				public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-					this.bikeStations = new ArrayList<BikeStation>();
-				}
-
-				@Override
-				public void onTextChanged(CharSequence s, int start, int before, int count) {
-					for (BikeStation bikeStation : BikeFragment.this.bikeStations) {
-						if (StringUtils.containsIgnoreCase(bikeStation.getName(), s.toString().trim())) {
-							this.bikeStations.add(bikeStation);
-						}
+			loadingLayout = (RelativeLayout) rootView.findViewById(R.id.loading_relativeLayout);
+			desactivatedLayout = (RelativeLayout) rootView.findViewById(R.id.desactivated_layout);
+			listView = (ListView) rootView.findViewById(R.id.bike_list);
+			filterView = (TextView) rootView.findViewById(R.id.bike_filter);
+			if (Util.isNetworkAvailable()) {
+				SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mActivity);
+				boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
+				if (loadBike) {
+					if (bikeStations == null && bikeStations.size() != 0) {
+						loadList();
+					} else {
+						loadingLayout.setVisibility(RelativeLayout.VISIBLE);
+						listView.setVisibility(ListView.INVISIBLE);
+						filterView.setVisibility(TextView.INVISIBLE);
+						new WaitForRefreshData().execute();
 					}
+				} else {
+					desactivatedLayout.setVisibility(RelativeLayout.VISIBLE);
+					filterView.setVisibility(TextView.INVISIBLE);
 				}
-
-				@Override
-				public void afterTextChanged(Editable s) {
-					ada.setBikeStations(this.bikeStations);
-					ada.notifyDataSetChanged();
-				}
-			});
+			} else {
+				Toast.makeText(ChicagoTracker.getAppContext(), "No network connection detected!", Toast.LENGTH_SHORT).show();
+			}
 		}
 		return rootView;
+	}
+
+	private final void loadList() {
+		EditText filter = (EditText) rootView.findViewById(R.id.bike_filter);
+		if (ada == null) {
+			ada = new BikeAdapter(mActivity);
+		}
+		listView.setAdapter(ada);
+		filter.addTextChangedListener(new TextWatcher() {
+
+			private List<BikeStation> bikeStations = null;
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+				this.bikeStations = new ArrayList<BikeStation>();
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				for (BikeStation bikeStation : BikeFragment.this.bikeStations) {
+					if (StringUtils.containsIgnoreCase(bikeStation.getName(), s.toString().trim())) {
+						this.bikeStations.add(bikeStation);
+					}
+				}
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				ada.setBikeStations(this.bikeStations);
+				ada.notifyDataSetChanged();
+			}
+		});
+		listView.setVisibility(ListView.VISIBLE);
+		filterView.setVisibility(ListView.VISIBLE);
+		loadingLayout.setVisibility(RelativeLayout.INVISIBLE);
 	}
 
 	@Override
@@ -153,14 +195,65 @@ public class BikeFragment extends Fragment {
 	public final boolean onOptionsItemSelected(final MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_refresh:
-			MenuItem menuItem = item;
-			menuItem.setActionView(R.layout.progressbar);
-			menuItem.expandActionView();
+			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mActivity);
+			boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
+			if (loadBike) {
+				MenuItem menuItem = item;
+				menuItem.setActionView(R.layout.progressbar);
+				menuItem.expandActionView();
 
-			new DivvyAsyncTask().execute();
+				new DivvyAsyncTask().execute();
+
+				Bundle bundle = mActivity.getIntent().getExtras();
+				List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
+
+				boolean loadData = false;
+				if (!loadData && loadBike && bikeStations == null) {
+					loadData = true;
+				}
+				if (loadData) {
+					mActivity.startRefreshAnimation();
+					mActivity.new LoadData().execute();
+				}
+			}
 			return false;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	private final class WaitForRefreshData extends AsyncTask<Void, Void, Boolean> {
+		@Override
+		protected Boolean doInBackground(Void... args) {
+			Bundle bundle = BikeFragment.this.mActivity.getIntent().getExtras();
+			List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
+			int i = 0;
+			while ((bikeStations == null || bikeStations.size() == 0) && i < 10) {
+				try {
+					Thread.sleep(100);
+					bundle = BikeFragment.this.mActivity.getIntent().getExtras();
+					bikeStations = bundle.getParcelableArrayList("bikeStations");
+					i++;
+				} catch (InterruptedException e) {
+					Log.e(TAG, e.getMessage(), e);
+				}
+			}
+			return bundle.getParcelableArrayList("bikeStations").size() == 0;
+		}
+
+		@Override
+		protected final void onPostExecute(final Boolean result) {
+			if (result) {
+				loadError();
+			} else {
+				loadList();
+			}
+		}
+	}
+
+	private final void loadError() {
+		loadingLayout.setVisibility(RelativeLayout.INVISIBLE);
+		RelativeLayout loadingLayout = (RelativeLayout) rootView.findViewById(R.id.error_layout);
+		loadingLayout.setVisibility(RelativeLayout.VISIBLE);
 	}
 
 	private final class DivvyAsyncTask extends AsyncTask<Void, Void, List<BikeStation>> {
@@ -174,19 +267,17 @@ public class BikeFragment extends Fragment {
 				String bikeContent = divvyConnect.connect();
 				bikeStations = json.parseStations(bikeContent);
 				Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
-				bikeStations = new ArrayList<BikeStation>();
-				throw new ConnectException("derp");
 			} catch (ConnectException e) {
 				BikeFragment.this.mActivity.runOnUiThread(new Runnable() {
 					public void run() {
-						Toast.makeText(ChicagoTracker.getAppContext(), "Error, try again later!", Toast.LENGTH_LONG).show();
+						Toast.makeText(ChicagoTracker.getAppContext(), "Error, try again later!", Toast.LENGTH_SHORT).show();
 					}
 				});
 				Log.e(TAG, "Connect error", e);
 			} catch (ParserException e) {
 				BikeFragment.this.mActivity.runOnUiThread(new Runnable() {
 					public void run() {
-						Toast.makeText(ChicagoTracker.getAppContext(), "Error, try again later!", Toast.LENGTH_LONG).show();
+						Toast.makeText(ChicagoTracker.getAppContext(), "Error, try again later!", Toast.LENGTH_SHORT).show();
 					}
 				});
 				Log.e(TAG, "Parser error", e);
@@ -198,6 +289,9 @@ public class BikeFragment extends Fragment {
 		protected final void onPostExecute(final List<BikeStation> result) {
 			if (result.size() != 0) {
 				BikeFragment.this.bikeStations = result;
+				if (BikeFragment.this.ada == null) {
+					BikeFragment.this.loadList();
+				}
 				BikeFragment.this.ada.setBikeStations(result);
 				BikeFragment.this.ada.notifyDataSetChanged();
 				// Put in main activity the new list of bikes
@@ -207,5 +301,4 @@ public class BikeFragment extends Fragment {
 			BikeFragment.this.mActivity.stopRefreshAnimation();
 		}
 	}
-
 }

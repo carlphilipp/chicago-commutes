@@ -204,7 +204,6 @@ public class BikeStationActivity extends Activity {
 			menuItem.expandActionView();
 
 			new DivvyAsyncTask().execute();
-			//Toast.makeText(this, "Refresh...!", Toast.LENGTH_SHORT).show();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -217,9 +216,9 @@ public class BikeStationActivity extends Activity {
 	 */
 	private final boolean isFavorite() {
 		boolean isFavorite = false;
-		List<Integer> favorites = Preferences.getBikeFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
-		for (Integer fav : favorites) {
-			if (fav.intValue() == station.getId()) {
+		List<String> favorites = Preferences.getBikeFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
+		for (String fav : favorites) {
+			if (Integer.valueOf(fav) == station.getId()) {
 				isFavorite = true;
 				break;
 			}
@@ -251,14 +250,14 @@ public class BikeStationActivity extends Activity {
 			} catch (ConnectException e) {
 				BikeStationActivity.this.runOnUiThread(new Runnable() {
 					public void run() {
-						Toast.makeText(ChicagoTracker.getAppContext(), "Error, try again later!", Toast.LENGTH_LONG).show();
+						Toast.makeText(ChicagoTracker.getAppContext(), "A surprising error has occured. Try again!", Toast.LENGTH_SHORT).show();
 					}
 				});
 				Log.e(TAG, "Connect error", e);
 			} catch (ParserException e) {
 				BikeStationActivity.this.runOnUiThread(new Runnable() {
 					public void run() {
-						Toast.makeText(ChicagoTracker.getAppContext(), "Error, try again later!", Toast.LENGTH_LONG).show();
+						Toast.makeText(ChicagoTracker.getAppContext(), "A surprising error has occured. Try again!", Toast.LENGTH_SHORT).show();
 					}
 				});
 				Log.e(TAG, "Parser error", e);
@@ -371,8 +370,8 @@ public class BikeStationActivity extends Activity {
 			Util.removeFromBikeFavorites(station.getId(), ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
 			isFavorite = false;
 		} else {
-			Log.i(TAG, "Add to bike fav " + station.getId());
 			Util.addToBikeFavorites(station.getId(), ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
+			Preferences.addBikeRouteNameMapping(String.valueOf(station.getId()), station.getName());
 			isFavorite = true;
 		}
 		if (isFavorite) {

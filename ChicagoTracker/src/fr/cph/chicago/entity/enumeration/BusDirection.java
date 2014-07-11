@@ -55,6 +55,9 @@ public enum BusDirection {
 				} else if (b.text.toLowerCase(Locale.US).contains(text.toLowerCase(Locale.US))) {
 					return b;
 				}
+				else if (b.text.toLowerCase(Locale.US).contains(text.toLowerCase(Locale.US))) {
+					return b;
+				}
 			}
 		}
 		return null;

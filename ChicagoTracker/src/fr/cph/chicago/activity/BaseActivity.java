@@ -18,7 +18,6 @@ package fr.cph.chicago.activity;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections4.MultiMap;
@@ -26,16 +25,15 @@ import org.apache.commons.collections4.map.MultiValueMap;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
+import android.preference.PreferenceManager;
 import android.util.SparseArray;
-import android.widget.TextView;
+import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaRequestType;
-import fr.cph.chicago.connection.DivvyConnect;
-import fr.cph.chicago.data.AlertData;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
@@ -43,10 +41,8 @@ import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
-import fr.cph.chicago.json.Json;
 import fr.cph.chicago.task.GlobalConnectTask;
 import fr.cph.chicago.util.Util;
 
@@ -57,38 +53,18 @@ import fr.cph.chicago.util.Util;
  * @version 1
  */
 public class BaseActivity extends Activity {
-
-	/** Tag **/
-	private static final String TAG = "BaseActivity";
 	/** Error state **/
 	private Boolean error;
-
+	/** Train arrivals **/
 	private SparseArray<TrainArrival> trainArrivals;
-
+	/** Bus arrivals **/
 	private List<BusArrival> busArrivals;
-
-	private List<BikeStation> bikeStations;
-
-	private TextView trainMessage, busMessage, alertMessage, bikeMessage, favoritesMessage;
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		setContentView(R.layout.loading);
-
-		trainMessage = (TextView) findViewById(R.id.loadingTrainView);
-
-		busMessage = (TextView) findViewById(R.id.loadingBusView);
-
-		alertMessage = (TextView) findViewById(R.id.loadingAlertView);
-
-		bikeMessage = (TextView) findViewById(R.id.loadingBikeView);
-
-		favoritesMessage = (TextView) findViewById(R.id.loadingFavoritesView);
-
 		Bundle extras = getIntent().getExtras();
-
 		if (extras != null && error == null) {
 			error = extras.getBoolean("error");
 		} else {
@@ -97,21 +73,21 @@ public class BaseActivity extends Activity {
 
 		if (error) {
 			new LoadData().execute();
-		} else if (trainArrivals == null || busArrivals == null || bikeStations == null) {
+		} else if (trainArrivals == null || busArrivals == null) {
 			new LoadData().execute();
 		} else {
-			startMainActivity();
+			startMainActivity(trainArrivals, busArrivals);
 		}
 	}
 
 	@Override
-	public void onRestoreInstanceState(Bundle savedInstanceState) {
+	public final void onRestoreInstanceState(final Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
 		error = savedInstanceState.getBoolean("error");
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle savedInstanceState) {
+	public final void onSaveInstanceState(final Bundle savedInstanceState) {
 		savedInstanceState.putBoolean("error", error);
 		super.onSaveInstanceState(savedInstanceState);
 	}
@@ -125,18 +101,35 @@ public class BaseActivity extends Activity {
 	 *            list of bus arrivals
 	 */
 	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals,
-			final List<BikeStation> bikeStations, final Boolean trainBoolean, final Boolean busBoolean, final Boolean bikeBoolean) {
-		this.trainArrivals = trainArrivals;
-		this.busArrivals = busArrivals;
-		if (trainBoolean && busBoolean) {
-			favoritesMessage.setText(favoritesMessage.getText() + " - OK");
-			favoritesMessage.setTextColor(getResources().getColor(R.color.green));
-		} else {
-			favoritesMessage.setText(favoritesMessage.getText() + " - FAIL");
-			favoritesMessage.setTextColor(getResources().getColor(R.color.red));
+			final List<BikeStation> bikeStations, final Boolean trainBoolean, final Boolean busBoolean, final Boolean bikeBoolean,
+			final Boolean networkAvailable) {
+		if (!networkAvailable) {
+			Toast.makeText(this, "No network connection detected!", Toast.LENGTH_SHORT).show();
 		}
 		ChicagoTracker.modifyLastUpdate(Calendar.getInstance().getTime());
-		startMainActivity();
+		startMainActivity(trainArrivals, busArrivals);
+	}
+
+	/**
+	 * Finish current activity and start main activity with custom transition
+	 * 
+	 * @param trainArrivals
+	 *            the train arrivals
+	 * @param busArrivals
+	 *            the bus arrivals
+	 */
+	private void startMainActivity(SparseArray<TrainArrival> trainArrivals, List<BusArrival> busArrivals) {
+		if (!isFinishing()) {
+			Intent intent = new Intent(this, MainActivity.class);
+			Bundle bundle = new Bundle();
+			bundle.putParcelableArrayList("busArrivals", (ArrayList<BusArrival>) busArrivals);
+			bundle.putSparseParcelableArray("trainArrivals", trainArrivals);
+			intent.putExtras(bundle);
+
+			finish();
+			startActivity(intent);
+			overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+		}
 	}
 
 	/**
@@ -151,105 +144,16 @@ public class BaseActivity extends Activity {
 		private BusData busData;
 		/** Train data **/
 		private TrainData trainData;
-		/** Alert data **/
-		private AlertData alertData;
 
 		@Override
 		protected final Void doInBackground(final Void... params) {
-
 			// Load local CSV
 			this.trainData = new TrainData();
 			this.trainData.read();
 
-			publishProgress(new String[] { "t", "true" });
-
 			this.busData = BusData.getInstance();
 			this.busData.readBusStops();
-
-			// Load bus API data
-			try {
-				this.busData.loadBusRoutes();
-				publishProgress(new String[] { "b", "true" });
-			} catch (ParserException e) {
-				publishProgress(new String[] { "b", "false" });
-				Log.e(TAG, e.getMessage(), e);
-			} catch (ConnectException e) {
-				publishProgress(new String[] { "b", "false" });
-				Log.e(TAG, e.getMessage(), e);
-			}
-
-			// Load alert API data
-			try {
-				this.alertData = AlertData.getInstance();
-				this.alertData.loadGeneralAlerts();
-				publishProgress(new String[] { "a", "true" });
-			} catch (ParserException e) {
-				publishProgress(new String[] { "a", "false" });
-				Log.e(TAG, e.getMessage(), e);
-			} catch (ConnectException e) {
-				publishProgress(new String[] { "a", "false" });
-				Log.e(TAG, e.getMessage(), e);
-			}
-			// Load divvy
-			BaseActivity.this.bikeStations = new ArrayList<BikeStation>();
-			try {
-				Json json = new Json();
-				DivvyConnect divvyConnect = DivvyConnect.getInstance();
-				String bikeContent = divvyConnect.connect();
-				BaseActivity.this.bikeStations = json.parseStations(bikeContent);
-				Collections.sort(BaseActivity.this.bikeStations, Util.BIKE_COMPARATOR_NAME);
-				publishProgress(new String[] { "d", "true" });
-			} catch (ConnectException e) {
-				publishProgress(new String[] { "d", "false" });
-				Log.e(TAG, e.getMessage(), e);
-			} catch (ParserException e) {
-				publishProgress(new String[] { "d", "false" });
-				Log.e(TAG, e.getMessage(), e);
-			}
 			return null;
-		}
-
-		@Override
-		protected final void onProgressUpdate(String... progress) {
-			String type = progress[0];
-			boolean passed = Boolean.valueOf(progress[1]);
-			if (type.equals("t")) {
-				trainMessage.setVisibility(TextView.VISIBLE);
-				if (!passed) {
-					trainMessage.setText(trainMessage.getText() + " - FAIL");
-					trainMessage.setTextColor(getResources().getColor(R.color.red));
-				} else {
-					trainMessage.setText(trainMessage.getText() + " - OK");
-					trainMessage.setTextColor(getResources().getColor(R.color.green));
-				}
-				busMessage.setVisibility(TextView.VISIBLE);
-			} else if (type.equals("b")) {
-				if (!passed) {
-					busMessage.setText(busMessage.getText() + " - FAIL");
-					busMessage.setTextColor(getResources().getColor(R.color.red));
-				} else {
-					busMessage.setText(busMessage.getText() + " - OK");
-					busMessage.setTextColor(getResources().getColor(R.color.green));
-				}
-				alertMessage.setVisibility(TextView.VISIBLE);
-			} else if (type.equals("a")) {
-				if (!passed) {
-					alertMessage.setText(alertMessage.getText() + " - FAIL");
-					alertMessage.setTextColor(getResources().getColor(R.color.red));
-				} else {
-					alertMessage.setText(alertMessage.getText() + " - OK");
-					alertMessage.setTextColor(getResources().getColor(R.color.green));
-				}
-				bikeMessage.setVisibility(TextView.VISIBLE);
-			} else if (type.equals("d")) {
-				if (!passed) {
-					bikeMessage.setText(bikeMessage.getText() + " - FAIL");
-					bikeMessage.setTextColor(getResources().getColor(R.color.red));
-				} else {
-					bikeMessage.setText(bikeMessage.getText() + " - OK");
-					bikeMessage.setTextColor(getResources().getColor(R.color.green));
-				}
-			}
 		}
 
 		@Override
@@ -258,9 +162,7 @@ public class BaseActivity extends Activity {
 			DataHolder dataHolder = DataHolder.getInstance();
 			dataHolder.setBusData(busData);
 			dataHolder.setTrainData(trainData);
-			dataHolder.setAlertData(alertData);
 			try {
-				favoritesMessage.setVisibility(TextView.VISIBLE);
 				// Load favorites data
 				loadData();
 			} catch (ParserException e) {
@@ -278,7 +180,6 @@ public class BaseActivity extends Activity {
 	public void displayError(final TrackerException exceptionToBeThrown) {
 		DataHolder.getInstance().setTrainData(null);
 		DataHolder.getInstance().setBusData(null);
-		DataHolder.getInstance().setAlertData(null);
 		ChicagoTracker.displayError(this, exceptionToBeThrown);
 		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 	}
@@ -304,24 +205,13 @@ public class BaseActivity extends Activity {
 			params2.put("stpid", fav[1]);
 		}
 
+		// Get preferences to know if trains and buses need to be loaded
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+		boolean loadTrain = sharedPref.getBoolean("cta_train", true);
+		boolean loadBus = sharedPref.getBoolean("cta_bus", true);
+
 		GlobalConnectTask task = new GlobalConnectTask(this, BaseActivity.class, CtaRequestType.TRAIN_ARRIVALS, params, CtaRequestType.BUS_ARRIVALS,
-				params2, false);
+				params2, loadTrain, loadBus, false);
 		task.execute((Void) null);
-	}
-
-	/**
-	 * Finish current activity and start main activity with custom transition
-	 */
-	private void startMainActivity() {
-		Intent intent = new Intent(this, MainActivity.class);
-		Bundle bundle = new Bundle();
-		bundle.putParcelableArrayList("busArrivals", (ArrayList<BusArrival>) busArrivals);
-		bundle.putSparseParcelableArray("trainArrivals", trainArrivals);
-		bundle.putParcelableArrayList("bikeStations", (ArrayList<BikeStation>) bikeStations);
-		intent.putExtras(bundle);
-
-		finish();
-		startActivity(intent);
-		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 	}
 }

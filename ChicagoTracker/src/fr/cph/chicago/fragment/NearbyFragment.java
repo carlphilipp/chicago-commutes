@@ -35,6 +35,7 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -42,6 +43,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
 import android.util.SparseArray;
@@ -53,11 +55,12 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
+import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -145,7 +148,8 @@ public class NearbyFragment extends Fragment {
 	@Override
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		ChicagoTracker.checkData(mActivity);
+		ChicagoTracker.checkTrainData(mActivity);
+		ChicagoTracker.checkBusData(mActivity);
 	}
 
 	@Override
@@ -166,7 +170,9 @@ public class NearbyFragment extends Fragment {
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 					Preferences.saveHideShowNearby(isChecked);
 					hideStationsStops = isChecked;
-					reloadData();
+					if (Util.isNetworkAvailable()) {
+						reloadData();
+					}
 				}
 			});
 			showProgress(true);
@@ -198,7 +204,12 @@ public class NearbyFragment extends Fragment {
 		if (map == null) {
 			map = mapFragment.getMap();
 		}
-		new LoadNearby().execute();
+		if (Util.isNetworkAvailable()) {
+			new LoadNearby().execute();
+		} else {
+			Toast.makeText(mActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
+			showProgress(false);
+		}
 	}
 
 	/**
@@ -245,79 +256,89 @@ public class NearbyFragment extends Fragment {
 			busArrivalsMap = new SparseArray<Map<String, List<BusArrival>>>();
 			trainArrivals = new SparseArray<TrainArrival>();
 
+			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mActivity);
+			boolean loadTrain = sharedPref.getBoolean("cta_train", true);
+			boolean loadBus = sharedPref.getBoolean("cta_bus", true);
+			boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
+
 			CtaConnect cta = CtaConnect.getInstance();
 
 			// Loop over bus stops around user
-			for (BusStop busStop : busStops) {
-				Map<String, List<BusArrival>> tempMap;
+			if (loadBus) {
+				for (BusStop busStop : busStops) {
+					Map<String, List<BusArrival>> tempMap;
 
-				// Create
-				tempMap = busArrivalsMap.get(busStop.getId(), null);
-				if (tempMap == null) {
-					tempMap = new HashMap<String, List<BusArrival>>();
-					busArrivalsMap.put(busStop.getId(), tempMap);
+					// Create
+					tempMap = busArrivalsMap.get(busStop.getId(), null);
+					if (tempMap == null) {
+						tempMap = new HashMap<String, List<BusArrival>>();
+						busArrivalsMap.put(busStop.getId(), tempMap);
+					}
+
+					// Buses
+					try {
+
+						MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
+						reqParams.put("stpid", busStop.getId().toString());
+
+						String xmlRes = cta.connect(CtaRequestType.BUS_ARRIVALS, reqParams);
+						Xml xml = new Xml();
+						List<BusArrival> busArrivals = xml.parseBusArrivals(xmlRes);
+						for (BusArrival busArrival : busArrivals) {
+							String direction = busArrival.getRouteDirection();
+							if (tempMap.containsKey(direction)) {
+								List<BusArrival> temp = tempMap.get(direction);
+								temp.add(busArrival);
+							} else {
+								List<BusArrival> temp = new ArrayList<BusArrival>();
+								temp.add(busArrival);
+								tempMap.put(direction, temp);
+							}
+						}
+					} catch (ConnectException e) {
+						Log.e(TAG, e.getMessage(), e);
+					} catch (ParserException e) {
+						Log.e(TAG, e.getMessage(), e);
+					}
 				}
-
-				// Buses
+			}
+			if (loadTrain) {
+				// Train
+				for (Station station : stations) {
+					try {
+						MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
+						reqParams.put("mapid", String.valueOf(station.getId()));
+						String xmlRes = cta.connect(CtaRequestType.TRAIN_ARRIVALS, reqParams);
+						Xml xml = new Xml();
+						SparseArray<TrainArrival> temp = xml.parseArrivals(xmlRes, DataHolder.getInstance().getTrainData());
+						for (int j = 0; j < temp.size(); j++) {
+							trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
+						}
+					} catch (ConnectException e) {
+						Log.e(TAG, e.getMessage(), e);
+					} catch (ParserException e) {
+						Log.e(TAG, e.getMessage(), e);
+					}
+				}
+			}
+			if (loadBike) {
+				// Bike
+				DivvyConnect connect = DivvyConnect.getInstance();
 				try {
-
-					MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
-					reqParams.put("stpid", busStop.getId().toString());
-
-					String xmlRes = cta.connect(CtaRequestType.BUS_ARRIVALS, reqParams);
-					Xml xml = new Xml();
-					List<BusArrival> busArrivals = xml.parseBusArrivals(xmlRes);
-					for (BusArrival busArrival : busArrivals) {
-						String direction = busArrival.getRouteDirection();
-						if (tempMap.containsKey(direction)) {
-							List<BusArrival> temp = tempMap.get(direction);
-							temp.add(busArrival);
-						} else {
-							List<BusArrival> temp = new ArrayList<BusArrival>();
-							temp.add(busArrival);
-							tempMap.put(direction, temp);
+					Json json = new Json();
+					String content = connect.connect();
+					List<BikeStation> bikeStationUpdated = json.parseStations(content);
+					for (BikeStation station : bikeStationUpdated) {
+						if (bikeStationsTemp.contains(station)) {
+							bikeStationsRes.add(station);
 						}
 					}
+					Collections.sort(bikeStationsRes, Util.BIKE_COMPARATOR_NAME);
 				} catch (ConnectException e) {
 					Log.e(TAG, e.getMessage(), e);
 				} catch (ParserException e) {
 					Log.e(TAG, e.getMessage(), e);
 				}
-			}
-
-			// Train
-			for (Station station : stations) {
-				try {
-					MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
-					reqParams.put("mapid", String.valueOf(station.getId()));
-					String xmlRes = cta.connect(CtaRequestType.TRAIN_ARRIVALS, reqParams);
-					Xml xml = new Xml();
-					SparseArray<TrainArrival> temp = xml.parseArrivals(xmlRes, DataHolder.getInstance().getTrainData());
-					for (int j = 0; j < temp.size(); j++) {
-						trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
-					}
-				} catch (ConnectException e) {
-					Log.e(TAG, e.getMessage(), e);
-				} catch (ParserException e) {
-					Log.e(TAG, e.getMessage(), e);
-				}
-			}
-			// Bike
-			DivvyConnect connect = DivvyConnect.getInstance();
-			try {
-				Json json = new Json();
-				String content = connect.connect();
-				List<BikeStation> bikeStationUpdated = json.parseStations(content);
-				for (BikeStation station : bikeStationUpdated) {
-					if (bikeStationsTemp.contains(station)) {
-						bikeStationsRes.add(station);
-					}
-				}
-				Collections.sort(bikeStationsRes, Util.BIKE_COMPARATOR_NAME);
-			} catch (ConnectException e) {
-				Log.e(TAG, e.getMessage(), e);
-			} catch (ParserException e) {
-				Log.e(TAG, e.getMessage(), e);
 			}
 
 			return null;
@@ -436,9 +457,20 @@ public class NearbyFragment extends Fragment {
 				position.setLatitude(latitude);
 				position.setLongitude(longitude);
 
-				busStops = busData.readNearbyStops(position);
-				trainStations = trainData.readNearbyStation(position);
-				bikeStations = BikeStation.readNearbyStation(bikeStations, position);
+				SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mActivity);
+				boolean loadTrain = sharedPref.getBoolean("cta_train", true);
+				boolean loadBus = sharedPref.getBoolean("cta_bus", true);
+				boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
+
+				if (loadBus) {
+					busStops = busData.readNearbyStops(position);
+				}
+				if (loadTrain) {
+					trainStations = trainData.readNearbyStation(position);
+				}
+				if (loadBike) {
+					bikeStations = BikeStation.readNearbyStation(bikeStations, position);
+				}
 			}
 			return null;
 		}
@@ -516,7 +548,7 @@ public class NearbyFragment extends Fragment {
 			latLng = CHICAGO;
 			map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
 		}
-		//map.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
+		// map.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
 	}
 
 	/**
@@ -636,9 +668,14 @@ public class NearbyFragment extends Fragment {
 	 * Reload data
 	 */
 	public final void reloadData() {
-		map.clear();
-		showProgress(true);
-		nearbyContainer.setVisibility(View.GONE);
-		new LoadNearby().execute();
+		if (Util.isNetworkAvailable()) {
+			map.clear();
+			showProgress(true);
+			nearbyContainer.setVisibility(View.GONE);
+			new LoadNearby().execute();
+		} else {
+			Toast.makeText(mActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
+			showProgress(false);
+		}
 	}
 }

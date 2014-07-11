@@ -66,34 +66,51 @@ public final class Preferences {
 		return res;
 	}
 
-	public static final void saveBikeFavorites(final String name, final List<Integer> favorites) {
+	public static final void saveBikeFavorites(final String name, final List<String> favorites) {
 		Context context = ChicagoTracker.getAppContext();
 		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
 		Set<String> set = new LinkedHashSet<String>();
-		for (Integer fav : favorites) {
+		for (String fav : favorites) {
 			set.add(fav.toString());
 		}
-		Log.v(TAG, "Put bike favorites: " + favorites.toString());
+		Log.v(TAG, "Put bike favorites: " + set.toString());
 		editor.putStringSet(name, set);
 		editor.commit();
 	}
 
-	public static final List<Integer> getBikeFavorites(final String name) {
+	public static final List<String> getBikeFavorites(final String name) {
 		Context context = ChicagoTracker.getAppContext();
 		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
 		Set<String> setPref = sharedPref.getStringSet(name, null);
-		List<Integer> favorites = new ArrayList<Integer>();
+		List<String> favorites = new ArrayList<String>();
 		if (setPref != null) {
 			Iterator<String> it = setPref.iterator();
 			while (it.hasNext()) {
 				String value = it.next();
-				favorites.add(Integer.valueOf(value));
+				favorites.add(value);
 			}
 		}
 		Collections.sort(favorites);
 		Log.v(TAG, "Read bike favorites : " + favorites);
 		return favorites;
+	}
+	
+	public static final void addBikeRouteNameMapping(final String bikeId, final String bikeName){
+		Context context = ChicagoTracker.getAppContext();
+		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BIKE_NAME_MAPPING, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = sharedPref.edit();
+		editor.putString(bikeId, bikeName);
+		Log.v(TAG, "Add bike name mapping : " + bikeId + " => " + bikeName);
+		editor.commit();
+	}
+	
+	public static final String getBikeRouteNameMapping(final String bikeId){
+		Context context = ChicagoTracker.getAppContext();
+		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BIKE_NAME_MAPPING, Context.MODE_PRIVATE);
+		String bikeName = sharedPref.getString(bikeId, null);
+		Log.v(TAG, "Get bike name mapping : " + bikeId + " => " + bikeName);
+		return bikeName;
 	}
 
 	/**
@@ -158,6 +175,40 @@ public final class Preferences {
 		});
 		Log.v(TAG, "Read bus favorites : " + favorites.toString());
 		return favorites;
+	}
+	
+	public static final void addBusRouteNameMapping(final String busStopId, final String routeName){
+		Context context = ChicagoTracker.getAppContext();
+		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = sharedPref.edit();
+		editor.putString(busStopId, routeName);
+		Log.v(TAG, "Add bus route name mapping : " + busStopId + " => " + routeName);
+		editor.commit();
+	}
+	
+	public static final String getBusRouteNameMapping(final String busStopId){
+		Context context = ChicagoTracker.getAppContext();
+		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING, Context.MODE_PRIVATE);
+		String routeName = sharedPref.getString(busStopId, null);
+		Log.v(TAG, "Get bus route name mapping : " + busStopId + " => " + routeName);
+		return routeName;
+	}
+	
+	public static final void addBusStopNameMapping(final String busStopId, final String stopName){
+		Context context = ChicagoTracker.getAppContext();
+		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = sharedPref.edit();
+		editor.putString(busStopId, stopName);
+		Log.v(TAG, "Add bus stop name mapping : " + busStopId + " => " + stopName);
+		editor.commit();
+	}
+	
+	public static final String getBusStopNameMapping(final String busStopId){
+		Context context = ChicagoTracker.getAppContext();
+		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING, Context.MODE_PRIVATE);
+		String stopName = sharedPref.getString(busStopId, null);
+		Log.v(TAG, "Get bus stop name mapping : " + busStopId + " => " + stopName);
+		return stopName;
 	}
 
 	/**

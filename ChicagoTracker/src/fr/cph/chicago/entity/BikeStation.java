@@ -18,9 +18,9 @@ public final class BikeStation implements Parcelable {
 	/** Station name **/
 	private String name;
 	/** Available docks **/
-	private int availableDocks;
+	private Integer availableDocks;
 	/** Total docks **/
-	private int totalDocks;
+	private Integer totalDocks;
 	/** The position **/
 	private Position position;
 	/** Status value **/
@@ -28,7 +28,7 @@ public final class BikeStation implements Parcelable {
 	/** Status key **/
 	private String statusKey;
 	/** Available bikes **/
-	private int availableBikes;
+	private Integer availableBikes;
 	/** Street address 1 **/
 	private String stAddress1;
 	/** Street address 2 **/
@@ -76,19 +76,19 @@ public final class BikeStation implements Parcelable {
 		this.name = name;
 	}
 
-	public final int getAvailableDocks() {
+	public final Integer getAvailableDocks() {
 		return availableDocks;
 	}
 
-	public final void setAvailableDocks(final int availableDocks) {
+	public final void setAvailableDocks(final Integer availableDocks) {
 		this.availableDocks = availableDocks;
 	}
 
-	public final int getTotalDocks() {
+	public final Integer getTotalDocks() {
 		return totalDocks;
 	}
 
-	public final void setTotalDocks(final int totalDocks) {
+	public final void setTotalDocks(final Integer totalDocks) {
 		this.totalDocks = totalDocks;
 	}
 
@@ -116,11 +116,11 @@ public final class BikeStation implements Parcelable {
 		this.statusKey = statusKey;
 	}
 
-	public final int getAvailableBikes() {
+	public final Integer getAvailableBikes() {
 		return availableBikes;
 	}
 
-	public final void setAvailableBikes(final int availableBikes) {
+	public final void setAvailableBikes(final Integer availableBikes) {
 		this.availableBikes = availableBikes;
 	}
 

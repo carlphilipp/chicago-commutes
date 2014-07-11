@@ -25,12 +25,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.activity.TrainStationActivity;
 import fr.cph.chicago.adapter.TrainStationAdapter;
 import fr.cph.chicago.entity.enumeration.TrainLine;
+import fr.cph.chicago.util.Util;
 
 /**
  * Train Fragment
@@ -41,8 +43,6 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 public final class TrainFragment extends Fragment {
 	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
-	/** The activity **/
-	private MainActivity mActivity;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -61,7 +61,6 @@ public final class TrainFragment extends Fragment {
 	@Override
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		ChicagoTracker.checkData(mActivity);
 	}
 
 	@Override
@@ -73,12 +72,16 @@ public final class TrainFragment extends Fragment {
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
-				Intent intent = new Intent(TrainFragment.this.getView().getContext(), TrainStationActivity.class);
-				Bundle extras = new Bundle();
-				String line = TrainLine.values()[position].toString();
-				extras.putString("line", line);
-				intent.putExtras(extras);
-				startActivity(intent);
+				if (Util.isNetworkAvailable()) {
+					Intent intent = new Intent(TrainFragment.this.getView().getContext(), TrainStationActivity.class);
+					Bundle extras = new Bundle();
+					String line = TrainLine.values()[position].toString();
+					extras.putString("line", line);
+					intent.putExtras(extras);
+					startActivity(intent);
+				} else {
+					Toast.makeText(ChicagoTracker.getAppContext(), "No network connection detected!", Toast.LENGTH_SHORT).show();
+				}
 			}
 		});
 		return rootView;
@@ -92,7 +95,7 @@ public final class TrainFragment extends Fragment {
 	@Override
 	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
-		mActivity = (MainActivity) activity;
-		((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
+		MainActivity mActivity = (MainActivity) activity;
+		mActivity.onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 }

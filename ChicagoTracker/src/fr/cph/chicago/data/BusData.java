@@ -183,6 +183,15 @@ public class BusData {
 		}
 		return result;
 	}
+	
+	public final boolean containsRoute(final String routeId){
+		for (BusRoute br : routes) {
+			if (br.getId().equals(routeId)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * Load from CTA API a bus stop list

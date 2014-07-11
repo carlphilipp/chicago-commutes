@@ -32,6 +32,7 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.SearchView;
+import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.adapter.SearchAdapter;
@@ -42,6 +43,7 @@ import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.enumeration.TrainLine;
+import fr.cph.chicago.util.Util;
 
 /**
  * Activity that display search result
@@ -55,22 +57,26 @@ public class SearchActivity extends ListActivity {
 	private Menu menu;
 	/** The adapter **/
 	private SearchAdapter ada;
-	
+
 	List<BikeStation> bikeStations;
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		ChicagoTracker.checkData(this);
+		ChicagoTracker.checkTrainData(this);
+		ChicagoTracker.checkBusData(this);
 		if (!this.isFinishing()) {
 			setContentView(R.layout.activity_search);
-
 			FrameLayout container = (FrameLayout) findViewById(R.id.container);
 			container.getForeground().setAlpha(0);
-			ada = new SearchAdapter(this, container);
-			bikeStations = getIntent().getExtras().getParcelableArrayList("bikeStations");
-			handleIntent(getIntent());
-			setListAdapter(ada);
+			if (Util.isNetworkAvailable()) {
+				ada = new SearchAdapter(this, container);
+				bikeStations = getIntent().getExtras().getParcelableArrayList("bikeStations");
+				handleIntent(getIntent());
+				setListAdapter(ada);
+			} else {
+				Toast.makeText(ChicagoTracker.getAppContext(), "No network connection detected!", Toast.LENGTH_SHORT).show();
+			}
 
 			// Preventing keyboard from moving background when showing up
 			getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
@@ -159,18 +165,18 @@ public class SearchActivity extends ListActivity {
 				}
 			}
 
-			//List<BikeStation> bikeStations = intent.getExtras().getParcelableArrayList("bikeStations");
 			List<BikeStation> foundBikeStations = new ArrayList<BikeStation>();
-			for (BikeStation bikeStation : bikeStations) {
-				boolean res = StringUtils.containsIgnoreCase(bikeStation.getName(), query.trim())
-						|| StringUtils.containsIgnoreCase(bikeStation.getStAddress1(), query.trim());
-				if (res) {
-					if (!foundBikeStations.contains(bikeStation)) {
-						foundBikeStations.add(bikeStation);
+			if (bikeStations != null) {
+				for (BikeStation bikeStation : bikeStations) {
+					boolean res = StringUtils.containsIgnoreCase(bikeStation.getName(), query.trim())
+							|| StringUtils.containsIgnoreCase(bikeStation.getStAddress1(), query.trim());
+					if (res) {
+						if (!foundBikeStations.contains(bikeStation)) {
+							foundBikeStations.add(bikeStation);
+						}
 					}
 				}
 			}
-
 			ada.updateData(foundStations, foundBusRoutes, foundBikeStations);
 			ada.notifyDataSetChanged();
 		}

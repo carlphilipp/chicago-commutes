@@ -31,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
@@ -62,12 +63,10 @@ public class FavoritesFragment extends Fragment {
 	private List<BusArrival> busArrivals;
 	/** Train arrivals **/
 	private SparseArray<TrainArrival> trainArrivals;
-
 	/** List of bus arrivals **/
 	private List<BikeStation> bikeStations;
 	/** Welcome layout **/
 	private RelativeLayout welcome;
-
 	/** Root view **/
 	private View rootView;
 
@@ -97,7 +96,10 @@ public class FavoritesFragment extends Fragment {
 			busArrivals = savedInstanceState.getParcelableArrayList("busArrivals");
 			trainArrivals = savedInstanceState.getSparseParcelableArray("trainArrivals");
 			bikeStations = savedInstanceState.getParcelableArrayList("bikeStations");
-			ChicagoTracker.checkData(mActivity);
+			boolean boolTrain = ChicagoTracker.checkTrainData(mActivity);
+			if (boolTrain) {
+				ChicagoTracker.checkBusData(mActivity);
+			}
 		}
 		if (bikeStations == null) {
 			bikeStations = new ArrayList<BikeStation>();
@@ -188,17 +190,20 @@ public class FavoritesFragment extends Fragment {
 	 *            the bus arrivals list
 	 */
 	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals,
-			final List<BikeStation> bikeStations, final Boolean trainBoolean, final Boolean busBoolean, final Boolean bikeBoolean) {
-		// startRefreshTask();
-		// Put into intent new bike stations data
-		mActivity.getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
-		mActivity.onNewIntent(mActivity.getIntent());
+			final List<BikeStation> bikeStations, final Boolean trainBoolean, final Boolean busBoolean, final Boolean bikeBoolean,
+			final Boolean networkAvailable) {
+		if (!networkAvailable) {
+			Toast.makeText(mActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
+		} else {
+			// Put into intent new bike stations data
+			mActivity.getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
+			mActivity.onNewIntent(mActivity.getIntent());
 
-		ada.setArrivalsAndBikeStations(trainArrivals, busArrivals, bikeStations);
-		ada.refreshUpdated();
-		ada.refreshUpdatedView();
-		ada.notifyDataSetChanged();
-
+			ada.setArrivalsAndBikeStations(trainArrivals, busArrivals, bikeStations);
+			ada.refreshUpdated();
+			ada.refreshUpdatedView();
+			ada.notifyDataSetChanged();
+		}
 		// Highlight background
 		rootView.setBackgroundResource(R.drawable.highlight_selector);
 		rootView.postDelayed(new Runnable() {
@@ -217,6 +222,12 @@ public class FavoritesFragment extends Fragment {
 	 */
 	public final void displayError(TrackerException trackerException) {
 		ChicagoTracker.displayError(mActivity, trackerException);
+	}
+
+	public final void setBikeStations(List<BikeStation> bikeStations) {
+		this.bikeStations = bikeStations;
+		ada.setBikeStations(bikeStations);
+		ada.notifyDataSetChanged();
 	}
 
 	/**
