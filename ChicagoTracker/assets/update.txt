@@ -1,3 +1,11 @@
+3.0.0
+/!\ For a better UI experience, please re-add your bus favorites
+Faster loading time
+Updated left panel
+Added settings
+Better bus favorites
+Added google map features for bus lines
+
 2.2.5
 Fixed issue on stop
 
@@ -6,19 +14,3 @@ Modified left panel with icons and different colors
 
 2.2.3
 Modified the way error are handled
-
-2.2.2
-Handle new CTA data
-Added persistence of bus stop
-Modified default preference menu
-User should remove and add his favorites for a better experience
-
-2.2.1
-Added settings menu
-Ability to select data to load/refresh
-
-2.2.0
-Improved the way data are loaded
-
-2.1.6
-Removed Google Map animation
