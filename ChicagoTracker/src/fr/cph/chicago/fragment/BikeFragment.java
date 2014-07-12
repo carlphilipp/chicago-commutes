@@ -132,7 +132,7 @@ public class BikeFragment extends Fragment {
 				SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mActivity);
 				boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
 				if (loadBike) {
-					if (bikeStations == null && bikeStations.size() != 0) {
+					if (bikeStations == null || bikeStations.size() != 0) {
 						loadList();
 					} else {
 						loadingLayout.setVisibility(RelativeLayout.VISIBLE);
@@ -184,6 +184,8 @@ public class BikeFragment extends Fragment {
 		listView.setVisibility(ListView.VISIBLE);
 		filterView.setVisibility(ListView.VISIBLE);
 		loadingLayout.setVisibility(RelativeLayout.INVISIBLE);
+		RelativeLayout errorLayout = (RelativeLayout) rootView.findViewById(R.id.error_layout);
+		errorLayout.setVisibility(RelativeLayout.INVISIBLE);
 	}
 
 	@Override
@@ -207,11 +209,7 @@ public class BikeFragment extends Fragment {
 				Bundle bundle = mActivity.getIntent().getExtras();
 				List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
 
-				boolean loadData = false;
-				if (!loadData && loadBike && bikeStations == null) {
-					loadData = true;
-				}
-				if (loadData) {
+				if (bikeStations == null) {
 					mActivity.startRefreshAnimation();
 					mActivity.new LoadData().execute();
 				}
@@ -241,14 +239,14 @@ public class BikeFragment extends Fragment {
 			if (bikeStationsBundle == null) {
 				return false;
 			} else {
-				return bikeStationsBundle.size() == 0;
+				return bikeStationsBundle.size() != 0;
 			}
 
 		}
 
 		@Override
 		protected final void onPostExecute(final Boolean result) {
-			if (result) {
+			if (!result) {
 				loadError();
 			} else {
 				loadList();
@@ -258,8 +256,8 @@ public class BikeFragment extends Fragment {
 
 	private final void loadError() {
 		loadingLayout.setVisibility(RelativeLayout.INVISIBLE);
-		RelativeLayout loadingLayout = (RelativeLayout) rootView.findViewById(R.id.error_layout);
-		loadingLayout.setVisibility(RelativeLayout.VISIBLE);
+		RelativeLayout errorLayout = (RelativeLayout) rootView.findViewById(R.id.error_layout);
+		errorLayout.setVisibility(RelativeLayout.VISIBLE);
 	}
 
 	private final class DivvyAsyncTask extends AsyncTask<Void, Void, List<BikeStation>> {

@@ -12,8 +12,7 @@
   distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
-  limitations under the License.
-
+  limitations under the License.
 -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -21,7 +20,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_selector" >
-    
+
+    <RelativeLayout
+        android:id="@+id/error_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:visibility="invisible" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:text="@string/progress_error"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/red"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
     <RelativeLayout
         android:id="@+id/desactivated_layout"
         android:layout_width="fill_parent"
@@ -40,27 +61,6 @@
             android:text="@string/alert_fragment_notloaded"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/orange"
-            android:textSize="22sp"
-            android:textStyle="bold" />
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/error_layout"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:visibility="invisible" >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:text="@string/progress_error"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/red"
             android:textSize="22sp"
             android:textStyle="bold" />
     </RelativeLayout>
