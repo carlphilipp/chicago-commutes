@@ -5,12 +5,3 @@ Updated left panel
 Added settings
 Better bus favorites
 Added google map features for bus lines
-
-2.2.5
-Fixed issue on stop
-
-2.2.4
-Modified left panel with icons and different colors
-
-2.2.3
-Modified the way error are handled
