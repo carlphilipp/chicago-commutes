@@ -237,7 +237,13 @@ public class BikeFragment extends Fragment {
 					Log.e(TAG, e.getMessage(), e);
 				}
 			}
-			return bundle.getParcelableArrayList("bikeStations").size() == 0;
+			List<BikeStation> bikeStationsBundle = bundle.getParcelableArrayList("bikeStations");
+			if (bikeStationsBundle == null) {
+				return false;
+			} else {
+				return bikeStationsBundle.size() == 0;
+			}
+
 		}
 
 		@Override

@@ -1,7 +1,3 @@
-3.0.1
-Changed in menu Map to 'L' system map
-Modified favorites logo to bigger one
-
 3.0.0
 /!\ For a better UI experience, please re-add your bus favorites
 Faster loading time
