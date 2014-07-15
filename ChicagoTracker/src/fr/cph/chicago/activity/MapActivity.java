@@ -396,7 +396,9 @@ public class MapActivity extends Activity {
 
 				LatLng point = new LatLng(bus.getPosition().getLatitude(), bus.getPosition().getLongitude());
 				Marker marker = map.addMarker(new MarkerOptions().position(point).title(bus.getId() + "").snippet(bus.getId() + "")
-						.icon(BitmapDescriptorFactory.fromBitmap(bhalfsize)).anchor(0.5f, 0.5f).rotation(bus.getHeading()));
+						.icon(BitmapDescriptorFactory.fromBitmap(bhalfsize))
+						.anchor(0.5f, 0.5f).rotation(bus.getHeading())
+						.flat(true));
 				markers.add(marker);
 			}
 		}
