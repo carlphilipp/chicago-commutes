@@ -1,3 +1,6 @@
+3.0.1
+Minor bug fixes
+
 3.0.0
 /!\ For a better UI experience, please re-add your bus favorites
 Faster loading time
