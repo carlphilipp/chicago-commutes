@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -150,8 +151,8 @@ public final class BusAdapter extends BaseAdapter {
 
 		return convertView;
 	}
-	
-	public void setRoutes(List<BusRoute> busRoutes){
+
+	public void setRoutes(List<BusRoute> busRoutes) {
 		this.busRoutes = busRoutes;
 	}
 
@@ -206,7 +207,7 @@ public final class BusAdapter extends BaseAdapter {
 		protected final void onPostExecute(final BusDirections result) {
 			activity.stopRefreshAnimation();
 			if (trackerException == null) {
-				PopupMenu popupMenu = new PopupMenu(ChicagoTracker.getAppContext(), convertView);
+				final PopupMenu popupMenu = new PopupMenu(ChicagoTracker.getAppContext(), convertView);
 				final List<BusDirection> lBus = result.getlBusDirection();
 				for (int i = 0; i < lBus.size(); i++) {
 					popupMenu.getMenu().add(Menu.NONE, i, Menu.NONE, lBus.get(i).toString());
@@ -233,8 +234,12 @@ public final class BusAdapter extends BaseAdapter {
 						activity.stopRefreshAnimation();
 					}
 				});
-				firstLayout.getForeground().setAlpha(210);
-				popupMenu.show();
+				new Handler().postDelayed(new Runnable() {
+					public void run() {
+						firstLayout.getForeground().setAlpha(210);
+						popupMenu.show();
+					}
+				}, 50);
 			} else {
 				ChicagoTracker.displayError(activity, trackerException);
 			}
