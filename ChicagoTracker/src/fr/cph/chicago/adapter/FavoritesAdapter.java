@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -37,6 +36,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils.TruncateAt;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -385,13 +385,14 @@ public final class FavoritesAdapter extends BaseAdapter {
 										 */
 										final List<BusArrival> busArrivals = value.entrySet().iterator().next().getValue();
 										final List<String> menuTitles = new ArrayList<String>();
-										for(BusArrival arrival : busArrivals){
-											menuTitles.add("See bus map - " + arrival.getTimeLeftDueDelay() +"");
+										for (BusArrival arrival : busArrivals) {
+											menuTitles.add("Follow bus - " + arrival.getTimeLeftDueDelay() + "");
 										}
+										menuTitles.add("Follow all buses on line " + busRoute.getId());
 										PopupMenu popupMenu = new PopupMenu(context, v);
 										popupMenu.getMenu().add(Menu.NONE, 0, Menu.NONE, "Open details");
 										for (int i = 0; i < menuTitles.size(); i++) {
-											popupMenu.getMenu().add(Menu.NONE, i+1, Menu.NONE, menuTitles.get(i));
+											popupMenu.getMenu().add(Menu.NONE, i + 1, Menu.NONE, menuTitles.get(i));
 										}
 										popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 											@Override
@@ -402,21 +403,23 @@ public final class FavoritesAdapter extends BaseAdapter {
 													new BusBoundAsyncTask().execute(busArrival.getRouteId(), busArrival.getRouteDirection(),
 															String.valueOf(busArrival.getStopId()), busRoute.getName());
 													return false;
-												}
-												for(int i = 0; i < busArrivals.size() ; i++){
-													if (item.getItemId() == i+1) {
-														Toast.makeText(activity, "" + busArrivals.get(i).getTimeLeftDueDelay() +" " + busArrivals.get(i).getBusId(), Toast.LENGTH_SHORT).show();
-														Intent intent = new Intent(ChicagoTracker.getAppContext(), MapActivity.class);
-														Bundle extras = new Bundle();
-														extras.putInt("busId", busArrivals.get(i).getBusId());
-														//extras.putString("busStopName", busStop.getName());
-														
+												} else if (item.getItemId() == busArrivals.size()) {
 
-														intent.putExtras(extras);
-														//intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-														activity.startActivity(intent);
-														activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
-														return false;
+												} else {
+													for (int i = 0; i < busArrivals.size(); i++) {
+														if (item.getItemId() == i + 1) {
+															Toast.makeText(
+																	activity,
+																	"" + busArrivals.get(i).getTimeLeftDueDelay() + " "
+																			+ busArrivals.get(i).getBusId(), Toast.LENGTH_SHORT).show();
+															Intent intent = new Intent(ChicagoTracker.getAppContext(), MapActivity.class);
+															Bundle extras = new Bundle();
+															extras.putInt("busId", busArrivals.get(i).getBusId());
+															intent.putExtras(extras);
+															activity.startActivity(intent);
+															activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+															return false;
+														}
 													}
 												}
 												return false;
@@ -431,11 +434,17 @@ public final class FavoritesAdapter extends BaseAdapter {
 										firstLayout.getForeground().setAlpha(210);
 										popupMenu.show();
 									} else {
-										// TODO: handle that case, multiple bound for one stop
-										List<String> menuTitles = new ArrayList<String>();
+										final List<String> menuTitles = new ArrayList<String>();
 										for (Entry<String, List<BusArrival>> entry : value.entrySet()) {
-											menuTitles.add(entry.getKey());
+											menuTitles.add("Open details (" + entry.getKey() + ")");
 										}
+										for (Entry<String, List<BusArrival>> entry : value.entrySet()) {
+											List<BusArrival> arrivals = entry.getValue();
+											for (BusArrival arrival : arrivals) {
+												menuTitles.add("Follow bus - " + arrival.getTimeLeftDueDelay() + " (" + entry.getKey() + ")");
+											}
+										}
+										menuTitles.add("Follow all buses on line " + busRoute.getId());
 										PopupMenu popupMenu = new PopupMenu(context, v);
 										for (int i = 0; i < menuTitles.size(); i++) {
 											popupMenu.getMenu().add(Menu.NONE, i, Menu.NONE, menuTitles.get(i));
@@ -443,21 +452,43 @@ public final class FavoritesAdapter extends BaseAdapter {
 										popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 											@Override
 											public boolean onMenuItemClick(MenuItem item) {
-												Iterator<Entry<String, List<BusArrival>>> iterator = value.entrySet().iterator();
-												if (item.getItemId() == 1) {
-													iterator.next();
-												} else if (item.getItemId() == 2) {
-													iterator.next();
-													iterator.next();
-												} else if (item.getItemId() == 3) {
-													iterator.next();
-													iterator.next();
-													iterator.next();
+												int i = 0;
+												Log.i("Favorites adapter", "i: " + i);
+												for (Entry<String, List<BusArrival>> entry : value.entrySet()) {
+													BusArrival busArrival = entry.getValue().get(0);
+													if (item.getItemId() == i) {
+														activity.startRefreshAnimation();
+														new BusBoundAsyncTask().execute(busArrival.getRouteId(), busArrival.getRouteDirection(),
+																String.valueOf(busArrival.getStopId()), busRoute.getName());
+														return false;
+													}
+													i++;
 												}
-												BusArrival busArrival = iterator.next().getValue().get(0);
-												new BusBoundAsyncTask().execute(busArrival.getRouteId(), busArrival.getRouteDirection(),
-														String.valueOf(busArrival.getStopId()), busRoute.getName());
-												activity.startRefreshAnimation();
+												Log.i("Favorites adapter", "i: " + i);
+												for (Entry<String, List<BusArrival>> entry : value.entrySet()) {
+													List<BusArrival> arrivals = entry.getValue();
+													for (BusArrival arrival : arrivals) {
+														if (item.getItemId() == i) {
+															Intent intent = new Intent(ChicagoTracker.getAppContext(), MapActivity.class);
+															Bundle extras = new Bundle();
+															extras.putInt("busId", arrival.getBusId());
+															extras.putString("busRouteId", arrival.getRouteId());
+															extras.putString("bound", entry.getKey());
+															intent.putExtras(extras);
+															activity.startActivity(intent);
+															activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+															Toast.makeText(activity, "" + arrival.getTimeLeftDueDelay() + " " + arrival.getBusId(),
+																	Toast.LENGTH_SHORT).show();
+															return false;
+														}
+														i++;
+													}
+												}
+												
+												Log.i("Favorites adapter", "i: " + i);
+												if (item.getItemId() == i + 1) {
+													Toast.makeText(activity, "Show all", Toast.LENGTH_SHORT).show();
+												}
 												return false;
 											}
 										});

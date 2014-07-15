@@ -2,6 +2,7 @@ package fr.cph.chicago.activity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.map.MultiValueMap;
@@ -12,6 +13,9 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -22,9 +26,11 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -32,11 +38,14 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.entity.Bus;
+import fr.cph.chicago.entity.Pattern;
+import fr.cph.chicago.entity.PatternPoint;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
@@ -50,8 +59,12 @@ public class MapActivity extends Activity {
 	private MapFragment mapFragment;
 	/** The map **/
 	private GoogleMap map;
-
+	/** Bus id **/
 	private Integer busId;
+	/** Bus route id **/
+	private String busRouteId;
+	/** Bound **/
+	private String bound;
 
 	@Override
 	public final void onCreate(final Bundle savedInstanceState) {
@@ -59,9 +72,13 @@ public class MapActivity extends Activity {
 		if (!this.isFinishing()) {
 			setContentView(R.layout.activity_map);
 			busId = getIntent().getExtras().getInt("busId");
+			busRouteId = getIntent().getExtras().getString("busRouteId");
+			bound = getIntent().getExtras().getString("bound");
+			
 			new LoadCurrentPosition().execute();
 			new LoadBusPosition().execute();
-
+			new LoadPattern().execute();
+			
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 		}
 	}
@@ -82,7 +99,14 @@ public class MapActivity extends Activity {
 	@Override
 	public final void onStop() {
 		super.onStop();
-		map = null;
+		//map = null;
+		Log.i(TAG, "onStop");
+	}
+	
+	@Override
+	public final void onDestroy() {
+		super.onDestroy();
+		Log.i(TAG, "onDestroy");
 	}
 
 	@Override
@@ -91,6 +115,9 @@ public class MapActivity extends Activity {
 		if (map == null) {
 			map = mapFragment.getMap();
 		}
+		new LoadCurrentPosition().execute();
+		new LoadBusPosition().execute();
+		new LoadPattern().execute();
 	}
 
 	@Override
@@ -273,6 +300,69 @@ public class MapActivity extends Activity {
 			}.start();
 		}
 	}
+	
+	/**
+	 * Load nearby data
+	 * 
+	 * @author Carl-Philipp Harmant
+	 * 
+	 */
+	private final class LoadPattern extends AsyncTask<Void, Void, Pattern> implements LocationListener {
+
+		private Pattern pattern;
+
+		@Override
+		protected final Pattern doInBackground(final Void... params) {
+			CtaConnect connect = CtaConnect.getInstance();
+			MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
+			connectParam.put("rt", busRouteId);
+			String boundIgnoreCase = bound.toLowerCase(Locale.US);
+			try {
+				String content = connect.connect(CtaRequestType.BUS_PATTERN, connectParam);
+				Xml xml = new Xml();
+				List<Pattern> patterns = xml.parsePatterns(content);
+				for (Pattern pattern : patterns) {
+					String directionIgnoreCase = pattern.getDirection().toLowerCase(Locale.US);
+					if (pattern.getDirection().equals(bound) || boundIgnoreCase.indexOf(directionIgnoreCase) != -1) {
+						this.pattern = pattern;
+						break;
+					}
+				}
+			} catch (ConnectException e) {
+				Log.e(TAG, e.getMessage(), e);
+			} catch (ParserException e) {
+				Log.e(TAG, e.getMessage(), e);
+			}
+			return this.pattern;
+		}
+
+		@Override
+		protected final void onPostExecute(final Pattern result) {
+			if (result != null) {
+				//int center = result.getPoints().size() / 2;
+				//centerMap(result.getPoints().get(center).getPosition());
+				drawPattern(result);
+			} else {
+				Toast.makeText(MapActivity.this, "Sorry, could not load the path!", Toast.LENGTH_SHORT).show();
+			}
+		}
+
+		@Override
+		public final void onLocationChanged(final Location location) {
+		}
+
+		@Override
+		public final void onProviderDisabled(final String provider) {
+		}
+
+		@Override
+		public final void onProviderEnabled(final String provider) {
+		}
+
+		@Override
+		public final void onStatusChanged(final String provider, final int status, final Bundle extras) {
+		}
+	}
 
 	/**
 	 * Center map
@@ -301,11 +391,53 @@ public class MapActivity extends Activity {
 		if (map != null) {
 			final List<Marker> markers = new ArrayList<Marker>();
 			for (Bus bus : buses) {
+				Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.bus_gta_north);
+				Bitmap bhalfsize = Bitmap.createScaledBitmap(icon, icon.getWidth() / 4, icon.getHeight() / 4, false);
+
 				LatLng point = new LatLng(bus.getPosition().getLatitude(), bus.getPosition().getLongitude());
 				Marker marker = map.addMarker(new MarkerOptions().position(point).title(bus.getId() + "").snippet(bus.getId() + "")
-						.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+						.icon(BitmapDescriptorFactory.fromBitmap(bhalfsize)).anchor(0.5f, 0.5f).rotation(bus.getHeading()));
 				markers.add(marker);
 			}
+		}
+	}
+	
+	private void drawPattern(final Pattern pattern) {
+		if (map != null) {
+			final List<Marker> markers = new ArrayList<Marker>();
+			PolylineOptions poly = new PolylineOptions();
+			poly.geodesic(true).color(Color.BLUE);
+			for (PatternPoint patternPoint : pattern.getPoints()) {
+				LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
+				poly.add(point);
+				if (patternPoint.getStopId() != null) {
+					Marker marker = map.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName())
+							.snippet(patternPoint.getSequence() + "").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+					markers.add(marker);
+					marker.setVisible(false);
+				}
+			}
+			map.addPolyline(poly);
+
+			map.setOnCameraChangeListener(new OnCameraChangeListener() {
+				private float currentZoom = -1;
+
+				@Override
+				public void onCameraChange(CameraPosition pos) {
+					if (pos.zoom != currentZoom) {
+						currentZoom = pos.zoom;
+						if (currentZoom >= 16) {
+							for (Marker marker : markers) {
+								marker.setVisible(true);
+							}
+						} else {
+							for (Marker marker : markers) {
+								marker.setVisible(false);
+							}
+						}
+					}
+				}
+			});
 		}
 	}
 
