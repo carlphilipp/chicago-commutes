@@ -28,7 +28,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.GoogleMapOptions;
@@ -65,6 +64,8 @@ public class MapActivity extends Activity {
 	private String busRouteId;
 	/** Bound **/
 	private String bound;
+	/** Markers **/
+	private List<Marker> markers;
 
 	@Override
 	public final void onCreate(final Bundle savedInstanceState) {
@@ -72,13 +73,18 @@ public class MapActivity extends Activity {
 		if (!this.isFinishing()) {
 			setContentView(R.layout.activity_map);
 			busId = getIntent().getExtras().getInt("busId");
+			Log.i(TAG, "busId: " + busId);
 			busRouteId = getIntent().getExtras().getString("busRouteId");
+			Log.i(TAG, "busRouteId: " + busRouteId);
 			bound = getIntent().getExtras().getString("bound");
-			
+			Log.i(TAG, "Bound: " + bound);
+
+			markers = new ArrayList<Marker>();
+
 			new LoadCurrentPosition().execute();
-			new LoadBusPosition().execute();
+			new LoadBusPosition().execute(new Boolean[] { true });
 			new LoadPattern().execute();
-			
+
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 		}
 	}
@@ -99,10 +105,10 @@ public class MapActivity extends Activity {
 	@Override
 	public final void onStop() {
 		super.onStop();
-		//map = null;
+		// map = null;
 		Log.i(TAG, "onStop");
 	}
-	
+
 	@Override
 	public final void onDestroy() {
 		super.onDestroy();
@@ -116,7 +122,7 @@ public class MapActivity extends Activity {
 			map = mapFragment.getMap();
 		}
 		new LoadCurrentPosition().execute();
-		new LoadBusPosition().execute();
+		new LoadBusPosition().execute(new Boolean[] { true });
 		new LoadPattern().execute();
 	}
 
@@ -146,20 +152,27 @@ public class MapActivity extends Activity {
 			return true;
 		case R.id.action_refresh:
 			new LoadCurrentPosition().execute();
-			new LoadBusPosition().execute();
+			new LoadBusPosition().execute(new Boolean[] { false });
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
 
-	private final class LoadBusPosition extends AsyncTask<Void, Void, List<Bus>> {
+	private final class LoadBusPosition extends AsyncTask<Boolean, Void, List<Bus>> {
+
+		private boolean centerMap;
 
 		@Override
-		protected List<Bus> doInBackground(Void... params) {
+		protected List<Bus> doInBackground(Boolean... params) {
+			centerMap = params[0];
 			List<Bus> buses = null;
 			CtaConnect connect = CtaConnect.getInstance();
 			MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
-			connectParam.put("vid", String.valueOf(busId));
+			if (busId != 0) {
+				connectParam.put("vid", String.valueOf(busId));
+			} else {
+				connectParam.put("rt", busRouteId);
+			}
 			try {
 				String content = connect.connect(CtaRequestType.BUS_VEHICLES, connectParam);
 				Xml xml = new Xml();
@@ -176,7 +189,9 @@ public class MapActivity extends Activity {
 		protected final void onPostExecute(final List<Bus> result) {
 			if (result != null) {
 				drawBuses(result);
-				centerMapOnBus(result);
+				if (centerMap) {
+					centerMapOnBus(result);
+				}
 			}
 		}
 	}
@@ -251,7 +266,10 @@ public class MapActivity extends Activity {
 
 		@Override
 		protected final void onPostExecute(final Void result) {
-			centerMap(position);
+			while (mapFragment.getMap() == null) {
+			}
+			map = mapFragment.getMap();
+			map.setMyLocationEnabled(true);
 			locationManager.removeUpdates(LoadCurrentPosition.this);
 		}
 
@@ -300,7 +318,7 @@ public class MapActivity extends Activity {
 			}.start();
 		}
 	}
-	
+
 	/**
 	 * Load nearby data
 	 * 
@@ -339,8 +357,6 @@ public class MapActivity extends Activity {
 		@Override
 		protected final void onPostExecute(final Pattern result) {
 			if (result != null) {
-				//int center = result.getPoints().size() / 2;
-				//centerMap(result.getPoints().get(center).getPosition());
 				drawPattern(result);
 			} else {
 				Toast.makeText(MapActivity.this, "Sorry, could not load the path!", Toast.LENGTH_SHORT).show();
@@ -364,46 +380,34 @@ public class MapActivity extends Activity {
 		}
 	}
 
-	/**
-	 * Center map
-	 * 
-	 * @param positon
-	 *            the position we want to center on
-	 */
-	private void centerMap(final Position positon) {
-		// Because the fragment can possibly not be ready
-		while (mapFragment.getMap() == null) {
-		}
-		map = mapFragment.getMap();
-		map.setMyLocationEnabled(true);
-	}
-
 	private void centerMapOnBus(List<Bus> result) {
-		Bus bus = result.get(0);
-		while (mapFragment.getMap() == null) {
-		}
-		map = mapFragment.getMap();
-		LatLng latLng = new LatLng(bus.getPosition().getLatitude(), bus.getPosition().getLongitude());
-		map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
+		/*
+		 * Bus bus = result.get(0); while (mapFragment.getMap() == null) { } map = mapFragment.getMap(); LatLng latLng = new
+		 * LatLng(bus.getPosition().getLatitude(), bus.getPosition().getLongitude()); map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
+		 */
 	}
 
 	private void drawBuses(final List<Bus> buses) {
 		if (map != null) {
-			final List<Marker> markers = new ArrayList<Marker>();
+			synchronized (markers) {
+				for (Marker marker : markers) {
+					marker.remove();
+					markers.remove(marker);
+				}
+			}
 			for (Bus bus : buses) {
-				Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.bus_gta_north);
+				Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.bus_gta);
 				Bitmap bhalfsize = Bitmap.createScaledBitmap(icon, icon.getWidth() / 4, icon.getHeight() / 4, false);
-
 				LatLng point = new LatLng(bus.getPosition().getLatitude(), bus.getPosition().getLongitude());
 				Marker marker = map.addMarker(new MarkerOptions().position(point).title(bus.getId() + "").snippet(bus.getId() + "")
-						.icon(BitmapDescriptorFactory.fromBitmap(bhalfsize))
-						.anchor(0.5f, 0.5f).rotation(bus.getHeading())
-						.flat(true));
-				markers.add(marker);
+						.icon(BitmapDescriptorFactory.fromBitmap(bhalfsize)).anchor(0.5f, 0.5f).rotation(bus.getHeading()).flat(true));
+				synchronized (markers) {
+					markers.add(marker);
+				}
 			}
 		}
 	}
-	
+
 	private void drawPattern(final Pattern pattern) {
 		if (map != null) {
 			final List<Marker> markers = new ArrayList<Marker>();
@@ -442,5 +446,4 @@ public class MapActivity extends Activity {
 			});
 		}
 	}
-
 }

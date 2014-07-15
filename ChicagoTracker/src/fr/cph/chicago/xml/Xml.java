@@ -702,6 +702,9 @@ public final class Xml {
 					tagName = parser.getName();
 					if (tagName.equals("vehicle")) {
 						bus = new Bus();
+					} else if (tagName.equals("error")) {
+						eventType = XmlPullParser.END_DOCUMENT;
+						break;
 					}
 				} else if (eventType == XmlPullParser.END_TAG) {
 					tagName = null;

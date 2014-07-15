@@ -16,7 +16,9 @@
 
 package fr.cph.chicago.entity;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -31,6 +33,8 @@ import fr.cph.chicago.entity.enumeration.PredictionType;
  * @version 1
  */
 public final class BusArrival implements Parcelable {
+	/** **/
+	public static String NO_SERVICE = "No service scheduled";
 	/** Timestamp **/
 	private Date timeStamp;
 	/** Error message **/
@@ -272,7 +276,7 @@ public final class BusArrival implements Parcelable {
 			long time = predictionTime.getTime() - timeStamp.getTime();
 			return String.format(Locale.ENGLISH, "%d min", TimeUnit.MILLISECONDS.toMinutes(time));
 		} else {
-			return "No service scheduled";
+			return NO_SERVICE;
 		}
 	}
 
@@ -428,4 +432,13 @@ public final class BusArrival implements Parcelable {
 		}
 	};
 
+	public static final List<BusArrival> getRealBusArrival(List<BusArrival> arrivals) {
+		List<BusArrival> res = new ArrayList<BusArrival>();
+		for (BusArrival arrival : arrivals) {
+			if (!arrival.getTimeLeft().equals(NO_SERVICE)) {
+				res.add(arrival);
+			}
+		}
+		return res;
+	}
 }

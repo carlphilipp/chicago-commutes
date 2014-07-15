@@ -83,6 +83,8 @@ import fr.cph.chicago.util.Util;
  * @version 1
  */
 public final class FavoritesAdapter extends BaseAdapter {
+	/** Tag **/
+	private static final String TAG = "FavoritesAdapter";
 	/** Main activity **/
 	private MainActivity activity;
 	/** The context **/
@@ -375,15 +377,8 @@ public final class FavoritesAdapter extends BaseAdapter {
 									Toast.makeText(activity, "No network connection detected!", Toast.LENGTH_LONG).show();
 								} else {
 									if (value.entrySet().size() == 1) {
-										/*
-										 * BusArrival busArrival =
-										 * value.entrySet().iterator().next().getValue().get(0);
-										 * activity.startRefreshAnimation(); new
-										 * BusBoundAsyncTask().execute(busArrival.getRouteId(),
-										 * busArrival.getRouteDirection(),
-										 * String.valueOf(busArrival.getStopId()), busRoute.getName());
-										 */
-										final List<BusArrival> busArrivals = value.entrySet().iterator().next().getValue();
+										final List<BusArrival> busArrivals = BusArrival.getRealBusArrival(value.entrySet().iterator().next()
+												.getValue());
 										final List<String> menuTitles = new ArrayList<String>();
 										for (BusArrival arrival : busArrivals) {
 											menuTitles.add("Follow bus - " + arrival.getTimeLeftDueDelay() + "");
@@ -397,14 +392,45 @@ public final class FavoritesAdapter extends BaseAdapter {
 										popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 											@Override
 											public boolean onMenuItemClick(MenuItem item) {
+												Log.i(TAG, "item: " + item.getItemId());
+												Log.i(TAG, "busArrivals.size " + busArrivals.size());
 												if (item.getItemId() == 0) {
 													BusArrival busArrival = value.entrySet().iterator().next().getValue().get(0);
 													activity.startRefreshAnimation();
 													new BusBoundAsyncTask().execute(busArrival.getRouteId(), busArrival.getRouteDirection(),
 															String.valueOf(busArrival.getStopId()), busRoute.getName());
 													return false;
-												} else if (item.getItemId() == busArrivals.size()) {
+												} else if (item.getItemId() == busArrivals.size() +1) {
+													
+													Intent intent = new Intent(ChicagoTracker.getAppContext(), MapActivity.class);
+													Bundle extras = new Bundle();
+													//extras.putInt("busId", busArrivals.get(i).getBusId());
+													extras.putString("busRouteId", busArrivals.get(0).getRouteId());
+													extras.putString("bound", busArrivals.get(0).getRouteDirection());
+													intent.putExtras(extras);
+													activity.startActivity(intent);
+													activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+													
+									/*				List<Integer> busIds = new ArrayList<Integer>();
+													List<String> busRouteIds = new ArrayList<String>();
+													List<String> bounds = new ArrayList<String>();
+													for (BusArrival arrival : busArrivals) {
+														busIds.add(arrival.getBusId());
+														busRouteIds.add(arrival.getRouteId());
+														bounds.add(arrival.getRouteDirection());
+													}
+													Intent intent = new Intent(ChicagoTracker.getAppContext(), MapActivity.class);
+													Bundle extras = new Bundle();
+													extras.putIntegerArrayList("busIds", (ArrayList<Integer>) busIds);
+													extras.putStringArrayList("busRouteIds", (ArrayList<String>) busRouteIds);
+													extras.putStringArrayList("bounds", (ArrayList<String>) bounds);
 
+													intent.putExtras(extras);
+													activity.startActivity(intent);
+													activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);*/
+													
+													
+													
 												} else {
 													for (int i = 0; i < busArrivals.size(); i++) {
 														if (item.getItemId() == i + 1) {
@@ -415,6 +441,8 @@ public final class FavoritesAdapter extends BaseAdapter {
 															Intent intent = new Intent(ChicagoTracker.getAppContext(), MapActivity.class);
 															Bundle extras = new Bundle();
 															extras.putInt("busId", busArrivals.get(i).getBusId());
+															extras.putString("busRouteId", busArrivals.get(i).getRouteId());
+															extras.putString("bound", busArrivals.get(i).getRouteDirection());
 															intent.putExtras(extras);
 															activity.startActivity(intent);
 															activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
@@ -439,7 +467,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 											menuTitles.add("Open details (" + entry.getKey() + ")");
 										}
 										for (Entry<String, List<BusArrival>> entry : value.entrySet()) {
-											List<BusArrival> arrivals = entry.getValue();
+											List<BusArrival> arrivals = BusArrival.getRealBusArrival(entry.getValue());
 											for (BusArrival arrival : arrivals) {
 												menuTitles.add("Follow bus - " + arrival.getTimeLeftDueDelay() + " (" + entry.getKey() + ")");
 											}
@@ -453,7 +481,6 @@ public final class FavoritesAdapter extends BaseAdapter {
 											@Override
 											public boolean onMenuItemClick(MenuItem item) {
 												int i = 0;
-												Log.i("Favorites adapter", "i: " + i);
 												for (Entry<String, List<BusArrival>> entry : value.entrySet()) {
 													BusArrival busArrival = entry.getValue().get(0);
 													if (item.getItemId() == i) {
@@ -464,9 +491,8 @@ public final class FavoritesAdapter extends BaseAdapter {
 													}
 													i++;
 												}
-												Log.i("Favorites adapter", "i: " + i);
 												for (Entry<String, List<BusArrival>> entry : value.entrySet()) {
-													List<BusArrival> arrivals = entry.getValue();
+													List<BusArrival> arrivals = BusArrival.getRealBusArrival(entry.getValue());
 													for (BusArrival arrival : arrivals) {
 														if (item.getItemId() == i) {
 															Intent intent = new Intent(ChicagoTracker.getAppContext(), MapActivity.class);
@@ -484,8 +510,6 @@ public final class FavoritesAdapter extends BaseAdapter {
 														i++;
 													}
 												}
-												
-												Log.i("Favorites adapter", "i: " + i);
 												if (item.getItemId() == i + 1) {
 													Toast.makeText(activity, "Show all", Toast.LENGTH_SHORT).show();
 												}
@@ -500,6 +524,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 										});
 										firstLayout.getForeground().setAlpha(210);
 										popupMenu.show();
+
 									}
 								}
 							}
