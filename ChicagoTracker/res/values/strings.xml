@@ -108,5 +108,8 @@
     <string name="pref_alert_summary">Use alert data</string>
     <string name="pref_bikes_title">Divvy bikes</string>
     <string name="pref_bikes_summary">Use bikes data</string>
+    
+     <!-- Map -->
+    <string name="map_activity">Map</string>
 
 </resources>

@@ -268,27 +268,35 @@ public class Favorites {
 			for (String bus : busFavorites) {
 				String fav[] = Util.decodeBusFavorite(bus);
 				String routeIdFav = fav[0];
-				Integer stopId = Integer.valueOf(fav[1]);
-				String bound = fav[2];
-
-				String stopName = Preferences.getBusStopNameMapping(String.valueOf(stopId));
-
-				BusArrival busArrival = new BusArrival();
-				busArrival.setStopId(stopId);
-				busArrival.setRouteDirection(bound);
-				if (stopName != null) {
-					busArrival.setStopName(stopName);
-				} else {
-					busArrival.setStopName(stopId.toString());
-				}
-				busArrival.setRouteId(routeIdFav);
 				if (routeIdFav.equals(routeId)) {
+					Integer stopId = Integer.valueOf(fav[1]);
+					String bound = fav[2];
+
+					String stopName = Preferences.getBusStopNameMapping(String.valueOf(stopId));
+
+					BusArrival busArrival = new BusArrival();
+					busArrival.setStopId(stopId);
+					busArrival.setRouteDirection(bound);
+					if (stopName != null) {
+						busArrival.setStopName(stopName);
+					} else {
+						busArrival.setStopName(stopId.toString());
+					}
+					busArrival.setRouteId(routeIdFav);
+
 					if (!res.containsKey(busArrival.getStopName())) {
 						Map<String, List<BusArrival>> tempMap = new TreeMap<String, List<BusArrival>>();
 						List<BusArrival> arrivals = new ArrayList<BusArrival>();
 						arrivals.add(busArrival);
 						tempMap.put(bound, arrivals);
 						res.put(busArrival.getStopName(), tempMap);
+					} else {
+						Map<String, List<BusArrival>> tempMap = res.get(busArrival.getStopName());
+						if (!tempMap.containsKey(bound)) {
+							List<BusArrival> arrivals = new ArrayList<BusArrival>();
+							arrivals.add(busArrival);
+							tempMap.put(bound, arrivals);
+						}
 					}
 				}
 			}

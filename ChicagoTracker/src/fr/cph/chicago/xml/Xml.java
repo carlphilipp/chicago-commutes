@@ -35,6 +35,7 @@ import android.annotation.SuppressLint;
 import android.util.SparseArray;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.Alert;
+import fr.cph.chicago.entity.Bus;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusRoute;
@@ -612,7 +613,7 @@ public final class Xml {
 		}
 		return alerts;
 	}
-	
+
 	/**
 	 * Parse alert general
 	 * 
@@ -683,5 +684,59 @@ public final class Xml {
 			throw new ParserException(TrackerException.ERROR, e);
 		}
 		return patterns;
+	}
+
+	public final List<Bus> parseVehicles(final String xml) throws ParserException {
+		List<Bus> buses = null;
+		String tagName = null;
+		Bus bus = null;
+		Position position = null;
+		InputStream is = new ByteArrayInputStream(xml.getBytes());
+		try {
+			parser.setInput(is, "UTF-8");
+			int eventType = parser.getEventType();
+			while (eventType != XmlPullParser.END_DOCUMENT) {
+				if (eventType == XmlPullParser.START_DOCUMENT) {
+					buses = new ArrayList<Bus>();
+				} else if (eventType == XmlPullParser.START_TAG) {
+					tagName = parser.getName();
+					if (tagName.equals("vehicle")) {
+						bus = new Bus();
+					}
+				} else if (eventType == XmlPullParser.END_TAG) {
+					tagName = null;
+				} else if (eventType == XmlPullParser.TEXT) {
+					String text = parser.getText();
+					if (tagName != null) {
+						if (tagName.equals("vid")) {
+							bus.setId(Integer.valueOf(text));
+							buses.add(bus);
+						} else if (tagName.equals("tmstmp")) {
+
+						} else if (tagName.equals("lat")) {
+							position = new Position();
+							bus.setPosition(position);
+							position.setLatitude(Double.valueOf(text));
+						} else if (tagName.equals("lon")) {
+							position.setLongitude(Double.valueOf(text));
+						} else if (tagName.equals("hdg")) {
+							bus.setHeading(Integer.valueOf(text));
+						} else if (tagName.equals("pid")) {
+							bus.setPatternId((Integer.valueOf(text)));
+						} else if (tagName.equals("rt")) {
+							bus.setRouteId(text);
+						} else if (tagName.equals("des")) {
+							bus.setDestination(text);
+						}
+					}
+				}
+				eventType = parser.next();
+			}
+		} catch (XmlPullParserException e) {
+			throw new ParserException(TrackerException.ERROR, e);
+		} catch (IOException e) {
+			throw new ParserException(TrackerException.ERROR, e);
+		}
+		return buses;
 	}
 }

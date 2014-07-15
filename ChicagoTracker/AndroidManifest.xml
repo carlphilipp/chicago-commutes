@@ -111,6 +111,11 @@
             android:label="@string/bike_activity"
             android:screenOrientation="portrait" >
         </activity>
+                 <activity
+            android:name="fr.cph.chicago.activity.MapActivity"
+            android:label="@string/map_activity"
+            android:screenOrientation="portrait" >
+        </activity>
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
