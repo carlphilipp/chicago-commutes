@@ -131,7 +131,9 @@ public class FavoritesFragment extends Fragment {
 	@Override
 	public final void onStop() {
 		super.onStop();
-		refreshTimingTask.cancel(true);
+		if (refreshTimingTask != null) {
+			refreshTimingTask.cancel(true);
+		}
 	}
 
 	@Override
