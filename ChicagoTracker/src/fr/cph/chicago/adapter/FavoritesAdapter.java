@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -36,7 +38,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils.TruncateAt;
+import android.util.Log;
 import android.util.SparseArray;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -45,19 +49,21 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.PopupMenu.OnDismissListener;
 import android.widget.PopupMenu.OnMenuItemClickListener;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BikeStationActivity;
 import fr.cph.chicago.activity.BusActivity;
+import fr.cph.chicago.activity.BusMapActivity;
 import fr.cph.chicago.activity.MainActivity;
-import fr.cph.chicago.activity.MapActivity;
 import fr.cph.chicago.activity.StationActivity;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Favorites;
@@ -151,6 +157,9 @@ public final class FavoritesAdapter extends BaseAdapter {
 		Date lastUpdate = ChicagoTracker.getLastUpdate();
 		Object object = fav.getObject(position);
 		if (object != null) {
+			/*********************************************************/
+			/********************** TRAINS ***************************/
+			/*********************************************************/
 			if (object instanceof Station) {
 				Station station = (Station) object;
 				final Integer stationId = station.getId();
@@ -195,12 +204,75 @@ public final class FavoritesAdapter extends BaseAdapter {
 						if (!Util.isNetworkAvailable()) {
 							Toast.makeText(activity, "No network connection detected!", Toast.LENGTH_LONG).show();
 						} else {
-							Intent intent = new Intent(ChicagoTracker.getAppContext(), StationActivity.class);
-							Bundle extras = new Bundle();
-							extras.putInt("stationId", stationId);
-							intent.putExtras(extras);
-							activity.startActivity(intent);
-							activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+							
+							
+							LayoutInflater layoutInflater = (LayoutInflater) FavoritesAdapter.this.activity.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);  
+						    View popupView = layoutInflater.inflate(R.layout.popup_train, null);
+						    
+						    final PopupWindow popup = new PopupWindow(popupView, LayoutParams.MATCH_PARENT,
+						            LayoutParams.WRAP_CONTENT);
+						    popup.setFocusable(true);
+						    popup.setBackgroundDrawable(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.any_selector));
+						    firstLayout.getForeground().setAlpha(210);
+						    
+						    Button btnDismiss = (Button)popupView.findViewById(R.id.dismiss);
+				            btnDismiss.setOnClickListener(new Button.OnClickListener(){
+				            	 @Override
+				            	 	public void onClick(View v) {
+				            		 popup.dismiss();
+				            	 }
+				            });
+				            Button btnDetails = (Button)popupView.findViewById(R.id.details);
+				            btnDetails.setOnClickListener(new Button.OnClickListener(){
+				            	 @Override
+				            	 	public void onClick(View v) {
+				            		 	popup.dismiss();
+										Intent intent = new Intent(ChicagoTracker.getAppContext(), StationActivity.class); Bundle extras = new Bundle();
+										extras.putInt("stationId", stationId); intent.putExtras(extras);
+										activity.startActivity(intent);
+										activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+				            	 }
+				            });
+				            popup.setOnDismissListener(new PopupWindow.OnDismissListener() {
+								@Override
+								public void onDismiss() {
+									firstLayout.getForeground().setAlpha(0);
+								}
+							});
+				            
+				            popup.showAtLocation(firstLayout, Gravity.CENTER, 0, 0);
+				         
+							
+							/*LinearLayout layoutOfPopup = new LinearLayout(context);
+							TextView popupText = new TextView(context);
+							popupText.setText("This is Popup Window.press OK to dismiss         it.");
+						    popupText.setPadding(0, 0, 0, 20);
+							Button  insidePopupButton = new Button(context);
+							insidePopupButton.setText("derp");
+							popupText.setPadding(0, 0, 0, 20);
+						    layoutOfPopup.setOrientation(1);
+						    layoutOfPopup.setBackgroundColor(R.color.black);
+						    layoutOfPopup.addView(popupText);
+						    layoutOfPopup.addView(insidePopupButton);
+							final PopupWindow popup = new PopupWindow(layoutOfPopup, LayoutParams.MATCH_PARENT,
+						            LayoutParams.WRAP_CONTENT);
+							popup.setFocusable(true);
+							popup.setBackgroundDrawable(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.any_selector));
+							popup.showAtLocation(firstLayout, Gravity.CENTER, 0, 0);
+							firstLayout.getForeground().setAlpha(210);*/
+							
+/*							popup.setOnDismissListener(new PopupWindow.OnDismissListener() {
+								@Override
+								public void onDismiss() {
+									firstLayout.getForeground().setAlpha(0);
+								}
+							});
+							insidePopupButton.setOnClickListener(new OnClickListener() {
+								@Override
+								public void onClick(View v) {
+									popup.dismiss();
+								}
+							});*/
 						}
 					}
 				});
@@ -328,6 +400,9 @@ public final class FavoritesAdapter extends BaseAdapter {
 						}
 					}
 				}
+				/*********************************************************/
+				/*********************** BUSES ***************************/
+				/*********************************************************/
 			} else if (object instanceof BusRoute) {
 				final BusRoute busRoute = (BusRoute) object;
 				LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -378,70 +453,76 @@ public final class FavoritesAdapter extends BaseAdapter {
 									if (value.entrySet().size() == 1) {
 										final List<BusArrival> busArrivals = BusArrival.getRealBusArrival(value.entrySet().iterator().next()
 												.getValue());
-										if (busArrivals.size() == 0) {
-											BusArrival busArrival = value.entrySet().iterator().next().getValue().get(0);
-											activity.startRefreshAnimation();
-											new BusBoundAsyncTask().execute(busArrival.getRouteId(), busArrival.getRouteDirection(),
-													String.valueOf(busArrival.getStopId()), busRoute.getName());
-										} else {
-											final List<String> menuTitles = new ArrayList<String>();
-											for (BusArrival arrival : busArrivals) {
-												menuTitles.add("Follow bus - " + arrival.getTimeLeftDueDelay() + "");
-											}
-											menuTitles.add("Follow all buses on line " + busRoute.getId());
-											PopupMenu popupMenu = new PopupMenu(context, v);
-											popupMenu.getMenu().add(Menu.NONE, 0, Menu.NONE, "Open details");
-											for (int i = 0; i < menuTitles.size(); i++) {
-												popupMenu.getMenu().add(Menu.NONE, i + 1, Menu.NONE, menuTitles.get(i));
-											}
-											popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-												@Override
-												public boolean onMenuItemClick(MenuItem item) {
-													if (item.getItemId() == 0) {
-														BusArrival busArrival = value.entrySet().iterator().next().getValue().get(0);
-														activity.startRefreshAnimation();
-														new BusBoundAsyncTask().execute(busArrival.getRouteId(), busArrival.getRouteDirection(),
-																String.valueOf(busArrival.getStopId()), busRoute.getName());
-														return false;
-													} else if (item.getItemId() == busArrivals.size() + 1) {
-														Intent intent = new Intent(ChicagoTracker.getAppContext(), MapActivity.class);
-														Bundle extras = new Bundle();
-														extras.putString("busRouteId", busArrivals.get(0).getRouteId());
-														extras.putString("bound", busArrivals.get(0).getRouteDirection());
-														intent.putExtras(extras);
-														activity.startActivity(intent);
-														activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+										final List<String> menuTitles = new ArrayList<String>();
+										for (BusArrival arrival : busArrivals) {
+											menuTitles.add("Follow bus - " + arrival.getTimeLeftDueDelay() + "");
+										}
+										menuTitles.add("Follow all buses on line " + busRoute.getId());
+										PopupMenu popupMenu = new PopupMenu(context, v);
+										popupMenu.getMenu().add(Menu.NONE, 0, Menu.NONE, "Open details");
+										for (int i = 0; i < menuTitles.size(); i++) {
+											popupMenu.getMenu().add(Menu.NONE, i + 1, Menu.NONE, menuTitles.get(i));
+										}
+										popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+											@Override
+											public boolean onMenuItemClick(MenuItem item) {
+												if (item.getItemId() == 0) {
+													BusArrival busArrival = value.entrySet().iterator().next().getValue().get(0);
+													activity.startRefreshAnimation();
+													new BusBoundAsyncTask().execute(busArrival.getRouteId(), busArrival.getRouteDirection(),
+															String.valueOf(busArrival.getStopId()), busRoute.getName());
+													return false;
+												} else if (item.getItemId() == busArrivals.size() + 1) {
+													Intent intent = new Intent(ChicagoTracker.getAppContext(), BusMapActivity.class);
+													Bundle extras = new Bundle();
+													Set<String> bounds = new HashSet<String>();
+													Iterator<Entry<String, List<BusArrival>>> itr = value.entrySet().iterator();
+													while (itr.hasNext()) {
+														String temp = itr.next().getKey();
+														Log.i(TAG, "Add: " + temp);
+														bounds.add(temp);
+													}
+													if (busArrivals.size() == 0) {
+														extras.putString("busRouteId", busRoute.getId());
+														extras.putStringArray("bounds", bounds.toArray(new String[bounds.size()]));
 													} else {
-														for (int i = 0; i < busArrivals.size(); i++) {
-															if (item.getItemId() == i + 1) {
-																Toast.makeText(
-																		activity,
-																		"" + busArrivals.get(i).getTimeLeftDueDelay() + " "
-																				+ busArrivals.get(i).getBusId(), Toast.LENGTH_SHORT).show();
-																Intent intent = new Intent(ChicagoTracker.getAppContext(), MapActivity.class);
-																Bundle extras = new Bundle();
-																extras.putInt("busId", busArrivals.get(i).getBusId());
-																extras.putString("busRouteId", busArrivals.get(i).getRouteId());
-																extras.putString("bound", busArrivals.get(i).getRouteDirection());
-																intent.putExtras(extras);
-																activity.startActivity(intent);
-																activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
-																return false;
-															}
+														extras.putString("busRouteId", busArrivals.get(0).getRouteId());
+														extras.putStringArray("bounds", bounds.toArray(new String[bounds.size()]));
+													}
+
+													intent.putExtras(extras);
+													activity.startActivity(intent);
+													activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+												} else {
+													for (int i = 0; i < busArrivals.size(); i++) {
+														if (item.getItemId() == i + 1) {
+															Toast.makeText(
+																	activity,
+																	"" + busArrivals.get(i).getTimeLeftDueDelay() + " "
+																			+ busArrivals.get(i).getBusId(), Toast.LENGTH_SHORT).show();
+															Intent intent = new Intent(ChicagoTracker.getAppContext(), BusMapActivity.class);
+															Bundle extras = new Bundle();
+															extras.putInt("busId", busArrivals.get(i).getBusId());
+															extras.putString("busRouteId", busArrivals.get(i).getRouteId());
+															extras.putStringArray("bounds", new String[] { busArrivals.get(i).getRouteDirection() });
+															intent.putExtras(extras);
+															activity.startActivity(intent);
+															activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+															return false;
 														}
 													}
-													return false;
 												}
-											});
-											popupMenu.setOnDismissListener(new OnDismissListener() {
-												@Override
-												public void onDismiss(PopupMenu menu) {
-													firstLayout.getForeground().setAlpha(0);
-												}
-											});
-											firstLayout.getForeground().setAlpha(210);
-											popupMenu.show();
-										}
+												return false;
+											}
+										});
+										popupMenu.setOnDismissListener(new OnDismissListener() {
+											@Override
+											public void onDismiss(PopupMenu menu) {
+												firstLayout.getForeground().setAlpha(0);
+											}
+										});
+										firstLayout.getForeground().setAlpha(210);
+										popupMenu.show();
 									} else {
 										final List<String> menuTitles = new ArrayList<String>();
 										for (Entry<String, List<BusArrival>> entry : value.entrySet()) {
@@ -461,6 +542,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 										popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 											@Override
 											public boolean onMenuItemClick(MenuItem item) {
+												Log.i(TAG, "item id: " + item.getItemId());
 												int i = 0;
 												for (Entry<String, List<BusArrival>> entry : value.entrySet()) {
 													BusArrival busArrival = entry.getValue().get(0);
@@ -476,11 +558,11 @@ public final class FavoritesAdapter extends BaseAdapter {
 													List<BusArrival> arrivals = BusArrival.getRealBusArrival(entry.getValue());
 													for (BusArrival arrival : arrivals) {
 														if (item.getItemId() == i) {
-															Intent intent = new Intent(ChicagoTracker.getAppContext(), MapActivity.class);
+															Intent intent = new Intent(ChicagoTracker.getAppContext(), BusMapActivity.class);
 															Bundle extras = new Bundle();
 															extras.putInt("busId", arrival.getBusId());
 															extras.putString("busRouteId", arrival.getRouteId());
-															extras.putString("bound", entry.getKey());
+															extras.putStringArray("bounds", new String[] { entry.getKey() });
 															intent.putExtras(extras);
 															activity.startActivity(intent);
 															activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
@@ -491,8 +573,20 @@ public final class FavoritesAdapter extends BaseAdapter {
 														i++;
 													}
 												}
-												if (item.getItemId() == i + 1) {
-													Toast.makeText(activity, "Show all", Toast.LENGTH_SHORT).show();
+												if (item.getItemId() == i) {
+													Set<String> bounds = new HashSet<String>();
+													Iterator<Entry<String, List<BusArrival>>> itr = value.entrySet().iterator();
+													while (itr.hasNext()) {
+														String derp = itr.next().getKey();
+														bounds.add(derp);
+													}
+													Intent intent = new Intent(ChicagoTracker.getAppContext(), BusMapActivity.class);
+													Bundle extras = new Bundle();
+													extras.putString("busRouteId", busRoute.getId());
+													extras.putStringArray("bounds", bounds.toArray(new String[bounds.size()]));
+													intent.putExtras(extras);
+													activity.startActivity(intent);
+													activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 												}
 												return false;
 											}
@@ -548,6 +642,9 @@ public final class FavoritesAdapter extends BaseAdapter {
 						favoritesLayout.addView(llh);
 					}
 				}
+				/*********************************************************/
+				/*********************** BIKES ***************************/
+				/*********************************************************/
 			} else {
 				final BikeStation bikeStation = (BikeStation) object;
 				LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

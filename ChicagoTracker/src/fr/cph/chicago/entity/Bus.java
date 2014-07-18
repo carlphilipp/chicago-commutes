@@ -1,6 +1,7 @@
 package fr.cph.chicago.entity;
 
 import java.security.Timestamp;
+import java.util.List;
 
 public class Bus {
 	private int id;
@@ -83,6 +84,41 @@ public class Bus {
 
 	public void setDelay(Boolean delay) {
 		this.delay = delay;
+	}
+
+	public static Position getBestPosition(List<Bus> buses) {
+		Position position = new Position();
+		double maxLatitude = 0.0;
+		double minLatitude = 0.0;
+		double maxLongitude = 0.0;
+		double minLongitude = 0.0;
+		int i = 0;
+		for (Bus bus : buses) {
+			Position temp = bus.getPosition();
+			if (i == 0) {
+				maxLatitude = temp.getLatitude();
+				minLatitude = temp.getLatitude();
+				maxLongitude = temp.getLongitude();
+				minLongitude = temp.getLongitude();
+			} else {
+				if (temp.getLatitude() > maxLatitude) {
+					maxLatitude = temp.getLatitude();
+				}
+				if (temp.getLatitude() < minLatitude) {
+					minLatitude = temp.getLatitude();
+				}
+				if (temp.getLongitude() > maxLongitude) {
+					maxLongitude = temp.getLongitude();
+				}
+				if (temp.getLongitude() < minLongitude) {
+					minLongitude = temp.getLongitude();
+				}
+			}
+			i++;
+		}
+		position.setLatitude((maxLatitude + minLatitude) / 2);
+		position.setLongitude((maxLongitude + minLongitude) / 2);
+		return position;
 	}
 
 }

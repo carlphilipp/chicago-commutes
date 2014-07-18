@@ -54,7 +54,7 @@ import fr.cph.chicago.fragment.NearbyFragment;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
 
-public class MapActivity extends Activity {
+public class BusMapActivity extends Activity {
 	/** Tag **/
 	private static final String TAG = "MapActivity";
 	/** The map fragment from google api **/
@@ -65,8 +65,8 @@ public class MapActivity extends Activity {
 	private Integer busId;
 	/** Bus route id **/
 	private String busRouteId;
-	/** Bound **/
-	private String bound;
+	/** Bounds **/
+	private String[] bounds;
 	/** Markers **/
 	private List<Marker> markers;
 
@@ -79,9 +79,18 @@ public class MapActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		if (!this.isFinishing()) {
 			setContentView(R.layout.activity_map);
-			busId = getIntent().getExtras().getInt("busId");
-			busRouteId = getIntent().getExtras().getString("busRouteId");
-			bound = getIntent().getExtras().getString("bound");
+			if (savedInstanceState != null) {
+				busId = savedInstanceState.getInt("busId");
+				busRouteId = savedInstanceState.getString("busRouteId");
+				bounds = savedInstanceState.getStringArray("bounds");
+			} else {
+				busId = getIntent().getExtras().getInt("busId");
+				busRouteId = getIntent().getExtras().getString("busRouteId");
+				bounds = getIntent().getExtras().getStringArray("bounds");
+				for(String bound: bounds){
+					Log.i(TAG, "Bound: " + bound);
+				}
+			}
 
 			markers = new ArrayList<Marker>();
 
@@ -95,7 +104,7 @@ public class MapActivity extends Activity {
 		FragmentManager fm = getFragmentManager();
 		mapFragment = (MapFragment) fm.findFragmentById(R.id.map);
 		GoogleMapOptions options = new GoogleMapOptions();
-		CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 7, 0, 0);
+		CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 10, 0, 0);
 		options.camera(camera);
 		mapFragment = MapFragment.newInstance(options);
 		mapFragment.setRetainInstance(true);
@@ -105,7 +114,9 @@ public class MapActivity extends Activity {
 	@Override
 	public final void onPause() {
 		super.onPause();
-		refreshTimingTask.cancel(true);
+		if (refreshTimingTask != null) {
+			refreshTimingTask.cancel(true);
+		}
 	}
 
 	@Override
@@ -136,10 +147,10 @@ public class MapActivity extends Activity {
 		}
 		if (Util.isNetworkAvailable()) {
 			if (busId == 0) {
-				new LoadCurrentPosition().execute(new Boolean[] { true });
-				new LoadBusPosition().execute(new Boolean[] { false, false });
+				new LoadCurrentPosition().execute();
+				new LoadBusPosition().execute(new Boolean[] { true, false });
 			} else {
-				new LoadCurrentPosition().execute(new Boolean[] { false });
+				new LoadCurrentPosition().execute();
 				new LoadBusPosition().execute(new Boolean[] { true, false });
 			}
 			new LoadPattern().execute();
@@ -153,14 +164,14 @@ public class MapActivity extends Activity {
 		super.onRestoreInstanceState(savedInstanceState);
 		busId = savedInstanceState.getInt("busId");
 		busRouteId = savedInstanceState.getString("busRouteId");
-		bound = savedInstanceState.getString("bound");
+		bounds = savedInstanceState.getStringArray("bounds");
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 		savedInstanceState.putInt("busId", busId);
 		savedInstanceState.putString("busRouteId", busRouteId);
-		savedInstanceState.putString("bound", bound);
+		savedInstanceState.putStringArray("bounds", bounds);
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
@@ -180,7 +191,7 @@ public class MapActivity extends Activity {
 			return true;
 		case R.id.action_refresh:
 			startRefreshAnimation();
-			new LoadCurrentPosition().execute(new Boolean[] { false });
+			new LoadCurrentPosition().execute();
 			new LoadBusPosition().execute(new Boolean[] { false, true });
 			return true;
 		}
@@ -245,8 +256,12 @@ public class MapActivity extends Activity {
 		protected final void onPostExecute(final List<Bus> result) {
 			if (result != null) {
 				drawBuses(result);
-				if (centerMap) {
-					centerMapOnBus(result);
+				if (result.size() != 0) {
+					if (centerMap) {
+						centerMapOnBus(result);
+					}
+				} else {
+					Toast.makeText(BusMapActivity.this, "No bus found!", Toast.LENGTH_LONG).show();
 				}
 			}
 			if (stopRefresh) {
@@ -276,14 +291,14 @@ public class MapActivity extends Activity {
 		/** The location manager **/
 		private LocationManager locationManager;
 
-		private boolean userCenter;
+		// private boolean userCenter;
 
 		@Override
 		protected final Void doInBackground(final Boolean... params) {
 
-			userCenter = params[0];
+			// userCenter = params[0];
 
-			locationManager = (LocationManager) MapActivity.this.getSystemService(Context.LOCATION_SERVICE);
+			locationManager = (LocationManager) BusMapActivity.this.getSystemService(Context.LOCATION_SERVICE);
 
 			// getting GPS status
 			isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -338,9 +353,9 @@ public class MapActivity extends Activity {
 				map = mapFragment.getMap();
 				map.setMyLocationEnabled(true);
 				locationManager.removeUpdates(LoadCurrentPosition.this);
-				if (userCenter) {
-					centerMapOnUser(position);
-				}
+				/*
+				 * if (userCenter) { centerMapOnUser(position); }
+				 */
 			}
 		}
 
@@ -366,15 +381,15 @@ public class MapActivity extends Activity {
 		private void showSettingsAlert() {
 			new Thread() {
 				public void run() {
-					MapActivity.this.runOnUiThread(new Runnable() {
+					BusMapActivity.this.runOnUiThread(new Runnable() {
 						public void run() {
-							AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MapActivity.this);
+							AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(BusMapActivity.this);
 							alertDialogBuilder.setTitle("GPS settings");
 							alertDialogBuilder.setMessage("GPS is not enabled. Do you want to go to settings menu?");
 							alertDialogBuilder.setCancelable(false).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog, int id) {
 									Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-									MapActivity.this.startActivity(intent);
+									BusMapActivity.this.startActivity(intent);
 								}
 							}).setNegativeButton("No", new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog, int id) {
@@ -396,26 +411,27 @@ public class MapActivity extends Activity {
 	 * @author Carl-Philipp Harmant
 	 * 
 	 */
-	private final class LoadPattern extends AsyncTask<Void, Void, Pattern> implements LocationListener {
+	private final class LoadPattern extends AsyncTask<Void, Void, List<Pattern>> implements LocationListener {
 
-		private Pattern pattern;
+		private List<Pattern> patterns;
 
 		@Override
-		protected final Pattern doInBackground(final Void... params) {
-
+		protected final List<Pattern> doInBackground(final Void... params) {
+			this.patterns = new ArrayList<Pattern>();
 			CtaConnect connect = CtaConnect.getInstance();
 			MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
 			connectParam.put("rt", busRouteId);
-			String boundIgnoreCase = bound.toLowerCase(Locale.US);
+			// String boundIgnoreCase = bound.toLowerCase(Locale.US);
 			try {
 				String content = connect.connect(CtaRequestType.BUS_PATTERN, connectParam);
 				Xml xml = new Xml();
 				List<Pattern> patterns = xml.parsePatterns(content);
 				for (Pattern pattern : patterns) {
 					String directionIgnoreCase = pattern.getDirection().toLowerCase(Locale.US);
-					if (pattern.getDirection().equals(bound) || boundIgnoreCase.indexOf(directionIgnoreCase) != -1) {
-						this.pattern = pattern;
-						break;
+					for (String bound : bounds) {
+						if (pattern.getDirection().equals(bound) || bound.toLowerCase(Locale.US).indexOf(directionIgnoreCase) != -1) {
+							this.patterns.add(pattern);
+						}
 					}
 				}
 			} catch (ConnectException e) {
@@ -423,15 +439,15 @@ public class MapActivity extends Activity {
 			} catch (ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
-			return this.pattern;
+			return this.patterns;
 		}
 
 		@Override
-		protected final void onPostExecute(final Pattern result) {
+		protected final void onPostExecute(final List<Pattern> result) {
 			if (result != null) {
 				drawPattern(result);
 			} else {
-				Toast.makeText(MapActivity.this, "Sorry, could not load the path!", Toast.LENGTH_SHORT).show();
+				Toast.makeText(BusMapActivity.this, "Sorry, could not load the path!", Toast.LENGTH_SHORT).show();
 			}
 			stopRefreshAnimation();
 			startRefreshTask();
@@ -454,28 +470,30 @@ public class MapActivity extends Activity {
 		}
 	}
 
-	private void centerMapOnUser(Position position) {
+	/*
+	 * private void centerMapOnUser(Position position) { int i = 0; while (map == null && i < 20) { map =
+	 * mapFragment.getMap(); i++; } if (map != null) { LatLng latLng = new LatLng(position.getLatitude(),
+	 * position.getLongitude()); map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14)); } }
+	 */
+
+	private void centerMapOnBus(List<Bus> result) {
 		int i = 0;
 		while (map == null && i < 20) {
 			map = mapFragment.getMap();
 			i++;
+		}
+		Position position;
+		int zoom;
+		if (result.size() == 1) {
+			position = result.get(0).getPosition();
+			zoom = 15;
+		} else {
+			position = Bus.getBestPosition(result);
+			zoom = 11;
 		}
 		if (map != null) {
 			LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
-			map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
-		}
-	}
-
-	private void centerMapOnBus(List<Bus> result) {
-		Bus bus = result.get(0);
-		int i = 0;
-		while (map == null && i < 20) {
-			map = mapFragment.getMap();
-			i++;
-		}
-		if (map != null) {
-			LatLng latLng = new LatLng(bus.getPosition().getLatitude(), bus.getPosition().getLongitude());
-			map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
+			map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 		}
 	}
 
@@ -503,7 +521,7 @@ public class MapActivity extends Activity {
 		}
 	}
 
-	private void drawPattern(final Pattern pattern) {
+	private void drawPattern(final List<Pattern> patterns) {
 		int i = 0;
 		while (map == null && i < 20) {
 			map = mapFragment.getMap();
@@ -511,19 +529,22 @@ public class MapActivity extends Activity {
 		}
 		if (map != null) {
 			final List<Marker> markers = new ArrayList<Marker>();
-			PolylineOptions poly = new PolylineOptions();
-			poly.geodesic(true).color(Color.BLUE);
-			for (PatternPoint patternPoint : pattern.getPoints()) {
-				LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
-				poly.add(point);
-				if (patternPoint.getStopId() != null) {
-					Marker marker = map.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName())
-							.snippet(patternPoint.getSequence() + "").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-					markers.add(marker);
-					marker.setVisible(false);
+			for (Pattern pattern : patterns) {
+				PolylineOptions poly = new PolylineOptions();
+				poly.geodesic(true).color(Color.BLUE);
+				for (PatternPoint patternPoint : pattern.getPoints()) {
+					LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
+					poly.add(point);
+					if (patternPoint.getStopId() != null) {
+						Marker marker = map.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName())
+								.snippet(patternPoint.getSequence() + "")
+								.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+						markers.add(marker);
+						marker.setVisible(false);
+					}
 				}
+				map.addPolyline(poly);
 			}
-			map.addPolyline(poly);
 
 			map.setOnCameraChangeListener(new OnCameraChangeListener() {
 				private float currentZoom = -1;
@@ -559,7 +580,7 @@ public class MapActivity extends Activity {
 		protected final void onProgressUpdate(Void... values) {
 			super.onProgressUpdate();
 			startRefreshAnimation();
-			new LoadCurrentPosition().execute(new Boolean[] { false });
+			new LoadCurrentPosition().execute();
 			new LoadBusPosition().execute(new Boolean[] { false, true });
 		}
 
