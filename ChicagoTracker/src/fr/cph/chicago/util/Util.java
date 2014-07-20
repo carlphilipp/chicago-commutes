@@ -23,8 +23,11 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.view.Display;
+import android.view.WindowManager;
 import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.data.Preferences;
@@ -41,7 +44,8 @@ public class Util {
 	private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
 
 	/**
-	 * Generate a value suitable for use in {@link #setId(int)}. This value will not collide with ID values generated at build time by aapt for R.id.
+	 * Generate a value suitable for use in {@link #setId(int)}. This value will not collide with ID values
+	 * generated at build time by aapt for R.id.
 	 * 
 	 * @return a generated ID value
 	 */
@@ -200,5 +204,13 @@ public class Util {
 		ConnectivityManager connectivityManager = (ConnectivityManager) ChicagoTracker.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
 		return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+	}
+
+	public static final int[] getScreenSize() {
+		WindowManager wm = (WindowManager) ChicagoTracker.getAppContext().getSystemService(Context.WINDOW_SERVICE);
+		Display display = wm.getDefaultDisplay();
+		Point size = new Point();
+		display.getSize(size);
+		return new int[] { size.x, size.y };
 	}
 }

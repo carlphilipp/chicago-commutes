@@ -40,7 +40,6 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils.TruncateAt;
 import android.util.Log;
 import android.util.SparseArray;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -49,13 +48,11 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.PopupMenu.OnDismissListener;
 import android.widget.PopupMenu.OnMenuItemClickListener;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
@@ -64,7 +61,6 @@ import fr.cph.chicago.activity.BikeStationActivity;
 import fr.cph.chicago.activity.BusActivity;
 import fr.cph.chicago.activity.BusMapActivity;
 import fr.cph.chicago.activity.MainActivity;
-import fr.cph.chicago.activity.StationActivity;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Favorites;
 import fr.cph.chicago.entity.BikeStation;
@@ -79,6 +75,7 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
+import fr.cph.chicago.listener.FavoritesTrainOnClickListener;
 import fr.cph.chicago.util.Util;
 
 /**
@@ -197,85 +194,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 					convertView.setTag(holder);
 				}
-
-				convertView.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						if (!Util.isNetworkAvailable()) {
-							Toast.makeText(activity, "No network connection detected!", Toast.LENGTH_LONG).show();
-						} else {
-							
-							
-							LayoutInflater layoutInflater = (LayoutInflater) FavoritesAdapter.this.activity.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);  
-						    View popupView = layoutInflater.inflate(R.layout.popup_train, null);
-						    
-						    final PopupWindow popup = new PopupWindow(popupView, LayoutParams.MATCH_PARENT,
-						            LayoutParams.WRAP_CONTENT);
-						    popup.setFocusable(true);
-						    popup.setBackgroundDrawable(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.any_selector));
-						    firstLayout.getForeground().setAlpha(210);
-						    
-						    Button btnDismiss = (Button)popupView.findViewById(R.id.dismiss);
-				            btnDismiss.setOnClickListener(new Button.OnClickListener(){
-				            	 @Override
-				            	 	public void onClick(View v) {
-				            		 popup.dismiss();
-				            	 }
-				            });
-				            Button btnDetails = (Button)popupView.findViewById(R.id.details);
-				            btnDetails.setOnClickListener(new Button.OnClickListener(){
-				            	 @Override
-				            	 	public void onClick(View v) {
-				            		 	popup.dismiss();
-										Intent intent = new Intent(ChicagoTracker.getAppContext(), StationActivity.class); Bundle extras = new Bundle();
-										extras.putInt("stationId", stationId); intent.putExtras(extras);
-										activity.startActivity(intent);
-										activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
-				            	 }
-				            });
-				            popup.setOnDismissListener(new PopupWindow.OnDismissListener() {
-								@Override
-								public void onDismiss() {
-									firstLayout.getForeground().setAlpha(0);
-								}
-							});
-				            
-				            popup.showAtLocation(firstLayout, Gravity.CENTER, 0, 0);
-				         
-							
-							/*LinearLayout layoutOfPopup = new LinearLayout(context);
-							TextView popupText = new TextView(context);
-							popupText.setText("This is Popup Window.press OK to dismiss         it.");
-						    popupText.setPadding(0, 0, 0, 20);
-							Button  insidePopupButton = new Button(context);
-							insidePopupButton.setText("derp");
-							popupText.setPadding(0, 0, 0, 20);
-						    layoutOfPopup.setOrientation(1);
-						    layoutOfPopup.setBackgroundColor(R.color.black);
-						    layoutOfPopup.addView(popupText);
-						    layoutOfPopup.addView(insidePopupButton);
-							final PopupWindow popup = new PopupWindow(layoutOfPopup, LayoutParams.MATCH_PARENT,
-						            LayoutParams.WRAP_CONTENT);
-							popup.setFocusable(true);
-							popup.setBackgroundDrawable(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.any_selector));
-							popup.showAtLocation(firstLayout, Gravity.CENTER, 0, 0);
-							firstLayout.getForeground().setAlpha(210);*/
-							
-/*							popup.setOnDismissListener(new PopupWindow.OnDismissListener() {
-								@Override
-								public void onDismiss() {
-									firstLayout.getForeground().setAlpha(0);
-								}
-							});
-							insidePopupButton.setOnClickListener(new OnClickListener() {
-								@Override
-								public void onClick(View v) {
-									popup.dismiss();
-								}
-							});*/
-						}
-					}
-				});
+				convertView.setOnClickListener(new FavoritesTrainOnClickListener(activity, firstLayout, stationId));
 
 				LinearLayout.LayoutParams paramsArrival = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
