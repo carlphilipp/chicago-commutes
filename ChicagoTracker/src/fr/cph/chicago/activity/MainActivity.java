@@ -523,8 +523,23 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
 			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
 			boolean loadBus = sharedPref.getBoolean("cta_bus", true);
-			boolean loadAlert = sharedPref.getBoolean("cta_alert", true);
-			loadBike = sharedPref.getBoolean("divvy_bike", true);
+			boolean loadAlert = false;
+			this.loadBike = false;
+
+			if (sharedPref.contains("cta_alert")) {
+				loadAlert = sharedPref.getBoolean("cta_alert", true);
+			} else {
+				SharedPreferences.Editor editor = sharedPref.edit();
+				editor.putBoolean("cta_alert", false);
+				editor.commit();
+			}
+			if (sharedPref.contains("divvy_bike")) {
+				this.loadBike = sharedPref.getBoolean("divvy_bike", true);
+			} else {
+				SharedPreferences.Editor editor = sharedPref.edit();
+				editor.putBoolean("divvy_bike", false);
+				editor.commit();
+			}
 
 			// Load bus API data
 			if (loadBus) {

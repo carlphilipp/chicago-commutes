@@ -207,8 +207,22 @@ public class BaseActivity extends Activity {
 
 		// Get preferences to know if trains and buses need to be loaded
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-		boolean loadTrain = sharedPref.getBoolean("cta_train", true);
-		boolean loadBus = sharedPref.getBoolean("cta_bus", true);
+		boolean loadTrain = true;
+		boolean loadBus = true;
+		if (sharedPref.contains("cta_train")) {
+			loadTrain = sharedPref.getBoolean("cta_train", true);
+		} else {
+			SharedPreferences.Editor editor = sharedPref.edit();
+			editor.putBoolean("cta_train", true);
+			editor.commit();
+		}
+		if (sharedPref.contains("cta_bus")) {
+			loadBus = sharedPref.getBoolean("cta_bus", true);
+		} else {
+			SharedPreferences.Editor editor = sharedPref.edit();
+			editor.putBoolean("cta_bus", true);
+			editor.commit();
+		}
 
 		GlobalConnectTask task = new GlobalConnectTask(this, BaseActivity.class, CtaRequestType.TRAIN_ARRIVALS, params, CtaRequestType.BUS_ARRIVALS,
 				params2, loadTrain, loadBus, false);
