@@ -2,7 +2,6 @@ package fr.cph.chicago.activity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.map.MultiValueMap;
@@ -43,18 +42,14 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
-import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.entity.Bus;
 import fr.cph.chicago.entity.Pattern;
 import fr.cph.chicago.entity.PatternPoint;
 import fr.cph.chicago.entity.Position;
-import fr.cph.chicago.exception.ConnectException;
-import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.fragment.NearbyFragment;
 import fr.cph.chicago.util.Util;
-import fr.cph.chicago.xml.Xml;
 
-public class BusMapActivity extends Activity {
+public class TrainMapActivity extends Activity {
 	/** Tag **/
 	private static final String TAG = "BusMapActivity";
 	/** The map fragment from google api **/
@@ -62,14 +57,10 @@ public class BusMapActivity extends Activity {
 	/** The map **/
 	private GoogleMap map;
 	/** Bus id **/
-	private Integer busId;
-	/** Bus route id **/
-	private String busRouteId;
-	/** Bounds **/
-	private String[] bounds;
+	private String line;
 	/** Markers **/
 	private List<Marker> markers;
-
+	/** Menu **/
 	private Menu menu;
 	/** A refresh task **/
 	private RefreshTask refreshTimingTask;
@@ -80,16 +71,9 @@ public class BusMapActivity extends Activity {
 		if (!this.isFinishing()) {
 			setContentView(R.layout.activity_map);
 			if (savedInstanceState != null) {
-				busId = savedInstanceState.getInt("busId");
-				busRouteId = savedInstanceState.getString("busRouteId");
-				bounds = savedInstanceState.getStringArray("bounds");
+				line = savedInstanceState.getString("line");
 			} else {
-				busId = getIntent().getExtras().getInt("busId");
-				busRouteId = getIntent().getExtras().getString("busRouteId");
-				bounds = getIntent().getExtras().getStringArray("bounds");
-				for (String bound : bounds) {
-					Log.i(TAG, "Bound: " + bound);
-				}
+				line = getIntent().getExtras().getString("line");
 			}
 
 			markers = new ArrayList<Marker>();
@@ -114,9 +98,7 @@ public class BusMapActivity extends Activity {
 	@Override
 	public final void onPause() {
 		super.onPause();
-		Log.i(TAG, "onPause");
 		if (refreshTimingTask != null) {
-			Log.i(TAG, "cancel it");
 			refreshTimingTask.cancel(true);
 		}
 	}
@@ -124,10 +106,8 @@ public class BusMapActivity extends Activity {
 	@Override
 	public final void onStop() {
 		super.onStop();
-		Log.i(TAG, "onStop");
 		map = null;
 		if (refreshTimingTask != null) {
-			Log.i(TAG, "cancel it");
 			refreshTimingTask.cancel(true);
 		}
 	}
@@ -135,9 +115,7 @@ public class BusMapActivity extends Activity {
 	@Override
 	public final void onDestroy() {
 		super.onDestroy();
-		Log.i(TAG, "onDestroy");
 		if (refreshTimingTask != null) {
-			Log.i(TAG, "cancel it");
 			refreshTimingTask.cancel(true);
 		}
 	}
@@ -152,14 +130,7 @@ public class BusMapActivity extends Activity {
 			startRefreshTask();
 		}
 		if (Util.isNetworkAvailable()) {
-			if (busId == 0) {
-				new LoadCurrentPosition().execute();
-				new LoadBusPosition().execute(new Boolean[] { true, false });
-			} else {
-				new LoadCurrentPosition().execute();
-				new LoadBusPosition().execute(new Boolean[] { true, false });
-			}
-			new LoadPattern().execute();
+
 		} else {
 			Toast.makeText(this, "No network connection detected!", Toast.LENGTH_SHORT).show();
 		}
@@ -168,16 +139,16 @@ public class BusMapActivity extends Activity {
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		busId = savedInstanceState.getInt("busId");
+		/*busId = savedInstanceState.getInt("busId");
 		busRouteId = savedInstanceState.getString("busRouteId");
-		bounds = savedInstanceState.getStringArray("bounds");
+		bounds = savedInstanceState.getStringArray("bounds");*/
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-		savedInstanceState.putInt("busId", busId);
+/*		savedInstanceState.putInt("busId", busId);
 		savedInstanceState.putString("busRouteId", busRouteId);
-		savedInstanceState.putStringArray("bounds", bounds);
+		savedInstanceState.putStringArray("bounds", bounds);*/
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
@@ -185,7 +156,7 @@ public class BusMapActivity extends Activity {
 	public final boolean onCreateOptionsMenu(final Menu menu) {
 		this.menu = menu;
 		getMenuInflater().inflate(R.menu.main_no_search, menu);
-		startRefreshAnimation();
+		//startRefreshAnimation();
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -196,9 +167,9 @@ public class BusMapActivity extends Activity {
 			finish();
 			return true;
 		case R.id.action_refresh:
-			startRefreshAnimation();
-			new LoadCurrentPosition().execute();
-			new LoadBusPosition().execute(new Boolean[] { false, true });
+			//startRefreshAnimation();
+			//new LoadCurrentPosition().execute();
+			//new LoadBusPosition().execute(new Boolean[] { false, true });
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -241,20 +212,16 @@ public class BusMapActivity extends Activity {
 			List<Bus> buses = null;
 			CtaConnect connect = CtaConnect.getInstance();
 			MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
-			if (busId != 0) {
-				connectParam.put("vid", String.valueOf(busId));
-			} else {
-				connectParam.put("rt", busRouteId);
-			}
-			try {
-				String content = connect.connect(CtaRequestType.BUS_VEHICLES, connectParam);
-				Xml xml = new Xml();
-				buses = xml.parseVehicles(content);
-			} catch (ConnectException e) {
+			connectParam.put("vid", line);
+			//try {
+				//String content = connect.connect(CtaRequestType.BUS_VEHICLES, connectParam);
+				//Xml xml = new Xml();
+				//buses = xml.parseVehicles(content);
+/*			} catch (ConnectException e) {
 				Log.e(TAG, e.getMessage(), e);
 			} catch (ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
-			}
+			}*/
 			return buses;
 		}
 
@@ -267,7 +234,7 @@ public class BusMapActivity extends Activity {
 						centerMapOnBus(result);
 					}
 				} else {
-					Toast.makeText(BusMapActivity.this, "No bus found!", Toast.LENGTH_LONG).show();
+					Toast.makeText(TrainMapActivity.this, "No bus found!", Toast.LENGTH_LONG).show();
 				}
 			}
 			if (stopRefresh) {
@@ -304,7 +271,7 @@ public class BusMapActivity extends Activity {
 
 			// userCenter = params[0];
 
-			locationManager = (LocationManager) BusMapActivity.this.getSystemService(Context.LOCATION_SERVICE);
+			locationManager = (LocationManager) TrainMapActivity.this.getSystemService(Context.LOCATION_SERVICE);
 
 			// getting GPS status
 			isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -387,15 +354,15 @@ public class BusMapActivity extends Activity {
 		private void showSettingsAlert() {
 			new Thread() {
 				public void run() {
-					BusMapActivity.this.runOnUiThread(new Runnable() {
+					TrainMapActivity.this.runOnUiThread(new Runnable() {
 						public void run() {
-							AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(BusMapActivity.this);
+							AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(TrainMapActivity.this);
 							alertDialogBuilder.setTitle("GPS settings");
 							alertDialogBuilder.setMessage("GPS is not enabled. Do you want to go to settings menu?");
 							alertDialogBuilder.setCancelable(false).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog, int id) {
 									Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-									BusMapActivity.this.startActivity(intent);
+									TrainMapActivity.this.startActivity(intent);
 								}
 							}).setNegativeButton("No", new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog, int id) {
@@ -425,10 +392,10 @@ public class BusMapActivity extends Activity {
 		protected final List<Pattern> doInBackground(final Void... params) {
 			this.patterns = new ArrayList<Pattern>();
 			CtaConnect connect = CtaConnect.getInstance();
-			MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
-			connectParam.put("rt", busRouteId);
+			//MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
+			//connectParam.put("rt", busRouteId);
 			// String boundIgnoreCase = bound.toLowerCase(Locale.US);
-			try {
+/*			try {
 				String content = connect.connect(CtaRequestType.BUS_PATTERN, connectParam);
 				Xml xml = new Xml();
 				List<Pattern> patterns = xml.parsePatterns(content);
@@ -444,7 +411,7 @@ public class BusMapActivity extends Activity {
 				Log.e(TAG, e.getMessage(), e);
 			} catch (ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
-			}
+			}*/
 			return this.patterns;
 		}
 
@@ -453,7 +420,7 @@ public class BusMapActivity extends Activity {
 			if (result != null) {
 				drawPattern(result);
 			} else {
-				Toast.makeText(BusMapActivity.this, "Sorry, could not load the path!", Toast.LENGTH_SHORT).show();
+				Toast.makeText(TrainMapActivity.this, "Sorry, could not load the path!", Toast.LENGTH_SHORT).show();
 			}
 			stopRefreshAnimation();
 			startRefreshTask();
@@ -475,12 +442,6 @@ public class BusMapActivity extends Activity {
 		public final void onStatusChanged(final String provider, final int status, final Bundle extras) {
 		}
 	}
-
-	/*
-	 * private void centerMapOnUser(Position position) { int i = 0; while (map == null && i < 20) { map =
-	 * mapFragment.getMap(); i++; } if (map != null) { LatLng latLng = new LatLng(position.getLatitude(),
-	 * position.getLongitude()); map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14)); } }
-	 */
 
 	private void centerMapOnBus(List<Bus> result) {
 		int i = 0;
@@ -588,8 +549,8 @@ public class BusMapActivity extends Activity {
 		protected final void onProgressUpdate(Void... values) {
 			super.onProgressUpdate();
 			startRefreshAnimation();
-			new LoadCurrentPosition().execute();
-			new LoadBusPosition().execute(new Boolean[] { false, true });
+			//new LoadCurrentPosition().execute();
+			//new LoadBusPosition().execute(new Boolean[] { false, true });
 		}
 
 		@Override

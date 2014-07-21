@@ -16,8 +16,8 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="fr.cph.chicago"
-    android:versionCode="39"
-    android:versionName="3.0.3" >
+    android:versionCode="40"
+    android:versionName="3.0.4" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -111,8 +111,13 @@
             android:label="@string/bike_activity"
             android:screenOrientation="portrait" >
         </activity>
-                 <activity
+		<activity
             android:name="fr.cph.chicago.activity.BusMapActivity"
+            android:label="@string/map_activity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="fr.cph.chicago.activity.TrainMapActivity"
             android:label="@string/map_activity"
             android:screenOrientation="portrait" >
         </activity>

@@ -1,5 +1,5 @@
-3.0.3
-First test of tracking buses on google map
+3.0.4
+Customize menu in favorites
 
 3.0.0
 /!\ For a better UI experience, please re-add your bus favorites
