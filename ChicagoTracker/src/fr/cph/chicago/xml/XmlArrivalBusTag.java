@@ -23,5 +23,5 @@ package fr.cph.chicago.xml;
  * @version 1
  */
 public enum XmlArrivalBusTag {
-	ROUTE, RT, RTNM, OTHER
+	ROUTE, RT, RTNM, ERROR,OTHER
 }

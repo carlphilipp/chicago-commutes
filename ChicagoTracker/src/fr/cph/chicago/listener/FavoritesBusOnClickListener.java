@@ -143,7 +143,7 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 					StringBuilder sb = new StringBuilder();
 					sb.append("Open details");
 					if(entrySet.size() > 1){
-						sb.append(" " + entry.getKey() + ")");
+						sb.append(" (" + entry.getKey() + ")");
 					}
 					values.add(sb.toString());
 				}

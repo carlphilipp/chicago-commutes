@@ -469,7 +469,7 @@ public class TrainMapActivity extends Activity {
 	 */
 	private void startRefreshTask() {
 		if(!isFinishing()){
-			refreshTimingTask = (RefreshTask) new RefreshTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+			//refreshTimingTask = (RefreshTask) new RefreshTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		}
 	}
 
