@@ -39,6 +39,8 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
@@ -52,6 +54,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaRequestType;
@@ -552,7 +555,13 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				try {
 					this.busData.loadBusRoutes();
 					publishProgress();
-				} catch (ParserException e) {
+				} catch (final ParserException e) {
+					new Handler(Looper.getMainLooper()).post(new Runnable() {
+					    @Override
+					    public void run() {
+					    	Toast.makeText(MainActivity.this, "Bus error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+					    }
+					});
 					Log.e(TAG, e.getMessage(), e);
 				} catch (ConnectException e) {
 					Log.e(TAG, e.getMessage(), e);
