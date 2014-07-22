@@ -1,3 +1,6 @@
+3.0.5
+Fixed issue when Bus CTA API reaches its transaction limit
+
 3.0.2
 Minor bug fixes
 
