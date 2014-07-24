@@ -16,6 +16,7 @@
 
 package fr.cph.chicago.adapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.MultiMap;
@@ -25,18 +26,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
+import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.PopupMenu;
-import android.widget.PopupMenu.OnDismissListener;
-import android.widget.PopupMenu.OnMenuItemClickListener;
+import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
@@ -52,6 +53,7 @@ import fr.cph.chicago.entity.enumeration.BusDirection;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
+import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
 
 /**
@@ -63,7 +65,7 @@ import fr.cph.chicago.xml.Xml;
 public final class BusAdapter extends BaseAdapter {
 
 	/** Main activity **/
-	private MainActivity activity;
+	private MainActivity mActivity;
 	/** Bus data **/
 	private List<BusRoute> busRoutes;
 	/** Layout that you can use as a black fade background **/
@@ -76,7 +78,7 @@ public final class BusAdapter extends BaseAdapter {
 	 *            the main activity
 	 */
 	public BusAdapter(final MainActivity activity) {
-		this.activity = activity;
+		this.mActivity = activity;
 		BusData busData = DataHolder.getInstance().getBusData();
 		this.busRoutes = busData.getRoutes();
 		this.firstLayout = ChicagoTracker.container;
@@ -126,7 +128,7 @@ public final class BusAdapter extends BaseAdapter {
 				@Override
 				public void onClick(View v) {
 					holder.detailsLayout.setVisibility(LinearLayout.VISIBLE);
-					activity.startRefreshAnimation();
+					mActivity.startRefreshAnimation();
 					new DirectionAsyncTask().execute(route, holder.detailsLayout);
 				}
 			});
@@ -140,7 +142,7 @@ public final class BusAdapter extends BaseAdapter {
 				@Override
 				public void onClick(View v) {
 					holder.detailsLayout.setVisibility(LinearLayout.VISIBLE);
-					activity.startRefreshAnimation();
+					mActivity.startRefreshAnimation();
 					new DirectionAsyncTask().execute(route, holder.detailsLayout);
 				}
 			});
@@ -205,43 +207,52 @@ public final class BusAdapter extends BaseAdapter {
 
 		@Override
 		protected final void onPostExecute(final BusDirections result) {
-			activity.stopRefreshAnimation();
+			mActivity.stopRefreshAnimation();
 			if (trackerException == null) {
-				final PopupMenu popupMenu = new PopupMenu(ChicagoTracker.getAppContext(), convertView);
-				final List<BusDirection> lBus = result.getlBusDirection();
-				for (int i = 0; i < lBus.size(); i++) {
-					popupMenu.getMenu().add(Menu.NONE, i, Menu.NONE, lBus.get(i).toString());
+				List<BusDirection> busDirections = result.getlBusDirection();
+				final List<String> data = new ArrayList<String>();
+				for(BusDirection busDir : busDirections){
+					data.add(busDir.toString());
 				}
-				popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+				
+				LayoutInflater layoutInflater = (LayoutInflater) mActivity.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				View popupView = layoutInflater.inflate(R.layout.popup_bus, null);
+
+				final int[] screenSize = Util.getScreenSize();
+				final PopupWindow popup = new PopupWindow(popupView, (int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
+
+				ListView listView = (ListView) popupView.findViewById(R.id.details);
+				PopupBusAdapter ada = new PopupBusAdapter(mActivity, data);
+				listView.setAdapter(ada);
+
+				listView.setOnItemClickListener(new OnItemClickListener() {
 					@Override
-					public boolean onMenuItemClick(MenuItem item) {
-						Intent intent = new Intent(activity, BusBoundActivity.class);
+					public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+						Intent intent = new Intent(mActivity, BusBoundActivity.class);
 						Bundle extras = new Bundle();
 						extras.putString("busRouteId", busRoute.getId());
 						extras.putString("busRouteName", busRoute.getName());
-						extras.putString("bound", lBus.get(item.getItemId()).toString());
+						extras.putString("bound", data.get(position));
 						intent.putExtras(extras);
 						intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 						ChicagoTracker.getAppContext().startActivity(intent);
-						return false;
+						popup.dismiss();
 					}
 				});
-				popupMenu.setOnDismissListener(new OnDismissListener() {
+				popup.setFocusable(true);
+				popup.setBackgroundDrawable(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.any_selector));
+				firstLayout.getForeground().setAlpha(210);
+
+				popup.setOnDismissListener(new PopupWindow.OnDismissListener() {
 					@Override
-					public void onDismiss(PopupMenu menu) {
+					public void onDismiss() {
 						firstLayout.getForeground().setAlpha(0);
 						convertView.setVisibility(LinearLayout.GONE);
-						activity.stopRefreshAnimation();
 					}
 				});
-				new Handler().postDelayed(new Runnable() {
-					public void run() {
-						firstLayout.getForeground().setAlpha(210);
-						popupMenu.show();
-					}
-				}, 50);
+				popup.showAtLocation(firstLayout, Gravity.CENTER, 0, 0);
 			} else {
-				ChicagoTracker.displayError(activity, trackerException);
+				ChicagoTracker.displayError(mActivity, trackerException);
 			}
 		}
 	}

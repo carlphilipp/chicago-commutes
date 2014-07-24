@@ -189,6 +189,8 @@ public class BusBoundActivity extends ListActivity {
 		super.onResume();
 		if (map == null) {
 			map = mapFragment.getMap();
+			map.getUiSettings().setMyLocationButtonEnabled(false);
+			map.getUiSettings().setZoomControlsEnabled(false);
 		}
 		new LoadPattern().execute();
 	}
@@ -343,10 +345,12 @@ public class BusBoundActivity extends ListActivity {
 			i++;
 		}
 		if (map != null) {
+			map.getUiSettings().setMyLocationButtonEnabled(false);
+			map.getUiSettings().setZoomControlsEnabled(false);
 			map.setMyLocationEnabled(true);
 			LatLng latLng = new LatLng(positon.getLatitude(), positon.getLongitude());
 			map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
-			map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
+			map.animateCamera(CameraUpdateFactory.zoomTo(9), 500, null);
 		}
 
 	}

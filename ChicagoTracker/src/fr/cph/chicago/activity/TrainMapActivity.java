@@ -14,7 +14,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -24,13 +23,16 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
+import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -38,16 +40,17 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
 
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
-import fr.cph.chicago.entity.Bus;
-import fr.cph.chicago.entity.Pattern;
-import fr.cph.chicago.entity.PatternPoint;
+import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.entity.Position;
+import fr.cph.chicago.entity.Train;
+import fr.cph.chicago.exception.ConnectException;
+import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.fragment.NearbyFragment;
 import fr.cph.chicago.util.Util;
+import fr.cph.chicago.xml.Xml;
 
 public class TrainMapActivity extends Activity {
 	/** Tag **/
@@ -125,12 +128,27 @@ public class TrainMapActivity extends Activity {
 		super.onResume();
 		if (map == null) {
 			map = mapFragment.getMap();
+			map.setInfoWindowAdapter(new InfoWindowAdapter(){
+				@Override
+				public View getInfoWindow(Marker marker) {
+					return null;
+				}
+				@Override
+				public View getInfoContents(Marker marker) {
+					LayoutInflater layoutInflater = (LayoutInflater) TrainMapActivity.this.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+					View view = layoutInflater.inflate(R.layout.marker_train, null);
+					TextView title = (TextView) view.findViewById(R.id.title);
+					title.setText(marker.getTitle());
+					return view;
+				}
+			});
 		}
 		if (refreshTimingTask != null && refreshTimingTask.getStatus() == Status.FINISHED) {
 			startRefreshTask();
 		}
 		if (Util.isNetworkAvailable()) {
-
+			new LoadCurrentPosition().execute();
+			new LoadTrainPosition().execute(new Boolean[] { true, true });
 		} else {
 			Toast.makeText(this, "No network connection detected!", Toast.LENGTH_SHORT).show();
 		}
@@ -139,16 +157,12 @@ public class TrainMapActivity extends Activity {
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		/*busId = savedInstanceState.getInt("busId");
-		busRouteId = savedInstanceState.getString("busRouteId");
-		bounds = savedInstanceState.getStringArray("bounds");*/
+		/*busId = savedInstanceState.getInt("busId");*/
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-/*		savedInstanceState.putInt("busId", busId);
-		savedInstanceState.putString("busRouteId", busRouteId);
-		savedInstanceState.putStringArray("bounds", bounds);*/
+/*		savedInstanceState.putInt("busId", busId);*/
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
@@ -167,9 +181,10 @@ public class TrainMapActivity extends Activity {
 			finish();
 			return true;
 		case R.id.action_refresh:
-			//startRefreshAnimation();
-			//new LoadCurrentPosition().execute();
-			//new LoadBusPosition().execute(new Boolean[] { false, true });
+			startRefreshAnimation();
+			new LoadCurrentPosition().execute();
+			//new LoadTrainPosition().execute();
+			new LoadTrainPosition().execute(new Boolean[] { false, true });
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -199,42 +214,42 @@ public class TrainMapActivity extends Activity {
 		}
 	}
 
-	private final class LoadBusPosition extends AsyncTask<Boolean, Void, List<Bus>> {
+	private final class LoadTrainPosition extends AsyncTask<Boolean, Void, List<Train>> {
 
 		private boolean centerMap;
 
 		private boolean stopRefresh;
 
 		@Override
-		protected List<Bus> doInBackground(Boolean... params) {
+		protected List<Train> doInBackground(Boolean... params) {
 			centerMap = params[0];
 			stopRefresh = params[1];
-			List<Bus> buses = null;
+			List<Train> trains = null;
 			CtaConnect connect = CtaConnect.getInstance();
 			MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
-			connectParam.put("vid", line);
-			//try {
-				//String content = connect.connect(CtaRequestType.BUS_VEHICLES, connectParam);
-				//Xml xml = new Xml();
-				//buses = xml.parseVehicles(content);
-/*			} catch (ConnectException e) {
+			connectParam.put("rt", line);
+			try {
+				String content = connect.connect(CtaRequestType.TRAIN_LOCATION, connectParam);
+				Xml xml = new Xml();
+				trains = xml.parseTrainsLocation(content);
+			} catch (ConnectException e) {
 				Log.e(TAG, e.getMessage(), e);
 			} catch (ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
-			}*/
-			return buses;
+			}
+			return trains;
 		}
 
 		@Override
-		protected final void onPostExecute(final List<Bus> result) {
+		protected final void onPostExecute(final List<Train> result) {
 			if (result != null) {
-				drawBuses(result);
+				drawTrains(result);
 				if (result.size() != 0) {
 					if (centerMap) {
 						centerMapOnBus(result);
 					}
 				} else {
-					Toast.makeText(TrainMapActivity.this, "No bus found!", Toast.LENGTH_LONG).show();
+					Toast.makeText(TrainMapActivity.this, "No trains found!", Toast.LENGTH_LONG).show();
 				}
 			}
 			if (stopRefresh) {
@@ -378,72 +393,7 @@ public class TrainMapActivity extends Activity {
 		}
 	}
 
-	/**
-	 * Load nearby data
-	 * 
-	 * @author Carl-Philipp Harmant
-	 * 
-	 */
-	private final class LoadPattern extends AsyncTask<Void, Void, List<Pattern>> implements LocationListener {
-
-		private List<Pattern> patterns;
-
-		@Override
-		protected final List<Pattern> doInBackground(final Void... params) {
-			this.patterns = new ArrayList<Pattern>();
-			CtaConnect connect = CtaConnect.getInstance();
-			//MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
-			//connectParam.put("rt", busRouteId);
-			// String boundIgnoreCase = bound.toLowerCase(Locale.US);
-/*			try {
-				String content = connect.connect(CtaRequestType.BUS_PATTERN, connectParam);
-				Xml xml = new Xml();
-				List<Pattern> patterns = xml.parsePatterns(content);
-				for (Pattern pattern : patterns) {
-					String directionIgnoreCase = pattern.getDirection().toLowerCase(Locale.US);
-					for (String bound : bounds) {
-						if (pattern.getDirection().equals(bound) || bound.toLowerCase(Locale.US).indexOf(directionIgnoreCase) != -1) {
-							this.patterns.add(pattern);
-						}
-					}
-				}
-			} catch (ConnectException e) {
-				Log.e(TAG, e.getMessage(), e);
-			} catch (ParserException e) {
-				Log.e(TAG, e.getMessage(), e);
-			}*/
-			return this.patterns;
-		}
-
-		@Override
-		protected final void onPostExecute(final List<Pattern> result) {
-			if (result != null) {
-				drawPattern(result);
-			} else {
-				Toast.makeText(TrainMapActivity.this, "Sorry, could not load the path!", Toast.LENGTH_SHORT).show();
-			}
-			stopRefreshAnimation();
-			startRefreshTask();
-		}
-
-		@Override
-		public final void onLocationChanged(final Location location) {
-		}
-
-		@Override
-		public final void onProviderDisabled(final String provider) {
-		}
-
-		@Override
-		public final void onProviderEnabled(final String provider) {
-		}
-
-		@Override
-		public final void onStatusChanged(final String provider, final int status, final Bundle extras) {
-		}
-	}
-
-	private void centerMapOnBus(List<Bus> result) {
+	private void centerMapOnBus(List<Train> result) {
 		int i = 0;
 		while (map == null && i < 20) {
 			map = mapFragment.getMap();
@@ -455,7 +405,7 @@ public class TrainMapActivity extends Activity {
 			position = result.get(0).getPosition();
 			zoom = 15;
 		} else {
-			position = Bus.getBestPosition(result);
+			position = Train.getBestPosition(result);
 			zoom = 11;
 		}
 		if (map != null) {
@@ -473,67 +423,20 @@ public class TrainMapActivity extends Activity {
 		}
 	}
 
-	private void drawBuses(final List<Bus> buses) {
+	private void drawTrains(final List<Train> trains) {
 		if (map != null) {
 			for (Marker marker : markers) {
 				marker.remove();
 			}
 			markers.clear();
-			for (Bus bus : buses) {
-				Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.bus_gta);
+			for (Train train : trains) {
+				Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.train_gta);
 				Bitmap bhalfsize = Bitmap.createScaledBitmap(icon, icon.getWidth() / 4, icon.getHeight() / 4, false);
-				LatLng point = new LatLng(bus.getPosition().getLatitude(), bus.getPosition().getLongitude());
-				Marker marker = map.addMarker(new MarkerOptions().position(point).title(bus.getId() + "").snippet(bus.getId() + "")
-						.icon(BitmapDescriptorFactory.fromBitmap(bhalfsize)).anchor(0.5f, 0.5f).rotation(bus.getHeading()).flat(true));
+				LatLng point = new LatLng(train.getPosition().getLatitude(), train.getPosition().getLongitude());
+				Marker marker = map.addMarker(new MarkerOptions().position(point).title(train.getRouteNumber() + "").snippet(train.getRouteNumber() + "")
+						.icon(BitmapDescriptorFactory.fromBitmap(bhalfsize)).anchor(0.5f, 0.5f).rotation(train.getHeading()).flat(true));
 				markers.add(marker);
 			}
-		}
-	}
-
-	private void drawPattern(final List<Pattern> patterns) {
-		int i = 0;
-		while (map == null && i < 20) {
-			map = mapFragment.getMap();
-			i++;
-		}
-		if (map != null) {
-			final List<Marker> markers = new ArrayList<Marker>();
-			for (Pattern pattern : patterns) {
-				PolylineOptions poly = new PolylineOptions();
-				poly.geodesic(true).color(Color.BLUE);
-				for (PatternPoint patternPoint : pattern.getPoints()) {
-					LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
-					poly.add(point);
-					if (patternPoint.getStopId() != null) {
-						Marker marker = map.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName())
-								.snippet(patternPoint.getSequence() + "")
-								.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-						markers.add(marker);
-						marker.setVisible(false);
-					}
-				}
-				map.addPolyline(poly);
-			}
-
-			map.setOnCameraChangeListener(new OnCameraChangeListener() {
-				private float currentZoom = -1;
-
-				@Override
-				public void onCameraChange(CameraPosition pos) {
-					if (pos.zoom != currentZoom) {
-						currentZoom = pos.zoom;
-						if (currentZoom >= 16) {
-							for (Marker marker : markers) {
-								marker.setVisible(true);
-							}
-						} else {
-							for (Marker marker : markers) {
-								marker.setVisible(false);
-							}
-						}
-					}
-				}
-			});
 		}
 	}
 

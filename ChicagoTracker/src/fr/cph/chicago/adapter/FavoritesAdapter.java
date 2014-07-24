@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,28 +36,20 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils.TruncateAt;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.PopupMenu;
-import android.widget.PopupMenu.OnDismissListener;
-import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BikeStationActivity;
 import fr.cph.chicago.activity.BusActivity;
-import fr.cph.chicago.activity.BusMapActivity;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Favorites;
@@ -89,7 +79,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 	/** Tag **/
 	private static final String TAG = "FavoritesAdapter";
 	/** Main activity **/
-	private MainActivity activity;
+	private MainActivity mActivity;
 	/** The context **/
 	private Context context;
 	/** The layout that is used to display a fade black background **/
@@ -119,7 +109,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 	public FavoritesAdapter(final MainActivity activity) {
 		this.context = ChicagoTracker.getAppContext();
 
-		this.activity = activity;
+		this.mActivity = activity;
 		this.firstLayout = ChicagoTracker.container;
 		this.fav = new Favorites();
 
@@ -195,7 +185,6 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 					convertView.setTag(holder);
 				}
-				
 
 				LinearLayout.LayoutParams paramsArrival = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
@@ -283,8 +272,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 									llv.addView(insideLayout);
 								} else {
-									// llv can be null sometimes (after a remove from favorites for
-									// example)
+									// llv can be null sometimes (after a remove from favorites for example)
 									if (llv != null) {
 										LinearLayout insideLayout = (LinearLayout) llv.findViewById(idLayout3);
 										// InsideLayout can be null too if removed before
@@ -296,8 +284,8 @@ public final class FavoritesAdapter extends BaseAdapter {
 						}
 					}
 				}
-				
-				convertView.setOnClickListener(new FavoritesTrainOnClickListener(activity, firstLayout, stationId, setTL));
+
+				convertView.setOnClickListener(new FavoritesTrainOnClickListener(mActivity, firstLayout, stationId, setTL));
 
 				// Remove empty bloc
 				for (int i = 0; i < favoritesLayout.getChildCount(); i++) {
@@ -366,7 +354,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 						final String key = entry.getKey();
 						final Map<String, List<BusArrival>> value = entry.getValue();
 
-						llh.setOnClickListener(new FavoritesBusOnClickListener(activity, firstLayout, busRoute, value));
+						llh.setOnClickListener(new FavoritesBusOnClickListener(mActivity, firstLayout, busRoute, value));
 
 						LinearLayout stopLayout = new LinearLayout(context);
 						stopLayout.setOrientation(LinearLayout.VERTICAL);
@@ -490,7 +478,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 				favoritesData.addView(llh);
 
-				SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(activity);
+				SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mActivity);
 				boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
 
 				final boolean isNetworkAvailable = Util.isNetworkAvailable();
@@ -500,14 +488,14 @@ public final class FavoritesAdapter extends BaseAdapter {
 						@Override
 						public void onClick(View v) {
 							if (!isNetworkAvailable) {
-								Toast.makeText(activity, "No network connection detected!", Toast.LENGTH_LONG).show();
+								Toast.makeText(mActivity, "No network connection detected!", Toast.LENGTH_LONG).show();
 							} else {
 								Intent intent = new Intent(ChicagoTracker.getAppContext(), BikeStationActivity.class);
 								Bundle extras = new Bundle();
 								extras.putParcelable("station", bikeStation);
 								intent.putExtras(extras);
-								activity.startActivity(intent);
-								activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+								mActivity.startActivity(intent);
+								mActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 							}
 						}
 					});
@@ -516,9 +504,9 @@ public final class FavoritesAdapter extends BaseAdapter {
 						@Override
 						public void onClick(View v) {
 							if (!isNetworkAvailable) {
-								Toast.makeText(activity, "No network connection detected!", Toast.LENGTH_SHORT).show();
+								Toast.makeText(mActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
 							} else {
-								Toast.makeText(activity, "Not ready yet. Please try again in few seconds!", Toast.LENGTH_SHORT).show();
+								Toast.makeText(mActivity, "Not ready yet. Please try again in few seconds!", Toast.LENGTH_SHORT).show();
 							}
 						}
 					});
@@ -527,9 +515,9 @@ public final class FavoritesAdapter extends BaseAdapter {
 						@Override
 						public void onClick(View v) {
 							if (!isNetworkAvailable) {
-								Toast.makeText(activity, "No network connection detected!", Toast.LENGTH_SHORT).show();
+								Toast.makeText(mActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
 							} else {
-								Toast.makeText(activity, "You must activate divvy bikes data", Toast.LENGTH_SHORT).show();
+								Toast.makeText(mActivity, "You must activate divvy bikes data", Toast.LENGTH_SHORT).show();
 							}
 						}
 					});
@@ -607,8 +595,8 @@ public final class FavoritesAdapter extends BaseAdapter {
 		private String busRouteName;
 		private TrackerException trackerException;
 		private MainActivity activity;
-		
-		public BusBoundAsyncTask(final MainActivity activity){
+
+		public BusBoundAsyncTask(final MainActivity activity) {
 			this.activity = activity;
 		}
 

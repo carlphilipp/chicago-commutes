@@ -20,7 +20,6 @@ import android.widget.PopupWindow;
 import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
-import fr.cph.chicago.activity.BusMapActivity;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.activity.StationActivity;
 import fr.cph.chicago.activity.TrainMapActivity;
@@ -54,7 +53,7 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 			LayoutInflater layoutInflater = (LayoutInflater) mActivity.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			View popupView = layoutInflater.inflate(R.layout.popup_train, null);
 
-			int[] screenSize = Util.getScreenSize();
+			final int[] screenSize = Util.getScreenSize();
 
 			final PopupWindow popup = new PopupWindow(popupView, (int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
 			popup.setFocusable(true);
@@ -63,12 +62,16 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 
 			ListView listView = (ListView) popupView.findViewById(R.id.details);
 			final List<String> values = new ArrayList<String>();
+			final List<Integer> colors = new ArrayList<Integer>();
 			values.add("Open details");
 			for (TrainLine line : trainLines) {
-				values.add("Follow all trains on " + line.toString().toLowerCase() + " line");
+				values.add(line.toString() + " line - All trains");
+				colors.add(line.getColor());
 			}
-			PopupTrainAdapter ada = new PopupTrainAdapter(mActivity, values);
+			PopupTrainAdapter ada = new PopupTrainAdapter(mActivity, values, colors);
 			listView.setAdapter(ada);
+			final List<TrainLine> lines = new ArrayList<TrainLine>();
+			lines.addAll(trainLines);
 
 			listView.setOnItemClickListener(new OnItemClickListener() {
 				@Override
@@ -82,17 +85,13 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 						mActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 						popup.dismiss();
 					} else {
-						//for (TrainLine line : trainLines) {
-							Intent intent = new Intent(ChicagoTracker.getAppContext(), TrainMapActivity.class);
-							Bundle extras = new Bundle();
-							extras.putString("line", "Red");
-							intent.putExtras(extras);
-							mActivity.startActivity(intent);
-							mActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
-/*							Toast.makeText(mActivity, "" + arrival.getTimeLeftDueDelay() + " " + arrival.getBusId(), Toast.LENGTH_SHORT)
-									.show();*/
-							popup.dismiss();
-						//}
+						Intent intent = new Intent(ChicagoTracker.getAppContext(), TrainMapActivity.class);
+						Bundle extras = new Bundle();
+						extras.putString("line", lines.get(position - 1).toTextString());
+						intent.putExtras(extras);
+						mActivity.startActivity(intent);
+						mActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+						popup.dismiss();
 					}
 				}
 			});

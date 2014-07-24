@@ -47,6 +47,7 @@ import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Service;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.Stop;
+import fr.cph.chicago.entity.Train;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.BusDirection;
 import fr.cph.chicago.entity.enumeration.PredictionType;
@@ -747,5 +748,59 @@ public final class Xml {
 			throw new ParserException(TrackerException.ERROR, e);
 		}
 		return buses;
+	}
+	
+	public final List<Train> parseTrainsLocation(String xml) throws ParserException{
+		List<Train> trains = null;
+		String tagName = null;
+		Train train = null;
+		Position position = null;
+		InputStream is = new ByteArrayInputStream(xml.getBytes());
+		try {
+			parser.setInput(is, "UTF-8");
+			int eventType = parser.getEventType();
+			while (eventType != XmlPullParser.END_DOCUMENT) {
+				if (eventType == XmlPullParser.START_DOCUMENT) {
+					trains = new ArrayList<Train>();
+				} else if (eventType == XmlPullParser.START_TAG) {
+					tagName = parser.getName();
+					if (tagName.equals("train")) {
+						train = new Train();
+					}
+				} else if (eventType == XmlPullParser.END_TAG) {
+					tagName = null;
+				} else if (eventType == XmlPullParser.TEXT) {
+					String text = parser.getText();
+					if (tagName != null) {
+						if (tagName.equals("rn")) {
+							train.setRouteNumber(Integer.valueOf(text));
+							trains.add(train);
+						} else if (tagName.equals("destSt")) {
+							train.setDestStation(Integer.valueOf(text));
+						} else if (tagName.equals("destNm")) {
+							train.setDestName(text);
+						} else if (tagName.equals("lat")) {
+							position = new Position();
+							train.setPosition(position);
+							position.setLatitude(Double.valueOf(text));
+						} else if (tagName.equals("lon")) {
+							position.setLongitude(Double.valueOf(text));
+						} else if (tagName.equals("heading")) {
+							train.setHeading(Integer.valueOf(text));
+						} else if (tagName.equals("isApp")) {
+							train.setApp(Boolean.valueOf(text));
+						} else if (tagName.equals("isDly")) {
+							train.setDly(Boolean.valueOf(text));
+						}
+					}
+				}
+				eventType = parser.next();
+			}
+		} catch (XmlPullParserException e) {
+			throw new ParserException(TrackerException.ERROR, e);
+		} catch (IOException e) {
+			throw new ParserException(TrackerException.ERROR, e);
+		}
+		return trains;
 	}
 }
