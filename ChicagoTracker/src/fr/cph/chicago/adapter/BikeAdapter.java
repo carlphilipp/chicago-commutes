@@ -87,7 +87,7 @@ public final class BikeAdapter extends BaseAdapter {
 			convertView = vi.inflate(R.layout.list_bike, null);
 
 			holder = new ViewHolder();
-			holder.stationNameView = (TextView) convertView.findViewById(R.id.station_name_value_search);
+			holder.stationNameView = (TextView) convertView.findViewById(R.id.station_name);
 
 			convertView.setTag(holder);
 		} else {

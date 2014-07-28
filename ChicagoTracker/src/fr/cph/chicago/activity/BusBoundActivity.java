@@ -63,7 +63,7 @@ import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BusStop;
-import fr.cph.chicago.entity.Pattern;
+import fr.cph.chicago.entity.BusPattern;
 import fr.cph.chicago.entity.PatternPoint;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.exception.ConnectException;
@@ -274,12 +274,12 @@ public class BusBoundActivity extends ListActivity {
 	 * @author Carl-Philipp Harmant
 	 * 
 	 */
-	private final class LoadPattern extends AsyncTask<Void, Void, Pattern> implements LocationListener {
+	private final class LoadPattern extends AsyncTask<Void, Void, BusPattern> implements LocationListener {
 
-		private Pattern pattern;
+		private BusPattern pattern;
 
 		@Override
-		protected final Pattern doInBackground(final Void... params) {
+		protected final BusPattern doInBackground(final Void... params) {
 			CtaConnect connect = CtaConnect.getInstance();
 			MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
 			connectParam.put("rt", busRouteId);
@@ -287,8 +287,8 @@ public class BusBoundActivity extends ListActivity {
 			try {
 				String content = connect.connect(CtaRequestType.BUS_PATTERN, connectParam);
 				Xml xml = new Xml();
-				List<Pattern> patterns = xml.parsePatterns(content);
-				for (Pattern pattern : patterns) {
+				List<BusPattern> patterns = xml.parsePatterns(content);
+				for (BusPattern pattern : patterns) {
 					String directionIgnoreCase = pattern.getDirection().toLowerCase(Locale.US);
 					if (pattern.getDirection().equals(bound) || boundIgnoreCase.indexOf(directionIgnoreCase) != -1) {
 						this.pattern = pattern;
@@ -304,7 +304,7 @@ public class BusBoundActivity extends ListActivity {
 		}
 
 		@Override
-		protected final void onPostExecute(final Pattern result) {
+		protected final void onPostExecute(final BusPattern result) {
 			if (result != null) {
 				int center = result.getPoints().size() / 2;
 				centerMap(result.getPoints().get(center).getPosition());
@@ -355,7 +355,7 @@ public class BusBoundActivity extends ListActivity {
 
 	}
 
-	private void drawPattern(final Pattern pattern) {
+	private void drawPattern(final BusPattern pattern) {
 		if (map != null) {
 			final List<Marker> markers = new ArrayList<Marker>();
 			PolylineOptions poly = new PolylineOptions();

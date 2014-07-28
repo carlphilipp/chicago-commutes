@@ -1,7 +1,9 @@
 package fr.cph.chicago.activity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.map.MultiValueMap;
@@ -27,6 +29,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,12 +43,18 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import fr.cph.chicago.R;
+import fr.cph.chicago.adapter.TrainMapSnippetAdapter;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.CtaRequestType;
+import fr.cph.chicago.data.DataHolder;
+import fr.cph.chicago.data.TrainData;
+import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Train;
+import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.fragment.NearbyFragment;
@@ -54,19 +63,27 @@ import fr.cph.chicago.xml.Xml;
 
 public class TrainMapActivity extends Activity {
 	/** Tag **/
-	private static final String TAG = "BusMapActivity";
+	private static final String TAG = "TrainMapActivity";
 	/** The map fragment from google api **/
 	private MapFragment mapFragment;
 	/** The map **/
 	private GoogleMap map;
-	/** Bus id **/
+	/** Line **/
 	private String line;
-	/** Markers **/
+	/** Bus Markers **/
 	private List<Marker> markers;
+	/** Markers **/
+//	private List<Marker> stationMarkers;
 	/** Menu **/
 	private Menu menu;
 	/** A refresh task **/
 	private RefreshTask refreshTimingTask;
+	/** Train data **/
+	private TrainData data;
+
+	private boolean mRefreshingInfoWindow = false;
+	private Marker mSelectedMarker = null;
+	private Map<Marker, View> views;
 
 	@Override
 	public final void onCreate(final Bundle savedInstanceState) {
@@ -78,8 +95,16 @@ public class TrainMapActivity extends Activity {
 			} else {
 				line = getIntent().getExtras().getString("line");
 			}
+			
+			Log.i(TAG,"Set line: " + line);
+
+			// Load data
+			DataHolder dataHolder = DataHolder.getInstance();
+			this.data = dataHolder.getTrainData();
 
 			markers = new ArrayList<Marker>();
+			
+			//stationMarkers = new ArrayList<Marker>();
 
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 		}
@@ -128,18 +153,27 @@ public class TrainMapActivity extends Activity {
 		super.onResume();
 		if (map == null) {
 			map = mapFragment.getMap();
-			map.setInfoWindowAdapter(new InfoWindowAdapter(){
+
+			map.setInfoWindowAdapter(new InfoWindowAdapter() {
 				@Override
 				public View getInfoWindow(Marker marker) {
 					return null;
 				}
+
 				@Override
 				public View getInfoContents(Marker marker) {
-					LayoutInflater layoutInflater = (LayoutInflater) TrainMapActivity.this.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-					View view = layoutInflater.inflate(R.layout.marker_train, null);
-					TextView title = (TextView) view.findViewById(R.id.title);
-					title.setText(marker.getTitle());
-					return view;
+					if (!marker.getSnippet().equals("")) {
+						View view = views.get(marker);
+						if (!mRefreshingInfoWindow) {
+							mSelectedMarker = marker;
+							String runNumber = marker.getSnippet();
+							startRefreshAnimation();
+							new LoadTrainFollow(view).execute(runNumber);
+						}
+						return view;
+					} else {
+						return null;
+					}
 				}
 			});
 		}
@@ -154,15 +188,66 @@ public class TrainMapActivity extends Activity {
 		}
 	}
 
+	private void refreshInfoWindow() {
+		if (mSelectedMarker == null) {
+			return;
+		}
+		mRefreshingInfoWindow = true;
+		mSelectedMarker.showInfoWindow();
+		mRefreshingInfoWindow = false;
+		stopRefreshAnimation();
+	}
+
+	private final class LoadTrainFollow extends AsyncTask<String, Void, List<Eta>> {
+
+		private View view;
+
+		public LoadTrainFollow(View view) {
+			this.view = view;
+		}
+
+		@Override
+		protected List<Eta> doInBackground(String... params) {
+			final String runNumber = params[0];
+			List<Eta> etas = new ArrayList<Eta>();
+			try {
+				CtaConnect connect = CtaConnect.getInstance();
+				MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
+				connectParam.put("runnumber", runNumber);
+				String content = connect.connect(CtaRequestType.TRAIN_FOLLOW, connectParam);
+				Xml xml = new Xml();
+				etas = xml.parseTrainsFollow(content, data);
+			} catch (ConnectException e) {
+				Log.e(TAG, e.getMessage(), e);
+			} catch (ParserException e) {
+				Log.e(TAG, e.getMessage(), e);
+			}
+			return etas;
+		}
+
+		@Override
+		protected final void onPostExecute(final List<Eta> result) {
+			if (result.size() != 0) {
+				ListView arrivals = (ListView) view.findViewById(R.id.arrivals);
+				TrainMapSnippetAdapter ada = new TrainMapSnippetAdapter(result);
+				arrivals.setAdapter(ada);
+			} else {
+				TextView error = (TextView) view.findViewById(R.id.error);
+				error.setVisibility(TextView.VISIBLE);
+			}
+			refreshInfoWindow();
+		}
+	}
+
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		/*busId = savedInstanceState.getInt("busId");*/
+		/* busId = savedInstanceState.getInt("busId"); */
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-/*		savedInstanceState.putInt("busId", busId);*/
+		/* savedInstanceState.putInt("busId", busId); */
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
@@ -170,7 +255,7 @@ public class TrainMapActivity extends Activity {
 	public final boolean onCreateOptionsMenu(final Menu menu) {
 		this.menu = menu;
 		getMenuInflater().inflate(R.menu.main_no_search, menu);
-		//startRefreshAnimation();
+		// startRefreshAnimation();
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -183,7 +268,7 @@ public class TrainMapActivity extends Activity {
 		case R.id.action_refresh:
 			startRefreshAnimation();
 			new LoadCurrentPosition().execute();
-			//new LoadTrainPosition().execute();
+			// new LoadTrainPosition().execute();
 			new LoadTrainPosition().execute(new Boolean[] { false, true });
 			return true;
 		}
@@ -220,6 +305,8 @@ public class TrainMapActivity extends Activity {
 
 		private boolean stopRefresh;
 
+		private List<Position> patterns;
+
 		@Override
 		protected List<Train> doInBackground(Boolean... params) {
 			centerMap = params[0];
@@ -237,13 +324,14 @@ public class TrainMapActivity extends Activity {
 			} catch (ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
+			patterns = TrainMapActivity.this.data.readPattern(TrainLine.fromXmlString(TrainMapActivity.this.line));
 			return trains;
 		}
 
 		@Override
 		protected final void onPostExecute(final List<Train> result) {
 			if (result != null) {
-				drawTrains(result);
+				drawTrains(result, patterns);
 				if (result.size() != 0) {
 					if (centerMap) {
 						centerMapOnBus(result);
@@ -418,25 +506,75 @@ public class TrainMapActivity extends Activity {
 	 * Start refresh task
 	 */
 	private void startRefreshTask() {
-		if(!isFinishing()){
-			//refreshTimingTask = (RefreshTask) new RefreshTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		if (!isFinishing()) {
+			// refreshTimingTask = (RefreshTask) new RefreshTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		}
 	}
 
-	private void drawTrains(final List<Train> trains) {
+	private void drawTrains(final List<Train> trains, final List<Position> patterns) {
 		if (map != null) {
+			if (views != null) {
+				views.clear();
+			}
+			views = new HashMap<Marker, View>();
 			for (Marker marker : markers) {
 				marker.remove();
 			}
 			markers.clear();
 			for (Train train : trains) {
-				Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.train_gta);
-				Bitmap bhalfsize = Bitmap.createScaledBitmap(icon, icon.getWidth() / 4, icon.getHeight() / 4, false);
-				LatLng point = new LatLng(train.getPosition().getLatitude(), train.getPosition().getLongitude());
-				Marker marker = map.addMarker(new MarkerOptions().position(point).title(train.getRouteNumber() + "").snippet(train.getRouteNumber() + "")
+				final Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.train_gta);
+				final Bitmap bhalfsize = Bitmap.createScaledBitmap(icon, icon.getWidth() / 4, icon.getHeight() / 4, false);
+				final LatLng point = new LatLng(train.getPosition().getLatitude(), train.getPosition().getLongitude());
+				final String title = "To " + train.getDestName();
+				final String snippet = String.valueOf(train.getRouteNumber());
+
+				final Marker marker = map.addMarker(new MarkerOptions().position(point).title(title).snippet(snippet)
 						.icon(BitmapDescriptorFactory.fromBitmap(bhalfsize)).anchor(0.5f, 0.5f).rotation(train.getHeading()).flat(true));
 				markers.add(marker);
+
+				LayoutInflater layoutInflater = (LayoutInflater) TrainMapActivity.this.getBaseContext().getSystemService(
+						Context.LAYOUT_INFLATER_SERVICE);
+				View view = layoutInflater.inflate(R.layout.marker_train, null);
+				TextView title2 = (TextView) view.findViewById(R.id.title);
+				title2.setText(marker.getTitle());
+				
+				TextView color = (TextView) view.findViewById(R.id.route_color_value);
+				color.setBackgroundColor(TrainLine.fromXmlString(TrainMapActivity.this.line).getColor());
+				
+				views.put(marker, view);
 			}
+
+			PolylineOptions poly = new PolylineOptions();
+			poly.width(7f);
+			poly.geodesic(true).color(TrainLine.fromXmlString(this.line).getColor());
+			for (Position position : patterns) {
+				LatLng point = new LatLng(position.getLatitude(), position.getLongitude());
+				poly.add(point);
+/*				Marker marker = map.addMarker(new MarkerOptions().position(point).title("").snippet("")
+						.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+				marker.setVisible(false);
+				stationMarkers.add(marker);*/
+			}
+			map.addPolyline(poly);
+			/*map.setOnCameraChangeListener(new OnCameraChangeListener() {
+				private float currentZoom = -1;
+
+				@Override
+				public void onCameraChange(CameraPosition pos) {
+					if (pos.zoom != currentZoom) {
+						currentZoom = pos.zoom;
+						if (currentZoom >= 16) {
+							for (Marker marker : stationMarkers) {
+								marker.setVisible(true);
+							}
+						} else {
+							for (Marker marker : stationMarkers) {
+								marker.setVisible(false);
+							}
+						}
+					}
+				}
+			});*/
 		}
 	}
 
@@ -452,8 +590,8 @@ public class TrainMapActivity extends Activity {
 		protected final void onProgressUpdate(Void... values) {
 			super.onProgressUpdate();
 			startRefreshAnimation();
-			//new LoadCurrentPosition().execute();
-			//new LoadBusPosition().execute(new Boolean[] { false, true });
+			// new LoadCurrentPosition().execute();
+			// new LoadBusPosition().execute(new Boolean[] { false, true });
 		}
 
 		@Override

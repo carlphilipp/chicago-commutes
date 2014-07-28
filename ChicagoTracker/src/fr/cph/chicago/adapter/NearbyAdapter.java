@@ -184,7 +184,7 @@ public final class NearbyAdapter extends BaseAdapter {
 
 				TrainViewHolder holder = new TrainViewHolder();
 
-				TextView routeView = (TextView) convertView.findViewById(R.id.station_name_value_search);
+				TextView routeView = (TextView) convertView.findViewById(R.id.station_name);
 				routeView.setText(station.getName());
 				holder.stationNameView = routeView;
 
@@ -300,7 +300,7 @@ public final class NearbyAdapter extends BaseAdapter {
 			TextView typeView = (TextView) convertView.findViewById(R.id.train_bus_type);
 			typeView.setText("B");
 
-			TextView routeView = (TextView) convertView.findViewById(R.id.station_name_value_search);
+			TextView routeView = (TextView) convertView.findViewById(R.id.station_name);
 			routeView.setText(busStop.getName());
 
 			convertView.setOnClickListener(new OnClickListener() {
@@ -381,7 +381,7 @@ public final class NearbyAdapter extends BaseAdapter {
 			TextView typeView = (TextView) convertView.findViewById(R.id.train_bus_type);
 			typeView.setText("D");
 			
-			TextView routeView = (TextView) convertView.findViewById(R.id.station_name_value_search);
+			TextView routeView = (TextView) convertView.findViewById(R.id.station_name);
 			routeView.setText(bikeStation.getName());
 
 			LinearLayout llh = new LinearLayout(context);

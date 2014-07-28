@@ -245,8 +245,8 @@ public class TrainData {
 	public final int getStationsSize() {
 		return stations.size();
 	}
-	
-	public final boolean isStationNull(){
+
+	public final boolean isStationNull() {
 		return stations == null;
 	}
 
@@ -276,8 +276,8 @@ public class TrainData {
 		}
 		return null;
 	}
-	
-	public final boolean isStopsNull(){
+
+	public final boolean isStopsNull() {
 		return stops == null;
 	}
 
@@ -369,6 +369,28 @@ public class TrainData {
 			}
 		}
 		return res;
+	}
+
+	public final List<Position> readPattern(final TrainLine line) {
+		List<Position> positions = new ArrayList<Position>();
+		try {
+			CSVReader reader = new CSVReader(new InputStreamReader(ChicagoTracker.getAppContext().getAssets()
+					.open(line.toTextString() + "_pattern.csv")));
+			reader.readNext();
+			String[] row = null;
+			while ((row = reader.readNext()) != null) {
+				double longitude = Double.valueOf(row[0]);
+				double latitude = Double.valueOf(row[1]);
+				Position position = new Position();
+				position.setLatitude(latitude);
+				position.setLongitude(longitude);
+				positions.add(position);
+			}
+			reader.close();
+		} catch (IOException e) {
+			Log.e(TAG, e.getMessage(), e);
+		}
+		return positions;
 	}
 
 	/**

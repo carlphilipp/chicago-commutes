@@ -85,7 +85,7 @@
     <string name="nearby_title">Nearby</string>
     <string name="nearby_check_box">Hide stations/stops with no results</string>
 
-    <!-- Map -->
+    <!-- CTA System map -->
     <string name="fragment_image_description">A nice description</string>
     <string name="fragment_train">Train</string>
     <string name="fragment_bus">Bus</string>
@@ -111,5 +111,6 @@
     
      <!-- Map -->
     <string name="map_activity">Map</string>
+    <string name="map_train_follow_error">Unable to determine upcoming stops</string>
 
 </resources>

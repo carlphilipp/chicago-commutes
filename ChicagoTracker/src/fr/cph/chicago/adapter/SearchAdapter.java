@@ -125,7 +125,7 @@ public final class SearchAdapter extends BaseAdapter {
 		LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		convertView = vi.inflate(R.layout.list_search, null);
 
-		TextView rounteName = (TextView) convertView.findViewById(R.id.station_name_value_search);
+		TextView rounteName = (TextView) convertView.findViewById(R.id.station_name);
 
 		if (position < trains.size()) {
 			final Station station = (Station) getItem(position);

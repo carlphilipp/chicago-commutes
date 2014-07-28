@@ -10,7 +10,7 @@ import android.os.Parcelable;
  * @author carl
  * 
  */
-public final class Pattern implements Parcelable {
+public final class BusPattern implements Parcelable {
 	/** The pattern id **/
 	private Integer id;
 	/** The length in feet **/
@@ -23,7 +23,7 @@ public final class Pattern implements Parcelable {
 	/**
 	 * 
 	 */
-	public Pattern() {
+	public BusPattern() {
 		this.points = new ArrayList<PatternPoint>();
 	}
 
@@ -31,7 +31,7 @@ public final class Pattern implements Parcelable {
 	 * 
 	 * @param in
 	 */
-	private Pattern(Parcel in) {
+	private BusPattern(Parcel in) {
 		readFromParcel(in);
 	}
 
@@ -125,13 +125,13 @@ public final class Pattern implements Parcelable {
 		in.readList(points, PatternPoint.class.getClassLoader());
 	}
 
-	public static final Parcelable.Creator<Pattern> CREATOR = new Parcelable.Creator<Pattern>() {
-		public Pattern createFromParcel(Parcel in) {
-			return new Pattern(in);
+	public static final Parcelable.Creator<BusPattern> CREATOR = new Parcelable.Creator<BusPattern>() {
+		public BusPattern createFromParcel(Parcel in) {
+			return new BusPattern(in);
 		}
 
-		public Pattern[] newArray(int size) {
-			return new Pattern[size];
+		public BusPattern[] newArray(int size) {
+			return new BusPattern[size];
 		}
 	};
 

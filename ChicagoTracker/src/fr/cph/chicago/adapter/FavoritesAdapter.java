@@ -320,7 +320,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 				TextView routeIdView = (TextView) convertView.findViewById(R.id.route_id);
 				routeIdView.setText(busRoute.getId());
 
-				TextView routeNameView = (TextView) convertView.findViewById(R.id.station_name_value_search);
+				TextView routeNameView = (TextView) convertView.findViewById(R.id.station_name);
 				routeNameView.setText(" " + busRoute.getName());
 
 				final LinearLayout favoritesLayout = (LinearLayout) convertView.findViewById(R.id.favorites_list);

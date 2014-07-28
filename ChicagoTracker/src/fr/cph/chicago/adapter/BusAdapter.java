@@ -100,7 +100,7 @@ public final class BusAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public final View getView(final int position, View convertView, final ViewGroup parent) {
+	public final View getView(final int position, View convertView, ViewGroup parent) {
 
 		final BusRoute route = (BusRoute) getItem(position);
 
@@ -113,7 +113,7 @@ public final class BusAdapter extends BaseAdapter {
 			convertView = vi.inflate(R.layout.list_bus, null);
 
 			final ViewHolder holder = new ViewHolder();
-			routeNameView = (TextView) convertView.findViewById(R.id.station_name_value_search);
+			routeNameView = (TextView) convertView.findViewById(R.id.station_name);
 			holder.routeNameView = routeNameView;
 
 			routeNumberView = (TextView) convertView.findViewById(R.id.bike_availability);
