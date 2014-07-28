@@ -39,6 +39,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -86,7 +87,8 @@ public class BusMapActivity extends Activity {
 
 	private boolean mRefreshingInfoWindow = false;
 	private Marker mSelectedMarker = null;
-	private Map<Marker, View> views;
+	private Map<Marker, View> mViews;
+	private Map<Marker, Boolean> mStatus;
 
 	@Override
 	public final void onCreate(final Bundle savedInstanceState) {
@@ -105,7 +107,9 @@ public class BusMapActivity extends Activity {
 
 			markers = new ArrayList<Marker>();
 
-			views = new HashMap<Marker, View>();
+			mViews = new HashMap<Marker, View>();
+			
+			mStatus = new HashMap<Marker,Boolean>();
 
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 		}
@@ -169,16 +173,34 @@ public class BusMapActivity extends Activity {
 				@Override
 				public View getInfoContents(Marker marker) {
 					if (!marker.getSnippet().equals("")) {
-						View view = views.get(marker);
+						View view = mViews.get(marker);
 						if (!mRefreshingInfoWindow) {
 							mSelectedMarker = marker;
 							String busId = marker.getSnippet();
 							startRefreshAnimation();
-							new LoadBusFollow(view).execute(busId);
+							new LoadBusFollow(view, false).execute(busId);
+							mStatus.put(marker, false);
 						}
 						return view;
 					} else {
 						return null;
+					}
+				}
+			});
+			
+			map.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
+				@Override
+				public void onInfoWindowClick(Marker marker) {
+					if (!marker.getSnippet().equals("")) {
+						final View view = mViews.get(marker);
+						if (!mRefreshingInfoWindow) {
+							mSelectedMarker = marker;
+							final String runNumber = marker.getSnippet();
+							startRefreshAnimation();
+							boolean current = mStatus.get(marker);
+							new LoadBusFollow(view, !current).execute(runNumber);
+							mStatus.put(marker, !current);
+						}
 					}
 				}
 			});
@@ -203,9 +225,12 @@ public class BusMapActivity extends Activity {
 	private final class LoadBusFollow extends AsyncTask<String, Void, List<BusArrival>> {
 
 		private View view;
+		
+		private boolean loadAll;
 
-		public LoadBusFollow(View view) {
+		public LoadBusFollow(final View view, final boolean loadAll) {
 			this.view = view;
+			this.loadAll = loadAll;
 		}
 
 		@Override
@@ -223,6 +248,14 @@ public class BusMapActivity extends Activity {
 				Log.e(TAG, e.getMessage(), e);
 			} catch (ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
+			}
+			
+			if (!loadAll && arrivals.size() > 7) {
+				arrivals = arrivals.subList(0, 6);
+				BusArrival arrival = new BusArrival();
+				arrival.setStopName("Display all results");
+				arrival.setIsDly(false);
+				arrivals.add(arrival);
 			}
 			return arrivals;
 		}
@@ -629,7 +662,7 @@ public class BusMapActivity extends Activity {
 				TextView title2 = (TextView) view.findViewById(R.id.title);
 				title2.setText(marker.getTitle());
 
-				views.put(marker, view);
+				mViews.put(marker, view);
 			}
 		}
 	}

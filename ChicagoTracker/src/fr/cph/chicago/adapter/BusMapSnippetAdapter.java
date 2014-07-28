@@ -3,6 +3,8 @@ package fr.cph.chicago.adapter;
 import java.util.List;
 
 import android.content.Context;
+import android.graphics.Typeface;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,8 +45,14 @@ public class BusMapSnippetAdapter extends BaseAdapter {
 		TextView name = (TextView) convertView.findViewById(R.id.station_name);
 		name.setText(arrival.getStopName());
 
-		TextView time = (TextView) convertView.findViewById(R.id.time);
-		time.setText(arrival.getTimeLeftDueDelay());
+		if (!(position == mArrivals.size() - 1 && arrival.getTimeLeftDueDelay().equals("No service scheduled"))) {
+			TextView time = (TextView) convertView.findViewById(R.id.time);
+			time.setText(arrival.getTimeLeftDueDelay());
+		} else {
+			name.setTextColor(ChicagoTracker.getAppContext().getResources().getColor(R.color.grey));
+			name.setTypeface(null, Typeface.BOLD);
+			name.setGravity(Gravity.CENTER);
+		}
 
 		return convertView;
 	}

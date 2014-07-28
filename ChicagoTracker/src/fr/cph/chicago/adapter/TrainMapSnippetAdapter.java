@@ -3,6 +3,8 @@ package fr.cph.chicago.adapter;
 import java.util.List;
 
 import android.content.Context;
+import android.graphics.Typeface;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,9 +44,15 @@ public class TrainMapSnippetAdapter extends BaseAdapter {
 		convertView = vi.inflate(R.layout.list_map_train, null);
 		TextView name = (TextView) convertView.findViewById(R.id.station_name);
 		name.setText(eta.getStation().getName());
-		
-		TextView time = (TextView) convertView.findViewById(R.id.time);
-		time.setText(eta.getTimeLeftDueDelay());
+
+		if (!(position == mEtas.size() - 1 && eta.getTimeLeftDueDelay().equals("0 min"))) {
+			TextView time = (TextView) convertView.findViewById(R.id.time);
+			time.setText(eta.getTimeLeftDueDelay());
+		} else {
+			name.setTextColor(ChicagoTracker.getAppContext().getResources().getColor(R.color.grey));
+			name.setTypeface(null, Typeface.BOLD);
+			name.setGravity(Gravity.CENTER);
+		}
 
 		return convertView;
 	}

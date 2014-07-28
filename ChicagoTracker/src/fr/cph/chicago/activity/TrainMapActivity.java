@@ -1,6 +1,8 @@
 package fr.cph.chicago.activity;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +38,7 @@ import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -53,6 +56,7 @@ import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Position;
+import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.Train;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
@@ -73,7 +77,7 @@ public class TrainMapActivity extends Activity {
 	/** Bus Markers **/
 	private List<Marker> markers;
 	/** Markers **/
-//	private List<Marker> stationMarkers;
+	// private List<Marker> stationMarkers;
 	/** Menu **/
 	private Menu menu;
 	/** A refresh task **/
@@ -83,7 +87,8 @@ public class TrainMapActivity extends Activity {
 
 	private boolean mRefreshingInfoWindow = false;
 	private Marker mSelectedMarker = null;
-	private Map<Marker, View> views;
+	private Map<Marker, View> mViews;
+	private Map<Marker, Boolean> mStatus;
 
 	@Override
 	public final void onCreate(final Bundle savedInstanceState) {
@@ -95,8 +100,6 @@ public class TrainMapActivity extends Activity {
 			} else {
 				line = getIntent().getExtras().getString("line");
 			}
-			
-			Log.i(TAG,"Set line: " + line);
 
 			// Load data
 			DataHolder dataHolder = DataHolder.getInstance();
@@ -104,7 +107,9 @@ public class TrainMapActivity extends Activity {
 
 			markers = new ArrayList<Marker>();
 			
-			//stationMarkers = new ArrayList<Marker>();
+			mStatus = new HashMap<Marker,Boolean>();
+
+			// stationMarkers = new ArrayList<Marker>();
 
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 		}
@@ -163,16 +168,34 @@ public class TrainMapActivity extends Activity {
 				@Override
 				public View getInfoContents(Marker marker) {
 					if (!marker.getSnippet().equals("")) {
-						View view = views.get(marker);
+						final View view = mViews.get(marker);
 						if (!mRefreshingInfoWindow) {
 							mSelectedMarker = marker;
-							String runNumber = marker.getSnippet();
+							final String runNumber = marker.getSnippet();
 							startRefreshAnimation();
-							new LoadTrainFollow(view).execute(runNumber);
+							new LoadTrainFollow(view, false).execute(runNumber);
+							mStatus.put(marker, false);
 						}
 						return view;
 					} else {
 						return null;
+					}
+				}
+			});
+
+			map.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
+				@Override
+				public void onInfoWindowClick(Marker marker) {
+					if (!marker.getSnippet().equals("")) {
+						final View view = mViews.get(marker);
+						if (!mRefreshingInfoWindow) {
+							mSelectedMarker = marker;
+							final String runNumber = marker.getSnippet();
+							startRefreshAnimation();
+							boolean current = mStatus.get(marker);
+							new LoadTrainFollow(view, !current).execute(runNumber);
+							mStatus.put(marker, !current);
+						}
 					}
 				}
 			});
@@ -202,8 +225,11 @@ public class TrainMapActivity extends Activity {
 
 		private View view;
 
-		public LoadTrainFollow(View view) {
+		private boolean loadAll;
+
+		public LoadTrainFollow(View view, boolean loadAll) {
 			this.view = view;
+			this.loadAll = loadAll;
 		}
 
 		@Override
@@ -221,6 +247,21 @@ public class TrainMapActivity extends Activity {
 				Log.e(TAG, e.getMessage(), e);
 			} catch (ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
+			}
+			if (!loadAll && etas.size() > 7) {
+				etas = etas.subList(0, 6);
+				
+				// Add a fake Eta cell to alert the user about the fact that only a part of the result is displayed
+				Eta eta = new Eta();
+				eta.setIsDly(false);
+				eta.setIsApp(false);
+				Date currentDate = Calendar.getInstance().getTime();
+				eta.setArrivalDepartureDate(currentDate);
+				eta.setPredictionDate(currentDate);
+				Station fakeStation = new Station();
+				fakeStation.setName("Display all results");
+				eta.setStation(fakeStation);
+				etas.add(eta);
 			}
 			return etas;
 		}
@@ -513,10 +554,10 @@ public class TrainMapActivity extends Activity {
 
 	private void drawTrains(final List<Train> trains, final List<Position> patterns) {
 		if (map != null) {
-			if (views != null) {
-				views.clear();
+			if (mViews != null) {
+				mViews.clear();
 			}
-			views = new HashMap<Marker, View>();
+			mViews = new HashMap<Marker, View>();
 			for (Marker marker : markers) {
 				marker.remove();
 			}
@@ -537,11 +578,11 @@ public class TrainMapActivity extends Activity {
 				View view = layoutInflater.inflate(R.layout.marker_train, null);
 				TextView title2 = (TextView) view.findViewById(R.id.title);
 				title2.setText(marker.getTitle());
-				
+
 				TextView color = (TextView) view.findViewById(R.id.route_color_value);
 				color.setBackgroundColor(TrainLine.fromXmlString(TrainMapActivity.this.line).getColor());
-				
-				views.put(marker, view);
+
+				mViews.put(marker, view);
 			}
 
 			PolylineOptions poly = new PolylineOptions();
@@ -550,31 +591,20 @@ public class TrainMapActivity extends Activity {
 			for (Position position : patterns) {
 				LatLng point = new LatLng(position.getLatitude(), position.getLongitude());
 				poly.add(point);
-/*				Marker marker = map.addMarker(new MarkerOptions().position(point).title("").snippet("")
-						.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-				marker.setVisible(false);
-				stationMarkers.add(marker);*/
+				/*
+				 * Marker marker = map.addMarker(new MarkerOptions().position(point).title("").snippet("")
+				 * .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))); marker.setVisible(false);
+				 * stationMarkers.add(marker);
+				 */
 			}
 			map.addPolyline(poly);
-			/*map.setOnCameraChangeListener(new OnCameraChangeListener() {
-				private float currentZoom = -1;
-
-				@Override
-				public void onCameraChange(CameraPosition pos) {
-					if (pos.zoom != currentZoom) {
-						currentZoom = pos.zoom;
-						if (currentZoom >= 16) {
-							for (Marker marker : stationMarkers) {
-								marker.setVisible(true);
-							}
-						} else {
-							for (Marker marker : stationMarkers) {
-								marker.setVisible(false);
-							}
-						}
-					}
-				}
-			});*/
+			/*
+			 * map.setOnCameraChangeListener(new OnCameraChangeListener() { private float currentZoom = -1;
+			 * 
+			 * @Override public void onCameraChange(CameraPosition pos) { if (pos.zoom != currentZoom) { currentZoom = pos.zoom; if (currentZoom >=
+			 * 16) { for (Marker marker : stationMarkers) { marker.setVisible(true); } } else { for (Marker marker : stationMarkers) {
+			 * marker.setVisible(false); } } } } });
+			 */
 		}
 	}
 
