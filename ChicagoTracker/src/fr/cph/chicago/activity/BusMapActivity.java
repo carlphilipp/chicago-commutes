@@ -22,7 +22,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
-import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
@@ -38,7 +37,6 @@ import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
-import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
@@ -62,33 +60,43 @@ import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.fragment.NearbyFragment;
+import fr.cph.chicago.listener.BusMapOnCameraChangeListener;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
 
+/**
+ * @author Carl-Philipp Harmant
+ * @version 1
+ */
 public class BusMapActivity extends Activity {
 	/** Tag **/
 	private static final String TAG = "BusMapActivity";
 	/** The map fragment from google api **/
-	private MapFragment mapFragment;
+	private MapFragment mMapFragment;
 	/** The map **/
-	private GoogleMap map;
+	private GoogleMap mGooMap;
 	/** Bus id **/
-	private Integer busId;
+	private Integer mBusId;
 	/** Bus route id **/
-	private String busRouteId;
+	private String mBusRouteId;
 	/** Bounds **/
-	private String[] bounds;
-	/** Markers **/
-	private List<Marker> markers;
-
-	private Menu menu;
-	/** A refresh task **/
-	private RefreshTask refreshTimingTask;
-
+	private String[] mBounds;
+	/** Bus Markers **/
+	private List<Marker> mBusMarkers;
+	/** Station Markers **/
+	private List<Marker> mBusStationMarkers;
+	/** Menu **/
+	private Menu mMenu;
+	/** Refreshing info window **/
 	private boolean mRefreshingInfoWindow = false;
-	private Marker mSelectedMarker = null;
+	/** Selected marker **/
+	private Marker mSelectedMarker;
+	/** Map views **/
 	private Map<Marker, View> mViews;
+	/** Map status **/
 	private Map<Marker, Boolean> mStatus;
+	
+	private BusMapOnCameraChangeListener mBusListener;
 
 	@Override
 	public final void onCreate(final Bundle savedInstanceState) {
@@ -96,20 +104,20 @@ public class BusMapActivity extends Activity {
 		if (!this.isFinishing()) {
 			setContentView(R.layout.activity_map);
 			if (savedInstanceState != null) {
-				busId = savedInstanceState.getInt("busId");
-				busRouteId = savedInstanceState.getString("busRouteId");
-				bounds = savedInstanceState.getStringArray("bounds");
+				mBusId = savedInstanceState.getInt("busId");
+				mBusRouteId = savedInstanceState.getString("busRouteId");
+				mBounds = savedInstanceState.getStringArray("bounds");
 			} else {
-				busId = getIntent().getExtras().getInt("busId");
-				busRouteId = getIntent().getExtras().getString("busRouteId");
-				bounds = getIntent().getExtras().getStringArray("bounds");
+				mBusId = getIntent().getExtras().getInt("busId");
+				mBusRouteId = getIntent().getExtras().getString("busRouteId");
+				mBounds = getIntent().getExtras().getStringArray("bounds");
 			}
 
-			markers = new ArrayList<Marker>();
-
+			mBusMarkers = new ArrayList<Marker>();
+			mBusStationMarkers = new ArrayList<Marker>();
 			mViews = new HashMap<Marker, View>();
-			
-			mStatus = new HashMap<Marker,Boolean>();
+			mStatus = new HashMap<Marker, Boolean>();
+			mBusListener = new BusMapOnCameraChangeListener();
 
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 		}
@@ -119,52 +127,37 @@ public class BusMapActivity extends Activity {
 	public final void onStart() {
 		super.onStart();
 		FragmentManager fm = getFragmentManager();
-		mapFragment = (MapFragment) fm.findFragmentById(R.id.map);
+		mMapFragment = (MapFragment) fm.findFragmentById(R.id.map);
 		GoogleMapOptions options = new GoogleMapOptions();
 		CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 10, 0, 0);
 		options.camera(camera);
-		mapFragment = MapFragment.newInstance(options);
-		mapFragment.setRetainInstance(true);
-		fm.beginTransaction().replace(R.id.map, mapFragment).commit();
+		mMapFragment = MapFragment.newInstance(options);
+		mMapFragment.setRetainInstance(true);
+		fm.beginTransaction().replace(R.id.map, mMapFragment).commit();
 	}
 
 	@Override
 	public final void onPause() {
 		super.onPause();
-		Log.i(TAG, "onPause");
-		if (refreshTimingTask != null) {
-			Log.i(TAG, "cancel it");
-			refreshTimingTask.cancel(true);
-		}
 	}
 
 	@Override
 	public final void onStop() {
 		super.onStop();
-		Log.i(TAG, "onStop");
-		map = null;
-		if (refreshTimingTask != null) {
-			Log.i(TAG, "cancel it");
-			refreshTimingTask.cancel(true);
-		}
+		mGooMap = null;
 	}
 
 	@Override
 	public final void onDestroy() {
 		super.onDestroy();
-		Log.i(TAG, "onDestroy");
-		if (refreshTimingTask != null) {
-			Log.i(TAG, "cancel it");
-			refreshTimingTask.cancel(true);
-		}
 	}
 
 	@Override
 	public final void onResume() {
 		super.onResume();
-		if (map == null) {
-			map = mapFragment.getMap();
-			map.setInfoWindowAdapter(new InfoWindowAdapter() {
+		if (mGooMap == null) {
+			mGooMap = mMapFragment.getMap();
+			mGooMap.setInfoWindowAdapter(new InfoWindowAdapter() {
 				@Override
 				public View getInfoWindow(Marker marker) {
 					return null;
@@ -187,8 +180,8 @@ public class BusMapActivity extends Activity {
 					}
 				}
 			});
-			
-			map.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
+
+			mGooMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
 				@Override
 				public void onInfoWindowClick(Marker marker) {
 					if (!marker.getSnippet().equals("")) {
@@ -205,11 +198,8 @@ public class BusMapActivity extends Activity {
 				}
 			});
 		}
-		if (refreshTimingTask != null && refreshTimingTask.getStatus() == Status.FINISHED) {
-			startRefreshTask();
-		}
 		if (Util.isNetworkAvailable()) {
-			if (busId == 0) {
+			if (mBusId == 0) {
 				new LoadCurrentPosition().execute();
 				new LoadBusPosition().execute(new Boolean[] { true, false });
 			} else {
@@ -222,87 +212,25 @@ public class BusMapActivity extends Activity {
 		}
 	}
 
-	private final class LoadBusFollow extends AsyncTask<String, Void, List<BusArrival>> {
-
-		private View view;
-		
-		private boolean loadAll;
-
-		public LoadBusFollow(final View view, final boolean loadAll) {
-			this.view = view;
-			this.loadAll = loadAll;
-		}
-
-		@Override
-		protected List<BusArrival> doInBackground(String... params) {
-			final String busId = params[0];
-			List<BusArrival> arrivals = new ArrayList<BusArrival>();
-			try {
-				CtaConnect connect = CtaConnect.getInstance();
-				MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
-				connectParam.put("vid", busId);
-				String content = connect.connect(CtaRequestType.BUS_ARRIVALS, connectParam);
-				Xml xml = new Xml();
-				arrivals = xml.parseBusArrivals(content);
-			} catch (ConnectException e) {
-				Log.e(TAG, e.getMessage(), e);
-			} catch (ParserException e) {
-				Log.e(TAG, e.getMessage(), e);
-			}
-			
-			if (!loadAll && arrivals.size() > 7) {
-				arrivals = arrivals.subList(0, 6);
-				BusArrival arrival = new BusArrival();
-				arrival.setStopName("Display all results");
-				arrival.setIsDly(false);
-				arrivals.add(arrival);
-			}
-			return arrivals;
-		}
-
-		@Override
-		protected final void onPostExecute(final List<BusArrival> result) {
-			if (result.size() != 0) {
-				ListView arrivals = (ListView) view.findViewById(R.id.arrivals);
-				BusMapSnippetAdapter ada = new BusMapSnippetAdapter(result);
-				arrivals.setAdapter(ada);
-			} else {
-				TextView error = (TextView) view.findViewById(R.id.error);
-				error.setVisibility(TextView.VISIBLE);
-			}
-			refreshInfoWindow();
-		}
-	}
-
-	private void refreshInfoWindow() {
-		if (mSelectedMarker == null) {
-			return;
-		}
-		mRefreshingInfoWindow = true;
-		mSelectedMarker.showInfoWindow();
-		mRefreshingInfoWindow = false;
-		stopRefreshAnimation();
-	}
-
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		busId = savedInstanceState.getInt("busId");
-		busRouteId = savedInstanceState.getString("busRouteId");
-		bounds = savedInstanceState.getStringArray("bounds");
+		mBusId = savedInstanceState.getInt("busId");
+		mBusRouteId = savedInstanceState.getString("busRouteId");
+		mBounds = savedInstanceState.getStringArray("bounds");
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-		savedInstanceState.putInt("busId", busId);
-		savedInstanceState.putString("busRouteId", busRouteId);
-		savedInstanceState.putStringArray("bounds", bounds);
+		savedInstanceState.putInt("busId", mBusId);
+		savedInstanceState.putString("busRouteId", mBusRouteId);
+		savedInstanceState.putStringArray("bounds", mBounds);
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
 	@Override
 	public final boolean onCreateOptionsMenu(final Menu menu) {
-		this.menu = menu;
+		this.mMenu = menu;
 		getMenuInflater().inflate(R.menu.main_no_search, menu);
 		startRefreshAnimation();
 		return super.onCreateOptionsMenu(menu);
@@ -324,11 +252,24 @@ public class BusMapActivity extends Activity {
 	}
 
 	/**
+	 * 
+	 */
+	private void refreshInfoWindow() {
+		if (mSelectedMarker == null) {
+			return;
+		}
+		mRefreshingInfoWindow = true;
+		mSelectedMarker.showInfoWindow();
+		mRefreshingInfoWindow = false;
+		stopRefreshAnimation();
+	}
+
+	/**
 	 * Load animation in menu
 	 */
 	private final void startRefreshAnimation() {
-		if (menu != null) {
-			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+		if (mMenu != null) {
+			MenuItem refreshMenuItem = mMenu.findItem(R.id.action_refresh);
 			if (refreshMenuItem.getActionView() == null) {
 				refreshMenuItem.setActionView(R.layout.progressbar);
 				refreshMenuItem.expandActionView();
@@ -340,17 +281,120 @@ public class BusMapActivity extends Activity {
 	 * Stop animation in menu
 	 */
 	private final void stopRefreshAnimation() {
-		if (menu != null) {
-			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+		if (mMenu != null) {
+			MenuItem refreshMenuItem = mMenu.findItem(R.id.action_refresh);
 			refreshMenuItem.collapseActionView();
 			refreshMenuItem.setActionView(null);
 		}
 	}
 
+	/**
+	 * @param result
+	 */
+	private void centerMapOnBus(final List<Bus> result) {
+		int i = 0;
+		while (mGooMap == null && i < 20) {
+			mGooMap = mMapFragment.getMap();
+			i++;
+		}
+		Position position;
+		int zoom;
+		if (result.size() == 1) {
+			position = result.get(0).getPosition();
+			zoom = 15;
+		} else {
+			position = Bus.getBestPosition(result);
+			zoom = 11;
+		}
+		if (mGooMap != null) {
+			LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
+			mGooMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+		}
+	}
+
+	/**
+	 * @param buses
+	 */
+	private void drawBuses(final List<Bus> buses) {
+		if (mGooMap != null) {
+			for (Marker marker : mBusMarkers) {
+				marker.remove();
+			}
+			mBusMarkers.clear();
+			final Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.bus_gta);
+			final Bitmap bhalfsize = Bitmap.createScaledBitmap(icon, icon.getWidth() / 11, icon.getHeight() / 11, false);
+			for (Bus bus : buses) {
+				LatLng point = new LatLng(bus.getPosition().getLatitude(), bus.getPosition().getLongitude());
+				Marker marker = mGooMap.addMarker(new MarkerOptions().position(point).title(bus.getDestination()).snippet(bus.getId() + "")
+						.icon(BitmapDescriptorFactory.fromBitmap(bhalfsize)).anchor(0.5f, 0.5f).rotation(bus.getHeading()).flat(true));
+				mBusMarkers.add(marker);
+
+				LayoutInflater layoutInflater = (LayoutInflater) BusMapActivity.this.getBaseContext().getSystemService(
+						Context.LAYOUT_INFLATER_SERVICE);
+				View view = layoutInflater.inflate(R.layout.marker_train, null);
+				TextView title2 = (TextView) view.findViewById(R.id.title);
+				title2.setText(marker.getTitle());
+
+				mViews.put(marker, view);
+			}
+			
+			mBusListener.setBusMarkers(mBusMarkers);
+			
+			mGooMap.setOnCameraChangeListener(mBusListener);
+		}
+	}
+
+	/**
+	 * @param patterns
+	 */
+	private void drawPattern(final List<BusPattern> patterns) {
+		int i = 0;
+		while (mGooMap == null && i < 20) {
+			mGooMap = mMapFragment.getMap();
+			i++;
+		}
+		if (mGooMap != null) {
+			int j = 0;
+			for (BusPattern pattern : patterns) {
+				PolylineOptions poly = new PolylineOptions();
+				if (j == 0) {
+					poly.geodesic(true).color(Color.RED);
+				} else {
+					poly.geodesic(true).color(Color.BLUE);
+				}
+
+				poly.width(7f);
+				for (PatternPoint patternPoint : pattern.getPoints()) {
+					LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
+					poly.add(point);
+					if (patternPoint.getStopId() != null) {
+						MarkerOptions options = new MarkerOptions();
+						options.position(point).title(patternPoint.getStopName() + " (" + pattern.getDirection() + ")").snippet("");
+						if (j == 0) {
+							options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+						} else {
+							options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+						}
+
+						Marker marker = mGooMap.addMarker(options);
+						mBusStationMarkers.add(marker);
+						marker.setVisible(false);
+					}
+				}
+				mGooMap.addPolyline(poly);
+				j++;
+			}
+			
+			mBusListener.setBusStationMarkers(mBusStationMarkers);
+			
+			mGooMap.setOnCameraChangeListener(mBusListener);
+		}
+	}
+
 	private final class LoadBusPosition extends AsyncTask<Boolean, Void, List<Bus>> {
-
+		/** **/
 		private boolean centerMap;
-
+		/** **/
 		private boolean stopRefresh;
 
 		@Override
@@ -360,10 +404,10 @@ public class BusMapActivity extends Activity {
 			List<Bus> buses = null;
 			CtaConnect connect = CtaConnect.getInstance();
 			MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
-			if (busId != 0) {
-				connectParam.put("vid", String.valueOf(busId));
+			if (mBusId != 0) {
+				connectParam.put("vid", String.valueOf(mBusId));
 			} else {
-				connectParam.put("rt", busRouteId);
+				connectParam.put("rt", mBusRouteId);
 			}
 			try {
 				String content = connect.connect(CtaRequestType.BUS_VEHICLES, connectParam);
@@ -396,7 +440,6 @@ public class BusMapActivity extends Activity {
 	}
 
 	private final class LoadCurrentPosition extends AsyncTask<Boolean, Void, Void> implements LocationListener {
-
 		// The minimum distance to change Updates in meters
 		private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
 		// The minimum time between updates in milliseconds
@@ -416,12 +459,8 @@ public class BusMapActivity extends Activity {
 		/** The location manager **/
 		private LocationManager locationManager;
 
-		// private boolean userCenter;
-
 		@Override
 		protected final Void doInBackground(final Boolean... params) {
-
-			// userCenter = params[0];
 
 			locationManager = (LocationManager) BusMapActivity.this.getSystemService(Context.LOCATION_SERVICE);
 
@@ -470,17 +509,14 @@ public class BusMapActivity extends Activity {
 		@Override
 		protected final void onPostExecute(final Void result) {
 			int i = 0;
-			while (map == null && i < 20) {
-				map = mapFragment.getMap();
+			while (mGooMap == null && i < 20) {
+				mGooMap = mMapFragment.getMap();
 				i++;
 			}
-			if (map != null) {
-				map = mapFragment.getMap();
-				map.setMyLocationEnabled(true);
+			if (mGooMap != null) {
+				mGooMap = mMapFragment.getMap();
+				mGooMap.setMyLocationEnabled(true);
 				locationManager.removeUpdates(LoadCurrentPosition.this);
-				/*
-				 * if (userCenter) { centerMapOnUser(position); }
-				 */
 			}
 		}
 
@@ -537,7 +573,7 @@ public class BusMapActivity extends Activity {
 	 * 
 	 */
 	private final class LoadPattern extends AsyncTask<Void, Void, List<BusPattern>> implements LocationListener {
-
+		/** **/
 		private List<BusPattern> patterns;
 
 		@Override
@@ -545,26 +581,26 @@ public class BusMapActivity extends Activity {
 			this.patterns = new ArrayList<BusPattern>();
 			CtaConnect connect = CtaConnect.getInstance();
 			try {
-				if (busId == 0) {
+				if (mBusId == 0) {
 					MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
-					reqParams.put("rt", busRouteId);
+					reqParams.put("rt", mBusRouteId);
 					Xml xml = new Xml();
 					String xmlResult = connect.connect(CtaRequestType.BUS_DIRECTION, reqParams);
-					BusDirections busDirections = xml.parseBusDirections(xmlResult, busRouteId);
-					bounds = new String[busDirections.getlBusDirection().size()];
+					BusDirections busDirections = xml.parseBusDirections(xmlResult, mBusRouteId);
+					mBounds = new String[busDirections.getlBusDirection().size()];
 					for (int i = 0; i < busDirections.getlBusDirection().size(); i++) {
-						bounds[i] = busDirections.getlBusDirection().get(i).toString();
+						mBounds[i] = busDirections.getlBusDirection().get(i).toString();
 					}
 				}
 
 				MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
-				connectParam.put("rt", busRouteId);
+				connectParam.put("rt", mBusRouteId);
 				String content = connect.connect(CtaRequestType.BUS_PATTERN, connectParam);
 				Xml xml = new Xml();
 				List<BusPattern> patterns = xml.parsePatterns(content);
 				for (BusPattern pattern : patterns) {
 					String directionIgnoreCase = pattern.getDirection().toLowerCase(Locale.US);
-					for (String bound : bounds) {
+					for (String bound : mBounds) {
 						if (pattern.getDirection().equals(bound) || bound.toLowerCase(Locale.US).indexOf(directionIgnoreCase) != -1) {
 							this.patterns.add(pattern);
 						}
@@ -586,7 +622,6 @@ public class BusMapActivity extends Activity {
 				Toast.makeText(BusMapActivity.this, "Sorry, could not load the path!", Toast.LENGTH_SHORT).show();
 			}
 			stopRefreshAnimation();
-			startRefreshTask();
 		}
 
 		@Override
@@ -606,156 +641,59 @@ public class BusMapActivity extends Activity {
 		}
 	}
 
-	/*
-	 * private void centerMapOnUser(Position position) { int i = 0; while (map == null && i < 20) { map = mapFragment.getMap(); i++; } if (map !=
-	 * null) { LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude()); map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,
-	 * 14)); } }
-	 */
+	private final class LoadBusFollow extends AsyncTask<String, Void, List<BusArrival>> {
+		/** **/
+		private View view;
+		/** **/
+		private boolean loadAll;
 
-	private void centerMapOnBus(List<Bus> result) {
-		int i = 0;
-		while (map == null && i < 20) {
-			map = mapFragment.getMap();
-			i++;
-		}
-		Position position;
-		int zoom;
-		if (result.size() == 1) {
-			position = result.get(0).getPosition();
-			zoom = 15;
-		} else {
-			position = Bus.getBestPosition(result);
-			zoom = 11;
-		}
-		if (map != null) {
-			LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
-			map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
-		}
-	}
-
-	/**
-	 * Start refresh task
-	 */
-	private void startRefreshTask() {
-		if (!isFinishing()) {
-			// refreshTimingTask = (RefreshTask) new RefreshTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-		}
-	}
-
-	private void drawBuses(final List<Bus> buses) {
-		if (map != null) {
-			for (Marker marker : markers) {
-				marker.remove();
-			}
-			markers.clear();
-			for (Bus bus : buses) {
-				Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.bus_gta);
-				Bitmap bhalfsize = Bitmap.createScaledBitmap(icon, icon.getWidth() / 4, icon.getHeight() / 4, false);
-				LatLng point = new LatLng(bus.getPosition().getLatitude(), bus.getPosition().getLongitude());
-				Marker marker = map.addMarker(new MarkerOptions().position(point).title(bus.getDestination()).snippet(bus.getId() + "")
-						.icon(BitmapDescriptorFactory.fromBitmap(bhalfsize)).anchor(0.5f, 0.5f).rotation(bus.getHeading()).flat(true));
-				markers.add(marker);
-
-				LayoutInflater layoutInflater = (LayoutInflater) BusMapActivity.this.getBaseContext().getSystemService(
-						Context.LAYOUT_INFLATER_SERVICE);
-				View view = layoutInflater.inflate(R.layout.marker_train, null);
-				TextView title2 = (TextView) view.findViewById(R.id.title);
-				title2.setText(marker.getTitle());
-
-				mViews.put(marker, view);
-			}
-		}
-	}
-
-	private void drawPattern(final List<BusPattern> patterns) {
-		int i = 0;
-		while (map == null && i < 20) {
-			map = mapFragment.getMap();
-			i++;
-		}
-		if (map != null) {
-			final List<Marker> markers = new ArrayList<Marker>();
-			int j = 0;
-			for (BusPattern pattern : patterns) {
-				PolylineOptions poly = new PolylineOptions();
-				if (j == 0) {
-					poly.geodesic(true).color(Color.RED);
-				} else {
-					poly.geodesic(true).color(Color.BLUE);
-				}
-
-				poly.width(7f);
-				for (PatternPoint patternPoint : pattern.getPoints()) {
-					LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
-					poly.add(point);
-					if (patternPoint.getStopId() != null) {
-						MarkerOptions options = new MarkerOptions();
-						options.position(point).title(patternPoint.getStopName() + " (" + pattern.getDirection() + ")").snippet("");
-						if (j == 0) {
-							options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-						} else {
-							options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-						}
-
-						Marker marker = map.addMarker(options);
-						markers.add(marker);
-						marker.setVisible(false);
-					}
-				}
-				map.addPolyline(poly);
-				j++;
-			}
-
-			map.setOnCameraChangeListener(new OnCameraChangeListener() {
-				private float currentZoom = -1;
-
-				@Override
-				public void onCameraChange(CameraPosition pos) {
-					if (pos.zoom != currentZoom) {
-						currentZoom = pos.zoom;
-						if (currentZoom >= 16) {
-							for (Marker marker : markers) {
-								marker.setVisible(true);
-							}
-						} else {
-							for (Marker marker : markers) {
-								marker.setVisible(false);
-							}
-						}
-					}
-				}
-			});
-		}
-	}
-
-	/**
-	 * RefreshTask
-	 * 
-	 * @author Carl-Philipp Harmant
-	 * @version 1
-	 */
-	private class RefreshTask extends AsyncTask<Void, Void, Void> {
-
-		@Override
-		protected final void onProgressUpdate(Void... values) {
-			super.onProgressUpdate();
-			startRefreshAnimation();
-			new LoadCurrentPosition().execute();
-			new LoadBusPosition().execute(new Boolean[] { false, true });
+		/**
+		 * @param view
+		 * @param loadAll
+		 */
+		public LoadBusFollow(final View view, final boolean loadAll) {
+			this.view = view;
+			this.loadAll = loadAll;
 		}
 
 		@Override
-		protected final Void doInBackground(final Void... params) {
-			while (!this.isCancelled()) {
-				Log.i(TAG, "Updated of time " + Thread.currentThread().getId());
-				try {
-					publishProgress();
-					Thread.sleep(10000);
-				} catch (InterruptedException e) {
-					Log.i(TAG, "Stopping thread. Normal Behavior");
-				}
+		protected List<BusArrival> doInBackground(final String... params) {
+			final String busId = params[0];
+			List<BusArrival> arrivals = new ArrayList<BusArrival>();
+			try {
+				CtaConnect connect = CtaConnect.getInstance();
+				MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
+				connectParam.put("vid", busId);
+				String content = connect.connect(CtaRequestType.BUS_ARRIVALS, connectParam);
+				Xml xml = new Xml();
+				arrivals = xml.parseBusArrivals(content);
+			} catch (ConnectException e) {
+				Log.e(TAG, e.getMessage(), e);
+			} catch (ParserException e) {
+				Log.e(TAG, e.getMessage(), e);
 			}
-			return null;
+
+			if (!loadAll && arrivals.size() > 7) {
+				arrivals = arrivals.subList(0, 6);
+				BusArrival arrival = new BusArrival();
+				arrival.setStopName("Display all results");
+				arrival.setIsDly(false);
+				arrivals.add(arrival);
+			}
+			return arrivals;
+		}
+
+		@Override
+		protected final void onPostExecute(final List<BusArrival> result) {
+			if (result.size() != 0) {
+				ListView arrivals = (ListView) view.findViewById(R.id.arrivals);
+				BusMapSnippetAdapter ada = new BusMapSnippetAdapter(result);
+				arrivals.setAdapter(ada);
+			} else {
+				TextView error = (TextView) view.findViewById(R.id.error);
+				error.setVisibility(TextView.VISIBLE);
+			}
+			refreshInfoWindow();
 		}
 	}
 }

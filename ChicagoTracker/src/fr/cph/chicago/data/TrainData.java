@@ -375,8 +375,7 @@ public class TrainData {
 		List<Position> positions = new ArrayList<Position>();
 		try {
 			CSVReader reader = new CSVReader(new InputStreamReader(ChicagoTracker.getAppContext().getAssets()
-					.open(line.toTextString() + "_pattern.csv")));
-			reader.readNext();
+					.open("train_pattern/" + line.toTextString() + "_pattern.csv")));
 			String[] row = null;
 			while ((row = reader.readNext()) != null) {
 				double longitude = Double.valueOf(row[0]);
