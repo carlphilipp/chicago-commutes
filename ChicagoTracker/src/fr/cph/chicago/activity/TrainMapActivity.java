@@ -318,7 +318,7 @@ public class TrainMapActivity extends Activity {
 				final LatLng point = new LatLng(train.getPosition().getLatitude(), train.getPosition().getLongitude());
 				final String title = "To " + train.getDestName();
 				final String snippet = String.valueOf(train.getRouteNumber());
-				
+
 				final Marker marker = mGooMap.addMarker(new MarkerOptions().position(point).title(title).snippet(snippet)
 						.icon(BitmapDescriptorFactory.fromBitmap(bhalfsize)).anchor(0.5f, 0.5f).rotation(train.getHeading()).flat(true));
 				mMarkers.add(marker);
@@ -335,9 +335,10 @@ public class TrainMapActivity extends Activity {
 				mViews.put(marker, view);
 			}
 
-			final Bitmap bhalfsize11 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 11, icon.getHeight() / 11, false);
-			final Bitmap bhalfsize14 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 6, icon.getHeight() / 6, false);
-			
+			final Bitmap bhalfsize1 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 11, icon.getHeight() / 11, false);
+			final Bitmap bhalfsize2 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 6, icon.getHeight() / 6, false);
+			final Bitmap bhalfsize3 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 4, icon.getHeight() / 4, false);
+
 			mGooMap.setOnCameraChangeListener(new OnCameraChangeListener() {
 				private float currentZoom = -1;
 				private float oldZoom = -1;
@@ -347,19 +348,27 @@ public class TrainMapActivity extends Activity {
 					if (pos.zoom != currentZoom) {
 						oldZoom = currentZoom;
 						currentZoom = pos.zoom;
-						if (oldZoom != -1 && currentZoom == 11) {
-							for(Marker marker : mMarkers){
-								marker.setIcon(BitmapDescriptorFactory.fromBitmap(bhalfsize11));
+						if (isIn(currentZoom, 12.9f, 11f) && !isIn(oldZoom, 12.9f, 11f) ) {
+							for (Marker marker : mMarkers) {
+								marker.setIcon(BitmapDescriptorFactory.fromBitmap(bhalfsize1));
 							}
-						} else if(currentZoom == 13) {
-							for(Marker marker : mMarkers){
-								marker.setIcon(BitmapDescriptorFactory.fromBitmap(bhalfsize14));
+						}else if(isIn(currentZoom, 14.9f, 13f) && !isIn(oldZoom, 14.9f, 13f)){
+							for (Marker marker : mMarkers) {
+								marker.setIcon(BitmapDescriptorFactory.fromBitmap(bhalfsize2));
+							}
+						}else if(isIn(currentZoom, 21f, 15f) && !isIn(oldZoom, 21f, 15f)){
+							for (Marker marker : mMarkers) {
+								marker.setIcon(BitmapDescriptorFactory.fromBitmap(bhalfsize3));
 							}
 						}
 					}
 				}
+
+				public boolean isIn(float num, float sup, float inf) {
+					return num >= inf && num <= sup;
+				}
 			});
-			
+
 			PolylineOptions poly = new PolylineOptions();
 			poly.width(7f);
 			poly.geodesic(true).color(TrainLine.fromXmlString(this.mLine).getColor());
