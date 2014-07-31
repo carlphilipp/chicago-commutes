@@ -16,7 +16,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
@@ -95,7 +94,7 @@ public class BusMapActivity extends Activity {
 	private Map<Marker, View> mViews;
 	/** Map status **/
 	private Map<Marker, Boolean> mStatus;
-
+	/** On camera change zoom listener **/
 	private BusMapOnCameraChangeListener mBusListener;
 
 	@Override
@@ -321,19 +320,18 @@ public class BusMapActivity extends Activity {
 				marker.remove();
 			}
 			mBusMarkers.clear();
-			final Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.bus_gta);
-			final Bitmap bhalfsize = Bitmap.createScaledBitmap(icon, icon.getWidth() / 11, icon.getHeight() / 11, false);
+			final Bitmap bitmap = mBusListener.getCurrentBitmap();
 			for (Bus bus : buses) {
 				LatLng point = new LatLng(bus.getPosition().getLatitude(), bus.getPosition().getLongitude());
-				Marker marker = mGooMap.addMarker(new MarkerOptions().position(point).title(bus.getDestination()).snippet(bus.getId() + "")
-						.icon(BitmapDescriptorFactory.fromBitmap(bhalfsize)).anchor(0.5f, 0.5f).rotation(bus.getHeading()).flat(true));
+				Marker marker = mGooMap.addMarker(new MarkerOptions().position(point).title("To: " + bus.getDestination()).snippet(bus.getId() + "")
+						.icon(BitmapDescriptorFactory.fromBitmap(bitmap)).anchor(0.5f, 0.5f).rotation(bus.getHeading()).flat(true));
 				mBusMarkers.add(marker);
 
 				LayoutInflater layoutInflater = (LayoutInflater) BusMapActivity.this.getBaseContext().getSystemService(
 						Context.LAYOUT_INFLATER_SERVICE);
 				View view = layoutInflater.inflate(R.layout.marker_train, null);
-				TextView title2 = (TextView) view.findViewById(R.id.title);
-				title2.setText(marker.getTitle());
+				TextView title = (TextView) view.findViewById(R.id.title);
+				title.setText(marker.getTitle());
 
 				mViews.put(marker, view);
 			}
@@ -392,9 +390,9 @@ public class BusMapActivity extends Activity {
 	}
 
 	private final class LoadBusPosition extends AsyncTask<Boolean, Void, List<Bus>> {
-		/** **/
+		/** Allow or not centering the map **/
 		private boolean centerMap;
-		/** **/
+		/** Stop refresh animation or not **/
 		private boolean stopRefresh;
 
 		@Override

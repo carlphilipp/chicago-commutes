@@ -1,3 +1,7 @@
+3.0.7
+Fixed scalling bug when refreshing map
+Added more analytics
+
 3.0.6
 New custom popup menu
 Follow trains/buses via google map

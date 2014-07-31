@@ -13,7 +13,7 @@ import com.google.android.gms.maps.model.Marker;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 
-public class BusMapOnCameraChangeListener implements OnCameraChangeListener {
+public class TrainMapOnCameraChangeListener implements OnCameraChangeListener {
 
 	private float currentZoom = -1;
 	private float oldZoom = -1;
@@ -21,23 +21,18 @@ public class BusMapOnCameraChangeListener implements OnCameraChangeListener {
 	private Bitmap bitmap2;
 	private Bitmap bitmap3;
 	private Bitmap currentBitmap;
-	private List<Marker> mBusMarkers;
-	private List<Marker> mBusStationMarkers;
+	private List<Marker> mTrainMarkers;
 
-	public BusMapOnCameraChangeListener() {
-		Bitmap icon = BitmapFactory.decodeResource(ChicagoTracker.getAppContext().getResources(), R.drawable.bus_gta);
+	public TrainMapOnCameraChangeListener() {
+		Bitmap icon = BitmapFactory.decodeResource(ChicagoTracker.getAppContext().getResources(), R.drawable.train_gta);
 		this.bitmap1 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 11, icon.getHeight() / 11, false);
 		this.bitmap2 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 6, icon.getHeight() / 6, false);
 		this.bitmap3 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 4, icon.getHeight() / 4, false);
 		this.setCurrentBitmap(bitmap1);
 	}
 
-	public void setBusMarkers(List<Marker> busMarkers) {
-		this.mBusMarkers = busMarkers;
-	}
-
-	public void setBusStationMarkers(List<Marker> busStationMarkers) {
-		this.mBusStationMarkers = busStationMarkers;
+	public void setTrainMarkers(List<Marker> trainMarkers) {
+		this.mTrainMarkers = trainMarkers;
 	}
 
 	@Override
@@ -46,28 +41,19 @@ public class BusMapOnCameraChangeListener implements OnCameraChangeListener {
 			oldZoom = currentZoom;
 			currentZoom = position.zoom;
 			if (isIn(currentZoom, 12.9f, 11f) && !isIn(oldZoom, 12.9f, 11f)) {
-				for (Marker marker : mBusMarkers) {
+				for (Marker marker : mTrainMarkers) {
 					this.setCurrentBitmap(bitmap1);
 					marker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap1));
 				}
 			} else if (isIn(currentZoom, 14.9f, 13f) && !isIn(oldZoom, 14.9f, 13f)) {
-				for (Marker marker : mBusMarkers) {
+				for (Marker marker : mTrainMarkers) {
 					this.setCurrentBitmap(bitmap2);
 					marker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap2));
 				}
 			} else if (isIn(currentZoom, 21f, 15f) && !isIn(oldZoom, 21f, 15f)) {
-				for (Marker marker : mBusMarkers) {
+				for (Marker marker : mTrainMarkers) {
 					this.setCurrentBitmap(bitmap3);
 					marker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap3));
-				}
-			}
-			if (isIn(currentZoom, 21f, 16f) && !isIn(oldZoom, 21f, 16f)) {
-				for (Marker marker : mBusStationMarkers) {
-					marker.setVisible(true);
-				}
-			} else if (!isIn(currentZoom, 21f, 16f) && isIn(oldZoom, 21f, 16f)) {
-				for (Marker marker : mBusStationMarkers) {
-					marker.setVisible(false);
 				}
 			}
 		}
