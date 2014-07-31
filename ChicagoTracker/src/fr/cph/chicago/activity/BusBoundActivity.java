@@ -359,7 +359,8 @@ public class BusBoundActivity extends ListActivity {
 		if (map != null) {
 			final List<Marker> markers = new ArrayList<Marker>();
 			PolylineOptions poly = new PolylineOptions();
-			poly.geodesic(true).color(Color.BLUE);
+			poly.geodesic(true).color(Color.BLACK);
+			poly.width(7f);
 			for (PatternPoint patternPoint : pattern.getPoints()) {
 				LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
 				poly.add(point);
@@ -371,7 +372,7 @@ public class BusBoundActivity extends ListActivity {
 				}
 			}
 			map.addPolyline(poly);
-
+			
 			map.setOnCameraChangeListener(new OnCameraChangeListener() {
 				private float currentZoom = -1;
 
