@@ -24,6 +24,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.FrameLayout;
+
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Tracker;
+
 import fr.cph.chicago.activity.BaseActivity;
 import fr.cph.chicago.activity.ErrorActivity;
 import fr.cph.chicago.data.DataHolder;
@@ -57,6 +61,8 @@ public class ChicagoTracker extends Application {
 	private static Date lastUpdate;
 	/** Container that is used to get a faded black background **/
 	public static FrameLayout container;
+
+	public static Tracker tracker;
 
 	@Override
 	public final void onCreate() {
@@ -93,8 +99,7 @@ public class ChicagoTracker extends Application {
 	}
 
 	/**
-	 * Function that is used all over the application. Display error message and provide a way to
-	 * retry
+	 * Function that is used all over the application. Display error message and provide a way to retry
 	 * 
 	 * @param activity
 	 *            that is needed to lunch a new one
@@ -116,35 +121,43 @@ public class ChicagoTracker extends Application {
 			startErrorActivity(mActivity);
 		}
 	}
-	
+
 	public static boolean checkTrainData(Activity mActivity) {
-		if(DataHolder.getInstance().getTrainData() == null){
+		if (DataHolder.getInstance().getTrainData() == null) {
 			startErrorActivity(mActivity);
 			return false;
 		}
 		return true;
 	}
-	
+
 	public static boolean checkBusData(Activity mActivity) {
-		if(DataHolder.getInstance().getBusData() == null){
+		if (DataHolder.getInstance().getBusData() == null) {
 			startErrorActivity(mActivity);
 			return false;
 		}
 		return true;
 	}
-	
+
 	public static boolean checkAlertData(Activity mActivity) {
-		if(DataHolder.getInstance().getAlertData() == null){
+		if (DataHolder.getInstance().getAlertData() == null) {
 			startErrorActivity(mActivity);
 			return false;
 		}
 		return true;
 	}
-	
-	private static void startErrorActivity(Activity mActivity){
+
+	private static void startErrorActivity(Activity mActivity) {
 		Intent intent = new Intent(mActivity, BaseActivity.class);
 		intent.putExtra("error", true);
 		mActivity.startActivity(intent);
 		mActivity.finish();
+	}
+
+	public synchronized Tracker getTracker() {
+		GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+		if (tracker == null) {
+			tracker = analytics.newTracker("UA-53384654-1");
+		}
+		return tracker;
 	}
 }

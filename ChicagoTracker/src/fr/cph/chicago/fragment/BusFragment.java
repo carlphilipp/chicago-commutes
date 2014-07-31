@@ -37,6 +37,10 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
@@ -58,11 +62,11 @@ public class BusFragment extends Fragment {
 	/** The main actvity **/
 	private MainActivity mActivity;
 	/** Adapter **/
-	private BusAdapter ada;
+	private BusAdapter mAdapter;
 
-	private EditText filter;
+	private EditText mTextFilter;
 
-	private ListView listView;
+	private ListView mListView;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -90,14 +94,19 @@ public class BusFragment extends Fragment {
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		ChicagoTracker.checkBusData(mActivity);
+
+		// Google analytics
+		Tracker t = ((ChicagoTracker) mActivity.getApplication()).getTracker();
+		t.setScreenName("Bus fragment");
+		t.send(new HitBuilders.AppViewBuilder().build());
 	}
 
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_bus, container, false);
 		if (!mActivity.isFinishing()) {
-			filter = (EditText) rootView.findViewById(R.id.bus_filter);
-			listView = (ListView) rootView.findViewById(R.id.bus_list);
+			mTextFilter = (EditText) rootView.findViewById(R.id.bus_filter);
+			mListView = (ListView) rootView.findViewById(R.id.bus_list);
 			if (Util.isNetworkAvailable()) {
 				addView();
 			} else {
@@ -106,16 +115,16 @@ public class BusFragment extends Fragment {
 		}
 		return rootView;
 	}
-	
-	public final void update(){
+
+	public final void update() {
 		addView();
 	}
 
 	private final void addView() {
-		ada = new BusAdapter(mActivity);
-		listView.setAdapter(ada);
-		filter.setVisibility(TextView.VISIBLE);
-		filter.addTextChangedListener(new TextWatcher() {
+		mAdapter = new BusAdapter(mActivity);
+		mListView.setAdapter(mAdapter);
+		mTextFilter.setVisibility(TextView.VISIBLE);
+		mTextFilter.addTextChangedListener(new TextWatcher() {
 
 			private BusData busData = DataHolder.getInstance().getBusData();
 			private List<BusRoute> busRoutes = null;
@@ -138,8 +147,8 @@ public class BusFragment extends Fragment {
 
 			@Override
 			public void afterTextChanged(Editable s) {
-				ada.setRoutes(busRoutes);
-				ada.notifyDataSetChanged();
+				mAdapter.setRoutes(busRoutes);
+				mAdapter.notifyDataSetChanged();
 			}
 		});
 	}

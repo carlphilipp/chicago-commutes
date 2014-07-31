@@ -5,13 +5,18 @@ import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.view.Menu;
 import android.view.MenuInflater;
+
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
+import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 
 public class SettingsFragment extends PreferenceFragment {
 	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
-
+	/** The main activity **/
 	private MainActivity mActivity;
 
 	/**
@@ -41,6 +46,11 @@ public class SettingsFragment extends PreferenceFragment {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);
 		setHasOptionsMenu(true);
+
+		// Google analytics
+		Tracker t = ((ChicagoTracker) mActivity.getApplication()).getTracker();
+		t.setScreenName("Settings fragment");
+		t.send(new HitBuilders.AppViewBuilder().build());
 	}
 
 	@Override

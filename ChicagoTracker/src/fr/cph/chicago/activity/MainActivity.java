@@ -167,7 +167,6 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
 		displayUpdatePanel();
-
 	}
 
 	@Override
@@ -551,10 +550,10 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 					publishProgress();
 				} catch (final ParserException e) {
 					new Handler(Looper.getMainLooper()).post(new Runnable() {
-					    @Override
-					    public void run() {
-					    	Toast.makeText(MainActivity.this, "Bus error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-					    }
+						@Override
+						public void run() {
+							Toast.makeText(MainActivity.this, "Bus error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+						}
 					});
 					Log.e(TAG, e.getMessage(), e);
 				} catch (ConnectException e) {

@@ -16,6 +16,9 @@
 
 package fr.cph.chicago.fragment;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.SharedPreferences;
@@ -51,19 +54,18 @@ public class AlertFragment extends Fragment {
 	private static final String TAG = "AlertFragment";
 	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
-
 	/** Root view **/
-	private View rootView;
+	private View mRootView;
 	/** Loading layout **/
-	private RelativeLayout loadingLayout;
+	private RelativeLayout mLoadingLayout;
 	/** Desactivated layout **/
-	private RelativeLayout desactivatedLayout;
+	private RelativeLayout mDesactivatedLayout;
 	/** The list view **/
-	private ListView listView;
+	private ListView mListView;
 	/** The main activity **/
 	private MainActivity mActivity;
 	/** The adapter **/
-	private AlertAdapter ada;
+	private AlertAdapter mAdapter;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -90,34 +92,39 @@ public class AlertFragment extends Fragment {
 	@Override
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		// Google analytics
+		Tracker t = ((ChicagoTracker) mActivity.getApplication()).getTracker();
+		t.setScreenName("Alert fragment");
+		t.send(new HitBuilders.AppViewBuilder().build());
 	}
 
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-		rootView = inflater.inflate(R.layout.fragment_alert, container, false);
-		listView = (ListView) rootView.findViewById(R.id.alert_list);
-		desactivatedLayout = (RelativeLayout) rootView.findViewById(R.id.desactivated_layout);
-		loadingLayout = (RelativeLayout) rootView.findViewById(R.id.loading_relativeLayout);
+		mRootView = inflater.inflate(R.layout.fragment_alert, container, false);
+		mListView = (ListView) mRootView.findViewById(R.id.alert_list);
+		mDesactivatedLayout = (RelativeLayout) mRootView.findViewById(R.id.desactivated_layout);
+		mLoadingLayout = (RelativeLayout) mRootView.findViewById(R.id.loading_relativeLayout);
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mActivity);
 		boolean loadAlert = sharedPref.getBoolean("cta_alert", true);
 		if (Util.isNetworkAvailable()) {
 			if (loadAlert) {
 				if (DataHolder.getInstance().getAlertData() != null) {
-					ada = new AlertAdapter();
-					listView.setAdapter(ada);
+					mAdapter = new AlertAdapter();
+					mListView.setAdapter(mAdapter);
 				} else {
-					loadingLayout.setVisibility(RelativeLayout.VISIBLE);
-					listView.setVisibility(ListView.INVISIBLE);
+					mLoadingLayout.setVisibility(RelativeLayout.VISIBLE);
+					mListView.setVisibility(ListView.INVISIBLE);
 					new WaitForRefreshData().execute();
 				}
 			} else {
-				desactivatedLayout.setVisibility(RelativeLayout.VISIBLE);
+				mDesactivatedLayout.setVisibility(RelativeLayout.VISIBLE);
 			}
 		} else {
 			Toast.makeText(ChicagoTracker.getAppContext(), "No network connection detected!", Toast.LENGTH_SHORT).show();
 		}
 		setHasOptionsMenu(true);
-		return rootView;
+		return mRootView;
 	}
 
 	@Override
@@ -183,9 +190,9 @@ public class AlertFragment extends Fragment {
 
 		@Override
 		protected final void onPostExecute(final AlertData result) {
-			if (ada != null) {
-				ada.setAlerts(result.getAlerts());
-				ada.notifyDataSetChanged();
+			if (mAdapter != null) {
+				mAdapter.setAlerts(result.getAlerts());
+				mAdapter.notifyDataSetChanged();
 			}
 			AlertFragment.this.mActivity.stopRefreshAnimation();
 		}
@@ -217,17 +224,17 @@ public class AlertFragment extends Fragment {
 	}
 
 	private final void loadError() {
-		loadingLayout.setVisibility(RelativeLayout.INVISIBLE);
-		RelativeLayout errorLayout = (RelativeLayout) rootView.findViewById(R.id.error_layout);
+		mLoadingLayout.setVisibility(RelativeLayout.INVISIBLE);
+		RelativeLayout errorLayout = (RelativeLayout) mRootView.findViewById(R.id.error_layout);
 		errorLayout.setVisibility(RelativeLayout.VISIBLE);
 	}
 
 	public final void loadList() {
 		AlertAdapter ada = new AlertAdapter();
-		listView.setAdapter(ada);
-		listView.setVisibility(ListView.VISIBLE);
-		loadingLayout.setVisibility(RelativeLayout.INVISIBLE);
-		RelativeLayout errorLayout = (RelativeLayout) rootView.findViewById(R.id.error_layout);
+		mListView.setAdapter(ada);
+		mListView.setVisibility(ListView.VISIBLE);
+		mLoadingLayout.setVisibility(RelativeLayout.INVISIBLE);
+		RelativeLayout errorLayout = (RelativeLayout) mRootView.findViewById(R.id.error_layout);
 		errorLayout.setVisibility(RelativeLayout.INVISIBLE);
 	}
 }

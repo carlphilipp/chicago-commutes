@@ -26,6 +26,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
@@ -43,6 +47,8 @@ import fr.cph.chicago.util.Util;
 public final class TrainFragment extends Fragment {
 	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
+	/** The main activity **/
+	private MainActivity mActivity;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -61,6 +67,11 @@ public final class TrainFragment extends Fragment {
 	@Override
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		// Google analytics
+		Tracker t = ((ChicagoTracker) mActivity.getApplication()).getTracker();
+		t.setScreenName("Train fragment");
+		t.send(new HitBuilders.AppViewBuilder().build());
 	}
 
 	@Override
@@ -95,7 +106,7 @@ public final class TrainFragment extends Fragment {
 	@Override
 	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
-		MainActivity mActivity = (MainActivity) activity;
+		mActivity = (MainActivity) activity;
 		mActivity.onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 }
