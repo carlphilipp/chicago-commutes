@@ -16,9 +16,6 @@
 
 package fr.cph.chicago.fragment;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.SharedPreferences;
@@ -92,11 +89,8 @@ public class AlertFragment extends Fragment {
 	@Override
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		// Google analytics
-		Tracker t = ((ChicagoTracker) mActivity.getApplication()).getTracker();
-		t.setScreenName("Alert fragment");
-		t.send(new HitBuilders.AppViewBuilder().build());
+
+		Util.trackScreen(mActivity, R.string.analytics_alert_fragment);
 	}
 
 	@Override
@@ -149,6 +143,7 @@ public class AlertFragment extends Fragment {
 					new LoadData().execute();
 				}
 			}
+			Util.trackAction(mActivity, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_alert, 0);
 			return false;
 		}
 		return super.onOptionsItemSelected(item);
@@ -162,6 +157,8 @@ public class AlertFragment extends Fragment {
 			if (Util.isNetworkAvailable()) {
 				try {
 					alertData.loadGeneralAlerts();
+					Util.trackAction(AlertFragment.this.mActivity, R.string.analytics_category_req, R.string.analytics_action_get_alert,
+							R.string.analytics_action_get_alert_general, 0);
 				} catch (ParserException e) {
 					Log.e(TAG, "Parser error", e);
 					AlertFragment.this.mActivity.runOnUiThread(new Runnable() {

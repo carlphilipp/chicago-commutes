@@ -44,10 +44,6 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
@@ -123,10 +119,7 @@ public class BikeFragment extends Fragment {
 		}
 		setHasOptionsMenu(true);
 
-		// Google analytics
-		Tracker t = ((ChicagoTracker) mActivity.getApplication()).getTracker();
-		t.setScreenName("Bike fragment");
-		t.send(new HitBuilders.AppViewBuilder().build());
+		Util.trackScreen(mActivity, R.string.analytics_bike_fragment);
 	}
 
 	@Override
@@ -223,6 +216,7 @@ public class BikeFragment extends Fragment {
 					mActivity.new LoadData().execute();
 				}
 			}
+			Util.trackAction(mActivity, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_bike, 0);
 			return false;
 		}
 		return super.onOptionsItemSelected(item);
@@ -280,6 +274,8 @@ public class BikeFragment extends Fragment {
 				String bikeContent = divvyConnect.connect();
 				bikeStations = json.parseStations(bikeContent);
 				Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
+				Util.trackAction(BikeFragment.this.mActivity, R.string.analytics_category_req, R.string.analytics_action_get_divvy,
+						R.string.analytics_action_get_divvy_all, 0);
 			} catch (ConnectException e) {
 				BikeFragment.this.mActivity.runOnUiThread(new Runnable() {
 					public void run() {

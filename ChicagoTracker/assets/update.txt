@@ -1,4 +1,4 @@
-3.0.5
+3.0.6
 New custom popup menu
 Follow trains/buses via google map
 First try of google analytics

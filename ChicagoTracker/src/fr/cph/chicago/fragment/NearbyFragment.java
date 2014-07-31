@@ -57,8 +57,6 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
@@ -153,10 +151,7 @@ public class NearbyFragment extends Fragment {
 		ChicagoTracker.checkTrainData(mActivity);
 		ChicagoTracker.checkBusData(mActivity);
 
-		// Google analytics
-		Tracker t = ((ChicagoTracker) mActivity.getApplication()).getTracker();
-		t.setScreenName("Nearby fragment");
-		t.send(new HitBuilders.AppViewBuilder().build());
+		Util.trackScreen(mActivity, R.string.analytics_nearby_fragment);
 	}
 
 	@Override
@@ -302,6 +297,8 @@ public class NearbyFragment extends Fragment {
 								tempMap.put(direction, temp);
 							}
 						}
+						Util.trackAction(NearbyFragment.this.mActivity, R.string.analytics_category_req, R.string.analytics_action_get_bus,
+								R.string.analytics_action_get_bus_arrival, 0);
 					} catch (ConnectException e) {
 						Log.e(TAG, e.getMessage(), e);
 					} catch (ParserException e) {
@@ -321,6 +318,8 @@ public class NearbyFragment extends Fragment {
 						for (int j = 0; j < temp.size(); j++) {
 							trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
 						}
+						Util.trackAction(NearbyFragment.this.mActivity, R.string.analytics_category_req, R.string.analytics_action_get_train,
+								R.string.analytics_action_get_train_arrivals, 0);
 					} catch (ConnectException e) {
 						Log.e(TAG, e.getMessage(), e);
 					} catch (ParserException e) {
@@ -341,6 +340,8 @@ public class NearbyFragment extends Fragment {
 						}
 					}
 					Collections.sort(bikeStationsRes, Util.BIKE_COMPARATOR_NAME);
+					Util.trackAction(NearbyFragment.this.mActivity, R.string.analytics_category_req, R.string.analytics_action_get_divvy,
+							R.string.analytics_action_get_divvy_all, 0);
 				} catch (ConnectException e) {
 					Log.e(TAG, e.getMessage(), e);
 				} catch (ParserException e) {

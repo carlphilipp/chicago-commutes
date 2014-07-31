@@ -348,15 +348,15 @@ public class TrainMapActivity extends Activity {
 					if (pos.zoom != currentZoom) {
 						oldZoom = currentZoom;
 						currentZoom = pos.zoom;
-						if (isIn(currentZoom, 12.9f, 11f) && !isIn(oldZoom, 12.9f, 11f) ) {
+						if (isIn(currentZoom, 12.9f, 11f) && !isIn(oldZoom, 12.9f, 11f)) {
 							for (Marker marker : mMarkers) {
 								marker.setIcon(BitmapDescriptorFactory.fromBitmap(bhalfsize1));
 							}
-						}else if(isIn(currentZoom, 14.9f, 13f) && !isIn(oldZoom, 14.9f, 13f)){
+						} else if (isIn(currentZoom, 14.9f, 13f) && !isIn(oldZoom, 14.9f, 13f)) {
 							for (Marker marker : mMarkers) {
 								marker.setIcon(BitmapDescriptorFactory.fromBitmap(bhalfsize2));
 							}
-						}else if(isIn(currentZoom, 21f, 15f) && !isIn(oldZoom, 21f, 15f)){
+						} else if (isIn(currentZoom, 21f, 15f) && !isIn(oldZoom, 21f, 15f)) {
 							for (Marker marker : mMarkers) {
 								marker.setIcon(BitmapDescriptorFactory.fromBitmap(bhalfsize3));
 							}
@@ -415,6 +415,8 @@ public class TrainMapActivity extends Activity {
 			} catch (ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
+			Util.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train,
+					R.string.analytics_action_get_train_follow, 0);
 			if (!loadAll && etas.size() > 7) {
 				etas = etas.subList(0, 6);
 
@@ -472,6 +474,8 @@ public class TrainMapActivity extends Activity {
 			} catch (ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
+			Util.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train,
+					R.string.analytics_action_get_train_location, 0);
 			positions = TrainMapActivity.this.mData.readPattern(TrainLine.fromXmlString(TrainMapActivity.this.mLine));
 			return trains;
 		}

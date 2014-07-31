@@ -28,13 +28,9 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
-
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-
-import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
+import fr.cph.chicago.util.Util;
 
 /**
  * Mao Fragment
@@ -96,10 +92,7 @@ public class MapFragment extends Fragment implements OnTouchListener {
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		// Google analytics
-		Tracker t = ((ChicagoTracker) mActivity.getApplication()).getTracker();
-		t.setScreenName("L System Map fragment");
-		t.send(new HitBuilders.AppViewBuilder().build());
+		Util.trackScreen(mActivity, R.string.analytics_L_fragment);
 	}
 
 	@Override

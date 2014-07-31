@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Point;
 import android.net.ConnectivityManager;
@@ -29,6 +30,10 @@ import android.net.NetworkInfo;
 import android.view.Display;
 import android.view.WindowManager;
 import android.widget.Toast;
+
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
@@ -44,8 +49,7 @@ public class Util {
 	private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
 
 	/**
-	 * Generate a value suitable for use in {@link #setId(int)}. This value will not collide with ID values
-	 * generated at build time by aapt for R.id.
+	 * Generate a value suitable for use in {@link #setId(int)}. This value will not collide with ID values generated at build time by aapt for R.id.
 	 * 
 	 * @return a generated ID value
 	 */
@@ -213,4 +217,74 @@ public class Util {
 		display.getSize(size);
 		return new int[] { size.x, size.y };
 	}
+
+	/**
+	 * Google analytics track screen
+	 * 
+	 * @param activity
+	 *            the activity
+	 * @param str
+	 *            the label to send
+	 */
+	public static void trackScreen(Activity activity, int str) {
+		Tracker t = ((ChicagoTracker) activity.getApplication()).getTracker();
+		t.setScreenName(activity.getString(str));
+		t.send(new HitBuilders.AppViewBuilder().build());
+	}
+
+	public static void trackAction(Activity activity, int category, int action, int label, int value) {
+		Tracker tracker = ((ChicagoTracker) activity.getApplication()).getTracker();
+		tracker.send(new HitBuilders.EventBuilder().setCategory(activity.getString(category)).setAction(activity.getString(action))
+				.setLabel(activity.getString(label)).setValue(value).build());
+	}
+
+	/*public static void trackActionDynamic(Activity activity, CtaRequestType type) throws ConnectException {
+		switch (type) {
+		case ALERTS_GENERAL:
+			Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_alert,
+					R.string.analytics_action_get_alert_general, 0);
+			break;
+		case ALERTS_ROUTES:
+			Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_alert,
+					R.string.analytics_action_get_alert_routes, 0);
+			break;
+		case BUS_ARRIVALS:
+			Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival,
+					0);
+			break;
+		case BUS_DIRECTION:
+			Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus,
+					R.string.analytics_action_get_bus_direction, 0);
+			break;
+		case BUS_PATTERN:
+			Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_pattern,
+					0);
+			break;
+		case BUS_ROUTES:
+			Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_routes,
+					0);
+			break;
+		case BUS_STOP_LIST:
+			Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_stop, 0);
+			break;
+		case BUS_VEHICLES:
+			Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus,
+					R.string.analytics_action_get_bus_vehicles, 0);
+			break;
+		case TRAIN_ARRIVALS:
+			Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_train,
+					R.string.analytics_action_get_train_arrivals, 0);
+			break;
+		case TRAIN_FOLLOW:
+			Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_train,
+					R.string.analytics_action_get_train_follow, 0);
+			break;
+		case TRAIN_LOCATION:
+			Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_train,
+					R.string.analytics_action_get_train_location, 0);
+			break;
+		default:
+			break;
+		}
+	}*/
 }

@@ -32,6 +32,7 @@ import fr.cph.chicago.activity.BaseActivity;
 import fr.cph.chicago.activity.ErrorActivity;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.exception.TrackerException;
+import fr.cph.chicago.util.Util;
 
 /**
  * 
@@ -153,10 +154,12 @@ public class ChicagoTracker extends Application {
 		mActivity.finish();
 	}
 
-	public synchronized Tracker getTracker() {
+	public Tracker getTracker() {
 		GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
 		if (tracker == null) {
-			tracker = analytics.newTracker("UA-53384654-1");
+			String key = Util.getProperty("google.analytics");
+			tracker = analytics.newTracker(key);
+			tracker.enableAutoActivityTracking(true);
 		}
 		return tracker;
 	}

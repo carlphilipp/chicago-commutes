@@ -246,7 +246,8 @@ public class BikeStationActivity extends Activity {
 				String bikeContent = divvyConnect.connect();
 				bikeStations = json.parseStations(bikeContent);
 				Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
-
+				Util.trackAction(BikeStationActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy,
+						R.string.analytics_action_get_divvy_all, 0);
 			} catch (ConnectException e) {
 				BikeStationActivity.this.runOnUiThread(new Runnable() {
 					public void run() {
@@ -294,6 +295,8 @@ public class BikeStationActivity extends Activity {
 			GStreetViewConnect connect = GStreetViewConnect.getInstance();
 			try {
 				this.position = params[0];
+				Util.trackAction(BikeStationActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_google,
+						R.string.analytics_action_get_google_map_street_view, 0);
 				return connect.connect(params[0]);
 			} catch (IOException e) {
 				e.printStackTrace();

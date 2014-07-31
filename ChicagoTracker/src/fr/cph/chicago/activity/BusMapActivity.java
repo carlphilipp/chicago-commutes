@@ -95,7 +95,7 @@ public class BusMapActivity extends Activity {
 	private Map<Marker, View> mViews;
 	/** Map status **/
 	private Map<Marker, Boolean> mStatus;
-	
+
 	private BusMapOnCameraChangeListener mBusListener;
 
 	@Override
@@ -337,9 +337,9 @@ public class BusMapActivity extends Activity {
 
 				mViews.put(marker, view);
 			}
-			
+
 			mBusListener.setBusMarkers(mBusMarkers);
-			
+
 			mGooMap.setOnCameraChangeListener(mBusListener);
 		}
 	}
@@ -384,9 +384,9 @@ public class BusMapActivity extends Activity {
 				mGooMap.addPolyline(poly);
 				j++;
 			}
-			
+
 			mBusListener.setBusStationMarkers(mBusStationMarkers);
-			
+
 			mGooMap.setOnCameraChangeListener(mBusListener);
 		}
 	}
@@ -418,6 +418,8 @@ public class BusMapActivity extends Activity {
 			} catch (ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
+			Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
+					R.string.analytics_action_get_bus_vehicles, 0);
 			return buses;
 		}
 
@@ -611,6 +613,10 @@ public class BusMapActivity extends Activity {
 			} catch (ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
+			Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
+					R.string.analytics_action_get_bus_direction, 0);
+			Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
+					R.string.analytics_action_get_bus_pattern, 0);
 			return this.patterns;
 		}
 
@@ -672,7 +678,8 @@ public class BusMapActivity extends Activity {
 			} catch (ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
-
+			Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
+					R.string.analytics_action_get_bus_arrival, 0);
 			if (!loadAll && arrivals.size() > 7) {
 				arrivals = arrivals.subList(0, 6);
 				BusArrival arrival = new BusArrival();

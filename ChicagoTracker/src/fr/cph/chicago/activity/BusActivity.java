@@ -237,19 +237,19 @@ public class BusActivity extends Activity {
 					String destination = arrival.getBusDestination();
 					if (mapRes.containsKey(destination)) {
 						TextView arrivalView = mapRes.get(destination);
-						if(arrival.getIsDly()){
+						if (arrival.getIsDly()) {
 							arrivalView.setText(arrivalView.getText() + " Delay");
-						}else{
+						} else {
 							arrivalView.setText(arrivalView.getText() + " " + arrival.getTimeLeft());
 						}
 					} else {
 						TextView arrivalView = new TextView(ChicagoTracker.getAppContext());
-						if(arrival.getIsDly()){
+						if (arrival.getIsDly()) {
 							arrivalView.setText(arrival.getBusDestination() + ": Delay");
-						}else{
+						} else {
 							arrivalView.setText(arrival.getBusDestination() + ": " + arrival.getTimeLeft());
 						}
-						
+
 						arrivalView.setTextColor(ChicagoTracker.getAppContext().getResources().getColor(R.color.grey));
 						mapRes.put(destination, arrivalView);
 					}
@@ -308,6 +308,8 @@ public class BusActivity extends Activity {
 			} catch (ConnectException e) {
 				this.trackerException = e;
 			}
+			Util.trackAction(BusActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
+					R.string.analytics_action_get_bus_arrival, 0);
 			return null;
 		}
 
@@ -359,6 +361,8 @@ public class BusActivity extends Activity {
 			GStreetViewConnect connect = GStreetViewConnect.getInstance();
 			try {
 				this.position = params[0];
+				Util.trackAction(BusActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_google,
+						R.string.analytics_action_get_google_map_street_view, 0);
 				return connect.connect(params[0]);
 			} catch (IOException e) {
 				Log.e(TAG, e.getMessage(), e);

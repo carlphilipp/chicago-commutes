@@ -62,14 +62,15 @@ import fr.cph.chicago.adapter.BusBoundAdapter;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.data.DataHolder;
-import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.BusPattern;
+import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.PatternPoint;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.fragment.NearbyFragment;
+import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
 
 /**
@@ -253,6 +254,8 @@ public class BusBoundActivity extends ListActivity {
 			} catch (ConnectException e) {
 				this.trackerException = e;
 			}
+			Util.trackAction(BusBoundActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
+					R.string.analytics_action_get_bus_stop, 0);
 			return lBuses;
 		}
 
@@ -300,6 +303,8 @@ public class BusBoundActivity extends ListActivity {
 			} catch (ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
+			Util.trackAction(BusBoundActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
+					R.string.analytics_action_get_bus_pattern, 0);
 			return this.pattern;
 		}
 
@@ -372,7 +377,7 @@ public class BusBoundActivity extends ListActivity {
 				}
 			}
 			map.addPolyline(poly);
-			
+
 			map.setOnCameraChangeListener(new OnCameraChangeListener() {
 				private float currentZoom = -1;
 

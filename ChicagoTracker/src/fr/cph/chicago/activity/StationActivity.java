@@ -346,6 +346,8 @@ public class StationActivity extends Activity {
 			GStreetViewConnect connect = GStreetViewConnect.getInstance();
 			try {
 				this.position = params[0];
+				Util.trackAction(StationActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_google,
+						R.string.analytics_action_get_google_map_street_view, 0);
 				return connect.connect(params[0]);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -469,6 +471,8 @@ public class StationActivity extends Activity {
 			} catch (ConnectException e) {
 				this.trackerException = e;
 			}
+			Util.trackAction(StationActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train,
+					R.string.analytics_action_get_train_arrivals, 0);
 			if (arrivals.size() == 1) {
 				@SuppressWarnings("unchecked")
 				String id = ((List<String>) params[0].get("mapid")).get(0);

@@ -227,5 +227,13 @@ public class BaseActivity extends Activity {
 		GlobalConnectTask task = new GlobalConnectTask(this, BaseActivity.class, CtaRequestType.TRAIN_ARRIVALS, params, CtaRequestType.BUS_ARRIVALS,
 				params2, loadTrain, loadBus, false);
 		task.execute((Void) null);
+		if (loadTrain) {
+			Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train,
+					R.string.analytics_action_get_train_arrivals, 0);
+		}
+		if (loadBus) {
+			Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
+					R.string.analytics_action_get_bus_arrival, 0);
+		}
 	}
 }

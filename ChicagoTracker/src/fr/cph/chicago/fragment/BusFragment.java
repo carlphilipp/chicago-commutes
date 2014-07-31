@@ -37,10 +37,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
@@ -95,10 +91,7 @@ public class BusFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 		ChicagoTracker.checkBusData(mActivity);
 
-		// Google analytics
-		Tracker t = ((ChicagoTracker) mActivity.getApplication()).getTracker();
-		t.setScreenName("Bus fragment");
-		t.send(new HitBuilders.AppViewBuilder().build());
+		Util.trackScreen(mActivity, R.string.analytics_bus_fragment);
 	}
 
 	@Override

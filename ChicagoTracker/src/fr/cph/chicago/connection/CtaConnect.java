@@ -32,7 +32,9 @@ import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
 
+import android.app.Activity;
 import android.util.Log;
+import fr.cph.chicago.R;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.util.Util;
 
@@ -71,9 +73,9 @@ public class CtaConnect {
 	/** The alert routes address **/
 	private static final String BASE_URL_ALERT_ROUTES = "http://www.transitchicago.com/api/1.0/routes.aspx";
 	/** The cta bus API key **/
-	private String CTA_BUS_KEY;
+	private static String CTA_BUS_KEY;
 	/** The cta train API key **/
-	private String CTA_TRAIN_KEY;
+	private static String CTA_TRAIN_KEY;
 	/** The http client **/
 	private DefaultHttpClient client;
 

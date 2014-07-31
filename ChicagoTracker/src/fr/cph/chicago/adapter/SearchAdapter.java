@@ -182,12 +182,12 @@ public final class SearchAdapter extends BaseAdapter {
 			});
 		} else {
 			final BikeStation bikeStation = (BikeStation) getItem(position);
-			
+
 			TextView type = (TextView) convertView.findViewById(R.id.train_bus_type);
 			type.setText("D");
-			
+
 			rounteName.setText(bikeStation.getName());
-			
+
 			convertView.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -236,6 +236,8 @@ public final class SearchAdapter extends BaseAdapter {
 			} catch (ConnectException e) {
 				this.trackerException = e;
 			}
+			Util.trackAction(SearchAdapter.this.mActivity, R.string.analytics_category_req, R.string.analytics_action_get_bus,
+					R.string.analytics_action_get_bus_direction, 0);
 			return busDirections;
 		}
 
@@ -243,16 +245,16 @@ public final class SearchAdapter extends BaseAdapter {
 		protected final void onPostExecute(final BusDirections result) {
 			mActivity.stopRefreshAnimation();
 			if (trackerException == null) {
-				//PopupMenu popupMenu = new PopupMenu(ChicagoTracker.getAppContext(), convertView);
+				// PopupMenu popupMenu = new PopupMenu(ChicagoTracker.getAppContext(), convertView);
 				final List<BusDirection> lBus = result.getlBusDirection();
 				final List<String> data = new ArrayList<String>();
-				for(BusDirection busDir : lBus){
+				for (BusDirection busDir : lBus) {
 					data.add(busDir.toString());
 				}
-				
+
 				LayoutInflater layoutInflater = (LayoutInflater) mActivity.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				View popupView = layoutInflater.inflate(R.layout.popup_bus, null);
-				
+
 				final int[] screenSize = Util.getScreenSize();
 				final PopupWindow popup = new PopupWindow(popupView, (int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
 

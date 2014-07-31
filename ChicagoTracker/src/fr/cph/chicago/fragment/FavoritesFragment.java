@@ -19,9 +19,6 @@ package fr.cph.chicago.fragment;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.AsyncTask;
@@ -44,6 +41,7 @@ import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.exception.TrackerException;
+import fr.cph.chicago.util.Util;
 
 /**
  * Favorites Fragment
@@ -108,10 +106,7 @@ public class FavoritesFragment extends Fragment {
 			mBikeStations = new ArrayList<BikeStation>();
 		}
 		
-		// Google analytics
-		Tracker t = ((ChicagoTracker) mActivity.getApplication()).getTracker();
-		t.setScreenName("Favorites fragment");
-		t.send(new HitBuilders.AppViewBuilder().build());
+		Util.trackScreen(mActivity, R.string.analytics_favorites_fragment);
 	}
 
 	@Override

@@ -202,6 +202,8 @@ public final class BusAdapter extends BaseAdapter {
 			} catch (ConnectException e) {
 				this.trackerException = e;
 			}
+			Util.trackAction(BusAdapter.this.mActivity, R.string.analytics_category_req, R.string.analytics_action_get_bus,
+					R.string.analytics_action_get_bus_direction, 0);
 			return busDirections;
 		}
 
@@ -211,10 +213,10 @@ public final class BusAdapter extends BaseAdapter {
 			if (trackerException == null) {
 				List<BusDirection> busDirections = result.getlBusDirection();
 				final List<String> data = new ArrayList<String>();
-				for(BusDirection busDir : busDirections){
+				for (BusDirection busDir : busDirections) {
 					data.add(busDir.toString());
 				}
-				
+
 				LayoutInflater layoutInflater = (LayoutInflater) mActivity.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				View popupView = layoutInflater.inflate(R.layout.popup_bus, null);
 

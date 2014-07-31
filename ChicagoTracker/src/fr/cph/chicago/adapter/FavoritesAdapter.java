@@ -622,6 +622,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 			} catch (ParserException e) {
 				this.trackerException = e;
 			}
+			Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_stop, 0);
 			return res;
 		}
 

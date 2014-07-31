@@ -302,19 +302,12 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	@Override
 	public boolean onCreateOptionsMenu(final Menu menu) {
 		this.menu = menu;
-		// if (!mNavigationDrawerFragment.isDrawerOpen()) {
-		// Only show items in the action bar relevant to this screen
-		// if the drawer is not showing. Otherwise, let the drawer
-		// decide what to show in the action bar.
 		getMenuInflater().inflate(R.menu.main, menu);
 		// Associate searchable configuration with the SearchView
 		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 		SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
 		searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-
-		// restoreActionBar();
 		return super.onCreateOptionsMenu(menu);
-		// return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
@@ -353,6 +346,19 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 					ChicagoTracker.displayError(this, e);
 					return true;
 				}
+				// Google analytics
+				if (loadTrain) {
+					Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train,
+							R.string.analytics_action_get_train_arrivals, 0);
+				}
+				if (loadBus) {
+					Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
+							R.string.analytics_action_get_bus_arrival, 0);
+				}
+				if (loadBike) {
+					Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy,
+							R.string.analytics_action_get_divvy_all, 0);
+				}
 				// Check if bus/bike or alert data are not loaded. If not, load them.
 				// Can happen when the app has been loaded without any data connection
 				boolean loadData = false;
@@ -377,11 +383,14 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 					startRefreshAnimation();
 					new LoadData().execute();
 				}
+				Util.trackAction(this, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
 			} else if (currentPosition == POSITION_NEARBY) {
 				nearbyFragment.reloadData();
+				Util.trackAction(this, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_nearby, 0);
 			}
 			return false;
 		case R.id.action_search:
+			Util.trackAction(this, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_search, 0);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -547,6 +556,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			if (loadBus) {
 				try {
 					this.busData.loadBusRoutes();
+					Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
+							R.string.analytics_action_get_bus_routes, 0);
 					publishProgress();
 				} catch (final ParserException e) {
 					new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -566,6 +577,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				try {
 					this.alertData = AlertData.getInstance();
 					this.alertData.loadGeneralAlerts();
+					Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_alert,
+							R.string.analytics_action_get_alert_general, 0);
 					publishProgress();
 				} catch (ParserException e) {
 					Log.e(TAG, e.getMessage(), e);
@@ -583,6 +596,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 					String bikeContent = divvyConnect.connect();
 					this.bikeStations = json.parseStations(bikeContent);
 					Collections.sort(this.bikeStations, Util.BIKE_COMPARATOR_NAME);
+					Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy,
+							R.string.analytics_action_get_divvy_all, 0);
 					publishProgress();
 				} catch (ConnectException e) {
 					Log.e(TAG, e.getMessage(), e);
