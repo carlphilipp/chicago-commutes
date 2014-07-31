@@ -1,3 +1,8 @@
+3.0.5
+New custom popup menu
+Follow trains/buses via google map
+First try of google analytics
+
 3.0.4
 Customize menu in favorites
 
