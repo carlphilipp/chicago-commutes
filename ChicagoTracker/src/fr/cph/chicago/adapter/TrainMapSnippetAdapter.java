@@ -14,10 +14,18 @@ import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.entity.Eta;
 
+/**
+ * 
+ * @author Carl-Philipp Harmant
+ * @version 1
+ */
 public class TrainMapSnippetAdapter extends BaseAdapter {
-
+	/** Eta list **/
 	private List<Eta> mEtas;
 
+	/**
+	 * @param etas
+	 */
 	public TrainMapSnippetAdapter(final List<Eta> etas) {
 		this.mEtas = etas;
 	}

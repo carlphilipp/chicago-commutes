@@ -40,11 +40,10 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
  * @version 1
  */
 public final class TrainAdapter extends BaseAdapter {
-
 	/** List of stations **/
-	private List<Station> stations;
+	private List<Station> mStations;
 	/** The context **/
-	private Context context;
+	private Context mContext;
 
 	/**
 	 * Constructor
@@ -56,18 +55,18 @@ public final class TrainAdapter extends BaseAdapter {
 		// Load data
 		DataHolder dataHolder = DataHolder.getInstance();
 		TrainData data = dataHolder.getTrainData();
-		this.stations = data.getStationsForLine(line);
-		this.context = ChicagoTracker.getAppContext();
+		this.mStations = data.getStationsForLine(line);
+		this.mContext = ChicagoTracker.getAppContext();
 	}
 
 	@Override
 	public final int getCount() {
-		return stations.size();
+		return mStations.size();
 	}
 
 	@Override
 	public final Object getItem(final int position) {
-		return stations.get(position);
+		return mStations.get(position);
 	}
 
 	@Override
@@ -77,7 +76,7 @@ public final class TrainAdapter extends BaseAdapter {
 
 	@Override
 	public final View getView(final int position, View convertView, final ViewGroup parent) {
-		Station station = stations.get(position);
+		Station station = mStations.get(position);
 		Set<TrainLine> lines = station.getLines();
 
 		LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -90,16 +89,16 @@ public final class TrainAdapter extends BaseAdapter {
 
 		int indice = 0;
 		for (TrainLine tl : lines) {
-			TextView textView = new TextView(context);
+			TextView textView = new TextView(mContext);
 			textView.setBackgroundColor(tl.getColor());
 			textView.setText(" ");
-			textView.setTextSize(context.getResources().getDimension(R.dimen.activity_list_station_colors));
+			textView.setTextSize(mContext.getResources().getDimension(R.dimen.activity_list_station_colors));
 			stationColorView.addView(textView);
 			if (indice != lines.size()) {
-				textView = new TextView(context);
+				textView = new TextView(mContext);
 				textView.setText("");
-				textView.setPadding(0, 0, (int) context.getResources().getDimension(R.dimen.activity_list_station_colors_space), 0);
-				textView.setTextSize(context.getResources().getDimension(R.dimen.activity_list_station_colors));
+				textView.setPadding(0, 0, (int) mContext.getResources().getDimension(R.dimen.activity_list_station_colors_space), 0);
+				textView.setTextSize(mContext.getResources().getDimension(R.dimen.activity_list_station_colors));
 				stationColorView.addView(textView);
 			}
 			indice++;

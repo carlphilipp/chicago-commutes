@@ -63,13 +63,12 @@ import fr.cph.chicago.xml.Xml;
  * @version 1
  */
 public final class BusAdapter extends BaseAdapter {
-
 	/** Main activity **/
 	private MainActivity mActivity;
 	/** Bus data **/
-	private List<BusRoute> busRoutes;
+	private List<BusRoute> mBusRoutes;
 	/** Layout that you can use as a black fade background **/
-	private FrameLayout firstLayout;
+	private FrameLayout mFirstLayout;
 
 	/**
 	 * Constructor
@@ -80,18 +79,18 @@ public final class BusAdapter extends BaseAdapter {
 	public BusAdapter(final MainActivity activity) {
 		this.mActivity = activity;
 		BusData busData = DataHolder.getInstance().getBusData();
-		this.busRoutes = busData.getRoutes();
-		this.firstLayout = ChicagoTracker.container;
+		this.mBusRoutes = busData.getRoutes();
+		this.mFirstLayout = ChicagoTracker.container;
 	}
 
 	@Override
 	public final int getCount() {
-		return busRoutes.size();
+		return mBusRoutes.size();
 	}
 
 	@Override
 	public final Object getItem(final int position) {
-		return busRoutes.get(position);
+		return mBusRoutes.get(position);
 	}
 
 	@Override
@@ -155,7 +154,7 @@ public final class BusAdapter extends BaseAdapter {
 	}
 
 	public void setRoutes(List<BusRoute> busRoutes) {
-		this.busRoutes = busRoutes;
+		this.mBusRoutes = busRoutes;
 	}
 
 	/**
@@ -243,16 +242,16 @@ public final class BusAdapter extends BaseAdapter {
 				});
 				popup.setFocusable(true);
 				popup.setBackgroundDrawable(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.any_selector));
-				firstLayout.getForeground().setAlpha(210);
+				mFirstLayout.getForeground().setAlpha(210);
 
 				popup.setOnDismissListener(new PopupWindow.OnDismissListener() {
 					@Override
 					public void onDismiss() {
-						firstLayout.getForeground().setAlpha(0);
+						mFirstLayout.getForeground().setAlpha(0);
 						convertView.setVisibility(LinearLayout.GONE);
 					}
 				});
-				popup.showAtLocation(firstLayout, Gravity.CENTER, 0, 0);
+				popup.showAtLocation(mFirstLayout, Gravity.CENTER, 0, 0);
 			} else {
 				ChicagoTracker.displayError(mActivity, trackerException);
 			}

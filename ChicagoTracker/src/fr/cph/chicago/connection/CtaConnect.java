@@ -32,9 +32,7 @@ import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
 
-import android.app.Activity;
 import android.util.Log;
-import fr.cph.chicago.R;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.util.Util;
 

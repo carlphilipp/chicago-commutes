@@ -27,22 +27,34 @@ import fr.cph.chicago.adapter.PopupTrainAdapter;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.Util;
 
+/**
+ * Favorites train on click listener
+ * 
+ * @author Carl-Philipp Harmant
+ * @version 1
+ */
 public class FavoritesTrainOnClickListener implements OnClickListener {
 	/** The main activity **/
 	private MainActivity mActivity;
 	/** The layout that is used to display a fade black background **/
-	private FrameLayout firstLayout;
+	private FrameLayout mFirstLayout;
 	/** The station id **/
-	private int stationId;
+	private int mStationId;
+	/** Train lines **/
+	private Set<TrainLine> mTrainLines;
 
-	private Set<TrainLine> trainLines;
-
+	/**
+	 * @param activity
+	 * @param firstLayout
+	 * @param stationId
+	 * @param trainLines
+	 */
 	public FavoritesTrainOnClickListener(final MainActivity activity, final FrameLayout firstLayout, final int stationId,
 			final Set<TrainLine> trainLines) {
 		this.mActivity = activity;
-		this.firstLayout = firstLayout;
-		this.stationId = stationId;
-		this.trainLines = trainLines;
+		this.mFirstLayout = firstLayout;
+		this.mStationId = stationId;
+		this.mTrainLines = trainLines;
 	}
 
 	@Override
@@ -58,20 +70,20 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 			final PopupWindow popup = new PopupWindow(popupView, (int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
 			popup.setFocusable(true);
 			popup.setBackgroundDrawable(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.any_selector));
-			firstLayout.getForeground().setAlpha(210);
+			mFirstLayout.getForeground().setAlpha(210);
 
 			ListView listView = (ListView) popupView.findViewById(R.id.details);
 			final List<String> values = new ArrayList<String>();
 			final List<Integer> colors = new ArrayList<Integer>();
 			values.add("Open details");
-			for (TrainLine line : trainLines) {
+			for (TrainLine line : mTrainLines) {
 				values.add(line.toString() + " line - All trains");
 				colors.add(line.getColor());
 			}
 			PopupTrainAdapter ada = new PopupTrainAdapter(mActivity, values, colors);
 			listView.setAdapter(ada);
 			final List<TrainLine> lines = new ArrayList<TrainLine>();
-			lines.addAll(trainLines);
+			lines.addAll(mTrainLines);
 
 			listView.setOnItemClickListener(new OnItemClickListener() {
 				@Override
@@ -79,7 +91,7 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 					if (position == 0) {
 						Intent intent = new Intent(ChicagoTracker.getAppContext(), StationActivity.class);
 						Bundle extras = new Bundle();
-						extras.putInt("stationId", stationId);
+						extras.putInt("stationId", mStationId);
 						intent.putExtras(extras);
 						mActivity.startActivity(intent);
 						mActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
@@ -97,15 +109,15 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 			});
 			popup.setFocusable(true);
 			popup.setBackgroundDrawable(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.any_selector));
-			firstLayout.getForeground().setAlpha(210);
+			mFirstLayout.getForeground().setAlpha(210);
 			popup.setOnDismissListener(new PopupWindow.OnDismissListener() {
 				@Override
 				public void onDismiss() {
-					firstLayout.getForeground().setAlpha(0);
+					mFirstLayout.getForeground().setAlpha(0);
 				}
 			});
 
-			popup.showAtLocation(firstLayout, Gravity.CENTER, 0, 0);
+			popup.showAtLocation(mFirstLayout, Gravity.CENTER, 0, 0);
 		}
 	}
 }

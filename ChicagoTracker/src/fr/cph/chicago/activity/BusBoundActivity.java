@@ -83,19 +83,19 @@ public class BusBoundActivity extends ListActivity {
 	/** Tag **/
 	private static final String TAG = "BusBoundActivity";
 	/** Bus route id **/
-	private String busRouteId;
+	private String mBusRouteId;
 	/** Bus route name **/
-	private String busRouteName;
+	private String mBusRouteName;
 	/** Bound **/
-	private String bound;
+	private String mBound;
 	/** Adapter **/
-	private BusBoundAdapter ada;
+	private BusBoundAdapter mAdapter;
 	/** List of bus stop get via API **/
-	private List<BusStop> busStops;
+	private List<BusStop> mBusStops;
 	/** The map fragment from google api **/
-	private MapFragment mapFragment;
+	private MapFragment mMapFragment;
 	/** The map **/
-	private GoogleMap map;
+	private GoogleMap mGooMap;
 
 	@Override
 	public final void onCreate(final Bundle savedInstanceState) {
@@ -104,25 +104,25 @@ public class BusBoundActivity extends ListActivity {
 		if (!this.isFinishing()) {
 			setContentView(R.layout.activity_bus_bound);
 
-			if (busRouteId == null && busRouteName == null && bound == null) {
-				busRouteId = getIntent().getExtras().getString("busRouteId");
-				busRouteName = getIntent().getExtras().getString("busRouteName");
-				bound = getIntent().getExtras().getString("bound");
+			if (mBusRouteId == null && mBusRouteName == null && mBound == null) {
+				mBusRouteId = getIntent().getExtras().getString("busRouteId");
+				mBusRouteName = getIntent().getExtras().getString("busRouteName");
+				mBound = getIntent().getExtras().getString("bound");
 			}
-			ada = new BusBoundAdapter(busRouteId);
-			setListAdapter(ada);
+			mAdapter = new BusBoundAdapter(mBusRouteId);
+			setListAdapter(mAdapter);
 			getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
 				@Override
 				public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-					BusStop busStop = (BusStop) ada.getItem(position);
+					BusStop busStop = (BusStop) mAdapter.getItem(position);
 					Intent intent = new Intent(ChicagoTracker.getAppContext(), BusActivity.class);
 
 					Bundle extras = new Bundle();
 					extras.putInt("busStopId", busStop.getId());
 					extras.putString("busStopName", busStop.getName());
-					extras.putString("busRouteId", busRouteId);
-					extras.putString("busRouteName", busRouteName);
-					extras.putString("bound", bound);
+					extras.putString("busRouteId", mBusRouteId);
+					extras.putString("busRouteName", mBusRouteName);
+					extras.putString("bound", mBound);
 					extras.putDouble("latitude", busStop.getPosition().getLatitude());
 					extras.putDouble("longitude", busStop.getPosition().getLongitude());
 
@@ -144,7 +144,7 @@ public class BusBoundActivity extends ListActivity {
 
 				@Override
 				public void onTextChanged(CharSequence s, int start, int before, int count) {
-					for (BusStop busStop : busStops) {
+					for (BusStop busStop : mBusStops) {
 						if (StringUtils.containsIgnoreCase(busStop.getName(), s)) {
 							this.busStopsFiltered.add(busStop);
 						}
@@ -153,8 +153,8 @@ public class BusBoundActivity extends ListActivity {
 
 				@Override
 				public void afterTextChanged(Editable s) {
-					ada.update(busStopsFiltered);
-					ada.notifyDataSetChanged();
+					mAdapter.update(busStopsFiltered);
+					mAdapter.notifyDataSetChanged();
 				}
 			});
 
@@ -170,28 +170,28 @@ public class BusBoundActivity extends ListActivity {
 	public final void onStart() {
 		super.onStart();
 		FragmentManager fm = getFragmentManager();
-		mapFragment = (MapFragment) fm.findFragmentById(R.id.map);
+		mMapFragment = (MapFragment) fm.findFragmentById(R.id.map);
 		GoogleMapOptions options = new GoogleMapOptions();
 		CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 7, 0, 0);
 		options.camera(camera);
-		mapFragment = MapFragment.newInstance(options);
-		mapFragment.setRetainInstance(true);
-		fm.beginTransaction().replace(R.id.map, mapFragment).commit();
+		mMapFragment = MapFragment.newInstance(options);
+		mMapFragment.setRetainInstance(true);
+		fm.beginTransaction().replace(R.id.map, mMapFragment).commit();
 	}
 
 	@Override
 	public final void onStop() {
 		super.onStop();
-		map = null;
+		mGooMap = null;
 	}
 
 	@Override
 	public final void onResume() {
 		super.onResume();
-		if (map == null) {
-			map = mapFragment.getMap();
-			map.getUiSettings().setMyLocationButtonEnabled(false);
-			map.getUiSettings().setZoomControlsEnabled(false);
+		if (mGooMap == null) {
+			mGooMap = mMapFragment.getMap();
+			mGooMap.getUiSettings().setMyLocationButtonEnabled(false);
+			mGooMap.getUiSettings().setZoomControlsEnabled(false);
 		}
 		new LoadPattern().execute();
 	}
@@ -199,16 +199,16 @@ public class BusBoundActivity extends ListActivity {
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		busRouteId = savedInstanceState.getString("busRouteId");
-		busRouteName = savedInstanceState.getString("busRouteName");
-		bound = savedInstanceState.getString("bound");
+		mBusRouteId = savedInstanceState.getString("busRouteId");
+		mBusRouteName = savedInstanceState.getString("busRouteName");
+		mBound = savedInstanceState.getString("bound");
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-		savedInstanceState.putString("busRouteId", busRouteId);
-		savedInstanceState.putString("busRouteName", busRouteName);
-		savedInstanceState.putString("bound", bound);
+		savedInstanceState.putString("busRouteId", mBusRouteId);
+		savedInstanceState.putString("busRouteName", mBusRouteName);
+		savedInstanceState.putString("bound", mBound);
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
@@ -219,7 +219,7 @@ public class BusBoundActivity extends ListActivity {
 		ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		actionBar.setDisplayShowTitleEnabled(true);
-		actionBar.setTitle(this.busRouteName + " (" + this.bound + ")");
+		actionBar.setTitle(this.mBusRouteName + " (" + this.mBound + ")");
 		return true;
 	}
 
@@ -248,7 +248,7 @@ public class BusBoundActivity extends ListActivity {
 		protected final List<BusStop> doInBackground(final Void... params) {
 			List<BusStop> lBuses = null;
 			try {
-				lBuses = DataHolder.getInstance().getBusData().loadBusStop(busRouteId, bound);
+				lBuses = DataHolder.getInstance().getBusData().loadBusStop(mBusRouteId, mBound);
 			} catch (ParserException e) {
 				this.trackerException = e;
 			} catch (ConnectException e) {
@@ -261,10 +261,10 @@ public class BusBoundActivity extends ListActivity {
 
 		@Override
 		protected final void onPostExecute(final List<BusStop> result) {
-			BusBoundActivity.this.busStops = result;
+			BusBoundActivity.this.mBusStops = result;
 			if (trackerException == null) {
-				ada.update(result);
-				ada.notifyDataSetChanged();
+				mAdapter.update(result);
+				mAdapter.notifyDataSetChanged();
 			} else {
 				ChicagoTracker.displayError(BusBoundActivity.this, trackerException);
 			}
@@ -285,15 +285,15 @@ public class BusBoundActivity extends ListActivity {
 		protected final BusPattern doInBackground(final Void... params) {
 			CtaConnect connect = CtaConnect.getInstance();
 			MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
-			connectParam.put("rt", busRouteId);
-			String boundIgnoreCase = bound.toLowerCase(Locale.US);
+			connectParam.put("rt", mBusRouteId);
+			String boundIgnoreCase = mBound.toLowerCase(Locale.US);
 			try {
 				String content = connect.connect(CtaRequestType.BUS_PATTERN, connectParam);
 				Xml xml = new Xml();
 				List<BusPattern> patterns = xml.parsePatterns(content);
 				for (BusPattern pattern : patterns) {
 					String directionIgnoreCase = pattern.getDirection().toLowerCase(Locale.US);
-					if (pattern.getDirection().equals(bound) || boundIgnoreCase.indexOf(directionIgnoreCase) != -1) {
+					if (pattern.getDirection().equals(mBound) || boundIgnoreCase.indexOf(directionIgnoreCase) != -1) {
 						this.pattern = pattern;
 						break;
 					}
@@ -345,23 +345,23 @@ public class BusBoundActivity extends ListActivity {
 	private void centerMap(final Position positon) {
 		// Because the fragment can possibly not be ready
 		int i = 0;
-		while (map == null && i < 20) {
-			map = mapFragment.getMap();
+		while (mGooMap == null && i < 20) {
+			mGooMap = mMapFragment.getMap();
 			i++;
 		}
-		if (map != null) {
-			map.getUiSettings().setMyLocationButtonEnabled(false);
-			map.getUiSettings().setZoomControlsEnabled(false);
-			map.setMyLocationEnabled(true);
+		if (mGooMap != null) {
+			mGooMap.getUiSettings().setMyLocationButtonEnabled(false);
+			mGooMap.getUiSettings().setZoomControlsEnabled(false);
+			mGooMap.setMyLocationEnabled(true);
 			LatLng latLng = new LatLng(positon.getLatitude(), positon.getLongitude());
-			map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
-			map.animateCamera(CameraUpdateFactory.zoomTo(9), 500, null);
+			mGooMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
+			mGooMap.animateCamera(CameraUpdateFactory.zoomTo(9), 500, null);
 		}
 
 	}
 
 	private void drawPattern(final BusPattern pattern) {
-		if (map != null) {
+		if (mGooMap != null) {
 			final List<Marker> markers = new ArrayList<Marker>();
 			PolylineOptions poly = new PolylineOptions();
 			poly.geodesic(true).color(Color.BLACK);
@@ -370,15 +370,15 @@ public class BusBoundActivity extends ListActivity {
 				LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
 				poly.add(point);
 				if (patternPoint.getStopId() != null) {
-					Marker marker = map.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName())
+					Marker marker = mGooMap.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName())
 							.snippet(patternPoint.getSequence() + "").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 					markers.add(marker);
 					marker.setVisible(false);
 				}
 			}
-			map.addPolyline(poly);
+			mGooMap.addPolyline(poly);
 
-			map.setOnCameraChangeListener(new OnCameraChangeListener() {
+			mGooMap.setOnCameraChangeListener(new OnCameraChangeListener() {
 				private float currentZoom = -1;
 
 				@Override

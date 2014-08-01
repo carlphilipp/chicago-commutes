@@ -65,7 +65,6 @@ import fr.cph.chicago.xml.Xml;
  * @version 1
  */
 public class BusActivity extends Activity {
-
 	/** Tag **/
 	private static final String TAG = "BusActivity";
 	/** List of bus arrivals **/

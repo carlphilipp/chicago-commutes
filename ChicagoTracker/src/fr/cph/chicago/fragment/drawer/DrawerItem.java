@@ -1,8 +1,15 @@
 package fr.cph.chicago.fragment.drawer;
 
+/**
+ * Drawer item
+ * 
+ * @author Carl-Philipp Harmant
+ * @version 1
+ */
 public final class DrawerItem {
-
+	/** **/
 	private String name;
+	/** **/
 	private int imgId;
 
 	public DrawerItem(final String name, final int imgId) {

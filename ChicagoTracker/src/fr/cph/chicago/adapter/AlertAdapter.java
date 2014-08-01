@@ -22,32 +22,31 @@ import fr.cph.chicago.entity.Service;
  * @version 1
  */
 public final class AlertAdapter extends BaseAdapter {
-
 	/** The list of alerts **/
-	private List<Alert> alerts;
+	private List<Alert> mAlerts;
 
 	/** The constructor **/
 	public AlertAdapter() {
 		if (DataHolder.getInstance().getAlertData() != null) {
-			alerts = DataHolder.getInstance().getAlertData().getAlerts();
+			mAlerts = DataHolder.getInstance().getAlertData().getAlerts();
 		} else {
-			alerts = new ArrayList<Alert>();
+			mAlerts = new ArrayList<Alert>();
 		}
 	}
 
 	@Override
 	public final int getCount() {
-		return alerts.size();
+		return mAlerts.size();
 	}
 
 	@Override
 	public final Object getItem(final int position) {
-		return alerts.get(position);
+		return mAlerts.get(position);
 	}
 
 	@Override
 	public final long getItemId(final int position) {
-		return alerts.get(position).getId();
+		return mAlerts.get(position).getId();
 	}
 
 	@Override
@@ -99,7 +98,7 @@ public final class AlertAdapter extends BaseAdapter {
 	}
 	
 	public final void setAlerts(final List<Alert> alerts){
-		this.alerts = alerts;
+		this.mAlerts = alerts;
 	}
 
 }

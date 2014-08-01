@@ -36,11 +36,10 @@ import fr.cph.chicago.entity.BusStop;
  * @version 1
  */
 public class BusBoundAdapter extends BaseAdapter {
-
+	/** List of bus stop **/
+	private List<BusStop> mBusStops;
 	/** **/
-	private List<BusStop> busStops;
-	/** **/
-	private String stopId;
+	private String mStopId;
 
 	/**
 	 * Constructor
@@ -49,29 +48,29 @@ public class BusBoundAdapter extends BaseAdapter {
 	 *            the stop id of the bu
 	 */
 	public BusBoundAdapter(final String stopId) {
-		this.busStops = new ArrayList<BusStop>();
-		this.stopId = stopId;
+		this.mBusStops = new ArrayList<BusStop>();
+		this.mStopId = stopId;
 	}
 
 	@Override
 	public final int getCount() {
-		return busStops.size();
+		return mBusStops.size();
 	}
 
 	@Override
 	public final Object getItem(final int position) {
-		return busStops.get(position);
+		return mBusStops.get(position);
 	}
 
 	@Override
 	public final long getItemId(final int position) {
-		return busStops.get(position).getId();
+		return mBusStops.get(position).getId();
 	}
 
 	@Override
 	public final View getView(final int position, View convertView, final ViewGroup parent) {
 
-		BusStop busStop = busStops.get(position);
+		BusStop busStop = mBusStops.get(position);
 
 		TextView routNumberView = null;
 		TextView routNameView = null;
@@ -94,7 +93,7 @@ public class BusBoundAdapter extends BaseAdapter {
 			routNameView = viewHolder.routNameView;
 		}
 
-		routNumberView.setText(stopId);
+		routNumberView.setText(mStopId);
 		routNameView.setText(busStop.getName());
 
 		return convertView;
@@ -118,8 +117,8 @@ public class BusBoundAdapter extends BaseAdapter {
 	 *            the list of bus stops
 	 */
 	public final void update(final List<BusStop> result) {
-		this.busStops = null;
-		this.busStops = result;
+		this.mBusStops = null;
+		this.mBusStops = result;
 	}
 
 }

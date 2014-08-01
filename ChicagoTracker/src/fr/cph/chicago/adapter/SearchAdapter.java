@@ -68,19 +68,18 @@ import fr.cph.chicago.xml.Xml;
  * @version 1
  */
 public final class SearchAdapter extends BaseAdapter {
-
 	/** List of train stations **/
-	private List<Station> trains;
+	private List<Station> mTrains;
 	/** List of buses route **/
-	private List<BusRoute> buses;
+	private List<BusRoute> mBuses;
 	/** List of bikes stations **/
-	private List<BikeStation> bikes;
+	private List<BikeStation> mBikes;
 	/** The context **/
-	private Context context;
+	private Context mContext;
 	/** The search activity **/
 	private SearchActivity mActivity;
 	/** The layout that is used to display a fade black background **/
-	private FrameLayout container;
+	private FrameLayout mContainer;
 
 	/**
 	 * Constructor
@@ -91,25 +90,25 @@ public final class SearchAdapter extends BaseAdapter {
 	 *            the layout container
 	 */
 	public SearchAdapter(final SearchActivity activity, final FrameLayout container) {
-		this.context = ChicagoTracker.getAppContext();
+		this.mContext = ChicagoTracker.getAppContext();
 		this.mActivity = activity;
-		this.container = container;
+		this.mContainer = container;
 	}
 
 	@Override
 	public final int getCount() {
-		return trains.size() + buses.size() + bikes.size();
+		return mTrains.size() + mBuses.size() + mBikes.size();
 	}
 
 	@Override
 	public final Object getItem(final int position) {
 		Object object = null;
-		if (position < trains.size()) {
-			object = trains.get(position);
-		} else if (position < trains.size() + buses.size()) {
-			object = buses.get(position - trains.size());
+		if (position < mTrains.size()) {
+			object = mTrains.get(position);
+		} else if (position < mTrains.size() + mBuses.size()) {
+			object = mBuses.get(position - mTrains.size());
 		} else {
-			object = bikes.get(position - (trains.size() + buses.size()));
+			object = mBikes.get(position - (mTrains.size() + mBuses.size()));
 		}
 		return object;
 	}
@@ -127,7 +126,7 @@ public final class SearchAdapter extends BaseAdapter {
 
 		TextView rounteName = (TextView) convertView.findViewById(R.id.station_name);
 
-		if (position < trains.size()) {
+		if (position < mTrains.size()) {
 			final Station station = (Station) getItem(position);
 			Set<TrainLine> lines = station.getLines();
 
@@ -137,16 +136,16 @@ public final class SearchAdapter extends BaseAdapter {
 
 			int indice = 0;
 			for (TrainLine tl : lines) {
-				TextView textView = new TextView(context);
+				TextView textView = new TextView(mContext);
 				textView.setBackgroundColor(tl.getColor());
 				textView.setText(" ");
-				textView.setTextSize(context.getResources().getDimension(R.dimen.activity_list_station_colors));
+				textView.setTextSize(mContext.getResources().getDimension(R.dimen.activity_list_station_colors));
 				stationColorView.addView(textView);
 				if (indice != lines.size()) {
-					textView = new TextView(context);
+					textView = new TextView(mContext);
 					textView.setText("");
-					textView.setPadding(0, 0, (int) context.getResources().getDimension(R.dimen.activity_list_station_colors_space), 0);
-					textView.setTextSize(context.getResources().getDimension(R.dimen.activity_list_station_colors));
+					textView.setPadding(0, 0, (int) mContext.getResources().getDimension(R.dimen.activity_list_station_colors_space), 0);
+					textView.setTextSize(mContext.getResources().getDimension(R.dimen.activity_list_station_colors));
 					stationColorView.addView(textView);
 				}
 				indice++;
@@ -163,7 +162,7 @@ public final class SearchAdapter extends BaseAdapter {
 					mActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 				}
 			});
-		} else if (position < trains.size() + buses.size()) {
+		} else if (position < mTrains.size() + mBuses.size()) {
 			final BusRoute busRoute = (BusRoute) getItem(position);
 
 			TextView type = (TextView) convertView.findViewById(R.id.train_bus_type);
@@ -278,16 +277,16 @@ public final class SearchAdapter extends BaseAdapter {
 				});
 				popup.setFocusable(true);
 				popup.setBackgroundDrawable(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.any_selector));
-				container.getForeground().setAlpha(210);
+				mContainer.getForeground().setAlpha(210);
 
 				popup.setOnDismissListener(new PopupWindow.OnDismissListener() {
 					@Override
 					public void onDismiss() {
-						container.getForeground().setAlpha(0);
+						mContainer.getForeground().setAlpha(0);
 						convertView.setVisibility(LinearLayout.GONE);
 					}
 				});
-				popup.showAtLocation(container, Gravity.CENTER, 0, 0);
+				popup.showAtLocation(mContainer, Gravity.CENTER, 0, 0);
 			} else {
 				ChicagoTracker.displayError(mActivity, trackerException);
 			}
@@ -303,8 +302,8 @@ public final class SearchAdapter extends BaseAdapter {
 	 *            the list of bus routes
 	 */
 	public void updateData(List<Station> trains, List<BusRoute> buses, List<BikeStation> bikes) {
-		this.trains = trains;
-		this.buses = buses;
-		this.bikes = bikes;
+		this.mTrains = trains;
+		this.mBuses = buses;
+		this.mBikes = bikes;
 	}
 }

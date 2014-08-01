@@ -25,13 +25,13 @@ package fr.cph.chicago.data;
 public class DataHolder {
 
 	/** Singleton **/
-	private static DataHolder dataHolder;
+	private static DataHolder mDataHolder;
 	/** Train data **/
-	private TrainData trainData;
+	private TrainData mTrainData;
 	/** Bus data **/
-	private BusData busData;
+	private BusData mBusData;
 	/** Alert data **/
-	private AlertData alertData;
+	private AlertData mAlertData;
 
 	/**
 	 * Private constructor
@@ -45,10 +45,10 @@ public class DataHolder {
 	 * @return
 	 */
 	public static final DataHolder getInstance() {
-		if (dataHolder == null) {
-			dataHolder = new DataHolder();
+		if (mDataHolder == null) {
+			mDataHolder = new DataHolder();
 		}
-		return dataHolder;
+		return mDataHolder;
 	}
 
 	/**
@@ -57,7 +57,7 @@ public class DataHolder {
 	 * @return train data
 	 */
 	public final TrainData getTrainData() {
-		return trainData;
+		return mTrainData;
 	}
 
 	/**
@@ -67,7 +67,7 @@ public class DataHolder {
 	 *            train data
 	 */
 	public final void setTrainData(final TrainData data) {
-		this.trainData = data;
+		this.mTrainData = data;
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class DataHolder {
 	 * @return bus data
 	 */
 	public final BusData getBusData() {
-		return busData;
+		return mBusData;
 	}
 
 	/**
@@ -86,7 +86,7 @@ public class DataHolder {
 	 *            bus data
 	 */
 	public final void setBusData(final BusData busData) {
-		this.busData = busData;
+		this.mBusData = busData;
 	}
 
 	/**
@@ -95,7 +95,7 @@ public class DataHolder {
 	 * @return alert data
 	 */
 	public final AlertData getAlertData() {
-		return alertData;
+		return mAlertData;
 	}
 
 	/**
@@ -105,6 +105,6 @@ public class DataHolder {
 	 *            alert data
 	 */
 	public final void setAlertData(final AlertData alertData) {
-		this.alertData = alertData;
+		this.mAlertData = alertData;
 	}
 }

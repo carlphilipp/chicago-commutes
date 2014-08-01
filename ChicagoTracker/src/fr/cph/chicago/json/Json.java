@@ -12,6 +12,12 @@ import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 
+/**
+ * Json
+ * 
+ * @author Carl-Philipp Harmant
+ * @version 1
+ */
 public class Json {
 	public List<BikeStation> parseStations(final String jsonString) throws ParserException {
 		List<BikeStation> stations = new ArrayList<BikeStation>();

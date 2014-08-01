@@ -62,53 +62,53 @@ public class BikeStationActivity extends Activity {
 	/** Tag **/
 	private static final String TAG = "BikeStationActivity";
 	/** The station **/
-	private BikeStation station;
+	private BikeStation mStation;
 	/** Street view image **/
-	private ImageView streetViewImage;
+	private ImageView mStreetViewImage;
 	/** Street view text **/
-	private TextView streetViewText;
+	private TextView mStreetViewText;
 	/** Map image **/
-	private ImageView mapImage;
+	private ImageView mMapImage;
 	/** Direction image **/
-	private ImageView directionImage;
+	private ImageView mDirectionImage;
 	/** Favorite image **/
-	private ImageView favoritesImage;
+	private ImageView mFavoritesImage;
 	/** Is favorite **/
-	private boolean isFavorite;
+	private boolean mIsFavorite;
 	/** The menu **/
-	private Menu menu;
+	private Menu mMenu;
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (!this.isFinishing()) {
 
-			station = getIntent().getExtras().getParcelable("station");
+			mStation = getIntent().getExtras().getParcelable("station");
 
 			// Load right xml
 			setContentView(R.layout.activity_bike_station);
 
 			// Call google street api to load image
-			new DisplayGoogleStreetPicture().execute(station.getPosition());
+			new DisplayGoogleStreetPicture().execute(mStation.getPosition());
 
-			this.isFavorite = isFavorite();
+			this.mIsFavorite = isFavorite();
 
 			TextView textView = (TextView) findViewById(R.id.activity_bike_station_station_name);
-			textView.setText(station.getName().toString());
+			textView.setText(mStation.getName().toString());
 
-			streetViewImage = (ImageView) findViewById(R.id.activity_bike_station_streetview_image);
+			mStreetViewImage = (ImageView) findViewById(R.id.activity_bike_station_streetview_image);
 
-			streetViewText = (TextView) findViewById(R.id.activity_bike_station_steetview_text);
+			mStreetViewText = (TextView) findViewById(R.id.activity_bike_station_steetview_text);
 
-			mapImage = (ImageView) findViewById(R.id.activity_bike_station_map_image);
+			mMapImage = (ImageView) findViewById(R.id.activity_bike_station_map_image);
 
-			directionImage = (ImageView) findViewById(R.id.activity_bike_station_map_direction);
+			mDirectionImage = (ImageView) findViewById(R.id.activity_bike_station_map_direction);
 
-			favoritesImage = (ImageView) findViewById(R.id.activity_bike_station_favorite_star);
-			if (isFavorite) {
-				favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_active));
+			mFavoritesImage = (ImageView) findViewById(R.id.activity_bike_station_favorite_star);
+			if (mIsFavorite) {
+				mFavoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_active));
 			}
-			favoritesImage.setOnClickListener(new View.OnClickListener() {
+			mFavoritesImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					BikeStationActivity.this.switchFavorite();
@@ -116,7 +116,7 @@ public class BikeStationActivity extends Activity {
 			});
 
 			TextView bikeStationValue = (TextView) findViewById(R.id.activity_bike_station_value);
-			bikeStationValue.setText(station.getStAddress1());
+			bikeStationValue.setText(mStation.getStAddress1());
 
 			setValue();
 
@@ -139,8 +139,8 @@ public class BikeStationActivity extends Activity {
 		availableBike.setTextColor(context.getResources().getColor(R.color.grey_5));
 		availableBikes.addView(availableBike);
 		TextView amountBike = new TextView(context);
-		amountBike.setText("" + station.getAvailableBikes());
-		if (station.getAvailableBikes() == 0) {
+		amountBike.setText("" + mStation.getAvailableBikes());
+		if (mStation.getAvailableBikes() == 0) {
 			amountBike.setTextColor(context.getResources().getColor(R.color.red));
 		} else {
 			amountBike.setTextColor(context.getResources().getColor(R.color.green));
@@ -154,8 +154,8 @@ public class BikeStationActivity extends Activity {
 		availableDock.setTextColor(context.getResources().getColor(R.color.grey_5));
 		availableDocks.addView(availableDock);
 		TextView amountDock = new TextView(context);
-		amountDock.setText("" + station.getAvailableDocks());
-		if (station.getAvailableDocks() == 0) {
+		amountDock.setText("" + mStation.getAvailableDocks());
+		if (mStation.getAvailableDocks() == 0) {
 			amountDock.setTextColor(context.getResources().getColor(R.color.red));
 		} else {
 			amountDock.setTextColor(context.getResources().getColor(R.color.green));
@@ -169,19 +169,19 @@ public class BikeStationActivity extends Activity {
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		station = savedInstanceState.getParcelable("station");
+		mStation = savedInstanceState.getParcelable("station");
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-		savedInstanceState.putParcelable("station", station);
+		savedInstanceState.putParcelable("station", mStation);
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
 	@Override
 	public final boolean onCreateOptionsMenu(final Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		this.menu = menu;
+		this.mMenu = menu;
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main_no_search, menu);
 
@@ -218,7 +218,7 @@ public class BikeStationActivity extends Activity {
 		boolean isFavorite = false;
 		List<String> favorites = Preferences.getBikeFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
 		for (String fav : favorites) {
-			if (Integer.valueOf(fav) == station.getId()) {
+			if (Integer.valueOf(fav) == mStation.getId()) {
 				isFavorite = true;
 				break;
 			}
@@ -227,10 +227,10 @@ public class BikeStationActivity extends Activity {
 	}
 
 	public final void refreshStation(BikeStation station) {
-		this.station = station;
+		this.mStation = station;
 		// setValue(bikeAvail);
 		setValue();
-		MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+		MenuItem refreshMenuItem = mMenu.findItem(R.id.action_refresh);
 		refreshMenuItem.collapseActionView();
 		refreshMenuItem.setActionView(null);
 	}
@@ -269,7 +269,7 @@ public class BikeStationActivity extends Activity {
 		@Override
 		protected final void onPostExecute(final List<BikeStation> result) {
 			for (BikeStation station : result) {
-				if (BikeStationActivity.this.station.getId() == station.getId()) {
+				if (BikeStationActivity.this.mStation.getId() == station.getId()) {
 					BikeStationActivity.this.refreshStation(station);
 					Bundle bundle = getIntent().getExtras();
 					bundle.putParcelable("station", station);
@@ -307,14 +307,14 @@ public class BikeStationActivity extends Activity {
 		@Override
 		protected final void onPostExecute(final Drawable result) {
 			int height = (int) getResources().getDimension(R.dimen.activity_station_street_map_height);
-			android.widget.RelativeLayout.LayoutParams params = (android.widget.RelativeLayout.LayoutParams) BikeStationActivity.this.streetViewImage
+			android.widget.RelativeLayout.LayoutParams params = (android.widget.RelativeLayout.LayoutParams) BikeStationActivity.this.mStreetViewImage
 					.getLayoutParams();
-			ViewGroup.LayoutParams params2 = BikeStationActivity.this.streetViewImage.getLayoutParams();
+			ViewGroup.LayoutParams params2 = BikeStationActivity.this.mStreetViewImage.getLayoutParams();
 			params2.height = height;
 			params2.width = params.width;
-			BikeStationActivity.this.streetViewImage.setLayoutParams(params2);
-			BikeStationActivity.this.streetViewImage.setImageDrawable(result);
-			BikeStationActivity.this.streetViewImage.setOnClickListener(new View.OnClickListener() {
+			BikeStationActivity.this.mStreetViewImage.setLayoutParams(params2);
+			BikeStationActivity.this.mStreetViewImage.setImageDrawable(result);
+			BikeStationActivity.this.mStreetViewImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					String uri = String.format(Locale.ENGLISH, "google.streetview:cbll=%f,%f&cbp=1,180,,0,1&mz=1", position.getLatitude(),
@@ -331,8 +331,8 @@ public class BikeStationActivity extends Activity {
 					}
 				}
 			});
-			BikeStationActivity.this.mapImage.setImageDrawable(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.da_turn_arrive));
-			BikeStationActivity.this.mapImage.setOnClickListener(new View.OnClickListener() {
+			BikeStationActivity.this.mMapImage.setImageDrawable(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.da_turn_arrive));
+			BikeStationActivity.this.mMapImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					String uri = "http://maps.google.com/maps?z=12&t=m&q=loc:" + position.getLatitude() + "+" + position.getLongitude();
@@ -342,9 +342,9 @@ public class BikeStationActivity extends Activity {
 				}
 			});
 
-			BikeStationActivity.this.directionImage.setImageDrawable(ChicagoTracker.getAppContext().getResources()
+			BikeStationActivity.this.mDirectionImage.setImageDrawable(ChicagoTracker.getAppContext().getResources()
 					.getDrawable(R.drawable.ic_directions_walking));
-			BikeStationActivity.this.directionImage.setOnClickListener(new View.OnClickListener() {
+			BikeStationActivity.this.mDirectionImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					String uri = "http://maps.google.com/?f=d&daddr=" + position.getLatitude() + "," + position.getLongitude() + "&dirflg=w";
@@ -354,11 +354,11 @@ public class BikeStationActivity extends Activity {
 				}
 			});
 
-			BikeStationActivity.this.streetViewText.setText(ChicagoTracker.getAppContext().getResources()
+			BikeStationActivity.this.mStreetViewText.setText(ChicagoTracker.getAppContext().getResources()
 					.getString(R.string.station_activity_street_view));
 
-			if (menu != null) {
-				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+			if (mMenu != null) {
+				MenuItem refreshMenuItem = mMenu.findItem(R.id.action_refresh);
 				refreshMenuItem.collapseActionView();
 				refreshMenuItem.setActionView(null);
 			}
@@ -369,18 +369,18 @@ public class BikeStationActivity extends Activity {
 	 * Add/remove favorites
 	 */
 	private final void switchFavorite() {
-		if (isFavorite) {
-			Util.removeFromBikeFavorites(station.getId(), ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
-			isFavorite = false;
+		if (mIsFavorite) {
+			Util.removeFromBikeFavorites(mStation.getId(), ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
+			mIsFavorite = false;
 		} else {
-			Util.addToBikeFavorites(station.getId(), ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
-			Preferences.addBikeRouteNameMapping(String.valueOf(station.getId()), station.getName());
-			isFavorite = true;
+			Util.addToBikeFavorites(mStation.getId(), ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
+			Preferences.addBikeRouteNameMapping(String.valueOf(mStation.getId()), mStation.getName());
+			mIsFavorite = true;
 		}
-		if (isFavorite) {
-			favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_active));
+		if (mIsFavorite) {
+			mFavoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_active));
 		} else {
-			favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_disabled));
+			mFavoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_disabled));
 		}
 	}
 }

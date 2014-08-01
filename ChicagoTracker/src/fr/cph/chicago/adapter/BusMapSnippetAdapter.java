@@ -14,10 +14,19 @@ import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.entity.BusArrival;
 
+/**
+ * Adapter that will handle bus map
+ * 
+ * @author Carl-Philipp Harmant
+ * @version 1
+ */
 public class BusMapSnippetAdapter extends BaseAdapter {
-
+	/** List of bus arrivals **/
 	private List<BusArrival> mArrivals;
 
+	/**
+	 * @param arrivals
+	 */
 	public BusMapSnippetAdapter(final List<BusArrival> arrivals) {
 		this.mArrivals = arrivals;
 	}
