@@ -69,33 +69,33 @@ public class BusActivity extends Activity {
 	/** Tag **/
 	private static final String TAG = "BusActivity";
 	/** List of bus arrivals **/
-	private List<BusArrival> busArrivals;
+	private List<BusArrival> mBusArrivals;
 	/** Buse route id **/
-	private String busRouteId;
+	private String mBusRouteId;
 	/** Bound **/
-	private String bound;
+	private String mBound;
 	/** Bus stop id **/
-	private Integer busStopId;
+	private Integer mBusStopId;
 	/** Bus stop name **/
-	private String busStopName;
+	private String mBusStopName;
 	/** Bus route name **/
-	private String busRouteName;
+	private String mBusRouteName;
 	/** Position **/
-	private Double latitude, longitude;
+	private Double mLatitude, mLongitude;
 	/** Images **/
-	private ImageView streetViewImage, mapImage, directionImage, favoritesImage;
+	private ImageView mStreetViewImage, mMapImage, mDirectionImage, mFavoritesImage;
 	/** Street view text **/
-	private TextView streetViewText;
+	private TextView mStreetViewText;
 	/** Stop view **/
-	private LinearLayout stopsView;
+	private LinearLayout mStopsView;
 	/** First time the activity is loaded **/
-	private boolean firstLoad = true;
+	private boolean mFirstLoad = true;
 	/** First time the activity is loaded count **/
-	private int firstLoadCount;
+	private int mFirstLoadCount;
 	/** Is added as favorite **/
-	private boolean isFavorite;
+	private boolean mIsFavorite;
 	/** Menu **/
-	private Menu menu;
+	private Menu mMenu;
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
@@ -105,44 +105,44 @@ public class BusActivity extends Activity {
 			// Load right xml
 			setContentView(R.layout.activity_bus);
 
-			if (busStopId == null && busRouteId == null && bound == null && busStopName == null && busRouteName == null && latitude == null
-					&& longitude == null) {
-				this.busStopId = getIntent().getExtras().getInt("busStopId");
-				this.busRouteId = getIntent().getExtras().getString("busRouteId");
-				this.bound = getIntent().getExtras().getString("bound");
+			if (mBusStopId == null && mBusRouteId == null && mBound == null && mBusStopName == null && mBusRouteName == null && mLatitude == null
+					&& mLongitude == null) {
+				this.mBusStopId = getIntent().getExtras().getInt("busStopId");
+				this.mBusRouteId = getIntent().getExtras().getString("busRouteId");
+				this.mBound = getIntent().getExtras().getString("bound");
 
-				this.busStopName = getIntent().getExtras().getString("busStopName");
-				this.busRouteName = getIntent().getExtras().getString("busRouteName");
+				this.mBusStopName = getIntent().getExtras().getString("busStopName");
+				this.mBusRouteName = getIntent().getExtras().getString("busRouteName");
 
-				this.latitude = getIntent().getExtras().getDouble("latitude");
-				this.longitude = getIntent().getExtras().getDouble("longitude");
+				this.mLatitude = getIntent().getExtras().getDouble("latitude");
+				this.mLongitude = getIntent().getExtras().getDouble("longitude");
 			}
 
 			Position position = new Position();
-			position.setLatitude(latitude);
-			position.setLongitude(longitude);
+			position.setLatitude(mLatitude);
+			position.setLongitude(mLongitude);
 
-			this.isFavorite = isFavorite();
+			this.mIsFavorite = isFavorite();
 
-			this.stopsView = (LinearLayout) findViewById(R.id.activity_bus_stops);
+			this.mStopsView = (LinearLayout) findViewById(R.id.activity_bus_stops);
 
 			TextView busRouteNameView = (TextView) findViewById(R.id.activity_bus_station_name);
-			busRouteNameView.setText(busStopName);
+			busRouteNameView.setText(mBusStopName);
 
 			TextView busRouteNameView2 = (TextView) findViewById(R.id.activity_bus_station_value);
-			busRouteNameView2.setText(busRouteName + " (" + bound + ")");
+			busRouteNameView2.setText(mBusRouteName + " (" + mBound + ")");
 
-			streetViewImage = (ImageView) findViewById(R.id.activity_bus_streetview_image);
-			streetViewText = (TextView) findViewById(R.id.activity_bus_steetview_text);
-			mapImage = (ImageView) findViewById(R.id.activity_bus_map_image);
+			mStreetViewImage = (ImageView) findViewById(R.id.activity_bus_streetview_image);
+			mStreetViewText = (TextView) findViewById(R.id.activity_bus_steetview_text);
+			mMapImage = (ImageView) findViewById(R.id.activity_bus_map_image);
 
-			directionImage = (ImageView) findViewById(R.id.activity_bus_map_direction);
+			mDirectionImage = (ImageView) findViewById(R.id.activity_bus_map_direction);
 
-			favoritesImage = (ImageView) findViewById(R.id.activity_bus_favorite_star);
-			if (isFavorite) {
-				favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_active));
+			mFavoritesImage = (ImageView) findViewById(R.id.activity_bus_favorite_star);
+			if (mIsFavorite) {
+				mFavoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_active));
 			}
-			favoritesImage.setOnClickListener(new View.OnClickListener() {
+			mFavoritesImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					BusActivity.this.switchFavorite();
@@ -154,37 +154,39 @@ public class BusActivity extends Activity {
 			new LoadData().execute();
 
 			getActionBar().setDisplayHomeAsUpEnabled(true);
+			
+			Util.trackScreen(this, R.string.analytics_bus_details);
 		}
 	}
 
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		busStopId = savedInstanceState.getInt("busStopId");
-		busRouteId = savedInstanceState.getString("busRouteId");
-		bound = savedInstanceState.getString("bound");
-		busStopName = savedInstanceState.getString("busStopName");
-		busRouteName = savedInstanceState.getString("busRouteName");
-		latitude = savedInstanceState.getDouble("latitude");
-		longitude = savedInstanceState.getDouble("longitude");
+		mBusStopId = savedInstanceState.getInt("busStopId");
+		mBusRouteId = savedInstanceState.getString("busRouteId");
+		mBound = savedInstanceState.getString("bound");
+		mBusStopName = savedInstanceState.getString("busStopName");
+		mBusRouteName = savedInstanceState.getString("busRouteName");
+		mLatitude = savedInstanceState.getDouble("latitude");
+		mLongitude = savedInstanceState.getDouble("longitude");
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-		savedInstanceState.putInt("busStopId", busStopId);
-		savedInstanceState.putString("busRouteId", busRouteId);
-		savedInstanceState.putString("bound", bound);
-		savedInstanceState.putString("busStopName", busStopName);
-		savedInstanceState.putString("busRouteName", busRouteName);
-		savedInstanceState.putDouble("latitude", latitude);
-		savedInstanceState.putDouble("longitude", longitude);
+		savedInstanceState.putInt("busStopId", mBusStopId);
+		savedInstanceState.putString("busRouteId", mBusRouteId);
+		savedInstanceState.putString("bound", mBound);
+		savedInstanceState.putString("busStopName", mBusStopName);
+		savedInstanceState.putString("busRouteName", mBusRouteName);
+		savedInstanceState.putDouble("latitude", mLatitude);
+		savedInstanceState.putDouble("longitude", mLongitude);
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
 	@Override
 	public final boolean onCreateOptionsMenu(final Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		this.menu = menu;
+		this.mMenu = menu;
 
 		// Inflate menu with no search
 		MenuInflater inflater = getMenuInflater();
@@ -230,10 +232,10 @@ public class BusActivity extends Activity {
 	 * Draw arrivals in current layout
 	 */
 	public final void drawArrivals() {
-		if (busArrivals != null) {
+		if (mBusArrivals != null) {
 			Map<String, TextView> mapRes = new HashMap<String, TextView>();
-			for (BusArrival arrival : this.busArrivals) {
-				if (arrival.getRouteDirection().equals(bound)) {
+			for (BusArrival arrival : this.mBusArrivals) {
+				if (arrival.getRouteDirection().equals(mBound)) {
 					String destination = arrival.getBusDestination();
 					if (mapRes.containsKey(destination)) {
 						TextView arrivalView = mapRes.get(destination);
@@ -255,9 +257,9 @@ public class BusActivity extends Activity {
 					}
 				}
 			}
-			stopsView.removeAllViews();
+			mStopsView.removeAllViews();
 			for (Entry<String, TextView> entry : mapRes.entrySet()) {
-				stopsView.addView(entry.getValue());
+				mStopsView.addView(entry.getValue());
 			}
 		}
 	}
@@ -270,7 +272,7 @@ public class BusActivity extends Activity {
 		boolean isFavorite = false;
 		List<String> favorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
 		for (String fav : favorites) {
-			if (fav.equals(busRouteId + "_" + busStopId + "_" + bound)) {
+			if (fav.equals(mBusRouteId + "_" + mBusStopId + "_" + mBound)) {
 				isFavorite = true;
 				break;
 			}
@@ -292,8 +294,8 @@ public class BusActivity extends Activity {
 		@Override
 		protected List<BusArrival> doInBackground(final Void... params) {
 			MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
-			reqParams.put("rt", busRouteId);
-			reqParams.put("stpid", String.valueOf(busStopId));
+			reqParams.put("rt", mBusRouteId);
+			reqParams.put("stpid", String.valueOf(mBusStopId));
 			CtaConnect connect = CtaConnect.getInstance();
 			try {
 				Xml xml = new Xml();
@@ -316,8 +318,8 @@ public class BusActivity extends Activity {
 		@Override
 		protected final void onProgressUpdate(final Void... values) {
 			// Get menu item and put it to loading mod
-			if (menu != null) {
-				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+			if (mMenu != null) {
+				MenuItem refreshMenuItem = mMenu.findItem(R.id.action_refresh);
 				refreshMenuItem.setActionView(R.layout.progressbar);
 				refreshMenuItem.expandActionView();
 			}
@@ -326,19 +328,19 @@ public class BusActivity extends Activity {
 		@Override
 		protected final void onPostExecute(final List<BusArrival> result) {
 			if (trackerException == null) {
-				BusActivity.this.busArrivals = result;
+				BusActivity.this.mBusArrivals = result;
 				BusActivity.this.drawArrivals();
 			} else {
 				ChicagoTracker.displayError(BusActivity.this, trackerException);
 			}
-			if (!firstLoad) {
+			if (!mFirstLoad) {
 				// Stop refresh animation
-				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+				MenuItem refreshMenuItem = mMenu.findItem(R.id.action_refresh);
 				refreshMenuItem.collapseActionView();
 				refreshMenuItem.setActionView(null);
 			} else {
 				setFirstLoad();
-				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+				MenuItem refreshMenuItem = mMenu.findItem(R.id.action_refresh);
 				refreshMenuItem.collapseActionView();
 				refreshMenuItem.setActionView(null);
 			}
@@ -373,14 +375,14 @@ public class BusActivity extends Activity {
 		@Override
 		protected final void onPostExecute(final Drawable result) {
 			int height = (int) getResources().getDimension(R.dimen.activity_station_street_map_height);
-			LayoutParams params = (LayoutParams) BusActivity.this.streetViewImage.getLayoutParams();
-			ViewGroup.LayoutParams params2 = BusActivity.this.streetViewImage.getLayoutParams();
+			LayoutParams params = (LayoutParams) BusActivity.this.mStreetViewImage.getLayoutParams();
+			ViewGroup.LayoutParams params2 = BusActivity.this.mStreetViewImage.getLayoutParams();
 			params2.height = height;
 			params2.width = params.width;
-			BusActivity.this.streetViewText.setText("Street view");
-			BusActivity.this.streetViewImage.setLayoutParams(params2);
-			BusActivity.this.streetViewImage.setImageDrawable(result);
-			BusActivity.this.streetViewImage.setOnClickListener(new View.OnClickListener() {
+			BusActivity.this.mStreetViewText.setText("Street view");
+			BusActivity.this.mStreetViewImage.setLayoutParams(params2);
+			BusActivity.this.mStreetViewImage.setImageDrawable(result);
+			BusActivity.this.mStreetViewImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					String uri = String.format(Locale.ENGLISH, "google.streetview:cbll=%f,%f&cbp=1,180,,0,1&mz=1", position.getLatitude(),
@@ -398,8 +400,8 @@ public class BusActivity extends Activity {
 					}
 				}
 			});
-			BusActivity.this.mapImage.setImageDrawable(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.da_turn_arrive));
-			BusActivity.this.mapImage.setOnClickListener(new View.OnClickListener() {
+			BusActivity.this.mMapImage.setImageDrawable(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.da_turn_arrive));
+			BusActivity.this.mMapImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					String uri = "http://maps.google.com/maps?z=12&t=m&q=loc:" + position.getLatitude() + "+" + position.getLongitude();
@@ -408,9 +410,9 @@ public class BusActivity extends Activity {
 					startActivity(i);
 				}
 			});
-			BusActivity.this.directionImage.setImageDrawable(ChicagoTracker.getAppContext().getResources()
+			BusActivity.this.mDirectionImage.setImageDrawable(ChicagoTracker.getAppContext().getResources()
 					.getDrawable(R.drawable.ic_directions_walking));
-			BusActivity.this.directionImage.setOnClickListener(new View.OnClickListener() {
+			BusActivity.this.mDirectionImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					String uri = "http://maps.google.com/?f=d&daddr=" + position.getLatitude() + "," + position.getLongitude() + "&dirflg=w";
@@ -421,7 +423,7 @@ public class BusActivity extends Activity {
 			});
 
 			// Stop menu refresh animation
-			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+			MenuItem refreshMenuItem = mMenu.findItem(R.id.action_refresh);
 			refreshMenuItem.collapseActionView();
 			refreshMenuItem.setActionView(null);
 			setFirstLoad();
@@ -430,30 +432,30 @@ public class BusActivity extends Activity {
 	}
 
 	private void setFirstLoad() {
-		if (firstLoad && firstLoadCount == 1) {
-			firstLoad = false;
+		if (mFirstLoad && mFirstLoadCount == 1) {
+			mFirstLoad = false;
 		}
-		firstLoadCount++;
+		mFirstLoadCount++;
 	}
 
 	/**
 	 * Add or remove from favorites
 	 */
 	private final void switchFavorite() {
-		if (isFavorite) {
-			Util.removeFromBusFavorites(busRouteId, String.valueOf(busStopId), bound, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
-			isFavorite = false;
+		if (mIsFavorite) {
+			Util.removeFromBusFavorites(mBusRouteId, String.valueOf(mBusStopId), mBound, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+			mIsFavorite = false;
 		} else {
-			Util.addToBusFavorites(busRouteId, String.valueOf(busStopId), bound, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
-			Log.i(TAG, "busRouteName: " + busRouteName);
-			Preferences.addBusRouteNameMapping(String.valueOf(busStopId), busRouteName);
-			Preferences.addBusStopNameMapping(String.valueOf(busStopId), busStopName);
-			isFavorite = true;
+			Util.addToBusFavorites(mBusRouteId, String.valueOf(mBusStopId), mBound, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+			Log.i(TAG, "busRouteName: " + mBusRouteName);
+			Preferences.addBusRouteNameMapping(String.valueOf(mBusStopId), mBusRouteName);
+			Preferences.addBusStopNameMapping(String.valueOf(mBusStopId), mBusStopName);
+			mIsFavorite = true;
 		}
-		if (isFavorite) {
-			favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_active));
+		if (mIsFavorite) {
+			mFavoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_active));
 		} else {
-			favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_disabled));
+			mFavoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_disabled));
 		}
 	}
 }

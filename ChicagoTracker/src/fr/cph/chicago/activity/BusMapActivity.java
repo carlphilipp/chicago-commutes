@@ -119,6 +119,10 @@ public class BusMapActivity extends Activity {
 			mBusListener = new BusMapOnCameraChangeListener();
 
 			getActionBar().setDisplayHomeAsUpEnabled(true);
+
+			setTitle("Map - " + mBusRouteId);
+
+			Util.trackScreen(this, R.string.analytics_bus_map);
 		}
 	}
 
@@ -357,8 +361,10 @@ public class BusMapActivity extends Activity {
 				PolylineOptions poly = new PolylineOptions();
 				if (j == 0) {
 					poly.geodesic(true).color(Color.RED);
-				} else {
+				} else if(j == 1){
 					poly.geodesic(true).color(Color.BLUE);
+				}else {
+					poly.geodesic(true).color(Color.YELLOW);
 				}
 
 				poly.width(7f);
@@ -572,8 +578,8 @@ public class BusMapActivity extends Activity {
 	 * @author Carl-Philipp Harmant
 	 * 
 	 */
-	private final class LoadPattern extends AsyncTask<Void, Void, List<BusPattern>> implements LocationListener {
-		/** **/
+	private final class LoadPattern extends AsyncTask<Void, Void, List<BusPattern>> {
+		/** List of bus pattern **/
 		private List<BusPattern> patterns;
 
 		@Override
@@ -591,6 +597,11 @@ public class BusMapActivity extends Activity {
 					for (int i = 0; i < busDirections.getlBusDirection().size(); i++) {
 						mBounds[i] = busDirections.getlBusDirection().get(i).toString();
 					}
+					Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
+							R.string.analytics_action_get_bus_direction, 0);
+				}
+				for(int i = 0 ; i < mBounds.length ; i++){
+					Log.i(TAG, mBounds[i]);
 				}
 
 				MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
@@ -612,8 +623,6 @@ public class BusMapActivity extends Activity {
 				Log.e(TAG, e.getMessage(), e);
 			}
 			Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
-					R.string.analytics_action_get_bus_direction, 0);
-			Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
 					R.string.analytics_action_get_bus_pattern, 0);
 			return this.patterns;
 		}
@@ -626,22 +635,6 @@ public class BusMapActivity extends Activity {
 				Toast.makeText(BusMapActivity.this, "Sorry, could not load the path!", Toast.LENGTH_SHORT).show();
 			}
 			stopRefreshAnimation();
-		}
-
-		@Override
-		public final void onLocationChanged(final Location location) {
-		}
-
-		@Override
-		public final void onProviderDisabled(final String provider) {
-		}
-
-		@Override
-		public final void onProviderEnabled(final String provider) {
-		}
-
-		@Override
-		public final void onStatusChanged(final String provider, final int status, final Bundle extras) {
 		}
 	}
 

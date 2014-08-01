@@ -114,6 +114,10 @@ public class TrainMapActivity extends Activity {
 			mTrainListener = new TrainMapOnCameraChangeListener();
 
 			getActionBar().setDisplayHomeAsUpEnabled(true);
+			
+			setTitle("Map - " + TrainLine.fromXmlString(mLine).toString());
+			
+			Util.trackScreen(this, R.string.analytics_train_map);
 		}
 	}
 
@@ -314,8 +318,6 @@ public class TrainMapActivity extends Activity {
 				marker.remove();
 			}
 			mMarkers.clear();
-			/*final Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.train_gta);
-			final Bitmap bhalfsize = Bitmap.createScaledBitmap(icon, icon.getWidth() / 11, icon.getHeight() / 11, false);*/
 			final Bitmap bitmap = mTrainListener.getCurrentBitmap();
 			for (Train train : trains) {
 				final LatLng point = new LatLng(train.getPosition().getLatitude(), train.getPosition().getLongitude());
