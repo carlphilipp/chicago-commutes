@@ -567,7 +567,13 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 						}
 					});
 					Log.e(TAG, e.getMessage(), e);
-				} catch (ConnectException e) {
+				} catch (final ConnectException e) {
+					new Handler(Looper.getMainLooper()).post(new Runnable() {
+						@Override
+						public void run() {
+							Toast.makeText(MainActivity.this, "Bus error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+						}
+					});
 					Log.e(TAG, e.getMessage(), e);
 				}
 			}

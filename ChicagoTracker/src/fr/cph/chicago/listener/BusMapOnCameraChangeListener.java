@@ -1,5 +1,6 @@
 package fr.cph.chicago.listener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.graphics.Bitmap;
@@ -43,6 +44,8 @@ public class BusMapOnCameraChangeListener implements OnCameraChangeListener {
 		this.mBitmap2 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 5, icon.getHeight() / 5, false);
 		this.mBitmap3 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 3, icon.getHeight() / 3, false);
 		this.setCurrentBitmap(mBitmap1);
+		this.mBusMarkers = new ArrayList<Marker>();
+		this.mBusStationMarkers = new ArrayList<Marker>();
 	}
 
 	public void setBusMarkers(List<Marker> busMarkers) {

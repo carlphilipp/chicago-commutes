@@ -445,6 +445,8 @@ public class BusMapActivity extends Activity {
 				} else {
 					Toast.makeText(BusMapActivity.this, "No bus found!", Toast.LENGTH_LONG).show();
 				}
+			} else {
+				Toast.makeText(BusMapActivity.this, "Error while loading data!", Toast.LENGTH_SHORT).show();
 			}
 			if (stopRefresh) {
 				stopRefreshAnimation();

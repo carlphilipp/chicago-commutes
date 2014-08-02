@@ -484,6 +484,8 @@ public class TrainMapActivity extends Activity {
 				} else {
 					Toast.makeText(TrainMapActivity.this, "No trains found!", Toast.LENGTH_LONG).show();
 				}
+			} else {
+				Toast.makeText(TrainMapActivity.this, "Error while loading data!", Toast.LENGTH_SHORT).show();
 			}
 			if (stopRefresh) {
 				stopRefreshAnimation();
