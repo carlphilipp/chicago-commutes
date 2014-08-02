@@ -318,6 +318,8 @@ public final class Xml {
 						tag = XmlArrivalBusTag.RTNM;
 					} else if (tagName.equals("bustime-response") || tagName.equals("SCRIPT")) {
 						tag = XmlArrivalBusTag.OTHER;
+					} else if (tagName.equals("msg")) {
+						tag = XmlArrivalBusTag.ERROR;
 					}
 				} else if (eventType == XmlPullParser.END_TAG) {
 					tag = XmlArrivalBusTag.OTHER;
@@ -335,6 +337,8 @@ public final class Xml {
 						case RTNM:
 							busRoute.setName(text);
 							break;
+						case ERROR:
+							throw new ParserException(text);
 						default:
 							break;
 						}
@@ -432,6 +436,8 @@ public final class Xml {
 							busStop.setPosition(position);
 						} else if (tagName.equals("lon")) {
 							busStop.getPosition().setLongitude(Double.valueOf(text));
+						} else if (tagName.equals("msg")) {
+							throw new ParserException(text);
 						}
 					}
 				}

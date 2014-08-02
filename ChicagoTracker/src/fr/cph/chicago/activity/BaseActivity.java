@@ -47,7 +47,8 @@ import fr.cph.chicago.task.GlobalConnectTask;
 import fr.cph.chicago.util.Util;
 
 /**
- * This class represents the base activity of the application It will load the loading screen and/or the main activity
+ * This class represents the base activity of the application It will load the loading screen and/or the main
+ * activity
  * 
  * @author Carl-Philipp Harmant
  * @version 1
@@ -93,7 +94,8 @@ public class BaseActivity extends Activity {
 	}
 
 	/**
-	 * Called via reflection from CtaConnectTask. It load arrivals data into ChicagoTracker object. Update last update time. Start main activity
+	 * Called via reflection from CtaConnectTask. It load arrivals data into ChicagoTracker object. Update
+	 * last update time. Start main activity
 	 * 
 	 * @param trainArrivals
 	 *            list of train arrivals
@@ -133,8 +135,9 @@ public class BaseActivity extends Activity {
 	}
 
 	/**
-	 * Load Bus and train data into DataHolder. The data are load in a sequence mode. It means that if one of the url contacted does not response, we
-	 * will still process the other data, and won't throw any exception
+	 * Load Bus and train data into DataHolder. The data are load in a sequence mode. It means that if one of
+	 * the url contacted does not response, we will still process the other data, and won't throw any
+	 * exception
 	 * 
 	 * @author Carl-Philipp Harmant
 	 * 
@@ -207,8 +210,22 @@ public class BaseActivity extends Activity {
 
 		// Get preferences to know if trains and buses need to be loaded
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-		boolean loadTrain = sharedPref.getBoolean("cta_train", true);
-		boolean loadBus = sharedPref.getBoolean("cta_bus", true);
+		boolean loadTrain = true;
+		boolean loadBus = true;
+		if (sharedPref.contains("cta_train")) {
+			loadTrain = sharedPref.getBoolean("cta_train", true);
+		} else {
+			SharedPreferences.Editor editor = sharedPref.edit();
+			editor.putBoolean("cta_train", true);
+			editor.commit();
+		}
+		if (sharedPref.contains("cta_bus")) {
+			loadBus = sharedPref.getBoolean("cta_bus", true);
+		} else {
+			SharedPreferences.Editor editor = sharedPref.edit();
+			editor.putBoolean("cta_bus", true);
+			editor.commit();
+		}
 
 		GlobalConnectTask task = new GlobalConnectTask(this, BaseActivity.class, CtaRequestType.TRAIN_ARRIVALS, params, CtaRequestType.BUS_ARRIVALS,
 				params2, loadTrain, loadBus, false);

@@ -1,6 +1,9 @@
 3.0.8
 Fixed bug when loading data on startup
 
+3.0.2
+Minor bug fixes
+
 3.0.0
 /!\ For a better UI experience, please re-add your bus favorites
 Faster loading time

@@ -39,4 +39,8 @@ public class ParserException extends TrackerException {
 		super(message, e);
 	}
 
+	public ParserException(String text) {
+		super(text);
+	}
+
 }
