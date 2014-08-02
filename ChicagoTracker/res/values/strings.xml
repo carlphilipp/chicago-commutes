@@ -126,7 +126,7 @@
     <string name="analytics_bus_details">Bus details</string>
     <string name="analytics_train_details">Train details</string>
     <string name="analytics_bus_map">Map bus</string>
-    <string name="analytics_train_map">Maps train</string>
+    <string name="analytics_train_map">Map train</string>
     
     
     <string name="analytics_category_ui">UI</string>
