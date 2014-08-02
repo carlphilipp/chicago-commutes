@@ -46,6 +46,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.adapter.TrainMapSnippetAdapter;
 import fr.cph.chicago.connection.CtaConnect;
@@ -94,9 +95,12 @@ public class TrainMapActivity extends Activity {
 	/** On camera change zoom listener **/
 	private TrainMapOnCameraChangeListener mTrainListener;
 
+	private boolean centerMap = true;
+
 	@Override
 	public final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		ChicagoTracker.checkTrainData(this);
 		if (!this.isFinishing()) {
 			setContentView(R.layout.activity_map);
 			if (savedInstanceState != null) {
@@ -114,24 +118,32 @@ public class TrainMapActivity extends Activity {
 			mTrainListener = new TrainMapOnCameraChangeListener();
 
 			getActionBar().setDisplayHomeAsUpEnabled(true);
-			
+
 			setTitle("Map - " + TrainLine.fromXmlString(mLine).toString());
-			
+
 			Util.trackScreen(this, R.string.analytics_train_map);
 		}
 	}
 
 	@Override
+	public final void onRestart() {
+		super.onRestart();
+		startRefreshAnimation();
+	}
+
+	@Override
 	public final void onStart() {
 		super.onStart();
-		FragmentManager fm = getFragmentManager();
-		mMapFragment = (MapFragment) fm.findFragmentById(R.id.map);
-		GoogleMapOptions options = new GoogleMapOptions();
-		CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 10, 0, 0);
-		options.camera(camera);
-		mMapFragment = MapFragment.newInstance(options);
-		mMapFragment.setRetainInstance(true);
-		fm.beginTransaction().replace(R.id.map, mMapFragment).commit();
+		if (mMapFragment == null) {
+			FragmentManager fm = getFragmentManager();
+			mMapFragment = (MapFragment) fm.findFragmentById(R.id.map);
+			GoogleMapOptions options = new GoogleMapOptions();
+			CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 10, 0, 0);
+			options.camera(camera);
+			mMapFragment = MapFragment.newInstance(options);
+			mMapFragment.setRetainInstance(true);
+			fm.beginTransaction().replace(R.id.map, mMapFragment).commit();
+		}
 	}
 
 	@Override
@@ -142,6 +154,7 @@ public class TrainMapActivity extends Activity {
 	@Override
 	public final void onStop() {
 		super.onStop();
+		centerMap = false;
 		mGooMap = null;
 	}
 
@@ -155,7 +168,6 @@ public class TrainMapActivity extends Activity {
 		super.onResume();
 		if (mGooMap == null) {
 			mGooMap = mMapFragment.getMap();
-
 			mGooMap.setInfoWindowAdapter(new InfoWindowAdapter() {
 				@Override
 				public View getInfoWindow(Marker marker) {
@@ -199,7 +211,7 @@ public class TrainMapActivity extends Activity {
 		}
 		if (Util.isNetworkAvailable()) {
 			new LoadCurrentPosition().execute();
-			new LoadTrainPosition().execute(new Boolean[] { true, true });
+			new LoadTrainPosition().execute(new Boolean[] { centerMap, true });
 		} else {
 			Toast.makeText(this, "No network connection detected!", Toast.LENGTH_SHORT).show();
 		}
@@ -208,12 +220,12 @@ public class TrainMapActivity extends Activity {
 	@Override
 	public void onRestoreInstanceState(final Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		mLine = savedInstanceState.getString("mLine");
+		mLine = savedInstanceState.getString("line");
 	}
 
 	@Override
 	public void onSaveInstanceState(final Bundle savedInstanceState) {
-		savedInstanceState.putString("mLine", mLine);
+		savedInstanceState.putString("line", mLine);
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
@@ -221,6 +233,7 @@ public class TrainMapActivity extends Activity {
 	public final boolean onCreateOptionsMenu(final Menu menu) {
 		this.mMenu = menu;
 		getMenuInflater().inflate(R.menu.main_no_search, menu);
+		startRefreshAnimation();
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -339,9 +352,9 @@ public class TrainMapActivity extends Activity {
 
 				mViews.put(marker, view);
 			}
-			
+
 			mTrainListener.setTrainMarkers(mMarkers);
-			
+
 			mGooMap.setOnCameraChangeListener(mTrainListener);
 
 			PolylineOptions poly = new PolylineOptions();
@@ -451,7 +464,12 @@ public class TrainMapActivity extends Activity {
 			}
 			Util.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train,
 					R.string.analytics_action_get_train_location, 0);
-			positions = TrainMapActivity.this.mData.readPattern(TrainLine.fromXmlString(TrainMapActivity.this.mLine));
+			TrainData data = TrainMapActivity.this.mData;
+			if (data == null) {
+				DataHolder dataHolder = DataHolder.getInstance();
+				data = dataHolder.getTrainData();
+			}
+			positions = data.readPattern(TrainLine.fromXmlString(TrainMapActivity.this.mLine));
 			return trains;
 		}
 

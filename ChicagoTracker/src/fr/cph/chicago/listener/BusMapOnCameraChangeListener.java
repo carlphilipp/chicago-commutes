@@ -38,10 +38,10 @@ public class BusMapOnCameraChangeListener implements OnCameraChangeListener {
 	private List<Marker> mBusStationMarkers;
 
 	public BusMapOnCameraChangeListener() {
-		Bitmap icon = BitmapFactory.decodeResource(ChicagoTracker.getAppContext().getResources(), R.drawable.bus_gta);
-		this.mBitmap1 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 11, icon.getHeight() / 11, false);
-		this.mBitmap2 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 6, icon.getHeight() / 6, false);
-		this.mBitmap3 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 4, icon.getHeight() / 4, false);
+		Bitmap icon = BitmapFactory.decodeResource(ChicagoTracker.getAppContext().getResources(), R.drawable.bus);
+		this.mBitmap1 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 9, icon.getHeight() / 9, false);
+		this.mBitmap2 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 5, icon.getHeight() / 5, false);
+		this.mBitmap3 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 3, icon.getHeight() / 3, false);
 		this.setCurrentBitmap(mBitmap1);
 	}
 

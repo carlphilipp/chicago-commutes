@@ -46,6 +46,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.adapter.BusMapSnippetAdapter;
 import fr.cph.chicago.connection.CtaConnect;
@@ -97,9 +98,14 @@ public class BusMapActivity extends Activity {
 	/** On camera change zoom listener **/
 	private BusMapOnCameraChangeListener mBusListener;
 
+	private boolean centerMap = true;
+
+	private boolean loadPattern = true;
+
 	@Override
 	public final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		ChicagoTracker.checkBusData(this);
 		if (!this.isFinishing()) {
 			setContentView(R.layout.activity_map);
 			if (savedInstanceState != null) {
@@ -123,20 +129,21 @@ public class BusMapActivity extends Activity {
 			setTitle("Map - " + mBusRouteId);
 
 			Util.trackScreen(this, R.string.analytics_bus_map);
+
+			FragmentManager fm = getFragmentManager();
+			mMapFragment = (MapFragment) fm.findFragmentById(R.id.map);
+			GoogleMapOptions options = new GoogleMapOptions();
+			CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 10, 0, 0);
+			options.camera(camera);
+			mMapFragment = MapFragment.newInstance(options);
+			mMapFragment.setRetainInstance(true);
+			fm.beginTransaction().replace(R.id.map, mMapFragment).commit();
 		}
 	}
 
 	@Override
 	public final void onStart() {
 		super.onStart();
-		FragmentManager fm = getFragmentManager();
-		mMapFragment = (MapFragment) fm.findFragmentById(R.id.map);
-		GoogleMapOptions options = new GoogleMapOptions();
-		CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 10, 0, 0);
-		options.camera(camera);
-		mMapFragment = MapFragment.newInstance(options);
-		mMapFragment.setRetainInstance(true);
-		fm.beginTransaction().replace(R.id.map, mMapFragment).commit();
 	}
 
 	@Override
@@ -147,6 +154,8 @@ public class BusMapActivity extends Activity {
 	@Override
 	public final void onStop() {
 		super.onStop();
+		centerMap = false;
+		loadPattern = false;
 		mGooMap = null;
 	}
 
@@ -202,14 +211,12 @@ public class BusMapActivity extends Activity {
 			});
 		}
 		if (Util.isNetworkAvailable()) {
-			if (mBusId == 0) {
-				new LoadCurrentPosition().execute();
-				new LoadBusPosition().execute(new Boolean[] { true, false });
-			} else {
-				new LoadCurrentPosition().execute();
-				new LoadBusPosition().execute(new Boolean[] { true, false });
+			startRefreshAnimation();
+			new LoadCurrentPosition().execute();
+			new LoadBusPosition().execute(new Boolean[] { centerMap, !loadPattern });
+			if (loadPattern) {
+				new LoadPattern().execute();
 			}
-			new LoadPattern().execute();
 		} else {
 			Toast.makeText(this, "No network connection detected!", Toast.LENGTH_SHORT).show();
 		}
@@ -361,9 +368,9 @@ public class BusMapActivity extends Activity {
 				PolylineOptions poly = new PolylineOptions();
 				if (j == 0) {
 					poly.geodesic(true).color(Color.RED);
-				} else if(j == 1){
+				} else if (j == 1) {
 					poly.geodesic(true).color(Color.BLUE);
-				}else {
+				} else {
 					poly.geodesic(true).color(Color.YELLOW);
 				}
 
@@ -599,9 +606,6 @@ public class BusMapActivity extends Activity {
 					}
 					Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
 							R.string.analytics_action_get_bus_direction, 0);
-				}
-				for(int i = 0 ; i < mBounds.length ; i++){
-					Log.i(TAG, mBounds[i]);
 				}
 
 				MultiMap<String, String> connectParam = new MultiValueMap<String, String>();

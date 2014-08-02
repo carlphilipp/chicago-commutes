@@ -129,7 +129,6 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 								intent.putExtras(extras);
 								mActivity.startActivity(intent);
 								mActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
-								Toast.makeText(mActivity, "" + arrival.getTimeLeftDueDelay() + " " + arrival.getBusId(), Toast.LENGTH_SHORT).show();
 								popup.dismiss();
 							}
 							i++;
