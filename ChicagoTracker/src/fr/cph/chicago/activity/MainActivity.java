@@ -39,6 +39,8 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
@@ -52,6 +54,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaRequestType;
@@ -89,27 +92,27 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	/** Fragment managing the behaviors, interactions and presentation of the navigation drawer. **/
 	private NavigationDrawerFragment mNavigationDrawerFragment;
 	/** Favorites fragment **/
-	private FavoritesFragment favoritesFragment;
+	private FavoritesFragment mFavoritesFragment;
 	/** Train fragment **/
-	private TrainFragment trainFragment;
+	private TrainFragment mTrainFragment;
 	/** Bus Fragment **/
-	private BusFragment busFragment;
+	private BusFragment mBusFragment;
 	/** Bike Fragment **/
-	private BikeFragment bikeFragment;
+	private BikeFragment mBikeFragment;
 	/** Nearby fragment **/
-	private NearbyFragment nearbyFragment;
+	private NearbyFragment mNearbyFragment;
 	/** Alert Fragment **/
-	private AlertFragment alertFragment;
+	private AlertFragment mAlertFragment;
 	/** Map fragment **/
-	private MapFragment mapFragment;
+	private MapFragment mMapFragment;
 	/** Settings fragment **/
-	private SettingsFragment settingsFragment;
+	private SettingsFragment mSettingsFragment;
 	/** Title **/
 	private CharSequence mTitle;
 	/** Menu **/
-	private Menu menu;
+	private Menu mMenu;
 	/** Current position **/
-	private int currentPosition;
+	private int mCurrentPosition;
 	/** Drawer favorites **/
 	private static final int POSITION_FAVORITES = 0;
 	/** Drawer Train **/
@@ -164,88 +167,87 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
 		displayUpdatePanel();
-
 	}
 
 	@Override
 	public final void onNavigationDrawerItemSelected(final int position) {
-		int oldPosition = currentPosition;
-		currentPosition = position;
+		int oldPosition = mCurrentPosition;
+		mCurrentPosition = position;
 		// update the main content by replacing fragments
 		final FragmentManager fragmentManager = getFragmentManager();
 		final FragmentTransaction ft = fragmentManager.beginTransaction();
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		switch (position) {
 		case POSITION_FAVORITES:
-			if (favoritesFragment == null) {
-				favoritesFragment = FavoritesFragment.newInstance(position + 1);
+			if (mFavoritesFragment == null) {
+				mFavoritesFragment = FavoritesFragment.newInstance(position + 1);
 			}
 			if (!this.isFinishing()) {
-				ft.replace(R.id.container, favoritesFragment).commit();
+				ft.replace(R.id.container, mFavoritesFragment).commit();
 			}
 			break;
 		case POSITION_TRAIN:
-			if (trainFragment == null) {
-				trainFragment = TrainFragment.newInstance(position + 1);
+			if (mTrainFragment == null) {
+				mTrainFragment = TrainFragment.newInstance(position + 1);
 			}
 			if (!this.isFinishing()) {
-				ft.replace(R.id.container, trainFragment).commit();
+				ft.replace(R.id.container, mTrainFragment).commit();
 			}
 			break;
 		case POSITION_BUS:
-			if (busFragment == null) {
-				busFragment = BusFragment.newInstance(position + 1);
+			if (mBusFragment == null) {
+				mBusFragment = BusFragment.newInstance(position + 1);
 			}
 			if (!this.isFinishing()) {
-				ft.replace(R.id.container, busFragment).commit();
+				ft.replace(R.id.container, mBusFragment).commit();
 			}
 			break;
 		case POSITION_DIVVY:
-			if (bikeFragment == null) {
-				bikeFragment = BikeFragment.newInstance(position + 1);
+			if (mBikeFragment == null) {
+				mBikeFragment = BikeFragment.newInstance(position + 1);
 			}
 			if (!this.isFinishing()) {
-				ft.replace(R.id.container, bikeFragment).commit();
+				ft.replace(R.id.container, mBikeFragment).commit();
 			}
 			break;
 		case POSITION_NEARBY:
-			if (nearbyFragment == null) {
-				nearbyFragment = NearbyFragment.newInstance(position + 1);
+			if (mNearbyFragment == null) {
+				mNearbyFragment = NearbyFragment.newInstance(position + 1);
 				if (!this.isFinishing()) {
-					ft.replace(R.id.container, nearbyFragment).commit();
+					ft.replace(R.id.container, mNearbyFragment).commit();
 				}
 			} else {
 				if (oldPosition == 4) {
 					fragmentManager.beginTransaction().commit();
 				} else {
 					if (!this.isFinishing()) {
-						ft.replace(R.id.container, nearbyFragment).commit();
+						ft.replace(R.id.container, mNearbyFragment).commit();
 					}
 				}
 			}
 			break;
 		case POSITION_ALERTS:
-			if (alertFragment == null) {
-				alertFragment = AlertFragment.newInstance(position + 1);
+			if (mAlertFragment == null) {
+				mAlertFragment = AlertFragment.newInstance(position + 1);
 			}
 			if (!this.isFinishing()) {
-				ft.replace(R.id.container, alertFragment).commit();
+				ft.replace(R.id.container, mAlertFragment).commit();
 			}
 			break;
 		case POSITION_MAP:
-			if (mapFragment == null) {
-				mapFragment = MapFragment.newInstance(position + 1);
+			if (mMapFragment == null) {
+				mMapFragment = MapFragment.newInstance(position + 1);
 			}
 			if (!this.isFinishing()) {
-				ft.replace(R.id.container, mapFragment).commit();
+				ft.replace(R.id.container, mMapFragment).commit();
 			}
 			break;
 		case POSITION_SETTINGS:
-			if (settingsFragment == null) {
-				settingsFragment = SettingsFragment.newInstance(position + 1);
+			if (mSettingsFragment == null) {
+				mSettingsFragment = SettingsFragment.newInstance(position + 1);
 			}
 			if (!this.isFinishing()) {
-				ft.replace(R.id.container, settingsFragment).commit();
+				ft.replace(R.id.container, mSettingsFragment).commit();
 			}
 			break;
 		}
@@ -299,27 +301,20 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
 	@Override
 	public boolean onCreateOptionsMenu(final Menu menu) {
-		this.menu = menu;
-		// if (!mNavigationDrawerFragment.isDrawerOpen()) {
-		// Only show items in the action bar relevant to this screen
-		// if the drawer is not showing. Otherwise, let the drawer
-		// decide what to show in the action bar.
+		this.mMenu = menu;
 		getMenuInflater().inflate(R.menu.main, menu);
 		// Associate searchable configuration with the SearchView
 		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 		SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
 		searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-
-		// restoreActionBar();
 		return super.onCreateOptionsMenu(menu);
-		// return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
 	public final boolean onOptionsItemSelected(final MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_refresh:
-			if (currentPosition != POSITION_DIVVY && currentPosition != POSITION_NEARBY && currentPosition != POSITION_ALERTS) {
+			if (mCurrentPosition != POSITION_DIVVY && mCurrentPosition != POSITION_NEARBY && mCurrentPosition != POSITION_ALERTS) {
 				MenuItem menuItem = item;
 				menuItem.setActionView(R.layout.progressbar);
 				menuItem.expandActionView();
@@ -344,7 +339,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				}
 				GlobalConnectTask task;
 				try {
-					task = new GlobalConnectTask(favoritesFragment, FavoritesFragment.class, CtaRequestType.TRAIN_ARRIVALS, params,
+					task = new GlobalConnectTask(mFavoritesFragment, FavoritesFragment.class, CtaRequestType.TRAIN_ARRIVALS, params,
 							CtaRequestType.BUS_ARRIVALS, params2, loadTrain, loadBus, loadBike);
 					task.execute((Void) null);
 				} catch (ParserException e) {
@@ -375,8 +370,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 					startRefreshAnimation();
 					new LoadData().execute();
 				}
-			} else if (currentPosition == POSITION_NEARBY) {
-				nearbyFragment.reloadData();
+			} else if (mCurrentPosition == POSITION_NEARBY) {
+				mNearbyFragment.reloadData();
 			}
 			return false;
 		case R.id.action_search:
@@ -387,7 +382,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
 	@Override
 	public final void onBackPressed() {
-		if (currentPosition != POSITION_FAVORITES) {
+		if (mCurrentPosition != POSITION_FAVORITES) {
 			mNavigationDrawerFragment.selectItem(0, true);
 		} else {
 			DataHolder.getInstance().setBusData(null);
@@ -401,8 +396,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	 * Load animation in menu
 	 */
 	public final void startRefreshAnimation() {
-		if (menu != null) {
-			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+		if (mMenu != null) {
+			MenuItem refreshMenuItem = mMenu.findItem(R.id.action_refresh);
 			refreshMenuItem.setActionView(R.layout.progressbar);
 			refreshMenuItem.expandActionView();
 		}
@@ -412,8 +407,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	 * Stop animation in menu
 	 */
 	public final void stopRefreshAnimation() {
-		if (menu != null) {
-			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+		if (mMenu != null) {
+			MenuItem refreshMenuItem = mMenu.findItem(R.id.action_refresh);
 			refreshMenuItem.collapseActionView();
 			refreshMenuItem.setActionView(null);
 		}
@@ -452,11 +447,6 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	}
 
 	private void displayUpdatePanel() {
-		/*
-		 * SharedPreferences sharedPref2 = PreferenceManager.getDefaultSharedPreferences(this); SharedPreferences.Editor editor2 = sharedPref2.edit();
-		 * editor2.putString("version.name", null); editor2.commit();
-		 */
-
 		try {
 			String versionName = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName;
 			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
@@ -528,17 +518,44 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
 			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
 			boolean loadBus = sharedPref.getBoolean("cta_bus", true);
-			boolean loadAlert = sharedPref.getBoolean("cta_alert", true);
-			loadBike = sharedPref.getBoolean("divvy_bike", true);
+			boolean loadAlert = false;
+			this.loadBike = false;
+
+			if (sharedPref.contains("cta_alert")) {
+				loadAlert = sharedPref.getBoolean("cta_alert", true);
+			} else {
+				SharedPreferences.Editor editor = sharedPref.edit();
+				editor.putBoolean("cta_alert", false);
+				editor.commit();
+			}
+			if (sharedPref.contains("divvy_bike")) {
+				this.loadBike = sharedPref.getBoolean("divvy_bike", true);
+			} else {
+				SharedPreferences.Editor editor = sharedPref.edit();
+				editor.putBoolean("divvy_bike", false);
+				editor.commit();
+			}
 
 			// Load bus API data
 			if (loadBus) {
 				try {
 					this.busData.loadBusRoutes();
 					publishProgress();
-				} catch (ParserException e) {
+				} catch (final ParserException e) {
+					new Handler(Looper.getMainLooper()).post(new Runnable() {
+						@Override
+						public void run() {
+							Toast.makeText(MainActivity.this, "Bus error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+						}
+					});
 					Log.e(TAG, e.getMessage(), e);
-				} catch (ConnectException e) {
+				} catch (final ConnectException e) {
+					new Handler(Looper.getMainLooper()).post(new Runnable() {
+						@Override
+						public void run() {
+							Toast.makeText(MainActivity.this, "Bus error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+						}
+					});
 					Log.e(TAG, e.getMessage(), e);
 				}
 			}
@@ -590,13 +607,13 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			if (loadBike) {
 				getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
 				onNewIntent(getIntent());
-				favoritesFragment.setBikeStations(bikeStations);
+				mFavoritesFragment.setBikeStations(bikeStations);
 			}
-			if (currentPosition == POSITION_BUS && busFragment != null) {
-				busFragment.update();
+			if (mCurrentPosition == POSITION_BUS && mBusFragment != null) {
+				mBusFragment.update();
 			}
-			if (currentPosition == POSITION_ALERTS && alertFragment != null) {
-				alertFragment.loadList();
+			if (mCurrentPosition == POSITION_ALERTS && mAlertFragment != null) {
+				mAlertFragment.loadList();
 			}
 			stopRefreshAnimation();
 		}

@@ -2,5 +2,6 @@
 cta.train.key			= 
 cta.bus.key				= 
 
-# Google street map
+# Google
 google.streetmap.key	= 
+google.analytics		= 
