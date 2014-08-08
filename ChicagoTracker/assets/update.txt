@@ -1,19 +1,20 @@
-3.0.7
-Fixed scalling bug when refreshing map
-Added more analytics
-
-3.0.6
+3.0.9
+Follow live trains/buses position on google map
+Renamed to 'Chicago Commutes'
 New custom popup menu
-Follow trains/buses via google map
-First try of google analytics
+Google analytics
 
-3.0.4
-Customize menu in favorites
+3.0.5
+Fixed issue when Bus CTA API reaches its transaction limit
+
+3.0.2
+Minor bug fixes
 
 3.0.0
-/!\ For a better UI experience, please re-add your bus favorites
+/!\ For a better user experience, please re-add your bus favorites
 Faster loading time
 Updated left panel
 Added settings
 Better bus favorites
-Added google map features for bus lines
+Added Google map features for bus lines
+Other fixes

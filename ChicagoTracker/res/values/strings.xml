@@ -20,7 +20,7 @@
 
     <string name="empty_string">&#160;</string>
     <string name="double_empty_string">&#160;&#160;</string>
-    <string name="app_name">ChitownX</string>
+    <string name="app_name">Chicago Commutes</string>
     <string name="favorites">Favorites</string>
     <string name="train">Train</string>
     <string name="bus">Bus</string>
@@ -50,7 +50,7 @@
     <!-- Favorites -->
     <string name="station_name">Station: </string>
     <string name="route_name">RouteName</string>
-    <string name="no_fav">Welcome to ChitownX!</string>
+    <string name="no_fav">Welcome to Chicago Commutes!</string>
     <string name="add_fav">Add favorites from train or bus tab</string>
 
     <!-- Station -->
