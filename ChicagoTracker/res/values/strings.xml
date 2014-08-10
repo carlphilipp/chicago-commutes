@@ -20,7 +20,7 @@
 
     <string name="empty_string">&#160;</string>
     <string name="double_empty_string">&#160;&#160;</string>
-    <string name="app_name">ChitownX</string>
+    <string name="app_name">Chicago Commutes</string>
     <string name="favorites">Favorites</string>
     <string name="train">Train</string>
     <string name="bus">Bus</string>
@@ -50,7 +50,7 @@
     <!-- Favorites -->
     <string name="station_name">Station: </string>
     <string name="route_name">RouteName</string>
-    <string name="no_fav">Welcome to ChitownX!</string>
+    <string name="no_fav">Welcome to Chicago Commutes!</string>
     <string name="add_fav">Add favorites from train or bus tab</string>
 
     <!-- Station -->
@@ -85,7 +85,7 @@
     <string name="nearby_title">Nearby</string>
     <string name="nearby_check_box">Hide stations/stops with no results</string>
 
-    <!-- Map -->
+    <!-- CTA System map -->
     <string name="fragment_image_description">A nice description</string>
     <string name="fragment_train">Train</string>
     <string name="fragment_bus">Bus</string>
@@ -108,5 +108,57 @@
     <string name="pref_alert_summary">Use alert data</string>
     <string name="pref_bikes_title">Divvy bikes</string>
     <string name="pref_bikes_summary">Use bikes data</string>
+    
+     <!-- Map -->
+    <string name="map_activity">Map</string>
+    <string name="map_train_follow_error">Unable to determine upcoming stops</string>
 
+    <!-- Analytics -->
+    <string name="analytics_alert_fragment">Alert fragment</string>
+    <string name="analytics_bike_fragment">Bike fragment</string>
+    <string name="analytics_bus_fragment">Bus fragment</string>
+    <string name="analytics_favorites_fragment">Favorites fragment</string>
+    <string name="analytics_L_fragment">L System Map fragment</string>
+    <string name="analytics_settings_fragment">Settings fragment</string>
+    <string name="analytics_nearby_fragment">Nearby fragment</string>
+    <string name="analytics_train_fragment">Train fragment</string>
+    
+    <string name="analytics_bus_details">Bus details</string>
+    <string name="analytics_train_details">Train details</string>
+    <string name="analytics_bus_map">Map bus</string>
+    <string name="analytics_train_map">Map train</string>
+    
+    
+    <string name="analytics_category_ui">UI</string>
+    <string name="analytics_category_req">Request</string>
+    <string name="analytics_action_press">Press</string>
+    <string name="analytics_action_get_bus">CTA Bus</string>
+    <string name="analytics_action_get_train">CTA Train</string>
+    <string name="analytics_action_get_alert">CTA Alert</string>
+    <string name="analytics_action_get_divvy">Divvy</string>
+    <string name="analytics_action_get_google">Google</string>
+    
+    <string name="analytics_action_get_divvy_all">All</string>
+    
+    <string name="analytics_action_get_google_map_street_view">Street View Picture</string>
+    
+    <string name="analytics_action_get_train_arrivals">http://lapi.transitchicago.com/api/1.0/ttarrivals.aspx</string>
+    <string name="analytics_action_get_train_follow">http://lapi.transitchicago.com/api/1.0/ttfollow.aspx</string>
+    <string name="analytics_action_get_train_location">http://lapi.transitchicago.com/api/1.0/ttpositions.aspx</string>
+    
+    <string name="analytics_action_get_bus_routes">http://www.ctabustracker.com/bustime/api/v1/getroutes</string>
+    <string name="analytics_action_get_bus_direction">http://www.ctabustracker.com/bustime/api/v1/getdirections</string>
+    <string name="analytics_action_get_bus_stop">http://www.ctabustracker.com/bustime/api/v1/getstops</string>
+    <string name="analytics_action_get_bus_vehicles">http://www.ctabustracker.com/bustime/api/v1/getvehicles</string>
+    <string name="analytics_action_get_bus_arrival">http://www.ctabustracker.com/bustime/api/v1/getpredictions</string>
+    <string name="analytics_action_get_bus_pattern">http://www.ctabustracker.com/bustime/api/v1/getpatterns</string>
+    
+    <string name="analytics_action_get_alert_general">http://www.transitchicago.com/api/1.0/alerts.aspx</string>
+    <string name="analytics_action_get_alert_routes">http://www.transitchicago.com/api/1.0/routes.aspx</string>
+    
+    <string name="analytics_action_refresh_fav">Refresh favorites</string>
+    <string name="analytics_action_refresh_nearby">Refresh nearby</string>
+    <string name="analytics_action_refresh_alert">Refresh alert</string>
+    <string name="analytics_action_refresh_bike">Refresh bike</string>
+    <string name="analytics_action_search">Search</string>
 </resources>

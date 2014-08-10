@@ -7,11 +7,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
+import fr.cph.chicago.util.Util;
 
 public class SettingsFragment extends PreferenceFragment {
 	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
-
+	/** The main activity **/
 	private MainActivity mActivity;
 
 	/**
@@ -41,6 +42,8 @@ public class SettingsFragment extends PreferenceFragment {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);
 		setHasOptionsMenu(true);
+
+		Util.trackScreen(mActivity, R.string.analytics_settings_fragment);
 	}
 
 	@Override

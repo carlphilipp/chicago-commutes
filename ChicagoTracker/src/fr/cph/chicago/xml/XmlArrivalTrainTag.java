@@ -23,5 +23,5 @@ package fr.cph.chicago.xml;
  * @version 1
  */
 public enum XmlArrivalTrainTag {
-	TMST, ERRCD, ERRNM, ETA, OTHER
+	TMST, ERRCD, ERRNM, ETA, OTHER, POSITION
 }

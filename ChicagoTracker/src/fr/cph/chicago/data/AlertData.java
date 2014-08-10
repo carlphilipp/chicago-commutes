@@ -36,15 +36,15 @@ import fr.cph.chicago.xml.Xml;
  */
 public class AlertData {
 	/** The data **/
-	private static AlertData alertData;
+	private static AlertData mAlertData;
 	/** The list of alerts **/
-	private List<Alert> alerts;
+	private List<Alert> mAlerts;
 
 	/**
 	 * Private constructor
 	 */
 	private AlertData() {
-		alerts = new ArrayList<Alert>();
+		mAlerts = new ArrayList<Alert>();
 	}
 
 	/**
@@ -53,10 +53,10 @@ public class AlertData {
 	 * @return the data
 	 */
 	public static AlertData getInstance() {
-		if (alertData == null) {
-			alertData = new AlertData();
+		if (mAlertData == null) {
+			mAlertData = new AlertData();
 		}
-		return alertData;
+		return mAlertData;
 	}
 
 	/**
@@ -69,14 +69,14 @@ public class AlertData {
 	 *             a connect exception
 	 */
 	public final List<Alert> loadGeneralAlerts() throws ParserException, ConnectException {
-		if (alerts.size() == 0) {
+		if (mAlerts.size() == 0) {
 			MultiMap<String, String> params = new MultiValueMap<String, String>();
 			CtaConnect connect = CtaConnect.getInstance();
 			Xml xml = new Xml();
 			String xmlResult = connect.connect(CtaRequestType.ALERTS_GENERAL, params);
-			alerts = xml.parseAlertGeneral(xmlResult);
+			mAlerts = xml.parseAlertGeneral(xmlResult);
 		}
-		return alerts;
+		return mAlerts;
 	}
 
 	/**
@@ -85,7 +85,7 @@ public class AlertData {
 	 * @return a list of alert
 	 */
 	public final List<Alert> getAlerts() {
-		return this.alerts;
+		return this.mAlerts;
 	}
 
 }

@@ -55,41 +55,41 @@ import fr.cph.chicago.util.Util;
  */
 public class BaseActivity extends Activity {
 	/** Error state **/
-	private Boolean error;
+	private Boolean mError;
 	/** Train arrivals **/
-	private SparseArray<TrainArrival> trainArrivals;
+	private SparseArray<TrainArrival> mTrainArrivals;
 	/** Bus arrivals **/
-	private List<BusArrival> busArrivals;
+	private List<BusArrival> mBusArrivals;
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.loading);
 		Bundle extras = getIntent().getExtras();
-		if (extras != null && error == null) {
-			error = extras.getBoolean("error");
+		if (extras != null && mError == null) {
+			mError = extras.getBoolean("error");
 		} else {
-			error = false;
+			mError = false;
 		}
 
-		if (error) {
+		if (mError) {
 			new LoadData().execute();
-		} else if (trainArrivals == null || busArrivals == null) {
+		} else if (mTrainArrivals == null || mBusArrivals == null) {
 			new LoadData().execute();
 		} else {
-			startMainActivity(trainArrivals, busArrivals);
+			startMainActivity(mTrainArrivals, mBusArrivals);
 		}
 	}
 
 	@Override
 	public final void onRestoreInstanceState(final Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		error = savedInstanceState.getBoolean("error");
+		mError = savedInstanceState.getBoolean("error");
 	}
 
 	@Override
 	public final void onSaveInstanceState(final Bundle savedInstanceState) {
-		savedInstanceState.putBoolean("error", error);
+		savedInstanceState.putBoolean("error", mError);
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
@@ -230,5 +230,13 @@ public class BaseActivity extends Activity {
 		GlobalConnectTask task = new GlobalConnectTask(this, BaseActivity.class, CtaRequestType.TRAIN_ARRIVALS, params, CtaRequestType.BUS_ARRIVALS,
 				params2, loadTrain, loadBus, false);
 		task.execute((Void) null);
+		if (loadTrain) {
+			Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train,
+					R.string.analytics_action_get_train_arrivals, 0);
+		}
+		if (loadBus) {
+			Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
+					R.string.analytics_action_get_bus_arrival, 0);
+		}
 	}
 }

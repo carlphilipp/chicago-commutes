@@ -12,17 +12,30 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import fr.cph.chicago.R;
 
+/**
+ * Custom drawer adapter
+ * 
+ * @author Carl-Philipp Harmant
+ * @version 1
+ */
 public class CustomDrawerAdapter extends ArrayAdapter<DrawerItem> {
+	/** **/
+	private Context mContext;
+	/** **/
+	private List<DrawerItem> mListItems;
+	/** **/
+	private int mResource;
 
-	private Context context;
-	private List<DrawerItem> listItems;
-	private int resource;
-
+	/**
+	 * @param context
+	 * @param resource
+	 * @param listItems
+	 */
 	public CustomDrawerAdapter(Context context, int resource, List<DrawerItem> listItems) {
 		super(context, resource, listItems);
-		this.context = context;
-		this.resource = resource;
-		this.listItems = listItems;
+		this.mContext = context;
+		this.mResource = resource;
+		this.mListItems = listItems;
 	}
 
 	@Override
@@ -30,10 +43,10 @@ public class CustomDrawerAdapter extends ArrayAdapter<DrawerItem> {
 		DrawerItemHolder drawerHolder;
 		View view = convertView;
 		if (view == null) {
-			LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+			LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
 			drawerHolder = new DrawerItemHolder();
 
-			view = inflater.inflate(resource, parent, false);
+			view = inflater.inflate(mResource, parent, false);
 			drawerHolder.name = (TextView) view.findViewById(R.id.drawer_itemName);
 			drawerHolder.icon = (ImageView) view.findViewById(R.id.drawer_icon);
 
@@ -44,7 +57,7 @@ public class CustomDrawerAdapter extends ArrayAdapter<DrawerItem> {
 
 		}
 
-		DrawerItem dItem = (DrawerItem) this.listItems.get(position);
+		DrawerItem dItem = (DrawerItem) this.mListItems.get(position);
 
 		drawerHolder.icon.setImageDrawable(view.getResources().getDrawable(dItem.getImgId()));
 		drawerHolder.name.setText(dItem.getName());

@@ -41,9 +41,9 @@ import fr.cph.chicago.entity.BikeStation;
  */
 public final class BikeAdapter extends BaseAdapter {
 	/** Main activity **/
-	private MainActivity activity;
+	private MainActivity mActivity;
 	/** Bike data **/
-	private List<BikeStation> bikeStations;
+	private List<BikeStation> mBikeStations;
 
 	/**
 	 * Constructor
@@ -52,22 +52,22 @@ public final class BikeAdapter extends BaseAdapter {
 	 *            the main activity
 	 */
 	public BikeAdapter(final MainActivity activity) {
-		this.activity = activity;
+		this.mActivity = activity;
 		Bundle bundle = activity.getIntent().getExtras();
-		this.bikeStations = bundle.getParcelableArrayList("bikeStations");
-		if(this.bikeStations == null){
-			this.bikeStations = new ArrayList<BikeStation>();
+		this.mBikeStations = bundle.getParcelableArrayList("bikeStations");
+		if(this.mBikeStations == null){
+			this.mBikeStations = new ArrayList<BikeStation>();
 		}
 	}
 
 	@Override
 	public final int getCount() {
-		return bikeStations.size();
+		return mBikeStations.size();
 	}
 
 	@Override
 	public final Object getItem(final int position) {
-		return bikeStations.get(position);
+		return mBikeStations.get(position);
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public final class BikeAdapter extends BaseAdapter {
 			convertView = vi.inflate(R.layout.list_bike, null);
 
 			holder = new ViewHolder();
-			holder.stationNameView = (TextView) convertView.findViewById(R.id.station_name_value_search);
+			holder.stationNameView = (TextView) convertView.findViewById(R.id.station_name);
 
 			convertView.setTag(holder);
 		} else {
@@ -102,15 +102,15 @@ public final class BikeAdapter extends BaseAdapter {
 				Bundle extras = new Bundle();
 				extras.putParcelable("station", station);
 				intent.putExtras(extras);
-				activity.startActivity(intent);
-				activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+				mActivity.startActivity(intent);
+				mActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 			}
 		});
 		return convertView;
 	}
 
 	public void setBikeStations(List<BikeStation> bikeStations) {
-		this.bikeStations = bikeStations;
+		this.mBikeStations = bikeStations;
 	}
 
 	/**

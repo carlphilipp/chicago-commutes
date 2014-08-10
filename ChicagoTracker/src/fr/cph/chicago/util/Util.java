@@ -22,10 +22,18 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.view.Display;
+import android.view.WindowManager;
 import android.widget.Toast;
+
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
@@ -200,5 +208,33 @@ public class Util {
 		ConnectivityManager connectivityManager = (ConnectivityManager) ChicagoTracker.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
 		return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+	}
+
+	public static final int[] getScreenSize() {
+		WindowManager wm = (WindowManager) ChicagoTracker.getAppContext().getSystemService(Context.WINDOW_SERVICE);
+		Display display = wm.getDefaultDisplay();
+		Point size = new Point();
+		display.getSize(size);
+		return new int[] { size.x, size.y };
+	}
+
+	/**
+	 * Google analytics track screen
+	 * 
+	 * @param activity
+	 *            the activity
+	 * @param str
+	 *            the label to send
+	 */
+	public static void trackScreen(Activity activity, int str) {
+		Tracker t = ((ChicagoTracker) activity.getApplication()).getTracker();
+		t.setScreenName(activity.getString(str));
+		t.send(new HitBuilders.AppViewBuilder().build());
+	}
+
+	public static void trackAction(Activity activity, int category, int action, int label, int value) {
+		Tracker tracker = ((ChicagoTracker) activity.getApplication()).getTracker();
+		tracker.send(new HitBuilders.EventBuilder().setCategory(activity.getString(category)).setAction(activity.getString(action))
+				.setLabel(activity.getString(label)).setValue(value).build());
 	}
 }

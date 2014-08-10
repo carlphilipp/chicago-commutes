@@ -16,6 +16,7 @@
 
 package fr.cph.chicago.adapter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -26,18 +27,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.PopupMenu;
-import android.widget.PopupMenu.OnDismissListener;
-import android.widget.PopupMenu.OnMenuItemClickListener;
+import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
@@ -56,6 +58,7 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
+import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
 
 /**
@@ -65,19 +68,18 @@ import fr.cph.chicago.xml.Xml;
  * @version 1
  */
 public final class SearchAdapter extends BaseAdapter {
-
 	/** List of train stations **/
-	private List<Station> trains;
+	private List<Station> mTrains;
 	/** List of buses route **/
-	private List<BusRoute> buses;
+	private List<BusRoute> mBuses;
 	/** List of bikes stations **/
-	private List<BikeStation> bikes;
+	private List<BikeStation> mBikes;
 	/** The context **/
-	private Context context;
+	private Context mContext;
 	/** The search activity **/
-	private SearchActivity activity;
+	private SearchActivity mActivity;
 	/** The layout that is used to display a fade black background **/
-	private FrameLayout container;
+	private FrameLayout mContainer;
 
 	/**
 	 * Constructor
@@ -88,25 +90,25 @@ public final class SearchAdapter extends BaseAdapter {
 	 *            the layout container
 	 */
 	public SearchAdapter(final SearchActivity activity, final FrameLayout container) {
-		this.context = ChicagoTracker.getAppContext();
-		this.activity = activity;
-		this.container = container;
+		this.mContext = ChicagoTracker.getAppContext();
+		this.mActivity = activity;
+		this.mContainer = container;
 	}
 
 	@Override
 	public final int getCount() {
-		return trains.size() + buses.size() + bikes.size();
+		return mTrains.size() + mBuses.size() + mBikes.size();
 	}
 
 	@Override
 	public final Object getItem(final int position) {
 		Object object = null;
-		if (position < trains.size()) {
-			object = trains.get(position);
-		} else if (position < trains.size() + buses.size()) {
-			object = buses.get(position - trains.size());
+		if (position < mTrains.size()) {
+			object = mTrains.get(position);
+		} else if (position < mTrains.size() + mBuses.size()) {
+			object = mBuses.get(position - mTrains.size());
 		} else {
-			object = bikes.get(position - (trains.size() + buses.size()));
+			object = mBikes.get(position - (mTrains.size() + mBuses.size()));
 		}
 		return object;
 	}
@@ -122,9 +124,9 @@ public final class SearchAdapter extends BaseAdapter {
 		LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		convertView = vi.inflate(R.layout.list_search, null);
 
-		TextView rounteName = (TextView) convertView.findViewById(R.id.station_name_value_search);
+		TextView rounteName = (TextView) convertView.findViewById(R.id.station_name);
 
-		if (position < trains.size()) {
+		if (position < mTrains.size()) {
 			final Station station = (Station) getItem(position);
 			Set<TrainLine> lines = station.getLines();
 
@@ -134,16 +136,16 @@ public final class SearchAdapter extends BaseAdapter {
 
 			int indice = 0;
 			for (TrainLine tl : lines) {
-				TextView textView = new TextView(context);
+				TextView textView = new TextView(mContext);
 				textView.setBackgroundColor(tl.getColor());
 				textView.setText(" ");
-				textView.setTextSize(context.getResources().getDimension(R.dimen.activity_list_station_colors));
+				textView.setTextSize(mContext.getResources().getDimension(R.dimen.activity_list_station_colors));
 				stationColorView.addView(textView);
 				if (indice != lines.size()) {
-					textView = new TextView(context);
+					textView = new TextView(mContext);
 					textView.setText("");
-					textView.setPadding(0, 0, (int) context.getResources().getDimension(R.dimen.activity_list_station_colors_space), 0);
-					textView.setTextSize(context.getResources().getDimension(R.dimen.activity_list_station_colors));
+					textView.setPadding(0, 0, (int) mContext.getResources().getDimension(R.dimen.activity_list_station_colors_space), 0);
+					textView.setTextSize(mContext.getResources().getDimension(R.dimen.activity_list_station_colors));
 					stationColorView.addView(textView);
 				}
 				indice++;
@@ -156,11 +158,11 @@ public final class SearchAdapter extends BaseAdapter {
 					extras.putInt("stationId", station.getId());
 					intent.putExtras(extras);
 					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-					activity.startActivity(intent);
-					activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+					mActivity.startActivity(intent);
+					mActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 				}
 			});
-		} else if (position < trains.size() + buses.size()) {
+		} else if (position < mTrains.size() + mBuses.size()) {
 			final BusRoute busRoute = (BusRoute) getItem(position);
 
 			TextView type = (TextView) convertView.findViewById(R.id.train_bus_type);
@@ -173,18 +175,18 @@ public final class SearchAdapter extends BaseAdapter {
 				@Override
 				public void onClick(View v) {
 					loadingTextView.setVisibility(LinearLayout.VISIBLE);
-					activity.startRefreshAnimation();
+					mActivity.startRefreshAnimation();
 					new DirectionAsyncTask().execute(busRoute, loadingTextView);
 				}
 			});
 		} else {
 			final BikeStation bikeStation = (BikeStation) getItem(position);
-			
+
 			TextView type = (TextView) convertView.findViewById(R.id.train_bus_type);
 			type.setText("D");
-			
+
 			rounteName.setText(bikeStation.getName());
-			
+
 			convertView.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -192,8 +194,8 @@ public final class SearchAdapter extends BaseAdapter {
 					Bundle extras = new Bundle();
 					extras.putParcelable("station", bikeStation);
 					intent.putExtras(extras);
-					activity.startActivity(intent);
-					activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+					mActivity.startActivity(intent);
+					mActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 				}
 			});
 		}
@@ -233,44 +235,60 @@ public final class SearchAdapter extends BaseAdapter {
 			} catch (ConnectException e) {
 				this.trackerException = e;
 			}
+			Util.trackAction(SearchAdapter.this.mActivity, R.string.analytics_category_req, R.string.analytics_action_get_bus,
+					R.string.analytics_action_get_bus_direction, 0);
 			return busDirections;
 		}
 
 		@Override
 		protected final void onPostExecute(final BusDirections result) {
-			activity.stopRefreshAnimation();
+			mActivity.stopRefreshAnimation();
 			if (trackerException == null) {
-				PopupMenu popupMenu = new PopupMenu(ChicagoTracker.getAppContext(), convertView);
+				// PopupMenu popupMenu = new PopupMenu(ChicagoTracker.getAppContext(), convertView);
 				final List<BusDirection> lBus = result.getlBusDirection();
-				for (int i = 0; i < lBus.size(); i++) {
-					popupMenu.getMenu().add(Menu.NONE, i, Menu.NONE, lBus.get(i).toString());
+				final List<String> data = new ArrayList<String>();
+				for (BusDirection busDir : lBus) {
+					data.add(busDir.toString());
 				}
-				popupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+
+				LayoutInflater layoutInflater = (LayoutInflater) mActivity.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				View popupView = layoutInflater.inflate(R.layout.popup_bus, null);
+
+				final int[] screenSize = Util.getScreenSize();
+				final PopupWindow popup = new PopupWindow(popupView, (int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
+
+				ListView listView = (ListView) popupView.findViewById(R.id.details);
+				PopupBusAdapter ada = new PopupBusAdapter(mActivity, data);
+				listView.setAdapter(ada);
+
+				listView.setOnItemClickListener(new OnItemClickListener() {
 					@Override
-					public boolean onMenuItemClick(MenuItem item) {
-						Intent intent = new Intent(ChicagoTracker.getAppContext(), BusBoundActivity.class);
+					public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+						Intent intent = new Intent(mActivity, BusBoundActivity.class);
 						Bundle extras = new Bundle();
 						extras.putString("busRouteId", busRoute.getId());
 						extras.putString("busRouteName", busRoute.getName());
-						extras.putString("bound", lBus.get(item.getItemId()).toString());
+						extras.putString("bound", data.get(position));
 						intent.putExtras(extras);
 						intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 						ChicagoTracker.getAppContext().startActivity(intent);
-						return false;
+						popup.dismiss();
 					}
 				});
-				popupMenu.setOnDismissListener(new OnDismissListener() {
+				popup.setFocusable(true);
+				popup.setBackgroundDrawable(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.any_selector));
+				mContainer.getForeground().setAlpha(210);
+
+				popup.setOnDismissListener(new PopupWindow.OnDismissListener() {
 					@Override
-					public void onDismiss(PopupMenu menu) {
-						container.getForeground().setAlpha(0);
+					public void onDismiss() {
+						mContainer.getForeground().setAlpha(0);
 						convertView.setVisibility(LinearLayout.GONE);
-						activity.stopRefreshAnimation();
 					}
 				});
-				container.getForeground().setAlpha(210);
-				popupMenu.show();
+				popup.showAtLocation(mContainer, Gravity.CENTER, 0, 0);
 			} else {
-				ChicagoTracker.displayError(activity, trackerException);
+				ChicagoTracker.displayError(mActivity, trackerException);
 			}
 		}
 	}
@@ -284,8 +302,8 @@ public final class SearchAdapter extends BaseAdapter {
 	 *            the list of bus routes
 	 */
 	public void updateData(List<Station> trains, List<BusRoute> buses, List<BikeStation> bikes) {
-		this.trains = trains;
-		this.buses = buses;
-		this.bikes = bikes;
+		this.mTrains = trains;
+		this.mBuses = buses;
+		this.mBikes = bikes;
 	}
 }

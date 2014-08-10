@@ -106,22 +106,22 @@ public class NearbyFragment extends Fragment {
 	/** The main activity **/
 	private MainActivity mActivity;
 	/** The map fragment from google api **/
-	private MapFragment mapFragment;
+	private MapFragment mMapFragment;
 	/** The load layout **/
-	private View loadLayout;
+	private View mLoadLayout;
 	/** The list layout **/
-	private RelativeLayout nearbyContainer;
+	private RelativeLayout mNearbyContainer;
 	/** The map **/
-	private GoogleMap map;
+	private GoogleMap mGooMap;
 	/** The adapter **/
-	private NearbyAdapter ada;
+	private NearbyAdapter mAdapter;
 	/** The list view **/
-	private ListView listView;
+	private ListView mListView;
 	/** The only check box **/
-	private CheckBox checkBox;
+	private CheckBox mCheckBox;
 	/** Hide empty stations/stops **/
-	private boolean hideStationsStops;
-	/** The chicago position **/
+	private boolean mHideStationsStops;
+	/** The Chicago position **/
 	public static final LatLng CHICAGO = new LatLng(41.8819, -87.6278);
 
 	/**
@@ -150,26 +150,28 @@ public class NearbyFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 		ChicagoTracker.checkTrainData(mActivity);
 		ChicagoTracker.checkBusData(mActivity);
+
+		Util.trackScreen(mActivity, R.string.analytics_nearby_fragment);
 	}
 
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_nearby, container, false);
 		if (!mActivity.isFinishing()) {
-			ada = new NearbyAdapter(mActivity);
-			listView = (ListView) rootView.findViewById(R.id.fragment_nearby_list);
-			listView.setAdapter(ada);
+			mAdapter = new NearbyAdapter(mActivity);
+			mListView = (ListView) rootView.findViewById(R.id.fragment_nearby_list);
+			mListView.setAdapter(mAdapter);
 			setHasOptionsMenu(true);
-			loadLayout = rootView.findViewById(R.id.loading_layout);
-			nearbyContainer = (RelativeLayout) rootView.findViewById(R.id.nerby_list_container);
-			checkBox = (CheckBox) rootView.findViewById(R.id.hideEmptyStops);
-			hideStationsStops = Preferences.getHideShowNearby();
-			checkBox.setChecked(hideStationsStops);
-			checkBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			mLoadLayout = rootView.findViewById(R.id.loading_layout);
+			mNearbyContainer = (RelativeLayout) rootView.findViewById(R.id.nerby_list_container);
+			mCheckBox = (CheckBox) rootView.findViewById(R.id.hideEmptyStops);
+			mHideStationsStops = Preferences.getHideShowNearby();
+			mCheckBox.setChecked(mHideStationsStops);
+			mCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 					Preferences.saveHideShowNearby(isChecked);
-					hideStationsStops = isChecked;
+					mHideStationsStops = isChecked;
 					if (Util.isNetworkAvailable()) {
 						reloadData();
 					}
@@ -189,20 +191,20 @@ public class NearbyFragment extends Fragment {
 	public final void onStart() {
 		super.onStart();
 		FragmentManager fm = getFragmentManager();
-		mapFragment = (MapFragment) fm.findFragmentById(R.id.map);
+		mMapFragment = (MapFragment) fm.findFragmentById(R.id.map);
 		GoogleMapOptions options = new GoogleMapOptions();
 		CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 7, 0, 0);
 		options.camera(camera);
-		mapFragment = MapFragment.newInstance(options);
-		mapFragment.setRetainInstance(true);
-		fm.beginTransaction().replace(R.id.map, mapFragment).commit();
+		mMapFragment = MapFragment.newInstance(options);
+		mMapFragment.setRetainInstance(true);
+		fm.beginTransaction().replace(R.id.map, mMapFragment).commit();
 	}
 
 	@Override
 	public final void onResume() {
 		super.onResume();
-		if (map == null) {
-			map = mapFragment.getMap();
+		if (mGooMap == null) {
+			mGooMap = mMapFragment.getMap();
 		}
 		if (Util.isNetworkAvailable()) {
 			new LoadNearby().execute();
@@ -295,6 +297,8 @@ public class NearbyFragment extends Fragment {
 								tempMap.put(direction, temp);
 							}
 						}
+						Util.trackAction(NearbyFragment.this.mActivity, R.string.analytics_category_req, R.string.analytics_action_get_bus,
+								R.string.analytics_action_get_bus_arrival, 0);
 					} catch (ConnectException e) {
 						Log.e(TAG, e.getMessage(), e);
 					} catch (ParserException e) {
@@ -314,6 +318,8 @@ public class NearbyFragment extends Fragment {
 						for (int j = 0; j < temp.size(); j++) {
 							trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
 						}
+						Util.trackAction(NearbyFragment.this.mActivity, R.string.analytics_category_req, R.string.analytics_action_get_train,
+								R.string.analytics_action_get_train_arrivals, 0);
 					} catch (ConnectException e) {
 						Log.e(TAG, e.getMessage(), e);
 					} catch (ParserException e) {
@@ -334,6 +340,8 @@ public class NearbyFragment extends Fragment {
 						}
 					}
 					Collections.sort(bikeStationsRes, Util.BIKE_COMPARATOR_NAME);
+					Util.trackAction(NearbyFragment.this.mActivity, R.string.analytics_category_req, R.string.analytics_action_get_divvy,
+							R.string.analytics_action_get_divvy_all, 0);
 				} catch (ConnectException e) {
 					Log.e(TAG, e.getMessage(), e);
 				} catch (ParserException e) {
@@ -346,7 +354,7 @@ public class NearbyFragment extends Fragment {
 
 		@Override
 		protected final void onPostExecute(final Void result) {
-			if (hideStationsStops) {
+			if (mHideStationsStops) {
 				List<BusStop> busStopTmp = new ArrayList<BusStop>();
 				for (BusStop busStop : busStops) {
 					if (busArrivalsMap.get(busStop.getId()).size() == 0) {
@@ -536,17 +544,17 @@ public class NearbyFragment extends Fragment {
 	 */
 	private void centerMap(final Position positon) {
 		// Because the fragment can possibly not be ready
-		while (mapFragment.getMap() == null) {
+		while (mMapFragment.getMap() == null) {
 		}
-		map = mapFragment.getMap();
-		map.setMyLocationEnabled(true);
+		mGooMap = mMapFragment.getMap();
+		mGooMap.setMyLocationEnabled(true);
 		LatLng latLng = null;
 		if (positon != null) {
 			latLng = new LatLng(positon.getLatitude(), positon.getLongitude());
-			map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
+			mGooMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
 		} else {
 			latLng = CHICAGO;
-			map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
+			mGooMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
 		}
 		// map.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
 	}
@@ -568,7 +576,7 @@ public class NearbyFragment extends Fragment {
 		List<Marker> markers = new ArrayList<Marker>();
 		for (BusStop busStop : buses) {
 			LatLng point = new LatLng(busStop.getPosition().getLatitude(), busStop.getPosition().getLongitude());
-			Marker marker = map.addMarker(new MarkerOptions().position(point).title(busStop.getName()).snippet(busStop.getId().toString())
+			Marker marker = mGooMap.addMarker(new MarkerOptions().position(point).title(busStop.getName()).snippet(busStop.getId().toString())
 					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
 			markers.add(marker);
 
@@ -576,22 +584,22 @@ public class NearbyFragment extends Fragment {
 		for (Station station : stations) {
 			for (Position position : station.getStopsPosition()) {
 				LatLng point = new LatLng(position.getLatitude(), position.getLongitude());
-				Marker marker = map.addMarker(new MarkerOptions().position(point).title(station.getName()).snippet(station.getId().toString())
+				Marker marker = mGooMap.addMarker(new MarkerOptions().position(point).title(station.getName()).snippet(station.getId().toString())
 						.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
 				markers.add(marker);
 			}
 		}
 		for (BikeStation station : bikeStations) {
 			LatLng point = new LatLng(station.getPosition().getLatitude(), station.getPosition().getLongitude());
-			Marker marker = map.addMarker(new MarkerOptions().position(point).title(station.getName()).snippet(station.getId() + "")
+			Marker marker = mGooMap.addMarker(new MarkerOptions().position(point).title(station.getName()).snippet(station.getId() + "")
 					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
 			markers.add(marker);
 		}
 		addClickEventsToMarkers(buses, stations, bikeStations);
-		ada.updateData(buses, busArrivals, stations, trainArrivals, bikeStations, map, markers);
-		ada.notifyDataSetChanged();
+		mAdapter.updateData(buses, busArrivals, stations, trainArrivals, bikeStations, mGooMap, markers);
+		mAdapter.notifyDataSetChanged();
 		showProgress(false);
-		nearbyContainer.setVisibility(View.VISIBLE);
+		mNearbyContainer.setVisibility(View.VISIBLE);
 
 	}
 
@@ -604,14 +612,14 @@ public class NearbyFragment extends Fragment {
 	 *            the list of stations
 	 */
 	private void addClickEventsToMarkers(final List<BusStop> busStops, final List<Station> stations, final List<BikeStation> bikeStations) {
-		map.setOnMarkerClickListener(new OnMarkerClickListener() {
+		mGooMap.setOnMarkerClickListener(new OnMarkerClickListener() {
 
 			@Override
 			public boolean onMarkerClick(Marker marker) {
 				boolean found = false;
 				for (int i = 0; i < stations.size(); i++) {
 					if (marker.getSnippet().equals(stations.get(i).getId().toString())) {
-						listView.smoothScrollToPosition(i);
+						mListView.smoothScrollToPosition(i);
 						found = true;
 						break;
 					}
@@ -620,7 +628,7 @@ public class NearbyFragment extends Fragment {
 					for (int i = 0; i < busStops.size(); i++) {
 						int indice = i + stations.size();
 						if (marker.getSnippet().equals(busStops.get(i).getId().toString())) {
-							listView.smoothScrollToPosition(indice);
+							mListView.smoothScrollToPosition(indice);
 							break;
 						}
 					}
@@ -628,7 +636,7 @@ public class NearbyFragment extends Fragment {
 				for (int i = 0; i < bikeStations.size(); i++) {
 					int indice = i + stations.size() + busStops.size();
 					if (marker.getSnippet().equals(bikeStations.get(i).getId() + "")) {
-						listView.smoothScrollToPosition(indice);
+						mListView.smoothScrollToPosition(indice);
 						break;
 					}
 				}
@@ -648,15 +656,15 @@ public class NearbyFragment extends Fragment {
 		try {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
 				int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-				loadLayout.setVisibility(View.VISIBLE);
-				loadLayout.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+				mLoadLayout.setVisibility(View.VISIBLE);
+				mLoadLayout.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
 					@Override
 					public void onAnimationEnd(Animator animation) {
-						loadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+						mLoadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
 					}
 				});
 			} else {
-				loadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+				mLoadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
 			}
 			mActivity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 		} catch (IllegalStateException e) {
@@ -669,9 +677,9 @@ public class NearbyFragment extends Fragment {
 	 */
 	public final void reloadData() {
 		if (Util.isNetworkAvailable()) {
-			map.clear();
+			mGooMap.clear();
 			showProgress(true);
-			nearbyContainer.setVisibility(View.GONE);
+			mNearbyContainer.setVisibility(View.GONE);
 			new LoadNearby().execute();
 		} else {
 			Toast.makeText(mActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();

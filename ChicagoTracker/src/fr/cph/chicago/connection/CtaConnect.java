@@ -60,6 +60,8 @@ public class CtaConnect {
 	private static final String BASE_URL_BUS_DIRECTION = "http://www.ctabustracker.com/bustime/api/v1/getdirections";
 	/** The buses stops address **/
 	private static final String BASE_URL_BUS_STOPS = "http://www.ctabustracker.com/bustime/api/v1/getstops";
+	/** The buses vehicles address **/
+	private static final String BASE_URL_BUS_VEHICLES = "http://www.ctabustracker.com/bustime/api/v1/getvehicles";
 	/** The buses arrival address **/
 	private static final String BASE_URL_BUS_ARRIVAL = "http://www.ctabustracker.com/bustime/api/v1/getpredictions";
 	/** The buses pattern address **/
@@ -69,9 +71,9 @@ public class CtaConnect {
 	/** The alert routes address **/
 	private static final String BASE_URL_ALERT_ROUTES = "http://www.transitchicago.com/api/1.0/routes.aspx";
 	/** The cta bus API key **/
-	private String CTA_BUS_KEY;
+	private static String CTA_BUS_KEY;
 	/** The cta train API key **/
-	private String CTA_TRAIN_KEY;
+	private static String CTA_TRAIN_KEY;
 	/** The http client **/
 	private DefaultHttpClient client;
 
@@ -127,6 +129,9 @@ public class CtaConnect {
 		case BUS_STOP_LIST:
 			adress = new StringBuilder(BASE_URL_BUS_STOPS + "?key=" + CTA_BUS_KEY);
 			break;
+		case BUS_VEHICLES:
+			adress = new StringBuilder(BASE_URL_BUS_VEHICLES + "?key=" + CTA_BUS_KEY);
+			break;
 		case BUS_ARRIVALS:
 			adress = new StringBuilder(BASE_URL_BUS_ARRIVAL + "?key=" + CTA_BUS_KEY);
 			break;
@@ -138,6 +143,8 @@ public class CtaConnect {
 			break;
 		case ALERTS_ROUTES:
 			adress = new StringBuilder(BASE_URL_ALERT_ROUTES + "?");
+			break;
+		default:
 			break;
 		}
 		for (Entry<String, Object> entry : params.entrySet()) {

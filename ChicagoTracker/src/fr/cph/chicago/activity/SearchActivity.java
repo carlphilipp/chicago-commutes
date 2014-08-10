@@ -52,13 +52,12 @@ import fr.cph.chicago.util.Util;
  * @version 1
  */
 public class SearchActivity extends ListActivity {
-
 	/** The menu **/
-	private Menu menu;
+	private Menu mMenu;
 	/** The adapter **/
-	private SearchAdapter ada;
-
-	List<BikeStation> bikeStations;
+	private SearchAdapter mAdapter;
+	/** Bike stations **/
+	private List<BikeStation> mBikeStations;
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
@@ -70,10 +69,10 @@ public class SearchActivity extends ListActivity {
 			FrameLayout container = (FrameLayout) findViewById(R.id.container);
 			container.getForeground().setAlpha(0);
 			if (Util.isNetworkAvailable()) {
-				ada = new SearchAdapter(this, container);
-				bikeStations = getIntent().getExtras().getParcelableArrayList("bikeStations");
+				mAdapter = new SearchAdapter(this, container);
+				mBikeStations = getIntent().getExtras().getParcelableArrayList("bikeStations");
 				handleIntent(getIntent());
-				setListAdapter(ada);
+				setListAdapter(mAdapter);
 			} else {
 				Toast.makeText(ChicagoTracker.getAppContext(), "No network connection detected!", Toast.LENGTH_SHORT).show();
 			}
@@ -90,7 +89,7 @@ public class SearchActivity extends ListActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(final Menu menu) {
-		this.menu = menu;
+		this.mMenu = menu;
 		getMenuInflater().inflate(R.menu.main, menu);
 		// Associate searchable configuration with the SearchView
 		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
@@ -103,8 +102,8 @@ public class SearchActivity extends ListActivity {
 	 * Load animation in menu
 	 */
 	public final void startRefreshAnimation() {
-		if (menu != null) {
-			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+		if (mMenu != null) {
+			MenuItem refreshMenuItem = mMenu.findItem(R.id.action_refresh);
 			refreshMenuItem.setActionView(R.layout.progressbar);
 			refreshMenuItem.expandActionView();
 		}
@@ -114,8 +113,8 @@ public class SearchActivity extends ListActivity {
 	 * Stop animation in menu
 	 */
 	public final void stopRefreshAnimation() {
-		if (menu != null) {
-			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+		if (mMenu != null) {
+			MenuItem refreshMenuItem = mMenu.findItem(R.id.action_refresh);
 			refreshMenuItem.collapseActionView();
 			refreshMenuItem.setActionView(null);
 		}
@@ -166,8 +165,8 @@ public class SearchActivity extends ListActivity {
 			}
 
 			List<BikeStation> foundBikeStations = new ArrayList<BikeStation>();
-			if (bikeStations != null) {
-				for (BikeStation bikeStation : bikeStations) {
+			if (mBikeStations != null) {
+				for (BikeStation bikeStation : mBikeStations) {
 					boolean res = StringUtils.containsIgnoreCase(bikeStation.getName(), query.trim())
 							|| StringUtils.containsIgnoreCase(bikeStation.getStAddress1(), query.trim());
 					if (res) {
@@ -177,8 +176,8 @@ public class SearchActivity extends ListActivity {
 					}
 				}
 			}
-			ada.updateData(foundStations, foundBusRoutes, foundBikeStations);
-			ada.notifyDataSetChanged();
+			mAdapter.updateData(foundStations, foundBusRoutes, foundBikeStations);
+			mAdapter.notifyDataSetChanged();
 		}
 	}
 }

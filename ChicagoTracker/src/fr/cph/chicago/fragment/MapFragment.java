@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
+import fr.cph.chicago.util.Util;
 
 /**
  * Mao Fragment
@@ -40,6 +41,8 @@ import fr.cph.chicago.activity.MainActivity;
 public class MapFragment extends Fragment implements OnTouchListener {
 	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
+	/** The main activity **/
+	private MainActivity mActivity;
 	/** The matrix **/
 	private Matrix matrix = new Matrix();
 	/** The saved matrix **/
@@ -48,7 +51,7 @@ public class MapFragment extends Fragment implements OnTouchListener {
 	private static final int NONE = 0;
 	/** Mode drag **/
 	private static final int DRAG = 1;
-	/** Mode zoon **/
+	/** Mode zoom **/
 	private static final int ZOOM = 2;
 	/** Default mode **/
 	private int mode = NONE;
@@ -61,16 +64,14 @@ public class MapFragment extends Fragment implements OnTouchListener {
 	/** Image view **/
 	private ImageView view;
 
-	boolean first_time = true;
-	Long currentClickTime = (long) 0;
-	Long startTime = (long) 0;
-	Long endTime = (long) 0;
-	Long previousUpTime = (long) 0;
-	Long consecutiveTwoClickTime = (long) 0;
-	Long timeBetweenTwoClick = (long) 0;
-	Long previousClickTime = (long) 0;
-	final Long doubleClickTimeDiffrence = (long) 500;
-	Long upCounter = (long) 0;
+	private Long currentClickTime = (long) 0;
+	private Long startTime = (long) 0;
+	private Long endTime = (long) 0;
+	private Long consecutiveTwoClickTime = (long) 0;
+	private Long timeBetweenTwoClick = (long) 0;
+	private Long previousClickTime = (long) 0;
+	private Long doubleClickTimeDiffrence = (long) 500;
+	private Long upCounter = (long) 0;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -88,6 +89,13 @@ public class MapFragment extends Fragment implements OnTouchListener {
 	}
 
 	@Override
+	public final void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		Util.trackScreen(mActivity, R.string.analytics_L_fragment);
+	}
+
+	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_map, container, false);
 		view = (ImageView) rootView.findViewById(R.id.imageView);
@@ -99,7 +107,8 @@ public class MapFragment extends Fragment implements OnTouchListener {
 	@Override
 	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
-		((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
+		mActivity = ((MainActivity) activity);
+		mActivity.onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 
 	@Override

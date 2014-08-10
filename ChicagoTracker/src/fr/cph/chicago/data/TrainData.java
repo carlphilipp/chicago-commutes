@@ -49,29 +49,29 @@ public class TrainData {
 	/** Tag **/
 	private static final String TAG = "TrainData";
 	/** List of stations **/
-	private SparseArray<Station> stations;
+	private SparseArray<Station> mStations;
 	/** List of stations ordered by name **/
-	private List<Station> stationsOrderByName;
+	private List<Station> mStationsOrderByName;
 	/** List of stations ordered by line and name **/
-	private List<Station> stationsOrderByLine;
+	private List<Station> mStationsOrderByLine;
 	/** Map of stations ordered by line and map **/
-	private Map<TrainLine, List<Station>> stationsOrderByLineMap;
+	private Map<TrainLine, List<Station>> mStationsOrderByLineMap;
 	/** List of stops **/
-	private SparseArray<Stop> stops;
+	private SparseArray<Stop> mStops;
 
 	/**
 	 * Constructor
 	 */
 	public TrainData() {
-		this.stations = new SparseArray<Station>();
-		this.stops = new SparseArray<Stop>();
+		this.mStations = new SparseArray<Station>();
+		this.mStops = new SparseArray<Stop>();
 	}
 
 	/**
 	 * Read train data from CSV file.
 	 */
 	public final void read() {
-		if (stations.size() == 0 && stops.size() == 0) {
+		if (mStations.size() == 0 && mStops.size() == 0) {
 			try {
 				CSVReader reader = new CSVReader(new InputStreamReader(ChicagoTracker.getAppContext().getAssets().open("cta_L_stops_cph.csv")));
 				reader.readNext();
@@ -136,14 +136,14 @@ public class TrainData {
 					// stop.setStation(station);
 					stop.setAda(ada);
 					stop.setLines(lines);
-					stops.append(stopId, stop);
+					mStops.append(stopId, stop);
 
-					Station currentStation = stations.get(parentStopId, null);
+					Station currentStation = mStations.get(parentStopId, null);
 					if (currentStation == null) {
 						List<Stop> st = new ArrayList<Stop>();
 						st.add(stop);
 						station.setStops(st);
-						stations.append(parentStopId, station);
+						mStations.append(parentStopId, station);
 					} else {
 						currentStation.getStops().add(stop);
 					}
@@ -162,7 +162,7 @@ public class TrainData {
 	 * @return a map containing all the stations ordered line
 	 */
 	public final Map<TrainLine, List<Station>> getAllStations() {
-		return stationsOrderByLineMap;
+		return mStationsOrderByLineMap;
 	}
 
 	/**
@@ -173,7 +173,7 @@ public class TrainData {
 	 * @return a list of station
 	 */
 	public final List<Station> getStationsForLine(final TrainLine line) {
-		List<Station> res = stationsOrderByLineMap.get(line);
+		List<Station> res = mStationsOrderByLineMap.get(line);
 		return res;
 	}
 
@@ -185,8 +185,8 @@ public class TrainData {
 	 * @return
 	 */
 	public final Station getStation(final Integer id) {
-		if (stations.size() != 0) {
-			return stations.get(id);
+		if (mStations.size() != 0) {
+			return mStations.get(id);
 		} else {
 			return null;
 		}
@@ -200,8 +200,8 @@ public class TrainData {
 	 * @return a station
 	 */
 	public final Station getStationByPosition(final int position) {
-		if (stations.size() != 0 && position <= stations.size()) {
-			return stations.valueAt(position);
+		if (mStations.size() != 0 && position <= mStations.size()) {
+			return mStations.valueAt(position);
 		} else {
 			return null;
 		}
@@ -215,8 +215,8 @@ public class TrainData {
 	 * @return a station
 	 */
 	public final Station getStationByPositionAndName(final int position) {
-		if (stationsOrderByName.size() != 0 && position <= stationsOrderByName.size()) {
-			return stationsOrderByName.get(position);
+		if (mStationsOrderByName.size() != 0 && position <= mStationsOrderByName.size()) {
+			return mStationsOrderByName.get(position);
 		} else {
 			return null;
 		}
@@ -230,8 +230,8 @@ public class TrainData {
 	 * @return a station
 	 */
 	public final Station getStationByPositionAndLine(final int position) {
-		if (stationsOrderByLine.size() != 0 && position <= stationsOrderByLine.size()) {
-			return stationsOrderByLine.get(position);
+		if (mStationsOrderByLine.size() != 0 && position <= mStationsOrderByLine.size()) {
+			return mStationsOrderByLine.get(position);
 		} else {
 			return null;
 		}
@@ -243,11 +243,11 @@ public class TrainData {
 	 * @return the size of the stations list
 	 */
 	public final int getStationsSize() {
-		return stations.size();
+		return mStations.size();
 	}
-	
-	public final boolean isStationNull(){
-		return stations == null;
+
+	public final boolean isStationNull() {
+		return mStations == null;
 	}
 
 	/**
@@ -256,7 +256,7 @@ public class TrainData {
 	 * @return the size
 	 */
 	public final int getStationsSizeByLine() {
-		return stationsOrderByLine.size();
+		return mStationsOrderByLine.size();
 	}
 
 	/**
@@ -268,17 +268,17 @@ public class TrainData {
 	 */
 	public final Station getStationByName(final String name) {
 		int index = 0;
-		while (index < stations.size()) {
-			Station station = stations.valueAt(index++);
+		while (index < mStations.size()) {
+			Station station = mStations.valueAt(index++);
 			if (station.getName().equals(name)) {
 				return station;
 			}
 		}
 		return null;
 	}
-	
-	public final boolean isStopsNull(){
-		return stops == null;
+
+	public final boolean isStopsNull() {
+		return mStops == null;
 	}
 
 	/**
@@ -289,8 +289,8 @@ public class TrainData {
 	 * @return a stop
 	 */
 	public final Stop getStop(final Integer id) {
-		if (stops.size() != 0) {
-			return stops.get(id);
+		if (mStops.size() != 0) {
+			return mStops.get(id);
 		} else {
 			return null;
 		}
@@ -304,8 +304,8 @@ public class TrainData {
 	 * @return a stop
 	 */
 	public final Stop getStopByPosition(final int position) {
-		if (stops.size() != 0) {
-			return stops.valueAt(position);
+		if (mStops.size() != 0) {
+			return mStops.valueAt(position);
 		} else {
 			return null;
 		}
@@ -317,7 +317,7 @@ public class TrainData {
 	 * @return a size
 	 */
 	public final int getStopsSize() {
-		return stops.size();
+		return mStops.size();
 	}
 
 	/**
@@ -329,8 +329,8 @@ public class TrainData {
 	 */
 	public final Stop getStopByDesc(final String desc) {
 		int index = 0;
-		while (index < stops.size()) {
-			Stop stop = stops.valueAt(index++);
+		while (index < mStops.size()) {
+			Stop stop = mStops.valueAt(index++);
 			if (stop.getDescription().equals(desc) || stop.getDescription().split(" ")[0].equals(desc)) {
 				return stop;
 			}
@@ -358,7 +358,7 @@ public class TrainData {
 		double lonMax = longitude + dist;
 		double lonMin = longitude - dist;
 
-		for (Station station : stationsOrderByName) {
+		for (Station station : mStationsOrderByName) {
 			for (Position stopPosition : station.getStopsPosition()) {
 				double trainLatitude = stopPosition.getLatitude();
 				double trainLongitude = stopPosition.getLongitude();
@@ -371,19 +371,40 @@ public class TrainData {
 		return res;
 	}
 
+	public final List<Position> readPattern(final TrainLine line) {
+		List<Position> positions = new ArrayList<Position>();
+		try {
+			CSVReader reader = new CSVReader(new InputStreamReader(ChicagoTracker.getAppContext().getAssets()
+					.open("train_pattern/" + line.toTextString() + "_pattern.csv")));
+			String[] row = null;
+			while ((row = reader.readNext()) != null) {
+				double longitude = Double.valueOf(row[0]);
+				double latitude = Double.valueOf(row[1]);
+				Position position = new Position();
+				position.setLatitude(latitude);
+				position.setLongitude(longitude);
+				positions.add(position);
+			}
+			reader.close();
+		} catch (IOException e) {
+			Log.e(TAG, e.getMessage(), e);
+		}
+		return positions;
+	}
+
 	/**
 	 * Order stations
 	 */
 	private final void order() {
 		List<Station> vals = new ArrayList<Station>();
-		for (int i = 0; i < stations.size(); i++) {
-			vals.add(stations.valueAt(i));
+		for (int i = 0; i < mStations.size(); i++) {
+			vals.add(mStations.valueAt(i));
 		}
 		Collections.sort(vals);
-		stationsOrderByName = new ArrayList<Station>();
-		stationsOrderByLineMap = new TreeMap<TrainLine, List<Station>>();
+		mStationsOrderByName = new ArrayList<Station>();
+		mStationsOrderByLineMap = new TreeMap<TrainLine, List<Station>>();
 		for (Station station : vals) {
-			stationsOrderByName.add(station);
+			mStationsOrderByName.add(station);
 		}
 		for (Station station : vals) {
 			Set<TrainLine> tls = station.getLines();
@@ -391,20 +412,20 @@ public class TrainData {
 			while (iterator.hasNext()) {
 				TrainLine tl = iterator.next();
 				List<Station> stations = null;
-				if (stationsOrderByLineMap.containsKey(tl)) {
-					stations = stationsOrderByLineMap.get(tl);
+				if (mStationsOrderByLineMap.containsKey(tl)) {
+					stations = mStationsOrderByLineMap.get(tl);
 				} else {
 					stations = new ArrayList<Station>();
-					stationsOrderByLineMap.put(tl, stations);
+					mStationsOrderByLineMap.put(tl, stations);
 				}
 				stations.add(station);
 				Collections.sort(stations);
 			}
 		}
-		stationsOrderByLine = new ArrayList<Station>();
-		for (Entry<TrainLine, List<Station>> e : stationsOrderByLineMap.entrySet()) {
+		mStationsOrderByLine = new ArrayList<Station>();
+		for (Entry<TrainLine, List<Station>> e : mStationsOrderByLineMap.entrySet()) {
 			List<Station> temp = e.getValue();
-			stationsOrderByLine.addAll(temp);
+			mStationsOrderByLine.addAll(temp);
 		}
 	}
 }

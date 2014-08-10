@@ -49,7 +49,7 @@
         android:textSize="@+dimen/activity_train_line_M" />
 
     <TextView
-        android:id="@+id/station_name_value_search"
+        android:id="@+id/station_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/train_bus_type"

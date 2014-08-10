@@ -39,31 +39,30 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
  */
 public class TrainStationActivity extends ListActivity {
 	/** The train data **/
-	private TrainData data;
-	/** **/
-	private TrainLine line;
-	/** **/
-	private String lineParam;
+	private TrainData mTrainData;
+	/** The line **/
+	private TrainLine mLine;
+	/** The line param **/
+	private String mLineParam;
 
 	@Override
 	public final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//ChicagoTracker.checkData(this);
 		if (!this.isFinishing()) {
 			// Load data
 			DataHolder dataHolder = DataHolder.getInstance();
-			this.data = dataHolder.getTrainData();
+			this.mTrainData = dataHolder.getTrainData();
 
-			if (line == null && lineParam == null) {
-				lineParam = getIntent().getExtras().getString("line");
-				line = TrainLine.fromString(lineParam);
+			if (mLine == null && mLineParam == null) {
+				mLineParam = getIntent().getExtras().getString("line");
+				mLine = TrainLine.fromString(mLineParam);
 			}
 
-			this.setTitle(line.toStringWithLine());
+			this.setTitle(mLine.toStringWithLine());
 
 			setContentView(R.layout.activity_train_station);
 
-			TrainAdapter ada = new TrainAdapter(line);
+			TrainAdapter ada = new TrainAdapter(mLine);
 			setListAdapter(ada);
 			ListView listView = getListView();
 			listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -71,7 +70,7 @@ public class TrainStationActivity extends ListActivity {
 				public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
 					Intent intent = new Intent(ChicagoTracker.getAppContext(), StationActivity.class);
 					Bundle extras = new Bundle();
-					extras.putInt("stationId", data.getStationsForLine(line).get(position).getId());
+					extras.putInt("stationId", mTrainData.getStationsForLine(mLine).get(position).getId());
 					intent.putExtras(extras);
 					startActivity(intent);
 					overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
@@ -83,13 +82,13 @@ public class TrainStationActivity extends ListActivity {
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		lineParam = savedInstanceState.getString("line");
-		line = TrainLine.fromString(lineParam);
+		mLineParam = savedInstanceState.getString("line");
+		mLine = TrainLine.fromString(mLineParam);
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-		savedInstanceState.putString("line", lineParam);
+		savedInstanceState.putString("line", mLineParam);
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
