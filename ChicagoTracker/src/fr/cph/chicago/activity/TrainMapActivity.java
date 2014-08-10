@@ -408,7 +408,8 @@ public class TrainMapActivity extends Activity {
 			if (!loadAll && etas.size() > 7) {
 				etas = etas.subList(0, 6);
 
-				// Add a fake Eta cell to alert the user about the fact that only a part of the result is displayed
+				// Add a fake Eta cell to alert the user about the fact that only a part of the result is
+				// displayed
 				Eta eta = new Eta();
 				eta.setIsDly(false);
 				eta.setIsApp(false);
@@ -425,12 +426,15 @@ public class TrainMapActivity extends Activity {
 
 		@Override
 		protected final void onPostExecute(final List<Eta> result) {
+			ListView arrivals = (ListView) view.findViewById(R.id.arrivals);
+			TextView error = (TextView) view.findViewById(R.id.error);
 			if (result.size() != 0) {
-				ListView arrivals = (ListView) view.findViewById(R.id.arrivals);
 				TrainMapSnippetAdapter ada = new TrainMapSnippetAdapter(result);
 				arrivals.setAdapter(ada);
+				arrivals.setVisibility(ListView.VISIBLE);
+				error.setVisibility(TextView.GONE);
 			} else {
-				TextView error = (TextView) view.findViewById(R.id.error);
+				arrivals.setVisibility(ListView.GONE);
 				error.setVisibility(TextView.VISIBLE);
 			}
 			refreshInfoWindow();

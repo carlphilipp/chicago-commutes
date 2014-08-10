@@ -689,12 +689,15 @@ public class BusMapActivity extends Activity {
 
 		@Override
 		protected final void onPostExecute(final List<BusArrival> result) {
+			ListView arrivals = (ListView) view.findViewById(R.id.arrivals);
+			TextView error = (TextView) view.findViewById(R.id.error);
 			if (result.size() != 0) {
-				ListView arrivals = (ListView) view.findViewById(R.id.arrivals);
 				BusMapSnippetAdapter ada = new BusMapSnippetAdapter(result);
 				arrivals.setAdapter(ada);
+				arrivals.setVisibility(ListView.VISIBLE);
+				error.setVisibility(TextView.GONE);
 			} else {
-				TextView error = (TextView) view.findViewById(R.id.error);
+				arrivals.setVisibility(ListView.GONE);
 				error.setVisibility(TextView.VISIBLE);
 			}
 			refreshInfoWindow();
