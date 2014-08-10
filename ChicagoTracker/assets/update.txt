@@ -1,3 +1,6 @@
+3.1.0
+Minor bug fixes
+
 3.0.9
 Follow live trains/buses position on google map
 Renamed to 'Chicago Commutes'
