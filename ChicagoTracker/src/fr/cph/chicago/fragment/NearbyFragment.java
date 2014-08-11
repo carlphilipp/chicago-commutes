@@ -327,7 +327,8 @@ public class NearbyFragment extends Fragment {
 					}
 				}
 			}
-			if (loadBike) {
+			//TODO: modify the second check
+			if (loadBike && bikeStationsTemp != null) {
 				// Bike
 				DivvyConnect connect = DivvyConnect.getInstance();
 				try {
@@ -476,7 +477,8 @@ public class NearbyFragment extends Fragment {
 				if (loadTrain) {
 					trainStations = trainData.readNearbyStation(position);
 				}
-				if (loadBike) {
+				// TODO: wait bikeStations is loaded
+				if (loadBike && bikeStations != null) {
 					bikeStations = BikeStation.readNearbyStation(bikeStations, position);
 				}
 			}
