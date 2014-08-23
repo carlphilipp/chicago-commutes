@@ -150,6 +150,7 @@ public class ChicagoTracker extends Application {
 	private static void startErrorActivity(Activity mActivity) {
 		Intent intent = new Intent(mActivity, BaseActivity.class);
 		intent.putExtra("error", true);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
 		mActivity.startActivity(intent);
 		mActivity.finish();
 	}

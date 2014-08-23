@@ -428,4 +428,8 @@ public class TrainData {
 			mStationsOrderByLine.addAll(temp);
 		}
 	}
+	
+	public SparseArray<Station> getStations(){
+		return mStations;
+	}
 }

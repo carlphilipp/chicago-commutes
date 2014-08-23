@@ -133,40 +133,42 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// Handle onStop event where bus data has been switched to null
-		if (savedInstanceState != null) {
-			boolean first = savedInstanceState.getBoolean("first", false);
-			if (!first) {
-				BusData busData = BusData.getInstance();
-				if (busData.readAllBusStops() == null || busData.readAllBusStops().size() == 0) {
-					busData.readBusStops();
+		if (!isFinishing()) {
+			// Handle onStop event where bus data has been switched to null
+			if (savedInstanceState != null) {
+				boolean first = savedInstanceState.getBoolean("first", false);
+				if (!first) {
+					DataHolder dataHolder = DataHolder.getInstance();
+					BusData busData = BusData.getInstance();
+					if (busData.readAllBusStops() == null || busData.readAllBusStops().size() == 0) {
+						busData.readBusStops();
+						dataHolder.setBusData(busData);
+					}
+					TrainData trainData = new TrainData();
+					if (trainData.isStationNull() || trainData.isStopsNull()) {
+						trainData.read();
+						dataHolder.setTrainData(trainData);
+					}
 				}
-				TrainData trainData = new TrainData();
-				if (trainData.isStationNull() || trainData.isStopsNull()) {
-					trainData.read();
-				}
-				DataHolder dataHolder = DataHolder.getInstance();
-				dataHolder.setBusData(busData);
-				dataHolder.setTrainData(trainData);
 			}
+
+			new LoadData().execute();
+
+			setContentView(R.layout.activity_main);
+
+			ChicagoTracker.container = (FrameLayout) findViewById(R.id.container);
+			ChicagoTracker.container.getForeground().setAlpha(0);
+
+			mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
+			mTitle = getTitle();
+			// Set up the drawer.
+			mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout));
+
+			// Preventing keyboard from moving background when showing up
+			getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
+			displayUpdatePanel();
 		}
-
-		new LoadData().execute();
-
-		setContentView(R.layout.activity_main);
-
-		ChicagoTracker.container = (FrameLayout) findViewById(R.id.container);
-		ChicagoTracker.container.getForeground().setAlpha(0);
-
-		mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
-		mTitle = getTitle();
-		// Set up the drawer.
-		mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout));
-
-		// Preventing keyboard from moving background when showing up
-		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-
-		displayUpdatePanel();
 	}
 
 	@Override
