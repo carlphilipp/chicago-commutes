@@ -121,6 +121,16 @@ public class BikeFragment extends Fragment {
 
 		Util.trackScreen(mActivity, R.string.analytics_bike_fragment);
 	}
+	
+	@Override
+	public final void onResume(){
+		super.onResume();
+		boolean boolTrain = ChicagoTracker.checkTrainData(mActivity);
+		if (boolTrain) {
+			ChicagoTracker.checkBusData(mActivity);
+		}
+
+	}
 
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {

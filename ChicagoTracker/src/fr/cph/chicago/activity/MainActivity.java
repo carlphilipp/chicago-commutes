@@ -170,14 +170,10 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			displayUpdatePanel();
 		}
 	}
-	
+
 	@Override
-	public final void onResume(){
+	public final void onResume() {
 		super.onResume();
-		boolean boolTrain = ChicagoTracker.checkTrainData(this);
-		if (boolTrain) {
-			ChicagoTracker.checkBusData(this);
-		}
 	}
 
 	@Override
@@ -640,7 +636,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			if (loadBike) {
 				getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
 				onNewIntent(getIntent());
-				if(mFavoritesFragment != null){
+				if (mFavoritesFragment != null) {
 					mFavoritesFragment.setBikeStations(bikeStations);
 				}
 			}
