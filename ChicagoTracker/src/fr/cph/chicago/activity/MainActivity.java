@@ -631,7 +631,9 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			if (loadBike) {
 				getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
 				onNewIntent(getIntent());
-				mFavoritesFragment.setBikeStations(bikeStations);
+				if(mFavoritesFragment != null){
+					mFavoritesFragment.setBikeStations(bikeStations);
+				}
 			}
 			if (mCurrentPosition == POSITION_BUS && mBusFragment != null) {
 				mBusFragment.update();
