@@ -170,6 +170,15 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			displayUpdatePanel();
 		}
 	}
+	
+	@Override
+	public final void onResume(){
+		super.onResume();
+		boolean boolTrain = ChicagoTracker.checkTrainData(this);
+		if (boolTrain) {
+			ChicagoTracker.checkBusData(this);
+		}
+	}
 
 	@Override
 	public final void onNavigationDrawerItemSelected(final int position) {

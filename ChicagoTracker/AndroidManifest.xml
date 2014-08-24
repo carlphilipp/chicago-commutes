@@ -16,8 +16,8 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="fr.cph.chicago"
-    android:versionCode="50"
-    android:versionName="3.2.2" >
+    android:versionCode="51"
+    android:versionName="3.2.3" >
 
     <uses-sdk
         android:minSdkVersion="14"
