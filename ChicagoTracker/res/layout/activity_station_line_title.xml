@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="@dimen/activity_vertical_margin" >
+
+    <TextView
+        android:id="@+id/activity_train_T"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:paddingRight="@+dimen/activity_station_stops_line1_padding_color"
+        android:text="@string/T"
+        android:textColor="@color/grey_M_B"
+        android:textSize="25sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/activity_bus_color"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/activity_train_T"
+        android:layout_toRightOf="@+id/activity_train_T"
+        android:background="@color/grey_5"
+        android:text="@string/empty_string"
+        android:textIsSelectable="false"
+        android:textSize="@+dimen/activity_train_line_M" />
+
+    <TextView
+        android:id="@+id/activity_bus_station_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/activity_train_T"
+        android:layout_toRightOf="@+id/activity_bus_color"
+        android:ellipsize="end"
+        android:lines="1"
+        android:paddingLeft="@+dimen/activity_station_stops_line1_padding_color"
+        android:scrollHorizontally="true"
+        android:textColor="@+color/black"
+        android:textIsSelectable="false"
+        android:textStyle="bold" />
+
+</RelativeLayout>

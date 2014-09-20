@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.map.MultiValueMap;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
@@ -129,6 +130,11 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	private static final int POSITION_MAP = 6;
 	/** Drawer Settings **/
 	private static final int POSITION_SETTINGS = 7;
+	
+	@Override
+	protected void attachBaseContext(Context newBase) {
+		super.attachBaseContext(new CalligraphyContextWrapper(newBase));
+	}
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {

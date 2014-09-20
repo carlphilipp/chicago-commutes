@@ -23,7 +23,9 @@ import java.util.List;
 import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.map.MultiValueMap;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -60,6 +62,11 @@ public class BaseActivity extends Activity {
 	private SparseArray<TrainArrival> mTrainArrivals;
 	/** Bus arrivals **/
 	private List<BusArrival> mBusArrivals;
+
+	@Override
+	protected void attachBaseContext(Context newBase) {
+		super.attachBaseContext(new CalligraphyContextWrapper(newBase));
+	}
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {

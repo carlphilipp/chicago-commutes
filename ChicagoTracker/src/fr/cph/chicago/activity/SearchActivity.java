@@ -22,6 +22,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import android.app.ListActivity;
 import android.app.SearchManager;
 import android.content.Context;
@@ -58,6 +59,11 @@ public class SearchActivity extends ListActivity {
 	private SearchAdapter mAdapter;
 	/** Bike stations **/
 	private List<BikeStation> mBikeStations;
+	
+	@Override
+	protected void attachBaseContext(Context newBase) {
+		super.attachBaseContext(new CalligraphyContextWrapper(newBase));
+	}
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {

@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.map.MultiValueMap;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
@@ -101,6 +102,11 @@ public class BusMapActivity extends Activity {
 	private boolean centerMap = true;
 
 	private boolean loadPattern = true;
+	
+	@Override
+	protected void attachBaseContext(Context newBase) {
+		super.attachBaseContext(new CalligraphyContextWrapper(newBase));
+	}
 
 	@Override
 	public final void onCreate(final Bundle savedInstanceState) {

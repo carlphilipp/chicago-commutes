@@ -18,6 +18,8 @@ package fr.cph.chicago;
 
 import java.util.Date;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
@@ -64,10 +66,16 @@ public class ChicagoTracker extends Application {
 	public static FrameLayout container;
 
 	public static Tracker tracker;
+	
+	@Override
+	protected void attachBaseContext(Context newBase) {
+	    super.attachBaseContext(new CalligraphyContextWrapper(newBase));
+	}
 
 	@Override
 	public final void onCreate() {
 		super.onCreate();
+		CalligraphyConfig.initDefault("fonts/nevis.ttf", R.attr.fontPath);
 		ChicagoTracker.context = getApplicationContext();
 	}
 

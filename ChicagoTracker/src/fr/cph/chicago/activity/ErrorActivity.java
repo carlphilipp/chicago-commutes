@@ -1,7 +1,9 @@
 package fr.cph.chicago.activity;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -21,6 +23,11 @@ import fr.cph.chicago.R;
 public class ErrorActivity extends Activity {
 	/** Error **/
 	private String mError;
+	
+	@Override
+	protected void attachBaseContext(Context newBase) {
+		super.attachBaseContext(new CalligraphyContextWrapper(newBase));
+	}
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {

@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -77,6 +78,11 @@ public class BikeStationActivity extends Activity {
 	private boolean mIsFavorite;
 	/** The menu **/
 	private Menu mMenu;
+	
+	@Override
+	protected void attachBaseContext(Context newBase) {
+		super.attachBaseContext(new CalligraphyContextWrapper(newBase));
+	}
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {

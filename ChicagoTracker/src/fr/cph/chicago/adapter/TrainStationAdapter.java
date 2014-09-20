@@ -57,7 +57,7 @@ public final class TrainStationAdapter extends BaseAdapter {
 
 		TextView textView = (TextView) v.findViewById(R.id.station_color_value);
 		textView.setBackgroundColor(TrainLine.values()[position].getColor());
-		textView.setText("  ");
+		//textView.setText("  ");
 
 		textView = (TextView) v.findViewById(R.id.station_name_value);
 		textView.setText(TrainLine.values()[position].toString());

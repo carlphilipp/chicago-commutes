@@ -16,7 +16,9 @@
 
 package fr.cph.chicago.activity;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -44,6 +46,11 @@ public class TrainStationActivity extends ListActivity {
 	private TrainLine mLine;
 	/** The line param **/
 	private String mLineParam;
+	
+	@Override
+	protected void attachBaseContext(Context newBase) {
+		super.attachBaseContext(new CalligraphyContextWrapper(newBase));
+	}
 
 	@Override
 	public final void onCreate(final Bundle savedInstanceState) {

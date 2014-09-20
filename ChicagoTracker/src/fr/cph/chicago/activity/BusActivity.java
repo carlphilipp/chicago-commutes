@@ -26,9 +26,11 @@ import java.util.Map.Entry;
 import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.map.MultiValueMap;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -97,6 +99,11 @@ public class BusActivity extends Activity {
 	private Menu mMenu;
 
 	@Override
+	protected void attachBaseContext(Context newBase) {
+		super.attachBaseContext(new CalligraphyContextWrapper(newBase));
+	}
+
+	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		ChicagoTracker.checkBusData(this);
@@ -153,7 +160,7 @@ public class BusActivity extends Activity {
 			new LoadData().execute();
 
 			getActionBar().setDisplayHomeAsUpEnabled(true);
-			
+
 			Util.trackScreen(this, R.string.analytics_bus_details);
 		}
 	}
@@ -233,33 +240,40 @@ public class BusActivity extends Activity {
 	public final void drawArrivals() {
 		if (mBusArrivals != null) {
 			Map<String, TextView> mapRes = new HashMap<String, TextView>();
-			for (BusArrival arrival : this.mBusArrivals) {
-				if (arrival.getRouteDirection().equals(mBound)) {
-					String destination = arrival.getBusDestination();
-					if (mapRes.containsKey(destination)) {
-						TextView arrivalView = mapRes.get(destination);
-						if (arrival.getIsDly()) {
-							arrivalView.setText(arrivalView.getText() + " Delay");
+			if (this.mBusArrivals.size() != 0) {
+				for (BusArrival arrival : this.mBusArrivals) {
+					if (arrival.getRouteDirection().equals(mBound)) {
+						String destination = arrival.getBusDestination();
+						if (mapRes.containsKey(destination)) {
+							TextView arrivalView = mapRes.get(destination);
+							if (arrival.getIsDly()) {
+								arrivalView.setText(arrivalView.getText() + " Delay");
+							} else {
+								arrivalView.setText(arrivalView.getText() + " " + arrival.getTimeLeft());
+							}
 						} else {
-							arrivalView.setText(arrivalView.getText() + " " + arrival.getTimeLeft());
+							TextView arrivalView = new TextView(ChicagoTracker.getAppContext());
+							if (arrival.getIsDly()) {
+								arrivalView.setText(arrival.getBusDestination() + ": Delay");
+							} else {
+								arrivalView.setText(arrival.getBusDestination() + ": " + arrival.getTimeLeft());
+							}
+							arrivalView.setTextColor(ChicagoTracker.getAppContext().getResources().getColor(R.color.grey));
+							mapRes.put(destination, arrivalView);
 						}
-					} else {
-						TextView arrivalView = new TextView(ChicagoTracker.getAppContext());
-						if (arrival.getIsDly()) {
-							arrivalView.setText(arrival.getBusDestination() + ": Delay");
-						} else {
-							arrivalView.setText(arrival.getBusDestination() + ": " + arrival.getTimeLeft());
-						}
-
-						arrivalView.setTextColor(ChicagoTracker.getAppContext().getResources().getColor(R.color.grey));
-						mapRes.put(destination, arrivalView);
 					}
 				}
+			} else {
+				TextView arrivalView = new TextView(ChicagoTracker.getAppContext());
+				arrivalView.setTextColor(ChicagoTracker.getAppContext().getResources().getColor(R.color.grey));
+				arrivalView.setText("No service scheduled");
+				mapRes.put("", arrivalView);
 			}
 			mStopsView.removeAllViews();
 			for (Entry<String, TextView> entry : mapRes.entrySet()) {
 				mStopsView.addView(entry.getValue());
 			}
+
 		}
 	}
 

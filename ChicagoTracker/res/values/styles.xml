@@ -24,6 +24,15 @@
         <!-- Customization -->
         <item name="android:tabWidgetStyle">@android:style/Widget.TabWidget</item>
         <item name="android:activatedBackgroundIndicator">@drawable/drawer_selector</item>
+        
+        <item name="android:textViewStyle">@style/AppTheme.Widget.TextView</item>
+        
     </style>
+    
+    <style name="AppTheme.Widget"/>
+
+	<style name="AppTheme.Widget.TextView" parent="android:Widget.Holo.Light.TextView">
+    	<item name="fontPath">fonts/nevis.ttf</item>
+	</style>
 
 </resources>

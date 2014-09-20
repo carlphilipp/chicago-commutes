@@ -24,9 +24,11 @@ import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.map.MultiValueMap;
 import org.apache.commons.lang3.StringUtils;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import android.app.ActionBar;
 import android.app.FragmentManager;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
@@ -96,6 +98,11 @@ public class BusBoundActivity extends ListActivity {
 	private MapFragment mMapFragment;
 	/** The map **/
 	private GoogleMap mGooMap;
+	
+	@Override
+	protected void attachBaseContext(Context newBase) {
+		super.attachBaseContext(new CalligraphyContextWrapper(newBase));
+	}
 
 	@Override
 	public final void onCreate(final Bundle savedInstanceState) {

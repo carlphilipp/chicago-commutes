@@ -29,17 +29,18 @@ import java.util.Set;
 import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.map.MultiValueMap;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils.TruncateAt;
 import android.util.SparseArray;
-import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -50,7 +51,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
@@ -109,6 +109,11 @@ public class StationActivity extends Activity {
 	/** The first load **/
 	private boolean mFirstLoad = true;
 
+	@Override
+	protected void attachBaseContext(Context newBase) {
+		super.attachBaseContext(new CalligraphyContextWrapper(newBase));
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
@@ -152,9 +157,6 @@ public class StationActivity extends Activity {
 
 			mDirectionImage = (ImageView) findViewById(R.id.activity_bike_station_map_direction);
 
-			int line1PaddingColor = (int) getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
-			int line1PaddingTop = (int) getResources().getDimension(R.dimen.activity_station_stops_line1_padding_top);
-
 			mFavoritesImage = (ImageView) findViewById(R.id.activity_bike_station_favorite_star);
 			if (mIsFavorite) {
 				mFavoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_active));
@@ -168,57 +170,23 @@ public class StationActivity extends Activity {
 
 			LinearLayout stopsView = (LinearLayout) findViewById(R.id.activity_bike_station_details);
 
+			this.mParamsStop = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+
 			Map<TrainLine, List<Stop>> stops = mStation.getStopByLines();
 			CheckBox checkBox = null;
 			for (Entry<TrainLine, List<Stop>> e : stops.entrySet()) {
-
-				RelativeLayout line1 = new RelativeLayout(this);
-				line1.setPadding(0, line1PaddingTop, 0, 0);
-
-				mParamsStop = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-				line1.setLayoutParams(mParamsStop);
-
 				final TrainLine line = e.getKey();
 				List<Stop> stopss = e.getValue();
 				Collections.sort(stopss);
+				LayoutInflater layoutInflater = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				View view = layoutInflater.inflate(R.layout.activity_station_line_title, null);
 
-				TextView textView2 = new TextView(this);
-				textView2.setText(ChicagoTracker.getAppContext().getResources().getString(R.string.T));
-				textView2.setTypeface(Typeface.DEFAULT_BOLD);
-				textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
-				textView2.setTextColor(getResources().getColor(R.color.grey_M_B));
-				int id = Util.generateViewId();
-				textView2.setId(id);
-				textView2.setPadding(0, 0, line1PaddingColor, 0);
-				line1.addView(textView2);
+				TextView lineTextView = (TextView) view.findViewById(R.id.activity_bus_station_value);
+				lineTextView.setText(line.toStringWithLine());
 
-				textView2 = new TextView(this);
-				textView2.setBackgroundColor(line.getColor());
-				int id2 = Util.generateViewId();
-				textView2.setId(id2);
-
-				RelativeLayout.LayoutParams layoutParam = new RelativeLayout.LayoutParams(stopsView.getLayoutParams());
-				layoutParam.addRule(RelativeLayout.RIGHT_OF, id);
-				layoutParam.addRule(RelativeLayout.ALIGN_BASELINE, id);
-				layoutParam.width = 15;
-				textView2.setTextSize(ChicagoTracker.getAppContext().getResources().getDimension(R.dimen.activity_train_line_color));
-				textView2.setLayoutParams(layoutParam);
-				line1.addView(textView2);
-
-				textView2 = new TextView(this);
-				textView2.setText(line.toStringWithLine());
-				textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				textView2.setPadding(line1PaddingColor, 0, 0, 0);
-				textView2.setTextColor(getResources().getColor(R.color.grey));
-
-				RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-				layoutParams.addRule(RelativeLayout.ALIGN_BASELINE, id);
-				layoutParams.addRule(RelativeLayout.RIGHT_OF, id2);
-
-				textView2.setLayoutParams(layoutParams);
-				line1.addView(textView2);
-
-				stopsView.addView(line1);
+				TextView lineColorTextView = (TextView) view.findViewById(R.id.activity_bus_color);
+				lineColorTextView.setBackgroundColor(line.getColor());
+				stopsView.addView(view);
 
 				for (final Stop stop : stopss) {
 					LinearLayout line2 = new LinearLayout(this);

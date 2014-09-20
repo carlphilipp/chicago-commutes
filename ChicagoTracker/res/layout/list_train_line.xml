@@ -43,6 +43,7 @@
         android:layout_alignBaseline="@+id/station_m"
         android:layout_toRightOf="@+id/station_m"
         android:textIsSelectable="false"
+        android:text="@string/empty_string"
         android:textSize="@+dimen/activity_train_line_M" />
 
     <TextView
