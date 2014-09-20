@@ -58,6 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/station_d"
+            android:layout_toLeftOf="@+id/station_updated"
             android:layout_toRightOf="@+id/station_separator"
             android:ellipsize="end"
             android:lines="1"
