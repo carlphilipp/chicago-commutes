@@ -340,7 +340,7 @@ public class BusMapActivity extends Activity {
 			final Bitmap bitmap = mBusListener.getCurrentBitmap();
 			for (Bus bus : buses) {
 				LatLng point = new LatLng(bus.getPosition().getLatitude(), bus.getPosition().getLongitude());
-				Marker marker = mGooMap.addMarker(new MarkerOptions().position(point).title("To: " + bus.getDestination()).snippet(bus.getId() + "")
+				Marker marker = mGooMap.addMarker(new MarkerOptions().position(point).title("To " + bus.getDestination()).snippet(bus.getId() + "")
 						.icon(BitmapDescriptorFactory.fromBitmap(bitmap)).anchor(0.5f, 0.5f).rotation(bus.getHeading()).flat(true));
 				mBusMarkers.add(marker);
 
