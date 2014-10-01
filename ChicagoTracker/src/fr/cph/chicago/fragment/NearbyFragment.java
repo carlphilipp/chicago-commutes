@@ -62,7 +62,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -327,7 +326,7 @@ public class NearbyFragment extends Fragment {
 					}
 				}
 			}
-			//TODO: modify the second check
+			// TODO: modify the second check
 			if (loadBike && bikeStationsTemp != null) {
 				// Bike
 				DivvyConnect connect = DivvyConnect.getInstance();
@@ -378,7 +377,12 @@ public class NearbyFragment extends Fragment {
 				stations.clear();
 				stations = trainStationTmp;
 			}
-			load(busStops, busArrivalsMap, stations, trainArrivals, bikeStationsRes);
+
+			mActivity.runOnUiThread(new Runnable() {
+				public void run() {
+					load(busStops, busArrivalsMap, stations, trainArrivals, bikeStationsRes);
+				}
+			});
 		}
 	}
 
@@ -576,25 +580,36 @@ public class NearbyFragment extends Fragment {
 	private void load(final List<BusStop> buses, final SparseArray<Map<String, List<BusArrival>>> busArrivals, final List<Station> stations,
 			final SparseArray<TrainArrival> trainArrivals, final List<BikeStation> bikeStations) {
 		List<Marker> markers = new ArrayList<Marker>();
+		// BitmapDescriptor azure = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE);
+		// BitmapDescriptor violet =
+		// BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
+		// BitmapDescriptor yellow =
+		// BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
+		MarkerOptions options;
+		Marker marker;
+		LatLng point;
 		for (BusStop busStop : buses) {
-			LatLng point = new LatLng(busStop.getPosition().getLatitude(), busStop.getPosition().getLongitude());
-			Marker marker = mGooMap.addMarker(new MarkerOptions().position(point).title(busStop.getName()).snippet(busStop.getId().toString())
-					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+			point = new LatLng(busStop.getPosition().getLatitude(), busStop.getPosition().getLongitude());
+			options = new MarkerOptions().position(point).title(busStop.getName()).snippet(busStop.getId().toString());
+			// options.icon(azure);
+			marker = mGooMap.addMarker(options);
 			markers.add(marker);
 
 		}
 		for (Station station : stations) {
 			for (Position position : station.getStopsPosition()) {
-				LatLng point = new LatLng(position.getLatitude(), position.getLongitude());
-				Marker marker = mGooMap.addMarker(new MarkerOptions().position(point).title(station.getName()).snippet(station.getId().toString())
-						.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
+				point = new LatLng(position.getLatitude(), position.getLongitude());
+				options = new MarkerOptions().position(point).title(station.getName()).snippet(station.getId().toString());
+				// options.icon(azure);
+				marker = mGooMap.addMarker(options);
 				markers.add(marker);
 			}
 		}
 		for (BikeStation station : bikeStations) {
-			LatLng point = new LatLng(station.getPosition().getLatitude(), station.getPosition().getLongitude());
-			Marker marker = mGooMap.addMarker(new MarkerOptions().position(point).title(station.getName()).snippet(station.getId() + "")
-					.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+			point = new LatLng(station.getPosition().getLatitude(), station.getPosition().getLongitude());
+			options = new MarkerOptions().position(point).title(station.getName()).snippet(station.getId() + "");
+			// options.icon(azure);
+			marker = mGooMap.addMarker(options);
 			markers.add(marker);
 		}
 		addClickEventsToMarkers(buses, stations, bikeStations);

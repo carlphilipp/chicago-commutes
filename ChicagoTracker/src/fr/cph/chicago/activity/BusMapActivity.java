@@ -40,6 +40,7 @@ import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -370,6 +371,9 @@ public class BusMapActivity extends Activity {
 		}
 		if (mGooMap != null) {
 			int j = 0;
+			BitmapDescriptor red = BitmapDescriptorFactory.defaultMarker();
+			//BitmapDescriptor blue = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
+			MarkerOptions options;
 			for (BusPattern pattern : patterns) {
 				PolylineOptions poly = new PolylineOptions();
 				if (j == 0) {
@@ -379,18 +383,18 @@ public class BusMapActivity extends Activity {
 				} else {
 					poly.geodesic(true).color(Color.YELLOW);
 				}
-
 				poly.width(7f);
 				for (PatternPoint patternPoint : pattern.getPoints()) {
 					LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
 					poly.add(point);
 					if (patternPoint.getStopId() != null) {
-						MarkerOptions options = new MarkerOptions();
+						options = new MarkerOptions();
 						options.position(point).title(patternPoint.getStopName() + " (" + pattern.getDirection() + ")").snippet("");
 						if (j == 0) {
-							options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+							options.icon(red);
 						} else {
-							options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+							// To modify to blue when no freeze issue
+							options.icon(red);
 						}
 
 						Marker marker = mGooMap.addMarker(options);

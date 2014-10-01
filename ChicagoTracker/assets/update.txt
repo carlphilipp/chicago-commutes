@@ -1,3 +1,6 @@
+3.3.2
+Changed google map markers to default color. Waiting for Google map fix.
+
 3.3.1
 Updated font
 Minor bug fixes
@@ -10,18 +13,3 @@ Follow live trains/buses position on google map
 Renamed to 'Chicago Commutes'
 New custom popup menu
 Google analytics
-
-3.0.5
-Fixed issue when Bus CTA API reaches its transaction limit
-
-3.0.2
-Minor bug fixes
-
-3.0.0
-/!\ For a better user experience, please re-add your bus favorites
-Faster loading time
-Updated left panel
-Added settings
-Better bus favorites
-Added Google map features for bus lines
-Other fixes

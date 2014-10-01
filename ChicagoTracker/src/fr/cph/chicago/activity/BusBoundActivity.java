@@ -51,7 +51,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -98,7 +97,7 @@ public class BusBoundActivity extends ListActivity {
 	private MapFragment mMapFragment;
 	/** The map **/
 	private GoogleMap mGooMap;
-	
+
 	@Override
 	protected void attachBaseContext(Context newBase) {
 		super.attachBaseContext(new CalligraphyContextWrapper(newBase));
@@ -373,12 +372,14 @@ public class BusBoundActivity extends ListActivity {
 			PolylineOptions poly = new PolylineOptions();
 			poly.geodesic(true).color(Color.BLACK);
 			poly.width(7f);
+			Marker marker;
 			for (PatternPoint patternPoint : pattern.getPoints()) {
 				LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
 				poly.add(point);
 				if (patternPoint.getStopId() != null) {
-					Marker marker = mGooMap.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName())
-							.snippet(patternPoint.getSequence() + "").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+					marker = mGooMap.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName())
+							.snippet(String.valueOf(patternPoint.getSequence())));
+					// .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 					markers.add(marker);
 					marker.setVisible(false);
 				}
