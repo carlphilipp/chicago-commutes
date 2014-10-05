@@ -15,7 +15,6 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/frameLayout"
@@ -24,14 +23,7 @@
     android:background="@drawable/bg_selector"
     tools:context=".MainActivity$PlaceholderFragment" >
 
-    <!--  ProgressBar
-        android:id="@+id/progressbar"
-        style="@style/ProgressBar.Horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:indeterminate="true" /-->
-
-    <RelativeLayout
+  <RelativeLayout
         android:id="@+id/welcome"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -39,23 +31,36 @@
 
         <TextView
             android:id="@+id/no_fav"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:paddingTop="20dp"
+            android:paddingTop="35dp"
             android:text="@string/no_fav"
             android:textIsSelectable="false"
-            android:textSize="22sp"
+            android:gravity="center_horizontal"
+            android:textSize="25sp"
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/no_fav2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/no_fav"
             android:layout_centerHorizontal="true"
             android:text="@string/add_fav"
             android:textIsSelectable="false"
+            android:paddingTop="15dp"
             android:textSize="18sp"
+            android:textStyle="bold" />
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/no_fav2"
+            android:layout_centerHorizontal="true"
+            android:text="@string/add_fav2"
+            android:textIsSelectable="false"
+            android:textSize="16sp"
             android:textStyle="bold" />
     </RelativeLayout>
 

@@ -1,3 +1,6 @@
+3.3.3
+Minor bug fixes on welcome screen
+
 3.3.2
 Changed google map markers to default color. Waiting for Google map fix.
 
