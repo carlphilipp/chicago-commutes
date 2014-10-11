@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,7 +21,6 @@ import android.widget.PopupWindow;
 import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
-import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.activity.StationActivity;
 import fr.cph.chicago.activity.TrainMapActivity;
 import fr.cph.chicago.adapter.PopupTrainAdapter;
@@ -35,7 +35,7 @@ import fr.cph.chicago.util.Util;
  */
 public class FavoritesTrainOnClickListener implements OnClickListener {
 	/** The main activity **/
-	private MainActivity mActivity;
+	private Activity mActivity;
 	/** The layout that is used to display a fade black background **/
 	private FrameLayout mFirstLayout;
 	/** The station id **/
@@ -49,8 +49,7 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 	 * @param stationId
 	 * @param trainLines
 	 */
-	public FavoritesTrainOnClickListener(final MainActivity activity, final FrameLayout firstLayout, final int stationId,
-			final Set<TrainLine> trainLines) {
+	public FavoritesTrainOnClickListener(final Activity activity, final FrameLayout firstLayout, final int stationId, final Set<TrainLine> trainLines) {
 		this.mActivity = activity;
 		this.mFirstLayout = firstLayout;
 		this.mStationId = stationId;
@@ -116,7 +115,6 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 					mFirstLayout.getForeground().setAlpha(0);
 				}
 			});
-
 			popup.showAtLocation(mFirstLayout, Gravity.CENTER, 0, 0);
 		}
 	}

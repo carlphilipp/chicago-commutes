@@ -74,6 +74,7 @@ public class SearchActivity extends ListActivity {
 			setContentView(R.layout.activity_search);
 			FrameLayout container = (FrameLayout) findViewById(R.id.container);
 			container.getForeground().setAlpha(0);
+			
 			if (Util.isNetworkAvailable()) {
 				mAdapter = new SearchAdapter(this, container);
 				mBikeStations = getIntent().getExtras().getParcelableArrayList("bikeStations");

@@ -54,9 +54,12 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/train_bus_type"
         android:layout_toRightOf="@+id/color_value"
+        android:layout_toLeftOf="@+id/station_color"
         android:paddingLeft="@+dimen/activity_station_stops_line1_padding_color"
         android:textColor="@+color/black"
         android:textIsSelectable="false"
+        android:ellipsize="end"
+		android:singleLine="true"
         android:textStyle="bold" />
 
     <LinearLayout

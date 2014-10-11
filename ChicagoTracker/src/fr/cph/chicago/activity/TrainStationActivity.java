@@ -19,14 +19,10 @@ package fr.cph.chicago.activity;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import android.app.ListActivity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import fr.cph.chicago.ChicagoTracker;
+import android.widget.FrameLayout;
 import fr.cph.chicago.R;
 import fr.cph.chicago.adapter.TrainAdapter;
 import fr.cph.chicago.data.DataHolder;
@@ -46,7 +42,7 @@ public class TrainStationActivity extends ListActivity {
 	private TrainLine mLine;
 	/** The line param **/
 	private String mLineParam;
-	
+
 	@Override
 	protected void attachBaseContext(Context newBase) {
 		super.attachBaseContext(new CalligraphyContextWrapper(newBase));
@@ -69,20 +65,11 @@ public class TrainStationActivity extends ListActivity {
 
 			setContentView(R.layout.activity_train_station);
 
-			TrainAdapter ada = new TrainAdapter(mLine);
+			FrameLayout container = (FrameLayout) findViewById(R.id.container);
+			container.getForeground().setAlpha(0);
+
+			TrainAdapter ada = new TrainAdapter(mLine, this, container);
 			setListAdapter(ada);
-			ListView listView = getListView();
-			listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-				@Override
-				public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
-					Intent intent = new Intent(ChicagoTracker.getAppContext(), StationActivity.class);
-					Bundle extras = new Bundle();
-					extras.putInt("stationId", mTrainData.getStationsForLine(mLine).get(position).getId());
-					intent.putExtras(extras);
-					startActivity(intent);
-					overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
-				}
-			});
 		}
 	}
 

@@ -30,7 +30,6 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
@@ -45,8 +44,8 @@ import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BikeStationActivity;
 import fr.cph.chicago.activity.BusBoundActivity;
+import fr.cph.chicago.activity.BusMapActivity;
 import fr.cph.chicago.activity.SearchActivity;
-import fr.cph.chicago.activity.StationActivity;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.entity.BikeStation;
@@ -58,6 +57,7 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
+import fr.cph.chicago.listener.FavoritesTrainOnClickListener;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
 
@@ -81,6 +81,9 @@ public final class SearchAdapter extends BaseAdapter {
 	/** The layout that is used to display a fade black background **/
 	private FrameLayout mContainer;
 
+	/** The layout that is used to display a fade black background **/
+	// private FrameLayout mFirstLayout;
+
 	/**
 	 * Constructor
 	 * 
@@ -93,6 +96,7 @@ public final class SearchAdapter extends BaseAdapter {
 		this.mContext = ChicagoTracker.getAppContext();
 		this.mActivity = activity;
 		this.mContainer = container;
+		// this.mFirstLayout = container2;
 	}
 
 	@Override
@@ -150,18 +154,7 @@ public final class SearchAdapter extends BaseAdapter {
 				}
 				indice++;
 			}
-			convertView.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					Intent intent = new Intent(ChicagoTracker.getAppContext(), StationActivity.class);
-					Bundle extras = new Bundle();
-					extras.putInt("stationId", station.getId());
-					intent.putExtras(extras);
-					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-					mActivity.startActivity(intent);
-					mActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
-				}
-			});
+			convertView.setOnClickListener(new FavoritesTrainOnClickListener(mActivity, mContainer, station.getId(), lines));
 		} else if (position < mTrains.size() + mBuses.size()) {
 			final BusRoute busRoute = (BusRoute) getItem(position);
 
@@ -250,6 +243,7 @@ public final class SearchAdapter extends BaseAdapter {
 				for (BusDirection busDir : lBus) {
 					data.add(busDir.toString());
 				}
+				data.add("Follow all buses on line " + result.getId());
 
 				LayoutInflater layoutInflater = (LayoutInflater) mActivity.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				View popupView = layoutInflater.inflate(R.layout.popup_bus, null);
@@ -264,6 +258,7 @@ public final class SearchAdapter extends BaseAdapter {
 				listView.setOnItemClickListener(new OnItemClickListener() {
 					@Override
 					public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+						if (position != data.size() - 1) {
 						Intent intent = new Intent(mActivity, BusBoundActivity.class);
 						Bundle extras = new Bundle();
 						extras.putString("busRouteId", busRoute.getId());
@@ -272,6 +267,20 @@ public final class SearchAdapter extends BaseAdapter {
 						intent.putExtras(extras);
 						intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 						ChicagoTracker.getAppContext().startActivity(intent);
+						} else {
+							String[] busDirectionArray = new String[lBus.size()];
+							int i = 0;
+							for (BusDirection busDir : lBus) {
+								busDirectionArray[i++] = busDir.toString();
+							}
+							Intent intent = new Intent(ChicagoTracker.getAppContext(), BusMapActivity.class);
+							Bundle extras = new Bundle();
+							extras.putString("busRouteId", result.getId());
+							extras.putStringArray("bounds", busDirectionArray);
+							intent.putExtras(extras);
+							mActivity.startActivity(intent);
+							mActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+						}
 						popup.dismiss();
 					}
 				});

@@ -19,11 +19,13 @@ package fr.cph.chicago.adapter;
 import java.util.List;
 import java.util.Set;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import fr.cph.chicago.ChicagoTracker;
@@ -32,6 +34,7 @@ import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.enumeration.TrainLine;
+import fr.cph.chicago.listener.FavoritesTrainOnClickListener;
 
 /**
  * Adapter that will handle trains
@@ -44,6 +47,10 @@ public final class TrainAdapter extends BaseAdapter {
 	private List<Station> mStations;
 	/** The context **/
 	private Context mContext;
+	
+	private Activity mActivity;
+	
+	private FrameLayout mContainer;
 
 	/**
 	 * Constructor
@@ -51,12 +58,14 @@ public final class TrainAdapter extends BaseAdapter {
 	 * @param line
 	 *            the train line
 	 */
-	public TrainAdapter(final TrainLine line) {
+	public TrainAdapter(final TrainLine line, final Activity activity, final FrameLayout container) {
 		// Load data
 		DataHolder dataHolder = DataHolder.getInstance();
 		TrainData data = dataHolder.getTrainData();
 		this.mStations = data.getStationsForLine(line);
 		this.mContext = ChicagoTracker.getAppContext();
+		this.mActivity = activity;
+		this.mContainer = container;
 	}
 
 	@Override
@@ -103,6 +112,7 @@ public final class TrainAdapter extends BaseAdapter {
 			}
 			indice++;
 		}
+		convertView.setOnClickListener(new FavoritesTrainOnClickListener(mActivity, mContainer, station.getId(), lines));
 		return convertView;
 	}
 }

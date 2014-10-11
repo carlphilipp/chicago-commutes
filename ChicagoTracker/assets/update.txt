@@ -1,3 +1,6 @@
+3.4.0
+Added quick access to follow trains/buses on Google map from more screens 
+
 3.3.3
 Minor bug fixes on welcome screen
 

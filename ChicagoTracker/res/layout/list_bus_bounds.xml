@@ -54,6 +54,8 @@
         android:paddingLeft="@+dimen/activity_station_stops_line1_padding_color"
         android:textColor="@+color/black"
         android:textIsSelectable="false"
+        android:ellipsize="end"
+		android:singleLine="true"
         android:textStyle="bold" />
 
 </RelativeLayout>

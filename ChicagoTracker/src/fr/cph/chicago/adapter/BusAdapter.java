@@ -42,6 +42,7 @@ import android.widget.TextView;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BusBoundActivity;
+import fr.cph.chicago.activity.BusMapActivity;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.CtaRequestType;
@@ -210,11 +211,12 @@ public final class BusAdapter extends BaseAdapter {
 		protected final void onPostExecute(final BusDirections result) {
 			mActivity.stopRefreshAnimation();
 			if (trackerException == null) {
-				List<BusDirection> busDirections = result.getlBusDirection();
+				final List<BusDirection> busDirections = result.getlBusDirection();
 				final List<String> data = new ArrayList<String>();
 				for (BusDirection busDir : busDirections) {
 					data.add(busDir.toString());
 				}
+				data.add("Follow all buses on line " + result.getId());
 
 				LayoutInflater layoutInflater = (LayoutInflater) mActivity.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				View popupView = layoutInflater.inflate(R.layout.popup_bus, null);
@@ -229,14 +231,30 @@ public final class BusAdapter extends BaseAdapter {
 				listView.setOnItemClickListener(new OnItemClickListener() {
 					@Override
 					public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-						Intent intent = new Intent(mActivity, BusBoundActivity.class);
-						Bundle extras = new Bundle();
-						extras.putString("busRouteId", busRoute.getId());
-						extras.putString("busRouteName", busRoute.getName());
-						extras.putString("bound", data.get(position));
-						intent.putExtras(extras);
-						intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-						ChicagoTracker.getAppContext().startActivity(intent);
+						if (position != data.size() - 1) {
+							Intent intent = new Intent(mActivity, BusBoundActivity.class);
+							Bundle extras = new Bundle();
+							extras.putString("busRouteId", busRoute.getId());
+							extras.putString("busRouteName", busRoute.getName());
+							extras.putString("bound", data.get(position));
+							intent.putExtras(extras);
+							intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+							ChicagoTracker.getAppContext().startActivity(intent);
+						} else {
+							String[] busDirectionArray = new String[busDirections.size()];
+							int i = 0;
+							for (BusDirection busDir : busDirections) {
+								busDirectionArray[i++] = busDir.toString();
+							}
+							Intent intent = new Intent(ChicagoTracker.getAppContext(), BusMapActivity.class);
+							Bundle extras = new Bundle();
+							extras.putString("busRouteId", result.getId());
+							extras.putStringArray("bounds", busDirectionArray);
+							intent.putExtras(extras);
+							mActivity.startActivity(intent);
+							mActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+						}
+
 						popup.dismiss();
 					}
 				});
