@@ -372,7 +372,7 @@ public class BusMapActivity extends Activity {
 		if (mGooMap != null) {
 			int j = 0;
 			BitmapDescriptor red = BitmapDescriptorFactory.defaultMarker();
-			//BitmapDescriptor blue = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
+			BitmapDescriptor blue = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
 			MarkerOptions options;
 			for (BusPattern pattern : patterns) {
 				PolylineOptions poly = new PolylineOptions();
@@ -394,7 +394,7 @@ public class BusMapActivity extends Activity {
 							options.icon(red);
 						} else {
 							// To modify to blue when no freeze issue
-							options.icon(red);
+							options.icon(blue);
 						}
 
 						Marker marker = mGooMap.addMarker(options);

@@ -1,21 +1,18 @@
 3.4.0
-Added quick access to follow trains/buses on Google map from more screens 
+Updated marker with new colors.
+
+3.4.0
+Added quick access to follow trains/buses on Google map from more screens.
 
 3.3.3
-Minor bug fixes on welcome screen
+Minor bug fixes on welcome screen.
 
 3.3.2
 Changed google map markers to default color. Waiting for Google map fix.
 
 3.3.1
-Updated font
-Minor bug fixes
+Updated font.
+Minor bug fixes.
 
 3.2.4
-Minor bug fixes
-
-3.0.9
-Follow live trains/buses position on google map
-Renamed to 'Chicago Commutes'
-New custom popup menu
-Google analytics
+Minor bug fixes.

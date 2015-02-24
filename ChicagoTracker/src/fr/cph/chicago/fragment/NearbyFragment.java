@@ -62,6 +62,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -580,18 +582,16 @@ public class NearbyFragment extends Fragment {
 	private void load(final List<BusStop> buses, final SparseArray<Map<String, List<BusArrival>>> busArrivals, final List<Station> stations,
 			final SparseArray<TrainArrival> trainArrivals, final List<BikeStation> bikeStations) {
 		List<Marker> markers = new ArrayList<Marker>();
-		// BitmapDescriptor azure = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE);
-		// BitmapDescriptor violet =
-		// BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
-		// BitmapDescriptor yellow =
-		// BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
+		BitmapDescriptor azure = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE);
+		BitmapDescriptor violet = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
+		BitmapDescriptor yellow = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
 		MarkerOptions options;
 		Marker marker;
 		LatLng point;
 		for (BusStop busStop : buses) {
 			point = new LatLng(busStop.getPosition().getLatitude(), busStop.getPosition().getLongitude());
 			options = new MarkerOptions().position(point).title(busStop.getName()).snippet(busStop.getId().toString());
-			// options.icon(azure);
+			options.icon(azure);
 			marker = mGooMap.addMarker(options);
 			markers.add(marker);
 
@@ -600,7 +600,7 @@ public class NearbyFragment extends Fragment {
 			for (Position position : station.getStopsPosition()) {
 				point = new LatLng(position.getLatitude(), position.getLongitude());
 				options = new MarkerOptions().position(point).title(station.getName()).snippet(station.getId().toString());
-				// options.icon(azure);
+				options.icon(violet);
 				marker = mGooMap.addMarker(options);
 				markers.add(marker);
 			}
@@ -608,7 +608,7 @@ public class NearbyFragment extends Fragment {
 		for (BikeStation station : bikeStations) {
 			point = new LatLng(station.getPosition().getLatitude(), station.getPosition().getLongitude());
 			options = new MarkerOptions().position(point).title(station.getName()).snippet(station.getId() + "");
-			// options.icon(azure);
+			options.icon(yellow);
 			marker = mGooMap.addMarker(options);
 			markers.add(marker);
 		}
