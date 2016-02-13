@@ -20,11 +20,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="fr.cph.chicago"
     android:versionCode="59"
-    android:versionName="3.6.0" >
+    android:versionName="3.7.0" >
 
     <uses-sdk
-        android:minSdkVersion="14"
-        android:targetSdkVersion="21" />
+        android:minSdkVersion="16"
+        android:targetSdkVersion="23" />
 
     <uses-feature
         android:glEsVersion="0x00020000"
