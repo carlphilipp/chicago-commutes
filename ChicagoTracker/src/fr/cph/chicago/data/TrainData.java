@@ -80,55 +80,58 @@ public class TrainData {
 					Integer stopId = Integer.valueOf(row[0]); // STOP_ID
 					TrainDirection direction = TrainDirection.fromString(row[1]); // DIRECTION_ID
 					String stopName = row[2]; // STOP_NAME
-					Double latitude = Double.valueOf(row[3]);// LON
-					Double longitude = Double.valueOf(row[4]);// LAT
-					String stationName = row[5];// STATION_NAME
-					// String stationDescription = row[6];//STATION_DESCRIPTIVE_NAME
-					Integer parentStopId = Integer.valueOf(row[7]);// PARENT_STOP_ID
-					Boolean ada = Boolean.valueOf(row[8]);// ADA
+					String stationName = row[3];// STATION_NAME
+					// String stationDescription = row[4];//STATION_DESCRIPTIVE_NAME
+					Integer parentStopId = Integer.valueOf(row[5]);// MAP_ID (old PARENT_STOP_ID)
+					Boolean ada = Boolean.valueOf(row[6]);// ADA
 					List<TrainLine> lines = new ArrayList<TrainLine>();
-					String red = row[9];// Red
-					String blue = row[10];// Blue
-					String brown = row[11];// Brn
-					String green = row[12];// G
-					String purple = row[13];// P
-					String purpleExp = row[14];// Pexp
-					String yellow = row[15];// Y
-					String pink = row[16];// Pink
-					String orange = row[17];// Org
-					if (red.equals("1")) {
+					String red = row[7];// Red
+					String blue = row[8];// Blue
+					String green = row[9];// G
+					String brown = row[10];// Brn
+					String purple = row[11];// P
+					String purpleExp = row[12];// Pexp
+					String yellow = row[13];// Y
+					String pink = row[14];// Pink
+					String orange = row[15];// Org
+					if (red.equals("TRUE")) {
 						lines.add(TrainLine.RED);
 					}
-					if (blue.equals("1")) {
+					if (blue.equals("TRUE")) {
 						lines.add(TrainLine.BLUE);
 					}
-					if (brown.equals("1")) {
+					if (brown.equals("TRUE")) {
 						lines.add(TrainLine.BROWN);
 					}
-					if (green.equals("1")) {
+					if (green.equals("TRUE")) {
 						lines.add(TrainLine.GREEN);
 					}
-					if (purple.equals("1")) {
+					if (purple.equals("TRUE")) {
 						// PURPLE_EXPRESS MOD
 						if (!lines.contains(TrainLine.PURPLE)) {
 							lines.add(TrainLine.PURPLE);
 						}
 					}
-					if (purpleExp.equals("1")) {
+					if (purpleExp.equals("TRUE")) {
 						// PURPLE_EXPRESS MOD
 						if (!lines.contains(TrainLine.PURPLE)) {
 							lines.add(TrainLine.PURPLE);
 						}
 					}
-					if (yellow.equals("1")) {
+					if (yellow.equals("TRUE")) {
 						lines.add(TrainLine.YELLOW);
 					}
-					if (pink.equals("1")) {
+					if (pink.equals("TRUE")) {
 						lines.add(TrainLine.PINK);
 					}
-					if (orange.equals("1")) {
+					if (orange.equals("TRUE")) {
 						lines.add(TrainLine.ORANGE);
 					}
+					String location = row[16];// Location
+					String locationTrunk = location.substring(1);
+					String coordinates [] = locationTrunk.substring(0, locationTrunk.length() - 1).split(", ");
+					Double longitude = Double.valueOf(coordinates[0]);
+					Double latitude = Double.valueOf(coordinates[1]);
 
 					Stop stop = StopFactory.buildStop(stopId, stopName, direction);
 					stop.setPosition(new Position(longitude, latitude));
