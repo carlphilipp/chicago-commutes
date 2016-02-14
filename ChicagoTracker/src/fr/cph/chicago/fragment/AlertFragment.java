@@ -52,17 +52,17 @@ public class AlertFragment extends Fragment {
 	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
 	/** Root view **/
-	private View mRootView;
+	private View rootView;
 	/** Loading layout **/
-	private RelativeLayout mLoadingLayout;
+	private RelativeLayout loadingLayout;
 	/** Desactivated layout **/
-	private RelativeLayout mDesactivatedLayout;
+	private RelativeLayout desactivatedLayout;
 	/** The list view **/
-	private ListView mListView;
+	private ListView listView;
 	/** The main activity **/
-	private MainActivity mActivity;
+	private MainActivity mainActivity;
 	/** The adapter **/
-	private AlertAdapter mAdapter;
+	private AlertAdapter alertAdapter;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -82,43 +82,43 @@ public class AlertFragment extends Fragment {
 	@Override
 	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
-		mActivity = (MainActivity) activity;
-		mActivity.onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
+		mainActivity = (MainActivity) activity;
+		mainActivity.onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 
 	@Override
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		Util.trackScreen(mActivity, R.string.analytics_alert_fragment);
+		Util.trackScreen(mainActivity, R.string.analytics_alert_fragment);
 	}
 
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-		mRootView = inflater.inflate(R.layout.fragment_alert, container, false);
-		mListView = (ListView) mRootView.findViewById(R.id.alert_list);
-		mDesactivatedLayout = (RelativeLayout) mRootView.findViewById(R.id.desactivated_layout);
-		mLoadingLayout = (RelativeLayout) mRootView.findViewById(R.id.loading_relativeLayout);
-		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mActivity);
+		rootView = inflater.inflate(R.layout.fragment_alert, container, false);
+		listView = (ListView) rootView.findViewById(R.id.alert_list);
+		desactivatedLayout = (RelativeLayout) rootView.findViewById(R.id.desactivated_layout);
+		loadingLayout = (RelativeLayout) rootView.findViewById(R.id.loading_relativeLayout);
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mainActivity);
 		boolean loadAlert = sharedPref.getBoolean("cta_alert", true);
 		if (Util.isNetworkAvailable()) {
 			if (loadAlert) {
 				if (DataHolder.getInstance().getAlertData() != null) {
-					mAdapter = new AlertAdapter();
-					mListView.setAdapter(mAdapter);
+					alertAdapter = new AlertAdapter();
+					listView.setAdapter(alertAdapter);
 				} else {
-					mLoadingLayout.setVisibility(RelativeLayout.VISIBLE);
-					mListView.setVisibility(ListView.INVISIBLE);
+					loadingLayout.setVisibility(RelativeLayout.VISIBLE);
+					listView.setVisibility(ListView.INVISIBLE);
 					new WaitForRefreshData().execute();
 				}
 			} else {
-				mDesactivatedLayout.setVisibility(RelativeLayout.VISIBLE);
+				desactivatedLayout.setVisibility(RelativeLayout.VISIBLE);
 			}
 		} else {
 			Toast.makeText(ChicagoTracker.getAppContext(), "No network connection detected!", Toast.LENGTH_SHORT).show();
 		}
 		setHasOptionsMenu(true);
-		return mRootView;
+		return rootView;
 	}
 
 	@Override
@@ -130,20 +130,20 @@ public class AlertFragment extends Fragment {
 	public final boolean onOptionsItemSelected(final MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_refresh:
-			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mActivity);
+			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mainActivity);
 			boolean loadAlerts = sharedPref.getBoolean("cta_alert", true);
 			if (loadAlerts) {
 				DataHolder dataHolder = DataHolder.getInstance();
 				AlertData alertData = dataHolder.getAlertData();
 				if (alertData == null || alertData.getAlerts().size() == 0) {
-					mActivity.startRefreshAnimation();
-					mActivity.new LoadData().execute();
+					mainActivity.startRefreshAnimation();
+					mainActivity.new LoadData().execute();
 				} else {
-					AlertFragment.this.mActivity.startRefreshAnimation();
+					AlertFragment.this.mainActivity.startRefreshAnimation();
 					new LoadData().execute();
 				}
 			}
-			Util.trackAction(mActivity, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_alert, 0);
+			Util.trackAction(mainActivity, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_alert, 0);
 			return false;
 		}
 		return super.onOptionsItemSelected(item);
@@ -157,21 +157,21 @@ public class AlertFragment extends Fragment {
 			if (Util.isNetworkAvailable()) {
 				try {
 					alertData.loadGeneralAlerts();
-					Util.trackAction(AlertFragment.this.mActivity, R.string.analytics_category_req, R.string.analytics_action_get_alert,
+					Util.trackAction(AlertFragment.this.mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_alert,
 							R.string.analytics_action_get_alert_general, 0);
 				} catch (ParserException | ConnectException e) {
 					Log.e(TAG, "Parser error", e);
-					AlertFragment.this.mActivity.runOnUiThread(new Runnable() {
+					AlertFragment.this.mainActivity.runOnUiThread(new Runnable() {
 						public void run() {
-							Toast.makeText(mActivity, "A surprising error has occurred. Try again!", Toast.LENGTH_SHORT).show();
+							Toast.makeText(mainActivity, "A surprising error has occurred. Try again!", Toast.LENGTH_SHORT).show();
 						}
 					});
 
 				}
 			} else {
-				AlertFragment.this.mActivity.runOnUiThread(new Runnable() {
+				AlertFragment.this.mainActivity.runOnUiThread(new Runnable() {
 					public void run() {
-						Toast.makeText(mActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
+						Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
 					}
 				});
 			}
@@ -180,11 +180,11 @@ public class AlertFragment extends Fragment {
 
 		@Override
 		protected final void onPostExecute(final AlertData result) {
-			if (mAdapter != null) {
-				mAdapter.setAlerts(result.getAlerts());
-				mAdapter.notifyDataSetChanged();
+			if (alertAdapter != null) {
+				alertAdapter.setAlerts(result.getAlerts());
+				alertAdapter.notifyDataSetChanged();
 			}
-			AlertFragment.this.mActivity.stopRefreshAnimation();
+			AlertFragment.this.mainActivity.stopRefreshAnimation();
 		}
 	}
 
@@ -214,17 +214,17 @@ public class AlertFragment extends Fragment {
 	}
 
 	private void loadError() {
-		mLoadingLayout.setVisibility(RelativeLayout.INVISIBLE);
-		RelativeLayout errorLayout = (RelativeLayout) mRootView.findViewById(R.id.error_layout);
+		loadingLayout.setVisibility(RelativeLayout.INVISIBLE);
+		RelativeLayout errorLayout = (RelativeLayout) rootView.findViewById(R.id.error_layout);
 		errorLayout.setVisibility(RelativeLayout.VISIBLE);
 	}
 
 	public final void loadList() {
 		AlertAdapter ada = new AlertAdapter();
-		mListView.setAdapter(ada);
-		mListView.setVisibility(ListView.VISIBLE);
-		mLoadingLayout.setVisibility(RelativeLayout.INVISIBLE);
-		RelativeLayout errorLayout = (RelativeLayout) mRootView.findViewById(R.id.error_layout);
+		listView.setAdapter(ada);
+		listView.setVisibility(ListView.VISIBLE);
+		loadingLayout.setVisibility(RelativeLayout.INVISIBLE);
+		RelativeLayout errorLayout = (RelativeLayout) rootView.findViewById(R.id.error_layout);
 		errorLayout.setVisibility(RelativeLayout.INVISIBLE);
 	}
 }

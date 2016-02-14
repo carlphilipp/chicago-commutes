@@ -32,11 +32,11 @@ import java.util.List;
  */
 public class PopupTrainAdapter extends ArrayAdapter<String> {
 	/** The context **/
-	private final Context mContext;
+	private final Context context;
 	/** The values **/
-	private final List<String> mValues;
+	private final List<String> values;
 	/** The colors **/
-	private final List<Integer> mColors;
+	private final List<Integer> colors;
 
 	/**
 	 * @param context
@@ -45,24 +45,24 @@ public class PopupTrainAdapter extends ArrayAdapter<String> {
 	 */
 	public PopupTrainAdapter(final Context context, final List<String> values, final List<Integer> colors) {
 		super(context, R.layout.popup_train_cell, values);
-		this.mContext = context;
-		this.mValues = values;
-		this.mColors = colors;
+		this.context = context;
+		this.values = values;
+		this.colors = colors;
 	}
 
 	@Override
 	public final View getView(final int position, final View convertView, final ViewGroup parent) {
-		LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View rowView = null;
 		if (position == 0) {
 			rowView = inflater.inflate(R.layout.popup_train_cell_0, parent, false);
 		} else {
 			rowView = inflater.inflate(R.layout.popup_train_cell, parent, false);
 			TextView colorView = (TextView) rowView.findViewById(R.id.line_color);
-			colorView.setBackgroundColor(mColors.get(position - 1));
+			colorView.setBackgroundColor(colors.get(position - 1));
 		}
 		TextView textView = (TextView) rowView.findViewById(R.id.label);
-		textView.setText(mValues.get(position));
+		textView.setText(values.get(position));
 		return rowView;
 	}
 

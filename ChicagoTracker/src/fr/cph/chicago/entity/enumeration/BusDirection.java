@@ -25,6 +25,7 @@ import java.util.Locale;
  * @version 1
  */
 public enum BusDirection {
+
 	NORTHBOUND("Northbound"), WESTBOUND("Westbound"), SOUTHBOUND("Southbound"), EASTBOUND("Eastbound");
 
 	/** The text **/
@@ -66,5 +67,4 @@ public enum BusDirection {
 	public final String toString() {
 		return text;
 	}
-
 }

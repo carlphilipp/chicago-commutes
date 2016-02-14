@@ -25,6 +25,7 @@ import android.graphics.Color;
  * @version 1
  */
 public enum TrainLine {
+	
 	BLUE("Blue", "Blue", "Blue line", Color.rgb(0, 158, 218)),
 	BROWN("Brn", "Brown", "Brown line", Color.rgb(102, 51, 0)),
 	GREEN("G", "Green", "Green line", Color.rgb(0, 153, 0)),

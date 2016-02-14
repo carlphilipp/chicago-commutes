@@ -39,30 +39,30 @@ import java.util.List;
  */
 public final class AlertAdapter extends BaseAdapter {
 	/** The list of alerts **/
-	private List<Alert> mAlerts;
+	private List<Alert> alerts;
 
 	/** The constructor **/
 	public AlertAdapter() {
 		if (DataHolder.getInstance().getAlertData() != null) {
-			mAlerts = DataHolder.getInstance().getAlertData().getAlerts();
+			alerts = DataHolder.getInstance().getAlertData().getAlerts();
 		} else {
-			mAlerts = new ArrayList<>();
+			alerts = new ArrayList<>();
 		}
 	}
 
 	@Override
 	public final int getCount() {
-		return mAlerts.size();
+		return alerts.size();
 	}
 
 	@Override
 	public final Object getItem(final int position) {
-		return mAlerts.get(position);
+		return alerts.get(position);
 	}
 
 	@Override
 	public final long getItemId(final int position) {
-		return mAlerts.get(position).getId();
+		return alerts.get(position).getId();
 	}
 
 	@Override
@@ -114,7 +114,7 @@ public final class AlertAdapter extends BaseAdapter {
 	}
 
 	public final void setAlerts(final List<Alert> alerts) {
-		this.mAlerts = alerts;
+		this.alerts = alerts;
 	}
 
 }

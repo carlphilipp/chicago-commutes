@@ -41,9 +41,9 @@ import java.util.List;
  */
 public final class BikeAdapter extends BaseAdapter {
 	/** Main activity **/
-	private MainActivity mActivity;
+	private MainActivity mainActivity;
 	/** Bike data **/
-	private List<BikeStation> mBikeStations;
+	private List<BikeStation> bikeStations;
 
 	/**
 	 * Constructor
@@ -52,22 +52,22 @@ public final class BikeAdapter extends BaseAdapter {
 	 *            the main activity
 	 */
 	public BikeAdapter(final MainActivity activity) {
-		this.mActivity = activity;
+		this.mainActivity = activity;
 		Bundle bundle = activity.getIntent().getExtras();
-		this.mBikeStations = bundle.getParcelableArrayList("bikeStations");
-		if (this.mBikeStations == null) {
-			this.mBikeStations = new ArrayList<>();
+		this.bikeStations = bundle.getParcelableArrayList("bikeStations");
+		if (this.bikeStations == null) {
+			this.bikeStations = new ArrayList<>();
 		}
 	}
 
 	@Override
 	public final int getCount() {
-		return mBikeStations.size();
+		return bikeStations.size();
 	}
 
 	@Override
 	public final Object getItem(final int position) {
-		return mBikeStations.get(position);
+		return bikeStations.get(position);
 	}
 
 	@Override
@@ -102,15 +102,15 @@ public final class BikeAdapter extends BaseAdapter {
 				Bundle extras = new Bundle();
 				extras.putParcelable("station", station);
 				intent.putExtras(extras);
-				mActivity.startActivity(intent);
-				mActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+				mainActivity.startActivity(intent);
+				mainActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 			}
 		});
 		return convertView;
 	}
 
 	public void setBikeStations(List<BikeStation> bikeStations) {
-		this.mBikeStations = bikeStations;
+		this.bikeStations = bikeStations;
 	}
 
 	/**

@@ -94,51 +94,51 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
 	 **/
-	private NavigationDrawerFragment mNavigationDrawerFragment;
+	private NavigationDrawerFragment navigationDrawerFragment;
 	/**
 	 * Favorites fragment
 	 **/
-	private FavoritesFragment mFavoritesFragment;
+	private FavoritesFragment favoritesFragment;
 	/**
 	 * Train fragment
 	 **/
-	private TrainFragment mTrainFragment;
+	private TrainFragment trainFragment;
 	/**
 	 * Bus Fragment
 	 **/
-	private BusFragment mBusFragment;
+	private BusFragment busFragment;
 	/**
 	 * Bike Fragment
 	 **/
-	private BikeFragment mBikeFragment;
+	private BikeFragment bikeFragment;
 	/**
 	 * Nearby fragment
 	 **/
-	private NearbyFragment mNearbyFragment;
+	private NearbyFragment nearbyFragment;
 	/**
 	 * Alert Fragment
 	 **/
-	private AlertFragment mAlertFragment;
+	private AlertFragment alertFragment;
 	/**
 	 * Map fragment
 	 **/
-	private MapFragment mMapFragment;
+	private MapFragment mapFragment;
 	/**
 	 * Settings fragment
 	 **/
-	private SettingsFragment mSettingsFragment;
+	private SettingsFragment settingsFragment;
 	/**
 	 * Title
 	 **/
-	private CharSequence mTitle;
+	private CharSequence title;
 	/**
 	 * Menu
 	 **/
-	private Menu mMenu;
+	private Menu menu;
 	/**
 	 * Current position
 	 **/
-	private int mCurrentPosition;
+	private int currentPosition;
 	/**
 	 * Drawer favorites
 	 **/
@@ -206,10 +206,10 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			ChicagoTracker.container = (FrameLayout) findViewById(R.id.container);
 			ChicagoTracker.container.getForeground().setAlpha(0);
 
-			mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
-			mTitle = getTitle();
+			navigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
+			title = getTitle();
 			// Set up the drawer.
-			mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout));
+			navigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout));
 
 			// Preventing keyboard from moving background when showing up
 			getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
@@ -225,83 +225,83 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
 	@Override
 	public final void onNavigationDrawerItemSelected(final int position) {
-		int oldPosition = mCurrentPosition;
-		mCurrentPosition = position;
+		int oldPosition = currentPosition;
+		currentPosition = position;
 		// update the main content by replacing fragments
 		final FragmentManager fragmentManager = getFragmentManager();
 		final FragmentTransaction ft = fragmentManager.beginTransaction();
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		switch (position) {
 		case POSITION_FAVORITES:
-			if (mFavoritesFragment == null) {
-				mFavoritesFragment = FavoritesFragment.newInstance(position + 1);
+			if (favoritesFragment == null) {
+				favoritesFragment = FavoritesFragment.newInstance(position + 1);
 			}
 			if (!this.isFinishing()) {
-				ft.replace(R.id.container, mFavoritesFragment).commit();
+				ft.replace(R.id.container, favoritesFragment).commit();
 			}
 			break;
 		case POSITION_TRAIN:
-			if (mTrainFragment == null) {
-				mTrainFragment = TrainFragment.newInstance(position + 1);
+			if (trainFragment == null) {
+				trainFragment = TrainFragment.newInstance(position + 1);
 			}
 			if (!this.isFinishing()) {
-				ft.replace(R.id.container, mTrainFragment).commit();
+				ft.replace(R.id.container, trainFragment).commit();
 			}
 			break;
 		case POSITION_BUS:
-			if (mBusFragment == null) {
-				mBusFragment = BusFragment.newInstance(position + 1);
+			if (busFragment == null) {
+				busFragment = BusFragment.newInstance(position + 1);
 			}
 			if (!this.isFinishing()) {
-				ft.replace(R.id.container, mBusFragment).commit();
+				ft.replace(R.id.container, busFragment).commit();
 			}
 			break;
 		case POSITION_DIVVY:
-			if (mBikeFragment == null) {
-				mBikeFragment = BikeFragment.newInstance(position + 1);
+			if (bikeFragment == null) {
+				bikeFragment = BikeFragment.newInstance(position + 1);
 			}
 			if (!this.isFinishing()) {
-				ft.replace(R.id.container, mBikeFragment).commit();
+				ft.replace(R.id.container, bikeFragment).commit();
 			}
 			break;
 		case POSITION_NEARBY:
-			if (mNearbyFragment == null) {
-				mNearbyFragment = NearbyFragment.newInstance(position + 1);
+			if (nearbyFragment == null) {
+				nearbyFragment = NearbyFragment.newInstance(position + 1);
 				if (!this.isFinishing()) {
-					ft.replace(R.id.container, mNearbyFragment).commit();
+					ft.replace(R.id.container, nearbyFragment).commit();
 				}
 			} else {
 				if (oldPosition == 4) {
 					fragmentManager.beginTransaction().commit();
 				} else {
 					if (!this.isFinishing()) {
-						ft.replace(R.id.container, mNearbyFragment).commit();
+						ft.replace(R.id.container, nearbyFragment).commit();
 					}
 				}
 			}
 			break;
 		case POSITION_ALERTS:
-			if (mAlertFragment == null) {
-				mAlertFragment = AlertFragment.newInstance(position + 1);
+			if (alertFragment == null) {
+				alertFragment = AlertFragment.newInstance(position + 1);
 			}
 			if (!this.isFinishing()) {
-				ft.replace(R.id.container, mAlertFragment).commit();
+				ft.replace(R.id.container, alertFragment).commit();
 			}
 			break;
 		case POSITION_MAP:
-			if (mMapFragment == null) {
-				mMapFragment = MapFragment.newInstance(position + 1);
+			if (mapFragment == null) {
+				mapFragment = MapFragment.newInstance(position + 1);
 			}
 			if (!this.isFinishing()) {
-				ft.replace(R.id.container, mMapFragment).commit();
+				ft.replace(R.id.container, mapFragment).commit();
 			}
 			break;
 		case POSITION_SETTINGS:
-			if (mSettingsFragment == null) {
-				mSettingsFragment = SettingsFragment.newInstance(position + 1);
+			if (settingsFragment == null) {
+				settingsFragment = SettingsFragment.newInstance(position + 1);
 			}
 			if (!this.isFinishing()) {
-				ft.replace(R.id.container, mSettingsFragment).commit();
+				ft.replace(R.id.container, settingsFragment).commit();
 			}
 			break;
 		}
@@ -315,28 +315,28 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	public final void onSectionAttached(final int number) {
 		switch (number) {
 		case POSITION_FAVORITES + 1:
-			mTitle = getString(R.string.favorites);
+			title = getString(R.string.favorites);
 			break;
 		case POSITION_TRAIN + 1:
-			mTitle = getString(R.string.train);
+			title = getString(R.string.train);
 			break;
 		case POSITION_BUS + 1:
-			mTitle = getString(R.string.bus);
+			title = getString(R.string.bus);
 			break;
 		case POSITION_DIVVY + 1:
-			mTitle = getString(R.string.divvy);
+			title = getString(R.string.divvy);
 			break;
 		case POSITION_NEARBY + 1:
-			mTitle = getString(R.string.nearby);
+			title = getString(R.string.nearby);
 			break;
 		case POSITION_ALERTS + 1:
-			mTitle = getString(R.string.alerts);
+			title = getString(R.string.alerts);
 			break;
 		case POSITION_MAP + 1:
-			mTitle = getString(R.string.map);
+			title = getString(R.string.map);
 			break;
 		case POSITION_SETTINGS + 1:
-			mTitle = getString(R.string.settings);
+			title = getString(R.string.settings);
 			break;
 		}
 		restoreActionBar();
@@ -349,12 +349,12 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		actionBar.setDisplayShowTitleEnabled(true);
-		actionBar.setTitle(mTitle);
+		actionBar.setTitle(title);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(final Menu menu) {
-		this.mMenu = menu;
+		this.menu = menu;
 		getMenuInflater().inflate(R.menu.main, menu);
 		// Associate searchable configuration with the SearchView
 		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
@@ -367,7 +367,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	public final boolean onOptionsItemSelected(final MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_refresh:
-			if (mCurrentPosition != POSITION_DIVVY && mCurrentPosition != POSITION_NEARBY && mCurrentPosition != POSITION_ALERTS) {
+			if (currentPosition != POSITION_DIVVY && currentPosition != POSITION_NEARBY && currentPosition != POSITION_ALERTS) {
 				MenuItem menuItem = item;
 				menuItem.setActionView(R.layout.progressbar);
 				menuItem.expandActionView();
@@ -392,7 +392,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				}
 				GlobalConnectTask task;
 				try {
-					task = new GlobalConnectTask(mFavoritesFragment, FavoritesFragment.class, CtaRequestType.TRAIN_ARRIVALS, params,
+					task = new GlobalConnectTask(favoritesFragment, FavoritesFragment.class, CtaRequestType.TRAIN_ARRIVALS, params,
 							CtaRequestType.BUS_ARRIVALS, params2, loadTrain, loadBus, loadBike);
 					task.execute((Void) null);
 				} catch (ParserException e) {
@@ -437,8 +437,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 					new LoadData().execute();
 				}
 				Util.trackAction(this, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
-			} else if (mCurrentPosition == POSITION_NEARBY) {
-				mNearbyFragment.reloadData();
+			} else if (currentPosition == POSITION_NEARBY) {
+				nearbyFragment.reloadData();
 				Util.trackAction(this, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_nearby, 0);
 			}
 			return false;
@@ -451,8 +451,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
 	@Override
 	public final void onBackPressed() {
-		if (mCurrentPosition != POSITION_FAVORITES) {
-			mNavigationDrawerFragment.selectItem(0, true);
+		if (currentPosition != POSITION_FAVORITES) {
+			navigationDrawerFragment.selectItem(0, true);
 		} else {
 			DataHolder.getInstance().setBusData(null);
 			DataHolder.getInstance().setTrainData(null);
@@ -465,8 +465,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	 * Load animation in menu
 	 */
 	public final void startRefreshAnimation() {
-		if (mMenu != null) {
-			MenuItem refreshMenuItem = mMenu.findItem(R.id.action_refresh);
+		if (menu != null) {
+			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
 			refreshMenuItem.setActionView(R.layout.progressbar);
 			refreshMenuItem.expandActionView();
 		}
@@ -476,8 +476,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	 * Stop animation in menu
 	 */
 	public final void stopRefreshAnimation() {
-		if (mMenu != null) {
-			MenuItem refreshMenuItem = mMenu.findItem(R.id.action_refresh);
+		if (menu != null) {
+			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
 			refreshMenuItem.collapseActionView();
 			refreshMenuItem.setActionView(null);
 		}
@@ -534,7 +534,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				String read = br.readLine();
 				StringBuilder sb = new StringBuilder();
 				while (read != null) {
-					sb.append(read + "\n");
+					sb.append(read).append("\n");
 					read = br.readLine();
 				}
 
@@ -676,15 +676,15 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			if (loadBike) {
 				getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
 				onNewIntent(getIntent());
-				if (mFavoritesFragment != null) {
-					mFavoritesFragment.setBikeStations(bikeStations);
+				if (favoritesFragment != null) {
+					favoritesFragment.setBikeStations(bikeStations);
 				}
 			}
-			if (mCurrentPosition == POSITION_BUS && mBusFragment != null) {
-				mBusFragment.update();
+			if (currentPosition == POSITION_BUS && busFragment != null) {
+				busFragment.update();
 			}
-			if (mCurrentPosition == POSITION_ALERTS && mAlertFragment != null) {
-				mAlertFragment.loadList();
+			if (currentPosition == POSITION_ALERTS && alertFragment != null) {
+				alertFragment.loadList();
 			}
 			stopRefreshAnimation();
 		}

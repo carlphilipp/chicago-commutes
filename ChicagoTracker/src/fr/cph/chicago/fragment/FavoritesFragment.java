@@ -55,21 +55,21 @@ public class FavoritesFragment extends Fragment {
 	/** Tag **/
 	private static final String TAG = "FavoritesFragment";
 	/** The activity **/
-	private MainActivity mActivity;
+	private MainActivity mainActivity;
 	/** The adapter of the fragment **/
-	private FavoritesAdapter mAdapter;
+	private FavoritesAdapter favoritesAdapter;
 	/** A refresh task **/
-	private RefreshTask mRefreshTimingTask;
+	private RefreshTask refreshTimingTask;
 	/** List of bus arrivals **/
-	private List<BusArrival> mBusArrivals;
+	private List<BusArrival> busArrivals;
 	/** Train arrivals **/
-	private SparseArray<TrainArrival> mTrainArrivals;
+	private SparseArray<TrainArrival> trainArrivals;
 	/** List of bus arrivals **/
-	private List<BikeStation> mBikeStations;
+	private List<BikeStation> bikeStations;
 	/** Welcome layout **/
-	private RelativeLayout mWelcomelayout;
+	private RelativeLayout welcomelayout;
 	/** Root view **/
-	private View mRootView;
+	private View rootView;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -89,63 +89,63 @@ public class FavoritesFragment extends Fragment {
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (savedInstanceState == null) {
-			Bundle bundle = mActivity.getIntent().getExtras();
-			mBusArrivals = bundle.getParcelableArrayList("busArrivals");
-			mTrainArrivals = bundle.getSparseParcelableArray("trainArrivals");
-			mBikeStations = bundle.getParcelableArrayList("bikeStations");
+			Bundle bundle = mainActivity.getIntent().getExtras();
+			busArrivals = bundle.getParcelableArrayList("busArrivals");
+			trainArrivals = bundle.getSparseParcelableArray("trainArrivals");
+			bikeStations = bundle.getParcelableArrayList("bikeStations");
 		} else {
-			mBusArrivals = savedInstanceState.getParcelableArrayList("busArrivals");
-			mTrainArrivals = savedInstanceState.getSparseParcelableArray("trainArrivals");
-			mBikeStations = savedInstanceState.getParcelableArrayList("bikeStations");
-			boolean boolTrain = ChicagoTracker.checkTrainData(mActivity);
+			busArrivals = savedInstanceState.getParcelableArrayList("busArrivals");
+			trainArrivals = savedInstanceState.getSparseParcelableArray("trainArrivals");
+			bikeStations = savedInstanceState.getParcelableArrayList("bikeStations");
+			boolean boolTrain = ChicagoTracker.checkTrainData(mainActivity);
 			if (boolTrain) {
-				ChicagoTracker.checkBusData(mActivity);
+				ChicagoTracker.checkBusData(mainActivity);
 			}
 		}
-		if (mBikeStations == null) {
-			mBikeStations = new ArrayList<>();
+		if (bikeStations == null) {
+			bikeStations = new ArrayList<>();
 		}
 
-		Util.trackScreen(mActivity, R.string.analytics_favorites_fragment);
+		Util.trackScreen(mainActivity, R.string.analytics_favorites_fragment);
 	}
 
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-		mRootView = inflater.inflate(R.layout.fragment_main, container, false);
-		if (!mActivity.isFinishing()) {
-			mWelcomelayout = (RelativeLayout) mRootView.findViewById(R.id.welcome);
-			if (mAdapter == null) {
-				mAdapter = new FavoritesAdapter(mActivity);
-				mAdapter.setArrivalsAndBikeStations(mTrainArrivals, mBusArrivals, mBikeStations);
+		rootView = inflater.inflate(R.layout.fragment_main, container, false);
+		if (!mainActivity.isFinishing()) {
+			welcomelayout = (RelativeLayout) rootView.findViewById(R.id.welcome);
+			if (favoritesAdapter == null) {
+				favoritesAdapter = new FavoritesAdapter(mainActivity);
+				favoritesAdapter.setArrivalsAndBikeStations(trainArrivals, busArrivals, bikeStations);
 			}
-			ListView listView = (ListView) mRootView.findViewById(R.id.favorites_list);
-			listView.setAdapter(mAdapter);
+			ListView listView = (ListView) rootView.findViewById(R.id.favorites_list);
+			listView.setAdapter(favoritesAdapter);
 			startRefreshTask();
 		}
-		return mRootView;
+		return rootView;
 	}
 
 	@Override
 	public final void onPause() {
 		super.onPause();
-		if (mRefreshTimingTask != null) {
-			mRefreshTimingTask.cancel(true);
+		if (refreshTimingTask != null) {
+			refreshTimingTask.cancel(true);
 		}
 	}
 
 	@Override
 	public final void onStop() {
 		super.onStop();
-		if (mRefreshTimingTask != null) {
-			mRefreshTimingTask.cancel(true);
+		if (refreshTimingTask != null) {
+			refreshTimingTask.cancel(true);
 		}
 	}
 
 	@Override
 	public final void onDestroy() {
 		super.onDestroy();
-		if (mRefreshTimingTask != null) {
-			mRefreshTimingTask.cancel(true);
+		if (refreshTimingTask != null) {
+			refreshTimingTask.cancel(true);
 		}
 	}
 
@@ -157,18 +157,18 @@ public class FavoritesFragment extends Fragment {
 	@Override
 	public final void onResume() {
 		super.onResume();
-		mAdapter.setFavorites();
-		mAdapter.notifyDataSetChanged();
-		if (mRefreshTimingTask.getStatus() == Status.FINISHED) {
+		favoritesAdapter.setFavorites();
+		favoritesAdapter.notifyDataSetChanged();
+		if (refreshTimingTask.getStatus() == Status.FINISHED) {
 			startRefreshTask();
 		}
-		if (mWelcomelayout != null) {
+		if (welcomelayout != null) {
 			boolean hasFav = Preferences.hasFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN, ChicagoTracker.PREFERENCE_FAVORITES_BUS,
 					ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
 			if (!hasFav) {
-				mWelcomelayout.setVisibility(View.VISIBLE);
+				welcomelayout.setVisibility(View.VISIBLE);
 			} else {
-				mWelcomelayout.setVisibility(View.GONE);
+				welcomelayout.setVisibility(View.GONE);
 			}
 		}
 	}
@@ -176,16 +176,16 @@ public class FavoritesFragment extends Fragment {
 	@Override
 	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
-		mActivity = (MainActivity) activity;
+		mainActivity = (MainActivity) activity;
 		((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 
 	@Override
 	public final void onSaveInstanceState(final Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putParcelableArrayList("busArrivals", (ArrayList<BusArrival>) mBusArrivals);
-		outState.putSparseParcelableArray("trainArrivals", mTrainArrivals);
-		outState.putParcelableArrayList("bikeStations", (ArrayList<BikeStation>) mBikeStations);
+		outState.putParcelableArrayList("busArrivals", (ArrayList<BusArrival>) busArrivals);
+		outState.putSparseParcelableArray("trainArrivals", trainArrivals);
+		outState.putParcelableArrayList("bikeStations", (ArrayList<BikeStation>) bikeStations);
 	}
 
 	/**
@@ -200,23 +200,23 @@ public class FavoritesFragment extends Fragment {
 			final List<BikeStation> bikeStations, final Boolean trainBoolean, final Boolean busBoolean, final Boolean bikeBoolean,
 			final Boolean networkAvailable) {
 		if (!networkAvailable) {
-			Toast.makeText(mActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
+			Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
 		} else {
 			// Put into intent new bike stations data
-			mActivity.getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
-			mActivity.onNewIntent(mActivity.getIntent());
+			mainActivity.getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
+			mainActivity.onNewIntent(mainActivity.getIntent());
 
-			mAdapter.setArrivalsAndBikeStations(trainArrivals, busArrivals, bikeStations);
-			mAdapter.refreshUpdated();
-			mAdapter.refreshUpdatedView();
-			mAdapter.notifyDataSetChanged();
+			favoritesAdapter.setArrivalsAndBikeStations(trainArrivals, busArrivals, bikeStations);
+			favoritesAdapter.refreshUpdated();
+			favoritesAdapter.refreshUpdatedView();
+			favoritesAdapter.notifyDataSetChanged();
 		}
 		// Highlight background
-		mRootView.setBackgroundResource(R.drawable.highlight_selector);
-		mRootView.postDelayed(new Runnable() {
+		rootView.setBackgroundResource(R.drawable.highlight_selector);
+		rootView.postDelayed(new Runnable() {
 			public void run() {
-				mRootView.setBackgroundResource(R.drawable.bg_selector);
-				mActivity.stopRefreshAnimation();
+				rootView.setBackgroundResource(R.drawable.bg_selector);
+				mainActivity.stopRefreshAnimation();
 			}
 		}, 100);
 	}
@@ -228,21 +228,21 @@ public class FavoritesFragment extends Fragment {
 	 *            the exception
 	 */
 	public final void displayError(TrackerException trackerException) {
-		ChicagoTracker.displayError(mActivity, trackerException);
+		ChicagoTracker.displayError(mainActivity, trackerException);
 	}
 
 	public final void setBikeStations(List<BikeStation> bikeStations) {
-		this.mBikeStations = bikeStations;
-		mAdapter.setBikeStations(bikeStations);
-		mAdapter.notifyDataSetChanged();
+		this.bikeStations = bikeStations;
+		favoritesAdapter.setBikeStations(bikeStations);
+		favoritesAdapter.notifyDataSetChanged();
 	}
 
 	/**
 	 * Start refresh task
 	 */
 	private void startRefreshTask() {
-		mRefreshTimingTask = (RefreshTask) new RefreshTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-		mAdapter.refreshUpdatedView();
+		refreshTimingTask = (RefreshTask) new RefreshTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		favoritesAdapter.refreshUpdatedView();
 	}
 
 	/**
@@ -256,7 +256,7 @@ public class FavoritesFragment extends Fragment {
 		@Override
 		protected final void onProgressUpdate(Void... values) {
 			super.onProgressUpdate();
-			mAdapter.refreshUpdatedView();
+			favoritesAdapter.refreshUpdatedView();
 		}
 
 		@Override

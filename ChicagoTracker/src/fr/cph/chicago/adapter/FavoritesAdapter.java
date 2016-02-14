@@ -77,59 +77,59 @@ import java.util.Set;
  */
 public final class FavoritesAdapter extends BaseAdapter {
 	/** Main activity **/
-	private MainActivity mActivity;
+	private MainActivity mainActivity;
 	/** The context **/
-	private Context mContext;
+	private Context context;
 	/** The layout that is used to display a fade black background **/
-	private FrameLayout mFirstLayout;
+	private FrameLayout firstLayout;
 	/** The model **/
-	private Favorites mFavorites;
+	private Favorites favorites;
 	/** Ids of layouts **/
-	private Map<String, Integer> mIds;
+	private Map<String, Integer> ids;
 	/** Layouts **/
-	private Map<Integer, LinearLayout> mLayouts;
+	private Map<Integer, LinearLayout> layouts;
 	/** Views **/
-	private Map<Integer, View> mViews;
+	private Map<Integer, View> views;
 	/** Map of textview that holds updates **/
-	private Map<String, TextView> mUpdated;
+	private Map<String, TextView> updated;
 	/** List update **/
-	private String mLastUpdate;
+	private String lastUpdate;
 	/** Params layout **/
-	private LinearLayout.LayoutParams mParamsLayout;
+	private LinearLayout.LayoutParams paramsLayout;
 	/** Params text view **/
-	private LinearLayout.LayoutParams mParamsTextView;
+	private LinearLayout.LayoutParams paramsTextView;
 	/** Padding color **/
-	private int mLine1Padding;
+	private int line1Padding;
 	/** Stops padding top **/
-	private int mStopsPaddingTop;
+	private int stopsPaddingTop;
 
 	@SuppressLint("UseSparseArrays")
 	public FavoritesAdapter(final MainActivity activity) {
-		this.mContext = ChicagoTracker.getAppContext();
+		this.context = ChicagoTracker.getAppContext();
 
-		this.mActivity = activity;
-		this.mFirstLayout = ChicagoTracker.container;
-		this.mFavorites = new Favorites();
+		this.mainActivity = activity;
+		this.firstLayout = ChicagoTracker.container;
+		this.favorites = new Favorites();
 
-		this.mIds = new HashMap<String, Integer>();
-		this.mLayouts = new HashMap<Integer, LinearLayout>();
-		this.mViews = new HashMap<Integer, View>();
-		this.mUpdated = new HashMap<String, TextView>();
+		this.ids = new HashMap<String, Integer>();
+		this.layouts = new HashMap<Integer, LinearLayout>();
+		this.views = new HashMap<Integer, View>();
+		this.updated = new HashMap<String, TextView>();
 
-		this.mParamsLayout = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-		this.mParamsTextView = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
-		this.mLine1Padding = (int) mContext.getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
-		this.mStopsPaddingTop = (int) mContext.getResources().getDimension(R.dimen.activity_station_stops_padding_top);
+		this.paramsLayout = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		this.paramsTextView = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
+		this.line1Padding = (int) context.getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
+		this.stopsPaddingTop = (int) context.getResources().getDimension(R.dimen.activity_station_stops_padding_top);
 	}
 
 	@Override
 	public final int getCount() {
-		return mFavorites.size();
+		return favorites.size();
 	}
 
 	@Override
 	public final Object getItem(final int position) {
-		return mFavorites.getObject(position);
+		return favorites.getObject(position);
 	}
 
 	@Override
@@ -141,7 +141,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 	@Override
 	public final View getView(final int position, View convertView, final ViewGroup parent) {
 		Date lastUpdate = ChicagoTracker.getLastUpdate();
-		Object object = mFavorites.getObject(position);
+		Object object = favorites.getObject(position);
 		if (object != null) {
 			/*********************************************************/
 			/********************** TRAINS ***************************/
@@ -153,20 +153,20 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 				TextView updatedView = null;
 
-				if (mLayouts.containsKey(stationId)) {
-					favoritesLayout = mLayouts.get(stationId);
-					convertView = mViews.get(stationId);
+				if (layouts.containsKey(stationId)) {
+					favoritesLayout = layouts.get(stationId);
+					convertView = views.get(stationId);
 
 					TrainViewHolder viewHolder = (TrainViewHolder) convertView.getTag();
 					updatedView = viewHolder.updatedView;
-					updatedView.setText(this.mLastUpdate);
+					updatedView.setText(this.lastUpdate);
 
 				} else {
 					LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 					convertView = vi.inflate(R.layout.list_favorites_train, null);
 					favoritesLayout = (LinearLayout) convertView.findViewById(R.id.favorites_list);
-					mLayouts.put(stationId, favoritesLayout);
-					mViews.put(stationId, convertView);
+					layouts.put(stationId, favoritesLayout);
+					views.put(stationId, convertView);
 
 					TrainViewHolder holder = new TrainViewHolder();
 
@@ -175,9 +175,9 @@ public final class FavoritesAdapter extends BaseAdapter {
 					holder.stationNameView = stationNameView;
 
 					updatedView = (TextView) convertView.findViewById(R.id.station_updated);
-					mUpdated.put(station.getId().toString(), updatedView);
+					updated.put(station.getId().toString(), updatedView);
 					if (lastUpdate != null) {
-						updatedView.setText(this.mLastUpdate);
+						updatedView.setText(this.lastUpdate);
 					}
 					holder.updatedView = updatedView;
 
@@ -203,37 +203,37 @@ public final class FavoritesAdapter extends BaseAdapter {
 				}
 
 				for (TrainLine tl : setTL) {
-					if (mFavorites.getTrainArrival(stationId) != null) {
-						List<Eta> etas = mFavorites.getTrainArrival(stationId).getEtas(tl);
+					if (favorites.getTrainArrival(stationId) != null) {
+						List<Eta> etas = favorites.getTrainArrival(stationId).getEtas(tl);
 						if (etas.size() != 0) {
 							String key = station.getName() + "_" + tl.toString() + "_h";
 							String key2 = station.getName() + "_" + tl.toString() + "_v";
-							Integer idLayout = mIds.get(key);
-							Integer idLayout2 = mIds.get(key2);
+							Integer idLayout = ids.get(key);
+							Integer idLayout2 = ids.get(key2);
 
 							LinearLayout llh, llv;
 							if (idLayout == null) {
-								llh = new LinearLayout(mContext);
-								llh.setLayoutParams(mParamsLayout);
+								llh = new LinearLayout(context);
+								llh.setLayoutParams(paramsLayout);
 								llh.setOrientation(LinearLayout.HORIZONTAL);
-								llh.setPadding(mLine1Padding, mStopsPaddingTop, 0, 0);
+								llh.setPadding(line1Padding, stopsPaddingTop, 0, 0);
 								int id = Util.generateViewId();
 								llh.setId(id);
-								mIds.put(key, id);
+								ids.put(key, id);
 
-								TextView tlView = new TextView(mContext);
+								TextView tlView = new TextView(context);
 								tlView.setBackgroundColor(tl.getColor());
 								tlView.setText("   ");
-								tlView.setLayoutParams(mParamsTextView);
+								tlView.setLayoutParams(paramsTextView);
 								llh.addView(tlView);
 
-								llv = new LinearLayout(mContext);
-								llv.setLayoutParams(mParamsLayout);
+								llv = new LinearLayout(context);
+								llv.setLayoutParams(paramsLayout);
 								llv.setOrientation(LinearLayout.VERTICAL);
-								llv.setPadding(mLine1Padding, 0, 0, 0);
+								llv.setPadding(line1Padding, 0, 0, 0);
 								int id2 = Util.generateViewId();
 								llv.setId(id2);
-								mIds.put(key2, id2);
+								ids.put(key2, id2);
 
 								llh.addView(llv);
 								favoritesLayout.addView(llh);
@@ -246,23 +246,23 @@ public final class FavoritesAdapter extends BaseAdapter {
 								Stop stop = eta.getStop();
 								String key3 = (station.getName() + "_" + tl.toString() + "_" + stop.getDirection().toString() + "_" + eta
 										.getDestName());
-								Integer idLayout3 = mIds.get(key3);
+								Integer idLayout3 = ids.get(key3);
 								if (idLayout3 == null) {
-									LinearLayout insideLayout = new LinearLayout(mContext);
+									LinearLayout insideLayout = new LinearLayout(context);
 									insideLayout.setOrientation(LinearLayout.HORIZONTAL);
 									insideLayout.setLayoutParams(paramsArrival);
 									int newId = Util.generateViewId();
 									insideLayout.setId(newId);
-									mIds.put(key3, newId);
+									ids.put(key3, newId);
 
-									TextView stopName = new TextView(mContext);
+									TextView stopName = new TextView(context);
 									stopName.setText(eta.getDestName() + ": ");
-									stopName.setTextColor(mContext.getResources().getColor(R.color.grey_5));
+									stopName.setTextColor(context.getResources().getColor(R.color.grey_5));
 									insideLayout.addView(stopName);
 
-									TextView timing = new TextView(mContext);
+									TextView timing = new TextView(context);
 									timing.setText(eta.getTimeLeftDueDelay() + " ");
-									timing.setTextColor(mContext.getResources().getColor(R.color.grey));
+									timing.setTextColor(context.getResources().getColor(R.color.grey));
 									timing.setLines(1);
 									timing.setEllipsize(TruncateAt.END);
 									insideLayout.addView(timing);
@@ -282,7 +282,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 					}
 				}
 
-				convertView.setOnClickListener(new FavoritesTrainOnClickListener(mActivity, mFirstLayout, stationId, setTL));
+				convertView.setOnClickListener(new FavoritesTrainOnClickListener(mainActivity, firstLayout, stationId, setTL));
 
 				// Remove empty bloc
 				for (int i = 0; i < favoritesLayout.getChildCount(); i++) {
@@ -295,13 +295,13 @@ public final class FavoritesAdapter extends BaseAdapter {
 							if (timing.getText().toString().equals("")) {
 								layoutChildH.removeAllViews();
 								List<String> toRemove = new ArrayList<>();
-								for (Entry<String, Integer> e : this.mIds.entrySet()) {
+								for (Entry<String, Integer> e : this.ids.entrySet()) {
 									if (e.getValue().intValue() == layoutChildH.getId()) {
 										toRemove.add(e.getKey());
 									}
 								}
 								for (String d : toRemove) {
-									this.mIds.remove(d);
+									this.ids.remove(d);
 								}
 							}
 						}
@@ -312,7 +312,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 				/*********************************************************/
 			} else if (object instanceof BusRoute) {
 				final BusRoute busRoute = (BusRoute) object;
-				LayoutInflater vi = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				convertView = vi.inflate(R.layout.list_favorites_bus, null);
 				TextView routeIdView = (TextView) convertView.findViewById(R.id.route_id);
 				routeIdView.setText(busRoute.getId());
@@ -323,43 +323,43 @@ public final class FavoritesAdapter extends BaseAdapter {
 				final LinearLayout favoritesLayout = (LinearLayout) convertView.findViewById(R.id.favorites_list);
 
 				TextView updated = (TextView) convertView.findViewById(R.id.station_updated);
-				if (!mUpdated.containsKey(busRoute.getId())) {
-					mUpdated.put(busRoute.getId(), updated);
+				if (!this.updated.containsKey(busRoute.getId())) {
+					this.updated.put(busRoute.getId(), updated);
 				}
 				if (lastUpdate != null) {
-					updated.setText(this.mLastUpdate);
+					updated.setText(this.lastUpdate);
 				}
 
-				Map<String, Map<String, List<BusArrival>>> busArrivals = mFavorites.getBusArrivalsMapped(busRoute.getId());
+				Map<String, Map<String, List<BusArrival>>> busArrivals = favorites.getBusArrivalsMapped(busRoute.getId());
 				if (busArrivals.size() > 0) {
 					for (Entry<String, Map<String, List<BusArrival>>> entry : busArrivals.entrySet()) {
-						LinearLayout llh = new LinearLayout(mContext);
-						llh.setLayoutParams(mParamsLayout);
+						LinearLayout llh = new LinearLayout(context);
+						llh.setLayoutParams(paramsLayout);
 						llh.setOrientation(LinearLayout.HORIZONTAL);
-						llh.setPadding(mLine1Padding, mStopsPaddingTop, 0, 0);
+						llh.setPadding(line1Padding, stopsPaddingTop, 0, 0);
 
 						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-							llh.setBackground(mContext.getResources().getDrawable(R.drawable.any_selector));
+							llh.setBackground(context.getResources().getDrawable(R.drawable.any_selector));
 						}
 
-						TextView tlView = new TextView(mContext);
-						tlView.setBackgroundColor(mContext.getResources().getColor(R.color.black));
+						TextView tlView = new TextView(context);
+						tlView.setBackgroundColor(context.getResources().getColor(R.color.black));
 						tlView.setText("   ");
-						tlView.setLayoutParams(mParamsTextView);
+						tlView.setLayoutParams(paramsTextView);
 						llh.addView(tlView);
 
 						final String key = entry.getKey();
 						final Map<String, List<BusArrival>> value = entry.getValue();
 
-						llh.setOnClickListener(new FavoritesBusOnClickListener(mActivity, mFirstLayout, busRoute, value));
+						llh.setOnClickListener(new FavoritesBusOnClickListener(mainActivity, firstLayout, busRoute, value));
 
-						LinearLayout stopLayout = new LinearLayout(mContext);
+						LinearLayout stopLayout = new LinearLayout(context);
 						stopLayout.setOrientation(LinearLayout.VERTICAL);
-						stopLayout.setPadding(mLine1Padding, 0, 0, 0);
+						stopLayout.setPadding(line1Padding, 0, 0, 0);
 
-						TextView stopName = new TextView(mContext);
+						TextView stopName = new TextView(context);
 						stopName.setText(String.valueOf(key));
-						stopName.setTextColor(mContext.getResources().getColor(R.color.grey_5));
+						stopName.setTextColor(context.getResources().getColor(R.color.grey_5));
 						stopName.setTypeface(Typeface.DEFAULT_BOLD);
 
 						stopLayout.addView(stopName);
@@ -368,18 +368,18 @@ public final class FavoritesAdapter extends BaseAdapter {
 							String key2 = entry2.getKey();
 							List<BusArrival> buses = entry2.getValue();
 
-							LinearLayout boundLayout = new LinearLayout(mContext);
+							LinearLayout boundLayout = new LinearLayout(context);
 							boundLayout.setOrientation(LinearLayout.HORIZONTAL);
 
-							TextView bound = new TextView(mContext);
+							TextView bound = new TextView(context);
 							bound.setText(key2 + ": ");
-							bound.setTextColor(mContext.getResources().getColor(R.color.grey_5));
+							bound.setTextColor(context.getResources().getColor(R.color.grey_5));
 							boundLayout.addView(bound);
 
 							for (BusArrival arri : buses) {
-								TextView timeView = new TextView(mContext);
+								TextView timeView = new TextView(context);
 								timeView.setText(arri.getTimeLeftDueDelay() + " ");
-								timeView.setTextColor(mContext.getResources().getColor(R.color.grey));
+								timeView.setTextColor(context.getResources().getColor(R.color.grey));
 								timeView.setLines(1);
 								timeView.setEllipsize(TruncateAt.END);
 								boundLayout.addView(timeView);
@@ -395,76 +395,76 @@ public final class FavoritesAdapter extends BaseAdapter {
 				/*********************************************************/
 			} else {
 				final BikeStation bikeStation = (BikeStation) object;
-				LayoutInflater vi = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				convertView = vi.inflate(R.layout.list_favorites_bike, null);
 				TextView bikeStationName = (TextView) convertView.findViewById(R.id.bike_station_name);
 				bikeStationName.setText(bikeStation.getName());
 
 				TextView updatedView = (TextView) convertView.findViewById(R.id.station_updated);
 				if (lastUpdate != null) {
-					updatedView.setText(this.mLastUpdate);
+					updatedView.setText(this.lastUpdate);
 				}
 
 				LinearLayout favoritesData = (LinearLayout) convertView.findViewById(R.id.favorites_bikes_list);
 
-				LinearLayout llh = new LinearLayout(mContext);
-				llh.setLayoutParams(mParamsLayout);
+				LinearLayout llh = new LinearLayout(context);
+				llh.setLayoutParams(paramsLayout);
 				llh.setOrientation(LinearLayout.HORIZONTAL);
-				llh.setPadding(mLine1Padding, mStopsPaddingTop, 0, 0);
+				llh.setPadding(line1Padding, stopsPaddingTop, 0, 0);
 
-				TextView tlView = new TextView(mContext);
-				tlView.setBackgroundColor(mContext.getResources().getColor(R.color.black));
+				TextView tlView = new TextView(context);
+				tlView.setBackgroundColor(context.getResources().getColor(R.color.black));
 				tlView.setText("   ");
-				tlView.setLayoutParams(mParamsTextView);
+				tlView.setLayoutParams(paramsTextView);
 				llh.addView(tlView);
 
-				LinearLayout availableLayout = new LinearLayout(mContext);
+				LinearLayout availableLayout = new LinearLayout(context);
 				availableLayout.setOrientation(LinearLayout.VERTICAL);
 
-				LinearLayout availableBikes = new LinearLayout(mContext);
+				LinearLayout availableBikes = new LinearLayout(context);
 				availableBikes.setOrientation(LinearLayout.HORIZONTAL);
-				availableBikes.setPadding(mLine1Padding, 0, 0, 0);
+				availableBikes.setPadding(line1Padding, 0, 0, 0);
 
-				TextView availableBike = new TextView(mContext);
+				TextView availableBike = new TextView(context);
 				availableBike.setText("Available bikes: ");
-				availableBike.setTextColor(mContext.getResources().getColor(R.color.grey_5));
+				availableBike.setTextColor(context.getResources().getColor(R.color.grey_5));
 				availableBikes.addView(availableBike);
 
-				TextView amountBike = new TextView(mContext);
+				TextView amountBike = new TextView(context);
 				if (bikeStation.getAvailableBikes() == null) {
 					amountBike.setText("?");
-					amountBike.setTextColor(mContext.getResources().getColor(R.color.orange));
+					amountBike.setTextColor(context.getResources().getColor(R.color.orange));
 				} else {
 					amountBike.setText("" + bikeStation.getAvailableBikes());
 					if (bikeStation.getAvailableBikes() == 0) {
-						amountBike.setTextColor(mContext.getResources().getColor(R.color.red));
+						amountBike.setTextColor(context.getResources().getColor(R.color.red));
 					} else {
-						amountBike.setTextColor(mContext.getResources().getColor(R.color.green));
+						amountBike.setTextColor(context.getResources().getColor(R.color.green));
 					}
 				}
 				availableBikes.addView(amountBike);
 
 				availableLayout.addView(availableBikes);
 
-				LinearLayout availableDocks = new LinearLayout(mContext);
+				LinearLayout availableDocks = new LinearLayout(context);
 				availableDocks.setOrientation(LinearLayout.HORIZONTAL);
-				availableDocks.setPadding(mLine1Padding, 0, 0, 0);
+				availableDocks.setPadding(line1Padding, 0, 0, 0);
 
-				TextView availableDock = new TextView(mContext);
+				TextView availableDock = new TextView(context);
 				availableDock.setText("Available docks: ");
-				availableDock.setTextColor(mContext.getResources().getColor(R.color.grey_5));
+				availableDock.setTextColor(context.getResources().getColor(R.color.grey_5));
 				availableDocks.addView(availableDock);
 
-				TextView amountDock = new TextView(mContext);
+				TextView amountDock = new TextView(context);
 				if (bikeStation.getAvailableDocks() == null) {
 					amountDock.setText("?");
-					amountDock.setTextColor(mContext.getResources().getColor(R.color.orange));
+					amountDock.setTextColor(context.getResources().getColor(R.color.orange));
 				} else {
 					amountDock.setText("" + bikeStation.getAvailableDocks());
 					if (bikeStation.getAvailableDocks() == 0) {
-						amountDock.setTextColor(mContext.getResources().getColor(R.color.red));
+						amountDock.setTextColor(context.getResources().getColor(R.color.red));
 					} else {
-						amountDock.setTextColor(mContext.getResources().getColor(R.color.green));
+						amountDock.setTextColor(context.getResources().getColor(R.color.green));
 					}
 				}
 				availableDocks.addView(amountDock);
@@ -475,7 +475,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 				favoritesData.addView(llh);
 
-				SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mActivity);
+				SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mainActivity);
 				boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
 
 				final boolean isNetworkAvailable = Util.isNetworkAvailable();
@@ -485,14 +485,14 @@ public final class FavoritesAdapter extends BaseAdapter {
 						@Override
 						public void onClick(View v) {
 							if (!isNetworkAvailable) {
-								Toast.makeText(mActivity, "No network connection detected!", Toast.LENGTH_LONG).show();
+								Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_LONG).show();
 							} else {
 								Intent intent = new Intent(ChicagoTracker.getAppContext(), BikeStationActivity.class);
 								Bundle extras = new Bundle();
 								extras.putParcelable("station", bikeStation);
 								intent.putExtras(extras);
-								mActivity.startActivity(intent);
-								mActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+								mainActivity.startActivity(intent);
+								mainActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 							}
 						}
 					});
@@ -501,9 +501,9 @@ public final class FavoritesAdapter extends BaseAdapter {
 						@Override
 						public void onClick(View v) {
 							if (!isNetworkAvailable) {
-								Toast.makeText(mActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
+								Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
 							} else {
-								Toast.makeText(mActivity, "Not ready yet. Please try again in few seconds!", Toast.LENGTH_SHORT).show();
+								Toast.makeText(mainActivity, "Not ready yet. Please try again in few seconds!", Toast.LENGTH_SHORT).show();
 							}
 						}
 					});
@@ -512,9 +512,9 @@ public final class FavoritesAdapter extends BaseAdapter {
 						@Override
 						public void onClick(View v) {
 							if (!isNetworkAvailable) {
-								Toast.makeText(mActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
+								Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
 							} else {
-								Toast.makeText(mActivity, "You must activate divvy bikes data", Toast.LENGTH_SHORT).show();
+								Toast.makeText(mainActivity, "You must activate divvy bikes data", Toast.LENGTH_SHORT).show();
 							}
 						}
 					});
@@ -546,18 +546,18 @@ public final class FavoritesAdapter extends BaseAdapter {
 	 */
 	public final void setArrivalsAndBikeStations(final SparseArray<TrainArrival> arrivals, final List<BusArrival> busArrivals,
 			final List<BikeStation> bikeStations) {
-		mFavorites.setArrivalsAndBikeStations(arrivals, busArrivals, bikeStations);
+		favorites.setArrivalsAndBikeStations(arrivals, busArrivals, bikeStations);
 	}
 
 	public final void setBikeStations(List<BikeStation> bikeStations) {
-		mFavorites.setBikeStations(bikeStations);
+		favorites.setBikeStations(bikeStations);
 	}
 
 	/**
 	 * Set favorites
 	 */
 	public final void setFavorites() {
-		mFavorites.setFavorites();
+		favorites.setFavorites();
 	}
 
 	/**
@@ -572,8 +572,8 @@ public final class FavoritesAdapter extends BaseAdapter {
 	 */
 	public final void refreshUpdatedView() {
 		Date lastUpdate = ChicagoTracker.getLastUpdate();
-		if (!String.valueOf(getLastUpdateInMinutes(lastUpdate)).equals(this.mLastUpdate)) {
-			this.mLastUpdate = String.valueOf(getLastUpdateInMinutes(lastUpdate));
+		if (!String.valueOf(getLastUpdateInMinutes(lastUpdate)).equals(this.lastUpdate)) {
+			this.lastUpdate = String.valueOf(getLastUpdateInMinutes(lastUpdate));
 			this.notifyDataSetChanged();
 		}
 	}

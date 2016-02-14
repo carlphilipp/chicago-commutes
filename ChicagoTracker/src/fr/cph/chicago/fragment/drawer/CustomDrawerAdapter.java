@@ -36,11 +36,11 @@ import java.util.List;
  */
 public class CustomDrawerAdapter extends ArrayAdapter<DrawerItem> {
 	/** **/
-	private Context mContext;
+	private Context context;
 	/** **/
-	private List<DrawerItem> mListItems;
+	private List<DrawerItem> listItems;
 	/** **/
-	private int mResource;
+	private int resource;
 
 	/**
 	 * @param context
@@ -49,9 +49,9 @@ public class CustomDrawerAdapter extends ArrayAdapter<DrawerItem> {
 	 */
 	public CustomDrawerAdapter(Context context, int resource, List<DrawerItem> listItems) {
 		super(context, resource, listItems);
-		this.mContext = context;
-		this.mResource = resource;
-		this.mListItems = listItems;
+		this.context = context;
+		this.resource = resource;
+		this.listItems = listItems;
 	}
 
 	@Override
@@ -59,10 +59,10 @@ public class CustomDrawerAdapter extends ArrayAdapter<DrawerItem> {
 		DrawerItemHolder drawerHolder;
 		View view = convertView;
 		if (view == null) {
-			LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
+			LayoutInflater inflater = ((Activity) context).getLayoutInflater();
 			drawerHolder = new DrawerItemHolder();
 
-			view = inflater.inflate(mResource, parent, false);
+			view = inflater.inflate(resource, parent, false);
 			drawerHolder.name = (TextView) view.findViewById(R.id.drawer_itemName);
 			drawerHolder.icon = (ImageView) view.findViewById(R.id.drawer_icon);
 
@@ -73,7 +73,7 @@ public class CustomDrawerAdapter extends ArrayAdapter<DrawerItem> {
 
 		}
 
-		DrawerItem dItem = (DrawerItem) this.mListItems.get(position);
+		DrawerItem dItem = (DrawerItem) this.listItems.get(position);
 
 		drawerHolder.icon.setImageDrawable(view.getResources().getDrawable(dItem.getImgId()));
 		drawerHolder.name.setText(dItem.getName());

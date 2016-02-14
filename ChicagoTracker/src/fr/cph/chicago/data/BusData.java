@@ -47,18 +47,18 @@ public class BusData {
 	/** Tag **/
 	private static final String TAG = "BusData";
 	/** Singleton **/
-	private static BusData mBusData;
+	private static BusData busData;
 	/** List of bus routes **/
-	private List<BusRoute> mRoutes;
+	private List<BusRoute> busRoutes;
 	/** List of bus stop **/
-	private List<BusStop> mStops;
+	private List<BusStop> busStops;
 
 	/**
 	 * Private constuctor
 	 */
 	private BusData() {
-		this.mRoutes = new ArrayList<>();
-		this.mStops = new ArrayList<>();
+		this.busRoutes = new ArrayList<>();
+		this.busStops = new ArrayList<>();
 	}
 
 	/**
@@ -67,10 +67,10 @@ public class BusData {
 	 * @return a bus data instance
 	 */
 	public static BusData getInstance() {
-		if (mBusData == null) {
-			mBusData = new BusData();
+		if (busData == null) {
+			busData = new BusData();
 		}
-		return mBusData;
+		return busData;
 	}
 
 	/**
@@ -79,7 +79,7 @@ public class BusData {
 	 * @return a list of bus stops
 	 */
 	public final List<BusStop> readBusStops() {
-		if (mStops.size() == 0) {
+		if (busStops.size() == 0) {
 			try {
 				CSVReader reader = new CSVReader(new InputStreamReader(ChicagoTracker.getAppContext().getAssets().open("stops.txt")));
 				reader.readNext();
@@ -102,7 +102,7 @@ public class BusData {
 						positon.setLongitude(longitude);
 						busStop.setPosition(positon);
 
-						mStops.add(busStop);
+						busStops.add(busStop);
 					} else {
 						break;
 					}
@@ -113,7 +113,7 @@ public class BusData {
 				Log.e(TAG, e.getMessage(), e);
 			}
 		}
-		return mStops;
+		return busStops;
 	}
 
 	/**
@@ -126,14 +126,14 @@ public class BusData {
 	 *             a connect exception
 	 */
 	public final List<BusRoute> loadBusRoutes() throws ParserException, ConnectException {
-		if (mRoutes.size() == 0) {
+		if (busRoutes.size() == 0) {
 			MultiMap<String, String> params = new MultiValueMap<String, String>();
 			CtaConnect connect = CtaConnect.getInstance();
 			Xml xml = new Xml();
 			String xmlResult = connect.connect(CtaRequestType.BUS_ROUTES, params);
-			mRoutes = xml.parseBusRoutes(xmlResult);
+			busRoutes = xml.parseBusRoutes(xmlResult);
 		}
-		return mRoutes;
+		return busRoutes;
 	}
 
 	/**
@@ -142,7 +142,7 @@ public class BusData {
 	 * @return a list of bus route
 	 */
 	public final List<BusRoute> getRoutes() {
-		return mRoutes;
+		return busRoutes;
 	}
 
 	/**
@@ -151,7 +151,7 @@ public class BusData {
 	 * @return a number
 	 */
 	public final int getRouteSize() {
-		return mRoutes.size();
+		return busRoutes.size();
 	}
 
 	/**
@@ -162,7 +162,7 @@ public class BusData {
 	 * @return a bus route
 	 */
 	public final BusRoute getRoute(final int position) {
-		return mRoutes.get(position);
+		return busRoutes.get(position);
 	}
 
 	/**
@@ -174,7 +174,7 @@ public class BusData {
 	 */
 	public final BusRoute getRoute(final String routeId) {
 		BusRoute result = null;
-		for (BusRoute br : mRoutes) {
+		for (BusRoute br : busRoutes) {
 			if (br.getId().equals(routeId)) {
 				result = br;
 				break;
@@ -184,7 +184,7 @@ public class BusData {
 	}
 
 	public final boolean containsRoute(final String routeId) {
-		for (BusRoute br : mRoutes) {
+		for (BusRoute br : busRoutes) {
 			if (br.getId().equals(routeId)) {
 				return true;
 			}
@@ -223,7 +223,7 @@ public class BusData {
 	 * @return a list of bus stops
 	 */
 	public final List<BusStop> readAllBusStops() {
-		return this.mStops;
+		return this.busStops;
 	}
 
 	/**
@@ -235,7 +235,7 @@ public class BusData {
 	 */
 	public final BusStop readOneBus(final int id) {
 		BusStop res = null;
-		for (BusStop busStop : mStops) {
+		for (BusStop busStop : busStops) {
 			if (busStop.getId().intValue() == id) {
 				res = busStop;
 				break;
@@ -264,7 +264,7 @@ public class BusData {
 		double lonMax = longitude + dist;
 		double lonMin = longitude - dist;
 
-		for (BusStop busStop : mStops) {
+		for (BusStop busStop : busStops) {
 			double busLatitude = busStop.getPosition().getLatitude();
 			double busLongitude = busStop.getPosition().getLongitude();
 			if (busLatitude <= latMax && busLatitude >= latMin && busLongitude <= lonMax && busLongitude >= lonMin) {
@@ -286,8 +286,8 @@ public class BusData {
 	 * Sort stops list
 	 */
 	private void order() {
-		if (mStops.size() != 0) {
-			Collections.sort(mStops);
+		if (busStops.size() != 0) {
+			Collections.sort(busStops);
 		}
 	}
 }

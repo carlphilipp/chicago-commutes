@@ -37,23 +37,23 @@ import java.util.List;
  */
 public class TrainMapSnippetAdapter extends BaseAdapter {
 	/** Eta list **/
-	private List<Eta> mEtas;
+	private List<Eta> etas;
 
 	/**
 	 * @param etas
 	 */
 	public TrainMapSnippetAdapter(final List<Eta> etas) {
-		this.mEtas = etas;
+		this.etas = etas;
 	}
 
 	@Override
 	public final int getCount() {
-		return mEtas.size();
+		return etas.size();
 	}
 
 	@Override
 	public final Object getItem(final int position) {
-		return mEtas.get(position);
+		return etas.get(position);
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class TrainMapSnippetAdapter extends BaseAdapter {
 		TextView name = (TextView) convertView.findViewById(R.id.station_name);
 		name.setText(eta.getStation().getName());
 
-		if (!(position == mEtas.size() - 1 && eta.getTimeLeftDueDelay().equals("0 min"))) {
+		if (!(position == etas.size() - 1 && eta.getTimeLeftDueDelay().equals("0 min"))) {
 			TextView time = (TextView) convertView.findViewById(R.id.time);
 			time.setText(eta.getTimeLeftDueDelay());
 		} else {

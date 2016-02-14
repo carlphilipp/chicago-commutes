@@ -42,7 +42,7 @@ public class MapFragment extends Fragment implements OnTouchListener {
 	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
 	/** The main activity **/
-	private MainActivity mActivity;
+	private MainActivity mainActivity;
 	/** The matrix **/
 	private Matrix matrix = new Matrix();
 	/** The saved matrix **/
@@ -92,7 +92,7 @@ public class MapFragment extends Fragment implements OnTouchListener {
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		Util.trackScreen(mActivity, R.string.analytics_L_fragment);
+		Util.trackScreen(mainActivity, R.string.analytics_L_fragment);
 	}
 
 	@Override
@@ -107,8 +107,8 @@ public class MapFragment extends Fragment implements OnTouchListener {
 	@Override
 	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
-		mActivity = ((MainActivity) activity);
-		mActivity.onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
+		mainActivity = ((MainActivity) activity);
+		mainActivity.onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 
 	@Override

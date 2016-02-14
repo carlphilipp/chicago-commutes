@@ -23,6 +23,7 @@ package fr.cph.chicago.entity.enumeration;
  * @version 1
  */
 public enum TrainDirection {
+
 	NORTH("N", "North"), SOUTH("S", "South"), EAST("E", "East"), WEST("W", "West");
 
 	/** The text **/

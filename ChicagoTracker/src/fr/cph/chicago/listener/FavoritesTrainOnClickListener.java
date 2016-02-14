@@ -51,13 +51,13 @@ import java.util.Set;
  */
 public class FavoritesTrainOnClickListener implements OnClickListener {
 	/** The main activity **/
-	private Activity mActivity;
+	private Activity activity;
 	/** The layout that is used to display a fade black background **/
-	private FrameLayout mFirstLayout;
+	private FrameLayout firstLayout;
 	/** The station id **/
-	private int mStationId;
+	private int stationId;
 	/** Train lines **/
-	private Set<TrainLine> mTrainLines;
+	private Set<TrainLine> trainLines;
 
 	/**
 	 * @param activity
@@ -67,18 +67,18 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 	 */
 	public FavoritesTrainOnClickListener(final Activity activity, final FrameLayout firstLayout, final int stationId,
 			final Set<TrainLine> trainLines) {
-		this.mActivity = activity;
-		this.mFirstLayout = firstLayout;
-		this.mStationId = stationId;
-		this.mTrainLines = trainLines;
+		this.activity = activity;
+		this.firstLayout = firstLayout;
+		this.stationId = stationId;
+		this.trainLines = trainLines;
 	}
 
 	@Override
 	public void onClick(final View view) {
 		if (!Util.isNetworkAvailable()) {
-			Toast.makeText(mActivity, "No network connection detected!", Toast.LENGTH_LONG).show();
+			Toast.makeText(activity, "No network connection detected!", Toast.LENGTH_LONG).show();
 		} else {
-			LayoutInflater layoutInflater = (LayoutInflater) mActivity.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			LayoutInflater layoutInflater = (LayoutInflater) activity.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			View popupView = layoutInflater.inflate(R.layout.popup_train, null);
 
 			final int[] screenSize = Util.getScreenSize();
@@ -86,20 +86,20 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 			final PopupWindow popup = new PopupWindow(popupView, (int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
 			popup.setFocusable(true);
 			popup.setBackgroundDrawable(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.any_selector));
-			mFirstLayout.getForeground().setAlpha(210);
+			firstLayout.getForeground().setAlpha(210);
 
 			ListView listView = (ListView) popupView.findViewById(R.id.details);
 			final List<String> values = new ArrayList<>();
 			final List<Integer> colors = new ArrayList<>();
 			values.add("Open details");
-			for (TrainLine line : mTrainLines) {
+			for (TrainLine line : trainLines) {
 				values.add(line.toString() + " line - All trains");
 				colors.add(line.getColor());
 			}
-			PopupTrainAdapter ada = new PopupTrainAdapter(mActivity, values, colors);
+			PopupTrainAdapter ada = new PopupTrainAdapter(activity, values, colors);
 			listView.setAdapter(ada);
 			final List<TrainLine> lines = new ArrayList<>();
-			lines.addAll(mTrainLines);
+			lines.addAll(trainLines);
 
 			listView.setOnItemClickListener(new OnItemClickListener() {
 				@Override
@@ -107,32 +107,32 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 					if (position == 0) {
 						Intent intent = new Intent(ChicagoTracker.getAppContext(), StationActivity.class);
 						Bundle extras = new Bundle();
-						extras.putInt("stationId", mStationId);
+						extras.putInt("stationId", stationId);
 						intent.putExtras(extras);
-						mActivity.startActivity(intent);
-						mActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+						activity.startActivity(intent);
+						activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 						popup.dismiss();
 					} else {
 						Intent intent = new Intent(ChicagoTracker.getAppContext(), TrainMapActivity.class);
 						Bundle extras = new Bundle();
 						extras.putString("line", lines.get(position - 1).toTextString());
 						intent.putExtras(extras);
-						mActivity.startActivity(intent);
-						mActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+						activity.startActivity(intent);
+						activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 						popup.dismiss();
 					}
 				}
 			});
 			popup.setFocusable(true);
 			popup.setBackgroundDrawable(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.any_selector));
-			mFirstLayout.getForeground().setAlpha(210);
+			firstLayout.getForeground().setAlpha(210);
 			popup.setOnDismissListener(new PopupWindow.OnDismissListener() {
 				@Override
 				public void onDismiss() {
-					mFirstLayout.getForeground().setAlpha(0);
+					firstLayout.getForeground().setAlpha(0);
 				}
 			});
-			popup.showAtLocation(mFirstLayout, Gravity.CENTER, 0, 0);
+			popup.showAtLocation(firstLayout, Gravity.CENTER, 0, 0);
 		}
 	}
 }

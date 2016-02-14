@@ -38,23 +38,23 @@ import java.util.List;
  */
 public class BusMapSnippetAdapter extends BaseAdapter {
 	/** List of bus arrivals **/
-	private List<BusArrival> mArrivals;
+	private List<BusArrival> arrivals;
 
 	/**
 	 * @param arrivals
 	 */
 	public BusMapSnippetAdapter(final List<BusArrival> arrivals) {
-		this.mArrivals = arrivals;
+		this.arrivals = arrivals;
 	}
 
 	@Override
 	public final int getCount() {
-		return mArrivals.size();
+		return arrivals.size();
 	}
 
 	@Override
 	public final Object getItem(final int position) {
-		return mArrivals.get(position);
+		return arrivals.get(position);
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class BusMapSnippetAdapter extends BaseAdapter {
 		TextView name = (TextView) convertView.findViewById(R.id.station_name);
 		name.setText(arrival.getStopName());
 
-		if (!(position == mArrivals.size() - 1 && arrival.getTimeLeftDueDelay().equals("No service scheduled"))) {
+		if (!(position == arrivals.size() - 1 && arrival.getTimeLeftDueDelay().equals("No service scheduled"))) {
 			TextView time = (TextView) convertView.findViewById(R.id.time);
 			time.setText(arrival.getTimeLeftDueDelay());
 		} else {

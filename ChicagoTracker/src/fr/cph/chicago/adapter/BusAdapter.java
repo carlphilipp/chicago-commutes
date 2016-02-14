@@ -64,11 +64,11 @@ import java.util.List;
  */
 public final class BusAdapter extends BaseAdapter {
 	/** Main activity **/
-	private MainActivity mActivity;
+	private MainActivity mainActivity;
 	/** Bus data **/
-	private List<BusRoute> mBusRoutes;
+	private List<BusRoute> busRoutes;
 	/** Layout that you can use as a black fade background **/
-	private FrameLayout mFirstLayout;
+	private FrameLayout firstLayout;
 
 	/**
 	 * Constructor
@@ -77,20 +77,20 @@ public final class BusAdapter extends BaseAdapter {
 	 *            the main activity
 	 */
 	public BusAdapter(final MainActivity activity) {
-		this.mActivity = activity;
+		this.mainActivity = activity;
 		BusData busData = DataHolder.getInstance().getBusData();
-		this.mBusRoutes = busData.getRoutes();
-		this.mFirstLayout = ChicagoTracker.container;
+		this.busRoutes = busData.getRoutes();
+		this.firstLayout = ChicagoTracker.container;
 	}
 
 	@Override
 	public final int getCount() {
-		return mBusRoutes.size();
+		return busRoutes.size();
 	}
 
 	@Override
 	public final Object getItem(final int position) {
-		return mBusRoutes.get(position);
+		return busRoutes.get(position);
 	}
 
 	@Override
@@ -127,7 +127,7 @@ public final class BusAdapter extends BaseAdapter {
 				@Override
 				public void onClick(View v) {
 					holder.detailsLayout.setVisibility(LinearLayout.VISIBLE);
-					mActivity.startRefreshAnimation();
+					mainActivity.startRefreshAnimation();
 					new DirectionAsyncTask().execute(route, holder.detailsLayout);
 				}
 			});
@@ -141,7 +141,7 @@ public final class BusAdapter extends BaseAdapter {
 				@Override
 				public void onClick(View v) {
 					holder.detailsLayout.setVisibility(LinearLayout.VISIBLE);
-					mActivity.startRefreshAnimation();
+					mainActivity.startRefreshAnimation();
 					new DirectionAsyncTask().execute(route, holder.detailsLayout);
 				}
 			});
@@ -154,7 +154,7 @@ public final class BusAdapter extends BaseAdapter {
 	}
 
 	public void setRoutes(List<BusRoute> busRoutes) {
-		this.mBusRoutes = busRoutes;
+		this.busRoutes = busRoutes;
 	}
 
 	/**
@@ -199,14 +199,14 @@ public final class BusAdapter extends BaseAdapter {
 			} catch (ParserException | ConnectException e) {
 				this.trackerException = e;
 			}
-			Util.trackAction(BusAdapter.this.mActivity, R.string.analytics_category_req, R.string.analytics_action_get_bus,
+			Util.trackAction(BusAdapter.this.mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_bus,
 					R.string.analytics_action_get_bus_direction, 0);
 			return busDirections;
 		}
 
 		@Override
 		protected final void onPostExecute(final BusDirections result) {
-			mActivity.stopRefreshAnimation();
+			mainActivity.stopRefreshAnimation();
 			if (trackerException == null) {
 				final List<BusDirection> busDirections = result.getlBusDirection();
 				final List<String> data = new ArrayList<>();
@@ -215,21 +215,21 @@ public final class BusAdapter extends BaseAdapter {
 				}
 				data.add("Follow all buses on line " + result.getId());
 
-				LayoutInflater layoutInflater = (LayoutInflater) mActivity.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				LayoutInflater layoutInflater = (LayoutInflater) mainActivity.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				View popupView = layoutInflater.inflate(R.layout.popup_bus, null);
 
 				final int[] screenSize = Util.getScreenSize();
 				final PopupWindow popup = new PopupWindow(popupView, (int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
 
 				ListView listView = (ListView) popupView.findViewById(R.id.details);
-				PopupBusAdapter ada = new PopupBusAdapter(mActivity, data);
+				PopupBusAdapter ada = new PopupBusAdapter(mainActivity, data);
 				listView.setAdapter(ada);
 
 				listView.setOnItemClickListener(new OnItemClickListener() {
 					@Override
 					public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 						if (position != data.size() - 1) {
-							Intent intent = new Intent(mActivity, BusBoundActivity.class);
+							Intent intent = new Intent(mainActivity, BusBoundActivity.class);
 							Bundle extras = new Bundle();
 							extras.putString("busRouteId", busRoute.getId());
 							extras.putString("busRouteName", busRoute.getName());
@@ -248,8 +248,8 @@ public final class BusAdapter extends BaseAdapter {
 							extras.putString("busRouteId", result.getId());
 							extras.putStringArray("bounds", busDirectionArray);
 							intent.putExtras(extras);
-							mActivity.startActivity(intent);
-							mActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+							mainActivity.startActivity(intent);
+							mainActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 						}
 
 						popup.dismiss();
@@ -257,18 +257,18 @@ public final class BusAdapter extends BaseAdapter {
 				});
 				popup.setFocusable(true);
 				popup.setBackgroundDrawable(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.any_selector));
-				mFirstLayout.getForeground().setAlpha(210);
+				firstLayout.getForeground().setAlpha(210);
 
 				popup.setOnDismissListener(new PopupWindow.OnDismissListener() {
 					@Override
 					public void onDismiss() {
-						mFirstLayout.getForeground().setAlpha(0);
+						firstLayout.getForeground().setAlpha(0);
 						convertView.setVisibility(LinearLayout.GONE);
 					}
 				});
-				popup.showAtLocation(mFirstLayout, Gravity.CENTER, 0, 0);
+				popup.showAtLocation(firstLayout, Gravity.CENTER, 0, 0);
 			} else {
-				ChicagoTracker.displayError(mActivity, trackerException);
+				ChicagoTracker.displayError(mainActivity, trackerException);
 			}
 		}
 	}

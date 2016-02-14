@@ -87,27 +87,27 @@ public class TrainMapActivity extends Activity {
 	/** Tag **/
 	private static final String TAG = "TrainMapActivity";
 	/** The map fragment from google api **/
-	private MapFragment mMapFragment;
+	private MapFragment mapFragment;
 	/** The map **/
-	private GoogleMap mGooMap;
+	private GoogleMap googleMap;
 	/** Line **/
-	private String mLine;
+	private String line;
 	/** Bus Markers **/
-	private List<Marker> mMarkers;
+	private List<Marker> markers;
 	/** Menu **/
-	private Menu mMenu;
+	private Menu menu;
 	/** Train data **/
-	private TrainData mData;
+	private TrainData trainData;
 	/** Refreshing info window **/
-	private boolean mRefreshingInfoWindow = false;
+	private boolean refreshingInfoWindow = false;
 	/** Selected marker **/
-	private Marker mSelectedMarker;
+	private Marker selectedMarker;
 	/** Map views **/
-	private Map<Marker, View> mViews;
+	private Map<Marker, View> views;
 	/** Map status **/
-	private Map<Marker, Boolean> mStatus;
+	private Map<Marker, Boolean> status;
 	/** On camera change zoom listener **/
-	private TrainMapOnCameraChangeListener mTrainListener;
+	private TrainMapOnCameraChangeListener trainListener;
 
 	private boolean centerMap = true;
 
@@ -123,22 +123,22 @@ public class TrainMapActivity extends Activity {
 		if (!this.isFinishing()) {
 			setContentView(R.layout.activity_map);
 			if (savedInstanceState != null) {
-				mLine = savedInstanceState.getString("line");
+				line = savedInstanceState.getString("line");
 			} else {
-				mLine = getIntent().getExtras().getString("line");
+				line = getIntent().getExtras().getString("line");
 			}
 
 			// Load data
 			DataHolder dataHolder = DataHolder.getInstance();
-			this.mData = dataHolder.getTrainData();
+			this.trainData = dataHolder.getTrainData();
 
-			mMarkers = new ArrayList<>();
-			mStatus = new HashMap<>();
-			mTrainListener = new TrainMapOnCameraChangeListener();
+			markers = new ArrayList<>();
+			status = new HashMap<>();
+			trainListener = new TrainMapOnCameraChangeListener();
 
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 
-			setTitle("Map - " + TrainLine.fromXmlString(mLine).toString());
+			setTitle("Map - " + TrainLine.fromXmlString(line).toString());
 
 			Util.trackScreen(this, R.string.analytics_train_map);
 		}
@@ -153,15 +153,15 @@ public class TrainMapActivity extends Activity {
 	@Override
 	public final void onStart() {
 		super.onStart();
-		if (mMapFragment == null) {
+		if (mapFragment == null) {
 			FragmentManager fm = getFragmentManager();
-			mMapFragment = (MapFragment) fm.findFragmentById(R.id.map);
+			mapFragment = (MapFragment) fm.findFragmentById(R.id.map);
 			GoogleMapOptions options = new GoogleMapOptions();
 			CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 10, 0, 0);
 			options.camera(camera);
-			mMapFragment = MapFragment.newInstance(options);
-			mMapFragment.setRetainInstance(true);
-			fm.beginTransaction().replace(R.id.map, mMapFragment).commit();
+			mapFragment = MapFragment.newInstance(options);
+			mapFragment.setRetainInstance(true);
+			fm.beginTransaction().replace(R.id.map, mapFragment).commit();
 		}
 	}
 
@@ -174,7 +174,7 @@ public class TrainMapActivity extends Activity {
 	public final void onStop() {
 		super.onStop();
 		centerMap = false;
-		mGooMap = null;
+		googleMap = null;
 	}
 
 	@Override
@@ -185,9 +185,9 @@ public class TrainMapActivity extends Activity {
 	@Override
 	public final void onResume() {
 		super.onResume();
-		if (mGooMap == null) {
-			mGooMap = mMapFragment.getMap();
-			mGooMap.setInfoWindowAdapter(new InfoWindowAdapter() {
+		if (googleMap == null) {
+			googleMap = mapFragment.getMap();
+			googleMap.setInfoWindowAdapter(new InfoWindowAdapter() {
 				@Override
 				public View getInfoWindow(Marker marker) {
 					return null;
@@ -196,13 +196,13 @@ public class TrainMapActivity extends Activity {
 				@Override
 				public View getInfoContents(Marker marker) {
 					if (!marker.getSnippet().equals("")) {
-						final View view = mViews.get(marker);
-						if (!mRefreshingInfoWindow) {
-							mSelectedMarker = marker;
+						final View view = views.get(marker);
+						if (!refreshingInfoWindow) {
+							selectedMarker = marker;
 							final String runNumber = marker.getSnippet();
 							startRefreshAnimation();
 							new LoadTrainFollow(view, false).execute(runNumber);
-							mStatus.put(marker, false);
+							status.put(marker, false);
 						}
 						return view;
 					} else {
@@ -211,18 +211,18 @@ public class TrainMapActivity extends Activity {
 				}
 			});
 
-			mGooMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
+			googleMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
 				@Override
 				public void onInfoWindowClick(Marker marker) {
 					if (!marker.getSnippet().equals("")) {
-						final View view = mViews.get(marker);
-						if (!mRefreshingInfoWindow) {
-							mSelectedMarker = marker;
+						final View view = views.get(marker);
+						if (!refreshingInfoWindow) {
+							selectedMarker = marker;
 							final String runNumber = marker.getSnippet();
 							startRefreshAnimation();
-							boolean current = mStatus.get(marker);
+							boolean current = status.get(marker);
 							new LoadTrainFollow(view, !current).execute(runNumber);
-							mStatus.put(marker, !current);
+							status.put(marker, !current);
 						}
 					}
 				}
@@ -239,18 +239,18 @@ public class TrainMapActivity extends Activity {
 	@Override
 	public void onRestoreInstanceState(final Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		mLine = savedInstanceState.getString("line");
+		line = savedInstanceState.getString("line");
 	}
 
 	@Override
 	public void onSaveInstanceState(final Bundle savedInstanceState) {
-		savedInstanceState.putString("line", mLine);
+		savedInstanceState.putString("line", line);
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
 	@Override
 	public final boolean onCreateOptionsMenu(final Menu menu) {
-		this.mMenu = menu;
+		this.menu = menu;
 		getMenuInflater().inflate(R.menu.main_no_search, menu);
 		startRefreshAnimation();
 		return super.onCreateOptionsMenu(menu);
@@ -275,8 +275,8 @@ public class TrainMapActivity extends Activity {
 	 * Load animation in menu
 	 */
 	private void startRefreshAnimation() {
-		if (mMenu != null) {
-			MenuItem refreshMenuItem = mMenu.findItem(R.id.action_refresh);
+		if (menu != null) {
+			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
 			if (refreshMenuItem.getActionView() == null) {
 				refreshMenuItem.setActionView(R.layout.progressbar);
 				refreshMenuItem.expandActionView();
@@ -288,8 +288,8 @@ public class TrainMapActivity extends Activity {
 	 * Stop animation in menu
 	 */
 	private void stopRefreshAnimation() {
-		if (mMenu != null) {
-			MenuItem refreshMenuItem = mMenu.findItem(R.id.action_refresh);
+		if (menu != null) {
+			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
 			refreshMenuItem.collapseActionView();
 			refreshMenuItem.setActionView(null);
 		}
@@ -299,12 +299,12 @@ public class TrainMapActivity extends Activity {
 	 * Refresh windows
 	 */
 	private void refreshInfoWindow() {
-		if (mSelectedMarker == null) {
+		if (selectedMarker == null) {
 			return;
 		}
-		mRefreshingInfoWindow = true;
-		mSelectedMarker.showInfoWindow();
-		mRefreshingInfoWindow = false;
+		refreshingInfoWindow = true;
+		selectedMarker.showInfoWindow();
+		refreshingInfoWindow = false;
 		stopRefreshAnimation();
 	}
 
@@ -314,8 +314,8 @@ public class TrainMapActivity extends Activity {
 	 */
 	private void centerMapOnBus(final List<Train> result) {
 		int i = 0;
-		while (mGooMap == null && i < 20) {
-			mGooMap = mMapFragment.getMap();
+		while (googleMap == null && i < 20) {
+			googleMap = mapFragment.getMap();
 			i++;
 		}
 		Position position;
@@ -327,9 +327,9 @@ public class TrainMapActivity extends Activity {
 			position = Train.getBestPosition(result);
 			zoom = 11;
 		}
-		if (mGooMap != null) {
+		if (googleMap != null) {
 			LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
-			mGooMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 		}
 	}
 
@@ -341,24 +341,24 @@ public class TrainMapActivity extends Activity {
 	 *            the list of positions
 	 */
 	private void drawTrains(final List<Train> trains, final List<Position> positions) {
-		if (mGooMap != null) {
-			if (mViews != null) {
-				mViews.clear();
+		if (googleMap != null) {
+			if (views != null) {
+				views.clear();
 			}
-			mViews = new HashMap<Marker, View>();
-			for (Marker marker : mMarkers) {
+			views = new HashMap<Marker, View>();
+			for (Marker marker : markers) {
 				marker.remove();
 			}
-			mMarkers.clear();
-			final Bitmap bitmap = mTrainListener.getCurrentBitmap();
+			markers.clear();
+			final Bitmap bitmap = trainListener.getCurrentBitmap();
 			for (Train train : trains) {
 				final LatLng point = new LatLng(train.getPosition().getLatitude(), train.getPosition().getLongitude());
 				final String title = "To " + train.getDestName();
 				final String snippet = String.valueOf(train.getRouteNumber());
 
-				final Marker marker = mGooMap.addMarker(new MarkerOptions().position(point).title(title).snippet(snippet)
+				final Marker marker = googleMap.addMarker(new MarkerOptions().position(point).title(title).snippet(snippet)
 						.icon(BitmapDescriptorFactory.fromBitmap(bitmap)).anchor(0.5f, 0.5f).rotation(train.getHeading()).flat(true));
-				mMarkers.add(marker);
+				markers.add(marker);
 
 				LayoutInflater layoutInflater = (LayoutInflater) TrainMapActivity.this.getBaseContext().getSystemService(
 						Context.LAYOUT_INFLATER_SERVICE);
@@ -367,23 +367,23 @@ public class TrainMapActivity extends Activity {
 				title2.setText(title);
 
 				TextView color = (TextView) view.findViewById(R.id.route_color_value);
-				color.setBackgroundColor(TrainLine.fromXmlString(TrainMapActivity.this.mLine).getColor());
+				color.setBackgroundColor(TrainLine.fromXmlString(TrainMapActivity.this.line).getColor());
 
-				mViews.put(marker, view);
+				views.put(marker, view);
 			}
 
-			mTrainListener.setTrainMarkers(mMarkers);
+			trainListener.setTrainMarkers(markers);
 
-			mGooMap.setOnCameraChangeListener(mTrainListener);
+			googleMap.setOnCameraChangeListener(trainListener);
 
 			PolylineOptions poly = new PolylineOptions();
 			poly.width(7f);
-			poly.geodesic(true).color(TrainLine.fromXmlString(this.mLine).getColor());
+			poly.geodesic(true).color(TrainLine.fromXmlString(this.line).getColor());
 			for (Position position : positions) {
 				LatLng point = new LatLng(position.getLatitude(), position.getLongitude());
 				poly.add(point);
 			}
-			mGooMap.addPolyline(poly);
+			googleMap.addPolyline(poly);
 		}
 	}
 
@@ -416,7 +416,7 @@ public class TrainMapActivity extends Activity {
 				connectParam.put("runnumber", runNumber);
 				String content = connect.connect(CtaRequestType.TRAIN_FOLLOW, connectParam);
 				Xml xml = new Xml();
-				etas = xml.parseTrainsFollow(content, mData);
+				etas = xml.parseTrainsFollow(content, trainData);
 			} catch (ConnectException | ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
@@ -473,7 +473,7 @@ public class TrainMapActivity extends Activity {
 			List<Train> trains = null;
 			CtaConnect connect = CtaConnect.getInstance();
 			MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
-			connectParam.put("rt", mLine);
+			connectParam.put("rt", line);
 			try {
 				String content = connect.connect(CtaRequestType.TRAIN_LOCATION, connectParam);
 				Xml xml = new Xml();
@@ -483,12 +483,12 @@ public class TrainMapActivity extends Activity {
 			}
 			Util.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train,
 					R.string.analytics_action_get_train_location, 0);
-			TrainData data = TrainMapActivity.this.mData;
+			TrainData data = TrainMapActivity.this.trainData;
 			if (data == null) {
 				DataHolder dataHolder = DataHolder.getInstance();
 				data = dataHolder.getTrainData();
 			}
-			positions = data.readPattern(TrainLine.fromXmlString(TrainMapActivity.this.mLine));
+			positions = data.readPattern(TrainLine.fromXmlString(TrainMapActivity.this.line));
 			return trains;
 		}
 
@@ -581,13 +581,13 @@ public class TrainMapActivity extends Activity {
 		@Override
 		protected final void onPostExecute(final Void result) {
 			int i = 0;
-			while (mGooMap == null && i < 20) {
-				mGooMap = mMapFragment.getMap();
+			while (googleMap == null && i < 20) {
+				googleMap = mapFragment.getMap();
 				i++;
 			}
-			if (mGooMap != null) {
-				mGooMap = mMapFragment.getMap();
-				mGooMap.setMyLocationEnabled(true);
+			if (googleMap != null) {
+				googleMap = mapFragment.getMap();
+				googleMap.setMyLocationEnabled(true);
 				locationManager.removeUpdates(LoadCurrentPosition.this);
 			}
 		}

@@ -40,7 +40,7 @@ public class ErrorActivity extends Activity {
 	/**
 	 * Error
 	 **/
-	private String mError;
+	private String error;
 
 	@Override
 	protected void attachBaseContext(Context newBase) {
@@ -54,11 +54,11 @@ public class ErrorActivity extends Activity {
 
 		View loadLayout = findViewById(R.id.loading_layout);
 		loadLayout.setVisibility(View.GONE);
-		if (mError == null) {
-			mError = getIntent().getExtras().getString("error");
+		if (error == null) {
+			error = getIntent().getExtras().getString("error");
 		}
 		TextView errorText = (TextView) findViewById(R.id.error_message);
-		errorText.setText(mError);
+		errorText.setText(error);
 		Button button = (Button) findViewById(R.id.retry_button);
 		button.setOnClickListener(new OnClickListener() {
 			@Override
@@ -74,12 +74,12 @@ public class ErrorActivity extends Activity {
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		mError = savedInstanceState.getString("error");
+		error = savedInstanceState.getString("error");
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-		savedInstanceState.putString("error", mError);
+		savedInstanceState.putString("error", error);
 		super.onSaveInstanceState(savedInstanceState);
 	}
 

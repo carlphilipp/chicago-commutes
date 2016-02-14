@@ -26,6 +26,7 @@ import fr.cph.chicago.entity.enumeration.TrainDirection;
  * @version 1
  */
 public final class StopFactory {
+
 	private StopFactory() {
 	}
 

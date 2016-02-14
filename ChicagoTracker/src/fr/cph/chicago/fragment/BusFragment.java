@@ -16,10 +16,6 @@
 
 package fr.cph.chicago.fragment;
 
-/**
- * Created by carl on 11/15/13.
- */
-
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
@@ -55,13 +51,13 @@ public class BusFragment extends Fragment {
 	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
 	/** The main actvity **/
-	private MainActivity mActivity;
+	private MainActivity mainActivity;
 	/** Adapter **/
-	private BusAdapter mAdapter;
+	private BusAdapter busAdapter;
 
-	private EditText mTextFilter;
+	private EditText textFilter;
 
-	private ListView mListView;
+	private ListView listView;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -81,24 +77,24 @@ public class BusFragment extends Fragment {
 	@Override
 	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
-		mActivity = (MainActivity) activity;
+		mainActivity = (MainActivity) activity;
 		((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 
 	@Override
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		ChicagoTracker.checkBusData(mActivity);
+		ChicagoTracker.checkBusData(mainActivity);
 
-		Util.trackScreen(mActivity, R.string.analytics_bus_fragment);
+		Util.trackScreen(mainActivity, R.string.analytics_bus_fragment);
 	}
 
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_bus, container, false);
-		if (!mActivity.isFinishing()) {
-			mTextFilter = (EditText) rootView.findViewById(R.id.bus_filter);
-			mListView = (ListView) rootView.findViewById(R.id.bus_list);
+		if (!mainActivity.isFinishing()) {
+			textFilter = (EditText) rootView.findViewById(R.id.bus_filter);
+			listView = (ListView) rootView.findViewById(R.id.bus_list);
 			if (Util.isNetworkAvailable()) {
 				addView();
 			} else {
@@ -113,10 +109,10 @@ public class BusFragment extends Fragment {
 	}
 
 	private void addView() {
-		mAdapter = new BusAdapter(mActivity);
-		mListView.setAdapter(mAdapter);
-		mTextFilter.setVisibility(TextView.VISIBLE);
-		mTextFilter.addTextChangedListener(new TextWatcher() {
+		busAdapter = new BusAdapter(mainActivity);
+		listView.setAdapter(busAdapter);
+		textFilter.setVisibility(TextView.VISIBLE);
+		textFilter.addTextChangedListener(new TextWatcher() {
 
 			private BusData busData = DataHolder.getInstance().getBusData();
 			private List<BusRoute> busRoutes = null;
@@ -139,8 +135,8 @@ public class BusFragment extends Fragment {
 
 			@Override
 			public void afterTextChanged(Editable s) {
-				mAdapter.setRoutes(busRoutes);
-				mAdapter.notifyDataSetChanged();
+				busAdapter.setRoutes(busRoutes);
+				busAdapter.notifyDataSetChanged();
 			}
 		});
 	}

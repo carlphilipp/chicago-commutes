@@ -35,15 +35,15 @@ import java.util.List;
  */
 public class AlertData {
 	/** The data **/
-	private static AlertData mAlertData;
+	private static AlertData alertData;
 	/** The list of alerts **/
-	private List<Alert> mAlerts;
+	private List<Alert> alerts;
 
 	/**
 	 * Private constructor
 	 */
 	private AlertData() {
-		mAlerts = new ArrayList<>();
+		alerts = new ArrayList<>();
 	}
 
 	/**
@@ -52,10 +52,10 @@ public class AlertData {
 	 * @return the data
 	 */
 	public static AlertData getInstance() {
-		if (mAlertData == null) {
-			mAlertData = new AlertData();
+		if (alertData == null) {
+			alertData = new AlertData();
 		}
-		return mAlertData;
+		return alertData;
 	}
 
 	/**
@@ -68,14 +68,14 @@ public class AlertData {
 	 *             a connect exception
 	 */
 	public final List<Alert> loadGeneralAlerts() throws ParserException, ConnectException {
-		if (mAlerts.size() == 0) {
+		if (alerts.size() == 0) {
 			MultiMap<String, String> params = new MultiValueMap<>();
 			CtaConnect connect = CtaConnect.getInstance();
 			Xml xml = new Xml();
 			String xmlResult = connect.connect(CtaRequestType.ALERTS_GENERAL, params);
-			mAlerts = xml.parseAlertGeneral(xmlResult);
+			alerts = xml.parseAlertGeneral(xmlResult);
 		}
-		return mAlerts;
+		return alerts;
 	}
 
 	/**
@@ -84,7 +84,6 @@ public class AlertData {
 	 * @return a list of alert
 	 */
 	public final List<Alert> getAlerts() {
-		return this.mAlerts;
+		return this.alerts;
 	}
-
 }

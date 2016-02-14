@@ -44,7 +44,7 @@ public final class TrainFragment extends Fragment {
 	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
 	/** The main activity **/
-	private MainActivity mActivity;
+	private MainActivity mainActivity;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -64,7 +64,7 @@ public final class TrainFragment extends Fragment {
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		Util.trackScreen(mActivity, R.string.analytics_train_fragment);
+		Util.trackScreen(mainActivity, R.string.analytics_train_fragment);
 	}
 
 	@Override
@@ -99,7 +99,7 @@ public final class TrainFragment extends Fragment {
 	@Override
 	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
-		mActivity = (MainActivity) activity;
-		mActivity.onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
+		mainActivity = (MainActivity) activity;
+		mainActivity.onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 }

@@ -37,9 +37,9 @@ import java.util.List;
  */
 public class BusBoundAdapter extends BaseAdapter {
 	/** List of bus stop **/
-	private List<BusStop> mBusStops;
+	private List<BusStop> busStops;
 	/** **/
-	private String mStopId;
+	private String stopId;
 
 	/**
 	 * Constructor
@@ -48,29 +48,29 @@ public class BusBoundAdapter extends BaseAdapter {
 	 *            the stop id of the bu
 	 */
 	public BusBoundAdapter(final String stopId) {
-		this.mBusStops = new ArrayList<>();
-		this.mStopId = stopId;
+		this.busStops = new ArrayList<>();
+		this.stopId = stopId;
 	}
 
 	@Override
 	public final int getCount() {
-		return mBusStops.size();
+		return busStops.size();
 	}
 
 	@Override
 	public final Object getItem(final int position) {
-		return mBusStops.get(position);
+		return busStops.get(position);
 	}
 
 	@Override
 	public final long getItemId(final int position) {
-		return mBusStops.get(position).getId();
+		return busStops.get(position).getId();
 	}
 
 	@Override
 	public final View getView(final int position, View convertView, final ViewGroup parent) {
 
-		BusStop busStop = mBusStops.get(position);
+		BusStop busStop = busStops.get(position);
 
 		TextView routNumberView = null;
 		TextView routNameView = null;
@@ -93,7 +93,7 @@ public class BusBoundAdapter extends BaseAdapter {
 			routNameView = viewHolder.routNameView;
 		}
 
-		routNumberView.setText(mStopId);
+		routNumberView.setText(stopId);
 		routNameView.setText(busStop.getName());
 
 		return convertView;
@@ -117,8 +117,8 @@ public class BusBoundAdapter extends BaseAdapter {
 	 *            the list of bus stops
 	 */
 	public final void update(final List<BusStop> result) {
-		this.mBusStops = null;
-		this.mBusStops = result;
+		this.busStops = null;
+		this.busStops = result;
 	}
 
 }

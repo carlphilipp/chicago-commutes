@@ -37,11 +37,11 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
  */
 public class TrainStationActivity extends ListActivity {
 	/** The train data **/
-	private TrainData mTrainData;
+	private TrainData trainData;
 	/** The line **/
-	private TrainLine mLine;
+	private TrainLine trainLine;
 	/** The line param **/
-	private String mLineParam;
+	private String lineParam;
 
 	@Override
 	protected void attachBaseContext(Context newBase) {
@@ -54,21 +54,21 @@ public class TrainStationActivity extends ListActivity {
 		if (!this.isFinishing()) {
 			// Load data
 			DataHolder dataHolder = DataHolder.getInstance();
-			this.mTrainData = dataHolder.getTrainData();
+			this.trainData = dataHolder.getTrainData();
 
-			if (mLine == null && mLineParam == null) {
-				mLineParam = getIntent().getExtras().getString("line");
-				mLine = TrainLine.fromString(mLineParam);
+			if (trainLine == null && lineParam == null) {
+				lineParam = getIntent().getExtras().getString("line");
+				trainLine = TrainLine.fromString(lineParam);
 			}
 
-			this.setTitle(mLine.toStringWithLine());
+			this.setTitle(trainLine.toStringWithLine());
 
 			setContentView(R.layout.activity_train_station);
 
 			FrameLayout container = (FrameLayout) findViewById(R.id.container);
 			container.getForeground().setAlpha(0);
 
-			TrainAdapter ada = new TrainAdapter(mLine, this, container);
+			TrainAdapter ada = new TrainAdapter(trainLine, this, container);
 			setListAdapter(ada);
 		}
 	}
@@ -76,13 +76,13 @@ public class TrainStationActivity extends ListActivity {
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		mLineParam = savedInstanceState.getString("line");
-		mLine = TrainLine.fromString(mLineParam);
+		lineParam = savedInstanceState.getString("line");
+		trainLine = TrainLine.fromString(lineParam);
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-		savedInstanceState.putString("line", mLineParam);
+		savedInstanceState.putString("line", lineParam);
 		super.onSaveInstanceState(savedInstanceState);
 	}
 

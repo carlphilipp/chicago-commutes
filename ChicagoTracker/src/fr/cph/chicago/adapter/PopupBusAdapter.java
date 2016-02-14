@@ -32,9 +32,9 @@ import java.util.List;
  */
 public class PopupBusAdapter extends ArrayAdapter<String> {
 	/** Context **/
-	private final Context mContext;
+	private final Context context;
 	/** Values **/
-	private final List<String> mValues;
+	private final List<String> values;
 
 	/**
 	 * @param context
@@ -42,16 +42,16 @@ public class PopupBusAdapter extends ArrayAdapter<String> {
 	 */
 	public PopupBusAdapter(Context context, List<String> values) {
 		super(context, R.layout.popup_bus_cell, values);
-		this.mContext = context;
-		this.mValues = values;
+		this.context = context;
+		this.values = values;
 	}
 
 	@Override
 	public final View getView(final int position, final View convertView, final ViewGroup parent) {
-		LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View rowView = inflater.inflate(R.layout.popup_bus_cell, parent, false);
 		TextView textView = (TextView) rowView.findViewById(R.id.label);
-		textView.setText(mValues.get(position));
+		textView.setText(values.get(position));
 		return rowView;
 	}
 

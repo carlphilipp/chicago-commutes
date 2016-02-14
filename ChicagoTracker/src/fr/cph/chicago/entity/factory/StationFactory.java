@@ -28,11 +28,11 @@ import java.util.List;
  * @version 1
  */
 public class StationFactory {
+
 	/**
 	 *
 	 */
 	private StationFactory() {
-
 	}
 
 	/**

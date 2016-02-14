@@ -41,39 +41,39 @@ import java.util.TreeMap;
  */
 public class Favorites {
 	/** The list of train arrival **/
-	private SparseArray<TrainArrival> mTrainArrivals;
+	private SparseArray<TrainArrival> trainArrivals;
 	/** The list of bus arrival **/
-	private List<BusArrival> mBusArrivals;
+	private List<BusArrival> busArrivals;
 	/** Bike stations **/
-	private List<BikeStation> mBikeStations;
+	private List<BikeStation> bikeStations;
 	/** The list of train favorites **/
-	private List<Integer> mTrainFavorites;
+	private List<Integer> trainFavorites;
 	/** THe list of bus favorites **/
-	private List<String> mBusFavorites;
+	private List<String> busFavorites;
 	/** The list of bike favorites **/
-	private List<String> mBikeFavorites;
+	private List<String> bikeFavorites;
 	/** The list of fake bus favorites **/
-	private List<String> mFakeBusFavorites;
+	private List<String> fakeBusFavorites;
 	/** Train data **/
-	private TrainData mTrainData;
+	private TrainData trainData;
 	/** Bus data **/
-	private BusData mBusData;
+	private BusData busData;
 
 	/**
 	 * Public constructor
 	 */
 	public Favorites() {
-		this.mTrainArrivals = new SparseArray<>();
-		this.mBusArrivals = new ArrayList<>();
-		this.mBikeStations = new ArrayList<>();
+		this.trainArrivals = new SparseArray<>();
+		this.busArrivals = new ArrayList<>();
+		this.bikeStations = new ArrayList<>();
 
-		this.mTrainFavorites = new ArrayList<>();
-		this.mBusFavorites = new ArrayList<>();
-		this.mFakeBusFavorites = new ArrayList<>();
-		this.mBikeFavorites = new ArrayList<>();
+		this.trainFavorites = new ArrayList<>();
+		this.busFavorites = new ArrayList<>();
+		this.fakeBusFavorites = new ArrayList<>();
+		this.bikeFavorites = new ArrayList<>();
 
-		this.mTrainData = DataHolder.getInstance().getTrainData();
-		this.mBusData = DataHolder.getInstance().getBusData();
+		this.trainData = DataHolder.getInstance().getTrainData();
+		this.busData = DataHolder.getInstance().getBusData();
 	}
 
 	/**
@@ -82,7 +82,7 @@ public class Favorites {
 	 * @return a size
 	 */
 	public final int size() {
-		return mTrainFavorites.size() + mFakeBusFavorites.size() + mBikeFavorites.size();
+		return trainFavorites.size() + fakeBusFavorites.size() + bikeFavorites.size();
 	}
 
 	/**
@@ -94,15 +94,15 @@ public class Favorites {
 	 */
 	public final Object getObject(final int position) {
 		Object result = null;
-		if (position < mTrainFavorites.size()) {
-			Integer stationId = mTrainFavorites.get(position);
-			result = mTrainData.getStation(stationId);
-		} else if (position < mTrainFavorites.size() + mFakeBusFavorites.size()) {
-			int indice = position - mTrainFavorites.size();
-			if (indice < mFakeBusFavorites.size()) {
-				String res[] = Util.decodeBusFavorite(mFakeBusFavorites.get(indice));
-				if (mBusData.containsRoute(res[0])) {
-					return mBusData.getRoute(res[0]);
+		if (position < trainFavorites.size()) {
+			Integer stationId = trainFavorites.get(position);
+			result = trainData.getStation(stationId);
+		} else if (position < trainFavorites.size() + fakeBusFavorites.size()) {
+			int indice = position - trainFavorites.size();
+			if (indice < fakeBusFavorites.size()) {
+				String res[] = Util.decodeBusFavorite(fakeBusFavorites.get(indice));
+				if (busData.containsRoute(res[0])) {
+					return busData.getRoute(res[0]);
 				} else {
 					// Get name in the preferences if null
 					String routeName = Preferences.getBusRouteNameMapping(res[1]);
@@ -118,15 +118,15 @@ public class Favorites {
 
 			}
 		} else {
-			int indice = position - (mTrainFavorites.size() + mFakeBusFavorites.size());
-			Collections.sort(mBikeStations, Util.BIKE_COMPARATOR_NAME);
-			for (BikeStation bikeStation : mBikeStations) {
-				if (String.valueOf(bikeStation.getId()).equals(mBikeFavorites.get(indice))) {
+			int indice = position - (trainFavorites.size() + fakeBusFavorites.size());
+			Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
+			for (BikeStation bikeStation : bikeStations) {
+				if (String.valueOf(bikeStation.getId()).equals(bikeFavorites.get(indice))) {
 					return bikeStation;
 				}
 			}
 			BikeStation bikeStation = new BikeStation();
-			String stationName = Preferences.getBikeRouteNameMapping(mBikeFavorites.get(indice));
+			String stationName = Preferences.getBikeRouteNameMapping(bikeFavorites.get(indice));
 			bikeStation.setName(stationName);
 			return bikeStation;
 		}
@@ -141,7 +141,7 @@ public class Favorites {
 	 * @return a train arrival
 	 */
 	public final TrainArrival getTrainArrival(final Integer stationId) {
-		return mTrainArrivals.get(stationId);
+		return trainArrivals.get(stationId);
 	}
 
 	/**
@@ -153,7 +153,7 @@ public class Favorites {
 	 */
 	public final List<BusArrival> getBusArrivals(final String routeId) {
 		List<BusArrival> res = new ArrayList<>();
-		for (BusArrival busArrival : mBusArrivals) {
+		for (BusArrival busArrival : busArrivals) {
 			if (busArrival.getRouteId().equals(routeId)) {
 				res.add(busArrival);
 			}
@@ -170,7 +170,7 @@ public class Favorites {
 	 */
 	public final BusArrival getOneBusArrival(final String routeId) {
 		BusArrival bus = null;
-		for (BusArrival busArrival : mBusArrivals) {
+		for (BusArrival busArrival : busArrivals) {
 			if (busArrival.getRouteId().equals(routeId)) {
 				bus = busArrival;
 				break;
@@ -193,10 +193,10 @@ public class Favorites {
 				return lhs.compareTo(rhs);
 			}
 		});
-		if (mBusArrivals != null) {
-			if (mBusArrivals.size() == 0) {
+		if (busArrivals != null) {
+			if (busArrivals.size() == 0) {
 				// Handle the case where no arrival train are there
-				for (String bus : mBusFavorites) {
+				for (String bus : busFavorites) {
 					String fav[] = Util.decodeBusFavorite(bus);
 					String routeIdFav = fav[0];
 					Integer stopId = Integer.valueOf(fav[1]);
@@ -235,7 +235,7 @@ public class Favorites {
 					}
 				}
 			} else {
-				for (BusArrival busArrival : mBusArrivals) {
+				for (BusArrival busArrival : busArrivals) {
 					Integer stopId = busArrival.getStopId();
 					String bound = busArrival.getRouteDirection();
 					if (isInFavorites(routeId, stopId, bound)) {
@@ -263,7 +263,7 @@ public class Favorites {
 			}
 
 			// Put empty buses if one of the stop is missing from the answer
-			for (String bus : mBusFavorites) {
+			for (String bus : busFavorites) {
 				String fav[] = Util.decodeBusFavorite(bus);
 				String routeIdFav = fav[0];
 				if (routeIdFav.equals(routeId)) {
@@ -315,7 +315,7 @@ public class Favorites {
 	 */
 	private boolean isInFavorites(final String routeId, final Integer stopId, final String bound) {
 		boolean res = false;
-		for (String fav : mBusFavorites) {
+		for (String fav : busFavorites) {
 			String decoded[] = Util.decodeBusFavorite(fav);
 			// TODO: Is that correct ? maybe remove stopId
 			if (routeId.equals(decoded[0]) && String.valueOf(stopId).equals(decoded[1]) && bound.equals(decoded[2])) {
@@ -331,7 +331,7 @@ public class Favorites {
 	 * @param trainArrival
 	 */
 	public final void setTrainArrival(final SparseArray<TrainArrival> trainArrival) {
-		this.mTrainArrivals = trainArrival;
+		this.trainArrivals = trainArrival;
 	}
 
 	/**
@@ -339,22 +339,22 @@ public class Favorites {
 	 * @param busArrivals
 	 */
 	public final void setBusArrivals(final List<BusArrival> busArrivals) {
-		this.mBusArrivals = busArrivals;
+		this.busArrivals = busArrivals;
 	}
 
 	/**
 	 *
 	 */
 	public final void setFavorites() {
-		this.mTrainFavorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
-		this.mBusFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
-		this.mFakeBusFavorites = calculateActualRouteNumberBusFavorites();
-		this.mBikeFavorites.clear();
+		this.trainFavorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
+		this.busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+		this.fakeBusFavorites = calculateActualRouteNumberBusFavorites();
+		this.bikeFavorites.clear();
 		List<String> bikeFavoritesTemp = Preferences.getBikeFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
 		List<BikeStation> bikeStationsFavoritesTemp = new ArrayList<>();
-		if (this.mBikeStations.size() != 0) {
+		if (this.bikeStations.size() != 0) {
 			for (String bikeStationId : bikeFavoritesTemp) {
-				for (BikeStation station : mBikeStations) {
+				for (BikeStation station : bikeStations) {
 					if (String.valueOf(station.getId()).equals(bikeStationId)) {
 						bikeStationsFavoritesTemp.add(station);
 						break;
@@ -363,10 +363,10 @@ public class Favorites {
 			}
 			Collections.sort(bikeStationsFavoritesTemp, Util.BIKE_COMPARATOR_NAME);
 			for (BikeStation station : bikeStationsFavoritesTemp) {
-				this.mBikeFavorites.add(String.valueOf(station.getId()));
+				this.bikeFavorites.add(String.valueOf(station.getId()));
 			}
 		} else {
-			mBikeFavorites.addAll(bikeFavoritesTemp);
+			bikeFavorites.addAll(bikeFavoritesTemp);
 		}
 	}
 
@@ -377,18 +377,18 @@ public class Favorites {
 	 */
 	public final void setArrivalsAndBikeStations(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals,
 			final List<BikeStation> bikeStations) {
-		this.mTrainArrivals.clear();
-		this.mTrainArrivals = trainArrivals;
+		this.trainArrivals.clear();
+		this.trainArrivals = trainArrivals;
 		removeDuplicates(busArrivals);
-		this.mBusArrivals.clear();
-		this.mBusArrivals = busArrivals;
-		this.mBikeStations.clear();
-		this.mBikeStations = bikeStations;
+		this.busArrivals.clear();
+		this.busArrivals = busArrivals;
+		this.bikeStations.clear();
+		this.bikeStations = bikeStations;
 	}
 
 	public final void setBikeStations(List<BikeStation> bikeStations) {
-		this.mBikeStations.clear();
-		this.mBikeStations = bikeStations;
+		this.bikeStations.clear();
+		this.bikeStations = bikeStations;
 		setFavorites();
 	}
 
@@ -399,7 +399,7 @@ public class Favorites {
 	private List<String> calculateActualRouteNumberBusFavorites() {
 		List<String> found = new ArrayList<>();
 		List<String> favs = new ArrayList<>();
-		for (String fav : mBusFavorites) {
+		for (String fav : busFavorites) {
 			String[] decoded = Util.decodeBusFavorite(fav);
 			if (!found.contains(decoded[0])) {
 				found.add(decoded[0]);

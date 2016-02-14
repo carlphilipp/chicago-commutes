@@ -29,7 +29,7 @@ public class SettingsFragment extends PreferenceFragment {
 	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
 	/** The main activity **/
-	private MainActivity mActivity;
+	private MainActivity mainActivity;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -49,8 +49,8 @@ public class SettingsFragment extends PreferenceFragment {
 	@Override
 	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
-		mActivity = (MainActivity) activity;
-		mActivity.onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
+		mainActivity = (MainActivity) activity;
+		mainActivity.onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class SettingsFragment extends PreferenceFragment {
 		addPreferencesFromResource(R.xml.preferences);
 		setHasOptionsMenu(true);
 
-		Util.trackScreen(mActivity, R.string.analytics_settings_fragment);
+		Util.trackScreen(mainActivity, R.string.analytics_settings_fragment);
 	}
 
 	@Override

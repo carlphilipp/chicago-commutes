@@ -83,33 +83,33 @@ public class StationActivity extends Activity {
 
 	private static final String TAG = "StationActivity";
 	/** Train data **/
-	private TrainData mTrainData;
+	private TrainData trainData;
 	/** Train arrival **/
-	private TrainArrival mArrival;
+	private TrainArrival trainArrival;
 	/** The station id **/
-	private Integer mStationId;
+	private Integer stationId;
 	/** The station **/
-	private Station mStation;
+	private Station station;
 	/** Street view image **/
-	private ImageView mStreetViewImage;
+	private ImageView streetViewImage;
 	/** Street view text **/
-	private TextView mStreetViewText;
+	private TextView streetViewText;
 	/** Map image **/
-	private ImageView mMapImage;
+	private ImageView mapImage;
 	/** Direction image **/
-	private ImageView mDirectionImage;
+	private ImageView directionImage;
 	/** Favorite image **/
-	private ImageView mFavoritesImage;
+	private ImageView favoritesImage;
 	/** Is favorite **/
-	private boolean mIsFavorite;
+	private boolean isFavorite;
 	/** Map of ids **/
-	private Map<String, Integer> mIds;
+	private Map<String, Integer> ids;
 	/** Params stops **/
-	private LinearLayout.LayoutParams mParamsStop;
+	private LinearLayout.LayoutParams paramsStop;
 	/** The menu **/
-	private Menu mMenu;
+	private Menu menu;
 	/** The first load **/
-	private boolean mFirstLoad = true;
+	private boolean firstLoad = true;
 
 	@Override
 	protected void attachBaseContext(Context newBase) {
@@ -124,46 +124,46 @@ public class StationActivity extends Activity {
 		if (!this.isFinishing()) {
 			// Load data
 			DataHolder dataHolder = DataHolder.getInstance();
-			this.mTrainData = dataHolder.getTrainData();
+			this.trainData = dataHolder.getTrainData();
 
-			mIds = new HashMap<String, Integer>();
+			ids = new HashMap<String, Integer>();
 
 			// Load right xml
 			setContentView(R.layout.activity_station);
 
 			// Get station id from bundle extra
-			if (mStationId == null) {
-				mStationId = getIntent().getExtras().getInt("stationId");
+			if (stationId == null) {
+				stationId = getIntent().getExtras().getInt("stationId");
 			}
 
 			// Get station from station id
-			mStation = mTrainData.getStation(mStationId);
+			station = trainData.getStation(stationId);
 
 			MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
-			reqParams.put("mapid", String.valueOf(mStation.getId()));
+			reqParams.put("mapid", String.valueOf(station.getId()));
 			new LoadData().execute(reqParams);
 
 			// Call google street api to load image
-			new DisplayGoogleStreetPicture().execute(mStation.getStops().get(0).getPosition());
+			new DisplayGoogleStreetPicture().execute(station.getStops().get(0).getPosition());
 
-			this.mIsFavorite = isFavorite();
+			this.isFavorite = isFavorite();
 
 			TextView textView = (TextView) findViewById(R.id.activity_bike_station_station_name);
-			textView.setText(mStation.getName().toString());
+			textView.setText(station.getName().toString());
 
-			mStreetViewImage = (ImageView) findViewById(R.id.activity_bike_station_streetview_image);
+			streetViewImage = (ImageView) findViewById(R.id.activity_bike_station_streetview_image);
 
-			mStreetViewText = (TextView) findViewById(R.id.activity_bike_station_steetview_text);
+			streetViewText = (TextView) findViewById(R.id.activity_bike_station_steetview_text);
 
-			mMapImage = (ImageView) findViewById(R.id.activity_bike_station_map_image);
+			mapImage = (ImageView) findViewById(R.id.activity_bike_station_map_image);
 
-			mDirectionImage = (ImageView) findViewById(R.id.activity_bike_station_map_direction);
+			directionImage = (ImageView) findViewById(R.id.activity_bike_station_map_direction);
 
-			mFavoritesImage = (ImageView) findViewById(R.id.activity_bike_station_favorite_star);
-			if (mIsFavorite) {
-				mFavoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_active));
+			favoritesImage = (ImageView) findViewById(R.id.activity_bike_station_favorite_star);
+			if (isFavorite) {
+				favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_active));
 			}
-			mFavoritesImage.setOnClickListener(new View.OnClickListener() {
+			favoritesImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					StationActivity.this.switchFavorite();
@@ -172,9 +172,9 @@ public class StationActivity extends Activity {
 
 			LinearLayout stopsView = (LinearLayout) findViewById(R.id.activity_bike_station_details);
 
-			this.mParamsStop = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+			this.paramsStop = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
-			Map<TrainLine, List<Stop>> stops = mStation.getStopByLines();
+			Map<TrainLine, List<Stop>> stops = station.getStopByLines();
 			CheckBox checkBox = null;
 			for (Entry<TrainLine, List<Stop>> e : stops.entrySet()) {
 				final TrainLine line = e.getKey();
@@ -193,13 +193,13 @@ public class StationActivity extends Activity {
 				for (final Stop stop : stopss) {
 					LinearLayout line2 = new LinearLayout(this);
 					line2.setOrientation(LinearLayout.HORIZONTAL);
-					line2.setLayoutParams(mParamsStop);
+					line2.setLayoutParams(paramsStop);
 
 					checkBox = new CheckBox(this);
 					checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 						@Override
 						public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-							Preferences.saveTrainFilter(mStationId, line, stop.getDirection(), isChecked);
+							Preferences.saveTrainFilter(stationId, line, stop.getDirection(), isChecked);
 						}
 					});
 					checkBox.setOnClickListener(new View.OnClickListener() {
@@ -207,11 +207,11 @@ public class StationActivity extends Activity {
 						public void onClick(View v) {
 							// Update timing
 							MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
-							reqParams.put("mapid", String.valueOf(mStation.getId()));
+							reqParams.put("mapid", String.valueOf(station.getId()));
 							new LoadData().execute(reqParams);
 						}
 					});
-					checkBox.setChecked(Preferences.getTrainFilter(mStationId, line, stop.getDirection()));
+					checkBox.setChecked(Preferences.getTrainFilter(stationId, line, stop.getDirection()));
 					checkBox.setText(stop.getDirection().toString());
 					checkBox.setTextColor(getResources().getColor(R.color.grey));
 
@@ -220,10 +220,10 @@ public class StationActivity extends Activity {
 
 					LinearLayout line3 = new LinearLayout(this);
 					line3.setOrientation(LinearLayout.VERTICAL);
-					line3.setLayoutParams(mParamsStop);
+					line3.setLayoutParams(paramsStop);
 					int id3 = Util.generateViewId();
 					line3.setId(id3);
-					mIds.put(line.toString() + "_" + stop.getDirection().toString(), id3);
+					ids.put(line.toString() + "_" + stop.getDirection().toString(), id3);
 
 					stopsView.addView(line3);
 				}
@@ -238,19 +238,19 @@ public class StationActivity extends Activity {
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		mStationId = savedInstanceState.getInt("stationId");
+		stationId = savedInstanceState.getInt("stationId");
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-		savedInstanceState.putInt("stationId", mStationId);
+		savedInstanceState.putInt("stationId", stationId);
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
 	@Override
 	public final boolean onCreateOptionsMenu(final Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		this.mMenu = menu;
+		this.menu = menu;
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main_no_search, menu);
 
@@ -279,7 +279,7 @@ public class StationActivity extends Activity {
 				params.put("mapid", String.valueOf(fav));
 			}
 			MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
-			reqParams.put("mapid", String.valueOf(mStation.getId()));
+			reqParams.put("mapid", String.valueOf(station.getId()));
 			new LoadData().execute(reqParams);
 			return true;
 		}
@@ -295,7 +295,7 @@ public class StationActivity extends Activity {
 		boolean isFavorite = false;
 		List<Integer> favorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
 		for (Integer fav : favorites) {
-			if (fav.intValue() == mStationId.intValue()) {
+			if (fav.intValue() == stationId.intValue()) {
 				isFavorite = true;
 				break;
 			}
@@ -330,14 +330,14 @@ public class StationActivity extends Activity {
 		@Override
 		protected final void onPostExecute(final Drawable result) {
 			int height = (int) getResources().getDimension(R.dimen.activity_station_street_map_height);
-			android.widget.RelativeLayout.LayoutParams params = (android.widget.RelativeLayout.LayoutParams) StationActivity.this.mStreetViewImage
+			android.widget.RelativeLayout.LayoutParams params = (android.widget.RelativeLayout.LayoutParams) StationActivity.this.streetViewImage
 					.getLayoutParams();
-			ViewGroup.LayoutParams params2 = StationActivity.this.mStreetViewImage.getLayoutParams();
+			ViewGroup.LayoutParams params2 = StationActivity.this.streetViewImage.getLayoutParams();
 			params2.height = height;
 			params2.width = params.width;
-			StationActivity.this.mStreetViewImage.setLayoutParams(params2);
-			StationActivity.this.mStreetViewImage.setImageDrawable(result);
-			StationActivity.this.mStreetViewImage.setOnClickListener(new View.OnClickListener() {
+			StationActivity.this.streetViewImage.setLayoutParams(params2);
+			StationActivity.this.streetViewImage.setImageDrawable(result);
+			StationActivity.this.streetViewImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					String uri = String.format(Locale.ENGLISH, "google.streetview:cbll=%f,%f&cbp=1,180,,0,1&mz=1", position.getLatitude(),
@@ -354,8 +354,8 @@ public class StationActivity extends Activity {
 					}
 				}
 			});
-			StationActivity.this.mMapImage.setImageDrawable(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.da_turn_arrive));
-			StationActivity.this.mMapImage.setOnClickListener(new View.OnClickListener() {
+			StationActivity.this.mapImage.setImageDrawable(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.da_turn_arrive));
+			StationActivity.this.mapImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					String uri = "http://maps.google.com/maps?z=12&t=m&q=loc:" + position.getLatitude() + "+" + position.getLongitude();
@@ -365,9 +365,9 @@ public class StationActivity extends Activity {
 				}
 			});
 
-			StationActivity.this.mDirectionImage.setImageDrawable(ChicagoTracker.getAppContext().getResources()
+			StationActivity.this.directionImage.setImageDrawable(ChicagoTracker.getAppContext().getResources()
 					.getDrawable(R.drawable.ic_directions_walking));
-			StationActivity.this.mDirectionImage.setOnClickListener(new View.OnClickListener() {
+			StationActivity.this.directionImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					String uri = "http://maps.google.com/?f=d&daddr=" + position.getLatitude() + "," + position.getLongitude() + "&dirflg=w";
@@ -377,15 +377,15 @@ public class StationActivity extends Activity {
 				}
 			});
 
-			StationActivity.this.mStreetViewText.setText(ChicagoTracker.getAppContext().getResources()
+			StationActivity.this.streetViewText.setText(ChicagoTracker.getAppContext().getResources()
 					.getString(R.string.station_activity_street_view));
 
-			if (mMenu != null) {
-				MenuItem refreshMenuItem = mMenu.findItem(R.id.action_refresh);
+			if (menu != null) {
+				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
 				refreshMenuItem.collapseActionView();
 				refreshMenuItem.setActionView(null);
 			}
-			mFirstLoad = false;
+			firstLoad = false;
 		}
 	}
 
@@ -411,7 +411,7 @@ public class StationActivity extends Activity {
 				Xml xml = new Xml();
 				String xmlResult = connect.connect(CtaRequestType.TRAIN_ARRIVALS, params[0]);
 				// String xmlResult = connectTest();
-				arrivals = xml.parseArrivals(xmlResult, StationActivity.this.mTrainData);
+				arrivals = xml.parseArrivals(xmlResult, StationActivity.this.trainData);
 				// Apply filters
 				int index = 0;
 				while (index < arrivals.size()) {
@@ -456,8 +456,8 @@ public class StationActivity extends Activity {
 		@Override
 		protected final void onProgressUpdate(final Void... values) {
 			// Get menu item and put it to loading mod
-			if (mMenu != null) {
-				MenuItem refreshMenuItem = mMenu.findItem(R.id.action_refresh);
+			if (menu != null) {
+				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
 				refreshMenuItem.setActionView(R.layout.progressbar);
 				refreshMenuItem.expandActionView();
 			}
@@ -466,19 +466,19 @@ public class StationActivity extends Activity {
 		@Override
 		protected final void onPostExecute(final TrainArrival result) {
 			if (this.trackerException == null) {
-				mArrival = result;
+				trainArrival = result;
 				List<Eta> etas;
-				if (mArrival != null) {
-					etas = mArrival.getEtas();
+				if (trainArrival != null) {
+					etas = trainArrival.getEtas();
 				} else {
 					etas = new ArrayList<>();
 				}
-				reset(StationActivity.this.mStation);
+				reset(StationActivity.this.station);
 				for (Eta eta : etas) {
 					drawLine3(eta);
 				}
-				if (!mFirstLoad) {
-					MenuItem refreshMenuItem = mMenu.findItem(R.id.action_refresh);
+				if (!firstLoad) {
+					MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
 					refreshMenuItem.collapseActionView();
 					refreshMenuItem.setActionView(null);
 				}
@@ -498,7 +498,7 @@ public class StationActivity extends Activity {
 		Set<TrainLine> setTL = station.getLines();
 		for (TrainLine tl : setTL) {
 			for (TrainDirection d : TrainDirection.values()) {
-				Integer id = mIds.get(tl.toString() + "_" + d.toString());
+				Integer id = ids.get(tl.toString() + "_" + d.toString());
 				if (id != null) {
 					LinearLayout line3View = (LinearLayout) findViewById(id);
 					if (line3View != null) {
@@ -528,18 +528,18 @@ public class StationActivity extends Activity {
 		TrainLine line = eta.getRouteName();
 		Stop stop = eta.getStop();
 		int line3Padding = (int) getResources().getDimension(R.dimen.activity_station_stops_line3);
-		Integer viewId = mIds.get(line.toString() + "_" + stop.getDirection().toString());
+		Integer viewId = ids.get(line.toString() + "_" + stop.getDirection().toString());
 		// viewId might be not there if CTA API provide wrong data
 		if (viewId != null) {
 			LinearLayout line3View = (LinearLayout) findViewById(viewId);
-			Integer id = mIds.get(line.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName());
+			Integer id = ids.get(line.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName());
 			if (id == null) {
 				LinearLayout insideLayout = new LinearLayout(this);
 				insideLayout.setOrientation(LinearLayout.HORIZONTAL);
-				insideLayout.setLayoutParams(mParamsStop);
+				insideLayout.setLayoutParams(paramsStop);
 				int newId = Util.generateViewId();
 				insideLayout.setId(newId);
-				mIds.put(line.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName(), newId);
+				ids.put(line.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName(), newId);
 
 				TextView stopName = new TextView(this);
 				stopName.setText(eta.getDestName() + ": ");
@@ -568,17 +568,17 @@ public class StationActivity extends Activity {
 	 * Add/remove favorites
 	 */
 	private void switchFavorite() {
-		if (mIsFavorite) {
-			Util.removeFromTrainFavorites(mStationId, ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
-			mIsFavorite = false;
+		if (isFavorite) {
+			Util.removeFromTrainFavorites(stationId, ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
+			isFavorite = false;
 		} else {
-			Util.addToTrainFavorites(mStationId, ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
-			mIsFavorite = true;
+			Util.addToTrainFavorites(stationId, ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
+			isFavorite = true;
 		}
-		if (mIsFavorite) {
-			mFavoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_active));
+		if (isFavorite) {
+			favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_active));
 		} else {
-			mFavoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_disabled));
+			favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_disabled));
 		}
 	}
 }
