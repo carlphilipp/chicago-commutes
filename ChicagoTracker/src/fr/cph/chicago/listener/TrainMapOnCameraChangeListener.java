@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,22 +16,20 @@
 
 package fr.cph.chicago.listener;
 
-import java.util.List;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Marker;
-
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 
+import java.util.List;
+
 /**
  * Train map on camera change listener
- * 
+ *
  * @author Carl-Philipp Harmant
  * @version 1
  */
@@ -52,7 +50,7 @@ public class TrainMapOnCameraChangeListener implements OnCameraChangeListener {
 	private List<Marker> mTrainMarkers;
 
 	/**
-	 * 
+	 *
 	 */
 	public TrainMapOnCameraChangeListener() {
 		Bitmap icon = BitmapFactory.decodeResource(ChicagoTracker.getAppContext().getResources(), R.drawable.train);

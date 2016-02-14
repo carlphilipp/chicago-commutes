@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,17 +16,6 @@
 
 package fr.cph.chicago.activity;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
-
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
@@ -80,10 +69,20 @@ import fr.cph.chicago.fragment.drawer.NavigationDrawerFragment;
 import fr.cph.chicago.json.Json;
 import fr.cph.chicago.task.GlobalConnectTask;
 import fr.cph.chicago.util.Util;
+import org.apache.commons.collections4.MultiMap;
+import org.apache.commons.collections4.map.MultiValueMap;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Activity that is the using loading fragments as needed.
- * 
+ *
  * @author Carl-Philipp Harmant
  * @version 1
  */
@@ -130,7 +129,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	private static final int POSITION_MAP = 6;
 	/** Drawer Settings **/
 	private static final int POSITION_SETTINGS = 7;
-	
+
 	@Override
 	protected void attachBaseContext(Context newBase) {
 		super.attachBaseContext(new CalligraphyContextWrapper(newBase));
@@ -268,7 +267,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
 	/**
 	 * Change title
-	 * 
+	 *
 	 * @param number
 	 *            the tab number
 	 */

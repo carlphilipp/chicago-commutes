@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,13 +15,6 @@
  */
 
 package fr.cph.chicago.adapter;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -36,13 +29,11 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
@@ -58,9 +49,16 @@ import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.Util;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 /**
  * Adapter that will handle nearby
- * 
+ *
  * @author Carl-Philipp Harmant
  * @version 1
  */
@@ -376,10 +374,10 @@ public final class NearbyAdapter extends BaseAdapter {
 			final BikeStation bikeStation = (BikeStation) mBikeStations.get(indice);
 
 			LinearLayout favoritesData = (LinearLayout) convertView.findViewById(R.id.nearby_results);
-			
+
 			TextView typeView = (TextView) convertView.findViewById(R.id.train_bus_type);
 			typeView.setText("D");
-			
+
 			TextView routeView = (TextView) convertView.findViewById(R.id.station_name);
 			routeView.setText(bikeStation.getName());
 
@@ -465,7 +463,7 @@ public final class NearbyAdapter extends BaseAdapter {
 
 	/**
 	 * DP view holder
-	 * 
+	 *
 	 * @author Carl-Philipp Harmant
 	 * @version 1
 	 */
@@ -476,7 +474,7 @@ public final class NearbyAdapter extends BaseAdapter {
 
 	/**
 	 * Update data
-	 * 
+	 *
 	 * @param busStops
 	 *            the bus stops
 	 * @param busArrivals

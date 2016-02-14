@@ -60,23 +60,41 @@ import java.util.Locale;
  * @version 1
  */
 public class BikeStationActivity extends Activity {
-	/** Tag **/
+	/**
+	 * Tag
+	 **/
 	private static final String TAG = "BikeStationActivity";
-	/** The station **/
+	/**
+	 * The station
+	 **/
 	private BikeStation bikeStation;
-	/** Street view image **/
+	/**
+	 * Street view image
+	 **/
 	private ImageView streetViewImage;
-	/** Street view text **/
+	/**
+	 * Street view text
+	 **/
 	private TextView streetViewText;
-	/** Map image **/
+	/**
+	 * Map image
+	 **/
 	private ImageView mapImage;
-	/** Direction image **/
+	/**
+	 * Direction image
+	 **/
 	private ImageView directionImage;
-	/** Favorite image **/
+	/**
+	 * Favorite image
+	 **/
 	private ImageView favoritesImage;
-	/** Is favorite **/
+	/**
+	 * Is favorite
+	 **/
 	private boolean isFavorite;
-	/** The menu **/
+	/**
+	 * The menu
+	 **/
 	private Menu menu;
 
 	@Override

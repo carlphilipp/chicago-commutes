@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,15 +16,15 @@
 
 package fr.cph.chicago.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author carl
- * 
+ *
  */
 public final class BusPattern implements Parcelable {
 	/** The pattern id **/
@@ -37,14 +37,14 @@ public final class BusPattern implements Parcelable {
 	private List<PatternPoint> points;
 
 	/**
-	 * 
+	 *
 	 */
 	public BusPattern() {
 		this.points = new ArrayList<PatternPoint>();
 	}
 
 	/**
-	 * 
+	 *
 	 * @param in
 	 */
 	private BusPattern(Parcel in) {
@@ -106,8 +106,8 @@ public final class BusPattern implements Parcelable {
 	public final void setPoints(List<PatternPoint> points) {
 		this.points = points;
 	}
-	
-	public final void addPoint(PatternPoint patternPoint){
+
+	public final void addPoint(PatternPoint patternPoint) {
 		this.points.add(patternPoint);
 	}
 

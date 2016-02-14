@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,7 +18,7 @@ package fr.cph.chicago.entity;
 
 /**
  * Service entity
- * 
+ *
  * @author Carl-Philipp Harmant
  * @version 1
  */
@@ -39,7 +39,7 @@ public class Service {
 	private String url;
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final String getType() {
@@ -47,7 +47,7 @@ public class Service {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param type
 	 */
 	public final void setType(String type) {
@@ -55,7 +55,7 @@ public class Service {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final String getTypeDescription() {
@@ -63,7 +63,7 @@ public class Service {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param typeDescription
 	 */
 	public final void setTypeDescription(String typeDescription) {
@@ -71,7 +71,7 @@ public class Service {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final String getName() {
@@ -79,7 +79,7 @@ public class Service {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param name
 	 */
 	public final void setName(String name) {
@@ -87,7 +87,7 @@ public class Service {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final String getId() {
@@ -95,7 +95,7 @@ public class Service {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param id
 	 */
 	public final void setId(String id) {
@@ -103,7 +103,7 @@ public class Service {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final String getBackColor() {
@@ -111,7 +111,7 @@ public class Service {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param backColor
 	 */
 	public final void setBackColor(String backColor) {
@@ -119,7 +119,7 @@ public class Service {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final String getTextColor() {
@@ -127,7 +127,7 @@ public class Service {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param textColor
 	 */
 	public final void setTextColor(String textColor) {
@@ -135,7 +135,7 @@ public class Service {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final String getUrl() {
@@ -143,7 +143,7 @@ public class Service {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param url
 	 */
 	public final void setUrl(String url) {

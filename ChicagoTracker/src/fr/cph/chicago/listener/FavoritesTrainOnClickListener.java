@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,10 +15,6 @@
  */
 
 package fr.cph.chicago.listener;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 import android.app.Activity;
 import android.content.Context;
@@ -43,9 +39,13 @@ import fr.cph.chicago.adapter.PopupTrainAdapter;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.Util;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 /**
  * Favorites train on click listener
- * 
+ *
  * @author Carl-Philipp Harmant
  * @version 1
  */
@@ -65,7 +65,8 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 	 * @param stationId
 	 * @param trainLines
 	 */
-	public FavoritesTrainOnClickListener(final Activity activity, final FrameLayout firstLayout, final int stationId, final Set<TrainLine> trainLines) {
+	public FavoritesTrainOnClickListener(final Activity activity, final FrameLayout firstLayout, final int stationId,
+			final Set<TrainLine> trainLines) {
 		this.mActivity = activity;
 		this.mFirstLayout = firstLayout;
 		this.mStationId = stationId;

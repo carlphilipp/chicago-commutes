@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,14 +16,14 @@
 
 package fr.cph.chicago.entity;
 
-import java.io.Serializable;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.Serializable;
+
 /**
  * The position
- * 
+ *
  * @author Carl-Philipp Harmant
  * @version 1
  */
@@ -43,7 +43,7 @@ public class Position implements Parcelable, Serializable {
 
 	/**
 	 * Public constructor
-	 * 
+	 *
 	 * @param latitude
 	 *            the latitude
 	 * @param longitude
@@ -59,7 +59,7 @@ public class Position implements Parcelable, Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final Double getLatitude() {
@@ -67,7 +67,7 @@ public class Position implements Parcelable, Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param latitude
 	 */
 	public final void setLatitude(final Double latitude) {
@@ -75,7 +75,7 @@ public class Position implements Parcelable, Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final Double getLongitude() {
@@ -83,7 +83,7 @@ public class Position implements Parcelable, Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param longitude
 	 */
 	public final void setLongitude(final Double longitude) {

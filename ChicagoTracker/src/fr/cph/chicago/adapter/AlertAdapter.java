@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,9 +15,6 @@
  */
 
 package fr.cph.chicago.adapter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -31,9 +28,12 @@ import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.Alert;
 import fr.cph.chicago.entity.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Adapter that will handle alerts
- * 
+ *
  * @author Carl-Philipp Harmant
  * @version 1
  */
@@ -103,7 +103,7 @@ public final class AlertAdapter extends BaseAdapter {
 
 	/**
 	 * DP View holder
-	 * 
+	 *
 	 * @author Carl-Philipp Harmant
 	 * @version 1
 	 */
@@ -112,8 +112,8 @@ public final class AlertAdapter extends BaseAdapter {
 		TextView headLineView;
 		TextView descrView;
 	}
-	
-	public final void setAlerts(final List<Alert> alerts){
+
+	public final void setAlerts(final List<Alert> alerts) {
 		this.mAlerts = alerts;
 	}
 

@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,12 +15,6 @@
  */
 
 package fr.cph.chicago.adapter;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
 
 import android.content.Context;
 import android.content.Intent;
@@ -56,10 +50,15 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
+import org.apache.commons.collections4.MultiMap;
+import org.apache.commons.collections4.map.MultiValueMap;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Adapter that will handle buses
- * 
+ *
  * @author Carl-Philipp Harmant
  * @version 1
  */
@@ -73,7 +72,7 @@ public final class BusAdapter extends BaseAdapter {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param activity
 	 *            the main activity
 	 */
@@ -160,7 +159,7 @@ public final class BusAdapter extends BaseAdapter {
 
 	/**
 	 * DP view holder
-	 * 
+	 *
 	 * @author Carl-Philipp Harmant
 	 * @version 1
 	 */
@@ -172,7 +171,7 @@ public final class BusAdapter extends BaseAdapter {
 
 	/**
 	 * Task to get the directions of the stop
-	 * 
+	 *
 	 * @author Carl-Philipp Harmant
 	 * @version 1
 	 */

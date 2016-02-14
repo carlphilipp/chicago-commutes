@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,6 +15,14 @@
  */
 
 package fr.cph.chicago.data;
+
+import android.util.SparseArray;
+import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.entity.BikeStation;
+import fr.cph.chicago.entity.BusArrival;
+import fr.cph.chicago.entity.BusRoute;
+import fr.cph.chicago.entity.TrainArrival;
+import fr.cph.chicago.util.Util;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,17 +33,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import android.util.SparseArray;
-import fr.cph.chicago.ChicagoTracker;
-import fr.cph.chicago.entity.BikeStation;
-import fr.cph.chicago.entity.BusArrival;
-import fr.cph.chicago.entity.BusRoute;
-import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.util.Util;
-
 /**
  * Vehicle Arrival. Hold data for favorites adapter.
- * 
+ *
  * @author Carl-Philipp Harmant
  * @version 1
  */
@@ -78,7 +78,7 @@ public class Favorites {
 
 	/**
 	 * Get the size of the current model
-	 * 
+	 *
 	 * @return a size
 	 */
 	public final int size() {
@@ -87,7 +87,7 @@ public class Favorites {
 
 	/**
 	 * Get the object depending on position
-	 * 
+	 *
 	 * @param position
 	 *            the position
 	 * @return an object, station or bus route
@@ -135,7 +135,7 @@ public class Favorites {
 
 	/**
 	 * Get the train arrival
-	 * 
+	 *
 	 * @param stationId
 	 *            the station id
 	 * @return a train arrival
@@ -146,7 +146,7 @@ public class Favorites {
 
 	/**
 	 * A list of bus arrival
-	 * 
+	 *
 	 * @param routeId
 	 *            the route id
 	 * @return a listof bus arrival
@@ -163,7 +163,7 @@ public class Favorites {
 
 	/**
 	 * Get on bus arrival
-	 * 
+	 *
 	 * @param routeId
 	 *            the route id
 	 * @return the bus arrival
@@ -181,7 +181,7 @@ public class Favorites {
 
 	/**
 	 * Get bus arrival mapped
-	 * 
+	 *
 	 * @param routeId
 	 *            the route id
 	 * @return a nice map
@@ -304,7 +304,7 @@ public class Favorites {
 
 	/**
 	 * Is in favorites
-	 * 
+	 *
 	 * @param routeId
 	 *            the route id
 	 * @param stopId
@@ -327,7 +327,7 @@ public class Favorites {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param trainArrival
 	 */
 	public final void setTrainArrival(final SparseArray<TrainArrival> trainArrival) {
@@ -335,7 +335,7 @@ public class Favorites {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param busArrivals
 	 */
 	public final void setBusArrivals(final List<BusArrival> busArrivals) {
@@ -343,7 +343,7 @@ public class Favorites {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public final void setFavorites() {
 		this.mTrainFavorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
@@ -371,7 +371,7 @@ public class Favorites {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param trainArrivals
 	 * @param busArrivals
 	 */
@@ -393,7 +393,7 @@ public class Favorites {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	private List<String> calculateActualRouteNumberBusFavorites() {
@@ -410,7 +410,7 @@ public class Favorites {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param busArrivals
 	 */
 	private final void removeDuplicates(final List<BusArrival> busArrivals) {

@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,22 +15,21 @@
  */
 package fr.cph.chicago.data;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
-
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.entity.Alert;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.xml.Xml;
+import org.apache.commons.collections4.MultiMap;
+import org.apache.commons.collections4.map.MultiValueMap;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class that handle alert data. Singleton
- * 
+ *
  * @author Carl-Philipp Harmant
  * @version 1
  */
@@ -49,7 +48,7 @@ public class AlertData {
 
 	/**
 	 * Singleton access to this class
-	 * 
+	 *
 	 * @return the data
 	 */
 	public static AlertData getInstance() {
@@ -61,7 +60,7 @@ public class AlertData {
 
 	/**
 	 * Connect to CTA API to get the alerts messages
-	 * 
+	 *
 	 * @return a list of alert
 	 * @throws ParserException
 	 *             a parse exception
@@ -81,7 +80,7 @@ public class AlertData {
 
 	/**
 	 * Get list of alert
-	 * 
+	 *
 	 * @return a list of alert
 	 */
 	public final List<Alert> getAlerts() {

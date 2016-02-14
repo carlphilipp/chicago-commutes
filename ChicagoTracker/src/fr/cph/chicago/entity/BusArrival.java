@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,19 +16,19 @@
 
 package fr.cph.chicago.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+import fr.cph.chicago.entity.enumeration.PredictionType;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-import fr.cph.chicago.entity.enumeration.PredictionType;
-
 /**
  * Bus Arrival entity
- * 
+ *
  * @author Carl-Philipp Harmant
  * @version 1
  */
@@ -61,14 +61,14 @@ public final class BusArrival implements Parcelable {
 	private Boolean isDly = false;
 
 	/**
-	 * 
+	 *
 	 */
 	public BusArrival() {
 
 	}
 
 	/**
-	 * 
+	 *
 	 * @param in
 	 */
 	private BusArrival(Parcel in) {
@@ -76,7 +76,7 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final Date getTimeStamp() {
@@ -84,7 +84,7 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param timeStamp
 	 */
 	public final void setTimeStamp(final Date timeStamp) {
@@ -92,7 +92,7 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final String getErrorMessage() {
@@ -100,7 +100,7 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param errorMessage
 	 */
 	public final void setErrorMessage(final String errorMessage) {
@@ -108,7 +108,7 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final PredictionType getPredictionType() {
@@ -116,7 +116,7 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param predictionType
 	 */
 	public final void setPredictionType(final PredictionType predictionType) {
@@ -124,7 +124,7 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final String getStopName() {
@@ -132,7 +132,7 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param stopName
 	 */
 	public final void setStopName(final String stopName) {
@@ -140,7 +140,7 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final Integer getStopId() {
@@ -148,7 +148,7 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param stopId
 	 */
 	public final void setStopId(final Integer stopId) {
@@ -156,7 +156,7 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final Integer getBusId() {
@@ -164,7 +164,7 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param busId
 	 */
 	public final void setBusId(final Integer busId) {
@@ -172,7 +172,7 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final Integer getDistanceToStop() {
@@ -180,7 +180,7 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param distanceToStop
 	 */
 	public final void setDistanceToStop(final Integer distanceToStop) {
@@ -188,7 +188,7 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final String getRouteId() {
@@ -196,7 +196,7 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param routeId
 	 */
 	public final void setRouteId(final String routeId) {
@@ -204,7 +204,7 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final String getRouteDirection() {
@@ -212,7 +212,7 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param routeDirection
 	 */
 	public final void setRouteDirection(final String routeDirection) {
@@ -220,7 +220,7 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final String getBusDestination() {
@@ -228,7 +228,7 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param busDestination
 	 */
 	public final void setBusDestination(final String busDestination) {
@@ -236,7 +236,7 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final Date getPredictionTime() {
@@ -244,7 +244,7 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param predictionTime
 	 */
 	public final void setPredictionTime(final Date predictionTime) {
@@ -252,7 +252,7 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final Boolean getIsDly() {
@@ -260,7 +260,7 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param isDly
 	 */
 	public final void setIsDly(final Boolean isDly) {
@@ -268,7 +268,7 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final String getTimeLeft() {
@@ -281,7 +281,7 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final String getTimeLeftDueDelay() {

@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,15 +15,6 @@
  */
 
 package fr.cph.chicago.fragment;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -56,7 +47,6 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
@@ -68,7 +58,6 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
@@ -92,10 +81,18 @@ import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.json.Json;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
+import org.apache.commons.collections4.MultiMap;
+import org.apache.commons.collections4.map.MultiValueMap;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Map Fragment
- * 
+ *
  * @author Carl-Philipp Harmant
  * @version 1
  */
@@ -127,7 +124,7 @@ public class NearbyFragment extends Fragment {
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
-	 * 
+	 *
 	 * @param sectionNumber
 	 * @return
 	 */
@@ -217,7 +214,7 @@ public class NearbyFragment extends Fragment {
 
 	/**
 	 * Load error
-	 * 
+	 *
 	 */
 	public final void displayError(final TrackerException exceptionToBeThrown) {
 		DataHolder.getInstance().setTrainData(null);
@@ -229,7 +226,7 @@ public class NearbyFragment extends Fragment {
 
 	/**
 	 * Load arrivals
-	 * 
+	 *
 	 * @author Carl-Philipp Harmant
 	 * @version 1
 	 */
@@ -390,9 +387,9 @@ public class NearbyFragment extends Fragment {
 
 	/**
 	 * Load nearby data
-	 * 
+	 *
 	 * @author Carl-Philipp Harmant
-	 * 
+	 *
 	 */
 	private final class LoadNearby extends AsyncTask<Void, Void, Void> implements LocationListener {
 
@@ -546,7 +543,7 @@ public class NearbyFragment extends Fragment {
 
 	/**
 	 * Center map
-	 * 
+	 *
 	 * @param positon
 	 *            the position we want to center on
 	 */
@@ -569,7 +566,7 @@ public class NearbyFragment extends Fragment {
 
 	/**
 	 * Load data
-	 * 
+	 *
 	 * @param buses
 	 *            the list of buses
 	 * @param busArrivals
@@ -622,7 +619,7 @@ public class NearbyFragment extends Fragment {
 
 	/**
 	 * Add click events to markers
-	 * 
+	 *
 	 * @param busStops
 	 *            the list of bus stops
 	 * @param stations
@@ -664,7 +661,7 @@ public class NearbyFragment extends Fragment {
 
 	/**
 	 * Show progress bar
-	 * 
+	 *
 	 * @param show
 	 *            true or falseO
 	 */

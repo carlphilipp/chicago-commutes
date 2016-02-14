@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,9 +15,6 @@
  */
 
 package fr.cph.chicago.fragment.drawer;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -39,6 +36,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import fr.cph.chicago.R;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer. See the <a
@@ -139,7 +139,7 @@ public class NavigationDrawerFragment extends Fragment {
 
 	/**
 	 * Users of this fragment must call this method to set up the navigation drawer interactions.
-	 * 
+	 *
 	 * @param fragmentId
 	 *            The android:id of this fragment in its activity's layout.
 	 * @param drawerLayout
@@ -160,10 +160,10 @@ public class NavigationDrawerFragment extends Fragment {
 		// ActionBarDrawerToggle ties together the the proper interactions
 		// between the navigation drawer and the action bar app icon.
 		mDrawerToggle = new ActionBarDrawerToggle(getActivity(), /* host Activity */
-		mDrawerLayout, /* DrawerLayout object */
-		R.drawable.ic_drawer, /* nav drawer image to replace 'Up' caret */
-		R.string.navigation_drawer_open, /* "open drawer" description for accessibility */
-		R.string.navigation_drawer_close /* "close drawer" description for accessibility */
+				mDrawerLayout, /* DrawerLayout object */
+				R.drawable.ic_drawer, /* nav drawer image to replace 'Up' caret */
+				R.string.navigation_drawer_open, /* "open drawer" description for accessibility */
+				R.string.navigation_drawer_close /* "close drawer" description for accessibility */
 		) {
 			@Override
 			public void onDrawerClosed(View drawerView) {
@@ -218,7 +218,7 @@ public class NavigationDrawerFragment extends Fragment {
 
 	/**
 	 * Select item
-	 * 
+	 *
 	 * @param position
 	 *            the position
 	 * @param backPressed
@@ -316,7 +316,7 @@ public class NavigationDrawerFragment extends Fragment {
 
 	/**
 	 * Get action bar
-	 * 
+	 *
 	 * @return the action bar
 	 */
 	private final ActionBar getActionBar() {

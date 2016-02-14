@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,9 +15,6 @@
  */
 
 package fr.cph.chicago.adapter;
-
-import java.util.List;
-import java.util.Set;
 
 import android.app.Activity;
 import android.content.Context;
@@ -36,9 +33,12 @@ import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.listener.FavoritesTrainOnClickListener;
 
+import java.util.List;
+import java.util.Set;
+
 /**
  * Adapter that will handle trains
- * 
+ *
  * @author Carl-Philipp Harmant
  * @version 1
  */
@@ -47,14 +47,14 @@ public final class TrainAdapter extends BaseAdapter {
 	private List<Station> mStations;
 	/** The context **/
 	private Context mContext;
-	
+
 	private Activity mActivity;
-	
+
 	private FrameLayout mContainer;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param line
 	 *            the train line
 	 */

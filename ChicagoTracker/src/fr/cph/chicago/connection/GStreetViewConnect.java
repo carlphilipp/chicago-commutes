@@ -33,17 +33,29 @@ import java.net.URL;
  */
 public class GStreetViewConnect {
 
-	/** The tag **/
+	/**
+	 * The tag
+	 **/
 	private static final String TAG = "GStreetViewConnect";
-	/** The base url of API **/
+	/**
+	 * The base url of API
+	 **/
 	private static final String BASE_URL = "http://maps.googleapis.com/maps/api/streetview";
-	/** The google key **/
+	/**
+	 * The google key
+	 **/
 	private String GOOGLE_KEY;
-	/** Width of the picture **/
+	/**
+	 * Width of the picture
+	 **/
 	private static final int WIDTH = 1000;
-	/** Height of the picture **/
+	/**
+	 * Height of the picture
+	 **/
 	private static final int HEIGHT = 300;
-	/** This class is a singleton **/
+	/**
+	 * This class is a singleton
+	 **/
 	private static GStreetViewConnect instance = null;
 
 	/**
@@ -68,11 +80,9 @@ public class GStreetViewConnect {
 	/**
 	 * Build Url
 	 *
-	 * @param position
-	 *            position that we want to access
+	 * @param position position that we want to access
 	 * @return a drawable
-	 * @throws IOException
-	 *             an exception
+	 * @throws IOException an exception
 	 */
 	public final Drawable connect(final Position position) throws IOException {
 		StringBuilder address = new StringBuilder(BASE_URL);
@@ -90,8 +100,7 @@ public class GStreetViewConnect {
 	/**
 	 * Connect to the API and get the MAP
 	 *
-	 * @param address
-	 *            the address to connect to
+	 * @param address the address to connect to
 	 * @return a drawable map
 	 * @throws IOException
 	 */

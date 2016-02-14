@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,17 +15,6 @@
  */
 
 package fr.cph.chicago.data;
-
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeMap;
 
 import android.util.Log;
 import android.util.SparseArray;
@@ -39,9 +28,20 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.entity.factory.StationFactory;
 import fr.cph.chicago.entity.factory.StopFactory;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
+
 /**
  * Class that handle train data
- * 
+ *
  * @author Carl-Philipp Harmant
  * @version 1
  */
@@ -129,7 +129,7 @@ public class TrainData {
 					}
 					String location = row[16];// Location
 					String locationTrunk = location.substring(1);
-					String coordinates [] = locationTrunk.substring(0, locationTrunk.length() - 1).split(", ");
+					String coordinates[] = locationTrunk.substring(0, locationTrunk.length() - 1).split(", ");
 					Double longitude = Double.valueOf(coordinates[0]);
 					Double latitude = Double.valueOf(coordinates[1]);
 
@@ -161,7 +161,7 @@ public class TrainData {
 
 	/**
 	 * Get all stations
-	 * 
+	 *
 	 * @return a map containing all the stations ordered line
 	 */
 	public final Map<TrainLine, List<Station>> getAllStations() {
@@ -170,7 +170,7 @@ public class TrainData {
 
 	/**
 	 * Get a list of station for a given line
-	 * 
+	 *
 	 * @param line
 	 *            the train line
 	 * @return a list of station
@@ -182,7 +182,7 @@ public class TrainData {
 
 	/**
 	 * get a station
-	 * 
+	 *
 	 * @param id
 	 *            the id of the station
 	 * @return
@@ -197,7 +197,7 @@ public class TrainData {
 
 	/**
 	 * Get a station with its position in the list
-	 * 
+	 *
 	 * @param position
 	 *            the position of the station in the list
 	 * @return a station
@@ -212,7 +212,7 @@ public class TrainData {
 
 	/**
 	 * Get a station with its position in the ordered by name list
-	 * 
+	 *
 	 * @param position
 	 *            the position
 	 * @return a station
@@ -227,7 +227,7 @@ public class TrainData {
 
 	/**
 	 * Get station by position and line
-	 * 
+	 *
 	 * @param position
 	 *            the position
 	 * @return a station
@@ -242,7 +242,7 @@ public class TrainData {
 
 	/**
 	 * Get stations size
-	 * 
+	 *
 	 * @return the size of the stations list
 	 */
 	public final int getStationsSize() {
@@ -255,7 +255,7 @@ public class TrainData {
 
 	/**
 	 * Get station size from the ordered by line
-	 * 
+	 *
 	 * @return the size
 	 */
 	public final int getStationsSizeByLine() {
@@ -264,7 +264,7 @@ public class TrainData {
 
 	/**
 	 * Get station by name
-	 * 
+	 *
 	 * @param name
 	 *            the name of the station
 	 * @return a station
@@ -286,7 +286,7 @@ public class TrainData {
 
 	/**
 	 * Get a stop
-	 * 
+	 *
 	 * @param id
 	 *            the id of the stop
 	 * @return a stop
@@ -301,7 +301,7 @@ public class TrainData {
 
 	/**
 	 * Get a stop from the list
-	 * 
+	 *
 	 * @param position
 	 *            the position of the stop in the list
 	 * @return a stop
@@ -316,7 +316,7 @@ public class TrainData {
 
 	/**
 	 * Get the size of the stops found
-	 * 
+	 *
 	 * @return a size
 	 */
 	public final int getStopsSize() {
@@ -325,7 +325,7 @@ public class TrainData {
 
 	/**
 	 * Get stop by desc
-	 * 
+	 *
 	 * @param desc
 	 *            the desription of stop
 	 * @return a stop
@@ -343,7 +343,7 @@ public class TrainData {
 
 	/**
 	 * Read near by station
-	 * 
+	 *
 	 * @param position
 	 *            the position
 	 * @return a list of station
@@ -431,8 +431,8 @@ public class TrainData {
 			mStationsOrderByLine.addAll(temp);
 		}
 	}
-	
-	public SparseArray<Station> getStations(){
+
+	public SparseArray<Station> getStations() {
 		return mStations;
 	}
 }

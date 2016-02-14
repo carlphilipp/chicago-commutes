@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,13 +15,6 @@
  */
 
 package fr.cph.chicago.adapter;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
 
 import android.content.Context;
 import android.content.Intent;
@@ -60,10 +53,16 @@ import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.listener.FavoritesTrainOnClickListener;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
+import org.apache.commons.collections4.MultiMap;
+import org.apache.commons.collections4.map.MultiValueMap;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Adapter that will handle search
- * 
+ *
  * @author Carl-Philipp Harmant
  * @version 1
  */
@@ -86,7 +85,7 @@ public final class SearchAdapter extends BaseAdapter {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param activity
 	 *            the search activity
 	 * @param container
@@ -198,7 +197,7 @@ public final class SearchAdapter extends BaseAdapter {
 
 	/**
 	 * Direction task
-	 * 
+	 *
 	 * @author Carl-Philipp Harmant
 	 * @version 1
 	 */
@@ -259,14 +258,14 @@ public final class SearchAdapter extends BaseAdapter {
 					@Override
 					public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 						if (position != data.size() - 1) {
-						Intent intent = new Intent(mActivity, BusBoundActivity.class);
-						Bundle extras = new Bundle();
-						extras.putString("busRouteId", busRoute.getId());
-						extras.putString("busRouteName", busRoute.getName());
-						extras.putString("bound", data.get(position));
-						intent.putExtras(extras);
-						intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-						ChicagoTracker.getAppContext().startActivity(intent);
+							Intent intent = new Intent(mActivity, BusBoundActivity.class);
+							Bundle extras = new Bundle();
+							extras.putString("busRouteId", busRoute.getId());
+							extras.putString("busRouteName", busRoute.getName());
+							extras.putString("bound", data.get(position));
+							intent.putExtras(extras);
+							intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+							ChicagoTracker.getAppContext().startActivity(intent);
 						} else {
 							String[] busDirectionArray = new String[lBus.size()];
 							int i = 0;
@@ -304,7 +303,7 @@ public final class SearchAdapter extends BaseAdapter {
 
 	/**
 	 * Update data
-	 * 
+	 *
 	 * @param trains
 	 *            the list of train stations
 	 * @param buses

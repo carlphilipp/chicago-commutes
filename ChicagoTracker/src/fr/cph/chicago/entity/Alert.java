@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  * Alert entity
- * 
+ *
  * @author Carl-Philipp Harmant
  * @version 1
  */
@@ -64,7 +64,7 @@ public class Alert {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return the id
 	 */
 	public final Integer getId() {
@@ -72,7 +72,7 @@ public class Alert {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param id
 	 *            the id
 	 */
@@ -81,7 +81,7 @@ public class Alert {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return the headline
 	 */
 	public final String getHeadline() {
@@ -89,7 +89,7 @@ public class Alert {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param headline
 	 */
 	public final void setHeadline(final String headline) {
@@ -97,7 +97,7 @@ public class Alert {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final String getShortDescription() {
@@ -105,7 +105,7 @@ public class Alert {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param shortDescription
 	 */
 	public final void setShortDescription(final String shortDescription) {
@@ -113,7 +113,7 @@ public class Alert {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final String getFullDescription() {
@@ -121,7 +121,7 @@ public class Alert {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param fullDescription
 	 */
 	public final void setFullDescription(final String fullDescription) {
@@ -129,7 +129,7 @@ public class Alert {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final Integer getSeverityScore() {
@@ -137,7 +137,7 @@ public class Alert {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param severityScore
 	 */
 	public final void setSeverityScore(final Integer severityScore) {
@@ -145,7 +145,7 @@ public class Alert {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final String getSeverityColor() {
@@ -153,7 +153,7 @@ public class Alert {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param severityColor
 	 */
 	public final void setSeverityColor(final String severityColor) {
@@ -161,7 +161,7 @@ public class Alert {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final String getSeverityCSS() {
@@ -169,7 +169,7 @@ public class Alert {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param severityCSS
 	 */
 	public final void setSeverityCSS(final String severityCSS) {
@@ -181,7 +181,7 @@ public class Alert {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param impact
 	 */
 	public final void setImpact(final String impact) {
@@ -189,7 +189,7 @@ public class Alert {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final Date getEventStart() {
@@ -197,7 +197,7 @@ public class Alert {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param eventStart
 	 */
 	public final void setEventStart(final Date eventStart) {
@@ -205,7 +205,7 @@ public class Alert {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final Date getEventEnd() {
@@ -213,7 +213,7 @@ public class Alert {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param eventEnd
 	 */
 	public final void setEventEnd(final Date eventEnd) {
@@ -221,7 +221,7 @@ public class Alert {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final Integer getTbd() {
@@ -229,7 +229,7 @@ public class Alert {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param tbd
 	 */
 	public final void setTbd(final Integer tbd) {
@@ -237,7 +237,7 @@ public class Alert {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final Integer getMajorAlert() {
@@ -245,7 +245,7 @@ public class Alert {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param majorAlert
 	 */
 	public final void setMajorAlert(Integer majorAlert) {
@@ -253,7 +253,7 @@ public class Alert {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final String getAlertUrl() {
@@ -261,7 +261,7 @@ public class Alert {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param alertUrl
 	 */
 	public final void setAlertUrl(final String alertUrl) {
@@ -269,7 +269,7 @@ public class Alert {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final List<Service> getImpactedServices() {
@@ -277,7 +277,7 @@ public class Alert {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param impactedService
 	 */
 	public final void addService(final Service impactedService) {

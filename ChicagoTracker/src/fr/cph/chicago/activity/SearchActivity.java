@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,13 +16,6 @@
 
 package fr.cph.chicago.activity;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map.Entry;
-
-import org.apache.commons.lang3.StringUtils;
-
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import android.app.ListActivity;
 import android.app.SearchManager;
 import android.content.Context;
@@ -45,10 +38,16 @@ import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.Util;
+import org.apache.commons.lang3.StringUtils;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
 
 /**
  * Activity that display search result
- * 
+ *
  * @author Carl-Philipp Harmant
  * @version 1
  */
@@ -59,7 +58,7 @@ public class SearchActivity extends ListActivity {
 	private SearchAdapter mAdapter;
 	/** Bike stations **/
 	private List<BikeStation> mBikeStations;
-	
+
 	@Override
 	protected void attachBaseContext(Context newBase) {
 		super.attachBaseContext(new CalligraphyContextWrapper(newBase));
@@ -74,7 +73,7 @@ public class SearchActivity extends ListActivity {
 			setContentView(R.layout.activity_search);
 			FrameLayout container = (FrameLayout) findViewById(R.id.container);
 			container.getForeground().setAlpha(0);
-			
+
 			if (Util.isNetworkAvailable()) {
 				mAdapter = new SearchAdapter(this, container);
 				mBikeStations = getIntent().getExtras().getParcelableArrayList("bikeStations");
@@ -134,7 +133,7 @@ public class SearchActivity extends ListActivity {
 
 	/**
 	 * Reload adapter with correct data
-	 * 
+	 *
 	 * @param intent
 	 *            the intent
 	 */

@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,14 +15,6 @@
  */
 
 package fr.cph.chicago.data;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -33,9 +25,17 @@ import fr.cph.chicago.entity.enumeration.TrainDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.Util;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
  * Class that store user preferences into phoneO
- * 
+ *
  * @author Carl-Philipp Harmant
  * @version 1
  */
@@ -46,7 +46,7 @@ public final class Preferences {
 
 	/**
 	 * Check if the user has favorites already
-	 * 
+	 *
 	 * @param trains
 	 *            the trains preference string
 	 * @param bus
@@ -95,8 +95,8 @@ public final class Preferences {
 		Log.v(TAG, "Read bike favorites : " + favorites);
 		return favorites;
 	}
-	
-	public static final void addBikeRouteNameMapping(final String bikeId, final String bikeName){
+
+	public static final void addBikeRouteNameMapping(final String bikeId, final String bikeName) {
 		Context context = ChicagoTracker.getAppContext();
 		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BIKE_NAME_MAPPING, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
@@ -104,8 +104,8 @@ public final class Preferences {
 		Log.v(TAG, "Add bike name mapping : " + bikeId + " => " + bikeName);
 		editor.commit();
 	}
-	
-	public static final String getBikeRouteNameMapping(final String bikeId){
+
+	public static final String getBikeRouteNameMapping(final String bikeId) {
 		Context context = ChicagoTracker.getAppContext();
 		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BIKE_NAME_MAPPING, Context.MODE_PRIVATE);
 		String bikeName = sharedPref.getString(bikeId, null);
@@ -115,7 +115,7 @@ public final class Preferences {
 
 	/**
 	 * Save bus into favorites
-	 * 
+	 *
 	 * @param name
 	 *            the name of the bus preference string
 	 * @param favorites
@@ -136,7 +136,7 @@ public final class Preferences {
 
 	/**
 	 * Get favorites bus
-	 * 
+	 *
 	 * @param name
 	 *            the name of the bus preference string
 	 * @return a list of favorites bus
@@ -176,8 +176,8 @@ public final class Preferences {
 		Log.v(TAG, "Read bus favorites : " + favorites.toString());
 		return favorites;
 	}
-	
-	public static final void addBusRouteNameMapping(final String busStopId, final String routeName){
+
+	public static final void addBusRouteNameMapping(final String busStopId, final String routeName) {
 		Context context = ChicagoTracker.getAppContext();
 		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
@@ -185,16 +185,16 @@ public final class Preferences {
 		Log.v(TAG, "Add bus route name mapping : " + busStopId + " => " + routeName);
 		editor.commit();
 	}
-	
-	public static final String getBusRouteNameMapping(final String busStopId){
+
+	public static final String getBusRouteNameMapping(final String busStopId) {
 		Context context = ChicagoTracker.getAppContext();
 		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING, Context.MODE_PRIVATE);
 		String routeName = sharedPref.getString(busStopId, null);
 		Log.v(TAG, "Get bus route name mapping : " + busStopId + " => " + routeName);
 		return routeName;
 	}
-	
-	public static final void addBusStopNameMapping(final String busStopId, final String stopName){
+
+	public static final void addBusStopNameMapping(final String busStopId, final String stopName) {
 		Context context = ChicagoTracker.getAppContext();
 		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
@@ -202,8 +202,8 @@ public final class Preferences {
 		Log.v(TAG, "Add bus stop name mapping : " + busStopId + " => " + stopName);
 		editor.commit();
 	}
-	
-	public static final String getBusStopNameMapping(final String busStopId){
+
+	public static final String getBusStopNameMapping(final String busStopId) {
 		Context context = ChicagoTracker.getAppContext();
 		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING, Context.MODE_PRIVATE);
 		String stopName = sharedPref.getString(busStopId, null);
@@ -213,7 +213,7 @@ public final class Preferences {
 
 	/**
 	 * Save train favorites
-	 * 
+	 *
 	 * @param name
 	 *            the name of the train preference string
 	 * @param favorites
@@ -234,7 +234,7 @@ public final class Preferences {
 
 	/**
 	 * Get train favorites
-	 * 
+	 *
 	 * @param name
 	 *            the name of the train preference string
 	 * @return the favorites
@@ -268,7 +268,7 @@ public final class Preferences {
 
 	/**
 	 * Save train filter
-	 * 
+	 *
 	 * @param stationId
 	 *            the station id
 	 * @param line
@@ -288,7 +288,7 @@ public final class Preferences {
 
 	/**
 	 * Get train filter
-	 * 
+	 *
 	 * @param stationId
 	 *            the station id
 	 * @param line

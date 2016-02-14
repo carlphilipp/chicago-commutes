@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,16 +15,6 @@
  */
 
 package fr.cph.chicago.data;
-
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
 
 import android.util.Log;
 import au.com.bytecode.opencsv.CSVReader;
@@ -37,10 +27,19 @@ import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.xml.Xml;
+import org.apache.commons.collections4.MultiMap;
+import org.apache.commons.collections4.map.MultiValueMap;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Class that handle bus data. Singleton
- * 
+ *
  * @author Carl-Philipp Harmant
  * @version 1
  */
@@ -64,7 +63,7 @@ public class BusData {
 
 	/**
 	 * Get instance of the class
-	 * 
+	 *
 	 * @return a bus data instance
 	 */
 	public static BusData getInstance() {
@@ -76,7 +75,7 @@ public class BusData {
 
 	/**
 	 * Method that read bus stops from CSV
-	 * 
+	 *
 	 * @return a list of bus stops
 	 */
 	public final List<BusStop> readBusStops() {
@@ -119,7 +118,7 @@ public class BusData {
 
 	/**
 	 * Load bus routes from CTA API
-	 * 
+	 *
 	 * @return a list of bus route
 	 * @throws ParserException
 	 *             a parser exception
@@ -139,7 +138,7 @@ public class BusData {
 
 	/**
 	 * Get bus routes
-	 * 
+	 *
 	 * @return a list of bus route
 	 */
 	public final List<BusRoute> getRoutes() {
@@ -148,7 +147,7 @@ public class BusData {
 
 	/**
 	 * Get number of route
-	 * 
+	 *
 	 * @return a number
 	 */
 	public final int getRouteSize() {
@@ -157,7 +156,7 @@ public class BusData {
 
 	/**
 	 * Get a route
-	 * 
+	 *
 	 * @param position
 	 *            the position in the list
 	 * @return a bus route
@@ -168,7 +167,7 @@ public class BusData {
 
 	/**
 	 * Get a route
-	 * 
+	 *
 	 * @param routeId
 	 *            the id of the bus route
 	 * @return a bus route
@@ -183,8 +182,8 @@ public class BusData {
 		}
 		return result;
 	}
-	
-	public final boolean containsRoute(final String routeId){
+
+	public final boolean containsRoute(final String routeId) {
 		for (BusRoute br : mRoutes) {
 			if (br.getId().equals(routeId)) {
 				return true;
@@ -195,7 +194,7 @@ public class BusData {
 
 	/**
 	 * Load from CTA API a bus stop list
-	 * 
+	 *
 	 * @param stopId
 	 *            the stop id
 	 * @param bound
@@ -220,7 +219,7 @@ public class BusData {
 
 	/**
 	 * Get all bus stops from CSV
-	 * 
+	 *
 	 * @return a list of bus stops
 	 */
 	public final List<BusStop> readAllBusStops() {
@@ -229,7 +228,7 @@ public class BusData {
 
 	/**
 	 * Get one bus from CSV
-	 * 
+	 *
 	 * @param id
 	 *            the id of the bus
 	 * @return a bus stop
@@ -247,7 +246,7 @@ public class BusData {
 
 	/**
 	 * Get a list of bus stop within a a distance and position
-	 * 
+	 *
 	 * @param position
 	 *            the position
 	 * @return a list of bus stop

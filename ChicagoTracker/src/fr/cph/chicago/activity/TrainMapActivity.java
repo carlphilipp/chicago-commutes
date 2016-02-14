@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,17 +16,6 @@
 
 package fr.cph.chicago.activity;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
-
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
@@ -49,7 +38,6 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
@@ -62,7 +50,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.adapter.TrainMapSnippetAdapter;
@@ -81,6 +68,16 @@ import fr.cph.chicago.fragment.NearbyFragment;
 import fr.cph.chicago.listener.TrainMapOnCameraChangeListener;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
+import org.apache.commons.collections4.MultiMap;
+import org.apache.commons.collections4.map.MultiValueMap;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Carl-Philipp Harmant
@@ -113,7 +110,7 @@ public class TrainMapActivity extends Activity {
 	private TrainMapOnCameraChangeListener mTrainListener;
 
 	private boolean centerMap = true;
-	
+
 	@Override
 	protected void attachBaseContext(Context newBase) {
 		super.attachBaseContext(new CalligraphyContextWrapper(newBase));
@@ -312,7 +309,7 @@ public class TrainMapActivity extends Activity {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param result
 	 */
 	private void centerMapOnBus(final List<Train> result) {
@@ -337,7 +334,7 @@ public class TrainMapActivity extends Activity {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param trains
 	 *            the list of trains
 	 * @param positions
@@ -398,7 +395,7 @@ public class TrainMapActivity extends Activity {
 
 		/**
 		 * Constructor
-		 * 
+		 *
 		 * @param view
 		 *            the view
 		 * @param loadAll

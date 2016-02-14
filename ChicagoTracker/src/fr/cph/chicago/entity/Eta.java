@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,17 +16,17 @@
 
 package fr.cph.chicago.entity;
 
-import java.util.Date;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
+import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
 /**
  * Eta entity
- * 
+ *
  * @author Carl-Philipp Harmant
  * @version 1
  */
@@ -65,14 +65,14 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	private Integer heading;
 
 	/**
-	 * 
+	 *
 	 */
 	public Eta() {
 
 	}
 
 	/**
-	 * 
+	 *
 	 * @param in
 	 */
 	private Eta(Parcel in) {
@@ -80,7 +80,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final Station getStation() {
@@ -88,7 +88,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param station
 	 */
 	public final void setStation(final Station station) {
@@ -96,7 +96,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final Stop getStop() {
@@ -104,7 +104,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param stop
 	 */
 	public final void setStop(final Stop stop) {
@@ -112,7 +112,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final Integer getRunNumber() {
@@ -120,7 +120,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param runNumber
 	 */
 	public final void setRunNumber(final Integer runNumber) {
@@ -128,7 +128,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final TrainLine getRouteName() {
@@ -136,7 +136,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param routeName
 	 */
 	public final void setRouteName(final TrainLine routeName) {
@@ -144,7 +144,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final Integer getTrainRouteDirectionCode() {
@@ -152,7 +152,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param trainRouteDirectionCode
 	 */
 	public final void setTrainRouteDirectionCode(final Integer trainRouteDirectionCode) {
@@ -160,7 +160,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final Date getPredictionDate() {
@@ -168,7 +168,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param predictionDate
 	 */
 	public final void setPredictionDate(final Date predictionDate) {
@@ -176,7 +176,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final Date getArrivalDepartureDate() {
@@ -184,7 +184,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param arrivalDepartureDate
 	 */
 	public final void setArrivalDepartureDate(final Date arrivalDepartureDate) {
@@ -192,7 +192,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final Boolean getIsApp() {
@@ -200,7 +200,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param isApp
 	 */
 	public final void setIsApp(final Boolean isApp) {
@@ -208,7 +208,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final Boolean getIsSch() {
@@ -216,7 +216,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param isSch
 	 */
 	public final void setIsSch(final Boolean isSch) {
@@ -224,7 +224,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final Boolean getIsFlt() {
@@ -232,7 +232,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param isFlt
 	 */
 	public final void setIsFlt(final Boolean isFlt) {
@@ -240,7 +240,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final Boolean getIsDly() {
@@ -248,7 +248,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param isDly
 	 */
 	public final void setIsDly(final Boolean isDly) {
@@ -256,7 +256,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final String getFlags() {
@@ -264,7 +264,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param flags
 	 */
 	public final void setFlags(final String flags) {
@@ -272,7 +272,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final Position getPosition() {
@@ -280,7 +280,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param position
 	 */
 	public final void setPosition(final Position position) {
@@ -288,7 +288,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final Integer getHeading() {
@@ -296,7 +296,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param heading
 	 */
 	public final void setHeading(final Integer heading) {
@@ -304,7 +304,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final String getTimeLeft() {
@@ -313,7 +313,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final String getTimeLeftDueDelay() {
@@ -331,7 +331,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final Integer getDestSt() {
@@ -339,7 +339,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param destSt
 	 */
 	public final void setDestSt(final Integer destSt) {
@@ -347,7 +347,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public final String getDestName() {
@@ -355,7 +355,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param destName
 	 */
 	public final void setDestName(final String destName) {

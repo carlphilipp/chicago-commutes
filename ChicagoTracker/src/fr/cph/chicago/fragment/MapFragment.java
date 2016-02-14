@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,7 +34,7 @@ import fr.cph.chicago.util.Util;
 
 /**
  * Mao Fragment
- * 
+ *
  * @author Carl-Philipp Harmant
  * @version 1
  */
@@ -75,7 +75,7 @@ public class MapFragment extends Fragment implements OnTouchListener {
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
-	 * 
+	 *
 	 * @param sectionNumber
 	 *            the section number
 	 * @return the fragment
@@ -168,8 +168,8 @@ public class MapFragment extends Fragment implements OnTouchListener {
 				if (newDist > 5f) {
 					matrix.set(savedMatrix);
 					float scale = newDist / oldDist; // setting the scaling of the matrix...if scale
-														// > 1 means zoom in...if scale < 1 means
-														// zoom out
+					// > 1 means zoom in...if scale < 1 means
+					// zoom out
 					matrix.postScale(scale, scale, mid.x, mid.y);
 				}
 			}
@@ -182,7 +182,7 @@ public class MapFragment extends Fragment implements OnTouchListener {
 
 	/**
 	 * Is centered already
-	 * 
+	 *
 	 * @return a boolean
 	 */
 	public final boolean isCenteredAlready() {
@@ -211,7 +211,7 @@ public class MapFragment extends Fragment implements OnTouchListener {
 
 	/**
 	 * Calculate the mid point of the first two fingers
-	 * 
+	 *
 	 * @param point
 	 *            the point
 	 * @param event

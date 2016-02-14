@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,20 +16,6 @@
 
 package fr.cph.chicago.activity;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
-
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -72,10 +58,23 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
+import org.apache.commons.collections4.MultiMap;
+import org.apache.commons.collections4.map.MultiValueMap;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Activity that represents the train station
- * 
+ *
  * @author Carl-Philipp Harmant
  * @version 1
  */
@@ -286,7 +285,7 @@ public class StationActivity extends Activity {
 
 	/**
 	 * Is favorite or not ?
-	 * 
+	 *
 	 * @return if the station is favorite
 	 */
 	private boolean isFavorite() {
@@ -303,7 +302,7 @@ public class StationActivity extends Activity {
 
 	/**
 	 * Display google street view image
-	 * 
+	 *
 	 * @author Carl-Philipp Harmant
 	 * @version 1
 	 */
@@ -389,7 +388,7 @@ public class StationActivity extends Activity {
 
 	/**
 	 * Load train arrivals
-	 * 
+	 *
 	 * @author Carl-Philipp Harmant
 	 * @version 1
 	 */
@@ -490,7 +489,7 @@ public class StationActivity extends Activity {
 
 	/**
 	 * Reset arrival layouts
-	 * 
+	 *
 	 * @param station
 	 *            the station
 	 */
@@ -520,7 +519,7 @@ public class StationActivity extends Activity {
 
 	/**
 	 * Draw line
-	 * 
+	 *
 	 * @param eta
 	 *            the eta
 	 */

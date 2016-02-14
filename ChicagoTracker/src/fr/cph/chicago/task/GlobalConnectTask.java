@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,14 +15,6 @@
  */
 
 package fr.cph.chicago.task;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map.Entry;
-
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -46,10 +38,17 @@ import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.json.Json;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
+import org.apache.commons.collections4.MultiMap;
+import org.apache.commons.collections4.map.MultiValueMap;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map.Entry;
 
 /**
  * CTA connect task
- * 
+ *
  * @author Carl-Philipp Harmant
  * @version 1
  */
@@ -100,7 +99,7 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param instance
 	 *            Instance of the object
 	 * @param classe
@@ -305,12 +304,15 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 	protected final void onPostExecute(final Boolean success) {
 		try {
 			if (success) {
-				mClasse.getMethod("reloadData", SparseArray.class, List.class, List.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class).invoke(
-						mInstance, this.mTrainArrivals, this.mBusArrivals, this.mBikeStations, this.mTrainBoolean, this.mBusBoolean, this.mBikeBoolean,
-						this.mNetworkAvailable);
+				mClasse.getMethod("reloadData", SparseArray.class, List.class, List.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class)
+						.invoke(
+								mInstance, this.mTrainArrivals, this.mBusArrivals, this.mBikeStations, this.mTrainBoolean, this.mBusBoolean,
+								this.mBikeBoolean,
+								this.mNetworkAvailable);
 			} else if (!mNetworkAvailable) {
-				mClasse.getMethod("reloadData", SparseArray.class, List.class, List.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class).invoke(
-						mInstance, this.mTrainArrivals, this.mBusArrivals, this.mBikeStations, false, false, false, this.mNetworkAvailable);
+				mClasse.getMethod("reloadData", SparseArray.class, List.class, List.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class)
+						.invoke(
+								mInstance, this.mTrainArrivals, this.mBusArrivals, this.mBikeStations, false, false, false, this.mNetworkAvailable);
 			} else {
 				TrackerException ex = mTrackerBusException == null ? (mTrackerBikeException == null ? mTrackerTrainException : mTrackerBikeException)
 						: mTrackerBusException;

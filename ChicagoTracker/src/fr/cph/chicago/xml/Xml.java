@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,6 +15,20 @@
  */
 
 package fr.cph.chicago.xml;
+
+import android.annotation.SuppressLint;
+import android.util.SparseArray;
+import fr.cph.chicago.data.TrainData;
+import fr.cph.chicago.entity.*;
+import fr.cph.chicago.entity.enumeration.BusDirection;
+import fr.cph.chicago.entity.enumeration.PredictionType;
+import fr.cph.chicago.entity.enumeration.TrainLine;
+import fr.cph.chicago.exception.ParserException;
+import fr.cph.chicago.exception.TrackerException;
+import org.apache.commons.lang3.BooleanUtils;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -27,38 +41,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.lang3.BooleanUtils;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
-
-import android.annotation.SuppressLint;
-import android.util.SparseArray;
-import fr.cph.chicago.data.TrainData;
-import fr.cph.chicago.entity.Alert;
-import fr.cph.chicago.entity.Bus;
-import fr.cph.chicago.entity.BusArrival;
-import fr.cph.chicago.entity.BusDirections;
-import fr.cph.chicago.entity.BusRoute;
-import fr.cph.chicago.entity.BusStop;
-import fr.cph.chicago.entity.Eta;
-import fr.cph.chicago.entity.BusPattern;
-import fr.cph.chicago.entity.PatternPoint;
-import fr.cph.chicago.entity.Position;
-import fr.cph.chicago.entity.Service;
-import fr.cph.chicago.entity.Station;
-import fr.cph.chicago.entity.Stop;
-import fr.cph.chicago.entity.Train;
-import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.entity.enumeration.BusDirection;
-import fr.cph.chicago.entity.enumeration.PredictionType;
-import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.exception.ParserException;
-import fr.cph.chicago.exception.TrackerException;
-
 /**
  * XML parser
- * 
+ *
  * @author Carl-Philipp Harmant
  * @version 1
  */
@@ -71,7 +56,7 @@ public final class Xml {
 	private SimpleDateFormat dfBus;
 
 	/**
-	 * 
+	 *
 	 * @throws ParserException
 	 */
 	@SuppressLint("SimpleDateFormat")
@@ -88,7 +73,7 @@ public final class Xml {
 
 	/**
 	 * Parse arrivals
-	 * 
+	 *
 	 * @param xml
 	 *            the xml string
 	 * @param data
@@ -292,7 +277,7 @@ public final class Xml {
 
 	/**
 	 * Parse bus route
-	 * 
+	 *
 	 * @param xml
 	 *            the xml to parse
 	 * @return a list of bus routes
@@ -359,7 +344,7 @@ public final class Xml {
 
 	/**
 	 * Parse bus directions
-	 * 
+	 *
 	 * @param xml
 	 *            the xml to parse
 	 * @param id
@@ -401,7 +386,7 @@ public final class Xml {
 
 	/**
 	 * Parse bus bounds
-	 * 
+	 *
 	 * @param xml
 	 *            the xml to parse
 	 * @return a list of bus stop
@@ -456,7 +441,7 @@ public final class Xml {
 
 	/**
 	 * Parse bus arrivals
-	 * 
+	 *
 	 * @param xml
 	 *            the xml to parse
 	 * @return a list of bus arrivals
@@ -529,7 +514,7 @@ public final class Xml {
 
 	/**
 	 * Parse alert general
-	 * 
+	 *
 	 * @param xml
 	 *            the xml to parse
 	 * @return a list of alert
@@ -624,7 +609,7 @@ public final class Xml {
 
 	/**
 	 * Parse alert general
-	 * 
+	 *
 	 * @param xml
 	 *            the xml to parse
 	 * @return a list of alert
@@ -977,7 +962,7 @@ public final class Xml {
 		while (index < arrivals.size()) {
 			TrainArrival arri = arrivals.valueAt(index++);
 			List<Eta> etas = arri.getEtas();
-			if(etas != null && etas.size() != 0){
+			if (etas != null && etas.size() != 0) {
 				res.add(etas.get(0));
 			}
 		}

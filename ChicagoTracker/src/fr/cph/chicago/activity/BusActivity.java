@@ -66,35 +66,65 @@ import java.util.Map.Entry;
  * @version 1
  */
 public class BusActivity extends Activity {
-	/** Tag **/
+	/**
+	 * Tag
+	 **/
 	private static final String TAG = "BusActivity";
-	/** List of bus arrivals **/
+	/**
+	 * List of bus arrivals
+	 **/
 	private List<BusArrival> busArrivals;
-	/** Buse route id **/
+	/**
+	 * Buse route id
+	 **/
 	private String busRouteId;
-	/** Bound **/
+	/**
+	 * Bound
+	 **/
 	private String bound;
-	/** Bus stop id **/
+	/**
+	 * Bus stop id
+	 **/
 	private Integer busStopId;
-	/** Bus stop name **/
+	/**
+	 * Bus stop name
+	 **/
 	private String busStopName;
-	/** Bus route name **/
+	/**
+	 * Bus route name
+	 **/
 	private String busRouteName;
-	/** Position **/
+	/**
+	 * Position
+	 **/
 	private Double latitude, longitude;
-	/** Images **/
+	/**
+	 * Images
+	 **/
 	private ImageView streetViewImage, mapImage, directionImage, favoritesImage;
-	/** Street view text **/
+	/**
+	 * Street view text
+	 **/
 	private TextView streetViewText;
-	/** Stop view **/
+	/**
+	 * Stop view
+	 **/
 	private LinearLayout stopsView;
-	/** First time the activity is loaded **/
+	/**
+	 * First time the activity is loaded
+	 **/
 	private boolean isFirstLoad = true;
-	/** First time the activity is loaded count **/
+	/**
+	 * First time the activity is loaded count
+	 **/
 	private int firstLoadCount;
-	/** Is added as favorite **/
+	/**
+	 * Is added as favorite
+	 **/
 	private boolean isFavorite;
-	/** Menu **/
+	/**
+	 * Menu
+	 **/
 	private Menu menu;
 
 	@Override
@@ -277,7 +307,6 @@ public class BusActivity extends Activity {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final boolean isFavorite() {
@@ -300,7 +329,9 @@ public class BusActivity extends Activity {
 	 */
 	private final class LoadData extends AsyncTask<Void, Void, List<BusArrival>> {
 
-		/** The exception that could potentially been thrown during request **/
+		/**
+		 * The exception that could potentially been thrown during request
+		 **/
 		private TrackerException trackerException;
 
 		@Override
@@ -367,7 +398,9 @@ public class BusActivity extends Activity {
 	 */
 	private final class DisplayGoogleStreetPicture extends AsyncTask<Position, Void, Drawable> {
 
-		/** Position of the stop **/
+		/**
+		 * Position of the stop
+		 **/
 		private Position position;
 
 		@Override

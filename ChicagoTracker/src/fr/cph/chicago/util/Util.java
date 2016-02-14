@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,12 +16,6 @@
 
 package fr.cph.chicago.util;
 
-import java.io.IOException;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Point;
@@ -30,17 +24,21 @@ import android.net.NetworkInfo;
 import android.view.Display;
 import android.view.WindowManager;
 import android.widget.Toast;
-
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
 
+import java.io.IOException;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Util class
- * 
+ *
  * @author Carl-Philipp Harmant
  * @version 1
  */
@@ -50,11 +48,11 @@ public class Util {
 
 	/**
 	 * Generate a value suitable for use in {@link #setId(int)}. This value will not collide with ID values generated at build time by aapt for R.id.
-	 * 
+	 *
 	 * @return a generated ID value
 	 */
 	public static final int generateViewId() {
-		for (;;) {
+		for (; ; ) {
 			final int result = sNextGeneratedId.get();
 			// aapt-generated IDs have the high byte nonzero; clamp to the range under that.
 			int newValue = result + 1;
@@ -68,7 +66,7 @@ public class Util {
 
 	/**
 	 * Get property from file
-	 * 
+	 *
 	 * @param property
 	 *            the property to get
 	 * @return the value of the property
@@ -86,7 +84,7 @@ public class Util {
 
 	/**
 	 * Add to train favorites
-	 * 
+	 *
 	 * @param stationId
 	 *            the station id
 	 * @param preference
@@ -103,7 +101,7 @@ public class Util {
 
 	/**
 	 * Remove train from favorites
-	 * 
+	 *
 	 * @param stationId
 	 *            the station id
 	 * @param preference
@@ -118,7 +116,7 @@ public class Util {
 
 	/**
 	 * Remove from bus favorites
-	 * 
+	 *
 	 * @param busRouteId
 	 *            the bus route id
 	 * @param busStopId
@@ -138,7 +136,7 @@ public class Util {
 
 	/**
 	 * Add to bus favorites
-	 * 
+	 *
 	 * @param busRouteId
 	 *            the bus route id
 	 * @param busStopId
@@ -176,7 +174,7 @@ public class Util {
 
 	/**
 	 * Decode bus favorites
-	 * 
+	 *
 	 * @param fav
 	 *            the favorites
 	 * @return a tab containing the route id, the stop id and the bound
@@ -220,7 +218,7 @@ public class Util {
 
 	/**
 	 * Google analytics track screen
-	 * 
+	 *
 	 * @param activity
 	 *            the activity
 	 * @param str
