@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,15 +16,6 @@
 
 package fr.cph.chicago.activity;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
-import org.apache.commons.lang3.StringUtils;
-
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import android.app.ActionBar;
 import android.app.FragmentManager;
 import android.app.ListActivity;
@@ -45,7 +36,6 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
@@ -56,7 +46,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.adapter.BusBoundAdapter;
@@ -73,30 +62,54 @@ import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.fragment.NearbyFragment;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
+import org.apache.commons.collections4.MultiMap;
+import org.apache.commons.collections4.map.MultiValueMap;
+import org.apache.commons.lang3.StringUtils;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Activity that represents the bus bound activity
- * 
+ *
  * @author Carl-Philipp Harmant
  * @version 1
  */
 public class BusBoundActivity extends ListActivity {
-	/** Tag **/
+	/**
+	 * Tag
+	 **/
 	private static final String TAG = "BusBoundActivity";
-	/** Bus route id **/
-	private String mBusRouteId;
-	/** Bus route name **/
-	private String mBusRouteName;
-	/** Bound **/
-	private String mBound;
-	/** Adapter **/
-	private BusBoundAdapter mAdapter;
-	/** List of bus stop get via API **/
-	private List<BusStop> mBusStops;
-	/** The map fragment from google api **/
-	private MapFragment mMapFragment;
-	/** The map **/
-	private GoogleMap mGooMap;
+	/**
+	 * Bus route id
+	 **/
+	private String busRouteId;
+	/**
+	 * Bus route name
+	 **/
+	private String busRouteName;
+	/**
+	 * Bound
+	 **/
+	private String bound;
+	/**
+	 * Adapter
+	 **/
+	private BusBoundAdapter busBoundAdapter;
+	/**
+	 * List of bus stop get via API
+	 **/
+	private List<BusStop> busStops;
+	/**
+	 * The map fragment from google api
+	 **/
+	private MapFragment mapFragment;
+	/**
+	 * The map
+	 **/
+	private GoogleMap googleMap;
 
 	@Override
 	protected void attachBaseContext(Context newBase) {
@@ -110,25 +123,25 @@ public class BusBoundActivity extends ListActivity {
 		if (!this.isFinishing()) {
 			setContentView(R.layout.activity_bus_bound);
 
-			if (mBusRouteId == null && mBusRouteName == null && mBound == null) {
-				mBusRouteId = getIntent().getExtras().getString("busRouteId");
-				mBusRouteName = getIntent().getExtras().getString("busRouteName");
-				mBound = getIntent().getExtras().getString("bound");
+			if (busRouteId == null && busRouteName == null && bound == null) {
+				busRouteId = getIntent().getExtras().getString("busRouteId");
+				busRouteName = getIntent().getExtras().getString("busRouteName");
+				bound = getIntent().getExtras().getString("bound");
 			}
-			mAdapter = new BusBoundAdapter(mBusRouteId);
-			setListAdapter(mAdapter);
+			busBoundAdapter = new BusBoundAdapter(busRouteId);
+			setListAdapter(busBoundAdapter);
 			getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
 				@Override
 				public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-					BusStop busStop = (BusStop) mAdapter.getItem(position);
+					BusStop busStop = (BusStop) busBoundAdapter.getItem(position);
 					Intent intent = new Intent(ChicagoTracker.getAppContext(), BusActivity.class);
 
 					Bundle extras = new Bundle();
 					extras.putInt("busStopId", busStop.getId());
 					extras.putString("busStopName", busStop.getName());
-					extras.putString("busRouteId", mBusRouteId);
-					extras.putString("busRouteName", mBusRouteName);
-					extras.putString("bound", mBound);
+					extras.putString("busRouteId", busRouteId);
+					extras.putString("busRouteName", busRouteName);
+					extras.putString("bound", bound);
 					extras.putDouble("latitude", busStop.getPosition().getLatitude());
 					extras.putDouble("longitude", busStop.getPosition().getLongitude());
 
@@ -150,7 +163,7 @@ public class BusBoundActivity extends ListActivity {
 
 				@Override
 				public void onTextChanged(CharSequence s, int start, int before, int count) {
-					for (BusStop busStop : mBusStops) {
+					for (BusStop busStop : busStops) {
 						if (StringUtils.containsIgnoreCase(busStop.getName(), s)) {
 							this.busStopsFiltered.add(busStop);
 						}
@@ -159,8 +172,8 @@ public class BusBoundActivity extends ListActivity {
 
 				@Override
 				public void afterTextChanged(Editable s) {
-					mAdapter.update(busStopsFiltered);
-					mAdapter.notifyDataSetChanged();
+					busBoundAdapter.update(busStopsFiltered);
+					busBoundAdapter.notifyDataSetChanged();
 				}
 			});
 
@@ -176,28 +189,28 @@ public class BusBoundActivity extends ListActivity {
 	public final void onStart() {
 		super.onStart();
 		FragmentManager fm = getFragmentManager();
-		mMapFragment = (MapFragment) fm.findFragmentById(R.id.map);
+		mapFragment = (MapFragment) fm.findFragmentById(R.id.map);
 		GoogleMapOptions options = new GoogleMapOptions();
 		CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 7, 0, 0);
 		options.camera(camera);
-		mMapFragment = MapFragment.newInstance(options);
-		mMapFragment.setRetainInstance(true);
-		fm.beginTransaction().replace(R.id.map, mMapFragment).commit();
+		mapFragment = MapFragment.newInstance(options);
+		mapFragment.setRetainInstance(true);
+		fm.beginTransaction().replace(R.id.map, mapFragment).commit();
 	}
 
 	@Override
 	public final void onStop() {
 		super.onStop();
-		mGooMap = null;
+		googleMap = null;
 	}
 
 	@Override
 	public final void onResume() {
 		super.onResume();
-		if (mGooMap == null) {
-			mGooMap = mMapFragment.getMap();
-			mGooMap.getUiSettings().setMyLocationButtonEnabled(false);
-			mGooMap.getUiSettings().setZoomControlsEnabled(false);
+		if (googleMap == null) {
+			googleMap = mapFragment.getMap();
+			googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+			googleMap.getUiSettings().setZoomControlsEnabled(false);
 		}
 		new LoadPattern().execute();
 	}
@@ -205,16 +218,16 @@ public class BusBoundActivity extends ListActivity {
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		mBusRouteId = savedInstanceState.getString("busRouteId");
-		mBusRouteName = savedInstanceState.getString("busRouteName");
-		mBound = savedInstanceState.getString("bound");
+		busRouteId = savedInstanceState.getString("busRouteId");
+		busRouteName = savedInstanceState.getString("busRouteName");
+		bound = savedInstanceState.getString("bound");
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-		savedInstanceState.putString("busRouteId", mBusRouteId);
-		savedInstanceState.putString("busRouteName", mBusRouteName);
-		savedInstanceState.putString("bound", mBound);
+		savedInstanceState.putString("busRouteId", busRouteId);
+		savedInstanceState.putString("busRouteName", busRouteName);
+		savedInstanceState.putString("bound", bound);
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
@@ -225,7 +238,7 @@ public class BusBoundActivity extends ListActivity {
 		ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		actionBar.setDisplayShowTitleEnabled(true);
-		actionBar.setTitle(this.mBusRouteName + " (" + this.mBound + ")");
+		actionBar.setTitle(this.busRouteName + " (" + this.bound + ")");
 		return true;
 	}
 
@@ -241,23 +254,23 @@ public class BusBoundActivity extends ListActivity {
 
 	/**
 	 * Task that connect to API to get the bound of the selected stop
-	 * 
+	 *
 	 * @author Carl-Philipp Harmant
 	 * @version 1
 	 */
 	private class BusBoundAsyncTask extends AsyncTask<Void, Void, List<BusStop>> {
 
-		/** The exception that could potentially been thrown during request **/
+		/**
+		 * The exception that could potentially been thrown during request
+		 **/
 		private TrackerException trackerException;
 
 		@Override
 		protected final List<BusStop> doInBackground(final Void... params) {
 			List<BusStop> lBuses = null;
 			try {
-				lBuses = DataHolder.getInstance().getBusData().loadBusStop(mBusRouteId, mBound);
-			} catch (ParserException e) {
-				this.trackerException = e;
-			} catch (ConnectException e) {
+				lBuses = DataHolder.getInstance().getBusData().loadBusStop(busRouteId, bound);
+			} catch (ParserException | ConnectException e) {
 				this.trackerException = e;
 			}
 			Util.trackAction(BusBoundActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
@@ -267,10 +280,10 @@ public class BusBoundActivity extends ListActivity {
 
 		@Override
 		protected final void onPostExecute(final List<BusStop> result) {
-			BusBoundActivity.this.mBusStops = result;
+			BusBoundActivity.this.busStops = result;
 			if (trackerException == null) {
-				mAdapter.update(result);
-				mAdapter.notifyDataSetChanged();
+				busBoundAdapter.update(result);
+				busBoundAdapter.notifyDataSetChanged();
 			} else {
 				ChicagoTracker.displayError(BusBoundActivity.this, trackerException);
 			}
@@ -279,39 +292,36 @@ public class BusBoundActivity extends ListActivity {
 
 	/**
 	 * Load nearby data
-	 * 
+	 *
 	 * @author Carl-Philipp Harmant
-	 * 
 	 */
 	private final class LoadPattern extends AsyncTask<Void, Void, BusPattern> implements LocationListener {
 
-		private BusPattern pattern;
+		private BusPattern busPattern;
 
 		@Override
 		protected final BusPattern doInBackground(final Void... params) {
 			CtaConnect connect = CtaConnect.getInstance();
 			MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
-			connectParam.put("rt", mBusRouteId);
-			String boundIgnoreCase = mBound.toLowerCase(Locale.US);
+			connectParam.put("rt", busRouteId);
+			String boundIgnoreCase = bound.toLowerCase(Locale.US);
 			try {
 				String content = connect.connect(CtaRequestType.BUS_PATTERN, connectParam);
 				Xml xml = new Xml();
 				List<BusPattern> patterns = xml.parsePatterns(content);
 				for (BusPattern pattern : patterns) {
 					String directionIgnoreCase = pattern.getDirection().toLowerCase(Locale.US);
-					if (pattern.getDirection().equals(mBound) || boundIgnoreCase.indexOf(directionIgnoreCase) != -1) {
-						this.pattern = pattern;
+					if (pattern.getDirection().equals(bound) || boundIgnoreCase.indexOf(directionIgnoreCase) != -1) {
+						this.busPattern = pattern;
 						break;
 					}
 				}
-			} catch (ConnectException e) {
-				Log.e(TAG, e.getMessage(), e);
-			} catch (ParserException e) {
+			} catch (ConnectException | ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
 			Util.trackAction(BusBoundActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
 					R.string.analytics_action_get_bus_pattern, 0);
-			return this.pattern;
+			return this.busPattern;
 		}
 
 		@Override
@@ -344,31 +354,30 @@ public class BusBoundActivity extends ListActivity {
 
 	/**
 	 * Center map
-	 * 
-	 * @param positon
-	 *            the position we want to center on
+	 *
+	 * @param position the position we want to center on
 	 */
-	private void centerMap(final Position positon) {
+	private void centerMap(final Position position) {
 		// Because the fragment can possibly not be ready
 		int i = 0;
-		while (mGooMap == null && i < 20) {
-			mGooMap = mMapFragment.getMap();
+		while (googleMap == null && i < 20) {
+			googleMap = mapFragment.getMap();
 			i++;
 		}
-		if (mGooMap != null) {
-			mGooMap.getUiSettings().setMyLocationButtonEnabled(false);
-			mGooMap.getUiSettings().setZoomControlsEnabled(false);
-			mGooMap.setMyLocationEnabled(true);
-			LatLng latLng = new LatLng(positon.getLatitude(), positon.getLongitude());
-			mGooMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
-			mGooMap.animateCamera(CameraUpdateFactory.zoomTo(9), 500, null);
+		if (googleMap != null) {
+			googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+			googleMap.getUiSettings().setZoomControlsEnabled(false);
+			googleMap.setMyLocationEnabled(true);
+			LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
+			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
+			googleMap.animateCamera(CameraUpdateFactory.zoomTo(9), 500, null);
 		}
 
 	}
 
 	private void drawPattern(final BusPattern pattern) {
-		if (mGooMap != null) {
-			final List<Marker> markers = new ArrayList<Marker>();
+		if (googleMap != null) {
+			final List<Marker> markers = new ArrayList<>();
 			PolylineOptions poly = new PolylineOptions();
 			poly.geodesic(true).color(Color.BLACK);
 			poly.width(7f);
@@ -377,16 +386,16 @@ public class BusBoundActivity extends ListActivity {
 				LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
 				poly.add(point);
 				if (patternPoint.getStopId() != null) {
-					marker = mGooMap.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName())
+					marker = googleMap.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName())
 							.snippet(String.valueOf(patternPoint.getSequence())));
 					// .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 					markers.add(marker);
 					marker.setVisible(false);
 				}
 			}
-			mGooMap.addPolyline(poly);
+			googleMap.addPolyline(poly);
 
-			mGooMap.setOnCameraChangeListener(new OnCameraChangeListener() {
+			googleMap.setOnCameraChangeListener(new OnCameraChangeListener() {
 				private float currentZoom = -1;
 
 				@Override

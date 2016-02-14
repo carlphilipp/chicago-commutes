@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,14 +16,6 @@
 
 package fr.cph.chicago.activity;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
-
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -47,21 +39,36 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.task.GlobalConnectTask;
 import fr.cph.chicago.util.Util;
+import org.apache.commons.collections4.MultiMap;
+import org.apache.commons.collections4.map.MultiValueMap;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 /**
  * This class represents the base activity of the application It will load the loading screen and/or the main
  * activity
- * 
+ *
  * @author Carl-Philipp Harmant
  * @version 1
  */
 public class BaseActivity extends Activity {
-	/** Error state **/
-	private Boolean mError;
-	/** Train arrivals **/
-	private SparseArray<TrainArrival> mTrainArrivals;
-	/** Bus arrivals **/
-	private List<BusArrival> mBusArrivals;
+
+	private static String ERROR_PROPERTY = "error";
+	/**
+	 * Error state
+	 **/
+	private Boolean error;
+	/**
+	 * Train arrivals
+	 **/
+	private SparseArray<TrainArrival> trainArrivals;
+	/**
+	 * Bus arrivals
+	 **/
+	private List<BusArrival> busArrivals;
 
 	@Override
 	protected void attachBaseContext(Context newBase) {
@@ -73,41 +80,39 @@ public class BaseActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.loading);
 		Bundle extras = getIntent().getExtras();
-		if (extras != null && mError == null) {
-			mError = extras.getBoolean("error");
+		if (extras != null && error == null) {
+			error = extras.getBoolean(ERROR_PROPERTY);
 		} else {
-			mError = false;
+			error = false;
 		}
 
-		if (mError) {
+		if (error) {
 			new LoadData().execute();
-		} else if (mTrainArrivals == null || mBusArrivals == null) {
+		} else if (trainArrivals == null || busArrivals == null) {
 			new LoadData().execute();
 		} else {
-			startMainActivity(mTrainArrivals, mBusArrivals);
+			startMainActivity(trainArrivals, busArrivals);
 		}
 	}
 
 	@Override
 	public final void onRestoreInstanceState(final Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		mError = savedInstanceState.getBoolean("error");
+		error = savedInstanceState.getBoolean(ERROR_PROPERTY);
 	}
 
 	@Override
 	public final void onSaveInstanceState(final Bundle savedInstanceState) {
-		savedInstanceState.putBoolean("error", mError);
+		savedInstanceState.putBoolean(ERROR_PROPERTY, error);
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
 	/**
 	 * Called via reflection from CtaConnectTask. It load arrivals data into ChicagoTracker object. Update
 	 * last update time. Start main activity
-	 * 
-	 * @param trainArrivals
-	 *            list of train arrivals
-	 * @param busArrivals
-	 *            list of bus arrivals
+	 *
+	 * @param trainArrivals list of train arrivals
+	 * @param busArrivals   list of bus arrivals
 	 */
 	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals,
 			final List<BikeStation> bikeStations, final Boolean trainBoolean, final Boolean busBoolean, final Boolean bikeBoolean,
@@ -121,11 +126,9 @@ public class BaseActivity extends Activity {
 
 	/**
 	 * Finish current activity and start main activity with custom transition
-	 * 
-	 * @param trainArrivals
-	 *            the train arrivals
-	 * @param busArrivals
-	 *            the bus arrivals
+	 *
+	 * @param trainArrivals the train arrivals
+	 * @param busArrivals   the bus arrivals
 	 */
 	private void startMainActivity(SparseArray<TrainArrival> trainArrivals, List<BusArrival> busArrivals) {
 		if (!isFinishing()) {
@@ -145,14 +148,17 @@ public class BaseActivity extends Activity {
 	 * Load Bus and train data into DataHolder. The data are load in a sequence mode. It means that if one of
 	 * the url contacted does not response, we will still process the other data, and won't throw any
 	 * exception
-	 * 
+	 *
 	 * @author Carl-Philipp Harmant
-	 * 
 	 */
 	private final class LoadData extends AsyncTask<Void, String, Void> {
-		/** Bus data **/
+		/**
+		 * Bus data
+		 **/
 		private BusData busData;
-		/** Train data **/
+		/**
+		 * Train data
+		 **/
 		private TrainData trainData;
 
 		@Override
@@ -183,9 +189,8 @@ public class BaseActivity extends Activity {
 
 	/**
 	 * Display error. Set train and bus data to null before running the error activity
-	 * 
-	 * @param exceptionToBeThrown
-	 *            the exception that has been thrown
+	 *
+	 * @param exceptionToBeThrown the exception that has been thrown
 	 */
 	public void displayError(final TrackerException exceptionToBeThrown) {
 		DataHolder.getInstance().setTrainData(null);
@@ -196,18 +201,17 @@ public class BaseActivity extends Activity {
 
 	/**
 	 * Connect to CTA API and get arrivals trains and buses from favorites
-	 * 
-	 * @throws ParserException
-	 *             the exception
+	 *
+	 * @throws ParserException the exception
 	 */
 	private void loadData() throws ParserException {
-		MultiMap<String, String> params = new MultiValueMap<String, String>();
+		MultiMap<String, String> params = new MultiValueMap<>();
 		List<Integer> favorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
 		for (Integer fav : favorites) {
 			params.put("mapid", String.valueOf(fav));
 		}
 
-		MultiMap<String, String> params2 = new MultiValueMap<String, String>();
+		MultiMap<String, String> params2 = new MultiValueMap<>();
 		List<String> busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
 		for (String str : busFavorites) {
 			String[] fav = Util.decodeBusFavorite(str);

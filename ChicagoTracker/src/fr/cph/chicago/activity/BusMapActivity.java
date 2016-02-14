@@ -90,31 +90,31 @@ public class BusMapActivity extends Activity {
 	/** Tag **/
 	private static final String TAG = "BusMapActivity";
 	/** The map fragment from google api **/
-	private MapFragment mMapFragment;
+	private MapFragment mapFragment;
 	/** The map **/
-	private GoogleMap mGooMap;
+	private GoogleMap googleMap;
 	/** Bus id **/
-	private Integer mBusId;
+	private Integer busId;
 	/** Bus route id **/
-	private String mBusRouteId;
+	private String busRouteId;
 	/** Bounds **/
-	private String[] mBounds;
+	private String[] bounds;
 	/** Bus Markers **/
-	private List<Marker> mBusMarkers;
+	private List<Marker> busMarkers;
 	/** Station Markers **/
-	private List<Marker> mBusStationMarkers;
+	private List<Marker> busStationMarkers;
 	/** Menu **/
-	private Menu mMenu;
+	private Menu menu;
 	/** Refreshing info window **/
-	private boolean mRefreshingInfoWindow = false;
+	private boolean refreshingInfoWindow = false;
 	/** Selected marker **/
-	private Marker mSelectedMarker;
+	private Marker selectedMarker;
 	/** Map views **/
-	private Map<Marker, View> mViews;
+	private Map<Marker, View> views;
 	/** Map status **/
-	private Map<Marker, Boolean> mStatus;
+	private Map<Marker, Boolean> status;
 	/** On camera change zoom listener **/
-	private BusMapOnCameraChangeListener mBusListener;
+	private BusMapOnCameraChangeListener busListener;
 
 	private boolean centerMap = true;
 
@@ -132,35 +132,35 @@ public class BusMapActivity extends Activity {
 		if (!this.isFinishing()) {
 			setContentView(R.layout.activity_map);
 			if (savedInstanceState != null) {
-				mBusId = savedInstanceState.getInt("busId");
-				mBusRouteId = savedInstanceState.getString("busRouteId");
-				mBounds = savedInstanceState.getStringArray("bounds");
+				busId = savedInstanceState.getInt("busId");
+				busRouteId = savedInstanceState.getString("busRouteId");
+				bounds = savedInstanceState.getStringArray("bounds");
 			} else {
-				mBusId = getIntent().getExtras().getInt("busId");
-				mBusRouteId = getIntent().getExtras().getString("busRouteId");
-				mBounds = getIntent().getExtras().getStringArray("bounds");
+				busId = getIntent().getExtras().getInt("busId");
+				busRouteId = getIntent().getExtras().getString("busRouteId");
+				bounds = getIntent().getExtras().getStringArray("bounds");
 			}
 
-			mBusMarkers = new ArrayList<Marker>();
-			mBusStationMarkers = new ArrayList<Marker>();
-			mViews = new HashMap<Marker, View>();
-			mStatus = new HashMap<Marker, Boolean>();
-			mBusListener = new BusMapOnCameraChangeListener();
+			busMarkers = new ArrayList<>();
+			busStationMarkers = new ArrayList<>();
+			views = new HashMap<>();
+			status = new HashMap<>();
+			busListener = new BusMapOnCameraChangeListener();
 
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 
-			setTitle("Map - " + mBusRouteId);
+			setTitle("Map - " + busRouteId);
 
 			Util.trackScreen(this, R.string.analytics_bus_map);
 
 			FragmentManager fm = getFragmentManager();
-			mMapFragment = (MapFragment) fm.findFragmentById(R.id.map);
+			mapFragment = (MapFragment) fm.findFragmentById(R.id.map);
 			GoogleMapOptions options = new GoogleMapOptions();
 			CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 10, 0, 0);
 			options.camera(camera);
-			mMapFragment = MapFragment.newInstance(options);
-			mMapFragment.setRetainInstance(true);
-			fm.beginTransaction().replace(R.id.map, mMapFragment).commit();
+			mapFragment = MapFragment.newInstance(options);
+			mapFragment.setRetainInstance(true);
+			fm.beginTransaction().replace(R.id.map, mapFragment).commit();
 		}
 	}
 
@@ -179,7 +179,7 @@ public class BusMapActivity extends Activity {
 		super.onStop();
 		centerMap = false;
 		loadPattern = false;
-		mGooMap = null;
+		googleMap = null;
 	}
 
 	@Override
@@ -190,9 +190,9 @@ public class BusMapActivity extends Activity {
 	@Override
 	public final void onResume() {
 		super.onResume();
-		if (mGooMap == null) {
-			mGooMap = mMapFragment.getMap();
-			mGooMap.setInfoWindowAdapter(new InfoWindowAdapter() {
+		if (googleMap == null) {
+			googleMap = mapFragment.getMap();
+			googleMap.setInfoWindowAdapter(new InfoWindowAdapter() {
 				@Override
 				public View getInfoWindow(Marker marker) {
 					return null;
@@ -201,13 +201,13 @@ public class BusMapActivity extends Activity {
 				@Override
 				public View getInfoContents(Marker marker) {
 					if (!marker.getSnippet().equals("")) {
-						View view = mViews.get(marker);
-						if (!mRefreshingInfoWindow) {
-							mSelectedMarker = marker;
+						View view = views.get(marker);
+						if (!refreshingInfoWindow) {
+							selectedMarker = marker;
 							String busId = marker.getSnippet();
 							startRefreshAnimation();
 							new LoadBusFollow(view, false).execute(busId);
-							mStatus.put(marker, false);
+							status.put(marker, false);
 						}
 						return view;
 					} else {
@@ -216,18 +216,18 @@ public class BusMapActivity extends Activity {
 				}
 			});
 
-			mGooMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
+			googleMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
 				@Override
 				public void onInfoWindowClick(Marker marker) {
 					if (!marker.getSnippet().equals("")) {
-						final View view = mViews.get(marker);
-						if (!mRefreshingInfoWindow) {
-							mSelectedMarker = marker;
+						final View view = views.get(marker);
+						if (!refreshingInfoWindow) {
+							selectedMarker = marker;
 							final String runNumber = marker.getSnippet();
 							startRefreshAnimation();
-							boolean current = mStatus.get(marker);
+							boolean current = status.get(marker);
 							new LoadBusFollow(view, !current).execute(runNumber);
-							mStatus.put(marker, !current);
+							status.put(marker, !current);
 						}
 					}
 				}
@@ -248,22 +248,22 @@ public class BusMapActivity extends Activity {
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		mBusId = savedInstanceState.getInt("busId");
-		mBusRouteId = savedInstanceState.getString("busRouteId");
-		mBounds = savedInstanceState.getStringArray("bounds");
+		busId = savedInstanceState.getInt("busId");
+		busRouteId = savedInstanceState.getString("busRouteId");
+		bounds = savedInstanceState.getStringArray("bounds");
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-		savedInstanceState.putInt("busId", mBusId);
-		savedInstanceState.putString("busRouteId", mBusRouteId);
-		savedInstanceState.putStringArray("bounds", mBounds);
+		savedInstanceState.putInt("busId", busId);
+		savedInstanceState.putString("busRouteId", busRouteId);
+		savedInstanceState.putStringArray("bounds", bounds);
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
 	@Override
 	public final boolean onCreateOptionsMenu(final Menu menu) {
-		this.mMenu = menu;
+		this.menu = menu;
 		getMenuInflater().inflate(R.menu.main_no_search, menu);
 		startRefreshAnimation();
 		return super.onCreateOptionsMenu(menu);
@@ -288,21 +288,21 @@ public class BusMapActivity extends Activity {
 	 * 
 	 */
 	private void refreshInfoWindow() {
-		if (mSelectedMarker == null) {
+		if (selectedMarker == null) {
 			return;
 		}
-		mRefreshingInfoWindow = true;
-		mSelectedMarker.showInfoWindow();
-		mRefreshingInfoWindow = false;
+		refreshingInfoWindow = true;
+		selectedMarker.showInfoWindow();
+		refreshingInfoWindow = false;
 		stopRefreshAnimation();
 	}
 
 	/**
 	 * Load animation in menu
 	 */
-	private final void startRefreshAnimation() {
-		if (mMenu != null) {
-			MenuItem refreshMenuItem = mMenu.findItem(R.id.action_refresh);
+	private void startRefreshAnimation() {
+		if (menu != null) {
+			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
 			if (refreshMenuItem.getActionView() == null) {
 				refreshMenuItem.setActionView(R.layout.progressbar);
 				refreshMenuItem.expandActionView();
@@ -313,9 +313,9 @@ public class BusMapActivity extends Activity {
 	/**
 	 * Stop animation in menu
 	 */
-	private final void stopRefreshAnimation() {
-		if (mMenu != null) {
-			MenuItem refreshMenuItem = mMenu.findItem(R.id.action_refresh);
+	private void stopRefreshAnimation() {
+		if (menu != null) {
+			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
 			refreshMenuItem.collapseActionView();
 			refreshMenuItem.setActionView(null);
 		}
@@ -326,8 +326,8 @@ public class BusMapActivity extends Activity {
 	 */
 	private void centerMapOnBus(final List<Bus> result) {
 		int i = 0;
-		while (mGooMap == null && i < 20) {
-			mGooMap = mMapFragment.getMap();
+		while (googleMap == null && i < 20) {
+			googleMap = mapFragment.getMap();
 			i++;
 		}
 		Position position;
@@ -339,9 +339,9 @@ public class BusMapActivity extends Activity {
 			position = Bus.getBestPosition(result);
 			zoom = 11;
 		}
-		if (mGooMap != null) {
+		if (googleMap != null) {
 			LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
-			mGooMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 		}
 	}
 
@@ -349,17 +349,17 @@ public class BusMapActivity extends Activity {
 	 * @param buses
 	 */
 	private void drawBuses(final List<Bus> buses) {
-		if (mGooMap != null) {
-			for (Marker marker : mBusMarkers) {
+		if (googleMap != null) {
+			for (Marker marker : busMarkers) {
 				marker.remove();
 			}
-			mBusMarkers.clear();
-			final Bitmap bitmap = mBusListener.getCurrentBitmap();
+			busMarkers.clear();
+			final Bitmap bitmap = busListener.getCurrentBitmap();
 			for (Bus bus : buses) {
 				LatLng point = new LatLng(bus.getPosition().getLatitude(), bus.getPosition().getLongitude());
-				Marker marker = mGooMap.addMarker(new MarkerOptions().position(point).title("To " + bus.getDestination()).snippet(bus.getId() + "")
+				Marker marker = googleMap.addMarker(new MarkerOptions().position(point).title("To " + bus.getDestination()).snippet(bus.getId() + "")
 						.icon(BitmapDescriptorFactory.fromBitmap(bitmap)).anchor(0.5f, 0.5f).rotation(bus.getHeading()).flat(true));
-				mBusMarkers.add(marker);
+				busMarkers.add(marker);
 
 				LayoutInflater layoutInflater = (LayoutInflater) BusMapActivity.this.getBaseContext().getSystemService(
 						Context.LAYOUT_INFLATER_SERVICE);
@@ -367,12 +367,12 @@ public class BusMapActivity extends Activity {
 				TextView title = (TextView) view.findViewById(R.id.title);
 				title.setText(marker.getTitle());
 
-				mViews.put(marker, view);
+				views.put(marker, view);
 			}
 
-			mBusListener.setBusMarkers(mBusMarkers);
+			busListener.setBusMarkers(busMarkers);
 
-			mGooMap.setOnCameraChangeListener(mBusListener);
+			googleMap.setOnCameraChangeListener(busListener);
 		}
 	}
 
@@ -381,11 +381,11 @@ public class BusMapActivity extends Activity {
 	 */
 	private void drawPattern(final List<BusPattern> patterns) {
 		int i = 0;
-		while (mGooMap == null && i < 20) {
-			mGooMap = mMapFragment.getMap();
+		while (googleMap == null && i < 20) {
+			googleMap = mapFragment.getMap();
 			i++;
 		}
-		if (mGooMap != null) {
+		if (googleMap != null) {
 			int j = 0;
 			BitmapDescriptor red = BitmapDescriptorFactory.defaultMarker();
 			BitmapDescriptor blue = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
@@ -413,18 +413,18 @@ public class BusMapActivity extends Activity {
 							options.icon(blue);
 						}
 
-						Marker marker = mGooMap.addMarker(options);
-						mBusStationMarkers.add(marker);
+						Marker marker = googleMap.addMarker(options);
+						busStationMarkers.add(marker);
 						marker.setVisible(false);
 					}
 				}
-				mGooMap.addPolyline(poly);
+				googleMap.addPolyline(poly);
 				j++;
 			}
 
-			mBusListener.setBusStationMarkers(mBusStationMarkers);
+			busListener.setBusStationMarkers(busStationMarkers);
 
-			mGooMap.setOnCameraChangeListener(mBusListener);
+			googleMap.setOnCameraChangeListener(busListener);
 		}
 	}
 
@@ -441,18 +441,16 @@ public class BusMapActivity extends Activity {
 			List<Bus> buses = null;
 			CtaConnect connect = CtaConnect.getInstance();
 			MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
-			if (mBusId != 0) {
-				connectParam.put("vid", String.valueOf(mBusId));
+			if (busId != 0) {
+				connectParam.put("vid", String.valueOf(busId));
 			} else {
-				connectParam.put("rt", mBusRouteId);
+				connectParam.put("rt", busRouteId);
 			}
 			try {
 				String content = connect.connect(CtaRequestType.BUS_VEHICLES, connectParam);
 				Xml xml = new Xml();
 				buses = xml.parseVehicles(content);
-			} catch (ConnectException e) {
-				Log.e(TAG, e.getMessage(), e);
-			} catch (ParserException e) {
+			} catch (ConnectException | ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
 			Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
@@ -550,13 +548,13 @@ public class BusMapActivity extends Activity {
 		@Override
 		protected final void onPostExecute(final Void result) {
 			int i = 0;
-			while (mGooMap == null && i < 20) {
-				mGooMap = mMapFragment.getMap();
+			while (googleMap == null && i < 20) {
+				googleMap = mapFragment.getMap();
 				i++;
 			}
-			if (mGooMap != null) {
-				mGooMap = mMapFragment.getMap();
-				mGooMap.setMyLocationEnabled(true);
+			if (googleMap != null) {
+				googleMap = mapFragment.getMap();
+				googleMap.setMyLocationEnabled(true);
 				locationManager.removeUpdates(LoadCurrentPosition.this);
 			}
 		}
@@ -622,28 +620,28 @@ public class BusMapActivity extends Activity {
 			this.patterns = new ArrayList<BusPattern>();
 			CtaConnect connect = CtaConnect.getInstance();
 			try {
-				if (mBusId == 0) {
+				if (busId == 0) {
 					MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
-					reqParams.put("rt", mBusRouteId);
+					reqParams.put("rt", busRouteId);
 					Xml xml = new Xml();
 					String xmlResult = connect.connect(CtaRequestType.BUS_DIRECTION, reqParams);
-					BusDirections busDirections = xml.parseBusDirections(xmlResult, mBusRouteId);
-					mBounds = new String[busDirections.getlBusDirection().size()];
+					BusDirections busDirections = xml.parseBusDirections(xmlResult, busRouteId);
+					bounds = new String[busDirections.getlBusDirection().size()];
 					for (int i = 0; i < busDirections.getlBusDirection().size(); i++) {
-						mBounds[i] = busDirections.getlBusDirection().get(i).toString();
+						bounds[i] = busDirections.getlBusDirection().get(i).toString();
 					}
 					Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
 							R.string.analytics_action_get_bus_direction, 0);
 				}
 
 				MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
-				connectParam.put("rt", mBusRouteId);
+				connectParam.put("rt", busRouteId);
 				String content = connect.connect(CtaRequestType.BUS_PATTERN, connectParam);
 				Xml xml = new Xml();
 				List<BusPattern> patterns = xml.parsePatterns(content);
 				for (BusPattern pattern : patterns) {
 					String directionIgnoreCase = pattern.getDirection().toLowerCase(Locale.US);
-					for (String bound : mBounds) {
+					for (String bound : bounds) {
 						if (pattern.getDirection().equals(bound) || bound.toLowerCase(Locale.US).indexOf(directionIgnoreCase) != -1) {
 							this.patterns.add(pattern);
 						}
