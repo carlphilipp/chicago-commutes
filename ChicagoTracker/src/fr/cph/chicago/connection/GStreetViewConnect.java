@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,18 +16,18 @@
 
 package fr.cph.chicago.connection;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.util.Util;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+
 /**
  * Class that access google street api. Singleton
- * 
+ *
  * @author Carl-Philipp Harmant
  * @version 1
  */
@@ -42,7 +42,7 @@ public class GStreetViewConnect {
 	/** Width of the picture **/
 	private static final int WIDTH = 1000;
 	/** Height of the picture **/
-	private static final int HEIGTH = 300;
+	private static final int HEIGHT = 300;
 	/** This class is a singleton **/
 	private static GStreetViewConnect instance = null;
 
@@ -55,7 +55,7 @@ public class GStreetViewConnect {
 
 	/**
 	 * Get instance of this class
-	 * 
+	 *
 	 * @return
 	 */
 	public static GStreetViewConnect getInstance() {
@@ -67,7 +67,7 @@ public class GStreetViewConnect {
 
 	/**
 	 * Build Url
-	 * 
+	 *
 	 * @param position
 	 *            position that we want to access
 	 * @return a drawable
@@ -75,29 +75,31 @@ public class GStreetViewConnect {
 	 *             an exception
 	 */
 	public final Drawable connect(final Position position) throws IOException {
-		StringBuilder adress = new StringBuilder(BASE_URL);
-		adress.append("?key=" + GOOGLE_KEY);
-		adress.append("&sensor=false");
-		adress.append("&size=" + WIDTH + "x" + HEIGTH);
-		adress.append("&fov=120");
-		adress.append("&location=" + position.getLatitude() + "," + position.getLongitude());
-		return connectUrl(adress.toString());
+		StringBuilder address = new StringBuilder(BASE_URL);
+		address.append("?key=");
+		address.append(GOOGLE_KEY);
+		address.append("&sensor=false");
+		address.append("&size=" + WIDTH + "x" + HEIGHT);
+		address.append("&fov=120");
+		address.append("&location=");
+		address.append(position.getLatitude());
+		address.append(",").append(position.getLongitude());
+		return connectUrl(address.toString());
 	}
 
 	/**
 	 * Connect to the API and get the MAP
-	 * 
+	 *
 	 * @param address
 	 *            the address to connect to
 	 * @return a drawable map
 	 * @throws IOException
 	 */
 	private Drawable connectUrl(final String address) throws IOException {
-		Log.v(TAG, "adress: " + address);
+		Log.v(TAG, "Address: " + address);
 		try {
 			InputStream is = (InputStream) new URL(address).getContent();
-			Drawable d = Drawable.createFromStream(is, "src name");
-			return d;
+			return Drawable.createFromStream(is, "src name");
 		} catch (Exception e) {
 			return null;
 		}
