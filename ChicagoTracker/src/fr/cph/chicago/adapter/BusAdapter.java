@@ -196,9 +196,7 @@ public final class BusAdapter extends BaseAdapter {
 				String xmlResult = connect.connect(CtaRequestType.BUS_DIRECTION, reqParams);
 				busDirections = xml.parseBusDirections(xmlResult, busRoute.getId());
 				convertView = (LinearLayout) params[1];
-			} catch (ParserException e) {
-				this.trackerException = e;
-			} catch (ConnectException e) {
+			} catch (ParserException | ConnectException e) {
 				this.trackerException = e;
 			}
 			Util.trackAction(BusAdapter.this.mActivity, R.string.analytics_category_req, R.string.analytics_action_get_bus,
@@ -211,7 +209,7 @@ public final class BusAdapter extends BaseAdapter {
 			mActivity.stopRefreshAnimation();
 			if (trackerException == null) {
 				final List<BusDirection> busDirections = result.getlBusDirection();
-				final List<String> data = new ArrayList<String>();
+				final List<String> data = new ArrayList<>();
 				for (BusDirection busDir : busDirections) {
 					data.add(busDir.toString());
 				}

@@ -77,7 +77,7 @@ public class FavoritesFragment extends Fragment {
 	 * @param sectionNumber
 	 * @return
 	 */
-	public static final FavoritesFragment newInstance(final int sectionNumber) {
+	public static FavoritesFragment newInstance(final int sectionNumber) {
 		FavoritesFragment fragment = new FavoritesFragment();
 		Bundle args = new Bundle();
 		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
@@ -103,7 +103,7 @@ public class FavoritesFragment extends Fragment {
 			}
 		}
 		if (mBikeStations == null) {
-			mBikeStations = new ArrayList<BikeStation>();
+			mBikeStations = new ArrayList<>();
 		}
 
 		Util.trackScreen(mActivity, R.string.analytics_favorites_fragment);

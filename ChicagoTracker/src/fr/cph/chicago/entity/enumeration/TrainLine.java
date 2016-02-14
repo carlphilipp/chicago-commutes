@@ -71,7 +71,7 @@ public enum TrainLine {
 	 *            the text
 	 * @return the text
 	 */
-	public static final TrainLine fromXmlString(final String text) {
+	public static TrainLine fromXmlString(final String text) {
 		if (text != null) {
 			for (TrainLine b : TrainLine.values()) {
 				if (text.equalsIgnoreCase(b.text)) {
@@ -89,7 +89,7 @@ public enum TrainLine {
 	 *            the text
 	 * @return a train line
 	 */
-	public static final TrainLine fromString(final String text) {
+	public static TrainLine fromString(final String text) {
 		if (text != null) {
 			for (TrainLine b : TrainLine.values()) {
 				if (text.equalsIgnoreCase(b.name)) {

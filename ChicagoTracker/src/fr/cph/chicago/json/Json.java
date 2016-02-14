@@ -35,7 +35,7 @@ import java.util.List;
  */
 public class Json {
 	public List<BikeStation> parseStations(final String jsonString) throws ParserException {
-		List<BikeStation> stations = new ArrayList<BikeStation>();
+		List<BikeStation> stations = new ArrayList<>();
 		try {
 			JSONObject json = new JSONObject(jsonString);
 			JSONArray stationList = json.getJSONArray("stationBeanList");

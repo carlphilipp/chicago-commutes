@@ -37,7 +37,7 @@ public final class BusDirections {
 	 * Constructor
 	 */
 	public BusDirections() {
-		lBusDirection = new ArrayList<BusDirection>();
+		lBusDirection = new ArrayList<>();
 	}
 
 	/**

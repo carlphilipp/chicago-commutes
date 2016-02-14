@@ -425,7 +425,7 @@ public class BusMapActivity extends Activity {
 		}
 	}
 
-	private final class LoadBusPosition extends AsyncTask<Boolean, Void, List<Bus>> {
+	private class LoadBusPosition extends AsyncTask<Boolean, Void, List<Bus>> {
 		/** Allow or not centering the map **/
 		private boolean centerMap;
 		/** Stop refresh animation or not **/
@@ -475,7 +475,7 @@ public class BusMapActivity extends Activity {
 		}
 	}
 
-	private final class LoadCurrentPosition extends AsyncTask<Boolean, Void, Void> implements LocationListener {
+	private class LoadCurrentPosition extends AsyncTask<Boolean, Void, Void> implements LocationListener {
 		// The minimum distance to change Updates in meters
 		private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
 		// The minimum time between updates in milliseconds
@@ -608,13 +608,13 @@ public class BusMapActivity extends Activity {
 	 * @author Carl-Philipp Harmant
 	 *
 	 */
-	private final class LoadPattern extends AsyncTask<Void, Void, List<BusPattern>> {
+	private class LoadPattern extends AsyncTask<Void, Void, List<BusPattern>> {
 		/** List of bus pattern **/
 		private List<BusPattern> patterns;
 
 		@Override
 		protected final List<BusPattern> doInBackground(final Void... params) {
-			this.patterns = new ArrayList<BusPattern>();
+			this.patterns = new ArrayList<>();
 			CtaConnect connect = CtaConnect.getInstance();
 			try {
 				if (busId == 0) {
@@ -644,9 +644,7 @@ public class BusMapActivity extends Activity {
 						}
 					}
 				}
-			} catch (ConnectException e) {
-				Log.e(TAG, e.getMessage(), e);
-			} catch (ParserException e) {
+			} catch (ConnectException | ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
 			Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
@@ -665,7 +663,7 @@ public class BusMapActivity extends Activity {
 		}
 	}
 
-	private final class LoadBusFollow extends AsyncTask<String, Void, List<BusArrival>> {
+	private class LoadBusFollow extends AsyncTask<String, Void, List<BusArrival>> {
 		/** **/
 		private View view;
 		/** **/
@@ -683,7 +681,7 @@ public class BusMapActivity extends Activity {
 		@Override
 		protected List<BusArrival> doInBackground(final String... params) {
 			final String busId = params[0];
-			List<BusArrival> arrivals = new ArrayList<BusArrival>();
+			List<BusArrival> arrivals = new ArrayList<>();
 			try {
 				CtaConnect connect = CtaConnect.getInstance();
 				MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
@@ -691,9 +689,7 @@ public class BusMapActivity extends Activity {
 				String content = connect.connect(CtaRequestType.BUS_ARRIVALS, connectParam);
 				Xml xml = new Xml();
 				arrivals = xml.parseBusArrivals(content);
-			} catch (ConnectException e) {
-				Log.e(TAG, e.getMessage(), e);
-			} catch (ParserException e) {
+			} catch (ConnectException | ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
 			Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,

@@ -158,7 +158,7 @@ public class BusBoundActivity extends ListActivity {
 
 				@Override
 				public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-					busStopsFiltered = new ArrayList<BusStop>();
+					busStopsFiltered = new ArrayList<>();
 				}
 
 				@Override
@@ -295,7 +295,7 @@ public class BusBoundActivity extends ListActivity {
 	 *
 	 * @author Carl-Philipp Harmant
 	 */
-	private final class LoadPattern extends AsyncTask<Void, Void, BusPattern> implements LocationListener {
+	private class LoadPattern extends AsyncTask<Void, Void, BusPattern> implements LocationListener {
 
 		private BusPattern busPattern;
 

@@ -327,7 +327,7 @@ public class BusActivity extends Activity {
 	 * @author Carl-Philipp Harmant
 	 * @version 1
 	 */
-	private final class LoadData extends AsyncTask<Void, Void, List<BusArrival>> {
+	private class LoadData extends AsyncTask<Void, Void, List<BusArrival>> {
 
 		/**
 		 * The exception that could potentially been thrown during request
@@ -348,9 +348,7 @@ public class BusActivity extends Activity {
 
 				// Parse and return arrival buses
 				return xml.parseBusArrivals(xmlResult);
-			} catch (ParserException e) {
-				this.trackerException = e;
-			} catch (ConnectException e) {
+			} catch (ParserException | ConnectException e) {
 				this.trackerException = e;
 			}
 			Util.trackAction(BusActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
@@ -396,7 +394,7 @@ public class BusActivity extends Activity {
 	 * @author Carl-Philipp Harmant
 	 * @version 1
 	 */
-	private final class DisplayGoogleStreetPicture extends AsyncTask<Position, Void, Drawable> {
+	private class DisplayGoogleStreetPicture extends AsyncTask<Position, Void, Drawable> {
 
 		/**
 		 * Position of the stop
@@ -486,7 +484,7 @@ public class BusActivity extends Activity {
 	/**
 	 * Add or remove from favorites
 	 */
-	private final void switchFavorite() {
+	private void switchFavorite() {
 		if (isFavorite) {
 			Util.removeFromBusFavorites(busRouteId, String.valueOf(busStopId), bound, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
 			isFavorite = false;

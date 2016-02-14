@@ -50,7 +50,7 @@ public enum TrainDirection {
 	 *            the text
 	 * @return the train direction
 	 */
-	public static final TrainDirection fromString(final String text) {
+	public static TrainDirection fromString(final String text) {
 		if (text != null) {
 			for (TrainDirection b : TrainDirection.values()) {
 				if (text.equalsIgnoreCase(b.text)) {

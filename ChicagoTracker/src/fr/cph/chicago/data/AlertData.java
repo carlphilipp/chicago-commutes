@@ -43,7 +43,7 @@ public class AlertData {
 	 * Private constructor
 	 */
 	private AlertData() {
-		mAlerts = new ArrayList<Alert>();
+		mAlerts = new ArrayList<>();
 	}
 
 	/**
@@ -69,7 +69,7 @@ public class AlertData {
 	 */
 	public final List<Alert> loadGeneralAlerts() throws ParserException, ConnectException {
 		if (mAlerts.size() == 0) {
-			MultiMap<String, String> params = new MultiValueMap<String, String>();
+			MultiMap<String, String> params = new MultiValueMap<>();
 			CtaConnect connect = CtaConnect.getInstance();
 			Xml xml = new Xml();
 			String xmlResult = connect.connect(CtaRequestType.ALERTS_GENERAL, params);

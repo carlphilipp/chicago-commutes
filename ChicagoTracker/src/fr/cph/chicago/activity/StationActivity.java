@@ -25,6 +25,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils.TruncateAt;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -79,6 +80,8 @@ import java.util.Set;
  * @version 1
  */
 public class StationActivity extends Activity {
+
+	private static final String TAG = "StationActivity";
 	/** Train data **/
 	private TrainData mTrainData;
 	/** Train arrival **/
@@ -306,7 +309,7 @@ public class StationActivity extends Activity {
 	 * @author Carl-Philipp Harmant
 	 * @version 1
 	 */
-	private final class DisplayGoogleStreetPicture extends AsyncTask<Position, Void, Drawable> {
+	private class DisplayGoogleStreetPicture extends AsyncTask<Position, Void, Drawable> {
 		/** **/
 		private Position position;
 
@@ -319,7 +322,7 @@ public class StationActivity extends Activity {
 						R.string.analytics_action_get_google_map_street_view, 0);
 				return connect.connect(params[0]);
 			} catch (IOException e) {
-				e.printStackTrace();
+				Log.e(TAG, e.getMessage(), e);
 				return null;
 			}
 		}
@@ -418,7 +421,7 @@ public class StationActivity extends Activity {
 					Collections.sort(etas);
 					// Copy data into new list to be able to avoid looping on a list that we want to
 					// modify
-					List<Eta> etas2 = new ArrayList<Eta>();
+					List<Eta> etas2 = new ArrayList<>();
 					etas2.addAll(etas);
 					int j = 0;
 					Eta eta = null;
@@ -436,9 +439,7 @@ public class StationActivity extends Activity {
 						}
 					}
 				}
-			} catch (ParserException e) {
-				this.trackerException = e;
-			} catch (ConnectException e) {
+			} catch (ParserException | ConnectException e) {
 				this.trackerException = e;
 			}
 			Util.trackAction(StationActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train,
@@ -470,7 +471,7 @@ public class StationActivity extends Activity {
 				if (mArrival != null) {
 					etas = mArrival.getEtas();
 				} else {
-					etas = new ArrayList<Eta>();
+					etas = new ArrayList<>();
 				}
 				reset(StationActivity.this.mStation);
 				for (Eta eta : etas) {
@@ -493,7 +494,7 @@ public class StationActivity extends Activity {
 	 * @param station
 	 *            the station
 	 */
-	private final void reset(final Station station) {
+	private void reset(final Station station) {
 		Set<TrainLine> setTL = station.getLines();
 		for (TrainLine tl : setTL) {
 			for (TrainDirection d : TrainDirection.values()) {
@@ -523,7 +524,7 @@ public class StationActivity extends Activity {
 	 * @param eta
 	 *            the eta
 	 */
-	private final void drawLine3(final Eta eta) {
+	private void drawLine3(final Eta eta) {
 		TrainLine line = eta.getRouteName();
 		Stop stop = eta.getStop();
 		int line3Padding = (int) getResources().getDimension(R.dimen.activity_station_stops_line3);
@@ -566,7 +567,7 @@ public class StationActivity extends Activity {
 	/**
 	 * Add/remove favorites
 	 */
-	private final void switchFavorite() {
+	private void switchFavorite() {
 		if (mIsFavorite) {
 			Util.removeFromTrainFavorites(mStationId, ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
 			mIsFavorite = false;

@@ -145,7 +145,7 @@ public class Station implements Comparable<Station>, Parcelable {
 					stopss = map.get(tl);
 					stopss.add(stop);
 				} else {
-					stopss = new ArrayList<Stop>();
+					stopss = new ArrayList<>();
 					stopss.add(stop);
 					map.put(tl, stopss);
 				}
@@ -161,7 +161,7 @@ public class Station implements Comparable<Station>, Parcelable {
 	}
 
 	public List<Position> getStopsPosition() {
-		List<Position> positions = new ArrayList<Position>();
+		List<Position> positions = new ArrayList<>();
 		for (Stop stop : stops) {
 			positions.add(stop.getPosition());
 		}
@@ -183,7 +183,7 @@ public class Station implements Comparable<Station>, Parcelable {
 	private void readFromParcel(Parcel in) {
 		id = in.readInt();
 		name = in.readString();
-		stops = new ArrayList<Stop>();
+		stops = new ArrayList<>();
 		in.readList(stops, Stop.class.getClassLoader());
 	}
 

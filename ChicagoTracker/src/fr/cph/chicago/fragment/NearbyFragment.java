@@ -250,11 +250,11 @@ public class NearbyFragment extends Fragment {
 		protected final Void doInBackground(final List<?>... params) {
 			busStops = (List<BusStop>) params[0];
 			stations = (List<Station>) params[1];
-			bikeStationsRes = new ArrayList<BikeStation>();
+			bikeStationsRes = new ArrayList<>();
 			bikeStationsTemp = (List<BikeStation>) params[2];
 
-			busArrivalsMap = new SparseArray<Map<String, List<BusArrival>>>();
-			trainArrivals = new SparseArray<TrainArrival>();
+			busArrivalsMap = new SparseArray<>();
+			trainArrivals = new SparseArray<>();
 
 			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mActivity);
 			boolean loadTrain = sharedPref.getBoolean("cta_train", true);
@@ -290,16 +290,14 @@ public class NearbyFragment extends Fragment {
 								List<BusArrival> temp = tempMap.get(direction);
 								temp.add(busArrival);
 							} else {
-								List<BusArrival> temp = new ArrayList<BusArrival>();
+								List<BusArrival> temp = new ArrayList<>();
 								temp.add(busArrival);
 								tempMap.put(direction, temp);
 							}
 						}
 						Util.trackAction(NearbyFragment.this.mActivity, R.string.analytics_category_req, R.string.analytics_action_get_bus,
 								R.string.analytics_action_get_bus_arrival, 0);
-					} catch (ConnectException e) {
-						Log.e(TAG, e.getMessage(), e);
-					} catch (ParserException e) {
+					} catch (ConnectException | ParserException e) {
 						Log.e(TAG, e.getMessage(), e);
 					}
 				}
@@ -318,9 +316,7 @@ public class NearbyFragment extends Fragment {
 						}
 						Util.trackAction(NearbyFragment.this.mActivity, R.string.analytics_category_req, R.string.analytics_action_get_train,
 								R.string.analytics_action_get_train_arrivals, 0);
-					} catch (ConnectException e) {
-						Log.e(TAG, e.getMessage(), e);
-					} catch (ParserException e) {
+					} catch (ConnectException | ParserException e) {
 						Log.e(TAG, e.getMessage(), e);
 					}
 				}
@@ -341,9 +337,7 @@ public class NearbyFragment extends Fragment {
 					Collections.sort(bikeStationsRes, Util.BIKE_COMPARATOR_NAME);
 					Util.trackAction(NearbyFragment.this.mActivity, R.string.analytics_category_req, R.string.analytics_action_get_divvy,
 							R.string.analytics_action_get_divvy_all, 0);
-				} catch (ConnectException e) {
-					Log.e(TAG, e.getMessage(), e);
-				} catch (ParserException e) {
+				} catch (ConnectException | ParserException e) {
 					Log.e(TAG, e.getMessage(), e);
 				}
 			}
@@ -354,7 +348,7 @@ public class NearbyFragment extends Fragment {
 		@Override
 		protected final void onPostExecute(final Void result) {
 			if (mHideStationsStops) {
-				List<BusStop> busStopTmp = new ArrayList<BusStop>();
+				List<BusStop> busStopTmp = new ArrayList<>();
 				for (BusStop busStop : busStops) {
 					if (busArrivalsMap.get(busStop.getId()).size() == 0) {
 						busArrivalsMap.remove(busStop.getId());
@@ -365,7 +359,7 @@ public class NearbyFragment extends Fragment {
 				busStops.clear();
 				busStops = busStopTmp;
 
-				List<Station> trainStationTmp = new ArrayList<Station>();
+				List<Station> trainStationTmp = new ArrayList<>();
 				for (Station station : stations) {
 					if (trainArrivals.get(station.getId()) == null || trainArrivals.get(station.getId()).getEtas().size() == 0) {
 						trainArrivals.remove(station.getId());
@@ -391,7 +385,7 @@ public class NearbyFragment extends Fragment {
 	 * @author Carl-Philipp Harmant
 	 *
 	 */
-	private final class LoadNearby extends AsyncTask<Void, Void, Void> implements LocationListener {
+	private class LoadNearby extends AsyncTask<Void, Void, Void> implements LocationListener {
 
 		// The minimum distance to change Updates in meters
 		private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
@@ -420,8 +414,8 @@ public class NearbyFragment extends Fragment {
 
 		@Override
 		protected final Void doInBackground(final Void... params) {
-			busStops = new ArrayList<BusStop>();
-			trainStations = new ArrayList<Station>();
+			busStops = new ArrayList<>();
+			trainStations = new ArrayList<>();
 			bikeStations = NearbyFragment.this.mActivity.getIntent().getExtras().getParcelableArrayList("bikeStations");
 
 			DataHolder dataHolder = DataHolder.getInstance();
@@ -578,7 +572,7 @@ public class NearbyFragment extends Fragment {
 	 */
 	private void load(final List<BusStop> buses, final SparseArray<Map<String, List<BusArrival>>> busArrivals, final List<Station> stations,
 			final SparseArray<TrainArrival> trainArrivals, final List<BikeStation> bikeStations) {
-		List<Marker> markers = new ArrayList<Marker>();
+		List<Marker> markers = new ArrayList<>();
 		BitmapDescriptor azure = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE);
 		BitmapDescriptor violet = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
 		BitmapDescriptor yellow = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
@@ -666,7 +660,7 @@ public class NearbyFragment extends Fragment {
 	 *            true or falseO
 	 */
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-	private final void showProgress(final boolean show) {
+	private void showProgress(final boolean show) {
 		try {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
 				int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);

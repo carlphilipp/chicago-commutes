@@ -38,7 +38,7 @@ public class SettingsFragment extends PreferenceFragment {
 	 *            the section number
 	 * @return the fragment
 	 */
-	public static final SettingsFragment newInstance(final int sectionNumber) {
+	public static SettingsFragment newInstance(final int sectionNumber) {
 		SettingsFragment fragment = new SettingsFragment();
 		Bundle args = new Bundle();
 		args.putInt(ARG_SECTION_NUMBER, sectionNumber);

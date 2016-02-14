@@ -127,9 +127,9 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 		this.mRequestType2 = requestType2;
 		this.mParams2 = params2;
 
-		this.mTrainArrivals = new SparseArray<TrainArrival>();
-		this.mBusArrivals = new ArrayList<BusArrival>();
-		this.mBikeStations = new ArrayList<BikeStation>();
+		this.mTrainArrivals = new SparseArray<>();
+		this.mBusArrivals = new ArrayList<>();
+		this.mBikeStations = new ArrayList<>();
 
 		this.mXml = new Xml();
 		this.mJson = new Json();
@@ -201,7 +201,7 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 						Collections.sort(etas);
 						// Copy data into new list to be able to avoid looping on a list that we want to
 						// modify
-						List<Eta> etas2 = new ArrayList<Eta>();
+						List<Eta> etas2 = new ArrayList<>();
 						etas2.addAll(etas);
 						int j = 0;
 						Eta eta = null;
@@ -220,18 +220,15 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 						}
 					}
 
-				} catch (ConnectException e) {
-					mTrainBoolean = false;
-					this.mTrackerTrainException = e;
-				} catch (ParserException e) {
+				} catch (ConnectException | ParserException e) {
 					mTrainBoolean = false;
 					this.mTrackerTrainException = e;
 				}
 			}
 			if (mLoadBuses) {
 				try {
-					List<String> rts = new ArrayList<String>();
-					List<String> stpids = new ArrayList<String>();
+					List<String> rts = new ArrayList<>();
+					List<String> stpids = new ArrayList<>();
 					for (Entry<String, Object> entry : mParams2.entrySet()) {
 						String key = entry.getKey();
 						StringBuilder str = new StringBuilder();
@@ -253,16 +250,13 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 						}
 					}
 					for (int i = 0; i < rts.size(); i++) {
-						MultiMap<String, String> para = new MultiValueMap<String, String>();
+						MultiMap<String, String> para = new MultiValueMap<>();
 						para.put("rt", rts.get(i));
 						para.put("stpid", stpids.get(i));
 						String xmlResult = ctaConnect.connect(mRequestType2, para);
 						this.mBusArrivals.addAll(mXml.parseBusArrivals(xmlResult));
 					}
-				} catch (ConnectException e) {
-					mBusBoolean = false;
-					this.mTrackerBusException = e;
-				} catch (ParserException e) {
+				} catch (ConnectException | ParserException e) {
 					mBusBoolean = false;
 					this.mTrackerBusException = e;
 				}
@@ -272,10 +266,7 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 					String bikeContent = divvyConnect.connect();
 					this.mBikeStations = mJson.parseStations(bikeContent);
 					Collections.sort(this.mBikeStations, Util.BIKE_COMPARATOR_NAME);
-				} catch (ParserException e) {
-					mBikeBoolean = false;
-					this.mTrackerBikeException = e;
-				} catch (ConnectException e) {
+				} catch (ParserException | ConnectException e) {
 					mBikeBoolean = false;
 					this.mTrackerBikeException = e;
 				} finally {

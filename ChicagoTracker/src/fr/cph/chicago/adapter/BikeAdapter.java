@@ -56,7 +56,7 @@ public final class BikeAdapter extends BaseAdapter {
 		Bundle bundle = activity.getIntent().getExtras();
 		this.mBikeStations = bundle.getParcelableArrayList("bikeStations");
 		if (this.mBikeStations == null) {
-			this.mBikeStations = new ArrayList<BikeStation>();
+			this.mBikeStations = new ArrayList<>();
 		}
 	}
 

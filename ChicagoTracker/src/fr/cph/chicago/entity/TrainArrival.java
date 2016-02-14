@@ -125,7 +125,7 @@ public class TrainArrival implements Parcelable {
 	 * @return
 	 */
 	public final List<Eta> getEtas(final TrainLine line) {
-		List<Eta> etas = new ArrayList<Eta>();
+		List<Eta> etas = new ArrayList<>();
 		for (Eta eta : getEtas()) {
 			if (eta.getRouteName() == line) {
 				etas.add(eta);
@@ -151,7 +151,7 @@ public class TrainArrival implements Parcelable {
 		timeStamp = new Date(in.readLong());
 		errorCode = in.readInt();
 		errorMessage = in.readString();
-		etas = new ArrayList<Eta>();
+		etas = new ArrayList<>();
 		in.readList(etas, Eta.class.getClassLoader());
 	}
 

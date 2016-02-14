@@ -60,7 +60,7 @@ public class Alert {
 	 * Constructor
 	 */
 	public Alert() {
-		this.impactedServices = new ArrayList<Service>();
+		this.impactedServices = new ArrayList<>();
 	}
 
 	/**

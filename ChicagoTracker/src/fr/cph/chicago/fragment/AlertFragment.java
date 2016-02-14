@@ -71,7 +71,7 @@ public class AlertFragment extends Fragment {
 	 *            the section number
 	 * @return the fragment
 	 */
-	public static final AlertFragment newInstance(final int sectionNumber) {
+	public static AlertFragment newInstance(final int sectionNumber) {
 		AlertFragment fragment = new AlertFragment();
 		Bundle args = new Bundle();
 		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
@@ -149,7 +149,7 @@ public class AlertFragment extends Fragment {
 		return super.onOptionsItemSelected(item);
 	}
 
-	private final class LoadData extends AsyncTask<Void, Void, AlertData> {
+	private class LoadData extends AsyncTask<Void, Void, AlertData> {
 
 		@Override
 		protected AlertData doInBackground(Void... params) {
@@ -159,21 +159,14 @@ public class AlertFragment extends Fragment {
 					alertData.loadGeneralAlerts();
 					Util.trackAction(AlertFragment.this.mActivity, R.string.analytics_category_req, R.string.analytics_action_get_alert,
 							R.string.analytics_action_get_alert_general, 0);
-				} catch (ParserException e) {
+				} catch (ParserException | ConnectException e) {
 					Log.e(TAG, "Parser error", e);
 					AlertFragment.this.mActivity.runOnUiThread(new Runnable() {
 						public void run() {
-							Toast.makeText(mActivity, "A surprising error has occured. Try again!", Toast.LENGTH_SHORT).show();
+							Toast.makeText(mActivity, "A surprising error has occurred. Try again!", Toast.LENGTH_SHORT).show();
 						}
 					});
 
-				} catch (ConnectException e) {
-					Log.e(TAG, "Connect error", e);
-					AlertFragment.this.mActivity.runOnUiThread(new Runnable() {
-						public void run() {
-							Toast.makeText(mActivity, "A surprising error has occured. Try again!", Toast.LENGTH_SHORT).show();
-						}
-					});
 				}
 			} else {
 				AlertFragment.this.mActivity.runOnUiThread(new Runnable() {
@@ -195,7 +188,7 @@ public class AlertFragment extends Fragment {
 		}
 	}
 
-	private final class WaitForRefreshData extends AsyncTask<Void, Void, Boolean> {
+	private class WaitForRefreshData extends AsyncTask<Void, Void, Boolean> {
 		@Override
 		protected Boolean doInBackground(Void... args) {
 			int i = 0;
@@ -220,7 +213,7 @@ public class AlertFragment extends Fragment {
 		}
 	}
 
-	private final void loadError() {
+	private void loadError() {
 		mLoadingLayout.setVisibility(RelativeLayout.INVISIBLE);
 		RelativeLayout errorLayout = (RelativeLayout) mRootView.findViewById(R.id.error_layout);
 		errorLayout.setVisibility(RelativeLayout.VISIBLE);

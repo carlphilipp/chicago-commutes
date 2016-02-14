@@ -222,9 +222,7 @@ public final class SearchAdapter extends BaseAdapter {
 				String xmlResult = connect.connect(CtaRequestType.BUS_DIRECTION, reqParams);
 				busDirections = xml.parseBusDirections(xmlResult, busRoute.getId());
 				convertView = (TextView) params[1];
-			} catch (ParserException e) {
-				this.trackerException = e;
-			} catch (ConnectException e) {
+			} catch (ParserException | ConnectException e) {
 				this.trackerException = e;
 			}
 			Util.trackAction(SearchAdapter.this.mActivity, R.string.analytics_category_req, R.string.analytics_action_get_bus,
@@ -238,7 +236,7 @@ public final class SearchAdapter extends BaseAdapter {
 			if (trackerException == null) {
 				// PopupMenu popupMenu = new PopupMenu(ChicagoTracker.getAppContext(), convertView);
 				final List<BusDirection> lBus = result.getlBusDirection();
-				final List<String> data = new ArrayList<String>();
+				final List<String> data = new ArrayList<>();
 				for (BusDirection busDir : lBus) {
 					data.add(busDir.toString());
 				}

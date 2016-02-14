@@ -195,7 +195,7 @@ public class Stop implements Comparable<Stop>, Parcelable {
 		dest.writeString(direction.toTextString());
 		dest.writeParcelable(position, PARCELABLE_WRITE_RETURN_VALUE);
 		dest.writeString(ada.toString());
-		List<String> linesString = new ArrayList<String>();
+		List<String> linesString = new ArrayList<>();
 		for (TrainLine line : lines) {
 			linesString.add(line.toTextString());
 		}
@@ -208,9 +208,9 @@ public class Stop implements Comparable<Stop>, Parcelable {
 		direction = TrainDirection.fromString(in.readString());
 		position = in.readParcelable(Position.class.getClassLoader());
 		ada = Boolean.valueOf(in.readString());
-		List<String> linesString = new ArrayList<String>();
+		List<String> linesString = new ArrayList<>();
 		in.readStringList(linesString);
-		lines = new ArrayList<TrainLine>();
+		lines = new ArrayList<>();
 		for (String line : linesString) {
 			lines.add(TrainLine.fromXmlString(line));
 		}

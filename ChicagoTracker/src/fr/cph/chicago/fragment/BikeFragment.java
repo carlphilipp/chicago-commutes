@@ -114,7 +114,7 @@ public class BikeFragment extends Fragment {
 			this.mBikeStations = bundle.getParcelableArrayList("bikeStations");
 		}
 		if (this.mBikeStations == null) {
-			this.mBikeStations = new ArrayList<BikeStation>();
+			this.mBikeStations = new ArrayList<>();
 		}
 		setHasOptionsMenu(true);
 
@@ -162,7 +162,7 @@ public class BikeFragment extends Fragment {
 		return mRootView;
 	}
 
-	private final void loadList() {
+	private void loadList() {
 		EditText filter = (EditText) mRootView.findViewById(R.id.bike_filter);
 		if (mAdapter == null) {
 			mAdapter = new BikeAdapter(mActivity);
@@ -174,7 +174,7 @@ public class BikeFragment extends Fragment {
 
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-				this.bikeStations = new ArrayList<BikeStation>();
+				this.bikeStations = new ArrayList<>();
 			}
 
 			@Override
@@ -231,7 +231,7 @@ public class BikeFragment extends Fragment {
 		return super.onOptionsItemSelected(item);
 	}
 
-	private final class WaitForRefreshData extends AsyncTask<Void, Void, Boolean> {
+	private class WaitForRefreshData extends AsyncTask<Void, Void, Boolean> {
 		@Override
 		protected Boolean doInBackground(Void... args) {
 			Bundle bundle = BikeFragment.this.mActivity.getIntent().getExtras();
@@ -266,17 +266,16 @@ public class BikeFragment extends Fragment {
 		}
 	}
 
-	private final void loadError() {
+	private void loadError() {
 		mLoadingLayout.setVisibility(RelativeLayout.INVISIBLE);
 		RelativeLayout errorLayout = (RelativeLayout) mRootView.findViewById(R.id.error_layout);
 		errorLayout.setVisibility(RelativeLayout.VISIBLE);
 	}
 
-	private final class DivvyAsyncTask extends AsyncTask<Void, Void, List<BikeStation>> {
-
+	private class DivvyAsyncTask extends AsyncTask<Void, Void, List<BikeStation>> {
 		@Override
 		protected List<BikeStation> doInBackground(Void... params) {
-			List<BikeStation> bikeStations = new ArrayList<BikeStation>();
+			List<BikeStation> bikeStations = new ArrayList<>();
 			try {
 				Json json = new Json();
 				DivvyConnect divvyConnect = DivvyConnect.getInstance();

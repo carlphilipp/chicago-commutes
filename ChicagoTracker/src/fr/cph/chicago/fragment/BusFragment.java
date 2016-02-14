@@ -112,7 +112,7 @@ public class BusFragment extends Fragment {
 		addView();
 	}
 
-	private final void addView() {
+	private void addView() {
 		mAdapter = new BusAdapter(mActivity);
 		mListView.setAdapter(mAdapter);
 		mTextFilter.setVisibility(TextView.VISIBLE);
@@ -123,7 +123,7 @@ public class BusFragment extends Fragment {
 
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-				busRoutes = new ArrayList<BusRoute>();
+				busRoutes = new ArrayList<>();
 			}
 
 			@Override

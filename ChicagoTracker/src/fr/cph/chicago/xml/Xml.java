@@ -48,15 +48,21 @@ import java.util.Locale;
  * @version 1
  */
 public final class Xml {
-	/** The parser **/
-	private XmlPullParser parser;
-	/** The train date format **/
-	private SimpleDateFormat dfTrain;
-	/** The bus date format **/
-	private SimpleDateFormat dfBus;
 
 	/**
-	 *
+	 * The parser
+	 **/
+	private XmlPullParser parser;
+	/**
+	 * The train date format
+	 **/
+	private SimpleDateFormat simpleDateFormatTrain;
+	/**
+	 * The bus date format
+	 **/
+	private SimpleDateFormat simpleDateFormatBus;
+
+	/**
 	 * @throws ParserException
 	 */
 	@SuppressLint("SimpleDateFormat")
@@ -64,8 +70,8 @@ public final class Xml {
 		try {
 			XmlPullParserFactory pullParserFactory = XmlPullParserFactory.newInstance();
 			parser = pullParserFactory.newPullParser();
-			dfTrain = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
-			dfBus = new SimpleDateFormat("yyyyMMdd HH:mm");
+			simpleDateFormatTrain = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
+			simpleDateFormatBus = new SimpleDateFormat("yyyyMMdd HH:mm");
 		} catch (XmlPullParserException e) {
 			throw new ParserException(TrackerException.ERROR, e);
 		}
@@ -74,13 +80,10 @@ public final class Xml {
 	/**
 	 * Parse arrivals
 	 *
-	 * @param xml
-	 *            the xml string
-	 * @param data
-	 *            the train data
+	 * @param xml  the xml string
+	 * @param data the train data
 	 * @return a list of train arrival
-	 * @throws ParserException
-	 *             the parser exception
+	 * @throws ParserException the parser exception
 	 */
 	public final SparseArray<TrainArrival> parseArrivals(final String xml, final TrainData data) throws ParserException {
 		InputStream is = new ByteArrayInputStream(xml.getBytes());
@@ -126,7 +129,7 @@ public final class Xml {
 							arri.setTimeStamp(tmst);
 							List<Eta> etas = arri.getEtas();
 							if (etas == null) {
-								etas = new ArrayList<Eta>();
+								etas = new ArrayList<>();
 								arri.setEtas(etas);
 							}
 							Eta eta = new Eta();
@@ -193,13 +196,13 @@ public final class Xml {
 							TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-								currentEta.setPredictionDate(dfTrain.parse(text));
+								currentEta.setPredictionDate(simpleDateFormatTrain.parse(text));
 							}
 						} else if (tagName.equals("arrT")) {
 							TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-								currentEta.setArrivalDepartureDate(dfTrain.parse(text));
+								currentEta.setArrivalDepartureDate(simpleDateFormatTrain.parse(text));
 							}
 						} else if (tagName.equals("isApp")) {
 							TrainArrival arri = arrivals.get(staId, null);
@@ -251,7 +254,7 @@ public final class Xml {
 						}
 						break;
 					case TMST:
-						tmst = dfTrain.parse(text);
+						tmst = simpleDateFormatTrain.parse(text);
 						break;
 					case ERRCD:
 						errCd = Integer.valueOf(text);
@@ -265,11 +268,7 @@ public final class Xml {
 				}
 				eventType = parser.next();
 			}
-		} catch (XmlPullParserException e) {
-			throw new ParserException(TrackerException.ERROR, e);
-		} catch (ParseException e) {
-			throw new ParserException(TrackerException.ERROR, e);
-		} catch (IOException e) {
+		} catch (XmlPullParserException | ParseException | IOException e) {
 			throw new ParserException(TrackerException.ERROR, e);
 		}
 		return arrivals;
@@ -278,11 +277,9 @@ public final class Xml {
 	/**
 	 * Parse bus route
 	 *
-	 * @param xml
-	 *            the xml to parse
+	 * @param xml the xml to parse
 	 * @return a list of bus routes
-	 * @throws ParserException
-	 *             a parser exception
+	 * @throws ParserException a parser exception
 	 */
 	public final List<BusRoute> parseBusRoutes(final String xml) throws ParserException {
 		List<BusRoute> routes = null;
@@ -295,7 +292,7 @@ public final class Xml {
 			BusRoute busRoute = null;
 			while (eventType != XmlPullParser.END_DOCUMENT) {
 				if (eventType == XmlPullParser.START_DOCUMENT) {
-					routes = new ArrayList<BusRoute>();
+					routes = new ArrayList<>();
 				} else if (eventType == XmlPullParser.START_TAG) {
 					tagName = parser.getName();
 					if (tagName.equals("route")) {
@@ -334,9 +331,7 @@ public final class Xml {
 				}
 				eventType = parser.next();
 			}
-		} catch (XmlPullParserException e) {
-			throw new ParserException(TrackerException.ERROR, e);
-		} catch (IOException e) {
+		} catch (IOException | XmlPullParserException e) {
 			throw new ParserException(TrackerException.ERROR, e);
 		}
 		return routes;
@@ -345,13 +340,10 @@ public final class Xml {
 	/**
 	 * Parse bus directions
 	 *
-	 * @param xml
-	 *            the xml to parse
-	 * @param id
-	 *            the line id
+	 * @param xml the xml to parse
+	 * @param id  the line id
 	 * @return a bus directions
-	 * @throws ParserException
-	 *             a parser exception
+	 * @throws ParserException a parser exception
 	 */
 	public final BusDirections parseBusDirections(final String xml, final String id) throws ParserException {
 		BusDirections directions = null;
@@ -376,9 +368,7 @@ public final class Xml {
 				}
 				eventType = parser.next();
 			}
-		} catch (XmlPullParserException e) {
-			throw new ParserException(TrackerException.ERROR, e);
-		} catch (IOException e) {
+		} catch (IOException | XmlPullParserException e) {
 			throw new ParserException(TrackerException.ERROR, e);
 		}
 		return directions;
@@ -387,11 +377,9 @@ public final class Xml {
 	/**
 	 * Parse bus bounds
 	 *
-	 * @param xml
-	 *            the xml to parse
+	 * @param xml the xml to parse
 	 * @return a list of bus stop
-	 * @throws ParserException
-	 *             a parser exception
+	 * @throws ParserException a parser exception
 	 */
 	public final List<BusStop> parseBusBounds(final String xml) throws ParserException {
 		List<BusStop> busStops = null;
@@ -404,7 +392,7 @@ public final class Xml {
 			int eventType = parser.getEventType();
 			while (eventType != XmlPullParser.END_DOCUMENT) {
 				if (eventType == XmlPullParser.START_DOCUMENT) {
-					busStops = new ArrayList<BusStop>();
+					busStops = new ArrayList<>();
 				} else if (eventType == XmlPullParser.START_TAG) {
 					tagName = parser.getName();
 				} else if (eventType == XmlPullParser.END_TAG) {
@@ -431,9 +419,7 @@ public final class Xml {
 				}
 				eventType = parser.next();
 			}
-		} catch (XmlPullParserException e) {
-			throw new ParserException(TrackerException.ERROR, e);
-		} catch (IOException e) {
+		} catch (IOException | XmlPullParserException e) {
 			throw new ParserException(TrackerException.ERROR, e);
 		}
 		return busStops;
@@ -442,11 +428,9 @@ public final class Xml {
 	/**
 	 * Parse bus arrivals
 	 *
-	 * @param xml
-	 *            the xml to parse
+	 * @param xml the xml to parse
 	 * @return a list of bus arrivals
-	 * @throws ParserException
-	 *             a parser exception
+	 * @throws ParserException a parser exception
 	 */
 	public final List<BusArrival> parseBusArrivals(String xml) throws ParserException {
 		xml = xml.replaceAll("&", "&amp;");
@@ -459,7 +443,7 @@ public final class Xml {
 			int eventType = parser.getEventType();
 			while (eventType != XmlPullParser.END_DOCUMENT) {
 				if (eventType == XmlPullParser.START_DOCUMENT) {
-					busArrivals = new ArrayList<BusArrival>();
+					busArrivals = new ArrayList<>();
 				} else if (eventType == XmlPullParser.START_TAG) {
 					tagName = parser.getName();
 				} else if (eventType == XmlPullParser.END_TAG) {
@@ -469,7 +453,7 @@ public final class Xml {
 					if (tagName != null) {
 						if (tagName.equals("tmstmp")) {
 							busArrival = new BusArrival();
-							busArrival.setTimeStamp(dfBus.parse(text));
+							busArrival.setTimeStamp(simpleDateFormatBus.parse(text));
 							busArrivals.add(busArrival);
 						} else if (tagName.equals("typ")) {
 							busArrival.setPredictionType(PredictionType.fromString(text));
@@ -494,7 +478,7 @@ public final class Xml {
 						} else if (tagName.equals("des")) {
 							busArrival.setBusDestination(text);
 						} else if (tagName.equals("prdtm")) {
-							busArrival.setPredictionTime(dfBus.parse(text));
+							busArrival.setPredictionTime(simpleDateFormatBus.parse(text));
 						} else if (tagName.equals("dly")) {
 							busArrival.setIsDly(BooleanUtils.toBoolean(text));
 						}
@@ -502,11 +486,7 @@ public final class Xml {
 				}
 				eventType = parser.next();
 			}
-		} catch (XmlPullParserException e) {
-			throw new ParserException(TrackerException.ERROR, e);
-		} catch (ParseException e) {
-			throw new ParserException(TrackerException.ERROR, e);
-		} catch (IOException e) {
+		} catch (XmlPullParserException | ParseException | IOException e) {
 			throw new ParserException(TrackerException.ERROR, e);
 		}
 		return busArrivals;
@@ -515,11 +495,9 @@ public final class Xml {
 	/**
 	 * Parse alert general
 	 *
-	 * @param xml
-	 *            the xml to parse
+	 * @param xml the xml to parse
 	 * @return a list of alert
-	 * @throws ParserException
-	 *             a parser exception
+	 * @throws ParserException a parser exception
 	 */
 	public final List<Alert> parseAlertGeneral(final String xml) throws ParserException {
 		List<Alert> alerts = null;
@@ -533,7 +511,7 @@ public final class Xml {
 			int eventType = parser.getEventType();
 			while (eventType != XmlPullParser.END_DOCUMENT) {
 				if (eventType == XmlPullParser.START_DOCUMENT) {
-					alerts = new ArrayList<Alert>();
+					alerts = new ArrayList<>();
 				} else if (eventType == XmlPullParser.START_TAG) {
 					tagName = parser.getName();
 					if (tagName.equals("Alert")) {
@@ -597,11 +575,7 @@ public final class Xml {
 				}
 				eventType = parser.next();
 			}
-		} catch (XmlPullParserException e) {
-			throw new ParserException(TrackerException.ERROR, e);
-		} catch (ParseException e) {
-			throw new ParserException(TrackerException.ERROR, e);
-		} catch (IOException e) {
+		} catch (XmlPullParserException | ParseException | IOException e) {
 			throw new ParserException(TrackerException.ERROR, e);
 		}
 		return alerts;
@@ -610,11 +584,9 @@ public final class Xml {
 	/**
 	 * Parse alert general
 	 *
-	 * @param xml
-	 *            the xml to parse
+	 * @param xml the xml to parse
 	 * @return a list of alert
-	 * @throws ParserException
-	 *             a parser exception
+	 * @throws ParserException a parser exception
 	 */
 	public final List<BusPattern> parsePatterns(final String xml) throws ParserException {
 		List<BusPattern> patterns = null;
@@ -628,7 +600,7 @@ public final class Xml {
 			int eventType = parser.getEventType();
 			while (eventType != XmlPullParser.END_DOCUMENT) {
 				if (eventType == XmlPullParser.START_DOCUMENT) {
-					patterns = new ArrayList<BusPattern>();
+					patterns = new ArrayList<>();
 				} else if (eventType == XmlPullParser.START_TAG) {
 					tagName = parser.getName();
 					if (tagName.equals("ptr")) {
@@ -671,9 +643,7 @@ public final class Xml {
 				}
 				eventType = parser.next();
 			}
-		} catch (XmlPullParserException e) {
-			throw new ParserException(TrackerException.ERROR, e);
-		} catch (IOException e) {
+		} catch (XmlPullParserException | IOException e) {
 			throw new ParserException(TrackerException.ERROR, e);
 		}
 		return patterns;
@@ -690,7 +660,7 @@ public final class Xml {
 			int eventType = parser.getEventType();
 			while (eventType != XmlPullParser.END_DOCUMENT) {
 				if (eventType == XmlPullParser.START_DOCUMENT) {
-					buses = new ArrayList<Bus>();
+					buses = new ArrayList<>();
 				} else if (eventType == XmlPullParser.START_TAG) {
 					tagName = parser.getName();
 					if (tagName.equals("vehicle")) {
@@ -728,9 +698,7 @@ public final class Xml {
 				}
 				eventType = parser.next();
 			}
-		} catch (XmlPullParserException e) {
-			throw new ParserException(TrackerException.ERROR, e);
-		} catch (IOException e) {
+		} catch (XmlPullParserException | IOException e) {
 			throw new ParserException(TrackerException.ERROR, e);
 		}
 		return buses;
@@ -747,7 +715,7 @@ public final class Xml {
 			int eventType = parser.getEventType();
 			while (eventType != XmlPullParser.END_DOCUMENT) {
 				if (eventType == XmlPullParser.START_DOCUMENT) {
-					trains = new ArrayList<Train>();
+					trains = new ArrayList<>();
 				} else if (eventType == XmlPullParser.START_TAG) {
 					tagName = parser.getName();
 					if (tagName.equals("train")) {
@@ -782,9 +750,7 @@ public final class Xml {
 				}
 				eventType = parser.next();
 			}
-		} catch (XmlPullParserException e) {
-			throw new ParserException(TrackerException.ERROR, e);
-		} catch (IOException e) {
+		} catch (XmlPullParserException | IOException e) {
 			throw new ParserException(TrackerException.ERROR, e);
 		}
 		return trains;
@@ -834,7 +800,7 @@ public final class Xml {
 							arri.setTimeStamp(tmst);
 							List<Eta> etas = arri.getEtas();
 							if (etas == null) {
-								etas = new ArrayList<Eta>();
+								etas = new ArrayList<>();
 								arri.setEtas(etas);
 							}
 							Eta eta = new Eta();
@@ -901,13 +867,13 @@ public final class Xml {
 							TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-								currentEta.setPredictionDate(dfTrain.parse(text));
+								currentEta.setPredictionDate(simpleDateFormatTrain.parse(text));
 							}
 						} else if (tagName.equals("arrT")) {
 							TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-								currentEta.setArrivalDepartureDate(dfTrain.parse(text));
+								currentEta.setArrivalDepartureDate(simpleDateFormatTrain.parse(text));
 							}
 						} else if (tagName.equals("isApp")) {
 							TrainArrival arri = arrivals.get(staId, null);
@@ -936,7 +902,7 @@ public final class Xml {
 						}
 						break;
 					case TMST:
-						tmst = dfTrain.parse(text);
+						tmst = simpleDateFormatTrain.parse(text);
 						break;
 					case ERRCD:
 						errCd = Integer.valueOf(text);
@@ -950,14 +916,10 @@ public final class Xml {
 				}
 				eventType = parser.next();
 			}
-		} catch (XmlPullParserException e) {
-			throw new ParserException(TrackerException.ERROR, e);
-		} catch (ParseException e) {
-			throw new ParserException(TrackerException.ERROR, e);
-		} catch (IOException e) {
+		} catch (XmlPullParserException | ParseException | IOException e) {
 			throw new ParserException(TrackerException.ERROR, e);
 		}
-		List<Eta> res = new ArrayList<Eta>();
+		List<Eta> res = new ArrayList<>();
 		int index = 0;
 		while (index < arrivals.size()) {
 			TrainArrival arri = arrivals.valueAt(index++);

@@ -109,7 +109,7 @@ public class NavigationDrawerFragment extends Fragment {
 				selectItem(position, false);
 			}
 		});
-		List<DrawerItem> drawerItems = new ArrayList<DrawerItem>();
+		List<DrawerItem> drawerItems = new ArrayList<>();
 		DrawerItem item1 = new DrawerItem(getString(R.string.favorites), R.drawable.ic_action_favorite);
 		DrawerItem item2 = new DrawerItem(getString(R.string.train), R.drawable.ic_action_train);
 		DrawerItem item3 = new DrawerItem(getString(R.string.bus), R.drawable.ic_action_bus);
@@ -307,7 +307,7 @@ public class NavigationDrawerFragment extends Fragment {
 	 * Per the navigation drawer design guidelines, updates the action bar to show the global app 'context', rather than just what's in the current
 	 * screen.
 	 */
-	private final void showGlobalContextActionBar() {
+	private void showGlobalContextActionBar() {
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayShowTitleEnabled(true);
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
@@ -319,7 +319,7 @@ public class NavigationDrawerFragment extends Fragment {
 	 *
 	 * @return the action bar
 	 */
-	private final ActionBar getActionBar() {
+	private ActionBar getActionBar() {
 		return getActivity().getActionBar();
 	}
 

@@ -44,7 +44,7 @@ public class DataHolder {
 	 *
 	 * @return
 	 */
-	public static final DataHolder getInstance() {
+	public static DataHolder getInstance() {
 		if (mDataHolder == null) {
 			mDataHolder = new DataHolder();
 		}

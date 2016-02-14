@@ -91,16 +91,16 @@ public final class NearbyAdapter extends BaseAdapter {
 	@SuppressLint("UseSparseArrays")
 	public NearbyAdapter(final MainActivity activity) {
 		this.mContext = ChicagoTracker.getAppContext();
-		this.mBusStops = new ArrayList<BusStop>();
-		this.mBusArrivals = new SparseArray<Map<String, List<BusArrival>>>();
-		this.mStations = new ArrayList<Station>();
-		this.mBikeStations = new ArrayList<BikeStation>();
-		this.mTrainArrivals = new SparseArray<TrainArrival>();
+		this.mBusStops = new ArrayList<>();
+		this.mBusArrivals = new SparseArray<>();
+		this.mStations = new ArrayList<>();
+		this.mBikeStations = new ArrayList<>();
+		this.mTrainArrivals = new SparseArray<>();
 		this.mBusData = DataHolder.getInstance().getBusData();
 
-		this.mIds = new HashMap<String, Integer>();
-		this.mLayouts = new HashMap<Integer, LinearLayout>();
-		this.mViews = new HashMap<Integer, View>();
+		this.mIds = new HashMap<>();
+		this.mLayouts = new HashMap<>();
+		this.mViews = new HashMap<>();
 	}
 
 	@Override

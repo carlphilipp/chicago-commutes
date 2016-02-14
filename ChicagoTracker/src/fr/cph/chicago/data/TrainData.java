@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -46,17 +45,29 @@ import java.util.TreeMap;
  * @version 1
  */
 public class TrainData {
-	/** Tag **/
+	/**
+	 * Tag
+	 **/
 	private static final String TAG = "TrainData";
-	/** List of stations **/
+	/**
+	 * List of stations
+	 **/
 	private SparseArray<Station> mStations;
-	/** List of stations ordered by name **/
+	/**
+	 * List of stations ordered by name
+	 **/
 	private List<Station> mStationsOrderByName;
-	/** List of stations ordered by line and name **/
+	/**
+	 * List of stations ordered by line and name
+	 **/
 	private List<Station> mStationsOrderByLine;
-	/** Map of stations ordered by line and map **/
+	/**
+	 * Map of stations ordered by line and map
+	 **/
 	private Map<TrainLine, List<Station>> mStationsOrderByLineMap;
-	/** List of stops **/
+	/**
+	 * List of stops
+	 **/
 	private SparseArray<Stop> mStops;
 
 	/**
@@ -84,7 +95,7 @@ public class TrainData {
 					// String stationDescription = row[4];//STATION_DESCRIPTIVE_NAME
 					Integer parentStopId = Integer.valueOf(row[5]);// MAP_ID (old PARENT_STOP_ID)
 					Boolean ada = Boolean.valueOf(row[6]);// ADA
-					List<TrainLine> lines = new ArrayList<TrainLine>();
+					List<TrainLine> lines = new ArrayList<>();
 					String red = row[7];// Red
 					String blue = row[8];// Blue
 					String green = row[9];// G
@@ -143,7 +154,7 @@ public class TrainData {
 
 					Station currentStation = mStations.get(parentStopId, null);
 					if (currentStation == null) {
-						List<Stop> st = new ArrayList<Stop>();
+						List<Stop> st = new ArrayList<>();
 						st.add(stop);
 						station.setStops(st);
 						mStations.append(parentStopId, station);
@@ -171,8 +182,7 @@ public class TrainData {
 	/**
 	 * Get a list of station for a given line
 	 *
-	 * @param line
-	 *            the train line
+	 * @param line the train line
 	 * @return a list of station
 	 */
 	public final List<Station> getStationsForLine(final TrainLine line) {
@@ -183,8 +193,7 @@ public class TrainData {
 	/**
 	 * get a station
 	 *
-	 * @param id
-	 *            the id of the station
+	 * @param id the id of the station
 	 * @return
 	 */
 	public final Station getStation(final Integer id) {
@@ -198,8 +207,7 @@ public class TrainData {
 	/**
 	 * Get a station with its position in the list
 	 *
-	 * @param position
-	 *            the position of the station in the list
+	 * @param position the position of the station in the list
 	 * @return a station
 	 */
 	public final Station getStationByPosition(final int position) {
@@ -213,8 +221,7 @@ public class TrainData {
 	/**
 	 * Get a station with its position in the ordered by name list
 	 *
-	 * @param position
-	 *            the position
+	 * @param position the position
 	 * @return a station
 	 */
 	public final Station getStationByPositionAndName(final int position) {
@@ -228,8 +235,7 @@ public class TrainData {
 	/**
 	 * Get station by position and line
 	 *
-	 * @param position
-	 *            the position
+	 * @param position the position
 	 * @return a station
 	 */
 	public final Station getStationByPositionAndLine(final int position) {
@@ -265,8 +271,7 @@ public class TrainData {
 	/**
 	 * Get station by name
 	 *
-	 * @param name
-	 *            the name of the station
+	 * @param name the name of the station
 	 * @return a station
 	 */
 	public final Station getStationByName(final String name) {
@@ -287,8 +292,7 @@ public class TrainData {
 	/**
 	 * Get a stop
 	 *
-	 * @param id
-	 *            the id of the stop
+	 * @param id the id of the stop
 	 * @return a stop
 	 */
 	public final Stop getStop(final Integer id) {
@@ -302,8 +306,7 @@ public class TrainData {
 	/**
 	 * Get a stop from the list
 	 *
-	 * @param position
-	 *            the position of the stop in the list
+	 * @param position the position of the stop in the list
 	 * @return a stop
 	 */
 	public final Stop getStopByPosition(final int position) {
@@ -326,8 +329,7 @@ public class TrainData {
 	/**
 	 * Get stop by desc
 	 *
-	 * @param desc
-	 *            the desription of stop
+	 * @param desc the desription of stop
 	 * @return a stop
 	 */
 	public final Stop getStopByDesc(final String desc) {
@@ -344,15 +346,14 @@ public class TrainData {
 	/**
 	 * Read near by station
 	 *
-	 * @param position
-	 *            the position
+	 * @param position the position
 	 * @return a list of station
 	 */
 	public final List<Station> readNearbyStation(final Position position) {
 
 		final double dist = 0.004472;
 
-		List<Station> res = new ArrayList<Station>();
+		List<Station> res = new ArrayList<>();
 		double latitude = position.getLatitude();
 		double longitude = position.getLongitude();
 
@@ -375,7 +376,7 @@ public class TrainData {
 	}
 
 	public final List<Position> readPattern(final TrainLine line) {
-		List<Position> positions = new ArrayList<Position>();
+		List<Position> positions = new ArrayList<>();
 		try {
 			CSVReader reader = new CSVReader(new InputStreamReader(ChicagoTracker.getAppContext().getAssets()
 					.open("train_pattern/" + line.toTextString() + "_pattern.csv")));
@@ -398,34 +399,34 @@ public class TrainData {
 	/**
 	 * Order stations
 	 */
-	private final void order() {
-		List<Station> vals = new ArrayList<Station>();
+	private void order() {
+		List<Station> vals = new ArrayList<>();
 		for (int i = 0; i < mStations.size(); i++) {
 			vals.add(mStations.valueAt(i));
 		}
 		Collections.sort(vals);
-		mStationsOrderByName = new ArrayList<Station>();
-		mStationsOrderByLineMap = new TreeMap<TrainLine, List<Station>>();
+		mStationsOrderByName = new ArrayList<>();
+		mStationsOrderByLineMap = new TreeMap<>();
 		for (Station station : vals) {
 			mStationsOrderByName.add(station);
 		}
 		for (Station station : vals) {
 			Set<TrainLine> tls = station.getLines();
-			Iterator<TrainLine> iterator = tls.iterator();
-			while (iterator.hasNext()) {
-				TrainLine tl = iterator.next();
-				List<Station> stations = null;
-				if (mStationsOrderByLineMap.containsKey(tl)) {
-					stations = mStationsOrderByLineMap.get(tl);
-				} else {
-					stations = new ArrayList<Station>();
-					mStationsOrderByLineMap.put(tl, stations);
+			if (tls != null) {
+				for (TrainLine tl : tls) {
+					List<Station> stations = null;
+					if (mStationsOrderByLineMap.containsKey(tl)) {
+						stations = mStationsOrderByLineMap.get(tl);
+					} else {
+						stations = new ArrayList<>();
+						mStationsOrderByLineMap.put(tl, stations);
+					}
+					stations.add(station);
+					Collections.sort(stations);
 				}
-				stations.add(station);
-				Collections.sort(stations);
 			}
 		}
-		mStationsOrderByLine = new ArrayList<Station>();
+		mStationsOrderByLine = new ArrayList<>();
 		for (Entry<TrainLine, List<Station>> e : mStationsOrderByLineMap.entrySet()) {
 			List<Station> temp = e.getValue();
 			mStationsOrderByLine.addAll(temp);

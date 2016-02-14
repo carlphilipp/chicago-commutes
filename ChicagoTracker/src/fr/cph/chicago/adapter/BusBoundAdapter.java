@@ -48,7 +48,7 @@ public class BusBoundAdapter extends BaseAdapter {
 	 *            the stop id of the bu
 	 */
 	public BusBoundAdapter(final String stopId) {
-		this.mBusStops = new ArrayList<BusStop>();
+		this.mBusStops = new ArrayList<>();
 		this.mStopId = stopId;
 	}
 

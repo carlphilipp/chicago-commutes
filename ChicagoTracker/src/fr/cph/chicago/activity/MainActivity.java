@@ -87,47 +87,89 @@ import java.util.List;
  * @version 1
  */
 public class MainActivity extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
-	/** Tag **/
+	/**
+	 * Tag
+	 **/
 	private static final String TAG = "MainActivity";
-	/** Fragment managing the behaviors, interactions and presentation of the navigation drawer. **/
+	/**
+	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
+	 **/
 	private NavigationDrawerFragment mNavigationDrawerFragment;
-	/** Favorites fragment **/
+	/**
+	 * Favorites fragment
+	 **/
 	private FavoritesFragment mFavoritesFragment;
-	/** Train fragment **/
+	/**
+	 * Train fragment
+	 **/
 	private TrainFragment mTrainFragment;
-	/** Bus Fragment **/
+	/**
+	 * Bus Fragment
+	 **/
 	private BusFragment mBusFragment;
-	/** Bike Fragment **/
+	/**
+	 * Bike Fragment
+	 **/
 	private BikeFragment mBikeFragment;
-	/** Nearby fragment **/
+	/**
+	 * Nearby fragment
+	 **/
 	private NearbyFragment mNearbyFragment;
-	/** Alert Fragment **/
+	/**
+	 * Alert Fragment
+	 **/
 	private AlertFragment mAlertFragment;
-	/** Map fragment **/
+	/**
+	 * Map fragment
+	 **/
 	private MapFragment mMapFragment;
-	/** Settings fragment **/
+	/**
+	 * Settings fragment
+	 **/
 	private SettingsFragment mSettingsFragment;
-	/** Title **/
+	/**
+	 * Title
+	 **/
 	private CharSequence mTitle;
-	/** Menu **/
+	/**
+	 * Menu
+	 **/
 	private Menu mMenu;
-	/** Current position **/
+	/**
+	 * Current position
+	 **/
 	private int mCurrentPosition;
-	/** Drawer favorites **/
+	/**
+	 * Drawer favorites
+	 **/
 	private static final int POSITION_FAVORITES = 0;
-	/** Drawer Train **/
+	/**
+	 * Drawer Train
+	 **/
 	private static final int POSITION_TRAIN = 1;
-	/** Drawer Bus **/
+	/**
+	 * Drawer Bus
+	 **/
 	private static final int POSITION_BUS = 2;
-	/** Drawer Divvy **/
+	/**
+	 * Drawer Divvy
+	 **/
 	private static final int POSITION_DIVVY = 3;
-	/** Drawer Nearby **/
+	/**
+	 * Drawer Nearby
+	 **/
 	private static final int POSITION_NEARBY = 4;
-	/** Drawer Alerts **/
+	/**
+	 * Drawer Alerts
+	 **/
 	private static final int POSITION_ALERTS = 5;
-	/** Drawer Map **/
+	/**
+	 * Drawer Map
+	 **/
 	private static final int POSITION_MAP = 6;
-	/** Drawer Settings **/
+	/**
+	 * Drawer Settings
+	 **/
 	private static final int POSITION_SETTINGS = 7;
 
 	@Override
@@ -268,8 +310,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	/**
 	 * Change title
 	 *
-	 * @param number
-	 *            the tab number
+	 * @param number the tab number
 	 */
 	public final void onSectionAttached(final int number) {
 		switch (number) {
@@ -521,21 +562,27 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				dialog.show();
 			}
 
-		} catch (NameNotFoundException e) {
-			Log.w(TAG, e.getMessage(), e);
-		} catch (IOException e) {
+		} catch (NameNotFoundException | IOException e) {
 			Log.w(TAG, e.getMessage(), e);
 		}
 	}
 
 	public final class LoadData extends AsyncTask<Void, Void, Void> {
-		/** Bus data **/
+		/**
+		 * Bus data
+		 **/
 		private BusData busData;
-		/** Alert data **/
+		/**
+		 * Alert data
+		 **/
 		private AlertData alertData;
-		/** Bike stations **/
+		/**
+		 * Bike stations
+		 **/
 		private List<BikeStation> bikeStations;
-		/** Load bikes **/
+		/**
+		 * Load bikes
+		 **/
 		private boolean loadBike;
 
 		@Override
@@ -571,15 +618,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 					Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
 							R.string.analytics_action_get_bus_routes, 0);
 					publishProgress();
-				} catch (final ParserException e) {
-					new Handler(Looper.getMainLooper()).post(new Runnable() {
-						@Override
-						public void run() {
-							Toast.makeText(MainActivity.this, "Bus error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-						}
-					});
-					Log.e(TAG, e.getMessage(), e);
-				} catch (final ConnectException e) {
+				} catch (final ParserException | ConnectException e) {
 					new Handler(Looper.getMainLooper()).post(new Runnable() {
 						@Override
 						public void run() {
@@ -598,15 +637,13 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 					Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_alert,
 							R.string.analytics_action_get_alert_general, 0);
 					publishProgress();
-				} catch (ParserException e) {
-					Log.e(TAG, e.getMessage(), e);
-				} catch (ConnectException e) {
+				} catch (ParserException | ConnectException e) {
 					Log.e(TAG, e.getMessage(), e);
 				}
 			}
 
 			// Load divvy
-			this.bikeStations = new ArrayList<BikeStation>();
+			this.bikeStations = new ArrayList<>();
 			if (loadBike) {
 				try {
 					Json json = new Json();
@@ -617,9 +654,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 					Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy,
 							R.string.analytics_action_get_divvy_all, 0);
 					publishProgress();
-				} catch (ConnectException e) {
-					Log.e(TAG, e.getMessage(), e);
-				} catch (ParserException e) {
+				} catch (ConnectException | ParserException e) {
 					Log.e(TAG, e.getMessage(), e);
 				}
 			}

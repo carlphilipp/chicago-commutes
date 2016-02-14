@@ -40,7 +40,7 @@ public final class StopFactory {
 	 *            the direction
 	 * @return a stop
 	 */
-	public static final Stop buildStop(final Integer id, final String description, final TrainDirection direction) {
+	public static Stop buildStop(final Integer id, final String description, final TrainDirection direction) {
 		Stop stop = new Stop();
 		stop.setId(id);
 		stop.setDescription(description);

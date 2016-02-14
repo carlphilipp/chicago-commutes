@@ -151,7 +151,7 @@ public class BaseActivity extends Activity {
 	 *
 	 * @author Carl-Philipp Harmant
 	 */
-	private final class LoadData extends AsyncTask<Void, String, Void> {
+	private class LoadData extends AsyncTask<Void, String, Void> {
 		/**
 		 * Bus data
 		 **/

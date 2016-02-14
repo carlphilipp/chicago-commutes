@@ -132,8 +132,8 @@ public class TrainMapActivity extends Activity {
 			DataHolder dataHolder = DataHolder.getInstance();
 			this.mData = dataHolder.getTrainData();
 
-			mMarkers = new ArrayList<Marker>();
-			mStatus = new HashMap<Marker, Boolean>();
+			mMarkers = new ArrayList<>();
+			mStatus = new HashMap<>();
 			mTrainListener = new TrainMapOnCameraChangeListener();
 
 			getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -274,7 +274,7 @@ public class TrainMapActivity extends Activity {
 	/**
 	 * Load animation in menu
 	 */
-	private final void startRefreshAnimation() {
+	private void startRefreshAnimation() {
 		if (mMenu != null) {
 			MenuItem refreshMenuItem = mMenu.findItem(R.id.action_refresh);
 			if (refreshMenuItem.getActionView() == null) {
@@ -287,7 +287,7 @@ public class TrainMapActivity extends Activity {
 	/**
 	 * Stop animation in menu
 	 */
-	private final void stopRefreshAnimation() {
+	private void stopRefreshAnimation() {
 		if (mMenu != null) {
 			MenuItem refreshMenuItem = mMenu.findItem(R.id.action_refresh);
 			refreshMenuItem.collapseActionView();
@@ -387,7 +387,7 @@ public class TrainMapActivity extends Activity {
 		}
 	}
 
-	private final class LoadTrainFollow extends AsyncTask<String, Void, List<Eta>> {
+	private class LoadTrainFollow extends AsyncTask<String, Void, List<Eta>> {
 		/** Current view **/
 		private View view;
 		/** Load all **/
@@ -409,7 +409,7 @@ public class TrainMapActivity extends Activity {
 		@Override
 		protected final List<Eta> doInBackground(final String... params) {
 			final String runNumber = params[0];
-			List<Eta> etas = new ArrayList<Eta>();
+			List<Eta> etas = new ArrayList<>();
 			try {
 				CtaConnect connect = CtaConnect.getInstance();
 				MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
@@ -417,9 +417,7 @@ public class TrainMapActivity extends Activity {
 				String content = connect.connect(CtaRequestType.TRAIN_FOLLOW, connectParam);
 				Xml xml = new Xml();
 				etas = xml.parseTrainsFollow(content, mData);
-			} catch (ConnectException e) {
-				Log.e(TAG, e.getMessage(), e);
-			} catch (ParserException e) {
+			} catch (ConnectException | ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
 			Util.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train,
@@ -460,7 +458,7 @@ public class TrainMapActivity extends Activity {
 		}
 	}
 
-	private final class LoadTrainPosition extends AsyncTask<Boolean, Void, List<Train>> {
+	private class LoadTrainPosition extends AsyncTask<Boolean, Void, List<Train>> {
 		/** Center map **/
 		private boolean centerMap;
 		/** Stop refresh **/
@@ -480,9 +478,7 @@ public class TrainMapActivity extends Activity {
 				String content = connect.connect(CtaRequestType.TRAIN_LOCATION, connectParam);
 				Xml xml = new Xml();
 				trains = xml.parseTrainsLocation(content);
-			} catch (ConnectException e) {
-				Log.e(TAG, e.getMessage(), e);
-			} catch (ParserException e) {
+			} catch (ConnectException | ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
 			Util.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train,
@@ -516,7 +512,7 @@ public class TrainMapActivity extends Activity {
 		}
 	}
 
-	private final class LoadCurrentPosition extends AsyncTask<Boolean, Void, Void> implements LocationListener {
+	private class LoadCurrentPosition extends AsyncTask<Boolean, Void, Void> implements LocationListener {
 		// The minimum distance to change Updates in meters
 		private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
 		// The minimum time between updates in milliseconds

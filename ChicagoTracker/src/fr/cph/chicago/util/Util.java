@@ -21,6 +21,7 @@ import android.content.Context;
 import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -43,6 +44,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @version 1
  */
 public class Util {
+
+	private static final String TAG = "Util";
 	/** **/
 	private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
 
@@ -51,7 +54,7 @@ public class Util {
 	 *
 	 * @return a generated ID value
 	 */
-	public static final int generateViewId() {
+	public static int generateViewId() {
 		for (; ; ) {
 			final int result = sNextGeneratedId.get();
 			// aapt-generated IDs have the high byte nonzero; clamp to the range under that.
@@ -67,16 +70,15 @@ public class Util {
 	/**
 	 * Get property from file
 	 *
-	 * @param property
-	 *            the property to get
+	 * @param property the property to get
 	 * @return the value of the property
 	 */
-	public static final String getProperty(final String property) {
+	public static String getProperty(final String property) {
 		Properties prop = new Properties();
 		try {
 			prop.load(ChicagoTracker.getAppContext().getAssets().open("app.properties"));
 		} catch (IOException e) {
-			e.printStackTrace();
+			Log.e(TAG, e.getMessage(), e);
 			return null;
 		}
 		return prop.getProperty(property, null);
@@ -85,12 +87,10 @@ public class Util {
 	/**
 	 * Add to train favorites
 	 *
-	 * @param stationId
-	 *            the station id
-	 * @param preference
-	 *            the preference
+	 * @param stationId  the station id
+	 * @param preference the preference
 	 */
-	public static final void addToTrainFavorites(final Integer stationId, final String preference) {
+	public static void addToTrainFavorites(final Integer stationId, final String preference) {
 		List<Integer> favorites = Preferences.getTrainFavorites(preference);
 		if (!favorites.contains(stationId)) {
 			favorites.add(stationId);
@@ -102,12 +102,10 @@ public class Util {
 	/**
 	 * Remove train from favorites
 	 *
-	 * @param stationId
-	 *            the station id
-	 * @param preference
-	 *            the preference
+	 * @param stationId  the station id
+	 * @param preference the preference
 	 */
-	public static final void removeFromTrainFavorites(final Integer stationId, final String preference) {
+	public static void removeFromTrainFavorites(final Integer stationId, final String preference) {
 		List<Integer> favorites = Preferences.getTrainFavorites(preference);
 		favorites.remove(stationId);
 		Preferences.saveTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN, favorites);
@@ -117,16 +115,12 @@ public class Util {
 	/**
 	 * Remove from bus favorites
 	 *
-	 * @param busRouteId
-	 *            the bus route id
-	 * @param busStopId
-	 *            the bus stop id
-	 * @param bound
-	 *            the bus bound
-	 * @param preference
-	 *            the preference
+	 * @param busRouteId the bus route id
+	 * @param busStopId  the bus stop id
+	 * @param bound      the bus bound
+	 * @param preference the preference
 	 */
-	public static final void removeFromBusFavorites(final String busRouteId, final String busStopId, final String bound, final String preference) {
+	public static void removeFromBusFavorites(final String busRouteId, final String busStopId, final String bound, final String preference) {
 		String id = busRouteId + "_" + busStopId + "_" + bound;
 		List<String> favorites = Preferences.getBusFavorites(preference);
 		favorites.remove(id);
@@ -137,16 +131,12 @@ public class Util {
 	/**
 	 * Add to bus favorites
 	 *
-	 * @param busRouteId
-	 *            the bus route id
-	 * @param busStopId
-	 *            the bus stop id
-	 * @param bound
-	 *            the bus bound
-	 * @param preference
-	 *            the preference
+	 * @param busRouteId the bus route id
+	 * @param busStopId  the bus stop id
+	 * @param bound      the bus bound
+	 * @param preference the preference
 	 */
-	public static final void addToBusFavorites(final String busRouteId, final String busStopId, final String bound, final String preference) {
+	public static void addToBusFavorites(final String busRouteId, final String busStopId, final String bound, final String preference) {
 		String id = busRouteId + "_" + busStopId + "_" + bound;
 		List<String> favorites = Preferences.getBusFavorites(preference);
 		if (!favorites.contains(id)) {
@@ -156,7 +146,7 @@ public class Util {
 		Toast.makeText(ChicagoTracker.getAppContext(), "Adding to favorites", Toast.LENGTH_SHORT).show();
 	}
 
-	public static final void addToBikeFavorites(final int stationId, final String preference) {
+	public static void addToBikeFavorites(final int stationId, final String preference) {
 		List<String> favorites = Preferences.getBikeFavorites(preference);
 		if (!favorites.contains(String.valueOf(stationId))) {
 			favorites.add(String.valueOf(stationId));
@@ -165,7 +155,7 @@ public class Util {
 		Toast.makeText(ChicagoTracker.getAppContext(), "Adding to favorites", Toast.LENGTH_SHORT).show();
 	}
 
-	public static final void removeFromBikeFavorites(final int stationId, final String preference) {
+	public static void removeFromBikeFavorites(final int stationId, final String preference) {
 		List<String> favorites = Preferences.getBikeFavorites(preference);
 		favorites.remove(String.valueOf(stationId));
 		Preferences.saveBikeFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BIKE, favorites);
@@ -175,11 +165,10 @@ public class Util {
 	/**
 	 * Decode bus favorites
 	 *
-	 * @param fav
-	 *            the favorites
+	 * @param fav the favorites
 	 * @return a tab containing the route id, the stop id and the bound
 	 */
-	public static final String[] decodeBusFavorite(final String fav) {
+	public static String[] decodeBusFavorite(final String fav) {
 		String[] res = new String[3];
 		int first = fav.indexOf('_');
 		String routeId = fav.substring(0, first);
@@ -202,13 +191,13 @@ public class Util {
 
 	}
 
-	public static final boolean isNetworkAvailable() {
+	public static boolean isNetworkAvailable() {
 		ConnectivityManager connectivityManager = (ConnectivityManager) ChicagoTracker.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
 		return activeNetworkInfo != null && activeNetworkInfo.isConnected();
 	}
 
-	public static final int[] getScreenSize() {
+	public static int[] getScreenSize() {
 		WindowManager wm = (WindowManager) ChicagoTracker.getAppContext().getSystemService(Context.WINDOW_SERVICE);
 		Display display = wm.getDefaultDisplay();
 		Point size = new Point();
@@ -219,10 +208,8 @@ public class Util {
 	/**
 	 * Google analytics track screen
 	 *
-	 * @param activity
-	 *            the activity
-	 * @param str
-	 *            the label to send
+	 * @param activity the activity
+	 * @param str      the label to send
 	 */
 	public static void trackScreen(Activity activity, int str) {
 		Tracker t = ((ChicagoTracker) activity.getApplication()).getTracker();

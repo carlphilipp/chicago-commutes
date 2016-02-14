@@ -80,7 +80,7 @@ public class MapFragment extends Fragment implements OnTouchListener {
 	 *            the section number
 	 * @return the fragment
 	 */
-	public static final MapFragment newInstance(final int sectionNumber) {
+	public static MapFragment newInstance(final int sectionNumber) {
 		MapFragment fragment = new MapFragment();
 		Bundle args = new Bundle();
 		args.putInt(ARG_SECTION_NUMBER, sectionNumber);

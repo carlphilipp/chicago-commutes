@@ -89,8 +89,8 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 			mFirstLayout.getForeground().setAlpha(210);
 
 			ListView listView = (ListView) popupView.findViewById(R.id.details);
-			final List<String> values = new ArrayList<String>();
-			final List<Integer> colors = new ArrayList<Integer>();
+			final List<String> values = new ArrayList<>();
+			final List<Integer> colors = new ArrayList<>();
 			values.add("Open details");
 			for (TrainLine line : mTrainLines) {
 				values.add(line.toString() + " line - All trains");
@@ -98,7 +98,7 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 			}
 			PopupTrainAdapter ada = new PopupTrainAdapter(mActivity, values, colors);
 			listView.setAdapter(ada);
-			final List<TrainLine> lines = new ArrayList<TrainLine>();
+			final List<TrainLine> lines = new ArrayList<>();
 			lines.addAll(mTrainLines);
 
 			listView.setOnItemClickListener(new OnItemClickListener() {

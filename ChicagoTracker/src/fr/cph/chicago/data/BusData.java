@@ -57,8 +57,8 @@ public class BusData {
 	 * Private constuctor
 	 */
 	private BusData() {
-		this.mRoutes = new ArrayList<BusRoute>();
-		this.mStops = new ArrayList<BusStop>();
+		this.mRoutes = new ArrayList<>();
+		this.mStops = new ArrayList<>();
 	}
 
 	/**
@@ -255,7 +255,7 @@ public class BusData {
 
 		final double dist = 0.004472;
 
-		List<BusStop> res = new ArrayList<BusStop>();
+		List<BusStop> res = new ArrayList<>();
 		double latitude = position.getLatitude();
 		double longitude = position.getLongitude();
 

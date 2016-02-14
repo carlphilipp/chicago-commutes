@@ -47,7 +47,7 @@ public enum BusDirection {
 	 *            text
 	 * @return a bus direction
 	 */
-	public static final BusDirection fromString(final String text) {
+	public static BusDirection fromString(final String text) {
 		if (text != null) {
 			for (BusDirection b : BusDirection.values()) {
 				if (text.equalsIgnoreCase(b.text)) {

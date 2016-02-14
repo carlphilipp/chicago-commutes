@@ -40,7 +40,7 @@ public final class BusPattern implements Parcelable {
 	 *
 	 */
 	public BusPattern() {
-		this.points = new ArrayList<PatternPoint>();
+		this.points = new ArrayList<>();
 	}
 
 	/**

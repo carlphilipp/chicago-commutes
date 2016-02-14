@@ -52,7 +52,7 @@ public final class TrainFragment extends Fragment {
 	 * @param sectionNumber
 	 * @return
 	 */
-	public static final TrainFragment newInstance(final int sectionNumber) {
+	public static TrainFragment newInstance(final int sectionNumber) {
 		TrainFragment fragment = new TrainFragment();
 		Bundle args = new Bundle();
 		args.putInt(ARG_SECTION_NUMBER, sectionNumber);

@@ -88,10 +88,10 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 
 			int[] screenSize = Util.getScreenSize();
 			final PopupWindow popup = new PopupWindow(popupView, (int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
-			final List<BusArrival> busArrivals = new ArrayList<BusArrival>();
+			final List<BusArrival> busArrivals = new ArrayList<>();
 
 			ListView listView = (ListView) popupView.findViewById(R.id.details);
-			final List<String> values = new ArrayList<String>();
+			final List<String> values = new ArrayList<>();
 			Set<Entry<String, List<BusArrival>>> entrySet = mMapBusArrivals.entrySet();
 			for (Entry<String, List<BusArrival>> entry : entrySet) {
 				StringBuilder sb = new StringBuilder();

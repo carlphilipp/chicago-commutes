@@ -63,14 +63,14 @@ public class Favorites {
 	 * Public constructor
 	 */
 	public Favorites() {
-		this.mTrainArrivals = new SparseArray<TrainArrival>();
-		this.mBusArrivals = new ArrayList<BusArrival>();
-		this.mBikeStations = new ArrayList<BikeStation>();
+		this.mTrainArrivals = new SparseArray<>();
+		this.mBusArrivals = new ArrayList<>();
+		this.mBikeStations = new ArrayList<>();
 
-		this.mTrainFavorites = new ArrayList<Integer>();
-		this.mBusFavorites = new ArrayList<String>();
-		this.mFakeBusFavorites = new ArrayList<String>();
-		this.mBikeFavorites = new ArrayList<String>();
+		this.mTrainFavorites = new ArrayList<>();
+		this.mBusFavorites = new ArrayList<>();
+		this.mFakeBusFavorites = new ArrayList<>();
+		this.mBikeFavorites = new ArrayList<>();
 
 		this.mTrainData = DataHolder.getInstance().getTrainData();
 		this.mBusData = DataHolder.getInstance().getBusData();
@@ -152,7 +152,7 @@ public class Favorites {
 	 * @return a listof bus arrival
 	 */
 	public final List<BusArrival> getBusArrivals(final String routeId) {
-		List<BusArrival> res = new ArrayList<BusArrival>();
+		List<BusArrival> res = new ArrayList<>();
 		for (BusArrival busArrival : mBusArrivals) {
 			if (busArrival.getRouteId().equals(routeId)) {
 				res.add(busArrival);
@@ -221,13 +221,13 @@ public class Favorites {
 								List<BusArrival> arrivals = tempMap.get(bound);
 								arrivals.add(busArrival);
 							} else {
-								List<BusArrival> arrivals = new ArrayList<BusArrival>();
+								List<BusArrival> arrivals = new ArrayList<>();
 								arrivals.add(busArrival);
 								tempMap.put(bound, arrivals);
 							}
 						} else {
-							Map<String, List<BusArrival>> tempMap = new TreeMap<String, List<BusArrival>>();
-							List<BusArrival> arrivals = new ArrayList<BusArrival>();
+							Map<String, List<BusArrival>> tempMap = new TreeMap<>();
+							List<BusArrival> arrivals = new ArrayList<>();
 							arrivals.add(busArrival);
 							tempMap.put(bound, arrivals);
 							res.put(busArrival.getStopName(), tempMap);
@@ -246,13 +246,13 @@ public class Favorites {
 									List<BusArrival> arrivals = tempMap.get(busArrival.getRouteDirection());
 									arrivals.add(busArrival);
 								} else {
-									List<BusArrival> arrivals = new ArrayList<BusArrival>();
+									List<BusArrival> arrivals = new ArrayList<>();
 									arrivals.add(busArrival);
 									tempMap.put(bound, arrivals);
 								}
 							} else {
-								Map<String, List<BusArrival>> tempMap = new TreeMap<String, List<BusArrival>>();
-								List<BusArrival> arrivals = new ArrayList<BusArrival>();
+								Map<String, List<BusArrival>> tempMap = new TreeMap<>();
+								List<BusArrival> arrivals = new ArrayList<>();
 								arrivals.add(busArrival);
 								tempMap.put(bound, arrivals);
 								res.put(busArrival.getStopName(), tempMap);
@@ -283,15 +283,15 @@ public class Favorites {
 					busArrival.setRouteId(routeIdFav);
 
 					if (!res.containsKey(busArrival.getStopName())) {
-						Map<String, List<BusArrival>> tempMap = new TreeMap<String, List<BusArrival>>();
-						List<BusArrival> arrivals = new ArrayList<BusArrival>();
+						Map<String, List<BusArrival>> tempMap = new TreeMap<>();
+						List<BusArrival> arrivals = new ArrayList<>();
 						arrivals.add(busArrival);
 						tempMap.put(bound, arrivals);
 						res.put(busArrival.getStopName(), tempMap);
 					} else {
 						Map<String, List<BusArrival>> tempMap = res.get(busArrival.getStopName());
 						if (!tempMap.containsKey(bound)) {
-							List<BusArrival> arrivals = new ArrayList<BusArrival>();
+							List<BusArrival> arrivals = new ArrayList<>();
 							arrivals.add(busArrival);
 							tempMap.put(bound, arrivals);
 						}
@@ -313,7 +313,7 @@ public class Favorites {
 	 *            the bound
 	 * @return a boolean
 	 */
-	private final boolean isInFavorites(final String routeId, final Integer stopId, final String bound) {
+	private boolean isInFavorites(final String routeId, final Integer stopId, final String bound) {
 		boolean res = false;
 		for (String fav : mBusFavorites) {
 			String decoded[] = Util.decodeBusFavorite(fav);
@@ -351,7 +351,7 @@ public class Favorites {
 		this.mFakeBusFavorites = calculateActualRouteNumberBusFavorites();
 		this.mBikeFavorites.clear();
 		List<String> bikeFavoritesTemp = Preferences.getBikeFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
-		List<BikeStation> bikeStationsFavoritesTemp = new ArrayList<BikeStation>();
+		List<BikeStation> bikeStationsFavoritesTemp = new ArrayList<>();
 		if (this.mBikeStations.size() != 0) {
 			for (String bikeStationId : bikeFavoritesTemp) {
 				for (BikeStation station : mBikeStations) {
@@ -397,8 +397,8 @@ public class Favorites {
 	 * @return
 	 */
 	private List<String> calculateActualRouteNumberBusFavorites() {
-		List<String> found = new ArrayList<String>();
-		List<String> favs = new ArrayList<String>();
+		List<String> found = new ArrayList<>();
+		List<String> favs = new ArrayList<>();
 		for (String fav : mBusFavorites) {
 			String[] decoded = Util.decodeBusFavorite(fav);
 			if (!found.contains(decoded[0])) {
@@ -413,7 +413,7 @@ public class Favorites {
 	 *
 	 * @param busArrivals
 	 */
-	private final void removeDuplicates(final List<BusArrival> busArrivals) {
+	private void removeDuplicates(final List<BusArrival> busArrivals) {
 		Set<BusArrival> stBusArrivals = new LinkedHashSet<BusArrival>(busArrivals);
 		busArrivals.clear();
 		busArrivals.addAll(stBusArrivals);

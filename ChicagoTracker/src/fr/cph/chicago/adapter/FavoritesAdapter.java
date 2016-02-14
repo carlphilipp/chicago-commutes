@@ -294,7 +294,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 						if (timing != null) {
 							if (timing.getText().toString().equals("")) {
 								layoutChildH.removeAllViews();
-								List<String> toRemove = new ArrayList<String>();
+								List<String> toRemove = new ArrayList<>();
 								for (Entry<String, Integer> e : this.mIds.entrySet()) {
 									if (e.getValue().intValue() == layoutChildH.getId()) {
 										toRemove.add(e.getKey());
@@ -614,9 +614,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 						break;
 					}
 				}
-			} catch (ConnectException e) {
-				this.trackerException = e;
-			} catch (ParserException e) {
+			} catch (ConnectException | ParserException e) {
 				this.trackerException = e;
 			}
 			Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_stop, 0);
@@ -658,7 +656,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 	 *            the date two
 	 * @return a tab containing in 0 the hour and in 1 the minutes
 	 */
-	private final long[] getTimeDifference(final Date d1, final Date d2) {
+	private long[] getTimeDifference(final Date d1, final Date d2) {
 		long[] result = new long[2];
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(d1);
@@ -685,7 +683,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 	 *            the last update
 	 * @return a string
 	 */
-	private final String getLastUpdateInMinutes(final Date lastUpdate) {
+	private String getLastUpdateInMinutes(final Date lastUpdate) {
 		String res = null;
 		if (lastUpdate != null) {
 			Date currentCDate = Calendar.getInstance().getTime();

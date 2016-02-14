@@ -145,7 +145,7 @@ public class SearchActivity extends ListActivity {
 			BusData busData = dataHolder.getBusData();
 			TrainData trainData = dataHolder.getTrainData();
 
-			List<Station> foundStations = new ArrayList<Station>();
+			List<Station> foundStations = new ArrayList<>();
 
 			for (Entry<TrainLine, List<Station>> e : trainData.getAllStations().entrySet()) {
 				for (Station station : e.getValue()) {
@@ -158,7 +158,7 @@ public class SearchActivity extends ListActivity {
 				}
 			}
 
-			List<BusRoute> foundBusRoutes = new ArrayList<BusRoute>();
+			List<BusRoute> foundBusRoutes = new ArrayList<>();
 
 			for (BusRoute busRoute : busData.getRoutes()) {
 				boolean res = StringUtils.containsIgnoreCase(busRoute.getId(), query.trim())
@@ -170,7 +170,7 @@ public class SearchActivity extends ListActivity {
 				}
 			}
 
-			List<BikeStation> foundBikeStations = new ArrayList<BikeStation>();
+			List<BikeStation> foundBikeStations = new ArrayList<>();
 			if (mBikeStations != null) {
 				for (BikeStation bikeStation : mBikeStations) {
 					boolean res = StringUtils.containsIgnoreCase(bikeStation.getName(), query.trim())

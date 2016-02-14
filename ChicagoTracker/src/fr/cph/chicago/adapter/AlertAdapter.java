@@ -46,7 +46,7 @@ public final class AlertAdapter extends BaseAdapter {
 		if (DataHolder.getInstance().getAlertData() != null) {
 			mAlerts = DataHolder.getInstance().getAlertData().getAlerts();
 		} else {
-			mAlerts = new ArrayList<Alert>();
+			mAlerts = new ArrayList<>();
 		}
 	}
 

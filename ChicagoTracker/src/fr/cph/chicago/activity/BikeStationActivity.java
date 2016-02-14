@@ -259,11 +259,11 @@ public class BikeStationActivity extends Activity {
 		refreshMenuItem.setActionView(null);
 	}
 
-	private final class DivvyAsyncTask extends AsyncTask<Void, Void, List<BikeStation>> {
+	private class DivvyAsyncTask extends AsyncTask<Void, Void, List<BikeStation>> {
 
 		@Override
 		protected List<BikeStation> doInBackground(Void... params) {
-			List<BikeStation> bikeStations = new ArrayList<BikeStation>();
+			List<BikeStation> bikeStations = new ArrayList<>();
 			try {
 				Json json = new Json();
 				DivvyConnect divvyConnect = DivvyConnect.getInstance();
@@ -272,20 +272,13 @@ public class BikeStationActivity extends Activity {
 				Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
 				Util.trackAction(BikeStationActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy,
 						R.string.analytics_action_get_divvy_all, 0);
-			} catch (ConnectException e) {
+			} catch (ConnectException | ParserException e) {
 				BikeStationActivity.this.runOnUiThread(new Runnable() {
 					public void run() {
 						Toast.makeText(ChicagoTracker.getAppContext(), "A surprising error has occurred. Try again!", Toast.LENGTH_SHORT).show();
 					}
 				});
 				Log.e(TAG, "Connect error", e);
-			} catch (ParserException e) {
-				BikeStationActivity.this.runOnUiThread(new Runnable() {
-					public void run() {
-						Toast.makeText(ChicagoTracker.getAppContext(), "A surprising error has occurred. Try again!", Toast.LENGTH_SHORT).show();
-					}
-				});
-				Log.e(TAG, "Parser error", e);
 			}
 			return bikeStations;
 		}
@@ -323,7 +316,7 @@ public class BikeStationActivity extends Activity {
 						R.string.analytics_action_get_google_map_street_view, 0);
 				return connect.connect(params[0]);
 			} catch (IOException e) {
-				e.printStackTrace();
+				Log.e(TAG, "IOException", e);
 				return null;
 			}
 		}
