@@ -84,7 +84,7 @@ public final class BikeAdapter extends BaseAdapter {
 
 		if (convertView == null) {
 			LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			convertView = vi.inflate(R.layout.list_bike, null);
+			convertView = vi.inflate(R.layout.list_bike, parent, false);
 
 			holder = new ViewHolder();
 			holder.stationNameView = (TextView) convertView.findViewById(R.id.station_name);

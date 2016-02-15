@@ -71,7 +71,7 @@ public final class AlertAdapter extends BaseAdapter {
 
 		if (convertView == null) {
 			LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			convertView = vi.inflate(R.layout.list_alert, null);
+			convertView = vi.inflate(R.layout.list_alert, parent);
 
 			ViewHolder holder = new ViewHolder();
 			TextView lineView = (TextView) convertView.findViewById(R.id.alert_line);
@@ -80,7 +80,7 @@ public final class AlertAdapter extends BaseAdapter {
 				if (service.getType().equals("T")) {
 					stb.append(service.getName()).append(", ");
 				} else {
-					stb.append(service.getId() + ", ");
+					stb.append(service.getId()).append(", ");
 				}
 			}
 			String res = stb.toString().substring(0, stb.toString().length() - 2);

@@ -19,6 +19,7 @@ package fr.cph.chicago.listener;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -174,7 +175,7 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 				}
 			});
 			popup.setFocusable(true);
-			popup.setBackgroundDrawable(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.any_selector));
+			popup.setBackgroundDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.any_selector));
 			firstLayout.getForeground().setAlpha(210);
 
 			popup.setOnDismissListener(new PopupWindow.OnDismissListener() {

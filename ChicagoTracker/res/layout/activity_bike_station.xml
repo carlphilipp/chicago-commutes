@@ -28,10 +28,10 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="@+dimen/activity_train_line_padding_bottom"
-        android:paddingLeft="@+dimen/activity_train_line_padding_left"
-        android:paddingRight="@+dimen/activity_train_line_padding_right"
-        android:paddingTop="@+dimen/activity_train_line_padding_top" >
+        android:paddingBottom="@dimen/activity_train_line_padding_bottom"
+        android:paddingLeft="@dimen/activity_train_line_padding_left"
+        android:paddingRight="@dimen/activity_train_line_padding_right"
+        android:paddingTop="@dimen/activity_train_line_padding_top" >
 
         <RelativeLayout
             android:id="@+id/header"
@@ -94,7 +94,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/header"
-            android:paddingTop="@+dimen/activity_train_line_padding_top" >
+            android:paddingTop="@dimen/activity_train_line_padding_top" >
 
             <ImageView
                 android:id="@+id/activity_bike_station_streetview_image"
@@ -125,7 +125,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:paddingRight="@+dimen/activity_station_stops_line1_padding_color"
+                android:paddingRight="@dimen/activity_station_stops_line1_padding_color"
                 android:text="@string/D"
                 android:textColor="@color/grey_M_B"
                 android:textSize="25sp"
@@ -140,7 +140,7 @@
                 android:background="@color/grey_5"
                 android:text="@string/empty_string"
                 android:textIsSelectable="false"
-                android:textSize="@+dimen/activity_train_line_M" />
+                android:textSize="@dimen/activity_train_line_M" />
 
             <TextView
                 android:id="@+id/activity_bike_station_value"
@@ -150,9 +150,9 @@
                 android:layout_toRightOf="@+id/activity_bus_color"
                 android:ellipsize="end"
                 android:lines="1"
-                android:paddingLeft="@+dimen/activity_station_stops_line1_padding_color"
+                android:paddingLeft="@dimen/activity_station_stops_line1_padding_color"
                 android:scrollHorizontally="true"
-                android:textColor="@+color/black"
+                android:textColor="@color/black"
                 android:textIsSelectable="false"
                 android:textStyle="bold" />
         </RelativeLayout>

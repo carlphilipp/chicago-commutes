@@ -12,7 +12,7 @@
              android:layout_marginBottom="5dp"
         android:layout_marginTop="5dp"
             android:textIsSelectable="false"
-            android:textSize="@+dimen/activity_train_line_M" />
+            android:textSize="@dimen/activity_train_line_M" />
 
         <TextView
             android:id="@+id/title"
@@ -22,7 +22,7 @@
             android:layout_toRightOf="@+id/route_color_value"
             android:ellipsize="end"
             android:lines="1"
-            android:paddingLeft="@+dimen/activity_station_stops_line1_padding_color"
+            android:paddingLeft="@dimen/activity_station_stops_line1_padding_color"
             android:scrollHorizontally="true"
             android:textColor="@color/black"
             android:textIsSelectable="false"

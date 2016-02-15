@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:paddingRight="@+dimen/activity_station_stops_line1_padding_color"
+        android:paddingRight="@dimen/activity_station_stops_line1_padding_color"
         android:text="@string/T"
         android:textColor="@color/grey_M_B"
         android:textSize="25sp"
@@ -24,7 +24,7 @@
         android:background="@color/grey_5"
         android:text="@string/empty_string"
         android:textIsSelectable="false"
-        android:textSize="@+dimen/activity_train_line_M" />
+        android:textSize="@dimen/activity_train_line_M" />
 
     <TextView
         android:id="@+id/activity_bus_station_value"
@@ -34,9 +34,9 @@
         android:layout_toRightOf="@+id/activity_bus_color"
         android:ellipsize="end"
         android:lines="1"
-        android:paddingLeft="@+dimen/activity_station_stops_line1_padding_color"
+        android:paddingLeft="@dimen/activity_station_stops_line1_padding_color"
         android:scrollHorizontally="true"
-        android:textColor="@+color/black"
+        android:textColor="@color/black"
         android:textIsSelectable="false"
         android:textStyle="bold" />
 

@@ -18,12 +18,14 @@ package fr.cph.chicago.fragment.drawer;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 
 import java.util.List;
@@ -75,7 +77,7 @@ public class CustomDrawerAdapter extends ArrayAdapter<DrawerItem> {
 
 		DrawerItem dItem = this.listItems.get(position);
 
-		drawerHolder.icon.setImageDrawable(view.getResources().getDrawable(dItem.getImgId()));
+		drawerHolder.icon.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), dItem.getImgId()));
 		drawerHolder.name.setText(dItem.getName());
 
 		return view;

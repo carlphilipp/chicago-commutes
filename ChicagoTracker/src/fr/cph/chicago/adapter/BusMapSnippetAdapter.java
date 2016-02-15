@@ -66,7 +66,7 @@ public class BusMapSnippetAdapter extends BaseAdapter {
 	public final View getView(final int position, View convertView, final ViewGroup parent) {
 		BusArrival arrival = (BusArrival) getItem(position);
 		LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		convertView = vi.inflate(R.layout.list_map_train, null);
+		convertView = vi.inflate(R.layout.list_map_train, parent);
 		TextView name = (TextView) convertView.findViewById(R.id.station_name);
 		name.setText(arrival.getStopName());
 

@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -114,7 +115,7 @@ public final class BusAdapter extends BaseAdapter {
 
 		if (convertView == null) {
 			LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			convertView = vi.inflate(R.layout.list_bus, null);
+			convertView = vi.inflate(R.layout.list_bus, parent, false);
 
 			final ViewHolder holder = new ViewHolder();
 			routeNameView = (TextView) convertView.findViewById(R.id.station_name);
@@ -263,7 +264,7 @@ public final class BusAdapter extends BaseAdapter {
 					}
 				});
 				popup.setFocusable(true);
-				popup.setBackgroundDrawable(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.any_selector));
+				popup.setBackgroundDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.any_selector));
 				firstLayout.getForeground().setAlpha(210);
 
 				popup.setOnDismissListener(new PopupWindow.OnDismissListener() {

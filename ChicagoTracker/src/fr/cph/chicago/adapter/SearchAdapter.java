@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -135,7 +136,7 @@ public final class SearchAdapter extends BaseAdapter {
 	public final View getView(final int position, View convertView, final ViewGroup parent) {
 
 		LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		convertView = vi.inflate(R.layout.list_search, null);
+		convertView = vi.inflate(R.layout.list_search, parent, false);
 
 		TextView rounteName = (TextView) convertView.findViewById(R.id.station_name);
 
@@ -292,7 +293,7 @@ public final class SearchAdapter extends BaseAdapter {
 					}
 				});
 				popup.setFocusable(true);
-				popup.setBackgroundDrawable(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.any_selector));
+				popup.setBackgroundDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.any_selector));
 				container.getForeground().setAlpha(210);
 
 				popup.setOnDismissListener(new PopupWindow.OnDismissListener() {

@@ -19,10 +19,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@+dimen/activity_train_line_padding_bottom"
-    android:paddingLeft="@+dimen/activity_train_line_padding_left"
-    android:paddingRight="@+dimen/activity_train_line_padding_right"
-    android:paddingTop="@+dimen/activity_train_line_padding_top" >
+    android:paddingBottom="@dimen/activity_train_line_padding_bottom"
+    android:paddingLeft="@dimen/activity_train_line_padding_left"
+    android:paddingRight="@dimen/activity_train_line_padding_right"
+    android:paddingTop="@dimen/activity_train_line_padding_top" >
 
     <RelativeLayout
         android:id="@+id/line1"
@@ -34,11 +34,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:paddingRight="@+dimen/activity_station_stops_line1_padding_color"
+            android:paddingRight="@dimen/activity_station_stops_line1_padding_color"
             android:text="@string/B"
-            android:textColor="@+color/grey_M_B"
+            android:textColor="@color/grey_M_B"
             android:textIsSelectable="false"
-            android:textSize="@+dimen/activity_train_line_M"
+            android:textSize="@dimen/activity_train_line_M"
             android:textStyle="bold" />
 
         <TextView
@@ -50,7 +50,7 @@
             android:background="@color/grey_5"
             android:text="@string/empty_string"
             android:textIsSelectable="false"
-            android:textSize="@+dimen/activity_train_line_M" />
+            android:textSize="@dimen/activity_train_line_M" />
 
         <TextView
             android:id="@+id/route_id"
@@ -58,10 +58,10 @@
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/station_b"
             android:layout_toRightOf="@+id/station_separator"
-            android:paddingLeft="@+dimen/activity_station_stops_line1_padding_color"
+            android:paddingLeft="@dimen/activity_station_stops_line1_padding_color"
             android:textColor="@color/black"
             android:textIsSelectable="false"
-            android:textSize="@+dimen/activity_train_station_name"
+            android:textSize="@dimen/activity_train_station_name"
             android:textStyle="bold" />
 
         <TextView
@@ -76,7 +76,7 @@
             android:scrollHorizontally="true"
             android:textColor="@color/black"
             android:textIsSelectable="false"
-            android:textSize="@+dimen/activity_train_station_name"
+            android:textSize="@dimen/activity_train_station_name"
             android:textStyle="bold" />
 
         <TextView

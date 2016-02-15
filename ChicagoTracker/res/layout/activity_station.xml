@@ -29,10 +29,10 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="@+dimen/activity_train_line_padding_bottom"
-        android:paddingLeft="@+dimen/activity_train_line_padding_left"
-        android:paddingRight="@+dimen/activity_train_line_padding_right"
-        android:paddingTop="@+dimen/activity_train_line_padding_top" >
+        android:paddingBottom="@dimen/activity_train_line_padding_bottom"
+        android:paddingLeft="@dimen/activity_train_line_padding_left"
+        android:paddingRight="@dimen/activity_train_line_padding_right"
+        android:paddingTop="@dimen/activity_train_line_padding_top" >
 
         <RelativeLayout
             android:id="@+id/header"
@@ -95,7 +95,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/header"
-            android:paddingTop="@+dimen/activity_train_line_padding_top" >
+            android:paddingTop="@dimen/activity_train_line_padding_top" >
 
             <ImageView
                 android:id="@+id/activity_bike_station_streetview_image"

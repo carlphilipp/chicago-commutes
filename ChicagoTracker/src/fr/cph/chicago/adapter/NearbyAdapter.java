@@ -19,6 +19,7 @@ package fr.cph.chicago.adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils.TruncateAt;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -63,29 +64,53 @@ import java.util.Set;
  * @version 1
  */
 public final class NearbyAdapter extends BaseAdapter {
-	/** The context **/
+	/**
+	 * The context
+	 **/
 	private Context context;
-	/** The bus data **/
+	/**
+	 * The bus data
+	 **/
 	private BusData busData;
-	/** List of bus stop **/
+	/**
+	 * List of bus stop
+	 **/
 	private List<BusStop> busStops;
-	/** Bus arrivals **/
+	/**
+	 * Bus arrivals
+	 **/
 	private SparseArray<Map<String, List<BusArrival>>> busArrivals;
-	/** Trian arrivals **/
+	/**
+	 * Trian arrivals
+	 **/
 	private SparseArray<TrainArrival> trainArrivals;
-	/** List of stations **/
+	/**
+	 * List of stations
+	 **/
 	private List<Station> stations;
-	/** Google map **/
+	/**
+	 * Google map
+	 **/
 	private GoogleMap googleMap;
-	/** Markers on the map **/
+	/**
+	 * Markers on the map
+	 **/
 	private List<Marker> markers;
-	/** Layout ids **/
+	/**
+	 * Layout ids
+	 **/
 	private Map<String, Integer> ids;
-	/** Layouts **/
+	/**
+	 * Layouts
+	 **/
 	private Map<Integer, LinearLayout> layouts;
-	/** View **/
+	/**
+	 * View
+	 **/
 	private Map<Integer, View> views;
-	/** List of bike stations **/
+	/**
+	 * List of bike stations
+	 **/
 	private List<BikeStation> bikeStations;
 
 	@SuppressLint("UseSparseArrays")
@@ -147,7 +172,7 @@ public final class NearbyAdapter extends BaseAdapter {
 		int stopsPaddingTop = (int) context.getResources().getDimension(R.dimen.activity_station_stops_padding_top);
 
 		LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		convertView = vi.inflate(R.layout.list_nearby, null);
+		convertView = vi.inflate(R.layout.list_nearby, parent);
 
 		if (position < stations.size()) {
 			final Station station = stations.get(position);
@@ -328,7 +353,7 @@ public final class NearbyAdapter extends BaseAdapter {
 					llh.setPadding(line1PaddingColor, stopsPaddingTop, 0, 0);
 
 					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-						llh.setBackground(context.getResources().getDrawable(R.drawable.any_selector));
+						llh.setBackground(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.any_selector));
 					}
 
 					TextView tlView = new TextView(context);
@@ -472,18 +497,12 @@ public final class NearbyAdapter extends BaseAdapter {
 	/**
 	 * Update data
 	 *
-	 * @param busStops
-	 *            the bus stops
-	 * @param busArrivals
-	 *            the bus arrivals
-	 * @param stations
-	 *            the stations
-	 * @param trainArrivals
-	 *            the train arrivals
-	 * @param map
-	 *            the map
-	 * @param markers
-	 *            the markers
+	 * @param busStops      the bus stops
+	 * @param busArrivals   the bus arrivals
+	 * @param stations      the stations
+	 * @param trainArrivals the train arrivals
+	 * @param map           the map
+	 * @param markers       the markers
 	 */
 	public final void updateData(final List<BusStop> busStops, final SparseArray<Map<String, List<BusArrival>>> busArrivals,
 			final List<Station> stations, final SparseArray<TrainArrival> trainArrivals, final List<BikeStation> bikeStations, final GoogleMap map,

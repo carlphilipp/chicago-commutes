@@ -45,7 +45,7 @@
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="@+dimen/activity_train_line_padding_left" >
+            android:paddingLeft="@dimen/activity_train_line_padding_left" >
 
             <CheckBox
                 android:id="@+id/hideEmptyStops"

@@ -25,6 +25,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -175,7 +176,7 @@ public class BusActivity extends Activity {
 
 			favoritesImage = (ImageView) findViewById(R.id.activity_bus_favorite_star);
 			if (isFavorite) {
-				favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_active));
+				favoritesImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.ic_save_active));
 			}
 			favoritesImage.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -440,7 +441,7 @@ public class BusActivity extends Activity {
 					}
 				}
 			});
-			BusActivity.this.mapImage.setImageDrawable(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.da_turn_arrive));
+			BusActivity.this.mapImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.da_turn_arrive));
 			BusActivity.this.mapImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -450,8 +451,8 @@ public class BusActivity extends Activity {
 					startActivity(i);
 				}
 			});
-			BusActivity.this.directionImage.setImageDrawable(ChicagoTracker.getAppContext().getResources()
-					.getDrawable(R.drawable.ic_directions_walking));
+			BusActivity.this.directionImage
+					.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.ic_directions_walking));
 			BusActivity.this.directionImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {

@@ -77,7 +77,7 @@ public class BusBoundAdapter extends BaseAdapter {
 
 		if (convertView == null) {
 			LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			convertView = vi.inflate(R.layout.list_bus_bounds, null);
+			convertView = vi.inflate(R.layout.list_bus_bounds, parent, false);
 
 			ViewHolder holder = new ViewHolder();
 			routNumberView = (TextView) convertView.findViewById(R.id.route_number);

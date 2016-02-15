@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,13 +51,21 @@ import java.util.Set;
  * @version 1
  */
 public class FavoritesTrainOnClickListener implements OnClickListener {
-	/** The main activity **/
+	/**
+	 * The main activity
+	 **/
 	private Activity activity;
-	/** The layout that is used to display a fade black background **/
+	/**
+	 * The layout that is used to display a fade black background
+	 **/
 	private FrameLayout firstLayout;
-	/** The station id **/
+	/**
+	 * The station id
+	 **/
 	private int stationId;
-	/** Train lines **/
+	/**
+	 * Train lines
+	 **/
 	private Set<TrainLine> trainLines;
 
 	/**
@@ -85,7 +94,7 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 
 			final PopupWindow popup = new PopupWindow(popupView, (int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
 			popup.setFocusable(true);
-			popup.setBackgroundDrawable(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.any_selector));
+			popup.setBackgroundDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.any_selector));
 			firstLayout.getForeground().setAlpha(210);
 
 			ListView listView = (ListView) popupView.findViewById(R.id.details);
@@ -124,7 +133,7 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 				}
 			});
 			popup.setFocusable(true);
-			popup.setBackgroundDrawable(ChicagoTracker.getAppContext().getResources().getDrawable(R.drawable.any_selector));
+			popup.setBackgroundDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.any_selector));
 			firstLayout.getForeground().setAlpha(210);
 			popup.setOnDismissListener(new PopupWindow.OnDismissListener() {
 				@Override

@@ -89,7 +89,7 @@ public final class TrainAdapter extends BaseAdapter {
 		Set<TrainLine> lines = station.getLines();
 
 		LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		convertView = vi.inflate(R.layout.list_train, null);
+		convertView = vi.inflate(R.layout.list_train, parent, false);
 
 		TextView stationNameView = (TextView) convertView.findViewById(R.id.station_name_value);
 		LinearLayout stationColorView = (LinearLayout) convertView.findViewById(R.id.station_color);

@@ -26,6 +26,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils.TruncateAt;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -163,7 +164,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 				} else {
 					LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-					convertView = vi.inflate(R.layout.list_favorites_train, null);
+					convertView = vi.inflate(R.layout.list_favorites_train, parent, false);
 					favoritesLayout = (LinearLayout) convertView.findViewById(R.id.favorites_list);
 					layouts.put(stationId, favoritesLayout);
 					views.put(stationId, convertView);
@@ -313,7 +314,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 			} else if (object instanceof BusRoute) {
 				final BusRoute busRoute = (BusRoute) object;
 				LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				convertView = vi.inflate(R.layout.list_favorites_bus, null);
+				convertView = vi.inflate(R.layout.list_favorites_bus, parent, false);
 				TextView routeIdView = (TextView) convertView.findViewById(R.id.route_id);
 				routeIdView.setText(busRoute.getId());
 
@@ -339,7 +340,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 						llh.setPadding(line1Padding, stopsPaddingTop, 0, 0);
 
 						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-							llh.setBackground(context.getResources().getDrawable(R.drawable.any_selector));
+							llh.setBackground(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.any_selector));
 						}
 
 						TextView tlView = new TextView(context);
@@ -396,7 +397,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 			} else {
 				final BikeStation bikeStation = (BikeStation) object;
 				LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				convertView = vi.inflate(R.layout.list_favorites_bike, null);
+				convertView = vi.inflate(R.layout.list_favorites_bike, parent);
 				TextView bikeStationName = (TextView) convertView.findViewById(R.id.bike_station_name);
 				bikeStationName.setText(bikeStation.getName());
 
