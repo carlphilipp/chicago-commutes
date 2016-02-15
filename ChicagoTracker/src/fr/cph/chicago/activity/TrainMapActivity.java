@@ -637,5 +637,4 @@ public class TrainMapActivity extends Activity {
 			}.start();
 		}
 	}
-
 }

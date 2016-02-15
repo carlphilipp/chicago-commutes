@@ -9,4 +9,4 @@
 /.gradle
 ChicagoTracker.iml
 local.properties
-/app.properties
+app.properties

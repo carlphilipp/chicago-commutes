@@ -1,26 +1,21 @@
-repositories {
-    jcenter()
-    mavenCentral()
-}
-
 buildscript {
     repositories {
         jcenter()
-        mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.5.0'
+        classpath 'com.android.tools.build:gradle:2.0.0-beta4'
     }
 }
 
 apply plugin: 'com.android.application'
 
 dependencies {
-    //compile fileTree(dir: 'libs', include: '*.jar');
-    // TODO: Use only libs needed : https://developers.google.com/android/guides/setup
-    compile 'com.google.android.gms:play-services:8.4.0'
-    // Upgrade to 4.1
-    compile 'org.apache.commons:commons-collections4:4.0'
+    repositories {
+        jcenter()
+    }
+    compile 'com.google.android.gms:play-services-maps:8.4.0'
+    compile 'com.google.android.gms:play-services-analytics:8.4.0'
+    compile 'org.apache.commons:commons-collections4:4.1'
     compile 'commons-io:commons-io:2.4'
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'net.sf.opencsv:opencsv:2.3'
@@ -29,12 +24,12 @@ dependencies {
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    compileSdkVersion 22
+    buildToolsVersion "22.0.1"
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 23
+        targetSdkVersion 22
     }
 
     compileOptions {
@@ -54,7 +49,7 @@ android {
         }
 
         // Move the tests to tests/java, tests/res, etc...
-        instrumentTest.setRoot('tests')
+        // instrumentTest.setRoot('tests')
 
         // Move the build types to build-types/<type>
         // For instance, build-types/debug/java, build-types/debug/AndroidManifest.xml, ...
@@ -62,14 +57,12 @@ android {
         // conflict with src/ being used by the main source set.
         // Adding new build types or product flavors should be accompanied
         // by a similar customization.
-        debug.setRoot('build-types/debug')
-        release.setRoot('build-types/release')
+        //debug.setRoot('build-types/debug')
+        //release.setRoot('build-types/release')
     }
 
     lintOptions {
         checkReleaseBuilds true
-        // Or, if you prefer, you can continue to check for errors in release builds,
-        // but continue the build even when errors are found:
         abortOnError false
     }
 
