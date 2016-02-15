@@ -5,3 +5,8 @@
 /proguard
 /lint.xml
 /.idea
+/build
+/.gradle
+ChicagoTracker.iml
+local.properties
+/app.properties

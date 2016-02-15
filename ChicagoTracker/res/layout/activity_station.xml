@@ -63,11 +63,11 @@
                     android:id="@+id/activity_bike_station_map_image"
                     android:layout_width="35dp"
                     android:layout_height="35dp"
-                    android:layout_toRightOf="@+id/activity_bike_station_map_image"
                     android:background="@drawable/any_selector"
                     android:clickable="true"
                     android:contentDescription="@string/station_activity_google_map_link_desc" >
                 </ImageView>
+                <!-- android:layout_toRightOf="@+id/activity_bike_station_map_image" -->
 
                 <ImageView
                     android:id="@+id/activity_bike_station_map_direction"

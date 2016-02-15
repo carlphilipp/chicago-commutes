@@ -61,10 +61,10 @@
                     android:id="@+id/activity_bus_map_image"
                     android:layout_width="35dp"
                     android:layout_height="35dp"
-                    android:layout_toRightOf="@+id/activity_bus_map_image"
                     android:background="@drawable/any_selector"
                     android:contentDescription="@string/bus_activity_google_map_link_desc" >
                 </ImageView>
+                <!-- android:layout_toRightOf="@+id/activity_bus_map_image" -->
 
                 <ImageView
                     android:id="@+id/activity_bus_map_direction"
