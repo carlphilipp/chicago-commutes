@@ -39,8 +39,8 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.task.GlobalConnectTask;
 import fr.cph.chicago.util.Util;
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import java.util.ArrayList;
@@ -205,13 +205,13 @@ public class BaseActivity extends Activity {
 	 * @throws ParserException the exception
 	 */
 	private void loadData() throws ParserException {
-		MultiMap<String, String> params = new MultiValueMap<>();
+		MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
 		List<Integer> favorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
 		for (Integer fav : favorites) {
 			params.put("mapid", String.valueOf(fav));
 		}
 
-		MultiMap<String, String> params2 = new MultiValueMap<>();
+		MultiValuedMap<String, String> params2 = new ArrayListValuedHashMap<>();
 		List<String> busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
 		for (String str : busFavorites) {
 			String[] fav = Util.decodeBusFavorite(str);
@@ -228,14 +228,14 @@ public class BaseActivity extends Activity {
 		} else {
 			SharedPreferences.Editor editor = sharedPref.edit();
 			editor.putBoolean("cta_train", true);
-			editor.commit();
+			editor.apply();
 		}
 		if (sharedPref.contains("cta_bus")) {
 			loadBus = sharedPref.getBoolean("cta_bus", true);
 		} else {
 			SharedPreferences.Editor editor = sharedPref.edit();
 			editor.putBoolean("cta_bus", true);
-			editor.commit();
+			editor.apply();
 		}
 
 		GlobalConnectTask task = new GlobalConnectTask(this, BaseActivity.class, CtaRequestType.TRAIN_ARRIVALS, params, CtaRequestType.BUS_ARRIVALS,

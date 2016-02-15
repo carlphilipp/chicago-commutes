@@ -111,10 +111,10 @@ public final class FavoritesAdapter extends BaseAdapter {
 		this.firstLayout = ChicagoTracker.container;
 		this.favorites = new Favorites();
 
-		this.ids = new HashMap<String, Integer>();
-		this.layouts = new HashMap<Integer, LinearLayout>();
-		this.views = new HashMap<Integer, View>();
-		this.updated = new HashMap<String, TextView>();
+		this.ids = new HashMap<>();
+		this.layouts = new HashMap<>();
+		this.views = new HashMap<>();
+		this.updated = new HashMap<>();
 
 		this.paramsLayout = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 		this.paramsTextView = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
@@ -296,7 +296,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 								layoutChildH.removeAllViews();
 								List<String> toRemove = new ArrayList<>();
 								for (Entry<String, Integer> e : this.ids.entrySet()) {
-									if (e.getValue().intValue() == layoutChildH.getId()) {
+									if (e.getValue() == layoutChildH.getId()) {
 										toRemove.add(e.getKey());
 									}
 								}
@@ -622,10 +622,8 @@ public final class FavoritesAdapter extends BaseAdapter {
 		}
 
 		@Override
-		protected final void onPostExecute(final BusStop result) {
+		protected final void onPostExecute(final BusStop busStop) {
 			if (trackerException == null) {
-				BusStop busStop = result;
-
 				Intent intent = new Intent(ChicagoTracker.getAppContext(), BusActivity.class);
 				Bundle extras = new Bundle();
 				extras.putInt("busStopId", busStop.getId());

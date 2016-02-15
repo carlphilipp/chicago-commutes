@@ -59,8 +59,8 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import java.io.IOException;
@@ -82,33 +82,61 @@ import java.util.Set;
 public class StationActivity extends Activity {
 
 	private static final String TAG = "StationActivity";
-	/** Train data **/
+	/**
+	 * Train data
+	 **/
 	private TrainData trainData;
-	/** Train arrival **/
+	/**
+	 * Train arrival
+	 **/
 	private TrainArrival trainArrival;
-	/** The station id **/
+	/**
+	 * The station id
+	 **/
 	private Integer stationId;
-	/** The station **/
+	/**
+	 * The station
+	 **/
 	private Station station;
-	/** Street view image **/
+	/**
+	 * Street view image
+	 **/
 	private ImageView streetViewImage;
-	/** Street view text **/
+	/**
+	 * Street view text
+	 **/
 	private TextView streetViewText;
-	/** Map image **/
+	/**
+	 * Map image
+	 **/
 	private ImageView mapImage;
-	/** Direction image **/
+	/**
+	 * Direction image
+	 **/
 	private ImageView directionImage;
-	/** Favorite image **/
+	/**
+	 * Favorite image
+	 **/
 	private ImageView favoritesImage;
-	/** Is favorite **/
+	/**
+	 * Is favorite
+	 **/
 	private boolean isFavorite;
-	/** Map of ids **/
+	/**
+	 * Map of ids
+	 **/
 	private Map<String, Integer> ids;
-	/** Params stops **/
+	/**
+	 * Params stops
+	 **/
 	private LinearLayout.LayoutParams paramsStop;
-	/** The menu **/
+	/**
+	 * The menu
+	 **/
 	private Menu menu;
-	/** The first load **/
+	/**
+	 * The first load
+	 **/
 	private boolean firstLoad = true;
 
 	@Override
@@ -126,7 +154,7 @@ public class StationActivity extends Activity {
 			DataHolder dataHolder = DataHolder.getInstance();
 			this.trainData = dataHolder.getTrainData();
 
-			ids = new HashMap<String, Integer>();
+			ids = new HashMap<>();
 
 			// Load right xml
 			setContentView(R.layout.activity_station);
@@ -139,7 +167,7 @@ public class StationActivity extends Activity {
 			// Get station from station id
 			station = trainData.getStation(stationId);
 
-			MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
+			MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
 			reqParams.put("mapid", String.valueOf(station.getId()));
 			new LoadData().execute(reqParams);
 
@@ -149,7 +177,7 @@ public class StationActivity extends Activity {
 			this.isFavorite = isFavorite();
 
 			TextView textView = (TextView) findViewById(R.id.activity_bike_station_station_name);
-			textView.setText(station.getName().toString());
+			textView.setText(station.getName());
 
 			streetViewImage = (ImageView) findViewById(R.id.activity_bike_station_streetview_image);
 
@@ -206,7 +234,7 @@ public class StationActivity extends Activity {
 						@Override
 						public void onClick(View v) {
 							// Update timing
-							MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
+							MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
 							reqParams.put("mapid", String.valueOf(station.getId()));
 							new LoadData().execute(reqParams);
 						}
@@ -269,16 +297,15 @@ public class StationActivity extends Activity {
 			finish();
 			return true;
 		case R.id.action_refresh:
-			MenuItem menuItem = item;
-			menuItem.setActionView(R.layout.progressbar);
-			menuItem.expandActionView();
+			item.setActionView(R.layout.progressbar);
+			item.expandActionView();
 
-			MultiMap<String, String> params = new MultiValueMap<String, String>();
-			List<Integer> favorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
-			for (Integer fav : favorites) {
-				params.put("mapid", String.valueOf(fav));
-			}
-			MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
+			//			MultiMap<String, String> params = new MultiValueMap<>();
+			//			List<Integer> favorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
+			//			for (Integer fav : favorites) {
+			//				params.put("mapid", String.valueOf(fav));
+			//			}
+			MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
 			reqParams.put("mapid", String.valueOf(station.getId()));
 			new LoadData().execute(reqParams);
 			return true;
@@ -395,17 +422,19 @@ public class StationActivity extends Activity {
 	 * @author Carl-Philipp Harmant
 	 * @version 1
 	 */
-	private class LoadData extends AsyncTask<MultiMap<String, String>, Void, TrainArrival> {
+	private class LoadData extends AsyncTask<MultiValuedMap<String, String>, Void, TrainArrival> {
 
-		/** The exception that might be thrown **/
+		/**
+		 * The exception that might be thrown
+		 **/
 		private TrackerException trackerException;
 
 		@SafeVarargs
 		@Override
-		protected final TrainArrival doInBackground(final MultiMap<String, String>... params) {
+		protected final TrainArrival doInBackground(final MultiValuedMap<String, String>... params) {
 			// Get menu item and put it to loading mod
 			publishProgress((Void[]) null);
-			SparseArray<TrainArrival> arrivals = new SparseArray<TrainArrival>();
+			SparseArray<TrainArrival> arrivals = new SparseArray<>();
 			CtaConnect connect = CtaConnect.getInstance();
 			try {
 				Xml xml = new Xml();
@@ -491,8 +520,7 @@ public class StationActivity extends Activity {
 	/**
 	 * Reset arrival layouts
 	 *
-	 * @param station
-	 *            the station
+	 * @param station the station
 	 */
 	private void reset(final Station station) {
 		Set<TrainLine> setTL = station.getLines();
@@ -521,8 +549,7 @@ public class StationActivity extends Activity {
 	/**
 	 * Draw line
 	 *
-	 * @param eta
-	 *            the eta
+	 * @param eta the eta
 	 */
 	private void drawLine3(final Eta eta) {
 		TrainLine line = eta.getRouteName();

@@ -47,7 +47,7 @@ public class CustomDrawerAdapter extends ArrayAdapter<DrawerItem> {
 	 * @param resource
 	 * @param listItems
 	 */
-	public CustomDrawerAdapter(Context context, int resource, List<DrawerItem> listItems) {
+	public CustomDrawerAdapter(final Context context, final int resource, final List<DrawerItem> listItems) {
 		super(context, resource, listItems);
 		this.context = context;
 		this.resource = resource;
@@ -73,7 +73,7 @@ public class CustomDrawerAdapter extends ArrayAdapter<DrawerItem> {
 
 		}
 
-		DrawerItem dItem = (DrawerItem) this.listItems.get(position);
+		DrawerItem dItem = this.listItems.get(position);
 
 		drawerHolder.icon.setImageDrawable(view.getResources().getDrawable(dItem.getImgId()));
 		drawerHolder.name.setText(dItem.getName());

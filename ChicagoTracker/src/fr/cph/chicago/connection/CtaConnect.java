@@ -19,7 +19,7 @@ package fr.cph.chicago.connection;
 import android.util.Log;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.util.Util;
-import org.apache.commons.collections4.MultiMap;
+import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.io.IOUtils;
 
 import java.io.BufferedInputStream;
@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map.Entry;
 
 /**
@@ -127,7 +127,7 @@ public class CtaConnect {
 	 * @return a string
 	 * @throws ConnectException
 	 */
-	public final String connect(final CtaRequestType requestType, final MultiMap<String, String> params) throws ConnectException {
+	public final String connect(final CtaRequestType requestType, final MultiValuedMap<String, String> params) throws ConnectException {
 		StringBuilder address = null;
 		switch (requestType) {
 		case TRAIN_ARRIVALS:
@@ -166,17 +166,11 @@ public class CtaConnect {
 		default:
 			break;
 		}
-		for (Entry<String, Object> entry : params.entrySet()) {
+		for (Entry<String, Collection<String>> entry : params.asMap().entrySet()) {
 			String key = entry.getKey();
-			Object value = entry.getValue();
-			if (value instanceof String) {
+			Collection<String> values = entry.getValue();
+			for (String value : values) {
 				address.append("&").append(key).append("=").append(value);
-			} else if (value instanceof List) {
-				@SuppressWarnings("unchecked")
-				List<String> list = (List<String>) value;
-				for (String l : list) {
-					address.append("&").append(key).append("=").append(l);
-				}
 			}
 		}
 		String xml = connectUrl(address.toString());

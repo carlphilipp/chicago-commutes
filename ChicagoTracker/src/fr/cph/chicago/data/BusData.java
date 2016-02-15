@@ -27,8 +27,8 @@ import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.xml.Xml;
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -44,13 +44,21 @@ import java.util.List;
  * @version 1
  */
 public class BusData {
-	/** Tag **/
+	/**
+	 * Tag
+	 **/
 	private static final String TAG = "BusData";
-	/** Singleton **/
+	/**
+	 * Singleton
+	 **/
 	private static BusData busData;
-	/** List of bus routes **/
+	/**
+	 * List of bus routes
+	 **/
 	private List<BusRoute> busRoutes;
-	/** List of bus stop **/
+	/**
+	 * List of bus stop
+	 **/
 	private List<BusStop> busStops;
 
 	/**
@@ -120,14 +128,12 @@ public class BusData {
 	 * Load bus routes from CTA API
 	 *
 	 * @return a list of bus route
-	 * @throws ParserException
-	 *             a parser exception
-	 * @throws ConnectException
-	 *             a connect exception
+	 * @throws ParserException  a parser exception
+	 * @throws ConnectException a connect exception
 	 */
 	public final List<BusRoute> loadBusRoutes() throws ParserException, ConnectException {
 		if (busRoutes.size() == 0) {
-			MultiMap<String, String> params = new MultiValueMap<String, String>();
+			MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
 			CtaConnect connect = CtaConnect.getInstance();
 			Xml xml = new Xml();
 			String xmlResult = connect.connect(CtaRequestType.BUS_ROUTES, params);
@@ -157,8 +163,7 @@ public class BusData {
 	/**
 	 * Get a route
 	 *
-	 * @param position
-	 *            the position in the list
+	 * @param position the position in the list
 	 * @return a bus route
 	 */
 	public final BusRoute getRoute(final int position) {
@@ -168,8 +173,7 @@ public class BusData {
 	/**
 	 * Get a route
 	 *
-	 * @param routeId
-	 *            the id of the bus route
+	 * @param routeId the id of the bus route
 	 * @return a bus route
 	 */
 	public final BusRoute getRoute(final String routeId) {
@@ -195,26 +199,20 @@ public class BusData {
 	/**
 	 * Load from CTA API a bus stop list
 	 *
-	 * @param stopId
-	 *            the stop id
-	 * @param bound
-	 *            the direction
+	 * @param stopId the stop id
+	 * @param bound  the direction
 	 * @return a bus stop list
-	 * @throws ConnectException
-	 *             a connect exception
-	 * @throws ParserException
-	 *             a parser exception
+	 * @throws ConnectException a connect exception
+	 * @throws ParserException  a parser exception
 	 */
 	public final List<BusStop> loadBusStop(final String stopId, final String bound) throws ConnectException, ParserException {
 		CtaConnect connect = CtaConnect.getInstance();
-		MultiMap<String, String> param = new MultiValueMap<String, String>();
-		param.put("rt", stopId);
-		param.put("dir", bound);
-		List<BusStop> busStops = null;
-		String xmlResult = connect.connect(CtaRequestType.BUS_STOP_LIST, param);
+		MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
+		params.put("rt", stopId);
+		params.put("dir", bound);
+		String xmlResult = connect.connect(CtaRequestType.BUS_STOP_LIST, params);
 		Xml xml = new Xml();
-		busStops = xml.parseBusBounds(xmlResult);
-		return busStops;
+		return xml.parseBusBounds(xmlResult);
 	}
 
 	/**
@@ -229,14 +227,13 @@ public class BusData {
 	/**
 	 * Get one bus from CSV
 	 *
-	 * @param id
-	 *            the id of the bus
+	 * @param id the id of the bus
 	 * @return a bus stop
 	 */
 	public final BusStop readOneBus(final int id) {
 		BusStop res = null;
 		for (BusStop busStop : busStops) {
-			if (busStop.getId().intValue() == id) {
+			if (busStop.getId() == id) {
 				res = busStop;
 				break;
 			}
@@ -247,8 +244,7 @@ public class BusData {
 	/**
 	 * Get a list of bus stop within a a distance and position
 	 *
-	 * @param position
-	 *            the position
+	 * @param position the position
 	 * @return a list of bus stop
 	 */
 	public final List<BusStop> readNearbyStops(final Position position) {

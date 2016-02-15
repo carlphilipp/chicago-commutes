@@ -99,7 +99,7 @@ public final class Xml {
 			Integer staId = null;
 			while (eventType != XmlPullParser.END_DOCUMENT) {
 				if (eventType == XmlPullParser.START_DOCUMENT) {
-					arrivals = new SparseArray<TrainArrival>();
+					arrivals = new SparseArray<>();
 				} else if (eventType == XmlPullParser.START_TAG) {
 					tagName = parser.getName();
 					if (tagName.equals("tmst")) {
@@ -770,7 +770,7 @@ public final class Xml {
 			Integer staId = null;
 			while (eventType != XmlPullParser.END_DOCUMENT) {
 				if (eventType == XmlPullParser.START_DOCUMENT) {
-					arrivals = new SparseArray<TrainArrival>();
+					arrivals = new SparseArray<>();
 				} else if (eventType == XmlPullParser.START_TAG) {
 					tagName = parser.getName();
 					if (tagName.equals("tmst")) {

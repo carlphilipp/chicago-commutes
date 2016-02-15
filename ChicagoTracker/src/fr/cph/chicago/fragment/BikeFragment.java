@@ -207,9 +207,8 @@ public class BikeFragment extends Fragment {
 			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mainActivity);
 			boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
 			if (loadBike) {
-				MenuItem menuItem = item;
-				menuItem.setActionView(R.layout.progressbar);
-				menuItem.expandActionView();
+				item.setActionView(R.layout.progressbar);
+				item.expandActionView();
 
 				new DivvyAsyncTask().execute();
 

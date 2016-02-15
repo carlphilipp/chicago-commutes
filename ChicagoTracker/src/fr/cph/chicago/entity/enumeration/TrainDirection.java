@@ -39,7 +39,7 @@ public enum TrainDirection {
 	 * @param formattedText
 	 *            the formatted text
 	 */
-	private TrainDirection(final String text, final String formattedText) {
+	TrainDirection(final String text, final String formattedText) {
 		this.text = text;
 		this.formattedText = formattedText;
 	}

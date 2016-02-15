@@ -62,8 +62,8 @@ import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.fragment.NearbyFragment;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.commons.lang3.StringUtils;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -302,7 +302,7 @@ public class BusBoundActivity extends ListActivity {
 		@Override
 		protected final BusPattern doInBackground(final Void... params) {
 			CtaConnect connect = CtaConnect.getInstance();
-			MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
+			MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
 			connectParam.put("rt", busRouteId);
 			String boundIgnoreCase = bound.toLowerCase(Locale.US);
 			try {
@@ -311,7 +311,7 @@ public class BusBoundActivity extends ListActivity {
 				List<BusPattern> patterns = xml.parsePatterns(content);
 				for (BusPattern pattern : patterns) {
 					String directionIgnoreCase = pattern.getDirection().toLowerCase(Locale.US);
-					if (pattern.getDirection().equals(bound) || boundIgnoreCase.indexOf(directionIgnoreCase) != -1) {
+					if (pattern.getDirection().equals(bound) || boundIgnoreCase.contains(directionIgnoreCase)) {
 						this.busPattern = pattern;
 						break;
 					}

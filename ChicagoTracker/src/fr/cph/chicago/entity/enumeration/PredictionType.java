@@ -33,7 +33,7 @@ public enum PredictionType {
 	 *
 	 * @param message
 	 */
-	private PredictionType(String message) {
+	PredictionType(String message) {
 		this.message = message;
 	}
 

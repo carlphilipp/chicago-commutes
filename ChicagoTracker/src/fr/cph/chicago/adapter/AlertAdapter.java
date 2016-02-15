@@ -78,7 +78,7 @@ public final class AlertAdapter extends BaseAdapter {
 			StringBuilder stb = new StringBuilder();
 			for (Service service : alert.getImpactedServices()) {
 				if (service.getType().equals("T")) {
-					stb.append(service.getName() + ", ");
+					stb.append(service.getName()).append(", ");
 				} else {
 					stb.append(service.getId() + ", ");
 				}

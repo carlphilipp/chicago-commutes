@@ -35,12 +35,11 @@ public class ParserException extends TrackerException {
 	 * @param e
 	 *            the exception
 	 */
-	public ParserException(String message, Exception e) {
+	public ParserException(final String message, final Exception e) {
 		super(message, e);
 	}
 
-	public ParserException(String text) {
+	public ParserException(final String text) {
 		super(text);
 	}
-
 }

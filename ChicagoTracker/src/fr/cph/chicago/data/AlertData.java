@@ -21,8 +21,8 @@ import fr.cph.chicago.entity.Alert;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.xml.Xml;
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +34,13 @@ import java.util.List;
  * @version 1
  */
 public class AlertData {
-	/** The data **/
+	/**
+	 * The data
+	 **/
 	private static AlertData alertData;
-	/** The list of alerts **/
+	/**
+	 * The list of alerts
+	 **/
 	private List<Alert> alerts;
 
 	/**
@@ -62,14 +66,12 @@ public class AlertData {
 	 * Connect to CTA API to get the alerts messages
 	 *
 	 * @return a list of alert
-	 * @throws ParserException
-	 *             a parse exception
-	 * @throws ConnectException
-	 *             a connect exception
+	 * @throws ParserException  a parse exception
+	 * @throws ConnectException a connect exception
 	 */
 	public final List<Alert> loadGeneralAlerts() throws ParserException, ConnectException {
 		if (alerts.size() == 0) {
-			MultiMap<String, String> params = new MultiValueMap<>();
+			MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
 			CtaConnect connect = CtaConnect.getInstance();
 			Xml xml = new Xml();
 			String xmlResult = connect.connect(CtaRequestType.ALERTS_GENERAL, params);

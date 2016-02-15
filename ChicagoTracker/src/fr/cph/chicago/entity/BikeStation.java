@@ -296,10 +296,7 @@ public final class BikeStation implements Parcelable {
 		if (getClass() != obj.getClass())
 			return false;
 		BikeStation other = (BikeStation) obj;
-		if (id != other.id) {
-			return false;
-		}
-		return true;
+		return id == other.id;
 	}
 
 	public static final Parcelable.Creator<BikeStation> CREATOR = new Parcelable.Creator<BikeStation>() {

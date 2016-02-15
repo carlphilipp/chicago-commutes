@@ -18,6 +18,7 @@ package fr.cph.chicago.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import fr.cph.chicago.entity.enumeration.TrainDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
@@ -158,28 +159,28 @@ public class Stop implements Comparable<Stop>, Parcelable {
 	@Override
 	public final String toString() {
 		StringBuilder stb = new StringBuilder();
-		stb.append("[Id=" + id);
+		stb.append("[Id=").append(id);
 		if (description != null) {
-			stb.append(";description=" + description);
+			stb.append(";description=").append(description);
 		}
 		if (direction != null) {
-			stb.append(";direction=" + direction);
+			stb.append(";direction=").append(direction);
 		}
 		if (position != null) {
-			stb.append(";position=" + position);
+			stb.append(";position=").append(position);
 		}
 		if (ada != null) {
-			stb.append(";ada=" + ada);
+			stb.append(";ada=").append(ada);
 		}
 		if (lines != null) {
-			stb.append(";lines=" + lines);
+			stb.append(";lines=").append(lines);
 		}
 		stb.append("]");
 		return stb.toString();
 	}
 
 	@Override
-	public final int compareTo(final Stop anotherStop) {
+	public final int compareTo(@NonNull final Stop anotherStop) {
 		return this.direction.compareTo(anotherStop.getDirection());
 	}
 

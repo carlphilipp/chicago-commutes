@@ -18,6 +18,7 @@ package fr.cph.chicago.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import java.io.Serializable;
 
@@ -108,7 +109,7 @@ public final class BusStop implements Comparable<BusStop>, Parcelable, Serializa
 	}
 
 	@Override
-	public int compareTo(BusStop another) {
+	public int compareTo(@NonNull final BusStop another) {
 		Position position = another.getPosition();
 		int latitude = getPosition().getLatitude().compareTo(position.getLatitude());
 		return latitude == 0 ? getPosition().getLongitude().compareTo(position.getLongitude()) : latitude;

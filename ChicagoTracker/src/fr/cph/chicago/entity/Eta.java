@@ -18,6 +18,7 @@ package fr.cph.chicago.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
 import java.util.Date;
@@ -363,7 +364,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	@Override
-	public final int compareTo(final Eta another) {
+	public final int compareTo(@NonNull final Eta another) {
 		Long time1 = arrivalDepartureDate.getTime() - predictionDate.getTime();
 		Long time2 = another.getArrivalDepartureDate().getTime() - another.getPredictionDate().getTime();
 		return time1.compareTo(time2);
@@ -372,15 +373,15 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	@Override
 	public final String toString() {
 		StringBuilder res = new StringBuilder();
-		res.append("[Eta: [Station " + station.getName() + "]");
-		res.append("[Stop " + stop.getId() + "]");
-		res.append("[runNumber " + runNumber + "]");
-		res.append("[routeName " + routeName + "]");
-		res.append("[destSt " + destSt + "]");
-		res.append("[destName " + destName + "]");
-		res.append("[trainRouteDirectionCode " + trainRouteDirectionCode + "]");
-		res.append("[predictionDate " + predictionDate + "]");
-		res.append("[arrivalDepartureDate " + arrivalDepartureDate + "]");
+		res.append("[Eta: [Station ").append(station.getName()).append("]");
+		res.append("[Stop ").append(stop.getId()).append("]");
+		res.append("[runNumber ").append(runNumber).append("]");
+		res.append("[routeName ").append(routeName).append("]");
+		res.append("[destSt ").append(destSt).append("]");
+		res.append("[destName ").append(destName).append("]");
+		res.append("[trainRouteDirectionCode ").append(trainRouteDirectionCode).append("]");
+		res.append("[predictionDate ").append(predictionDate).append("]");
+		res.append("[arrivalDepartureDate ").append(arrivalDepartureDate).append("]");
 		// res.append("[isApp " + isApp + "]");
 		// res.append("[isFlt " + isFlt + "]");
 		// res.append("[isDly " + isDly + "]");

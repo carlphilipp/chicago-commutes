@@ -187,7 +187,7 @@ public class Favorites {
 	 * @return a nice map
 	 */
 	public final Map<String, Map<String, List<BusArrival>>> getBusArrivalsMapped(final String routeId) {
-		Map<String, Map<String, List<BusArrival>>> res = new TreeMap<String, Map<String, List<BusArrival>>>(new Comparator<String>() {
+		Map<String, Map<String, List<BusArrival>>> res = new TreeMap<>(new Comparator<String>() {
 			@Override
 			public int compare(String lhs, String rhs) {
 				return lhs.compareTo(rhs);
@@ -414,7 +414,7 @@ public class Favorites {
 	 * @param busArrivals
 	 */
 	private void removeDuplicates(final List<BusArrival> busArrivals) {
-		Set<BusArrival> stBusArrivals = new LinkedHashSet<BusArrival>(busArrivals);
+		Set<BusArrival> stBusArrivals = new LinkedHashSet<>(busArrivals);
 		busArrivals.clear();
 		busArrivals.addAll(stBusArrivals);
 	}

@@ -68,8 +68,8 @@ import fr.cph.chicago.fragment.NearbyFragment;
 import fr.cph.chicago.listener.TrainMapOnCameraChangeListener;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import java.util.ArrayList;
@@ -84,29 +84,53 @@ import java.util.Map;
  * @version 1
  */
 public class TrainMapActivity extends Activity {
-	/** Tag **/
+	/**
+	 * Tag
+	 **/
 	private static final String TAG = "TrainMapActivity";
-	/** The map fragment from google api **/
+	/**
+	 * The map fragment from google api
+	 **/
 	private MapFragment mapFragment;
-	/** The map **/
+	/**
+	 * The map
+	 **/
 	private GoogleMap googleMap;
-	/** Line **/
+	/**
+	 * Line
+	 **/
 	private String line;
-	/** Bus Markers **/
+	/**
+	 * Bus Markers
+	 **/
 	private List<Marker> markers;
-	/** Menu **/
+	/**
+	 * Menu
+	 **/
 	private Menu menu;
-	/** Train data **/
+	/**
+	 * Train data
+	 **/
 	private TrainData trainData;
-	/** Refreshing info window **/
+	/**
+	 * Refreshing info window
+	 **/
 	private boolean refreshingInfoWindow = false;
-	/** Selected marker **/
+	/**
+	 * Selected marker
+	 **/
 	private Marker selectedMarker;
-	/** Map views **/
+	/**
+	 * Map views
+	 **/
 	private Map<Marker, View> views;
-	/** Map status **/
+	/**
+	 * Map status
+	 **/
 	private Map<Marker, Boolean> status;
-	/** On camera change zoom listener **/
+	/**
+	 * On camera change zoom listener
+	 **/
 	private TrainMapOnCameraChangeListener trainListener;
 
 	private boolean centerMap = true;
@@ -309,7 +333,6 @@ public class TrainMapActivity extends Activity {
 	}
 
 	/**
-	 *
 	 * @param result
 	 */
 	private void centerMapOnBus(final List<Train> result) {
@@ -334,18 +357,15 @@ public class TrainMapActivity extends Activity {
 	}
 
 	/**
-	 *
-	 * @param trains
-	 *            the list of trains
-	 * @param positions
-	 *            the list of positions
+	 * @param trains    the list of trains
+	 * @param positions the list of positions
 	 */
 	private void drawTrains(final List<Train> trains, final List<Position> positions) {
 		if (googleMap != null) {
 			if (views != null) {
 				views.clear();
 			}
-			views = new HashMap<Marker, View>();
+			views = new HashMap<>();
 			for (Marker marker : markers) {
 				marker.remove();
 			}
@@ -388,18 +408,20 @@ public class TrainMapActivity extends Activity {
 	}
 
 	private class LoadTrainFollow extends AsyncTask<String, Void, List<Eta>> {
-		/** Current view **/
+		/**
+		 * Current view
+		 **/
 		private View view;
-		/** Load all **/
+		/**
+		 * Load all
+		 **/
 		private boolean loadAll;
 
 		/**
 		 * Constructor
 		 *
-		 * @param view
-		 *            the view
-		 * @param loadAll
-		 *            a boolean to load everything
+		 * @param view    the view
+		 * @param loadAll a boolean to load everything
 		 */
 		public LoadTrainFollow(final View view, final boolean loadAll) {
 			this.view = view;
@@ -412,7 +434,7 @@ public class TrainMapActivity extends Activity {
 			List<Eta> etas = new ArrayList<>();
 			try {
 				CtaConnect connect = CtaConnect.getInstance();
-				MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
+				MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
 				connectParam.put("runnumber", runNumber);
 				String content = connect.connect(CtaRequestType.TRAIN_FOLLOW, connectParam);
 				Xml xml = new Xml();
@@ -459,11 +481,17 @@ public class TrainMapActivity extends Activity {
 	}
 
 	private class LoadTrainPosition extends AsyncTask<Boolean, Void, List<Train>> {
-		/** Center map **/
+		/**
+		 * Center map
+		 **/
 		private boolean centerMap;
-		/** Stop refresh **/
+		/**
+		 * Stop refresh
+		 **/
 		private boolean stopRefresh;
-		/** Positions list **/
+		/**
+		 * Positions list
+		 **/
 		private List<Position> positions;
 
 		@Override
@@ -472,7 +500,7 @@ public class TrainMapActivity extends Activity {
 			stopRefresh = params[1];
 			List<Train> trains = null;
 			CtaConnect connect = CtaConnect.getInstance();
-			MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
+			MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
 			connectParam.put("rt", line);
 			try {
 				String content = connect.connect(CtaRequestType.TRAIN_LOCATION, connectParam);
@@ -521,15 +549,25 @@ public class TrainMapActivity extends Activity {
 		private boolean isGPSEnabled = false;
 		// flag for network status
 		private boolean isNetworkEnabled = false;
-		/** The location **/
+		/**
+		 * The location
+		 **/
 		private Location location;
-		/** The position **/
+		/**
+		 * The position
+		 **/
 		private Position position;
-		/** The latitude **/
+		/**
+		 * The latitude
+		 **/
 		private double latitude;
-		/** THe longitude **/
+		/**
+		 * THe longitude
+		 **/
 		private double longitude;
-		/** The location manager **/
+		/**
+		 * The location manager
+		 **/
 		private LocationManager locationManager;
 
 		@Override

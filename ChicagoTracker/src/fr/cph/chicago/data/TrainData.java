@@ -74,8 +74,8 @@ public class TrainData {
 	 * Constructor
 	 */
 	public TrainData() {
-		this.stations = new SparseArray<Station>();
-		this.stops = new SparseArray<Stop>();
+		this.stations = new SparseArray<>();
+		this.stops = new SparseArray<>();
 	}
 
 	/**
@@ -186,8 +186,7 @@ public class TrainData {
 	 * @return a list of station
 	 */
 	public final List<Station> getStationsForLine(final TrainLine line) {
-		List<Station> res = stationsOrderByLineMap.get(line);
-		return res;
+		return stationsOrderByLineMap.get(line);
 	}
 
 	/**

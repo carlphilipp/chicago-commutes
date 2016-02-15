@@ -58,7 +58,7 @@ public enum TrainLine {
 	 * @param color
 	 *            the color
 	 */
-	private TrainLine(final String text, final String name, final String withLine, final int color) {
+	TrainLine(final String text, final String name, final String withLine, final int color) {
 		this.text = text;
 		this.name = name;
 		this.withLine = withLine;

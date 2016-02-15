@@ -50,8 +50,8 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,18 +63,23 @@ import java.util.List;
  * @version 1
  */
 public final class BusAdapter extends BaseAdapter {
-	/** Main activity **/
+	/**
+	 * Main activity
+	 **/
 	private MainActivity mainActivity;
-	/** Bus data **/
+	/**
+	 * Bus data
+	 **/
 	private List<BusRoute> busRoutes;
-	/** Layout that you can use as a black fade background **/
+	/**
+	 * Layout that you can use as a black fade background
+	 **/
 	private FrameLayout firstLayout;
 
 	/**
 	 * Constructor
 	 *
-	 * @param activity
-	 *            the main activity
+	 * @param activity the main activity
 	 */
 	public BusAdapter(final MainActivity activity) {
 		this.mainActivity = activity;
@@ -177,7 +182,9 @@ public final class BusAdapter extends BaseAdapter {
 	 */
 	private class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 
-		/** Bus route **/
+		/**
+		 * Bus route
+		 **/
 		private BusRoute busRoute;
 		/** **/
 		private LinearLayout convertView;
@@ -189,7 +196,7 @@ public final class BusAdapter extends BaseAdapter {
 			CtaConnect connect = CtaConnect.getInstance();
 			BusDirections busDirections = null;
 			try {
-				MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
+				MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
 				busRoute = (BusRoute) params[0];
 				reqParams.put("rt", busRoute.getId());
 				Xml xml = new Xml();

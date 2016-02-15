@@ -18,6 +18,7 @@ package fr.cph.chicago.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
 import java.util.ArrayList;
@@ -104,13 +105,13 @@ public class Station implements Comparable<Station>, Parcelable {
 	@Override
 	public final String toString() {
 		StringBuilder stb = new StringBuilder();
-		stb.append("[Id=" + id);
-		stb.append(";name=" + name);
+		stb.append("[Id=").append(id);
+		stb.append(";name=").append(name);
 		if (stops != null) {
-			stb.append(";stops=" + stops);
+			stb.append(";stops=").append(stops);
 		}
 		if (getLines() != null) {
-			stb.append(";lines=" + getLines());
+			stb.append(";lines=").append(getLines());
 		}
 		stb.append("]");
 		return stb.toString();
@@ -122,7 +123,7 @@ public class Station implements Comparable<Station>, Parcelable {
 	 */
 	public final Set<TrainLine> getLines() {
 		if (stops != null) {
-			Set<TrainLine> lines = new TreeSet<TrainLine>();
+			Set<TrainLine> lines = new TreeSet<>();
 			for (Stop stop : stops) {
 				for (TrainLine tl : stop.getLines()) {
 					lines.add(tl);
@@ -135,7 +136,7 @@ public class Station implements Comparable<Station>, Parcelable {
 	}
 
 	public final Map<TrainLine, List<Stop>> getStopByLines() {
-		Map<TrainLine, List<Stop>> map = new TreeMap<TrainLine, List<Stop>>();
+		Map<TrainLine, List<Stop>> map = new TreeMap<>();
 		List<Stop> stops = getStops();
 		for (Stop stop : stops) {
 			List<TrainLine> lines = stop.getLines();
@@ -156,7 +157,7 @@ public class Station implements Comparable<Station>, Parcelable {
 	}
 
 	@Override
-	public final int compareTo(final Station another) {
+	public final int compareTo(@NonNull final Station another) {
 		return this.getName().compareTo(another.getName());
 	}
 

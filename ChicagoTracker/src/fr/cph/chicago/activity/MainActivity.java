@@ -69,8 +69,8 @@ import fr.cph.chicago.fragment.drawer.NavigationDrawerFragment;
 import fr.cph.chicago.json.Json;
 import fr.cph.chicago.task.GlobalConnectTask;
 import fr.cph.chicago.util.Util;
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import java.io.BufferedReader;
@@ -368,9 +368,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		switch (item.getItemId()) {
 		case R.id.action_refresh:
 			if (currentPosition != POSITION_DIVVY && currentPosition != POSITION_NEARBY && currentPosition != POSITION_ALERTS) {
-				MenuItem menuItem = item;
-				menuItem.setActionView(R.layout.progressbar);
-				menuItem.expandActionView();
+				item.setActionView(R.layout.progressbar);
+				item.expandActionView();
 
 				SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
 				boolean loadTrain = sharedPref.getBoolean("cta_train", true);
@@ -378,12 +377,12 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
 				boolean loadAlert = sharedPref.getBoolean("cta_alert", true);
 
-				MultiMap<String, String> params = new MultiValueMap<String, String>();
+				MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
 				List<Integer> trainFavorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
 				for (Integer fav : trainFavorites) {
 					params.put("mapid", String.valueOf(fav));
 				}
-				MultiMap<String, String> params2 = new MultiValueMap<String, String>();
+				MultiValuedMap<String, String> params2 = new ArrayListValuedHashMap<>();
 				List<String> busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
 				for (String str : busFavorites) {
 					String[] fav = Util.decodeBusFavorite(str);
@@ -523,7 +522,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			if (versionNamePreferences == null || !versionNamePreferences.equals(versionName)) {
 				SharedPreferences.Editor editor = sharedPref.edit();
 				editor.putString("version.name", versionName);
-				editor.commit();
+				editor.apply();
 
 				final Dialog dialog = new Dialog(this);
 				dialog.setContentView(R.layout.update);
@@ -601,14 +600,14 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			} else {
 				SharedPreferences.Editor editor = sharedPref.edit();
 				editor.putBoolean("cta_alert", false);
-				editor.commit();
+				editor.apply();
 			}
 			if (sharedPref.contains("divvy_bike")) {
 				this.loadBike = sharedPref.getBoolean("divvy_bike", true);
 			} else {
 				SharedPreferences.Editor editor = sharedPref.edit();
 				editor.putBoolean("divvy_bike", false);
-				editor.commit();
+				editor.apply();
 			}
 
 			// Load bus API data

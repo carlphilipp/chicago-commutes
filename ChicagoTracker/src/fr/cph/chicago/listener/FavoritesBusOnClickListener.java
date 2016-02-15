@@ -42,7 +42,6 @@ import fr.cph.chicago.util.Util;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -105,7 +104,7 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 				StringBuilder sb = new StringBuilder();
 				sb.append("Open details");
 				if (entrySet.size() > 1) {
-					sb.append(" (" + entry.getKey() + ")");
+					sb.append(" (").append(entry.getKey()).append(")");
 				}
 				values.add(sb.toString());
 			}
@@ -114,9 +113,9 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 				busArrivals.addAll(arrivals);
 				for (BusArrival arrival : arrivals) {
 					StringBuilder sb = new StringBuilder();
-					sb.append("Follow bus - " + arrival.getTimeLeftDueDelay());
+					sb.append("Follow bus - ").append(arrival.getTimeLeftDueDelay());
 					if (entrySet.size() > 1) {
-						sb.append(" (" + entry.getKey() + ")");
+						sb.append(" (").append(entry.getKey()).append(")");
 					}
 					values.add(sb.toString());
 				}
@@ -159,7 +158,7 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 						}
 					}
 					if (position == i) {
-						Set<String> bounds = new HashSet<String>();
+						Set<String> bounds = new HashSet<>();
 						for (Entry<String, List<BusArrival>> stringListEntry : mapBusArrivals.entrySet()) {
 							bounds.add(stringListEntry.getKey());
 						}

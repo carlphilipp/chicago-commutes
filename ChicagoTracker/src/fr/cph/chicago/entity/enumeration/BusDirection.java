@@ -37,7 +37,7 @@ public enum BusDirection {
 	 * @param text
 	 *            the text
 	 */
-	private BusDirection(String text) {
+	BusDirection(String text) {
 		this.text = text;
 	}
 

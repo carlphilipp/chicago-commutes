@@ -48,8 +48,8 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import java.io.IOException;
@@ -249,12 +249,9 @@ public class BusActivity extends Activity {
 			// overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 			return true;
 		case R.id.action_refresh:
-
 			// Load top bar animation
-			MenuItem menuItem = item;
-			menuItem.setActionView(R.layout.progressbar);
-			menuItem.expandActionView();
-
+			item.setActionView(R.layout.progressbar);
+			item.expandActionView();
 			// Load data
 			new LoadData().execute();
 			return true;
@@ -336,7 +333,7 @@ public class BusActivity extends Activity {
 
 		@Override
 		protected List<BusArrival> doInBackground(final Void... params) {
-			MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
+			MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
 			reqParams.put("rt", busRouteId);
 			reqParams.put("stpid", String.valueOf(busStopId));
 			CtaConnect connect = CtaConnect.getInstance();

@@ -104,7 +104,7 @@ public class GStreetViewConnect {
 	 * @return a drawable map
 	 * @throws IOException
 	 */
-	private Drawable connectUrl(final String address) throws IOException {
+	private Drawable connectUrl(final String address) {
 		Log.v(TAG, "Address: " + address);
 		try {
 			InputStream is = (InputStream) new URL(address).getContent();

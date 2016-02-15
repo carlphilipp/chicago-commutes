@@ -337,15 +337,12 @@ public final class NearbyAdapter extends BaseAdapter {
 					tlView.setLayoutParams(paramsTextView);
 					llh.addView(tlView);
 
-					final String key = entry.getKey();
-					final List<BusArrival> value = entry.getValue();
+					final String key2 = entry.getKey();
+					final List<BusArrival> buses = entry.getValue();
 
 					LinearLayout stopLayout = new LinearLayout(context);
 					stopLayout.setOrientation(LinearLayout.VERTICAL);
 					stopLayout.setPadding(line1PaddingColor, 0, 0, 0);
-
-					String key2 = key;
-					List<BusArrival> buses = value;
 
 					LinearLayout boundLayout = new LinearLayout(context);
 					boundLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -370,8 +367,8 @@ public final class NearbyAdapter extends BaseAdapter {
 				}
 			}
 		} else {
-			int indice = position - (stations.size() + busStops.size());
-			final BikeStation bikeStation = (BikeStation) bikeStations.get(indice);
+			int index = position - (stations.size() + busStops.size());
+			final BikeStation bikeStation = bikeStations.get(index);
 
 			LinearLayout favoritesData = (LinearLayout) convertView.findViewById(R.id.nearby_results);
 

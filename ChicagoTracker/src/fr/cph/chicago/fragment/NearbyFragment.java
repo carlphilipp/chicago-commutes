@@ -81,8 +81,8 @@ import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.json.Json;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -97,29 +97,53 @@ import java.util.Map;
  * @version 1
  */
 public class NearbyFragment extends Fragment {
-	/** Tag **/
+	/**
+	 * Tag
+	 **/
 	private static final String TAG = "NearbyFragment";
-	/** The fragment argument representing the section number for this fragment. **/
+	/**
+	 * The fragment argument representing the section number for this fragment.
+	 **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
-	/** The main activity **/
+	/**
+	 * The main activity
+	 **/
 	private MainActivity mainActivity;
-	/** The map fragment from google api **/
+	/**
+	 * The map fragment from google api
+	 **/
 	private MapFragment mapFragment;
-	/** The load layout **/
+	/**
+	 * The load layout
+	 **/
 	private View loadLayout;
-	/** The list layout **/
+	/**
+	 * The list layout
+	 **/
 	private RelativeLayout nearbyContainer;
-	/** The map **/
+	/**
+	 * The map
+	 **/
 	private GoogleMap googleMap;
-	/** The adapter **/
+	/**
+	 * The adapter
+	 **/
 	private NearbyAdapter nearbyAdapter;
-	/** The list view **/
+	/**
+	 * The list view
+	 **/
 	private ListView listView;
-	/** The only check box **/
+	/**
+	 * The only check box
+	 **/
 	private CheckBox checkBox;
-	/** Hide empty stations/stops **/
+	/**
+	 * Hide empty stations/stops
+	 **/
 	private boolean hideStationsStops;
-	/** The Chicago position **/
+	/**
+	 * The Chicago position
+	 **/
 	public static final LatLng CHICAGO = new LatLng(41.8819, -87.6278);
 
 	/**
@@ -214,7 +238,6 @@ public class NearbyFragment extends Fragment {
 
 	/**
 	 * Load error
-	 *
 	 */
 	public final void displayError(final TrackerException exceptionToBeThrown) {
 		DataHolder.getInstance().setTrainData(null);
@@ -232,17 +255,29 @@ public class NearbyFragment extends Fragment {
 	 */
 	private class LoadArrivals extends AsyncTask<List<?>, Void, Void> {
 
-		/** Bus arrival map **/
+		/**
+		 * Bus arrival map
+		 **/
 		private SparseArray<Map<String, List<BusArrival>>> busArrivalsMap;
-		/** Train arrivals **/
+		/**
+		 * Train arrivals
+		 **/
 		private SparseArray<TrainArrival> trainArrivals;
-		/** Bus stops **/
+		/**
+		 * Bus stops
+		 **/
 		private List<BusStop> busStops;
-		/** Stations **/
+		/**
+		 * Stations
+		 **/
 		private List<Station> stations;
-		/** List of bike stations result **/
+		/**
+		 * List of bike stations result
+		 **/
 		private List<BikeStation> bikeStationsRes;
-		/** List of bike stations result **/
+		/**
+		 * List of bike stations result
+		 **/
 		private List<BikeStation> bikeStationsTemp;
 
 		@SuppressWarnings("unchecked")
@@ -271,14 +306,13 @@ public class NearbyFragment extends Fragment {
 					// Create
 					tempMap = busArrivalsMap.get(busStop.getId(), null);
 					if (tempMap == null) {
-						tempMap = new HashMap<String, List<BusArrival>>();
+						tempMap = new HashMap<>();
 						busArrivalsMap.put(busStop.getId(), tempMap);
 					}
 
 					// Buses
 					try {
-
-						MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
+						MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
 						reqParams.put("stpid", busStop.getId().toString());
 
 						String xmlRes = cta.connect(CtaRequestType.BUS_ARRIVALS, reqParams);
@@ -306,7 +340,7 @@ public class NearbyFragment extends Fragment {
 				// Train
 				for (Station station : stations) {
 					try {
-						MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
+						MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
 						reqParams.put("mapid", String.valueOf(station.getId()));
 						String xmlRes = cta.connect(CtaRequestType.TRAIN_ARRIVALS, reqParams);
 						Xml xml = new Xml();
@@ -383,7 +417,6 @@ public class NearbyFragment extends Fragment {
 	 * Load nearby data
 	 *
 	 * @author Carl-Philipp Harmant
-	 *
 	 */
 	private class LoadNearby extends AsyncTask<Void, Void, Void> implements LocationListener {
 
@@ -395,21 +428,37 @@ public class NearbyFragment extends Fragment {
 		private boolean isGPSEnabled = false;
 		// flag for network status
 		private boolean isNetworkEnabled = false;
-		/** The location **/
+		/**
+		 * The location
+		 **/
 		private Location location;
-		/** The position **/
+		/**
+		 * The position
+		 **/
 		private Position position;
-		/** The latitude **/
+		/**
+		 * The latitude
+		 **/
 		private double latitude;
-		/** THe longitude **/
+		/**
+		 * THe longitude
+		 **/
 		private double longitude;
-		/** The list of bus stops **/
+		/**
+		 * The list of bus stops
+		 **/
 		private List<BusStop> busStops;
-		/** The list of train stations **/
+		/**
+		 * The list of train stations
+		 **/
 		private List<Station> trainStations;
-		/** List of bike stations **/
+		/**
+		 * List of bike stations
+		 **/
 		private List<BikeStation> bikeStations;
-		/** The location manager **/
+		/**
+		 * The location manager
+		 **/
 		private LocationManager locationManager;
 
 		@Override
@@ -538,8 +587,7 @@ public class NearbyFragment extends Fragment {
 	/**
 	 * Center map
 	 *
-	 * @param positon
-	 *            the position we want to center on
+	 * @param positon the position we want to center on
 	 */
 	private void centerMap(final Position positon) {
 		// Because the fragment can possibly not be ready
@@ -561,14 +609,10 @@ public class NearbyFragment extends Fragment {
 	/**
 	 * Load data
 	 *
-	 * @param buses
-	 *            the list of buses
-	 * @param busArrivals
-	 *            the list of bus arrivals
-	 * @param stations
-	 *            the list of station
-	 * @param trainArrivals
-	 *            the list of train arrival
+	 * @param buses         the list of buses
+	 * @param busArrivals   the list of bus arrivals
+	 * @param stations      the list of station
+	 * @param trainArrivals the list of train arrival
 	 */
 	private void load(final List<BusStop> buses, final SparseArray<Map<String, List<BusArrival>>> busArrivals, final List<Station> stations,
 			final SparseArray<TrainArrival> trainArrivals, final List<BikeStation> bikeStations) {
@@ -614,10 +658,8 @@ public class NearbyFragment extends Fragment {
 	/**
 	 * Add click events to markers
 	 *
-	 * @param busStops
-	 *            the list of bus stops
-	 * @param stations
-	 *            the list of stations
+	 * @param busStops the list of bus stops
+	 * @param stations the list of stations
 	 */
 	private void addClickEventsToMarkers(final List<BusStop> busStops, final List<Station> stations, final List<BikeStation> bikeStations) {
 		googleMap.setOnMarkerClickListener(new OnMarkerClickListener() {
@@ -656,8 +698,7 @@ public class NearbyFragment extends Fragment {
 	/**
 	 * Show progress bar
 	 *
-	 * @param show
-	 *            true or falseO
+	 * @param show true or falseO
 	 */
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
 	private void showProgress(final boolean show) {

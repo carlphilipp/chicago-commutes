@@ -53,8 +53,8 @@ import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.listener.FavoritesTrainOnClickListener;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,17 +67,29 @@ import java.util.Set;
  * @version 1
  */
 public final class SearchAdapter extends BaseAdapter {
-	/** List of train stations **/
+	/**
+	 * List of train stations
+	 **/
 	private List<Station> trains;
-	/** List of buses route **/
+	/**
+	 * List of buses route
+	 **/
 	private List<BusRoute> busRoutes;
-	/** List of bikes stations **/
+	/**
+	 * List of bikes stations
+	 **/
 	private List<BikeStation> bikeStations;
-	/** The context **/
+	/**
+	 * The context
+	 **/
 	private Context context;
-	/** The search activity **/
+	/**
+	 * The search activity
+	 **/
 	private SearchActivity searchActivity;
-	/** The layout that is used to display a fade black background **/
+	/**
+	 * The layout that is used to display a fade black background
+	 **/
 	private FrameLayout container;
 
 	/** The layout that is used to display a fade black background **/
@@ -86,10 +98,8 @@ public final class SearchAdapter extends BaseAdapter {
 	/**
 	 * Constructor
 	 *
-	 * @param activity
-	 *            the search activity
-	 * @param container
-	 *            the layout container
+	 * @param activity  the search activity
+	 * @param container the layout container
 	 */
 	public SearchAdapter(final SearchActivity activity, final FrameLayout container) {
 		this.context = ChicagoTracker.getAppContext();
@@ -215,7 +225,7 @@ public final class SearchAdapter extends BaseAdapter {
 			CtaConnect connect = CtaConnect.getInstance();
 			BusDirections busDirections = null;
 			try {
-				MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
+				MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
 				busRoute = (BusRoute) params[0];
 				reqParams.put("rt", busRoute.getId());
 				Xml xml = new Xml();
@@ -302,10 +312,8 @@ public final class SearchAdapter extends BaseAdapter {
 	/**
 	 * Update data
 	 *
-	 * @param trains
-	 *            the list of train stations
-	 * @param buses
-	 *            the list of bus routes
+	 * @param trains the list of train stations
+	 * @param buses  the list of bus routes
 	 */
 	public void updateData(List<Station> trains, List<BusRoute> buses, List<BikeStation> bikes) {
 		this.trains = trains;

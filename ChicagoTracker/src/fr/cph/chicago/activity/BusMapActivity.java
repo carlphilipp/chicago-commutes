@@ -69,8 +69,8 @@ import fr.cph.chicago.fragment.NearbyFragment;
 import fr.cph.chicago.listener.BusMapOnCameraChangeListener;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
-import org.apache.commons.collections4.MultiMap;
-import org.apache.commons.collections4.map.MultiValueMap;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import java.util.ArrayList;
@@ -84,33 +84,61 @@ import java.util.Map;
  * @version 1
  */
 public class BusMapActivity extends Activity {
-	/** Tag **/
+	/**
+	 * Tag
+	 **/
 	private static final String TAG = "BusMapActivity";
-	/** The map fragment from google api **/
+	/**
+	 * The map fragment from google api
+	 **/
 	private MapFragment mapFragment;
-	/** The map **/
+	/**
+	 * The map
+	 **/
 	private GoogleMap googleMap;
-	/** Bus id **/
+	/**
+	 * Bus id
+	 **/
 	private Integer busId;
-	/** Bus route id **/
+	/**
+	 * Bus route id
+	 **/
 	private String busRouteId;
-	/** Bounds **/
+	/**
+	 * Bounds
+	 **/
 	private String[] bounds;
-	/** Bus Markers **/
+	/**
+	 * Bus Markers
+	 **/
 	private List<Marker> busMarkers;
-	/** Station Markers **/
+	/**
+	 * Station Markers
+	 **/
 	private List<Marker> busStationMarkers;
-	/** Menu **/
+	/**
+	 * Menu
+	 **/
 	private Menu menu;
-	/** Refreshing info window **/
+	/**
+	 * Refreshing info window
+	 **/
 	private boolean refreshingInfoWindow = false;
-	/** Selected marker **/
+	/**
+	 * Selected marker
+	 **/
 	private Marker selectedMarker;
-	/** Map views **/
+	/**
+	 * Map views
+	 **/
 	private Map<Marker, View> views;
-	/** Map status **/
+	/**
+	 * Map status
+	 **/
 	private Map<Marker, Boolean> status;
-	/** On camera change zoom listener **/
+	/**
+	 * On camera change zoom listener
+	 **/
 	private BusMapOnCameraChangeListener busListener;
 
 	private boolean centerMap = true;
@@ -426,9 +454,13 @@ public class BusMapActivity extends Activity {
 	}
 
 	private class LoadBusPosition extends AsyncTask<Boolean, Void, List<Bus>> {
-		/** Allow or not centering the map **/
+		/**
+		 * Allow or not centering the map
+		 **/
 		private boolean centerMap;
-		/** Stop refresh animation or not **/
+		/**
+		 * Stop refresh animation or not
+		 **/
 		private boolean stopRefresh;
 
 		@Override
@@ -437,7 +469,7 @@ public class BusMapActivity extends Activity {
 			stopRefresh = params[1];
 			List<Bus> buses = null;
 			CtaConnect connect = CtaConnect.getInstance();
-			MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
+			MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
 			if (busId != 0) {
 				connectParam.put("vid", String.valueOf(busId));
 			} else {
@@ -484,15 +516,25 @@ public class BusMapActivity extends Activity {
 		private boolean isGPSEnabled = false;
 		// flag for network status
 		private boolean isNetworkEnabled = false;
-		/** The location **/
+		/**
+		 * The location
+		 **/
 		private Location location;
-		/** The position **/
+		/**
+		 * The position
+		 **/
 		private Position position;
-		/** The latitude **/
+		/**
+		 * The latitude
+		 **/
 		private double latitude;
-		/** THe longitude **/
+		/**
+		 * THe longitude
+		 **/
 		private double longitude;
-		/** The location manager **/
+		/**
+		 * The location manager
+		 **/
 		private LocationManager locationManager;
 
 		@Override
@@ -606,10 +648,11 @@ public class BusMapActivity extends Activity {
 	 * Load nearby data
 	 *
 	 * @author Carl-Philipp Harmant
-	 *
 	 */
 	private class LoadPattern extends AsyncTask<Void, Void, List<BusPattern>> {
-		/** List of bus pattern **/
+		/**
+		 * List of bus pattern
+		 **/
 		private List<BusPattern> patterns;
 
 		@Override
@@ -618,7 +661,7 @@ public class BusMapActivity extends Activity {
 			CtaConnect connect = CtaConnect.getInstance();
 			try {
 				if (busId == 0) {
-					MultiMap<String, String> reqParams = new MultiValueMap<String, String>();
+					MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
 					reqParams.put("rt", busRouteId);
 					Xml xml = new Xml();
 					String xmlResult = connect.connect(CtaRequestType.BUS_DIRECTION, reqParams);
@@ -631,7 +674,7 @@ public class BusMapActivity extends Activity {
 							R.string.analytics_action_get_bus_direction, 0);
 				}
 
-				MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
+				MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
 				connectParam.put("rt", busRouteId);
 				String content = connect.connect(CtaRequestType.BUS_PATTERN, connectParam);
 				Xml xml = new Xml();
@@ -639,7 +682,7 @@ public class BusMapActivity extends Activity {
 				for (BusPattern pattern : patterns) {
 					String directionIgnoreCase = pattern.getDirection().toLowerCase(Locale.US);
 					for (String bound : bounds) {
-						if (pattern.getDirection().equals(bound) || bound.toLowerCase(Locale.US).indexOf(directionIgnoreCase) != -1) {
+						if (pattern.getDirection().equals(bound) || bound.toLowerCase(Locale.US).contains(directionIgnoreCase)) {
 							this.patterns.add(pattern);
 						}
 					}
@@ -684,7 +727,7 @@ public class BusMapActivity extends Activity {
 			List<BusArrival> arrivals = new ArrayList<>();
 			try {
 				CtaConnect connect = CtaConnect.getInstance();
-				MultiMap<String, String> connectParam = new MultiValueMap<String, String>();
+				MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
 				connectParam.put("vid", busId);
 				String content = connect.connect(CtaRequestType.BUS_ARRIVALS, connectParam);
 				Xml xml = new Xml();

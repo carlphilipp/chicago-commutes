@@ -118,7 +118,7 @@ public class BikeStationActivity extends Activity {
 			this.isFavorite = isFavorite();
 
 			TextView textView = (TextView) findViewById(R.id.activity_bike_station_station_name);
-			textView.setText(bikeStation.getName().toString());
+			textView.setText(bikeStation.getName());
 
 			streetViewImage = (ImageView) findViewById(R.id.activity_bike_station_streetview_image);
 
@@ -223,9 +223,8 @@ public class BikeStationActivity extends Activity {
 			finish();
 			return true;
 		case R.id.action_refresh:
-			MenuItem menuItem = item;
-			menuItem.setActionView(R.layout.progressbar);
-			menuItem.expandActionView();
+			item.setActionView(R.layout.progressbar);
+			item.expandActionView();
 
 			new DivvyAsyncTask().execute();
 			return true;
