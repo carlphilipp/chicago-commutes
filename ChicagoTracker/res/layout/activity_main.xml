@@ -32,6 +32,45 @@
             android:layout_height="match_parent">
 
         <include layout="@layout/app_bar"/>
+
+        <TextView
+                android:id="@+id/no_fav"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="35dp"
+                android:text="@string/no_fav"
+                android:textIsSelectable="false"
+                android:gravity="center_horizontal"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
+        <TextView
+                android:id="@+id/no_fav2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/add_fav"
+                android:textIsSelectable="false"
+                android:gravity="center_horizontal"
+                android:paddingTop="15dp"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/add_fav2"
+                android:textIsSelectable="false"
+                android:gravity="center_horizontal"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+        <ListView
+                android:id="@+id/favorites_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:dividerHeight="1dp"
+                android:listSelector="@android:color/transparent" >
+        </ListView>
     </LinearLayout>
 
     <!--Navigation Drawer-->

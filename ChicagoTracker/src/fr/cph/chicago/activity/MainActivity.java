@@ -16,6 +16,7 @@
 
 package fr.cph.chicago.activity;
 
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -25,6 +26,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.PersistableBundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -59,11 +61,15 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+	/** Favorites fragment **/
+	private FavoritesFragment mFavoritesFragment;
+
 	private Toolbar toolbar;
 	private NavigationView mDrawer;
 	private DrawerLayout mDrawerLayout;
 	private ActionBarDrawerToggle drawerToggle;
 	private int mSelectedId;
+	private CharSequence title;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		mSelectedId = savedInstanceState == null ? R.id.navigation_item_1 : savedInstanceState.getInt("SELECTED_ID");
 		itemSelection(mSelectedId);
 
+		title = getTitle();
 	}
 
 	private void setToolbar() {
@@ -97,42 +104,49 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	}
 
 	private void itemSelection(int mSelectedId) {
-
 		switch (mSelectedId) {
 
 		case R.id.navigation_item_1:
+			title = getString(R.string.favorites);
 			mDrawerLayout.closeDrawer(GravityCompat.START);
 			break;
 
 		case R.id.navigation_item_2:
+			title = getString(R.string.train);
 			mDrawerLayout.closeDrawer(GravityCompat.START);
 			break;
 
 		case R.id.navigation_item_3:
+			title = getString(R.string.bus);
 			mDrawerLayout.closeDrawer(GravityCompat.START);
 			break;
 
 		case R.id.navigation_item_4:
+			title = getString(R.string.divvy);
 			mDrawerLayout.closeDrawer(GravityCompat.START);
 			break;
 
 		case R.id.navigation_item_5:
+			title = getString(R.string.nearby);
 			mDrawerLayout.closeDrawer(GravityCompat.START);
 			break;
 
 		case R.id.navigation_item_6:
+			title = getString(R.string.alerts);
 			mDrawerLayout.closeDrawer(GravityCompat.START);
 			break;
 
 		case R.id.navigation_item_7:
+			title = getString(R.string.map);
 			mDrawerLayout.closeDrawer(GravityCompat.START);
 			break;
 
 		case R.id.navigation_item_8:
+			title = getString(R.string.settings);
 			mDrawerLayout.closeDrawer(GravityCompat.START);
 			break;
-
 		}
+		toolbar.setTitle(title);
 	}
 
 	@Override
@@ -194,10 +208,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	 * Settings fragment
 	 **/
 	private SettingsFragment settingsFragment;
-	/**
-	 * Title
-	 **/
-	private CharSequence title;
 	/**
 	 * Menu
 	 **/
