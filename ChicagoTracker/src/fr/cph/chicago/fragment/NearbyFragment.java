@@ -22,7 +22,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.support.v4.app.Fragment;
-import android.app.FragmentManager;
+import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -52,6 +52,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -112,7 +113,7 @@ public class NearbyFragment extends Fragment {
 	/**
 	 * The map fragment from google api
 	 **/
-	private MapFragment mapFragment;
+	private SupportMapFragment mapFragment;
 	/**
 	 * The load layout
 	 **/
@@ -212,14 +213,14 @@ public class NearbyFragment extends Fragment {
 	@Override
 	public final void onStart() {
 		super.onStart();
-//		FragmentManager fm = getFragmentManager();
-//		mapFragment = (MapFragment) fm.findFragmentById(R.id.map);
-//		GoogleMapOptions options = new GoogleMapOptions();
-//		CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 7, 0, 0);
-//		options.camera(camera);
-//		mapFragment = MapFragment.newInstance(options);
-//		mapFragment.setRetainInstance(true);
-//		fm.beginTransaction().replace(R.id.map, mapFragment).commit();
+		FragmentManager fm = mainActivity.getSupportFragmentManager();
+		mapFragment = (SupportMapFragment) fm.findFragmentById(R.id.map);
+		GoogleMapOptions options = new GoogleMapOptions();
+		CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 7, 0, 0);
+		options.camera(camera);
+		mapFragment = SupportMapFragment.newInstance(options);
+		mapFragment.setRetainInstance(true);
+		fm.beginTransaction().replace(R.id.map, mapFragment).commit();
 	}
 
 	@Override

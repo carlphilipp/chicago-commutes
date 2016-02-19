@@ -179,27 +179,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			mDrawerLayout.closeDrawer(GravityCompat.START);
 			break;
 
-		case R.id.navigation_alert:
-			title = getString(R.string.alerts);
-			if (mapFragment == null) {
-				mapFragment = MapFragment.newInstance(mSelectedId + 1);
-			}
-			if (!this.isFinishing()) {
-				fragmentManager.beginTransaction().replace(R.id.container, mapFragment).commit();
-			}
-			mDrawerLayout.closeDrawer(GravityCompat.START);
-			break;
-
-		case R.id.navigation_map:
-			title = getString(R.string.map);
-			if (nearbyFragment == null) {
-				nearbyFragment = NearbyFragment.newInstance(mSelectedId + 1);
-			}
-			if (!this.isFinishing()) {
-				fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
-			}
-			mDrawerLayout.closeDrawer(GravityCompat.START);
-			break;
+//		case R.id.navigation_alert:
+//			title = getString(R.string.alerts);
+//			if (mapFragment == null) {
+//				mapFragment = MapFragment.newInstance(mSelectedId + 1);
+//			}
+//			if (!this.isFinishing()) {
+//				fragmentManager.beginTransaction().replace(R.id.container, mapFragment).commit();
+//			}
+//			mDrawerLayout.closeDrawer(GravityCompat.START);
+//			break;
+//
+//		case R.id.navigation_map:
+//			title = getString(R.string.map);
+//			if (nearbyFragment == null) {
+//				nearbyFragment = NearbyFragment.newInstance(mSelectedId + 1);
+//			}
+//			if (!this.isFinishing()) {
+//				fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
+//			}
+//			mDrawerLayout.closeDrawer(GravityCompat.START);
+//			break;
 
 		case R.id.navigation_settings:
 			title = getString(R.string.settings);
