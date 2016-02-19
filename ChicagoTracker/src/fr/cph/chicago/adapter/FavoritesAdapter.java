@@ -397,7 +397,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 			} else {
 				final BikeStation bikeStation = (BikeStation) object;
 				LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				convertView = vi.inflate(R.layout.list_favorites_bike, parent);
+				convertView = vi.inflate(R.layout.list_favorites_bike, null);
 				TextView bikeStationName = (TextView) convertView.findViewById(R.id.bike_station_name);
 				bikeStationName.setText(bikeStation.getName());
 

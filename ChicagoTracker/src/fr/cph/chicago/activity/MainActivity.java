@@ -119,15 +119,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 	}
 
-	private void itemSelection(int mSelectedId) {
+	private void itemSelection(int position) {
 		FragmentManager fragmentManager = getSupportFragmentManager();
+		currentPosition = position;
 
-		switch (mSelectedId) {
+		switch (position) {
 
 		case R.id.navigation_favorites:
 			title = getString(R.string.favorites);
 			if (mFavoritesFragment == null) {
-				mFavoritesFragment = FavoritesFragment.newInstance(mSelectedId + 1);
+				mFavoritesFragment = FavoritesFragment.newInstance(position + 1);
 			}
 			if (!this.isFinishing()) {
 				fragmentManager.beginTransaction().replace(R.id.container, mFavoritesFragment).commit();
@@ -138,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		case R.id.navigation_train:
 			title = getString(R.string.train);
 			if (mTrainFragment == null) {
-				mTrainFragment = TrainFragment.newInstance(mSelectedId + 1);
+				mTrainFragment = TrainFragment.newInstance(position + 1);
 			}
 			if (!this.isFinishing()) {
 				fragmentManager.beginTransaction().replace(R.id.container, mTrainFragment).commit();
@@ -149,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		case R.id.navigation_bus:
 			title = getString(R.string.bus);
 			if (busFragment == null) {
-				busFragment = BusFragment.newInstance(mSelectedId + 1);
+				busFragment = BusFragment.newInstance(position + 1);
 			}
 			if (!this.isFinishing()) {
 				fragmentManager.beginTransaction().replace(R.id.container, busFragment).commit();
@@ -160,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		case R.id.navigation_bike:
 			title = getString(R.string.divvy);
 			if (bikeFragment == null) {
-				bikeFragment = BikeFragment.newInstance(mSelectedId + 1);
+				bikeFragment = BikeFragment.newInstance(position + 1);
 			}
 			if (!this.isFinishing()) {
 				fragmentManager.beginTransaction().replace(R.id.container, bikeFragment).commit();
@@ -171,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		case R.id.navigation_nearby:
 			title = getString(R.string.nearby);
 			if (nearbyFragment == null) {
-				nearbyFragment = NearbyFragment.newInstance(mSelectedId + 1);
+				nearbyFragment = NearbyFragment.newInstance(position + 1);
 			}
 			if (!this.isFinishing()) {
 				fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
@@ -179,35 +180,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			mDrawerLayout.closeDrawer(GravityCompat.START);
 			break;
 
-//		case R.id.navigation_alert:
-//			title = getString(R.string.alerts);
-//			if (mapFragment == null) {
-//				mapFragment = MapFragment.newInstance(mSelectedId + 1);
-//			}
-//			if (!this.isFinishing()) {
-//				fragmentManager.beginTransaction().replace(R.id.container, mapFragment).commit();
-//			}
-//			mDrawerLayout.closeDrawer(GravityCompat.START);
-//			break;
-//
-//		case R.id.navigation_map:
-//			title = getString(R.string.map);
-//			if (nearbyFragment == null) {
-//				nearbyFragment = NearbyFragment.newInstance(mSelectedId + 1);
-//			}
-//			if (!this.isFinishing()) {
-//				fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
-//			}
-//			mDrawerLayout.closeDrawer(GravityCompat.START);
-//			break;
-
 		case R.id.navigation_settings:
 			title = getString(R.string.settings);
 			if (settingsFragment == null) {
-				//settingsFragment = SettingsFragment.newInstance(mSelectedId + 1);
+				settingsFragment = SettingsFragment.newInstance(position + 1);
 			}
 			if (!this.isFinishing()) {
-				//fragmentManager.beginTransaction().replace(R.id.container, settingsFragment).commit();
+				fragmentManager.beginTransaction().replace(R.id.container, settingsFragment).commit();
 			}
 			mDrawerLayout.closeDrawer(GravityCompat.START);
 			break;
@@ -429,20 +408,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			}
 
 			// Load alert API data
-			if (loadAlert) {
-				try {
-					this.alertData = AlertData.getInstance();
-					this.alertData.loadGeneralAlerts();
-					Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_alert,
-							R.string.analytics_action_get_alert_general, 0);
-					publishProgress();
-				} catch (ParserException | ConnectException e) {
-					Log.e(TAG, e.getMessage(), e);
-				}
-			}
+//			if (loadAlert) {
+//				try {
+//					this.alertData = AlertData.getInstance();
+//					this.alertData.loadGeneralAlerts();
+//					Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_alert,
+//							R.string.analytics_action_get_alert_general, 0);
+//					publishProgress();
+//				} catch (ParserException | ConnectException e) {
+//					Log.e(TAG, e.getMessage(), e);
+//				}
+//			}
 
 			// Load divvy
-			this.bikeStations = new ArrayList<BikeStation>();
+			this.bikeStations = new ArrayList<>();
 			if (loadBike) {
 				try {
 					Json json = new Json();
@@ -458,6 +437,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				}
 			}
 			return null;
+		}
+
+		@Override
+		protected final void onProgressUpdate(Void... progress) {
+			startRefreshAnimation();
+		}
+
+		@Override
+		protected final void onPostExecute(final Void result) {
+			// Put data into data holder
+			DataHolder dataHolder = DataHolder.getInstance();
+			dataHolder.setBusData(busData);
+			dataHolder.setAlertData(alertData);
+
+			if (loadBike) {
+				getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
+				onNewIntent(getIntent());
+				if (mFavoritesFragment != null) {
+					mFavoritesFragment.setBikeStations(bikeStations);
+				}
+			}
+			if (currentPosition == POSITION_BUS && busFragment != null) {
+				busFragment.update();
+			}
+			stopRefreshAnimation();
 		}
 
 	}

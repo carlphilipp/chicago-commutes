@@ -18,24 +18,28 @@ package fr.cph.chicago.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.preference.PreferenceFragment;
+import android.support.v7.preference.PreferenceFragmentCompat;
 import android.view.Menu;
 import android.view.MenuInflater;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.util.Util;
 
-public class SettingsFragment extends PreferenceFragment {
-	/** The fragment argument representing the section number for this fragment. **/
+public class SettingsFragment extends PreferenceFragmentCompat {
+
+	/**
+	 * The fragment argument representing the section number for this fragment.
+	 **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
-	/** The main activity **/
+	/**
+	 * The main activity
+	 **/
 	private MainActivity mainActivity;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
 	 *
-	 * @param sectionNumber
-	 *            the section number
+	 * @param sectionNumber the section number
 	 * @return the fragment
 	 */
 	public static SettingsFragment newInstance(final int sectionNumber) {
@@ -63,16 +67,20 @@ public class SettingsFragment extends PreferenceFragment {
 	}
 
 	@Override
+	public void onCreatePreferences(Bundle bundle, String s) {
+	}
+
+	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
 	@Override
 	public void onPrepareOptionsMenu(Menu menu) {
-		for (int i = 0; i <= menu.size(); i++) {
-			int id = menu.getItem(0).getItemId();
-			menu.removeItem(id);
-		}
+//		for (int i = 0; i <= menu.size(); i++) {
+//			int id = menu.getItem(0).getItemId();
+//			menu.removeItem(id);
+//		}
 		super.onPrepareOptionsMenu(menu);
 	}
 }

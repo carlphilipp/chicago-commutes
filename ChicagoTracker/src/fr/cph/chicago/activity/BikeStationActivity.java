@@ -146,7 +146,7 @@ public class BikeStationActivity extends Activity {
 
 			setValue();
 
-			getActionBar().setDisplayHomeAsUpEnabled(true);
+//			getActionBar().setDisplayHomeAsUpEnabled(true);
 		}
 	}
 
@@ -211,9 +211,9 @@ public class BikeStationActivity extends Activity {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main_no_search, menu);
 
-		MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-		refreshMenuItem.setActionView(R.layout.progressbar);
-		refreshMenuItem.expandActionView();
+//		MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+//		refreshMenuItem.setActionView(R.layout.progressbar);
+//		refreshMenuItem.expandActionView();
 
 		return true;
 	}
@@ -255,9 +255,9 @@ public class BikeStationActivity extends Activity {
 		this.bikeStation = station;
 		// setValue(bikeAvail);
 		setValue();
-		MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-		refreshMenuItem.collapseActionView();
-		refreshMenuItem.setActionView(null);
+//		MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+//		refreshMenuItem.collapseActionView();
+//		refreshMenuItem.setActionView(null);
 	}
 
 	private class DivvyAsyncTask extends AsyncTask<Void, Void, List<BikeStation>> {
@@ -376,9 +376,9 @@ public class BikeStationActivity extends Activity {
 					.getString(R.string.station_activity_street_view));
 
 			if (menu != null) {
-				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-				refreshMenuItem.collapseActionView();
-				refreshMenuItem.setActionView(null);
+//				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+//				refreshMenuItem.collapseActionView();
+//				refreshMenuItem.setActionView(null);
 			}
 		}
 	}
