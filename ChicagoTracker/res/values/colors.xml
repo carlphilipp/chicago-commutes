@@ -31,7 +31,7 @@
 
 	<color name="primaryColor">#2196f3</color>
 	<color name="primaryColorDark">#1976d2</color>
-	<color name="colorAccent">#4CAF50</color>
+	<color name="colorAccent">#2196f3</color>
 	<color name="colorTextPrimary">#212121</color>
 	<color name="colorTextSecondary">#727272</color>
 </resources>

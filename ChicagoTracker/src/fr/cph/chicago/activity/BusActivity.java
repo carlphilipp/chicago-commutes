@@ -235,9 +235,9 @@ public class BusActivity extends Activity {
 		actionBar.setTitle("Bus");
 
 		// Load top bar animation
-		MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-		refreshMenuItem.setActionView(R.layout.progressbar);
-		refreshMenuItem.expandActionView();
+//		MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+//		refreshMenuItem.setActionView(R.layout.progressbar);
+//		refreshMenuItem.expandActionView();
 
 		return true;
 	}

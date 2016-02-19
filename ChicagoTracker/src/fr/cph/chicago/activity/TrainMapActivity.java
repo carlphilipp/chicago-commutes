@@ -160,7 +160,7 @@ public class TrainMapActivity extends Activity {
 			status = new HashMap<>();
 			trainListener = new TrainMapOnCameraChangeListener();
 
-			getActionBar().setDisplayHomeAsUpEnabled(true);
+//			getActionBar().setDisplayHomeAsUpEnabled(true);
 
 			setTitle("Map - " + TrainLine.fromXmlString(line).toString());
 

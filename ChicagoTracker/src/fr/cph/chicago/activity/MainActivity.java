@@ -82,9 +82,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		new LoadData().execute();
-
 		setContentView(R.layout.activity_main);
+
+		new LoadData().execute();
 
 		ChicagoTracker.container = (FrameLayout) findViewById(R.id.container);
 		ChicagoTracker.container.getForeground().setAlpha(0);
