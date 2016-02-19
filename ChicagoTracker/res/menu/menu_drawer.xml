@@ -3,35 +3,35 @@
 	  tools:context="nkdroid.tutorial.navigationview.MainActivity">
 	<group android:checkableBehavior="single">
 		<item
-				android:id="@+id/navigation_item_1"
+				android:id="@+id/navigation_favorites"
 				android:icon="@drawable/ic_action_favorite"
 				android:title="Favorites"/>
 		<item
-				android:id="@+id/navigation_item_2"
+				android:id="@+id/navigation_train"
 				android:icon="@drawable/ic_action_train"
 				android:title="Train"/>
 		<item
-				android:id="@+id/navigation_item_3"
+				android:id="@+id/navigation_bus"
 				android:icon="@drawable/ic_action_bus"
 				android:title="Bus"/>
 		<item
-				android:id="@+id/navigation_item_4"
+				android:id="@+id/navigation_bike"
 				android:icon="@drawable/ic_action_bike"
 				android:title="Divvy"/>
 		<item
-				android:id="@+id/navigation_item_5"
+				android:id="@+id/navigation_nearby"
 				android:icon="@drawable/ic_action_nearby"
 				android:title="Nearby"/>
 		<item
-				android:id="@+id/navigation_item_6"
+				android:id="@+id/navigation_alert"
 				android:icon="@drawable/ic_dialog_alert"
 				android:title="Alerts"/>
 		<item
-				android:id="@+id/navigation_item_7"
+				android:id="@+id/navigation_map"
 				android:icon="@drawable/ic_action_map"
 				android:title="'L' System Map"/>
 		<item
-				android:id="@+id/navigation_item_8"
+				android:id="@+id/navigation_settings"
 				android:icon="@drawable/ic_action_settings"
 				android:title="Settings"/>
 	</group>

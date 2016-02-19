@@ -283,9 +283,9 @@ public class StationActivity extends Activity {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main_no_search, menu);
 
-		MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-		refreshMenuItem.setActionView(R.layout.progressbar);
-		refreshMenuItem.expandActionView();
+//		MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+//		refreshMenuItem.setActionView(R.layout.progressbar);
+//		refreshMenuItem.expandActionView();
 
 		return true;
 	}
@@ -408,9 +408,9 @@ public class StationActivity extends Activity {
 					.getString(R.string.station_activity_street_view));
 
 			if (menu != null) {
-				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-				refreshMenuItem.collapseActionView();
-				refreshMenuItem.setActionView(null);
+//				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+//				refreshMenuItem.collapseActionView();
+//				refreshMenuItem.setActionView(null);
 			}
 			firstLoad = false;
 		}
@@ -486,9 +486,9 @@ public class StationActivity extends Activity {
 		protected final void onProgressUpdate(final Void... values) {
 			// Get menu item and put it to loading mod
 			if (menu != null) {
-				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-				refreshMenuItem.setActionView(R.layout.progressbar);
-				refreshMenuItem.expandActionView();
+//				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+//				refreshMenuItem.setActionView(R.layout.progressbar);
+//				refreshMenuItem.expandActionView();
 			}
 		}
 
@@ -507,9 +507,9 @@ public class StationActivity extends Activity {
 					drawLine3(eta);
 				}
 				if (!firstLoad) {
-					MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-					refreshMenuItem.collapseActionView();
-					refreshMenuItem.setActionView(null);
+//					MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+//					refreshMenuItem.collapseActionView();
+//					refreshMenuItem.setActionView(null);
 				}
 			} else {
 				ChicagoTracker.displayError(StationActivity.this, trackerException);

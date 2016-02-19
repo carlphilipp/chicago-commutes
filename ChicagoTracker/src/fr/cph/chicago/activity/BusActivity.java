@@ -189,7 +189,7 @@ public class BusActivity extends Activity {
 
 			new LoadData().execute();
 
-			getActionBar().setDisplayHomeAsUpEnabled(true);
+//			getActionBar().setDisplayHomeAsUpEnabled(true);
 
 			Util.trackScreen(this, R.string.analytics_bus_details);
 		}
@@ -358,9 +358,9 @@ public class BusActivity extends Activity {
 		protected final void onProgressUpdate(final Void... values) {
 			// Get menu item and put it to loading mod
 			if (menu != null) {
-				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-				refreshMenuItem.setActionView(R.layout.progressbar);
-				refreshMenuItem.expandActionView();
+//				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+//				refreshMenuItem.setActionView(R.layout.progressbar);
+//				refreshMenuItem.expandActionView();
 			}
 		}
 
@@ -374,14 +374,14 @@ public class BusActivity extends Activity {
 			}
 			if (!isFirstLoad) {
 				// Stop refresh animation
-				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-				refreshMenuItem.collapseActionView();
-				refreshMenuItem.setActionView(null);
+//				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+//				refreshMenuItem.collapseActionView();
+//				refreshMenuItem.setActionView(null);
 			} else {
 				setFirstLoad();
-				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-				refreshMenuItem.collapseActionView();
-				refreshMenuItem.setActionView(null);
+//				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+//				refreshMenuItem.collapseActionView();
+//				refreshMenuItem.setActionView(null);
 			}
 		}
 	}
@@ -464,9 +464,9 @@ public class BusActivity extends Activity {
 			});
 
 			// Stop menu refresh animation
-			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-			refreshMenuItem.collapseActionView();
-			refreshMenuItem.setActionView(null);
+//			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+//			refreshMenuItem.collapseActionView();
+//			refreshMenuItem.setActionView(null);
 			setFirstLoad();
 
 		}

@@ -177,7 +177,7 @@ public class BusBoundActivity extends ListActivity {
 				}
 			});
 
-			getActionBar().setDisplayHomeAsUpEnabled(true);
+//			getActionBar().setDisplayHomeAsUpEnabled(true);
 			new BusBoundAsyncTask().execute();
 
 			// Preventing keyboard from moving background when showing up
