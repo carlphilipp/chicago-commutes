@@ -17,60 +17,65 @@
 -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/frameLayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/bg_selector"
-    tools:context=".MainActivity$PlaceholderFragment" >
+				xmlns:tools="http://schemas.android.com/tools"
+				android:id="@+id/frameLayout"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:background="@drawable/bg_selector"
+				tools:context=".MainActivity$PlaceholderFragment">
 
-  <RelativeLayout
-        android:id="@+id/welcome"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" >
+	<RelativeLayout
+			android:id="@+id/welcome"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:visibility="gone">
 
-        <TextView
-            android:id="@+id/no_fav"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:paddingTop="35dp"
-            android:text="@string/no_fav"
-            android:textIsSelectable="false"
-            android:gravity="center_horizontal"
-            android:textSize="25sp"
-            android:textStyle="bold" />
+		<TextView
+				android:id="@+id/no_fav"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_centerHorizontal="true"
+				android:paddingTop="35dp"
+				android:text="@string/no_fav"
+				android:textIsSelectable="false"
+				android:gravity="center_horizontal"
+				android:textSize="25sp"
+				android:textStyle="bold"/>
 
-        <TextView
-            android:id="@+id/no_fav2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/no_fav"
-            android:layout_centerHorizontal="true"
-            android:text="@string/add_fav"
-            android:textIsSelectable="false"
-            android:paddingTop="15dp"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-        
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/no_fav2"
-            android:layout_centerHorizontal="true"
-            android:text="@string/add_fav2"
-            android:textIsSelectable="false"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-    </RelativeLayout>
+		<TextView
+				android:id="@+id/no_fav2"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_below="@+id/no_fav"
+				android:layout_centerHorizontal="true"
+				android:text="@string/add_fav"
+				android:textIsSelectable="false"
+				android:paddingTop="15dp"
+				android:textSize="18sp"
+				android:textStyle="bold"/>
 
-    <ListView
-        android:id="@+id/favorites_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:dividerHeight="1dp"
-        android:listSelector="@android:color/transparent" >
-    </ListView>
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_below="@+id/no_fav2"
+				android:layout_centerHorizontal="true"
+				android:text="@string/add_fav2"
+				android:textIsSelectable="false"
+				android:textSize="16sp"
+				android:textStyle="bold"/>
+	</RelativeLayout>
+
+	<android.support.v4.widget.SwipeRefreshLayout
+			android:id="@+id/activity_main_swipe_refresh_layout"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+		<ListView
+				android:id="@+id/favorites_list"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:dividerHeight="1dp"
+				android:listSelector="@android:color/transparent">
+		</ListView>
+	</android.support.v4.widget.SwipeRefreshLayout>
 
 </RelativeLayout>
