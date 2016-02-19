@@ -258,7 +258,7 @@ public class StationActivity extends Activity {
 				}
 
 			}
-			getActionBar().setDisplayHomeAsUpEnabled(true);
+			//getActionBar().setDisplayHomeAsUpEnabled(true);
 
 			Util.trackScreen(this, R.string.analytics_train_details);
 		}

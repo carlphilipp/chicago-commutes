@@ -16,34 +16,26 @@
 
 package fr.cph.chicago.activity;
 
-import android.app.FragmentManager;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.PersistableBundle;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.widget.FrameLayout;
+import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
-import fr.cph.chicago.connection.DivvyConnect;
 import fr.cph.chicago.data.AlertData;
 import fr.cph.chicago.data.BusData;
-import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BikeStation;
-import fr.cph.chicago.exception.ConnectException;
-import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.fragment.AlertFragment;
 import fr.cph.chicago.fragment.BikeFragment;
 import fr.cph.chicago.fragment.BusFragment;
@@ -53,16 +45,17 @@ import fr.cph.chicago.fragment.NearbyFragment;
 import fr.cph.chicago.fragment.SettingsFragment;
 import fr.cph.chicago.fragment.TrainFragment;
 import fr.cph.chicago.fragment.drawer.NavigationDrawerFragment;
-import fr.cph.chicago.json.Json;
-import fr.cph.chicago.util.Util;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-	/** Favorites fragment **/
+	/**
+	 * Favorites fragment
+	 **/
 	private FavoritesFragment mFavoritesFragment;
+
+	private TrainFragment mTrainFragment;
 
 	private Toolbar toolbar;
 	private NavigationView mDrawer;
@@ -77,6 +70,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 		setContentView(R.layout.activity_main);
 
+		ChicagoTracker.container = (FrameLayout) findViewById(R.id.container);
+		ChicagoTracker.container.getForeground().setAlpha(0);
+
 		setToolbar();
 		initView();
 
@@ -88,6 +84,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		itemSelection(mSelectedId);
 
 		title = getTitle();
+
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		mFavoritesFragment = FavoritesFragment.newInstance(mSelectedId + 1);
+		fragmentManager.beginTransaction().replace(R.id.container, mFavoritesFragment).commit();
 	}
 
 	private void setToolbar() {
@@ -104,45 +104,95 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	}
 
 	private void itemSelection(int mSelectedId) {
+		FragmentManager fragmentManager = getSupportFragmentManager();
+
 		switch (mSelectedId) {
 
 		case R.id.navigation_item_1:
 			title = getString(R.string.favorites);
+			if (mFavoritesFragment == null) {
+				mFavoritesFragment = FavoritesFragment.newInstance(mSelectedId + 1);
+			}
+			if (!this.isFinishing()) {
+				fragmentManager.beginTransaction().replace(R.id.container, mFavoritesFragment).commit();
+			}
 			mDrawerLayout.closeDrawer(GravityCompat.START);
 			break;
 
 		case R.id.navigation_item_2:
 			title = getString(R.string.train);
+			if (mTrainFragment == null) {
+				mTrainFragment = TrainFragment.newInstance(mSelectedId + 1);
+			}
+			if (!this.isFinishing()) {
+				fragmentManager.beginTransaction().replace(R.id.container, mTrainFragment).commit();
+			}
 			mDrawerLayout.closeDrawer(GravityCompat.START);
 			break;
 
 		case R.id.navigation_item_3:
 			title = getString(R.string.bus);
+			if (busFragment == null) {
+				busFragment = BusFragment.newInstance(mSelectedId + 1);
+			}
+			if (!this.isFinishing()) {
+				fragmentManager.beginTransaction().replace(R.id.container, busFragment).commit();
+			}
 			mDrawerLayout.closeDrawer(GravityCompat.START);
 			break;
 
 		case R.id.navigation_item_4:
 			title = getString(R.string.divvy);
+			if (bikeFragment == null) {
+				bikeFragment = BikeFragment.newInstance(mSelectedId + 1);
+			}
+			if (!this.isFinishing()) {
+				fragmentManager.beginTransaction().replace(R.id.container, bikeFragment).commit();
+			}
 			mDrawerLayout.closeDrawer(GravityCompat.START);
 			break;
 
 		case R.id.navigation_item_5:
 			title = getString(R.string.nearby);
+			if (nearbyFragment == null) {
+				nearbyFragment = NearbyFragment.newInstance(mSelectedId + 1);
+			}
+			if (!this.isFinishing()) {
+				fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
+			}
 			mDrawerLayout.closeDrawer(GravityCompat.START);
 			break;
 
 		case R.id.navigation_item_6:
 			title = getString(R.string.alerts);
+			if (mapFragment == null) {
+				mapFragment = MapFragment.newInstance(mSelectedId + 1);
+			}
+			if (!this.isFinishing()) {
+				fragmentManager.beginTransaction().replace(R.id.container, mapFragment).commit();
+			}
 			mDrawerLayout.closeDrawer(GravityCompat.START);
 			break;
 
 		case R.id.navigation_item_7:
 			title = getString(R.string.map);
+			if (nearbyFragment == null) {
+				nearbyFragment = NearbyFragment.newInstance(mSelectedId + 1);
+			}
+			if (!this.isFinishing()) {
+				fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
+			}
 			mDrawerLayout.closeDrawer(GravityCompat.START);
 			break;
 
 		case R.id.navigation_item_8:
 			title = getString(R.string.settings);
+			if (settingsFragment == null) {
+				//settingsFragment = SettingsFragment.newInstance(mSelectedId + 1);
+			}
+			if (!this.isFinishing()) {
+				//fragmentManager.beginTransaction().replace(R.id.container, settingsFragment).commit();
+			}
 			mDrawerLayout.closeDrawer(GravityCompat.START);
 			break;
 		}
@@ -169,7 +219,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		//save selected item so it will remains same even after orientation change
 		outState.putInt("SELECTED_ID", mSelectedId);
 	}
-
 
 	private static final String TAG = "MainActivity";
 	/**
@@ -280,11 +329,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	}
 
 	public final void startRefreshAnimation() {
-//		if (menu != null) {
-//			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-//			refreshMenuItem.setActionView(R.layout.progressbar);
-//			refreshMenuItem.expandActionView();
-//		}
+		//		if (menu != null) {
+		//			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+		//			refreshMenuItem.setActionView(R.layout.progressbar);
+		//			refreshMenuItem.expandActionView();
+		//		}
 	}
 
 	public final void stopRefreshAnimation() {

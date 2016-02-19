@@ -164,8 +164,8 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 				} else {
 					LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-					convertView = vi.inflate(R.layout.list_favorites_train, parent, false);
-					favoritesLayout = (LinearLayout) convertView.findViewById(R.id.favorites_list);
+					convertView = vi.inflate(R.layout.list_favorites_train, null);
+					favoritesLayout = (LinearLayout) convertView.findViewById(R.id.favorites_list_main);
 					layouts.put(stationId, favoritesLayout);
 					views.put(stationId, convertView);
 

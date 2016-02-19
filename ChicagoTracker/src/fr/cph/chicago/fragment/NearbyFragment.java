@@ -21,7 +21,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -212,14 +212,14 @@ public class NearbyFragment extends Fragment {
 	@Override
 	public final void onStart() {
 		super.onStart();
-		FragmentManager fm = getFragmentManager();
-		mapFragment = (MapFragment) fm.findFragmentById(R.id.map);
-		GoogleMapOptions options = new GoogleMapOptions();
-		CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 7, 0, 0);
-		options.camera(camera);
-		mapFragment = MapFragment.newInstance(options);
-		mapFragment.setRetainInstance(true);
-		fm.beginTransaction().replace(R.id.map, mapFragment).commit();
+//		FragmentManager fm = getFragmentManager();
+//		mapFragment = (MapFragment) fm.findFragmentById(R.id.map);
+//		GoogleMapOptions options = new GoogleMapOptions();
+//		CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 7, 0, 0);
+//		options.camera(camera);
+//		mapFragment = MapFragment.newInstance(options);
+//		mapFragment.setRetainInstance(true);
+//		fm.beginTransaction().replace(R.id.map, mapFragment).commit();
 	}
 
 	@Override

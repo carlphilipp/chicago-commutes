@@ -17,7 +17,7 @@
 package fr.cph.chicago.fragment;
 
 import android.app.Activity;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.os.Bundle;
