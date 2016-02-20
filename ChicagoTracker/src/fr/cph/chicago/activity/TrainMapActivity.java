@@ -29,15 +29,19 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -165,9 +169,77 @@ public class TrainMapActivity extends Activity {
 
 			//			getActionBar().setDisplayHomeAsUpEnabled(true);
 
-			setTitle("Map - " + TrainLine.fromXmlString(line).toString());
+			Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+			TrainLine trainLine = TrainLine.fromXmlString(line);
+
+			setToolbarColor(toolbar, trainLine);
+
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+				toolbar.setElevation(4);
+			}
+
+			toolbar.setTitle(trainLine.toString() + " Line");
 
 			Util.trackScreen(this, R.string.analytics_train_map);
+		}
+	}
+
+	private void setToolbarColor(final Toolbar toolbar, final TrainLine trainLine){
+		int backgroundColor = 0;
+		int statusBarColor = 0;
+		int titleColor = 0;
+		switch (trainLine){
+		case BLUE:
+			backgroundColor = R.color.blueLine;
+			statusBarColor = R.color.blueLineDark;
+			titleColor =  R.color.white;
+			break;
+		case BROWN:
+			backgroundColor = R.color.brownLine;
+			statusBarColor = R.color.brownLineDark;
+			titleColor =  R.color.white;
+			break;
+		case GREEN:
+			backgroundColor = R.color.greenLine;
+			statusBarColor = R.color.greenLineDark;
+			titleColor =  R.color.white;
+			break;
+		case ORANGE:
+			backgroundColor = R.color.orangeLine;
+			statusBarColor = R.color.orangeLineDark;
+			titleColor =  R.color.white;
+			break;
+		case PINK:
+			backgroundColor = R.color.pinkLine;
+			statusBarColor = R.color.pinkLineDark;
+			titleColor =  R.color.white;
+			break;
+		case PURPLE:
+			backgroundColor = R.color.purpleLine;
+			statusBarColor = R.color.purpleLineDark;
+			titleColor =  R.color.white;
+			break;
+		case RED:
+			backgroundColor = R.color.redLine;
+			statusBarColor = R.color.redLineDark;
+			titleColor =  R.color.white;
+			break;
+		case YELLOW:
+			backgroundColor = R.color.yellowLine;
+			statusBarColor = R.color.yellowLineDark;
+			titleColor =  R.color.white;
+			break;
+		case NA:
+			backgroundColor = R.color.primaryColor;
+			statusBarColor = R.color.primaryColorDark;
+			titleColor =  R.color.white;
+			break;
+		}
+		toolbar.setBackgroundColor(getResources().getColor(backgroundColor));
+		toolbar.setTitleTextColor(getResources().getColor(titleColor));
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			getWindow().setStatusBarColor(getResources().getColor(statusBarColor));
 		}
 	}
 

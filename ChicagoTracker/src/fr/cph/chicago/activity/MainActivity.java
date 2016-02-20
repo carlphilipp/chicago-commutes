@@ -123,6 +123,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		fragmentManager.beginTransaction().replace(R.id.container, favoritesFragment).commit();
 	}
 
+	private void initView() {
+		mDrawer = (NavigationView) findViewById(R.id.main_drawer);
+		mDrawer.setNavigationItemSelectedListener(this);
+		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+	}
+
 	private void setToolbar() {
 		toolbar = (Toolbar) findViewById(R.id.toolbar);
 		if (toolbar != null) {
@@ -210,12 +216,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 			toolbar.inflateMenu(R.menu.main);
 		}
-	}
-
-	private void initView() {
-		mDrawer = (NavigationView) findViewById(R.id.main_drawer);
-		mDrawer.setNavigationItemSelectedListener(this);
-		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 	}
 
 	private void itemSelection(final int position) {
