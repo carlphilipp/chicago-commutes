@@ -23,8 +23,10 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils.TruncateAt;
 import android.util.Log;
 import android.util.SparseArray;
@@ -259,6 +261,35 @@ public class StationActivity extends Activity {
 
 			}
 			//getActionBar().setDisplayHomeAsUpEnabled(true);
+
+			Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+			toolbar.inflateMenu(R.menu.main);
+			toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
+				@Override
+				public boolean onMenuItemClick(MenuItem item) {
+					MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
+					reqParams.put("mapid", String.valueOf(station.getId()));
+					new LoadData().execute(reqParams);
+
+					return false;
+				}
+			}));
+
+			Util.setToolbarColor(this, toolbar, TrainLine.NA);
+
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+				toolbar.setElevation(4);
+			}
+
+			toolbar.setTitle("Train station");
+			toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+			toolbar.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					finish();
+				}
+			});
 
 			Util.trackScreen(this, R.string.analytics_train_details);
 		}

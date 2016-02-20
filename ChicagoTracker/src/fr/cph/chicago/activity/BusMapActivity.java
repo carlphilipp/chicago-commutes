@@ -198,6 +198,13 @@ public class BusMapActivity extends Activity {
 			}
 
 			toolbar.setTitle(busRouteId);
+			toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+			toolbar.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					finish();
+				}
+			});
 
 			Util.trackScreen(this, R.string.analytics_bus_map);
 		}
