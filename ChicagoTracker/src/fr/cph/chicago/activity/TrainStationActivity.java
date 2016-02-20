@@ -19,6 +19,7 @@ package fr.cph.chicago.activity;
 import android.app.ListActivity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
@@ -27,6 +28,7 @@ import fr.cph.chicago.adapter.TrainAdapter;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.enumeration.TrainLine;
+import fr.cph.chicago.util.Util;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
@@ -67,6 +69,10 @@ public class TrainStationActivity extends ListActivity {
 
 			FrameLayout container = (FrameLayout) findViewById(R.id.container);
 			container.getForeground().setAlpha(0);
+
+			Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+			Util.setToolbarColor(this, toolbar, trainLine);
+			toolbar.setTitle(trainLine.toString() + " Line");
 
 			TrainAdapter ada = new TrainAdapter(trainLine, this, container);
 			setListAdapter(ada);
