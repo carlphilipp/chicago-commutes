@@ -209,7 +209,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			}
 
 			toolbar.inflateMenu(R.menu.main);
-			toolbar.setTitle(R.string.app_name);
 		}
 	}
 
@@ -219,8 +218,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 	}
 
-	private void itemSelection(int position) {
-		FragmentManager fragmentManager = getSupportFragmentManager();
+	private void itemSelection(final int position) {
+		final FragmentManager fragmentManager = getSupportFragmentManager();
 		currentPosition = position;
 
 		switch (position) {
@@ -233,6 +232,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				fragmentManager.beginTransaction().replace(R.id.container, favoritesFragment).commit();
 			}
 			mDrawerLayout.closeDrawer(GravityCompat.START);
+			showMenu();
 			break;
 		case R.id.navigation_train:
 			title = getString(R.string.train);
@@ -243,6 +243,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				fragmentManager.beginTransaction().replace(R.id.container, trainFragment).commit();
 			}
 			mDrawerLayout.closeDrawer(GravityCompat.START);
+			hideMenu();
 			break;
 		case R.id.navigation_bus:
 			title = getString(R.string.bus);
@@ -253,6 +254,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				fragmentManager.beginTransaction().replace(R.id.container, busFragment).commit();
 			}
 			mDrawerLayout.closeDrawer(GravityCompat.START);
+			hideMenu();
 			break;
 		case R.id.navigation_bike:
 			title = getString(R.string.divvy);
@@ -263,6 +265,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				fragmentManager.beginTransaction().replace(R.id.container, bikeFragment).commit();
 			}
 			mDrawerLayout.closeDrawer(GravityCompat.START);
+			hideMenu();
 			break;
 		case R.id.navigation_nearby:
 			title = getString(R.string.nearby);
@@ -273,6 +276,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
 			}
 			mDrawerLayout.closeDrawer(GravityCompat.START);
+			showMenu();
 			break;
 		case R.id.navigation_settings:
 			title = getString(R.string.settings);
@@ -283,9 +287,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				fragmentManager.beginTransaction().replace(R.id.container, settingsFragment).commit();
 			}
 			mDrawerLayout.closeDrawer(GravityCompat.START);
+			hideMenu();
 			break;
 		}
 		toolbar.setTitle(title);
+	}
+
+	private void hideMenu() {
+		if(toolbar.getMenu().getItem(0).isVisible()) {
+			showHideMenu(false);
+		}
+	}
+
+	private void showMenu() {
+		if(!toolbar.getMenu().getItem(0).isVisible()) {
+			showHideMenu(true);
+		}
+	}
+
+	private void showHideMenu(final boolean bool){
+		toolbar.getMenu().getItem(0).setVisible(bool);
 	}
 
 	@Override
