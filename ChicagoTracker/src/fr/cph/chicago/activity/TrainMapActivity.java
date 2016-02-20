@@ -34,14 +34,13 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -91,53 +90,29 @@ import java.util.Map;
  * @version 1
  */
 public class TrainMapActivity extends Activity {
-	/**
-	 * Tag
-	 **/
+
 	private static final String TAG = "TrainMapActivity";
-	/**
-	 * The map fragment from google api
-	 **/
+
 	private MapFragment mapFragment;
-	/**
-	 * The map
-	 **/
+
 	private GoogleMap googleMap;
-	/**
-	 * Line
-	 **/
+
 	private String line;
-	/**
-	 * Bus Markers
-	 **/
+
 	private List<Marker> markers;
-	/**
-	 * Menu
-	 **/
+
 	private Menu menu;
-	/**
-	 * Train data
-	 **/
+
 	private TrainData trainData;
-	/**
-	 * Refreshing info window
-	 **/
+
 	private boolean refreshingInfoWindow = false;
-	/**
-	 * Selected marker
-	 **/
+
 	private Marker selectedMarker;
-	/**
-	 * Map views
-	 **/
+
 	private Map<Marker, View> views;
-	/**
-	 * Map status
-	 **/
+
 	private Map<Marker, Boolean> status;
-	/**
-	 * On camera change zoom listener
-	 **/
+
 	private TrainMapOnCameraChangeListener trainListener;
 
 	private boolean centerMap = true;
@@ -167,13 +142,25 @@ public class TrainMapActivity extends Activity {
 			status = new HashMap<>();
 			trainListener = new TrainMapOnCameraChangeListener();
 
-			//			getActionBar().setDisplayHomeAsUpEnabled(true);
+			//getActionBar().setDisplayHomeAsUpEnabled(true);
 
 			Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
+			toolbar.inflateMenu(R.menu.main);
+			toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
+				@Override
+				public boolean onMenuItemClick(MenuItem item) {
+					Log.e(TAG, "DERP");
+					startRefreshAnimation();
+					new LoadCurrentPosition().execute();
+					new LoadTrainPosition().execute(false, true);
+					return false;
+				}
+			}));
+
 			TrainLine trainLine = TrainLine.fromXmlString(line);
 
-			setToolbarColor(toolbar, trainLine);
+			Util.setToolbarColor(this, toolbar, trainLine);
 
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 				toolbar.setElevation(4);
@@ -182,64 +169,6 @@ public class TrainMapActivity extends Activity {
 			toolbar.setTitle(trainLine.toString() + " Line");
 
 			Util.trackScreen(this, R.string.analytics_train_map);
-		}
-	}
-
-	private void setToolbarColor(final Toolbar toolbar, final TrainLine trainLine){
-		int backgroundColor = 0;
-		int statusBarColor = 0;
-		int titleColor = 0;
-		switch (trainLine){
-		case BLUE:
-			backgroundColor = R.color.blueLine;
-			statusBarColor = R.color.blueLineDark;
-			titleColor =  R.color.white;
-			break;
-		case BROWN:
-			backgroundColor = R.color.brownLine;
-			statusBarColor = R.color.brownLineDark;
-			titleColor =  R.color.white;
-			break;
-		case GREEN:
-			backgroundColor = R.color.greenLine;
-			statusBarColor = R.color.greenLineDark;
-			titleColor =  R.color.white;
-			break;
-		case ORANGE:
-			backgroundColor = R.color.orangeLine;
-			statusBarColor = R.color.orangeLineDark;
-			titleColor =  R.color.white;
-			break;
-		case PINK:
-			backgroundColor = R.color.pinkLine;
-			statusBarColor = R.color.pinkLineDark;
-			titleColor =  R.color.white;
-			break;
-		case PURPLE:
-			backgroundColor = R.color.purpleLine;
-			statusBarColor = R.color.purpleLineDark;
-			titleColor =  R.color.white;
-			break;
-		case RED:
-			backgroundColor = R.color.redLine;
-			statusBarColor = R.color.redLineDark;
-			titleColor =  R.color.white;
-			break;
-		case YELLOW:
-			backgroundColor = R.color.yellowLine;
-			statusBarColor = R.color.yellowLineDark;
-			titleColor =  R.color.white;
-			break;
-		case NA:
-			backgroundColor = R.color.primaryColor;
-			statusBarColor = R.color.primaryColorDark;
-			titleColor =  R.color.white;
-			break;
-		}
-		toolbar.setBackgroundColor(getResources().getColor(backgroundColor));
-		toolbar.setTitleTextColor(getResources().getColor(titleColor));
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			getWindow().setStatusBarColor(getResources().getColor(statusBarColor));
 		}
 	}
 
@@ -329,7 +258,7 @@ public class TrainMapActivity extends Activity {
 		}
 		if (Util.isNetworkAvailable()) {
 			new LoadCurrentPosition().execute();
-			new LoadTrainPosition().execute(new Boolean[] { centerMap, true });
+			new LoadTrainPosition().execute(centerMap, true);
 		} else {
 			Toast.makeText(this, "No network connection detected!", Toast.LENGTH_SHORT).show();
 		}
@@ -347,51 +276,51 @@ public class TrainMapActivity extends Activity {
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
-	@Override
-	public final boolean onCreateOptionsMenu(final Menu menu) {
-		this.menu = menu;
-		getMenuInflater().inflate(R.menu.main_no_search, menu);
-		startRefreshAnimation();
-		return super.onCreateOptionsMenu(menu);
-	}
+	//	@Override
+	//	public final boolean onCreateOptionsMenu(final Menu menu) {
+	//		this.menu = menu;
+	//		getMenuInflater().inflate(R.menu.main_no_search, menu);
+	//		startRefreshAnimation();
+	//		return super.onCreateOptionsMenu(menu);
+	//	}
 
-	@Override
-	public final boolean onOptionsItemSelected(final MenuItem item) {
-		switch (item.getItemId()) {
-		case android.R.id.home:
-			finish();
-			return true;
-		case R.id.action_refresh:
-			startRefreshAnimation();
-			new LoadCurrentPosition().execute();
-			new LoadTrainPosition().execute(new Boolean[] { false, true });
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
+	//	@Override
+	//	public final boolean onOptionsItemSelected(final MenuItem item) {
+	//		switch (item.getItemId()) {
+	//		case android.R.id.home:
+	//			finish();
+	//			return true;
+	//		case R.id.action_refresh:
+	//			startRefreshAnimation();
+	//			new LoadCurrentPosition().execute();
+	//			new LoadTrainPosition().execute(new Boolean[] { false, true });
+	//			return true;
+	//		}
+	//		return super.onOptionsItemSelected(item);
+	//	}
 
 	/**
 	 * Load animation in menu
 	 */
 	private void startRefreshAnimation() {
-		if (menu != null) {
+/*		if (menu != null) {
 			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
 			if (refreshMenuItem.getActionView() == null) {
 				refreshMenuItem.setActionView(R.layout.progressbar);
 				refreshMenuItem.expandActionView();
 			}
-		}
+		}*/
 	}
 
 	/**
 	 * Stop animation in menu
 	 */
 	private void stopRefreshAnimation() {
-		if (menu != null) {
-			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-			refreshMenuItem.collapseActionView();
-			refreshMenuItem.setActionView(null);
-		}
+		//		if (menu != null) {
+		//			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+		//			refreshMenuItem.collapseActionView();
+		//			refreshMenuItem.setActionView(null);
+		//		}
 	}
 
 	/**
@@ -664,12 +593,6 @@ public class TrainMapActivity extends Activity {
 							!= PackageManager.PERMISSION_GRANTED
 							&& ActivityCompat.checkSelfPermission(TrainMapActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
 							!= PackageManager.PERMISSION_GRANTED) {
-						// TODO: Consider calling
-						//    ActivityCompat#requestPermissions
-						// here to request the missing permissions, and then overriding
-						//   public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
-						// to handle the case where the user grants the permission. See the documentation
-						// for ActivityCompat#requestPermissions for more details.
 						ActivityCompat.requestPermissions(TrainMapActivity.this,
 								new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
 						return null;
@@ -691,12 +614,6 @@ public class TrainMapActivity extends Activity {
 								!= PackageManager.PERMISSION_GRANTED
 								&& ActivityCompat.checkSelfPermission(TrainMapActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
 								!= PackageManager.PERMISSION_GRANTED) {
-							// TODO: Consider calling
-							//    ActivityCompat#requestPermissions
-							// here to request the missing permissions, and then overriding
-							//   public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
-							// to handle the case where the user grants the permission. See the documentation
-							// for ActivityCompat#requestPermissions for more details.
 							ActivityCompat.requestPermissions(TrainMapActivity.this,
 									new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
 							return null;
@@ -732,12 +649,6 @@ public class TrainMapActivity extends Activity {
 						!= PackageManager.PERMISSION_GRANTED
 						&& ActivityCompat.checkSelfPermission(TrainMapActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
 						!= PackageManager.PERMISSION_GRANTED) {
-					// TODO: Consider calling
-					//    ActivityCompat#requestPermissions
-					// here to request the missing permissions, and then overriding
-					//   public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
-					// to handle the case where the user grants the permission. See the documentation
-					// for ActivityCompat#requestPermissions for more details.
 					ActivityCompat.requestPermissions(TrainMapActivity.this,
 							new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
 					return;

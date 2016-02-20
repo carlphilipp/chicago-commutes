@@ -21,6 +21,8 @@ import android.content.Context;
 import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
@@ -28,8 +30,10 @@ import android.widget.Toast;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.R;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
+import fr.cph.chicago.entity.enumeration.TrainLine;
 
 import java.io.IOException;
 import java.util.Comparator;
@@ -221,5 +225,63 @@ public class Util {
 		Tracker tracker = ((ChicagoTracker) activity.getApplication()).getTracker();
 		tracker.send(new HitBuilders.EventBuilder().setCategory(activity.getString(category)).setAction(activity.getString(action))
 				.setLabel(activity.getString(label)).setValue(value).build());
+	}
+
+	public static void setToolbarColor(final Activity activity, final Toolbar toolbar, final TrainLine trainLine){
+		int backgroundColor = 0;
+		int statusBarColor = 0;
+		int titleColor = 0;
+		switch (trainLine){
+		case BLUE:
+			backgroundColor = R.color.blueLine;
+			statusBarColor = R.color.blueLineDark;
+			titleColor =  R.color.white;
+			break;
+		case BROWN:
+			backgroundColor = R.color.brownLine;
+			statusBarColor = R.color.brownLineDark;
+			titleColor =  R.color.white;
+			break;
+		case GREEN:
+			backgroundColor = R.color.greenLine;
+			statusBarColor = R.color.greenLineDark;
+			titleColor =  R.color.white;
+			break;
+		case ORANGE:
+			backgroundColor = R.color.orangeLine;
+			statusBarColor = R.color.orangeLineDark;
+			titleColor =  R.color.white;
+			break;
+		case PINK:
+			backgroundColor = R.color.pinkLine;
+			statusBarColor = R.color.pinkLineDark;
+			titleColor =  R.color.white;
+			break;
+		case PURPLE:
+			backgroundColor = R.color.purpleLine;
+			statusBarColor = R.color.purpleLineDark;
+			titleColor =  R.color.white;
+			break;
+		case RED:
+			backgroundColor = R.color.redLine;
+			statusBarColor = R.color.redLineDark;
+			titleColor =  R.color.white;
+			break;
+		case YELLOW:
+			backgroundColor = R.color.yellowLine;
+			statusBarColor = R.color.yellowLineDark;
+			titleColor =  R.color.white;
+			break;
+		case NA:
+			backgroundColor = R.color.primaryColor;
+			statusBarColor = R.color.primaryColorDark;
+			titleColor =  R.color.white;
+			break;
+		}
+		toolbar.setBackgroundColor(activity.getResources().getColor(backgroundColor));
+		toolbar.setTitleTextColor(activity.getResources().getColor(titleColor));
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			activity.getWindow().setStatusBarColor(activity.getResources().getColor(statusBarColor));
+		}
 	}
 }
