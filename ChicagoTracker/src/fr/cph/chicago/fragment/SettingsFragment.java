@@ -54,7 +54,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
 		mainActivity = (MainActivity) activity;
-		mainActivity.onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
+		//mainActivity.onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 
 	@Override

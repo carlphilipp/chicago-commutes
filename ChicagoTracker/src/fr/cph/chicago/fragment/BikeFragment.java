@@ -97,7 +97,7 @@ public class BikeFragment extends Fragment {
 	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
 		mainActivity = (MainActivity) activity;
-		mainActivity.onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
+		//mainActivity.onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 
 	@Override
@@ -216,7 +216,7 @@ public class BikeFragment extends Fragment {
 				List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
 
 				if (bikeStations == null) {
-					mainActivity.startRefreshAnimation();
+					//mainActivity.startRefreshAnimation();
 					mainActivity.new LoadData().execute();
 				}
 			}
@@ -308,9 +308,9 @@ public class BikeFragment extends Fragment {
 				BikeFragment.this.bikeAdapter.notifyDataSetChanged();
 				// Put in main activity the new list of bikes
 				BikeFragment.this.mainActivity.getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) result);
-				BikeFragment.this.mainActivity.onNewIntent(mainActivity.getIntent());
+				//BikeFragment.this.mainActivity.onNewIntent(mainActivity.getIntent());
 			}
-			BikeFragment.this.mainActivity.stopRefreshAnimation();
+			//BikeFragment.this.mainActivity.stopRefreshAnimation();
 		}
 	}
 }

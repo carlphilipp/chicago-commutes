@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p>
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,6 +29,7 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -65,41 +66,22 @@ public class FavoritesFragment extends Fragment {
 	 * The fragment argument representing the section number for this fragment.
 	 **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
-	/**
-	 * Tag
-	 **/
 	private static final String TAG = "FavoritesFragment";
-	/**
-	 * The activity
-	 **/
+
 	private MainActivity mainActivity;
-	/**
-	 * The adapter of the fragment
-	 **/
+
 	private FavoritesAdapter favoritesAdapter;
-	/**
-	 * A refresh task
-	 **/
+
 	private RefreshTask refreshTimingTask;
-	/**
-	 * List of bus arrivals
-	 **/
+
 	private List<BusArrival> busArrivals;
-	/**
-	 * Train arrivals
-	 **/
+
 	private SparseArray<TrainArrival> trainArrivals;
-	/**
-	 * List of bus arrivals
-	 **/
+
 	private List<BikeStation> bikeStations;
-	/**
-	 * Welcome layout
-	 **/
+
 	private RelativeLayout welcomeLayout;
-	/**
-	 * Root view
-	 **/
+
 	private View rootView;
 
 	private SwipeRefreshLayout swipeRefreshLayout;
@@ -281,7 +263,7 @@ public class FavoritesFragment extends Fragment {
 	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
 		mainActivity = (MainActivity) activity;
-		((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
+		//((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 
 	@Override
@@ -306,7 +288,7 @@ public class FavoritesFragment extends Fragment {
 		} else {
 			// Put into intent new bike stations data
 			mainActivity.getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
-			mainActivity.onNewIntent(mainActivity.getIntent());
+			//mainActivity.onNewIntent(mainActivity.getIntent());
 
 			favoritesAdapter.setArrivalsAndBikeStations(trainArrivals, busArrivals, bikeStations);
 			favoritesAdapter.refreshUpdated();
@@ -318,7 +300,7 @@ public class FavoritesFragment extends Fragment {
 		rootView.postDelayed(new Runnable() {
 			public void run() {
 				rootView.setBackgroundResource(R.drawable.bg_selector);
-				mainActivity.stopRefreshAnimation();
+				//mainActivity.stopRefreshAnimation();
 			}
 		}, 100);
 		stopRefreshing();

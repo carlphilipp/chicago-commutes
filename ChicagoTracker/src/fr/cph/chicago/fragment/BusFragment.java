@@ -78,7 +78,7 @@ public class BusFragment extends Fragment {
 	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
 		mainActivity = (MainActivity) activity;
-		((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
+		//((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 
 	@Override

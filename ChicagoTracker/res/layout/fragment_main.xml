@@ -64,17 +64,17 @@
 				android:textStyle="bold"/>
 	</RelativeLayout>
 
-	<android.support.v4.widget.SwipeRefreshLayout
-			android:id="@+id/activity_main_swipe_refresh_layout"
+	<android.support.design.widget.CoordinatorLayout
+			xmlns:android="http://schemas.android.com/apk/res/android"
+			xmlns:app="http://schemas.android.com/apk/res-auto"
+			android:id="@+id/main_coordinator"
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content">
+			android:layout_height="match_parent">
 
-		<android.support.design.widget.CoordinatorLayout
-				xmlns:android="http://schemas.android.com/apk/res/android"
-				xmlns:app="http://schemas.android.com/apk/res-auto"
-				android:id="@+id/main_content"
+		<android.support.v4.widget.SwipeRefreshLayout
+				android:id="@+id/activity_main_swipe_refresh_layout"
 				android:layout_width="match_parent"
-				android:layout_height="match_parent">
+				android:layout_height="wrap_content">
 
 			<ListView
 					android:id="@+id/favorites_list"
@@ -84,18 +84,18 @@
 					android:listSelector="@android:color/transparent">
 			</ListView>
 
-			<android.support.design.widget.FloatingActionButton
-					android:id="@+id/floating_button"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:src="@drawable/ic_action_search"
-					android:layout_margin="16dp"
-					android:clickable="true"
-					app:layout_anchor="@id/favorites_list"
-					app:layout_anchorGravity="bottom|right|end"/>
+		</android.support.v4.widget.SwipeRefreshLayout>
 
-		</android.support.design.widget.CoordinatorLayout>
+		<android.support.design.widget.FloatingActionButton
+				android:id="@+id/floating_button"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:src="@drawable/ic_action_search"
+				android:layout_margin="16dp"
+				android:clickable="true"
+				app:layout_anchor="@id/favorites_list"
+				app:layout_anchorGravity="bottom|right|end"/>
 
-	</android.support.v4.widget.SwipeRefreshLayout>
+	</android.support.design.widget.CoordinatorLayout>
 
 </RelativeLayout>

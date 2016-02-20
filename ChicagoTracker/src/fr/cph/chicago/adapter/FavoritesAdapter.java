@@ -639,7 +639,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				activity.startActivity(intent);
 				activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
-				activity.stopRefreshAnimation();
+				//activity.stopRefreshAnimation();
 			} else {
 				ChicagoTracker.displayError(activity, trackerException);
 			}

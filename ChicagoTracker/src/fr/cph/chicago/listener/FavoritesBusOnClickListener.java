@@ -134,7 +134,7 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 					for (Entry<String, List<BusArrival>> entry : mapBusArrivals.entrySet()) {
 						BusArrival busArrival = entry.getValue().get(0);
 						if (position == i) {
-							mainActivity.startRefreshAnimation();
+							//mainActivity.startRefreshAnimation();
 							new FavoritesAdapter.BusBoundAsyncTask(mainActivity).execute(busArrival.getRouteId(), busArrival.getRouteDirection(),
 									String.valueOf(busArrival.getStopId()), busRoute.getName());
 							popup.dismiss();

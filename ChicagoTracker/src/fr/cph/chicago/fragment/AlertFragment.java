@@ -83,7 +83,7 @@ public class AlertFragment extends Fragment {
 	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
 		mainActivity = (MainActivity) activity;
-		mainActivity.onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
+		//mainActivity.onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 
 	@Override
@@ -136,10 +136,10 @@ public class AlertFragment extends Fragment {
 				DataHolder dataHolder = DataHolder.getInstance();
 				AlertData alertData = dataHolder.getAlertData();
 				if (alertData == null || alertData.getAlerts().size() == 0) {
-					mainActivity.startRefreshAnimation();
+					//mainActivity.startRefreshAnimation();
 					mainActivity.new LoadData().execute();
 				} else {
-					AlertFragment.this.mainActivity.startRefreshAnimation();
+					//AlertFragment.this.mainActivity.startRefreshAnimation();
 					new LoadData().execute();
 				}
 			}
@@ -184,7 +184,7 @@ public class AlertFragment extends Fragment {
 				alertAdapter.setAlerts(result.getAlerts());
 				alertAdapter.notifyDataSetChanged();
 			}
-			AlertFragment.this.mainActivity.stopRefreshAnimation();
+			//AlertFragment.this.mainActivity.stopRefreshAnimation();
 		}
 	}
 

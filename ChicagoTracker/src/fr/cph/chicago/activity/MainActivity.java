@@ -16,8 +16,6 @@
 
 package fr.cph.chicago.activity;
 
-import android.app.ActionBar;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
@@ -35,7 +33,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -50,15 +47,12 @@ import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
-import fr.cph.chicago.fragment.AlertFragment;
 import fr.cph.chicago.fragment.BikeFragment;
 import fr.cph.chicago.fragment.BusFragment;
 import fr.cph.chicago.fragment.FavoritesFragment;
-import fr.cph.chicago.fragment.MapFragment;
 import fr.cph.chicago.fragment.NearbyFragment;
 import fr.cph.chicago.fragment.SettingsFragment;
 import fr.cph.chicago.fragment.TrainFragment;
-import fr.cph.chicago.fragment.drawer.NavigationDrawerFragment;
 import fr.cph.chicago.json.Json;
 import fr.cph.chicago.task.GlobalConnectTask;
 import fr.cph.chicago.util.Util;
@@ -71,13 +65,34 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-	private TrainFragment mTrainFragment;
+	private static final String TAG = "MainActivity";
+
+	private static final String SELECTED_ID = "SELECTED_ID";
+
+	private static final int POSITION_BUS = 2;
+
+	private FavoritesFragment favoritesFragment;
+
+	private TrainFragment trainFragment;
+
+	private BusFragment busFragment;
+
+	private BikeFragment bikeFragment;
+
+	private NearbyFragment nearbyFragment;
+
+	private SettingsFragment settingsFragment;
+
+	private int currentPosition;
 
 	private Toolbar toolbar;
+
 	private NavigationView mDrawer;
+
 	private DrawerLayout mDrawerLayout;
+
 	private ActionBarDrawerToggle drawerToggle;
-	private int mSelectedId;
+
 	private CharSequence title;
 
 	@Override
@@ -98,13 +113,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		mDrawerLayout.setDrawerListener(drawerToggle);
 		drawerToggle.syncState();
 		//default it set first item as selected
-		mSelectedId = savedInstanceState == null ? R.id.navigation_favorites : savedInstanceState.getInt("SELECTED_ID");
-		itemSelection(mSelectedId);
+		currentPosition = savedInstanceState == null ? R.id.navigation_favorites : savedInstanceState.getInt(SELECTED_ID);
+		itemSelection(currentPosition);
 
 		title = getTitle();
 
 		FragmentManager fragmentManager = getSupportFragmentManager();
-		favoritesFragment = FavoritesFragment.newInstance(mSelectedId + 1);
+		favoritesFragment = FavoritesFragment.newInstance(currentPosition + 1);
 		fragmentManager.beginTransaction().replace(R.id.container, favoritesFragment).commit();
 	}
 
@@ -114,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
 				@Override
 				public boolean onMenuItemClick(final MenuItem item) {
-					if(favoritesFragment != null) {
+					if (favoritesFragment != null) {
 						favoritesFragment.startRefreshing();
 					}
 					SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
@@ -180,8 +195,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 						//startRefreshAnimation();
 						new LoadData().execute();
 					}
-					Util.trackAction(MainActivity.this, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
-					if(favoritesFragment != null) {
+					Util.trackAction(MainActivity.this, R.string.analytics_category_ui, R.string.analytics_action_press,
+							R.string.analytics_action_refresh_fav, 0);
+					if (favoritesFragment != null) {
 						favoritesFragment.stopRefreshing();
 					}
 					return true;
@@ -208,7 +224,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		currentPosition = position;
 
 		switch (position) {
-
 		case R.id.navigation_favorites:
 			title = getString(R.string.favorites);
 			if (favoritesFragment == null) {
@@ -219,18 +234,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			}
 			mDrawerLayout.closeDrawer(GravityCompat.START);
 			break;
-
 		case R.id.navigation_train:
 			title = getString(R.string.train);
-			if (mTrainFragment == null) {
-				mTrainFragment = TrainFragment.newInstance(position + 1);
+			if (trainFragment == null) {
+				trainFragment = TrainFragment.newInstance(position + 1);
 			}
 			if (!this.isFinishing()) {
-				fragmentManager.beginTransaction().replace(R.id.container, mTrainFragment).commit();
+				fragmentManager.beginTransaction().replace(R.id.container, trainFragment).commit();
 			}
 			mDrawerLayout.closeDrawer(GravityCompat.START);
 			break;
-
 		case R.id.navigation_bus:
 			title = getString(R.string.bus);
 			if (busFragment == null) {
@@ -241,7 +254,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			}
 			mDrawerLayout.closeDrawer(GravityCompat.START);
 			break;
-
 		case R.id.navigation_bike:
 			title = getString(R.string.divvy);
 			if (bikeFragment == null) {
@@ -252,7 +264,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			}
 			mDrawerLayout.closeDrawer(GravityCompat.START);
 			break;
-
 		case R.id.navigation_nearby:
 			title = getString(R.string.nearby);
 			if (nearbyFragment == null) {
@@ -263,7 +274,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			}
 			mDrawerLayout.closeDrawer(GravityCompat.START);
 			break;
-
 		case R.id.navigation_settings:
 			title = getString(R.string.settings);
 			if (settingsFragment == null) {
@@ -287,8 +297,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	@Override
 	public boolean onNavigationItemSelected(MenuItem menuItem) {
 		menuItem.setChecked(true);
-		mSelectedId = menuItem.getItemId();
-		itemSelection(mSelectedId);
+		currentPosition = menuItem.getItemId();
+		itemSelection(currentPosition);
 		return true;
 	}
 
@@ -296,137 +306,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
 		super.onSaveInstanceState(outState, outPersistentState);
 		//save selected item so it will remains same even after orientation change
-		outState.putInt("SELECTED_ID", mSelectedId);
-	}
-
-	private static final String TAG = "MainActivity";
-	/**
-	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
-	 **/
-	private NavigationDrawerFragment navigationDrawerFragment;
-	/**
-	 * Favorites fragment
-	 **/
-	private FavoritesFragment favoritesFragment;
-	/**
-	 * Train fragment
-	 **/
-	private TrainFragment trainFragment;
-	/**
-	 * Bus Fragment
-	 **/
-	private BusFragment busFragment;
-	/**
-	 * Bike Fragment
-	 **/
-	private BikeFragment bikeFragment;
-	/**
-	 * Nearby fragment
-	 **/
-	private NearbyFragment nearbyFragment;
-	/**
-	 * Alert Fragment
-	 **/
-	private AlertFragment alertFragment;
-	/**
-	 * Map fragment
-	 **/
-	private MapFragment mapFragment;
-	/**
-	 * Settings fragment
-	 **/
-	private SettingsFragment settingsFragment;
-	/**
-	 * Menu
-	 **/
-	private Menu menu;
-	/**
-	 * Current position
-	 **/
-	private int currentPosition;
-	/**
-	 * Drawer favorites
-	 **/
-	private static final int POSITION_FAVORITES = 0;
-	/**
-	 * Drawer Train
-	 **/
-	private static final int POSITION_TRAIN = 1;
-	/**
-	 * Drawer Bus
-	 **/
-	private static final int POSITION_BUS = 2;
-	/**
-	 * Drawer Divvy
-	 **/
-	private static final int POSITION_DIVVY = 3;
-	/**
-	 * Drawer Nearby
-	 **/
-	private static final int POSITION_NEARBY = 4;
-	/**
-	 * Drawer Alerts
-	 **/
-	private static final int POSITION_ALERTS = 5;
-	/**
-	 * Drawer Map
-	 **/
-	private static final int POSITION_MAP = 6;
-	/**
-	 * Drawer Settings
-	 **/
-	private static final int POSITION_SETTINGS = 7;
-
-	public final void onSectionAttached(final int number) {
-		switch (number) {
-		case POSITION_FAVORITES + 1:
-			title = getString(R.string.favorites);
-			break;
-		case POSITION_TRAIN + 1:
-			title = getString(R.string.train);
-			break;
-		case POSITION_BUS + 1:
-			title = getString(R.string.bus);
-			break;
-		case POSITION_DIVVY + 1:
-			title = getString(R.string.divvy);
-			break;
-		case POSITION_NEARBY + 1:
-			title = getString(R.string.nearby);
-			break;
-		case POSITION_ALERTS + 1:
-			title = getString(R.string.alerts);
-			break;
-		case POSITION_MAP + 1:
-			title = getString(R.string.map);
-			break;
-		case POSITION_SETTINGS + 1:
-			title = getString(R.string.settings);
-			break;
-		}
-		//restoreActionBar();
-	}
-
-	public final void startRefreshAnimation() {
-		//		if (menu != null) {
-		//			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-		//			refreshMenuItem.setActionView(R.layout.progressbar);
-		//			refreshMenuItem.expandActionView();
-		//		}
-	}
-
-	public final void stopRefreshAnimation() {
-/*		if (menu != null) {
-			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-			refreshMenuItem.collapseActionView();
-			refreshMenuItem.setActionView(null);
-		}*/
-	}
-
-	//@Override
-	public void onNewIntent(Intent intent) {
-		//super.onNewIntent(intent);
-		//this.setIntent(intent);
+		outState.putInt(SELECTED_ID, currentPosition);
 	}
 
 	public final class LoadData extends AsyncTask<Void, Void, Void> {
@@ -434,10 +314,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		 * Bus data
 		 **/
 		private BusData busData;
-		/**
-		 * Alert data
-		 **/
-		private AlertData alertData;
 		/**
 		 * Bike stations
 		 **/
@@ -455,16 +331,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
 			boolean loadBus = sharedPref.getBoolean("cta_bus", true);
-			boolean loadAlert = false;
 			this.loadBike = false;
 
-			if (sharedPref.contains("cta_alert")) {
-				loadAlert = sharedPref.getBoolean("cta_alert", true);
-			} else {
-				SharedPreferences.Editor editor = sharedPref.edit();
-				editor.putBoolean("cta_alert", false);
-				editor.apply();
-			}
 			if (sharedPref.contains("divvy_bike")) {
 				this.loadBike = sharedPref.getBoolean("divvy_bike", true);
 			} else {
@@ -491,19 +359,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				}
 			}
 
-			// Load alert API data
-//			if (loadAlert) {
-//				try {
-//					this.alertData = AlertData.getInstance();
-//					this.alertData.loadGeneralAlerts();
-//					Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_alert,
-//							R.string.analytics_action_get_alert_general, 0);
-//					publishProgress();
-//				} catch (ParserException | ConnectException e) {
-//					Log.e(TAG, e.getMessage(), e);
-//				}
-//			}
-
 			// Load divvy
 			this.bikeStations = new ArrayList<>();
 			if (loadBike) {
@@ -511,8 +366,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 					Json json = new Json();
 					DivvyConnect divvyConnect = DivvyConnect.getInstance();
 					String bikeContent = divvyConnect.connect();
-					this.bikeStations = json.parseStations(bikeContent);
-					Collections.sort(this.bikeStations, Util.BIKE_COMPARATOR_NAME);
+					bikeStations = json.parseStations(bikeContent);
+					Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
 					Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy,
 							R.string.analytics_action_get_divvy_all, 0);
 					publishProgress();
@@ -525,7 +380,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 		@Override
 		protected final void onProgressUpdate(Void... progress) {
-			startRefreshAnimation();
 		}
 
 		@Override
@@ -533,7 +387,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			// Put data into data holder
 			DataHolder dataHolder = DataHolder.getInstance();
 			dataHolder.setBusData(busData);
-			dataHolder.setAlertData(alertData);
 
 			if (loadBike) {
 				getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
@@ -545,8 +398,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			if (currentPosition == POSITION_BUS && busFragment != null) {
 				busFragment.update();
 			}
-			stopRefreshAnimation();
 		}
-
 	}
 }

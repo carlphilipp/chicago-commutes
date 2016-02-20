@@ -133,7 +133,7 @@ public final class BusAdapter extends BaseAdapter {
 				@Override
 				public void onClick(View v) {
 					holder.detailsLayout.setVisibility(LinearLayout.VISIBLE);
-					mainActivity.startRefreshAnimation();
+					//mainActivity.startRefreshAnimation();
 					new DirectionAsyncTask().execute(route, holder.detailsLayout);
 				}
 			});
@@ -147,7 +147,7 @@ public final class BusAdapter extends BaseAdapter {
 				@Override
 				public void onClick(View v) {
 					holder.detailsLayout.setVisibility(LinearLayout.VISIBLE);
-					mainActivity.startRefreshAnimation();
+					//mainActivity.startRefreshAnimation();
 					new DirectionAsyncTask().execute(route, holder.detailsLayout);
 				}
 			});
@@ -214,7 +214,7 @@ public final class BusAdapter extends BaseAdapter {
 
 		@Override
 		protected final void onPostExecute(final BusDirections result) {
-			mainActivity.stopRefreshAnimation();
+			//mainActivity.stopRefreshAnimation();
 			if (trackerException == null) {
 				final List<BusDirection> busDirections = result.getlBusDirection();
 				final List<String> data = new ArrayList<>();
