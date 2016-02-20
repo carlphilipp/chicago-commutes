@@ -148,7 +148,7 @@ public class BusBoundActivity extends ListActivity {
 					intent.putExtras(extras);
 					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 					startActivity(intent);
-					overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+					//overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 				}
 			});
 

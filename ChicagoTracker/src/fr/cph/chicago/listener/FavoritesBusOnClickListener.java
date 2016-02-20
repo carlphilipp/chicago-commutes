@@ -16,6 +16,7 @@
 
 package fr.cph.chicago.listener;
 
+import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -92,7 +94,7 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 			Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_LONG).show();
 		} else {
 			LayoutInflater layoutInflater = (LayoutInflater) mainActivity.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			View popupView = layoutInflater.inflate(R.layout.popup_bus, null);
+			final View popupView = layoutInflater.inflate(R.layout.popup_bus, null);
 
 			int[] screenSize = Util.getScreenSize();
 			final PopupWindow popup = new PopupWindow(popupView, (int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
@@ -152,7 +154,7 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 								extras.putStringArray("bounds", new String[] { entry.getKey() });
 								intent.putExtras(extras);
 								mainActivity.startActivity(intent);
-								mainActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+								//mainActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 								popup.dismiss();
 							}
 							i++;
@@ -169,7 +171,7 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 						extras.putStringArray("bounds", bounds.toArray(new String[bounds.size()]));
 						intent.putExtras(extras);
 						mainActivity.startActivity(intent);
-						mainActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+						//mainActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 						popup.dismiss();
 					}
 				}
@@ -184,7 +186,7 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 					firstLayout.getForeground().setAlpha(0);
 				}
 			});
-
+			popup.setAnimationStyle(R.style.popupAnimation);
 			popup.showAtLocation(firstLayout, Gravity.CENTER, 0, 0);
 		}
 	}

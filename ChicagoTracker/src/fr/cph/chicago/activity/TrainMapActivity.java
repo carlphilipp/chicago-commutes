@@ -150,7 +150,6 @@ public class TrainMapActivity extends Activity {
 			toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
 				@Override
 				public boolean onMenuItemClick(MenuItem item) {
-					Log.e(TAG, "DERP");
 					startRefreshAnimation();
 					new LoadCurrentPosition().execute();
 					new LoadTrainPosition().execute(false, true);

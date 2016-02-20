@@ -198,7 +198,7 @@ public final class SearchAdapter extends BaseAdapter {
 					extras.putParcelable("station", bikeStation);
 					intent.putExtras(extras);
 					searchActivity.startActivity(intent);
-					searchActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+					//searchActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 				}
 			});
 		}
@@ -287,7 +287,7 @@ public final class SearchAdapter extends BaseAdapter {
 							extras.putStringArray("bounds", busDirectionArray);
 							intent.putExtras(extras);
 							searchActivity.startActivity(intent);
-							searchActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+							//searchActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 						}
 						popup.dismiss();
 					}

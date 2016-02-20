@@ -140,7 +140,7 @@ public class BaseActivity extends Activity {
 
 			finish();
 			startActivity(intent);
-			overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+			//overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 		}
 	}
 
@@ -196,7 +196,7 @@ public class BaseActivity extends Activity {
 		DataHolder.getInstance().setTrainData(null);
 		DataHolder.getInstance().setBusData(null);
 		ChicagoTracker.displayError(this, exceptionToBeThrown);
-		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+		//overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 	}
 
 	/**

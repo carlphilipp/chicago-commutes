@@ -493,7 +493,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 								extras.putParcelable("station", bikeStation);
 								intent.putExtras(extras);
 								mainActivity.startActivity(intent);
-								mainActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+								//mainActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 							}
 						}
 					});
@@ -638,7 +638,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 				intent.putExtras(extras);
 				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				activity.startActivity(intent);
-				activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+				//activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 				//activity.stopRefreshAnimation();
 			} else {
 				ChicagoTracker.displayError(activity, trackerException);

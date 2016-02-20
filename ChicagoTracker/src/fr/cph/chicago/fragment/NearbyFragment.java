@@ -248,7 +248,7 @@ public class NearbyFragment extends Fragment {
 		DataHolder.getInstance().setBusData(null);
 		DataHolder.getInstance().setAlertData(null);
 		ChicagoTracker.displayError(mainActivity, exceptionToBeThrown);
-		mainActivity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+		//mainActivity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 	}
 
 	/**
@@ -767,7 +767,7 @@ public class NearbyFragment extends Fragment {
 			} else {
 				loadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
 			}
-			mainActivity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+			//mainActivity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 		} catch (IllegalStateException e) {
 			Log.w(TAG, e.getMessage(), e);
 		}

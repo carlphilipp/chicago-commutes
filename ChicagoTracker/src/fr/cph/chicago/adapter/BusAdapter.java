@@ -257,7 +257,7 @@ public final class BusAdapter extends BaseAdapter {
 							extras.putStringArray("bounds", busDirectionArray);
 							intent.putExtras(extras);
 							mainActivity.startActivity(intent);
-							mainActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+							//mainActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 						}
 
 						popup.dismiss();

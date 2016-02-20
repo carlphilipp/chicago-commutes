@@ -103,7 +103,7 @@ public final class BikeAdapter extends BaseAdapter {
 				extras.putParcelable("station", station);
 				intent.putExtras(extras);
 				mainActivity.startActivity(intent);
-				mainActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+				//mainActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 			}
 		});
 		return convertView;

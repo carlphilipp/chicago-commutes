@@ -119,7 +119,7 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 						extras.putInt("stationId", stationId);
 						intent.putExtras(extras);
 						activity.startActivity(intent);
-						activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+						//activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 						popup.dismiss();
 					} else {
 						Intent intent = new Intent(ChicagoTracker.getAppContext(), TrainMapActivity.class);
@@ -127,7 +127,7 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 						extras.putString("line", lines.get(position - 1).toTextString());
 						intent.putExtras(extras);
 						activity.startActivity(intent);
-						activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+						//activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 						popup.dismiss();
 					}
 				}
@@ -141,6 +141,8 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 					firstLayout.getForeground().setAlpha(0);
 				}
 			});
+
+			popup.setAnimationStyle(R.style.popupAnimation);
 			popup.showAtLocation(firstLayout, Gravity.CENTER, 0, 0);
 		}
 	}
