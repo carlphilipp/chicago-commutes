@@ -16,11 +16,14 @@
 
 package fr.cph.chicago.fragment;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.content.Context;
@@ -230,7 +233,7 @@ public class NearbyFragment extends Fragment {
 			googleMap = mapFragment.getMap();
 		}
 		if (Util.isNetworkAvailable()) {
-			new LoadNearby().execute();
+			new LoadNearby(mainActivity).execute();
 		} else {
 			Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
 			showProgress(false);
@@ -462,6 +465,12 @@ public class NearbyFragment extends Fragment {
 		 **/
 		private LocationManager locationManager;
 
+		private MainActivity activity;
+
+		public LoadNearby(MainActivity activity){
+			this.activity = activity;
+		}
+
 		@Override
 		protected final Void doInBackground(final Void... params) {
 			busStops = new ArrayList<>();
@@ -485,6 +494,20 @@ public class NearbyFragment extends Fragment {
 				showSettingsAlert();
 			} else {
 				if (isNetworkEnabled) {
+					if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
+							!= PackageManager.PERMISSION_GRANTED
+							&& ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
+							!= PackageManager.PERMISSION_GRANTED) {
+						// TODO: Consider calling
+						//    ActivityCompat#requestPermissions
+						// here to request the missing permissions, and then overriding
+						//   public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+						// to handle the case where the user grants the permission. See the documentation
+						// for ActivityCompat#requestPermissions for more details.
+						ActivityCompat.requestPermissions(activity,
+								new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
+						return null;
+					}
 					locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES,
 							this, Looper.getMainLooper());
 					if (locationManager != null) {
@@ -498,6 +521,20 @@ public class NearbyFragment extends Fragment {
 				// if GPS Enabled get lat/long using GPS Services
 				if (isGPSEnabled) {
 					if (location == null) {
+						if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
+								!= PackageManager.PERMISSION_GRANTED
+								&& ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
+								!= PackageManager.PERMISSION_GRANTED) {
+							// TODO: Consider calling
+							//    ActivityCompat#requestPermissions
+							// here to request the missing permissions, and then overriding
+							//   public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+							// to handle the case where the user grants the permission. See the documentation
+							// for ActivityCompat#requestPermissions for more details.
+							ActivityCompat.requestPermissions(activity,
+									new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
+							return null;
+						}
 						locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES,
 								this, Looper.getMainLooper());
 						if (locationManager != null) {
@@ -536,6 +573,20 @@ public class NearbyFragment extends Fragment {
 		protected final void onPostExecute(final Void result) {
 			new LoadArrivals().execute(busStops, trainStations, bikeStations);
 			centerMap(position);
+			if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
+					!= PackageManager.PERMISSION_GRANTED
+					&& ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
+					!= PackageManager.PERMISSION_GRANTED) {
+				// TODO: Consider calling
+				//    ActivityCompat#requestPermissions
+				// here to request the missing permissions, and then overriding
+				//   public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+				// to handle the case where the user grants the permission. See the documentation
+				// for ActivityCompat#requestPermissions for more details.
+				ActivityCompat.requestPermissions(activity,
+						new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
+				return ;
+			}
 			locationManager.removeUpdates(LoadNearby.this);
 		}
 
@@ -730,7 +781,7 @@ public class NearbyFragment extends Fragment {
 			googleMap.clear();
 			showProgress(true);
 			nearbyContainer.setVisibility(View.GONE);
-			new LoadNearby().execute();
+			new LoadNearby(mainActivity).execute();
 		} else {
 			Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
 			showProgress(false);

@@ -21,15 +21,15 @@ dependencies {
     compile 'net.sf.opencsv:opencsv:2.3'
     // Upgrade to 2.1.0
     compile 'uk.co.chrisjenx:calligraphy:1.1.0'
-    compile 'com.android.support:appcompat-v7:22.2.1'
-    compile 'com.android.support:design:22.2.1'
-    compile 'com.android.support:support-v4:22.2.1'
-    compile 'com.android.support:preference-v7:23.0.1'
+    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:design:23.1.1'
+    compile 'com.android.support:support-v4:23.1.1'
+    compile 'com.android.support:preference-v7:23.1.1'
 }
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "22.0.1"
+    buildToolsVersion "23.0.2"
 
     defaultConfig {
         minSdkVersion 16

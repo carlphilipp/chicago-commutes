@@ -16,12 +16,14 @@
 
 package fr.cph.chicago.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationListener;
@@ -30,6 +32,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -160,7 +163,7 @@ public class TrainMapActivity extends Activity {
 			status = new HashMap<>();
 			trainListener = new TrainMapOnCameraChangeListener();
 
-//			getActionBar().setDisplayHomeAsUpEnabled(true);
+			//			getActionBar().setDisplayHomeAsUpEnabled(true);
 
 			setTitle("Map - " + TrainLine.fromXmlString(line).toString());
 
@@ -585,6 +588,20 @@ public class TrainMapActivity extends Activity {
 				showSettingsAlert();
 			} else {
 				if (isNetworkEnabled) {
+					if (ActivityCompat.checkSelfPermission(TrainMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+							!= PackageManager.PERMISSION_GRANTED
+							&& ActivityCompat.checkSelfPermission(TrainMapActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
+							!= PackageManager.PERMISSION_GRANTED) {
+						// TODO: Consider calling
+						//    ActivityCompat#requestPermissions
+						// here to request the missing permissions, and then overriding
+						//   public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+						// to handle the case where the user grants the permission. See the documentation
+						// for ActivityCompat#requestPermissions for more details.
+						ActivityCompat.requestPermissions(TrainMapActivity.this,
+								new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
+						return null;
+					}
 					locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES,
 							this, Looper.getMainLooper());
 					if (locationManager != null) {
@@ -598,6 +615,20 @@ public class TrainMapActivity extends Activity {
 				// if GPS Enabled get lat/long using GPS Services
 				if (isGPSEnabled) {
 					if (location == null) {
+						if (ActivityCompat.checkSelfPermission(TrainMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+								!= PackageManager.PERMISSION_GRANTED
+								&& ActivityCompat.checkSelfPermission(TrainMapActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
+								!= PackageManager.PERMISSION_GRANTED) {
+							// TODO: Consider calling
+							//    ActivityCompat#requestPermissions
+							// here to request the missing permissions, and then overriding
+							//   public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+							// to handle the case where the user grants the permission. See the documentation
+							// for ActivityCompat#requestPermissions for more details.
+							ActivityCompat.requestPermissions(TrainMapActivity.this,
+									new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
+							return null;
+						}
 						locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES,
 								this, Looper.getMainLooper());
 						if (locationManager != null) {
@@ -625,6 +656,20 @@ public class TrainMapActivity extends Activity {
 			}
 			if (googleMap != null) {
 				googleMap = mapFragment.getMap();
+				if (ActivityCompat.checkSelfPermission(TrainMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+						!= PackageManager.PERMISSION_GRANTED
+						&& ActivityCompat.checkSelfPermission(TrainMapActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
+						!= PackageManager.PERMISSION_GRANTED) {
+					// TODO: Consider calling
+					//    ActivityCompat#requestPermissions
+					// here to request the missing permissions, and then overriding
+					//   public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+					// to handle the case where the user grants the permission. See the documentation
+					// for ActivityCompat#requestPermissions for more details.
+					ActivityCompat.requestPermissions(TrainMapActivity.this,
+							new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
+					return;
+				}
 				googleMap.setMyLocationEnabled(true);
 				locationManager.removeUpdates(LoadCurrentPosition.this);
 			}

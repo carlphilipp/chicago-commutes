@@ -48,9 +48,7 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.task.GlobalConnectTask;
 import fr.cph.chicago.util.Util;
-import org.apache.commons.collections4.MultiMap;
 import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.map.MultiValueMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
 import java.util.ArrayList;
@@ -66,7 +64,7 @@ public class FavoritesFragment extends Fragment {
 	/**
 	 * The fragment argument representing the section number for this fragment.
 	 **/
-	private static final String ARG_SECTION_NUMBER = "section_nfumber";
+	private static final String ARG_SECTION_NUMBER = "section_number";
 	/**
 	 * Tag
 	 **/
@@ -98,7 +96,7 @@ public class FavoritesFragment extends Fragment {
 	/**
 	 * Welcome layout
 	 **/
-	private RelativeLayout welcomelayout;
+	private RelativeLayout welcomeLayout;
 	/**
 	 * Root view
 	 **/
@@ -148,7 +146,7 @@ public class FavoritesFragment extends Fragment {
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		rootView = inflater.inflate(R.layout.fragment_main, container, false);
 		if (!mainActivity.isFinishing()) {
-			welcomelayout = (RelativeLayout) rootView.findViewById(R.id.welcome);
+			welcomeLayout = (RelativeLayout) rootView.findViewById(R.id.welcome);
 			if (favoritesAdapter == null) {
 				favoritesAdapter = new FavoritesAdapter(mainActivity);
 				favoritesAdapter.setArrivalsAndBikeStations(trainArrivals, busArrivals, bikeStations);
@@ -166,26 +164,25 @@ public class FavoritesFragment extends Fragment {
 					boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
 					boolean loadAlert = sharedPref.getBoolean("cta_alert", true);
 
-					MultiValuedMap<String, String> params = new ArrayListValuedHashMap<String, String>();
+					final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
 					List<Integer> trainFavorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
 					for (Integer fav : trainFavorites) {
 						params.put("mapid", String.valueOf(fav));
 					}
-					MultiValuedMap<String, String> params2 = new ArrayListValuedHashMap<String, String>();
-					List<String> busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
-					for (String str : busFavorites) {
+					final MultiValuedMap<String, String> params2 = new ArrayListValuedHashMap<>();
+					final List<String> busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+					for (final String str : busFavorites) {
 						String[] fav = Util.decodeBusFavorite(str);
 						params2.put("rt", fav[0]);
 						params2.put("stpid", fav[1]);
 					}
-					GlobalConnectTask task;
 					try {
-						task = new GlobalConnectTask(FavoritesFragment.this, FavoritesFragment.class, CtaRequestType.TRAIN_ARRIVALS, params,
-								CtaRequestType.BUS_ARRIVALS, params2, loadTrain, loadBus, loadBike);
+						GlobalConnectTask task = new GlobalConnectTask(FavoritesFragment.this, FavoritesFragment.class, CtaRequestType.TRAIN_ARRIVALS,
+								params, CtaRequestType.BUS_ARRIVALS, params2, loadTrain, loadBus, loadBike);
 						task.execute((Void) null);
 					} catch (ParserException e) {
 						ChicagoTracker.displayError(mainActivity, e);
-						//return true;
+						return;
 					}
 					// Google analytics
 					if (loadTrain) {
@@ -203,13 +200,13 @@ public class FavoritesFragment extends Fragment {
 					// Check if bus/bike or alert data are not loaded. If not, load them.
 					// Can happen when the app has been loaded without any data connection
 					boolean loadData = false;
-					DataHolder dataHolder = DataHolder.getInstance();
+					final DataHolder dataHolder = DataHolder.getInstance();
 
-					BusData busData = dataHolder.getBusData();
-					AlertData alertData = dataHolder.getAlertData();
+					final BusData busData = dataHolder.getBusData();
+					final AlertData alertData = dataHolder.getAlertData();
 
-					Bundle bundle = mainActivity.getIntent().getExtras();
-					List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
+					final Bundle bundle = mainActivity.getIntent().getExtras();
+					final List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
 
 					if (loadBus && busData.getRoutes() != null && busData.getRoutes().size() == 0) {
 						loadData = true;
@@ -224,8 +221,8 @@ public class FavoritesFragment extends Fragment {
 						//startRefreshAnimation();
 						//new LoadData().execute();
 					}
-					Util.trackAction(mainActivity, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
-					swipeRefreshLayout.setRefreshing(false);
+					Util.trackAction(mainActivity, R.string.analytics_category_ui, R.string.analytics_action_press,
+							R.string.analytics_action_refresh_fav, 0);
 				}
 			});
 		}
@@ -269,13 +266,13 @@ public class FavoritesFragment extends Fragment {
 		if (refreshTimingTask.getStatus() == Status.FINISHED) {
 			startRefreshTask();
 		}
-		if (welcomelayout != null) {
+		if (welcomeLayout != null) {
 			boolean hasFav = Preferences.hasFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN, ChicagoTracker.PREFERENCE_FAVORITES_BUS,
 					ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
 			if (!hasFav) {
-				welcomelayout.setVisibility(View.VISIBLE);
+				welcomeLayout.setVisibility(View.VISIBLE);
 			} else {
-				welcomelayout.setVisibility(View.GONE);
+				welcomeLayout.setVisibility(View.GONE);
 			}
 		}
 	}
@@ -324,6 +321,7 @@ public class FavoritesFragment extends Fragment {
 				mainActivity.stopRefreshAnimation();
 			}
 		}, 100);
+		swipeRefreshLayout.setRefreshing(false);
 	}
 
 	/**
