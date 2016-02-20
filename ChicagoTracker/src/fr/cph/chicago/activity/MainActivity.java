@@ -16,10 +16,12 @@
 
 package fr.cph.chicago.activity;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -39,10 +41,12 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
+import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.connection.DivvyConnect;
 import fr.cph.chicago.data.AlertData;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
+import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
@@ -56,18 +60,16 @@ import fr.cph.chicago.fragment.SettingsFragment;
 import fr.cph.chicago.fragment.TrainFragment;
 import fr.cph.chicago.fragment.drawer.NavigationDrawerFragment;
 import fr.cph.chicago.json.Json;
+import fr.cph.chicago.task.GlobalConnectTask;
 import fr.cph.chicago.util.Util;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-
-	/**
-	 * Favorites fragment
-	 **/
-	private FavoritesFragment mFavoritesFragment;
 
 	private TrainFragment mTrainFragment;
 
@@ -89,8 +91,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		ChicagoTracker.container = (FrameLayout) findViewById(R.id.container);
 		ChicagoTracker.container.getForeground().setAlpha(0);
 
-		setToolbar();
 		initView();
+		setToolbar();
 
 		drawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 		mDrawerLayout.setDrawerListener(drawerToggle);
@@ -102,14 +104,96 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		title = getTitle();
 
 		FragmentManager fragmentManager = getSupportFragmentManager();
-		mFavoritesFragment = FavoritesFragment.newInstance(mSelectedId + 1);
-		fragmentManager.beginTransaction().replace(R.id.container, mFavoritesFragment).commit();
+		favoritesFragment = FavoritesFragment.newInstance(mSelectedId + 1);
+		fragmentManager.beginTransaction().replace(R.id.container, favoritesFragment).commit();
 	}
 
 	private void setToolbar() {
 		toolbar = (Toolbar) findViewById(R.id.toolbar);
 		if (toolbar != null) {
-			setSupportActionBar(toolbar);
+			toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+				@Override
+				public boolean onMenuItemClick(final MenuItem item) {
+					if(favoritesFragment != null) {
+						favoritesFragment.startRefreshing();
+					}
+					SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+					boolean loadTrain = sharedPref.getBoolean("cta_train", true);
+					boolean loadBus = sharedPref.getBoolean("cta_bus", true);
+					boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
+					boolean loadAlert = sharedPref.getBoolean("cta_alert", true);
+
+					final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
+					List<Integer> trainFavorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
+					for (Integer fav : trainFavorites) {
+						params.put("mapid", String.valueOf(fav));
+					}
+					final MultiValuedMap<String, String> params2 = new ArrayListValuedHashMap<>();
+					final List<String> busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+					for (final String str : busFavorites) {
+						String[] fav = Util.decodeBusFavorite(str);
+						params2.put("rt", fav[0]);
+						params2.put("stpid", fav[1]);
+					}
+					try {
+						GlobalConnectTask task = new GlobalConnectTask(favoritesFragment, FavoritesFragment.class, CtaRequestType.TRAIN_ARRIVALS,
+								params, CtaRequestType.BUS_ARRIVALS, params2, loadTrain, loadBus, loadBike);
+						task.execute((Void) null);
+					} catch (ParserException e) {
+						ChicagoTracker.displayError(MainActivity.this, e);
+						return false;
+					}
+					// Google analytics
+					if (loadTrain) {
+						Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train,
+								R.string.analytics_action_get_train_arrivals, 0);
+					}
+					if (loadBus) {
+						Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
+								R.string.analytics_action_get_bus_arrival, 0);
+					}
+					if (loadBike) {
+						Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy,
+								R.string.analytics_action_get_divvy_all, 0);
+					}
+					// Check if bus/bike or alert data are not loaded. If not, load them.
+					// Can happen when the app has been loaded without any data connection
+					boolean loadData = false;
+					final DataHolder dataHolder = DataHolder.getInstance();
+
+					final BusData busData = dataHolder.getBusData();
+					final AlertData alertData = dataHolder.getAlertData();
+
+					final Bundle bundle = MainActivity.this.getIntent().getExtras();
+					final List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
+
+					if (loadBus && busData.getRoutes() != null && busData.getRoutes().size() == 0) {
+						loadData = true;
+					}
+					if (!loadData && loadAlert && alertData.getAlerts() != null && alertData.getAlerts().size() == 0) {
+						loadData = true;
+					}
+					if (!loadData && loadBike && bikeStations == null) {
+						loadData = true;
+					}
+					if (loadData) {
+						//startRefreshAnimation();
+						new LoadData().execute();
+					}
+					Util.trackAction(MainActivity.this, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
+					if(favoritesFragment != null) {
+						favoritesFragment.stopRefreshing();
+					}
+					return true;
+				}
+			});
+
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+				toolbar.setElevation(4);
+			}
+
+			toolbar.inflateMenu(R.menu.main);
+			toolbar.setTitle(R.string.app_name);
 		}
 	}
 
@@ -127,11 +211,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 		case R.id.navigation_favorites:
 			title = getString(R.string.favorites);
-			if (mFavoritesFragment == null) {
-				mFavoritesFragment = FavoritesFragment.newInstance(position + 1);
+			if (favoritesFragment == null) {
+				favoritesFragment = FavoritesFragment.newInstance(position + 1);
 			}
 			if (!this.isFinishing()) {
-				fragmentManager.beginTransaction().replace(R.id.container, mFavoritesFragment).commit();
+				fragmentManager.beginTransaction().replace(R.id.container, favoritesFragment).commit();
 			}
 			mDrawerLayout.closeDrawer(GravityCompat.START);
 			break;
@@ -332,11 +416,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	}
 
 	public final void stopRefreshAnimation() {
-		if (menu != null) {
+/*		if (menu != null) {
 			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
 			refreshMenuItem.collapseActionView();
 			refreshMenuItem.setActionView(null);
-		}
+		}*/
 	}
 
 	//@Override
@@ -454,8 +538,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			if (loadBike) {
 				getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
 				onNewIntent(getIntent());
-				if (mFavoritesFragment != null) {
-					mFavoritesFragment.setBikeStations(bikeStations);
+				if (favoritesFragment != null) {
+					favoritesFragment.setBikeStations(bikeStations);
 				}
 			}
 			if (currentPosition == POSITION_BUS && busFragment != null) {

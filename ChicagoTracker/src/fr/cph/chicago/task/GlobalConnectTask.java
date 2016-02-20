@@ -323,14 +323,10 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 		try {
 			if (success) {
 				clazz.getMethod("reloadData", SparseArray.class, List.class, List.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class)
-						.invoke(
-								instance, this.trainArrivals, this.busArrivals, this.bikeStations, this.trainBoolean, this.busBoolean,
-								this.bikeBoolean,
-								this.networkAvailable);
+						.invoke(instance, trainArrivals, busArrivals, bikeStations, trainBoolean, busBoolean, bikeBoolean, networkAvailable);
 			} else if (!networkAvailable) {
 				clazz.getMethod("reloadData", SparseArray.class, List.class, List.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class)
-						.invoke(
-								instance, this.trainArrivals, this.busArrivals, this.bikeStations, false, false, false, this.networkAvailable);
+						.invoke(instance, trainArrivals, busArrivals, bikeStations, false, false, false, networkAvailable);
 			} else {
 				TrackerException ex = trackerBusException == null ? (trackerBikeException == null ? trackerException : trackerBikeException)
 						: trackerBusException;

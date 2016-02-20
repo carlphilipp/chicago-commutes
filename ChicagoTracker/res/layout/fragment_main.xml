@@ -17,12 +17,11 @@
 -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-				xmlns:tools="http://schemas.android.com/tools"
+				xmlns:app="http://schemas.android.com/apk/res-auto"
 				android:id="@+id/frameLayout"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
-				android:background="@drawable/bg_selector"
-				tools:context=".MainActivity$PlaceholderFragment">
+				android:background="@drawable/bg_selector">
 
 	<RelativeLayout
 			android:id="@+id/welcome"
@@ -69,13 +68,34 @@
 			android:id="@+id/activity_main_swipe_refresh_layout"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content">
-		<ListView
-				android:id="@+id/favorites_list"
+
+		<android.support.design.widget.CoordinatorLayout
+				xmlns:android="http://schemas.android.com/apk/res/android"
+				xmlns:app="http://schemas.android.com/apk/res-auto"
+				android:id="@+id/main_content"
 				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:dividerHeight="1dp"
-				android:listSelector="@android:color/transparent">
-		</ListView>
+				android:layout_height="match_parent">
+
+			<ListView
+					android:id="@+id/favorites_list"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:dividerHeight="1dp"
+					android:listSelector="@android:color/transparent">
+			</ListView>
+
+			<android.support.design.widget.FloatingActionButton
+					android:id="@+id/floating_button"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:src="@drawable/ic_action_search"
+					android:layout_margin="16dp"
+					android:clickable="true"
+					app:layout_anchor="@id/favorites_list"
+					app:layout_anchorGravity="bottom|right|end"/>
+
+		</android.support.design.widget.CoordinatorLayout>
+
 	</android.support.v4.widget.SwipeRefreshLayout>
 
 </RelativeLayout>

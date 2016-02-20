@@ -577,12 +577,6 @@ public class NearbyFragment extends Fragment {
 					!= PackageManager.PERMISSION_GRANTED
 					&& ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
 					!= PackageManager.PERMISSION_GRANTED) {
-				// TODO: Consider calling
-				//    ActivityCompat#requestPermissions
-				// here to request the missing permissions, and then overriding
-				//   public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
-				// to handle the case where the user grants the permission. See the documentation
-				// for ActivityCompat#requestPermissions for more details.
 				ActivityCompat.requestPermissions(activity,
 						new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
 				return ;
@@ -646,14 +640,20 @@ public class NearbyFragment extends Fragment {
 		while (mapFragment.getMap() == null) {
 		}
 		googleMap = mapFragment.getMap();
+		if (ActivityCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_FINE_LOCATION)
+				!= PackageManager.PERMISSION_GRANTED
+				&& ActivityCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_COARSE_LOCATION)
+				!= PackageManager.PERMISSION_GRANTED) {
+			ActivityCompat.requestPermissions(mainActivity,
+					new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
+			return ;
+		}
 		googleMap.setMyLocationEnabled(true);
-		LatLng latLng = null;
 		if (positon != null) {
-			latLng = new LatLng(positon.getLatitude(), positon.getLongitude());
+			LatLng latLng = new LatLng(positon.getLatitude(), positon.getLongitude());
 			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
 		} else {
-			latLng = CHICAGO;
-			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
+			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CHICAGO, 10));
 		}
 		// map.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
 	}
