@@ -30,10 +30,12 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -66,6 +68,7 @@ import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusPattern;
 import fr.cph.chicago.entity.PatternPoint;
 import fr.cph.chicago.entity.Position;
+import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.fragment.NearbyFragment;
@@ -175,12 +178,35 @@ public class BusMapActivity extends Activity {
 			status = new HashMap<>();
 			busListener = new BusMapOnCameraChangeListener();
 
-			getActionBar().setDisplayHomeAsUpEnabled(true);
+			Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-			setTitle("Map - " + busRouteId);
+			toolbar.inflateMenu(R.menu.main);
+			toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
+				@Override
+				public boolean onMenuItemClick(MenuItem item) {
+					startRefreshAnimation();
+					new LoadCurrentPosition().execute();
+					new LoadBusPosition().execute(false, true);
+					return false;
+				}
+			}));
+
+			Util.setToolbarColor(this, toolbar, TrainLine.NA);
+
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+				toolbar.setElevation(4);
+			}
+
+			toolbar.setTitle(busRouteId);
 
 			Util.trackScreen(this, R.string.analytics_bus_map);
+		}
+	}
 
+	@Override
+	public final void onStart() {
+		super.onStart();
+		if (mapFragment == null) {
 			FragmentManager fm = getFragmentManager();
 			mapFragment = (MapFragment) fm.findFragmentById(R.id.map);
 			GoogleMapOptions options = new GoogleMapOptions();
@@ -190,11 +216,6 @@ public class BusMapActivity extends Activity {
 			mapFragment.setRetainInstance(true);
 			fm.beginTransaction().replace(R.id.map, mapFragment).commit();
 		}
-	}
-
-	@Override
-	public final void onStart() {
-		super.onStart();
 	}
 
 	@Override
@@ -264,7 +285,7 @@ public class BusMapActivity extends Activity {
 		if (Util.isNetworkAvailable()) {
 			startRefreshAnimation();
 			new LoadCurrentPosition().execute();
-			new LoadBusPosition().execute(new Boolean[] { centerMap, !loadPattern });
+			new LoadBusPosition().execute(centerMap, !loadPattern);
 			if (loadPattern) {
 				new LoadPattern().execute();
 			}
@@ -624,6 +645,14 @@ public class BusMapActivity extends Activity {
 			}
 			if (googleMap != null) {
 				googleMap = mapFragment.getMap();
+				if (ActivityCompat.checkSelfPermission(BusMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+						!= PackageManager.PERMISSION_GRANTED
+						&& ActivityCompat.checkSelfPermission(BusMapActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
+						!= PackageManager.PERMISSION_GRANTED) {
+					ActivityCompat.requestPermissions(BusMapActivity.this,
+							new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
+					return;
+				}
 				googleMap.setMyLocationEnabled(true);
 				locationManager.removeUpdates(LoadCurrentPosition.this);
 			}

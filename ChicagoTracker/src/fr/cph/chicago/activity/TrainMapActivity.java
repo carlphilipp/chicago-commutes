@@ -142,8 +142,6 @@ public class TrainMapActivity extends Activity {
 			status = new HashMap<>();
 			trainListener = new TrainMapOnCameraChangeListener();
 
-			//getActionBar().setDisplayHomeAsUpEnabled(true);
-
 			Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
 			toolbar.inflateMenu(R.menu.main);
