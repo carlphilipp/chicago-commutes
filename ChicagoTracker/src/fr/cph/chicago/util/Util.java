@@ -53,11 +53,6 @@ public class Util {
 	/** **/
 	private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
 
-	/**
-	 * Generate a value suitable for use in {@link #setId(int)}. This value will not collide with ID values generated at build time by aapt for R.id.
-	 *
-	 * @return a generated ID value
-	 */
 	public static int generateViewId() {
 		for (; ; ) {
 			final int result = sNextGeneratedId.get();
@@ -212,17 +207,17 @@ public class Util {
 	/**
 	 * Google analytics track screen
 	 *
-	 * @param activity the activity
+	 * @param screen the screen name
 	 * @param str      the label to send
 	 */
-	public static void trackScreen(Activity activity, int str) {
-		Tracker t = ((ChicagoTracker) activity.getApplication()).getTracker();
-		t.setScreenName(activity.getString(str));
+	public static void trackScreen(final String screen) {
+		Tracker t = ChicagoTracker.getTracker();
+		t.setScreenName(screen);
 		t.send(new HitBuilders.AppViewBuilder().build());
 	}
 
 	public static void trackAction(Activity activity, int category, int action, int label, int value) {
-		Tracker tracker = ((ChicagoTracker) activity.getApplication()).getTracker();
+		Tracker tracker = ChicagoTracker.getTracker();
 		tracker.send(new HitBuilders.EventBuilder().setCategory(activity.getString(category)).setAction(activity.getString(action))
 				.setLabel(activity.getString(label)).setValue(value).build());
 	}

@@ -165,7 +165,7 @@ public class TrainMapActivity extends Activity {
 
 			toolbar.setTitle(trainLine.toString() + " Line");
 
-			Util.trackScreen(this, R.string.analytics_train_map);
+			Util.trackScreen(getResources().getString(R.string.analytics_train_map));
 		}
 	}
 

@@ -121,7 +121,7 @@ public class FavoritesFragment extends Fragment {
 			bikeStations = new ArrayList<>();
 		}
 
-		Util.trackScreen(mainActivity, R.string.analytics_favorites_fragment);
+		Util.trackScreen(getResources().getString(R.string.analytics_favorites_fragment));
 	}
 
 	@Override

@@ -90,7 +90,7 @@ public class AlertFragment extends Fragment {
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		Util.trackScreen(mainActivity, R.string.analytics_alert_fragment);
+		Util.trackScreen(getResources().getString(R.string.analytics_alert_fragment));
 	}
 
 	@Override

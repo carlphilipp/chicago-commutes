@@ -64,7 +64,7 @@ public final class TrainFragment extends Fragment {
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		Util.trackScreen(mainActivity, R.string.analytics_train_fragment);
+		Util.trackScreen(getResources().getString(R.string.analytics_train_fragment));
 	}
 
 	@Override

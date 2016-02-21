@@ -218,7 +218,7 @@ public class BusActivity extends Activity {
 				}
 			});
 
-			Util.trackScreen(this, R.string.analytics_bus_details);
+			Util.trackScreen(getResources().getString(R.string.analytics_bus_details));
 		}
 	}
 

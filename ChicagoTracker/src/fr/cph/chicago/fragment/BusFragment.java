@@ -17,6 +17,7 @@
 package fr.cph.chicago.fragment;
 
 import android.app.Activity;
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.text.Editable;
@@ -75,6 +76,11 @@ public class BusFragment extends Fragment {
 	}
 
 	@Override
+	public final void onAttach(final Context context){
+		super.onAttach(context);
+	}
+
+	@Override
 	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
 		mainActivity = (MainActivity) activity;
@@ -86,7 +92,7 @@ public class BusFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 		ChicagoTracker.checkBusData(mainActivity);
 
-		Util.trackScreen(mainActivity, R.string.analytics_bus_fragment);
+		Util.trackScreen(getResources().getString(R.string.analytics_bus_fragment));
 	}
 
 	@Override

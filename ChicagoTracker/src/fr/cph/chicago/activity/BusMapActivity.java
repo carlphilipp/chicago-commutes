@@ -206,7 +206,7 @@ public class BusMapActivity extends Activity {
 				}
 			});
 
-			Util.trackScreen(this, R.string.analytics_bus_map);
+			Util.trackScreen(getResources().getString(R.string.analytics_bus_map));
 		}
 	}
 

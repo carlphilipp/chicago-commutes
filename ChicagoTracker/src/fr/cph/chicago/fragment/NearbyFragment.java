@@ -177,7 +177,7 @@ public class NearbyFragment extends Fragment {
 		ChicagoTracker.checkTrainData(mainActivity);
 		ChicagoTracker.checkBusData(mainActivity);
 
-		Util.trackScreen(mainActivity, R.string.analytics_nearby_fragment);
+		Util.trackScreen(getResources().getString(R.string.analytics_nearby_fragment));
 	}
 
 	@Override

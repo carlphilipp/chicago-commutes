@@ -54,7 +54,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 	public final void onAttach(final Activity activity) {
 		super.onAttach(activity);
 		mainActivity = (MainActivity) activity;
-		//mainActivity.onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 
 	@Override
@@ -62,25 +61,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);
 		setHasOptionsMenu(true);
-
-		Util.trackScreen(mainActivity, R.string.analytics_settings_fragment);
+		Util.trackScreen(getResources().getString(R.string.analytics_settings_fragment));
 	}
 
 	@Override
 	public void onCreatePreferences(Bundle bundle, String s) {
-	}
-
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		super.onCreateOptionsMenu(menu, inflater);
-	}
-
-	@Override
-	public void onPrepareOptionsMenu(Menu menu) {
-//		for (int i = 0; i <= menu.size(); i++) {
-//			int id = menu.getItem(0).getItemId();
-//			menu.removeItem(id);
-//		}
-		super.onPrepareOptionsMenu(menu);
 	}
 }

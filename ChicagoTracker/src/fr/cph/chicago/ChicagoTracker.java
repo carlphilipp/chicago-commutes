@@ -179,8 +179,8 @@ public class ChicagoTracker extends Application {
 		mActivity.finish();
 	}
 
-	public Tracker getTracker() {
-		GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+	public static Tracker getTracker() {
+		GoogleAnalytics analytics = GoogleAnalytics.getInstance(ChicagoTracker.getAppContext());
 		if (tracker == null) {
 			String key = Util.getProperty("google.analytics");
 			tracker = analytics.newTracker(key);
