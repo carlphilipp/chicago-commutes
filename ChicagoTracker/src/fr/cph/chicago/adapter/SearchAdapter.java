@@ -18,6 +18,7 @@ package fr.cph.chicago.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -94,20 +95,16 @@ public final class SearchAdapter extends BaseAdapter {
 	 **/
 	private FrameLayout container;
 
-	/** The layout that is used to display a fade black background **/
-	// private FrameLayout mFirstLayout;
-
 	/**
 	 * Constructor
 	 *
-	 * @param activity  the search activity
-	 * @param container the layout container
+	 * @param activity the search activity
+	 * @param container the container
 	 */
 	public SearchAdapter(final SearchActivity activity, final FrameLayout container) {
 		this.context = ChicagoTracker.getAppContext();
 		this.searchActivity = activity;
 		this.container = container;
-		// this.mFirstLayout = container2;
 	}
 
 	@Override

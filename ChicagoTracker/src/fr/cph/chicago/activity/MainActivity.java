@@ -127,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	@Override
 	public void startActivity(final Intent intent) {
 		// check if search intent
+		Log.e(TAG, "Start activity with action: " + intent.getAction());
 		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 			ArrayList<BikeStation> bikeStations = getIntent().getExtras().getParcelableArrayList("bikeStations");
 			intent.putParcelableArrayListExtra("bikeStations", bikeStations);

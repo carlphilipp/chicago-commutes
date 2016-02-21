@@ -139,7 +139,6 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 					firstLayout.getForeground().setAlpha(0);
 				}
 			});
-
 			popup.setAnimationStyle(R.style.popupAnimation);
 			popup.showAtLocation(firstLayout, Gravity.CENTER, 0, 0);
 		}

@@ -146,6 +146,7 @@ public class FavoritesFragment extends Fragment {
 				@Override
 				public void onClick(final View v) {
 					final Intent intent = new Intent(mainActivity, SearchActivity.class);
+					intent.putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
 					mainActivity.startActivity(intent);
 				}
 			});
