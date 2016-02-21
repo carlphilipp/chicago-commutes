@@ -80,7 +80,7 @@
 
     <!-- Search -->
     <string name="search_title">Search</string>
-    <string name="search_hint">Train Stations or Bus Lines</string>
+    <string name="search_hint">Search...</string>
 
     <!-- Nearby -->
     <string name="nearby_title">Nearby</string>

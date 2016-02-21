@@ -17,11 +17,13 @@
 package fr.cph.chicago.fragment;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -29,13 +31,14 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
+import fr.cph.chicago.activity.SearchActivity;
+import fr.cph.chicago.activity.SearchActivityOld;
 import fr.cph.chicago.adapter.FavoritesAdapter;
 import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.data.AlertData;
@@ -85,6 +88,8 @@ public class FavoritesFragment extends Fragment {
 	private View rootView;
 
 	private SwipeRefreshLayout swipeRefreshLayout;
+
+	private FloatingActionButton floatingButton;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -136,6 +141,14 @@ public class FavoritesFragment extends Fragment {
 			ListView listView = (ListView) rootView.findViewById(R.id.favorites_list);
 			listView.setAdapter(favoritesAdapter);
 			startRefreshTask();
+			floatingButton = (FloatingActionButton) rootView.findViewById(R.id.floating_button);
+			floatingButton.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(final View v) {
+					final Intent intent = new Intent(mainActivity, SearchActivity.class);
+					mainActivity.startActivity(intent);
+				}
+			});
 			swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.activity_main_swipe_refresh_layout);
 			swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 				@Override
@@ -203,7 +216,8 @@ public class FavoritesFragment extends Fragment {
 						//startRefreshAnimation();
 						//new LoadData().execute();
 					}
-					Util.trackAction(mainActivity, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
+					Util.trackAction(mainActivity, R.string.analytics_category_ui, R.string.analytics_action_press,
+							R.string.analytics_action_refresh_fav, 0);
 				}
 			});
 		}

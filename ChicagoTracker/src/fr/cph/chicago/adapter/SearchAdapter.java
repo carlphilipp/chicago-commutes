@@ -40,6 +40,7 @@ import fr.cph.chicago.activity.BikeStationActivity;
 import fr.cph.chicago.activity.BusBoundActivity;
 import fr.cph.chicago.activity.BusMapActivity;
 import fr.cph.chicago.activity.SearchActivity;
+import fr.cph.chicago.activity.SearchActivityOld;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.entity.BikeStation;
@@ -178,7 +179,7 @@ public final class SearchAdapter extends BaseAdapter {
 				@Override
 				public void onClick(View v) {
 					loadingTextView.setVisibility(LinearLayout.VISIBLE);
-					searchActivity.startRefreshAnimation();
+					//searchActivity.startRefreshAnimation();
 					new DirectionAsyncTask().execute(busRoute, loadingTextView);
 				}
 			});
@@ -243,7 +244,7 @@ public final class SearchAdapter extends BaseAdapter {
 
 		@Override
 		protected final void onPostExecute(final BusDirections result) {
-			searchActivity.stopRefreshAnimation();
+			//searchActivity.stopRefreshAnimation();
 			if (trackerException == null) {
 				// PopupMenu popupMenu = new PopupMenu(ChicagoTracker.getAppContext(), convertView);
 				final List<BusDirection> lBus = result.getlBusDirection();

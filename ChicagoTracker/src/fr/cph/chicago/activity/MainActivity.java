@@ -16,6 +16,7 @@
 
 package fr.cph.chicago.activity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
@@ -121,6 +122,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		favoritesFragment = FavoritesFragment.newInstance(currentPosition + 1);
 		fragmentManager.beginTransaction().replace(R.id.container, favoritesFragment).commit();
+	}
+
+	@Override
+	public void startActivity(final Intent intent) {
+		// check if search intent
+		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+			ArrayList<BikeStation> bikeStations = getIntent().getExtras().getParcelableArrayList("bikeStations");
+			intent.putParcelableArrayListExtra("bikeStations", bikeStations);
+		}
+		super.startActivity(intent);
 	}
 
 	private void initView() {

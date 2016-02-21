@@ -24,6 +24,11 @@
     android:background="@drawable/bg_selector"
     android:foreground="@drawable/shape_win_dim" >
 
+    <include
+            layout="@layout/app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
