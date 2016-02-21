@@ -77,31 +77,57 @@ import java.util.Set;
  * @version 1
  */
 public final class FavoritesAdapter extends BaseAdapter {
-	/** Main activity **/
+	/**
+	 * Main activity
+	 **/
 	private MainActivity mainActivity;
-	/** The context **/
+	/**
+	 * The context
+	 **/
 	private Context context;
-	/** The layout that is used to display a fade black background **/
+	/**
+	 * The layout that is used to display a fade black background
+	 **/
 	private FrameLayout firstLayout;
-	/** The model **/
+	/**
+	 * The model
+	 **/
 	private Favorites favorites;
-	/** Ids of layouts **/
+	/**
+	 * Ids of layouts
+	 **/
 	private Map<String, Integer> ids;
-	/** Layouts **/
+	/**
+	 * Layouts
+	 **/
 	private Map<Integer, LinearLayout> layouts;
-	/** Views **/
+	/**
+	 * Views
+	 **/
 	private Map<Integer, View> views;
-	/** Map of textview that holds updates **/
+	/**
+	 * Map of textview that holds updates
+	 **/
 	private Map<String, TextView> updated;
-	/** List update **/
+	/**
+	 * List update
+	 **/
 	private String lastUpdate;
-	/** Params layout **/
+	/**
+	 * Params layout
+	 **/
 	private LinearLayout.LayoutParams paramsLayout;
-	/** Params text view **/
+	/**
+	 * Params text view
+	 **/
 	private LinearLayout.LayoutParams paramsTextView;
-	/** Padding color **/
+	/**
+	 * Padding color
+	 **/
 	private int line1Padding;
-	/** Stops padding top **/
+	/**
+	 * Stops padding top
+	 **/
 	private int stopsPaddingTop;
 
 	@SuppressLint("UseSparseArrays")
@@ -540,10 +566,8 @@ public final class FavoritesAdapter extends BaseAdapter {
 	/**
 	 * Set favorites
 	 *
-	 * @param arrivals
-	 *            the trains arrivals
-	 * @param busArrivals
-	 *            the buses arrivals
+	 * @param arrivals    the trains arrivals
+	 * @param busArrivals the buses arrivals
 	 */
 	public final void setArrivalsAndBikeStations(final SparseArray<TrainArrival> arrivals, final List<BusArrival> busArrivals,
 			final List<BikeStation> bikeStations) {
@@ -649,10 +673,8 @@ public final class FavoritesAdapter extends BaseAdapter {
 	/**
 	 * Get time difference between 2 dates
 	 *
-	 * @param d1
-	 *            the date one
-	 * @param d2
-	 *            the date two
+	 * @param d1 the date one
+	 * @param d2 the date two
 	 * @return a tab containing in 0 the hour and in 1 the minutes
 	 */
 	private long[] getTimeDifference(final Date d1, final Date d2) {
@@ -678,8 +700,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 	/**
 	 * Get last update in minutes
 	 *
-	 * @param lastUpdate
-	 *            the last update
+	 * @param lastUpdate the last update
 	 * @return a string
 	 */
 	private String getLastUpdateInMinutes(final Date lastUpdate) {

@@ -3,11 +3,8 @@ package fr.cph.chicago.activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -62,7 +59,6 @@ public class SearchActivity extends AppCompatActivity {
 			getSupportActionBar().setDisplayShowHomeEnabled(true);
 			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
 			if (Util.isNetworkAvailable()) {
 				FrameLayout container = (FrameLayout) findViewById(R.id.container);
 				ListView listView = (ListView) findViewById(R.id.search_list);
@@ -93,8 +89,6 @@ public class SearchActivity extends AppCompatActivity {
 			searchView.clearFocus();
 			searchView.requestFocus();
 			searchView.requestFocusFromTouch();
-
-
 
 			SearchView.SearchAutoComplete searchAutoComplete = (SearchView.SearchAutoComplete) searchView
 					.findViewById(android.support.v7.appcompat.R.id.search_src_text);
@@ -127,7 +121,7 @@ public class SearchActivity extends AppCompatActivity {
 		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 			ArrayList<BikeStation> bikeStations = getIntent().getExtras().getParcelableArrayList("bikeStations");
 			intent.putParcelableArrayListExtra("bikeStations", bikeStations);
-//			intent.putParcelableArrayListExtra("bikeStations", new ArrayList<Parcelable>());
+			//			intent.putParcelableArrayListExtra("bikeStations", new ArrayList<Parcelable>());
 		}
 		super.startActivity(intent);
 	}

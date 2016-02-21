@@ -43,9 +43,13 @@ import java.util.Set;
  * @version 1
  */
 public final class TrainAdapter extends BaseAdapter {
-	/** List of stations **/
+	/**
+	 * List of stations
+	 **/
 	private List<Station> stations;
-	/** The context **/
+	/**
+	 * The context
+	 **/
 	private Context context;
 
 	private Activity activity;
@@ -55,8 +59,7 @@ public final class TrainAdapter extends BaseAdapter {
 	/**
 	 * Constructor
 	 *
-	 * @param line
-	 *            the train line
+	 * @param line the train line
 	 */
 	public TrainAdapter(final TrainLine line, final Activity activity, final FrameLayout container) {
 		// Load data

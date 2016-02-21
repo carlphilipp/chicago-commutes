@@ -18,7 +18,6 @@ package fr.cph.chicago.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -41,7 +40,6 @@ import fr.cph.chicago.activity.BikeStationActivity;
 import fr.cph.chicago.activity.BusBoundActivity;
 import fr.cph.chicago.activity.BusMapActivity;
 import fr.cph.chicago.activity.SearchActivity;
-import fr.cph.chicago.activity.SearchActivityOld;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.entity.BikeStation;
@@ -98,7 +96,7 @@ public final class SearchAdapter extends BaseAdapter {
 	/**
 	 * Constructor
 	 *
-	 * @param activity the search activity
+	 * @param activity  the search activity
 	 * @param container the container
 	 */
 	public SearchAdapter(final SearchActivity activity, final FrameLayout container) {
