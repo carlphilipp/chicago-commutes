@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -74,6 +74,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -260,7 +261,6 @@ public class StationActivity extends Activity {
 				}
 
 			}
-			//getActionBar().setDisplayHomeAsUpEnabled(true);
 
 			Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
@@ -276,11 +276,13 @@ public class StationActivity extends Activity {
 				}
 			}));
 
-			Util.setToolbarColor(this, toolbar, TrainLine.NA);
-
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 				toolbar.setElevation(4);
 			}
+
+			TrainLine randomTrainLine = getRandomLine(stops);
+
+			Util.setToolbarColor(this, toolbar, randomTrainLine);
 
 			toolbar.setTitle("Train station");
 			toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
@@ -293,6 +295,12 @@ public class StationActivity extends Activity {
 
 			Util.trackScreen(this, R.string.analytics_train_details);
 		}
+	}
+
+	private TrainLine getRandomLine(final Map<TrainLine, List<Stop>> stops) {
+		final Random random = new Random();
+		final List<TrainLine> keys = new ArrayList<>(stops.keySet());
+		return keys.get(random.nextInt(keys.size()));
 	}
 
 	@Override
@@ -314,9 +322,9 @@ public class StationActivity extends Activity {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main_no_search, menu);
 
-//		MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-//		refreshMenuItem.setActionView(R.layout.progressbar);
-//		refreshMenuItem.expandActionView();
+		//		MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+		//		refreshMenuItem.setActionView(R.layout.progressbar);
+		//		refreshMenuItem.expandActionView();
 
 		return true;
 	}
@@ -424,7 +432,8 @@ public class StationActivity extends Activity {
 				}
 			});
 
-			StationActivity.this.directionImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.ic_directions_walking));
+			StationActivity.this.directionImage
+					.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.ic_directions_walking));
 			StationActivity.this.directionImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -439,9 +448,9 @@ public class StationActivity extends Activity {
 					.getString(R.string.station_activity_street_view));
 
 			if (menu != null) {
-//				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-//				refreshMenuItem.collapseActionView();
-//				refreshMenuItem.setActionView(null);
+				//				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+				//				refreshMenuItem.collapseActionView();
+				//				refreshMenuItem.setActionView(null);
 			}
 			firstLoad = false;
 		}
@@ -517,9 +526,9 @@ public class StationActivity extends Activity {
 		protected final void onProgressUpdate(final Void... values) {
 			// Get menu item and put it to loading mod
 			if (menu != null) {
-//				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-//				refreshMenuItem.setActionView(R.layout.progressbar);
-//				refreshMenuItem.expandActionView();
+				//				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+				//				refreshMenuItem.setActionView(R.layout.progressbar);
+				//				refreshMenuItem.expandActionView();
 			}
 		}
 
@@ -538,9 +547,9 @@ public class StationActivity extends Activity {
 					drawLine3(eta);
 				}
 				if (!firstLoad) {
-//					MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-//					refreshMenuItem.collapseActionView();
-//					refreshMenuItem.setActionView(null);
+					//					MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+					//					refreshMenuItem.collapseActionView();
+					//					refreshMenuItem.setActionView(null);
 				}
 			} else {
 				ChicagoTracker.displayError(StationActivity.this, trackerException);

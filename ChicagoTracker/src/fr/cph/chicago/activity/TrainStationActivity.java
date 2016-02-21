@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.FrameLayout;
 import fr.cph.chicago.R;
 import fr.cph.chicago.adapter.TrainAdapter;
@@ -73,6 +74,14 @@ public class TrainStationActivity extends ListActivity {
 			Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 			Util.setToolbarColor(this, toolbar, trainLine);
 			toolbar.setTitle(trainLine.toString() + " Line");
+
+			toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+			toolbar.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					finish();
+				}
+			});
 
 			TrainAdapter ada = new TrainAdapter(trainLine, this, container);
 			setListAdapter(ada);

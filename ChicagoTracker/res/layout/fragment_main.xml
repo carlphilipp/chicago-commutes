@@ -90,7 +90,7 @@
 				android:id="@+id/floating_button"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:src="@drawable/ic_action_search"
+				android:src="@drawable/ic_search_white_24dp"
 				android:layout_margin="16dp"
 				android:clickable="true"
 				app:layout_anchor="@id/favorites_list"

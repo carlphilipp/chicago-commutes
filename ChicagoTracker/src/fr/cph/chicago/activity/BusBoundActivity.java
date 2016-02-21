@@ -16,16 +16,20 @@
 
 package fr.cph.chicago.activity;
 
+import android.Manifest;
 import android.app.ActionBar;
 import android.app.FragmentManager;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -56,6 +60,7 @@ import fr.cph.chicago.entity.BusPattern;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.PatternPoint;
 import fr.cph.chicago.entity.Position;
+import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
@@ -148,7 +153,6 @@ public class BusBoundActivity extends ListActivity {
 					intent.putExtras(extras);
 					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 					startActivity(intent);
-					//overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 				}
 			});
 
@@ -177,7 +181,18 @@ public class BusBoundActivity extends ListActivity {
 				}
 			});
 
-//			getActionBar().setDisplayHomeAsUpEnabled(true);
+			Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+			Util.setToolbarColor(this, toolbar, TrainLine.NA);
+			toolbar.setTitle(busRouteName + " - " + bound);
+
+			toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+			toolbar.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					finish();
+				}
+			});
+
 			new BusBoundAsyncTask().execute();
 
 			// Preventing keyboard from moving background when showing up
@@ -367,6 +382,14 @@ public class BusBoundActivity extends ListActivity {
 		if (googleMap != null) {
 			googleMap.getUiSettings().setMyLocationButtonEnabled(false);
 			googleMap.getUiSettings().setZoomControlsEnabled(false);
+			if (ActivityCompat.checkSelfPermission(BusBoundActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+					!= PackageManager.PERMISSION_GRANTED
+					&& ActivityCompat.checkSelfPermission(BusBoundActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
+					!= PackageManager.PERMISSION_GRANTED) {
+				ActivityCompat.requestPermissions(BusBoundActivity.this,
+						new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
+				return;
+			}
 			googleMap.setMyLocationEnabled(true);
 			LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
 			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));

@@ -119,7 +119,6 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 						extras.putInt("stationId", stationId);
 						intent.putExtras(extras);
 						activity.startActivity(intent);
-						//activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 						popup.dismiss();
 					} else {
 						Intent intent = new Intent(ChicagoTracker.getAppContext(), TrainMapActivity.class);
@@ -127,7 +126,6 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 						extras.putString("line", lines.get(position - 1).toTextString());
 						intent.putExtras(extras);
 						activity.startActivity(intent);
-						//activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 						popup.dismiss();
 					}
 				}
