@@ -172,7 +172,7 @@ public class BusMapActivity extends Activity {
 			status = new HashMap<>();
 			busListener = new BusMapOnCameraChangeListener();
 
-			Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+			final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
 			toolbar.inflateMenu(R.menu.main);
 			toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
@@ -208,10 +208,10 @@ public class BusMapActivity extends Activity {
 	public final void onStart() {
 		super.onStart();
 		if (mapFragment == null) {
-			FragmentManager fm = getFragmentManager();
+			final FragmentManager fm = getFragmentManager();
 			mapFragment = (MapFragment) fm.findFragmentById(R.id.map);
-			GoogleMapOptions options = new GoogleMapOptions();
-			CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 10, 0, 0);
+			final GoogleMapOptions options = new GoogleMapOptions();
+			final CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 10, 0, 0);
 			options.camera(camera);
 			mapFragment = MapFragment.newInstance(options);
 			mapFragment.setRetainInstance(true);
@@ -251,10 +251,10 @@ public class BusMapActivity extends Activity {
 				@Override
 				public View getInfoContents(Marker marker) {
 					if (!marker.getSnippet().equals("")) {
-						View view = views.get(marker);
+						final View view = views.get(marker);
 						if (!refreshingInfoWindow) {
 							selectedMarker = marker;
-							String busId = marker.getSnippet();
+							final String busId = marker.getSnippet();
 							startRefreshAnimation();
 							new LoadBusFollow(view, false).execute(busId);
 							status.put(marker, false);
@@ -328,7 +328,7 @@ public class BusMapActivity extends Activity {
 		case R.id.action_refresh:
 			startRefreshAnimation();
 			new LoadCurrentPosition().execute();
-			new LoadBusPosition().execute(new Boolean[] { false, true });
+			new LoadBusPosition().execute(false, true);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -352,7 +352,7 @@ public class BusMapActivity extends Activity {
 	 */
 	private void startRefreshAnimation() {
 		if (menu != null) {
-			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+			final MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
 			if (refreshMenuItem.getActionView() == null) {
 				refreshMenuItem.setActionView(R.layout.progressbar);
 				refreshMenuItem.expandActionView();
@@ -365,7 +365,7 @@ public class BusMapActivity extends Activity {
 	 */
 	private void stopRefreshAnimation() {
 		if (menu != null) {
-			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+			final MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
 			refreshMenuItem.collapseActionView();
 			refreshMenuItem.setActionView(null);
 		}
@@ -390,7 +390,7 @@ public class BusMapActivity extends Activity {
 			zoom = 11;
 		}
 		if (googleMap != null) {
-			LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
+			final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
 			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 		}
 	}
@@ -405,16 +405,16 @@ public class BusMapActivity extends Activity {
 			}
 			busMarkers.clear();
 			final Bitmap bitmap = busListener.getCurrentBitmap();
-			for (Bus bus : buses) {
-				LatLng point = new LatLng(bus.getPosition().getLatitude(), bus.getPosition().getLongitude());
-				Marker marker = googleMap.addMarker(new MarkerOptions().position(point).title("To " + bus.getDestination()).snippet(bus.getId() + "")
+			for (final Bus bus : buses) {
+				final LatLng point = new LatLng(bus.getPosition().getLatitude(), bus.getPosition().getLongitude());
+				final Marker marker = googleMap.addMarker(new MarkerOptions().position(point).title("To " + bus.getDestination()).snippet(bus.getId() + "")
 						.icon(BitmapDescriptorFactory.fromBitmap(bitmap)).anchor(0.5f, 0.5f).rotation(bus.getHeading()).flat(true));
 				busMarkers.add(marker);
 
-				LayoutInflater layoutInflater = (LayoutInflater) BusMapActivity.this.getBaseContext().getSystemService(
+				final LayoutInflater layoutInflater = (LayoutInflater) BusMapActivity.this.getBaseContext().getSystemService(
 						Context.LAYOUT_INFLATER_SERVICE);
-				View view = layoutInflater.inflate(R.layout.marker_train, null);
-				TextView title = (TextView) view.findViewById(R.id.title);
+				final View view = layoutInflater.inflate(R.layout.marker_train, null);
+				final TextView title = (TextView) view.findViewById(R.id.title);
 				title.setText(marker.getTitle());
 
 				views.put(marker, view);
@@ -437,11 +437,11 @@ public class BusMapActivity extends Activity {
 		}
 		if (googleMap != null) {
 			int j = 0;
-			BitmapDescriptor red = BitmapDescriptorFactory.defaultMarker();
+			final BitmapDescriptor red = BitmapDescriptorFactory.defaultMarker();
 			BitmapDescriptor blue = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
 			MarkerOptions options;
-			for (BusPattern pattern : patterns) {
-				PolylineOptions poly = new PolylineOptions();
+			for (final BusPattern pattern : patterns) {
+				final PolylineOptions poly = new PolylineOptions();
 				if (j == 0) {
 					poly.geodesic(true).color(Color.RED);
 				} else if (j == 1) {
@@ -450,8 +450,8 @@ public class BusMapActivity extends Activity {
 					poly.geodesic(true).color(Color.YELLOW);
 				}
 				poly.width(7f);
-				for (PatternPoint patternPoint : pattern.getPoints()) {
-					LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
+				for (final PatternPoint patternPoint : pattern.getPoints()) {
+					final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
 					poly.add(point);
 					if (patternPoint.getStopId() != null) {
 						options = new MarkerOptions();
@@ -463,7 +463,7 @@ public class BusMapActivity extends Activity {
 							options.icon(blue);
 						}
 
-						Marker marker = googleMap.addMarker(options);
+						final Marker marker = googleMap.addMarker(options);
 						busStationMarkers.add(marker);
 						marker.setVisible(false);
 					}
@@ -493,18 +493,18 @@ public class BusMapActivity extends Activity {
 			centerMap = params[0];
 			stopRefresh = params[1];
 			List<Bus> buses = null;
-			CtaConnect connect = CtaConnect.getInstance();
-			MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
+			final CtaConnect connect = CtaConnect.getInstance();
+			final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
 			if (busId != 0) {
 				connectParam.put("vid", String.valueOf(busId));
 			} else {
 				connectParam.put("rt", busRouteId);
 			}
 			try {
-				String content = connect.connect(CtaRequestType.BUS_VEHICLES, connectParam);
-				Xml xml = new Xml();
+				final String content = connect.connect(CtaRequestType.BUS_VEHICLES, connectParam);
+				final Xml xml = new Xml();
 				buses = xml.parseVehicles(content);
-			} catch (ConnectException | ParserException e) {
+			} catch (final ConnectException | ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
 			Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
@@ -536,7 +536,7 @@ public class BusMapActivity extends Activity {
 		// The minimum distance to change Updates in meters
 		private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
 		// The minimum time between updates in milliseconds
-		private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
+		private static final long MIN_TIME_BW_UPDATES = 1000 * 60; // 1 minute
 		// flag for GPS status
 		private boolean isGPSEnabled = false;
 		// flag for network status
@@ -582,12 +582,6 @@ public class BusMapActivity extends Activity {
 							!= PackageManager.PERMISSION_GRANTED
 							&& ActivityCompat.checkSelfPermission(BusMapActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
 							!= PackageManager.PERMISSION_GRANTED) {
-						// TODO: Consider calling
-						//    ActivityCompat#requestPermissions
-						// here to request the missing permissions, and then overriding
-						//   public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
-						// to handle the case where the user grants the permission. See the documentation
-						// for ActivityCompat#requestPermissions for more details.
 						ActivityCompat.requestPermissions(BusMapActivity.this,
 								new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
 						return null;
@@ -609,12 +603,6 @@ public class BusMapActivity extends Activity {
 								!= PackageManager.PERMISSION_GRANTED
 								&& ActivityCompat.checkSelfPermission(BusMapActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
 								!= PackageManager.PERMISSION_GRANTED) {
-							// TODO: Consider calling
-							//    ActivityCompat#requestPermissions
-							// here to request the missing permissions, and then overriding
-							//   public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
-							// to handle the case where the user grants the permission. See the documentation
-							// for ActivityCompat#requestPermissions for more details.
 							ActivityCompat.requestPermissions(BusMapActivity.this,
 									new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
 							return null;
@@ -683,7 +671,7 @@ public class BusMapActivity extends Activity {
 				public void run() {
 					BusMapActivity.this.runOnUiThread(new Runnable() {
 						public void run() {
-							AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(BusMapActivity.this);
+							final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(BusMapActivity.this);
 							alertDialogBuilder.setTitle("GPS settings");
 							alertDialogBuilder.setMessage("GPS is not enabled. Do you want to go to settings menu?");
 							alertDialogBuilder.setCancelable(false).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -696,7 +684,7 @@ public class BusMapActivity extends Activity {
 									dialog.cancel();
 								}
 							});
-							AlertDialog alertDialog = alertDialogBuilder.create();
+							final AlertDialog alertDialog = alertDialogBuilder.create();
 							alertDialog.show();
 						}
 					});
@@ -719,14 +707,14 @@ public class BusMapActivity extends Activity {
 		@Override
 		protected final List<BusPattern> doInBackground(final Void... params) {
 			this.patterns = new ArrayList<>();
-			CtaConnect connect = CtaConnect.getInstance();
+			final CtaConnect connect = CtaConnect.getInstance();
 			try {
 				if (busId == 0) {
-					MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
+					final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
 					reqParams.put("rt", busRouteId);
-					Xml xml = new Xml();
+					final Xml xml = new Xml();
 					String xmlResult = connect.connect(CtaRequestType.BUS_DIRECTION, reqParams);
-					BusDirections busDirections = xml.parseBusDirections(xmlResult, busRouteId);
+					final BusDirections busDirections = xml.parseBusDirections(xmlResult, busRouteId);
 					bounds = new String[busDirections.getlBusDirection().size()];
 					for (int i = 0; i < busDirections.getlBusDirection().size(); i++) {
 						bounds[i] = busDirections.getlBusDirection().get(i).toString();
@@ -735,20 +723,20 @@ public class BusMapActivity extends Activity {
 							R.string.analytics_action_get_bus_direction, 0);
 				}
 
-				MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
+				final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
 				connectParam.put("rt", busRouteId);
-				String content = connect.connect(CtaRequestType.BUS_PATTERN, connectParam);
-				Xml xml = new Xml();
-				List<BusPattern> patterns = xml.parsePatterns(content);
-				for (BusPattern pattern : patterns) {
+				final String content = connect.connect(CtaRequestType.BUS_PATTERN, connectParam);
+				final Xml xml = new Xml();
+				final List<BusPattern> patterns = xml.parsePatterns(content);
+				for (final BusPattern pattern : patterns) {
 					String directionIgnoreCase = pattern.getDirection().toLowerCase(Locale.US);
-					for (String bound : bounds) {
+					for (final String bound : bounds) {
 						if (pattern.getDirection().equals(bound) || bound.toLowerCase(Locale.US).contains(directionIgnoreCase)) {
 							this.patterns.add(pattern);
 						}
 					}
 				}
-			} catch (ConnectException | ParserException e) {
+			} catch (final ConnectException | ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
 			Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
@@ -793,14 +781,14 @@ public class BusMapActivity extends Activity {
 				String content = connect.connect(CtaRequestType.BUS_ARRIVALS, connectParam);
 				Xml xml = new Xml();
 				arrivals = xml.parseBusArrivals(content);
-			} catch (ConnectException | ParserException e) {
+			} catch (final ConnectException | ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
 			Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
 					R.string.analytics_action_get_bus_arrival, 0);
 			if (!loadAll && arrivals.size() > 7) {
 				arrivals = arrivals.subList(0, 6);
-				BusArrival arrival = new BusArrival();
+				final BusArrival arrival = new BusArrival();
 				arrival.setStopName("Display all results");
 				arrival.setIsDly(false);
 				arrivals.add(arrival);
@@ -810,10 +798,10 @@ public class BusMapActivity extends Activity {
 
 		@Override
 		protected final void onPostExecute(final List<BusArrival> result) {
-			ListView arrivals = (ListView) view.findViewById(R.id.arrivals);
-			TextView error = (TextView) view.findViewById(R.id.error);
+			final ListView arrivals = (ListView) view.findViewById(R.id.arrivals);
+			final TextView error = (TextView) view.findViewById(R.id.error);
 			if (result.size() != 0) {
-				BusMapSnippetAdapter ada = new BusMapSnippetAdapter(result);
+				final BusMapSnippetAdapter ada = new BusMapSnippetAdapter(result);
 				arrivals.setAdapter(ada);
 				arrivals.setVisibility(ListView.VISIBLE);
 				error.setVisibility(TextView.GONE);

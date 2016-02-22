@@ -61,7 +61,7 @@ public class CustomDrawerAdapter extends ArrayAdapter<DrawerItem> {
 		DrawerItemHolder drawerHolder;
 		View view = convertView;
 		if (view == null) {
-			LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+			final LayoutInflater inflater = ((Activity) context).getLayoutInflater();
 			drawerHolder = new DrawerItemHolder();
 
 			view = inflater.inflate(resource, parent, false);
@@ -75,7 +75,7 @@ public class CustomDrawerAdapter extends ArrayAdapter<DrawerItem> {
 
 		}
 
-		DrawerItem dItem = this.listItems.get(position);
+		final DrawerItem dItem = this.listItems.get(position);
 
 		drawerHolder.icon.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), dItem.getImgId()));
 		drawerHolder.name.setText(dItem.getName());

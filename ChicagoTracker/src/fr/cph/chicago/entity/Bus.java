@@ -103,14 +103,14 @@ public class Bus {
 	}
 
 	public static Position getBestPosition(List<Bus> buses) {
-		Position position = new Position();
+		final Position position = new Position();
 		double maxLatitude = 0.0;
 		double minLatitude = 0.0;
 		double maxLongitude = 0.0;
 		double minLongitude = 0.0;
 		int i = 0;
-		for (Bus bus : buses) {
-			Position temp = bus.getPosition();
+		for (final Bus bus : buses) {
+			final Position temp = bus.getPosition();
 			if (i == 0) {
 				maxLatitude = temp.getLatitude();
 				minLatitude = temp.getLatitude();

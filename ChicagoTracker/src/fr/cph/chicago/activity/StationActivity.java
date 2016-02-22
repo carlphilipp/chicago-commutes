@@ -21,11 +21,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -154,8 +150,8 @@ public class StationActivity extends Activity {
 		ChicagoTracker.checkTrainData(this);
 		if (!this.isFinishing()) {
 			// Load data
-			DataHolder dataHolder = DataHolder.getInstance();
-			this.trainData = dataHolder.getTrainData();
+			final DataHolder dataHolder = DataHolder.getInstance();
+			trainData = dataHolder.getTrainData();
 
 			ids = new HashMap<>();
 
@@ -170,16 +166,16 @@ public class StationActivity extends Activity {
 			// Get station from station id
 			station = trainData.getStation(stationId);
 
-			MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
+			final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
 			reqParams.put("mapid", String.valueOf(station.getId()));
 			new LoadData().execute(reqParams);
 
 			// Call google street api to load image
 			new DisplayGoogleStreetPicture().execute(station.getStops().get(0).getPosition());
 
-			this.isFavorite = isFavorite();
+			isFavorite = isFavorite();
 
-			TextView textView = (TextView) findViewById(R.id.activity_bike_station_station_name);
+			final TextView textView = (TextView) findViewById(R.id.activity_bike_station_station_name);
 			textView.setText(station.getName());
 
 			streetViewImage = (ImageView) findViewById(R.id.activity_bike_station_streetview_image);
@@ -201,28 +197,29 @@ public class StationActivity extends Activity {
 				}
 			});
 
-			LinearLayout stopsView = (LinearLayout) findViewById(R.id.activity_bike_station_details);
+			final LinearLayout stopsView = (LinearLayout) findViewById(R.id.activity_bike_station_details);
 
-			this.paramsStop = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+			paramsStop = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
-			Map<TrainLine, List<Stop>> stops = station.getStopByLines();
+			final Map<TrainLine, List<Stop>> stops = station.getStopByLines();
 			CheckBox checkBox = null;
-			for (Entry<TrainLine, List<Stop>> e : stops.entrySet()) {
+			for (final Entry<TrainLine, List<Stop>> e : stops.entrySet()) {
 				final TrainLine line = e.getKey();
-				List<Stop> stopss = e.getValue();
+				final List<Stop> stopss = e.getValue();
 				Collections.sort(stopss);
-				LayoutInflater layoutInflater = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				View view = layoutInflater.inflate(R.layout.activity_station_line_title, null);
+				final LayoutInflater layoutInflater = (LayoutInflater) ChicagoTracker.getAppContext()
+						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				final View view = layoutInflater.inflate(R.layout.activity_station_line_title, null);
 
-				TextView lineTextView = (TextView) view.findViewById(R.id.activity_bus_station_value);
+				final TextView lineTextView = (TextView) view.findViewById(R.id.activity_bus_station_value);
 				lineTextView.setText(line.toStringWithLine());
 
-				TextView lineColorTextView = (TextView) view.findViewById(R.id.activity_bus_color);
+				final TextView lineColorTextView = (TextView) view.findViewById(R.id.activity_bus_color);
 				lineColorTextView.setBackgroundColor(line.getColor());
 				stopsView.addView(view);
 
 				for (final Stop stop : stopss) {
-					LinearLayout line2 = new LinearLayout(this);
+					final LinearLayout line2 = new LinearLayout(this);
 					line2.setOrientation(LinearLayout.HORIZONTAL);
 					line2.setLayoutParams(paramsStop);
 
@@ -237,7 +234,7 @@ public class StationActivity extends Activity {
 						@Override
 						public void onClick(View v) {
 							// Update timing
-							MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
+							final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
 							reqParams.put("mapid", String.valueOf(station.getId()));
 							new LoadData().execute(reqParams);
 						}
@@ -256,7 +253,7 @@ public class StationActivity extends Activity {
 					line2.addView(checkBox);
 					stopsView.addView(line2);
 
-					LinearLayout line3 = new LinearLayout(this);
+					final LinearLayout line3 = new LinearLayout(this);
 					line3.setOrientation(LinearLayout.VERTICAL);
 					line3.setLayoutParams(paramsStop);
 					int id3 = Util.generateViewId();
@@ -268,13 +265,13 @@ public class StationActivity extends Activity {
 
 			}
 
-			Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+			final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
 			toolbar.inflateMenu(R.menu.main);
 			toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
 				@Override
 				public boolean onMenuItemClick(MenuItem item) {
-					MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
+					final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
 					reqParams.put("mapid", String.valueOf(station.getId()));
 					new LoadData().execute(reqParams);
 
@@ -286,7 +283,7 @@ public class StationActivity extends Activity {
 				toolbar.setElevation(4);
 			}
 
-			TrainLine randomTrainLine = getRandomLine(stops);
+			final TrainLine randomTrainLine = getRandomLine(stops);
 
 			Util.setToolbarColor(this, toolbar, randomTrainLine);
 
@@ -325,13 +322,8 @@ public class StationActivity extends Activity {
 	public final boolean onCreateOptionsMenu(final Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		this.menu = menu;
-		MenuInflater inflater = getMenuInflater();
+		final MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main_no_search, menu);
-
-		//		MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-		//		refreshMenuItem.setActionView(R.layout.progressbar);
-		//		refreshMenuItem.expandActionView();
-
 		return true;
 	}
 
@@ -351,7 +343,7 @@ public class StationActivity extends Activity {
 			//			for (Integer fav : favorites) {
 			//				params.put("mapid", String.valueOf(fav));
 			//			}
-			MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
+			final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
 			reqParams.put("mapid", String.valueOf(station.getId()));
 			new LoadData().execute(reqParams);
 			return true;
@@ -366,9 +358,9 @@ public class StationActivity extends Activity {
 	 */
 	private boolean isFavorite() {
 		boolean isFavorite = false;
-		List<Integer> favorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
-		for (Integer fav : favorites) {
-			if (fav.intValue() == stationId.intValue()) {
+		final List<Integer> favorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
+		for (final Integer favorite : favorites) {
+			if (favorite.intValue() == stationId.intValue()) {
 				isFavorite = true;
 				break;
 			}
@@ -388,9 +380,9 @@ public class StationActivity extends Activity {
 
 		@Override
 		protected final Drawable doInBackground(final Position... params) {
-			GStreetViewConnect connect = GStreetViewConnect.getInstance();
+			final GStreetViewConnect connect = GStreetViewConnect.getInstance();
 			try {
-				this.position = params[0];
+				position = params[0];
 				Util.trackAction(StationActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_google,
 						R.string.analytics_action_get_google_map_street_view, 0);
 				return connect.connect(params[0]);
@@ -402,10 +394,10 @@ public class StationActivity extends Activity {
 
 		@Override
 		protected final void onPostExecute(final Drawable result) {
-			int height = (int) getResources().getDimension(R.dimen.activity_station_street_map_height);
+			final int height = (int) getResources().getDimension(R.dimen.activity_station_street_map_height);
 			android.widget.RelativeLayout.LayoutParams params = (android.widget.RelativeLayout.LayoutParams) StationActivity.this.streetViewImage
 					.getLayoutParams();
-			ViewGroup.LayoutParams params2 = StationActivity.this.streetViewImage.getLayoutParams();
+			final ViewGroup.LayoutParams params2 = StationActivity.this.streetViewImage.getLayoutParams();
 			params2.height = height;
 			params2.width = params.width;
 			StationActivity.this.streetViewImage.setLayoutParams(params2);
@@ -415,7 +407,7 @@ public class StationActivity extends Activity {
 				public void onClick(View v) {
 					String uri = String.format(Locale.ENGLISH, "google.streetview:cbll=%f,%f&cbp=1,180,,0,1&mz=1", position.getLatitude(),
 							position.getLongitude());
-					Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+					final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
 					intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
 					try {
 						startActivity(intent);
@@ -452,12 +444,6 @@ public class StationActivity extends Activity {
 
 			StationActivity.this.streetViewText.setText(ChicagoTracker.getAppContext().getResources()
 					.getString(R.string.station_activity_street_view));
-
-			if (menu != null) {
-				//				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-				//				refreshMenuItem.collapseActionView();
-				//				refreshMenuItem.setActionView(null);
-			}
 			firstLoad = false;
 		}
 	}
@@ -481,47 +467,43 @@ public class StationActivity extends Activity {
 			// Get menu item and put it to loading mod
 			publishProgress((Void[]) null);
 			SparseArray<TrainArrival> arrivals = new SparseArray<>();
-			CtaConnect connect = CtaConnect.getInstance();
+			final CtaConnect connect = CtaConnect.getInstance();
 			try {
-				Xml xml = new Xml();
-				String xmlResult = connect.connect(CtaRequestType.TRAIN_ARRIVALS, params[0]);
+				final Xml xml = new Xml();
+				final String xmlResult = connect.connect(CtaRequestType.TRAIN_ARRIVALS, params[0]);
 				// String xmlResult = connectTest();
 				arrivals = xml.parseArrivals(xmlResult, StationActivity.this.trainData);
 				// Apply filters
 				int index = 0;
 				while (index < arrivals.size()) {
-					TrainArrival arri = arrivals.valueAt(index++);
-					List<Eta> etas = arri.getEtas();
+					final TrainArrival arri = arrivals.valueAt(index++);
+					final List<Eta> etas = arri.getEtas();
 					// Sort Eta by arriving time
 					Collections.sort(etas);
 					// Copy data into new list to be able to avoid looping on a list that we want to
 					// modify
-					List<Eta> etas2 = new ArrayList<>();
+					final List<Eta> etas2 = new ArrayList<>();
 					etas2.addAll(etas);
 					int j = 0;
-					Eta eta = null;
-					Station station = null;
-					TrainLine line = null;
-					TrainDirection direction = null;
 					for (int i = 0; i < etas2.size(); i++) {
-						eta = etas2.get(i);
-						station = eta.getStation();
-						line = eta.getRouteName();
-						direction = eta.getStop().getDirection();
-						boolean toRemove = Preferences.getTrainFilter(station.getId(), line, direction);
+						final Eta eta = etas2.get(i);
+						final Station station = eta.getStation();
+						final TrainLine line = eta.getRouteName();
+						final TrainDirection direction = eta.getStop().getDirection();
+						final boolean toRemove = Preferences.getTrainFilter(station.getId(), line, direction);
 						if (!toRemove) {
 							etas.remove(i - j++);
 						}
 					}
 				}
-			} catch (ParserException | ConnectException e) {
+			} catch (final ParserException | ConnectException e) {
 				this.trackerException = e;
 			}
 			Util.trackAction(StationActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train,
 					R.string.analytics_action_get_train_arrivals, 0);
 			if (arrivals.size() == 1) {
 				@SuppressWarnings("unchecked")
-				String id = ((List<String>) params[0].get("mapid")).get(0);
+				final String id = ((List<String>) params[0].get("mapid")).get(0);
 				return arrivals.get(Integer.valueOf(id));
 			} else {
 				return null;
@@ -530,12 +512,6 @@ public class StationActivity extends Activity {
 
 		@Override
 		protected final void onProgressUpdate(final Void... values) {
-			// Get menu item and put it to loading mod
-			if (menu != null) {
-				//				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-				//				refreshMenuItem.setActionView(R.layout.progressbar);
-				//				refreshMenuItem.expandActionView();
-			}
 		}
 
 		@Override
@@ -549,13 +525,8 @@ public class StationActivity extends Activity {
 					etas = new ArrayList<>();
 				}
 				reset(StationActivity.this.station);
-				for (Eta eta : etas) {
+				for (final Eta eta : etas) {
 					drawLine3(eta);
-				}
-				if (!firstLoad) {
-					//					MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-					//					refreshMenuItem.collapseActionView();
-					//					refreshMenuItem.setActionView(null);
 				}
 			} else {
 				ChicagoTracker.displayError(StationActivity.this, trackerException);
@@ -569,20 +540,22 @@ public class StationActivity extends Activity {
 	 * @param station the station
 	 */
 	private void reset(final Station station) {
-		Set<TrainLine> setTL = station.getLines();
-		for (TrainLine tl : setTL) {
-			for (TrainDirection d : TrainDirection.values()) {
-				Integer id = ids.get(tl.toString() + "_" + d.toString());
-				if (id != null) {
-					LinearLayout line3View = (LinearLayout) findViewById(id);
-					if (line3View != null) {
-						line3View.setVisibility(View.GONE);
-						if (line3View.getChildCount() > 0) {
-							for (int i = 0; i < line3View.getChildCount(); i++) {
-								LinearLayout view = (LinearLayout) line3View.getChildAt(i);
-								TextView timing = (TextView) view.getChildAt(1);
-								if (timing != null) {
-									timing.setText("");
+		final Set<TrainLine> setTL = station.getLines();
+		if (setTL != null) {
+			for (TrainLine tl : setTL) {
+				for (TrainDirection d : TrainDirection.values()) {
+					final Integer id = ids.get(tl.toString() + "_" + d.toString());
+					if (id != null) {
+						final LinearLayout line3View = (LinearLayout) findViewById(id);
+						if (line3View != null) {
+							line3View.setVisibility(View.GONE);
+							if (line3View.getChildCount() > 0) {
+								for (int i = 0; i < line3View.getChildCount(); i++) {
+									final LinearLayout view = (LinearLayout) line3View.getChildAt(i);
+									final TextView timing = (TextView) view.getChildAt(1);
+									if (timing != null) {
+										timing.setText("");
+									}
 								}
 							}
 						}
@@ -598,29 +571,29 @@ public class StationActivity extends Activity {
 	 * @param eta the eta
 	 */
 	private void drawLine3(final Eta eta) {
-		TrainLine line = eta.getRouteName();
-		Stop stop = eta.getStop();
-		int line3Padding = (int) getResources().getDimension(R.dimen.activity_station_stops_line3);
-		Integer viewId = ids.get(line.toString() + "_" + stop.getDirection().toString());
+		final TrainLine line = eta.getRouteName();
+		final Stop stop = eta.getStop();
+		final int line3Padding = (int) getResources().getDimension(R.dimen.activity_station_stops_line3);
+		final Integer viewId = ids.get(line.toString() + "_" + stop.getDirection().toString());
 		// viewId might be not there if CTA API provide wrong data
 		if (viewId != null) {
-			LinearLayout line3View = (LinearLayout) findViewById(viewId);
-			Integer id = ids.get(line.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName());
+			final LinearLayout line3View = (LinearLayout) findViewById(viewId);
+			final Integer id = ids.get(line.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName());
 			if (id == null) {
-				LinearLayout insideLayout = new LinearLayout(this);
+				final LinearLayout insideLayout = new LinearLayout(this);
 				insideLayout.setOrientation(LinearLayout.HORIZONTAL);
 				insideLayout.setLayoutParams(paramsStop);
-				int newId = Util.generateViewId();
+				final int newId = Util.generateViewId();
 				insideLayout.setId(newId);
 				ids.put(line.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName(), newId);
 
-				TextView stopName = new TextView(this);
+				final TextView stopName = new TextView(this);
 				stopName.setText(eta.getDestName() + ": ");
 				stopName.setTextColor(getResources().getColor(R.color.grey));
 				stopName.setPadding(line3Padding, 0, 0, 0);
 				insideLayout.addView(stopName);
 
-				TextView timing = new TextView(this);
+				final TextView timing = new TextView(this);
 				timing.setText(eta.getTimeLeftDueDelay() + " ");
 				timing.setTextColor(getResources().getColor(R.color.grey));
 				timing.setLines(1);
@@ -629,8 +602,8 @@ public class StationActivity extends Activity {
 
 				line3View.addView(insideLayout);
 			} else {
-				LinearLayout insideLayout = (LinearLayout) findViewById(id);
-				TextView timing = (TextView) insideLayout.getChildAt(1);
+				final LinearLayout insideLayout = (LinearLayout) findViewById(id);
+				final TextView timing = (TextView) insideLayout.getChildAt(1);
 				timing.setText(timing.getText() + eta.getTimeLeftDueDelay() + " ");
 			}
 			line3View.setVisibility(View.VISIBLE);

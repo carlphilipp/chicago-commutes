@@ -43,8 +43,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 	 * @return the fragment
 	 */
 	public static SettingsFragment newInstance(final int sectionNumber) {
-		SettingsFragment fragment = new SettingsFragment();
-		Bundle args = new Bundle();
+		final SettingsFragment fragment = new SettingsFragment();
+		final Bundle args = new Bundle();
 		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
 		fragment.setArguments(args);
 		return fragment;

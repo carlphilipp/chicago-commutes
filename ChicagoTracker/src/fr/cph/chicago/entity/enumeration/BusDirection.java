@@ -50,7 +50,7 @@ public enum BusDirection {
 	 */
 	public static BusDirection fromString(final String text) {
 		if (text != null) {
-			for (BusDirection b : BusDirection.values()) {
+			for (final BusDirection b : BusDirection.values()) {
 				if (text.equalsIgnoreCase(b.text)) {
 					return b;
 				} else if (b.text.toLowerCase(Locale.US).contains(text.toLowerCase(Locale.US))) {

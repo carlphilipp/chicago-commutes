@@ -53,8 +53,8 @@ public final class TrainFragment extends Fragment {
 	 * @return
 	 */
 	public static TrainFragment newInstance(final int sectionNumber) {
-		TrainFragment fragment = new TrainFragment();
-		Bundle args = new Bundle();
+		final TrainFragment fragment = new TrainFragment();
+		final Bundle args = new Bundle();
 		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
 		fragment.setArguments(args);
 		return fragment;
@@ -63,23 +63,22 @@ public final class TrainFragment extends Fragment {
 	@Override
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		Util.trackScreen(getResources().getString(R.string.analytics_train_fragment));
 	}
 
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.fragment_train, container, false);
-		TrainStationAdapter ada = new TrainStationAdapter();
-		ListView listView = (ListView) rootView.findViewById(R.id.train_list);
+		final View rootView = inflater.inflate(R.layout.fragment_train, container, false);
+		final TrainStationAdapter ada = new TrainStationAdapter();
+		final ListView listView = (ListView) rootView.findViewById(R.id.train_list);
 		listView.setAdapter(ada);
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
 				if (Util.isNetworkAvailable()) {
-					Intent intent = new Intent(TrainFragment.this.getView().getContext(), TrainStationActivity.class);
-					Bundle extras = new Bundle();
-					String line = TrainLine.values()[position].toString();
+					final Intent intent = new Intent(TrainFragment.this.getView().getContext(), TrainStationActivity.class);
+					final Bundle extras = new Bundle();
+					final String line = TrainLine.values()[position].toString();
 					extras.putString("line", line);
 					intent.putExtras(extras);
 					startActivity(intent);

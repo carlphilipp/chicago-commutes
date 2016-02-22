@@ -37,7 +37,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
@@ -99,8 +98,6 @@ public class TrainMapActivity extends Activity {
 
 	private List<Marker> markers;
 
-	private Menu menu;
-
 	private TrainData trainData;
 
 	private boolean refreshingInfoWindow = false;
@@ -128,27 +125,26 @@ public class TrainMapActivity extends Activity {
 			}
 
 			// Load data
-			DataHolder dataHolder = DataHolder.getInstance();
-			this.trainData = dataHolder.getTrainData();
+			final DataHolder dataHolder = DataHolder.getInstance();
+			trainData = dataHolder.getTrainData();
 
 			markers = new ArrayList<>();
 			status = new HashMap<>();
 			trainListener = new TrainMapOnCameraChangeListener();
 
-			Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+			final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
 			toolbar.inflateMenu(R.menu.main);
 			toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
 				@Override
 				public boolean onMenuItemClick(MenuItem item) {
-					startRefreshAnimation();
 					new LoadCurrentPosition().execute();
 					new LoadTrainPosition().execute(false, true);
 					return false;
 				}
 			}));
 
-			TrainLine trainLine = TrainLine.fromXmlString(line);
+			final TrainLine trainLine = TrainLine.fromXmlString(line);
 
 			Util.setToolbarColor(this, toolbar, trainLine);
 
@@ -165,17 +161,16 @@ public class TrainMapActivity extends Activity {
 	@Override
 	public final void onRestart() {
 		super.onRestart();
-		startRefreshAnimation();
 	}
 
 	@Override
 	public final void onStart() {
 		super.onStart();
 		if (mapFragment == null) {
-			FragmentManager fm = getFragmentManager();
+			final FragmentManager fm = getFragmentManager();
 			mapFragment = (MapFragment) fm.findFragmentById(R.id.map);
-			GoogleMapOptions options = new GoogleMapOptions();
-			CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 10, 0, 0);
+			final GoogleMapOptions options = new GoogleMapOptions();
+			final CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 10, 0, 0);
 			options.camera(camera);
 			mapFragment = MapFragment.newInstance(options);
 			mapFragment.setRetainInstance(true);
@@ -218,7 +213,6 @@ public class TrainMapActivity extends Activity {
 						if (!refreshingInfoWindow) {
 							selectedMarker = marker;
 							final String runNumber = marker.getSnippet();
-							startRefreshAnimation();
 							new LoadTrainFollow(view, false).execute(runNumber);
 							status.put(marker, false);
 						}
@@ -237,8 +231,7 @@ public class TrainMapActivity extends Activity {
 						if (!refreshingInfoWindow) {
 							selectedMarker = marker;
 							final String runNumber = marker.getSnippet();
-							startRefreshAnimation();
-							boolean current = status.get(marker);
+							final boolean current = status.get(marker);
 							new LoadTrainFollow(view, !current).execute(runNumber);
 							status.put(marker, !current);
 						}
@@ -266,53 +259,6 @@ public class TrainMapActivity extends Activity {
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
-	//	@Override
-	//	public final boolean onCreateOptionsMenu(final Menu menu) {
-	//		this.menu = menu;
-	//		getMenuInflater().inflate(R.menu.main_no_search, menu);
-	//		startRefreshAnimation();
-	//		return super.onCreateOptionsMenu(menu);
-	//	}
-
-	//	@Override
-	//	public final boolean onOptionsItemSelected(final MenuItem item) {
-	//		switch (item.getItemId()) {
-	//		case android.R.id.home:
-	//			finish();
-	//			return true;
-	//		case R.id.action_refresh:
-	//			startRefreshAnimation();
-	//			new LoadCurrentPosition().execute();
-	//			new LoadTrainPosition().execute(new Boolean[] { false, true });
-	//			return true;
-	//		}
-	//		return super.onOptionsItemSelected(item);
-	//	}
-
-	/**
-	 * Load animation in menu
-	 */
-	private void startRefreshAnimation() {
-/*		if (menu != null) {
-			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-			if (refreshMenuItem.getActionView() == null) {
-				refreshMenuItem.setActionView(R.layout.progressbar);
-				refreshMenuItem.expandActionView();
-			}
-		}*/
-	}
-
-	/**
-	 * Stop animation in menu
-	 */
-	private void stopRefreshAnimation() {
-		//		if (menu != null) {
-		//			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-		//			refreshMenuItem.collapseActionView();
-		//			refreshMenuItem.setActionView(null);
-		//		}
-	}
-
 	/**
 	 * Refresh windows
 	 */
@@ -323,7 +269,6 @@ public class TrainMapActivity extends Activity {
 		refreshingInfoWindow = true;
 		selectedMarker.showInfoWindow();
 		refreshingInfoWindow = false;
-		stopRefreshAnimation();
 	}
 
 	/**
@@ -345,7 +290,7 @@ public class TrainMapActivity extends Activity {
 			zoom = 11;
 		}
 		if (googleMap != null) {
-			LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
+			final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
 			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 		}
 	}
@@ -360,12 +305,12 @@ public class TrainMapActivity extends Activity {
 				views.clear();
 			}
 			views = new HashMap<>();
-			for (Marker marker : markers) {
+			for (final Marker marker : markers) {
 				marker.remove();
 			}
 			markers.clear();
 			final Bitmap bitmap = trainListener.getCurrentBitmap();
-			for (Train train : trains) {
+			for (final Train train : trains) {
 				final LatLng point = new LatLng(train.getPosition().getLatitude(), train.getPosition().getLongitude());
 				final String title = "To " + train.getDestName();
 				final String snippet = String.valueOf(train.getRouteNumber());
@@ -374,13 +319,13 @@ public class TrainMapActivity extends Activity {
 						.icon(BitmapDescriptorFactory.fromBitmap(bitmap)).anchor(0.5f, 0.5f).rotation(train.getHeading()).flat(true));
 				markers.add(marker);
 
-				LayoutInflater layoutInflater = (LayoutInflater) TrainMapActivity.this.getBaseContext().getSystemService(
+				final LayoutInflater layoutInflater = (LayoutInflater) TrainMapActivity.this.getBaseContext().getSystemService(
 						Context.LAYOUT_INFLATER_SERVICE);
-				View view = layoutInflater.inflate(R.layout.marker_train, null);
-				TextView title2 = (TextView) view.findViewById(R.id.title);
+				final View view = layoutInflater.inflate(R.layout.marker_train, null);
+				final TextView title2 = (TextView) view.findViewById(R.id.title);
 				title2.setText(title);
 
-				TextView color = (TextView) view.findViewById(R.id.route_color_value);
+				final TextView color = (TextView) view.findViewById(R.id.route_color_value);
 				color.setBackgroundColor(TrainLine.fromXmlString(TrainMapActivity.this.line).getColor());
 
 				views.put(marker, view);
@@ -390,11 +335,11 @@ public class TrainMapActivity extends Activity {
 
 			googleMap.setOnCameraChangeListener(trainListener);
 
-			PolylineOptions poly = new PolylineOptions();
+			final PolylineOptions poly = new PolylineOptions();
 			poly.width(7f);
 			poly.geodesic(true).color(TrainLine.fromXmlString(this.line).getColor());
-			for (Position position : positions) {
-				LatLng point = new LatLng(position.getLatitude(), position.getLongitude());
+			for (final Position position : positions) {
+				final LatLng point = new LatLng(position.getLatitude(), position.getLongitude());
 				poly.add(point);
 			}
 			googleMap.addPolyline(poly);
@@ -427,13 +372,13 @@ public class TrainMapActivity extends Activity {
 			final String runNumber = params[0];
 			List<Eta> etas = new ArrayList<>();
 			try {
-				CtaConnect connect = CtaConnect.getInstance();
-				MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
+				final CtaConnect connect = CtaConnect.getInstance();
+				final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
 				connectParam.put("runnumber", runNumber);
-				String content = connect.connect(CtaRequestType.TRAIN_FOLLOW, connectParam);
-				Xml xml = new Xml();
+				final String content = connect.connect(CtaRequestType.TRAIN_FOLLOW, connectParam);
+				final Xml xml = new Xml();
 				etas = xml.parseTrainsFollow(content, trainData);
-			} catch (ConnectException | ParserException e) {
+			} catch (final ConnectException | ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
 			Util.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train,
@@ -443,13 +388,13 @@ public class TrainMapActivity extends Activity {
 
 				// Add a fake Eta cell to alert the user about the fact that only a part of the result is
 				// displayed
-				Eta eta = new Eta();
+				final Eta eta = new Eta();
 				eta.setIsDly(false);
 				eta.setIsApp(false);
-				Date currentDate = Calendar.getInstance().getTime();
+				final Date currentDate = Calendar.getInstance().getTime();
 				eta.setArrivalDepartureDate(currentDate);
 				eta.setPredictionDate(currentDate);
-				Station fakeStation = new Station();
+				final Station fakeStation = new Station();
 				fakeStation.setName("Display all results");
 				eta.setStation(fakeStation);
 				etas.add(eta);
@@ -459,10 +404,10 @@ public class TrainMapActivity extends Activity {
 
 		@Override
 		protected final void onPostExecute(final List<Eta> result) {
-			ListView arrivals = (ListView) view.findViewById(R.id.arrivals);
-			TextView error = (TextView) view.findViewById(R.id.error);
+			final ListView arrivals = (ListView) view.findViewById(R.id.arrivals);
+			final TextView error = (TextView) view.findViewById(R.id.error);
 			if (result.size() != 0) {
-				TrainMapSnippetAdapter ada = new TrainMapSnippetAdapter(result);
+				final TrainMapSnippetAdapter ada = new TrainMapSnippetAdapter(result);
 				arrivals.setAdapter(ada);
 				arrivals.setVisibility(ListView.VISIBLE);
 				error.setVisibility(TextView.GONE);
@@ -493,12 +438,12 @@ public class TrainMapActivity extends Activity {
 			centerMap = params[0];
 			stopRefresh = params[1];
 			List<Train> trains = null;
-			CtaConnect connect = CtaConnect.getInstance();
-			MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
+			final CtaConnect connect = CtaConnect.getInstance();
+			final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
 			connectParam.put("rt", line);
 			try {
-				String content = connect.connect(CtaRequestType.TRAIN_LOCATION, connectParam);
-				Xml xml = new Xml();
+				final String content = connect.connect(CtaRequestType.TRAIN_LOCATION, connectParam);
+				final Xml xml = new Xml();
 				trains = xml.parseTrainsLocation(content);
 			} catch (ConnectException | ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
@@ -507,7 +452,7 @@ public class TrainMapActivity extends Activity {
 					R.string.analytics_action_get_train_location, 0);
 			TrainData data = TrainMapActivity.this.trainData;
 			if (data == null) {
-				DataHolder dataHolder = DataHolder.getInstance();
+				final DataHolder dataHolder = DataHolder.getInstance();
 				data = dataHolder.getTrainData();
 			}
 			positions = data.readPattern(TrainLine.fromXmlString(TrainMapActivity.this.line));
@@ -527,9 +472,6 @@ public class TrainMapActivity extends Activity {
 				}
 			} else {
 				Toast.makeText(TrainMapActivity.this, "Error while loading data!", Toast.LENGTH_SHORT).show();
-			}
-			if (stopRefresh) {
-				stopRefreshAnimation();
 			}
 		}
 	}
@@ -672,7 +614,7 @@ public class TrainMapActivity extends Activity {
 				public void run() {
 					TrainMapActivity.this.runOnUiThread(new Runnable() {
 						public void run() {
-							AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(TrainMapActivity.this);
+							final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(TrainMapActivity.this);
 							alertDialogBuilder.setTitle("GPS settings");
 							alertDialogBuilder.setMessage("GPS is not enabled. Do you want to go to settings menu?");
 							alertDialogBuilder.setCancelable(false).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -685,7 +627,7 @@ public class TrainMapActivity extends Activity {
 									dialog.cancel();
 								}
 							});
-							AlertDialog alertDialog = alertDialogBuilder.create();
+							final AlertDialog alertDialog = alertDialogBuilder.create();
 							alertDialog.show();
 						}
 					});

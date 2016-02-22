@@ -89,26 +89,26 @@ public class BusData {
 	public final List<BusStop> readBusStops() {
 		if (busStops.size() == 0) {
 			try {
-				CSVReader reader = new CSVReader(new InputStreamReader(ChicagoTracker.getAppContext().getAssets().open("stops.txt")));
+				final CSVReader reader = new CSVReader(new InputStreamReader(ChicagoTracker.getAppContext().getAssets().open("stops.txt")));
 				reader.readNext();
-				String[] row = null;
+				String[] row;
 				while ((row = reader.readNext()) != null) {
 					// int locationType = Integer.valueOf(row[6]);// location_type
-					Integer stopId = Integer.valueOf(row[0]); // stop_id
+					final Integer stopId = Integer.valueOf(row[0]); // stop_id
 					if (stopId < 30000) {
 						// String stopCode = TrainDirection.fromString(row[1]); // stop_code
-						String stopName = row[2]; // stop_name
+						final String stopName = row[2]; // stop_name
 						// String stopDesc = row[3]; // stop_desc
-						Double latitude = Double.valueOf(row[4]);// stop_lat
-						Double longitude = Double.valueOf(row[5]);// stop_lon
+						final Double latitude = Double.valueOf(row[4]);// stop_lat
+						final Double longitude = Double.valueOf(row[5]);// stop_lon
 
-						BusStop busStop = new BusStop();
+						final BusStop busStop = new BusStop();
 						busStop.setId(stopId);
 						busStop.setName(stopName);
-						Position positon = new Position();
-						positon.setLatitude(latitude);
-						positon.setLongitude(longitude);
-						busStop.setPosition(positon);
+						final Position position = new Position();
+						position.setLatitude(latitude);
+						position.setLongitude(longitude);
+						busStop.setPosition(position);
 
 						busStops.add(busStop);
 					} else {
@@ -117,7 +117,7 @@ public class BusData {
 				}
 				reader.close();
 				order();
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
 		}
@@ -133,10 +133,10 @@ public class BusData {
 	 */
 	public final List<BusRoute> loadBusRoutes() throws ParserException, ConnectException {
 		if (busRoutes.size() == 0) {
-			MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
-			CtaConnect connect = CtaConnect.getInstance();
-			Xml xml = new Xml();
-			String xmlResult = connect.connect(CtaRequestType.BUS_ROUTES, params);
+			final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
+			final CtaConnect connect = CtaConnect.getInstance();
+			final Xml xml = new Xml();
+			final String xmlResult = connect.connect(CtaRequestType.BUS_ROUTES, params);
 			busRoutes = xml.parseBusRoutes(xmlResult);
 		}
 		return busRoutes;
@@ -178,7 +178,7 @@ public class BusData {
 	 */
 	public final BusRoute getRoute(final String routeId) {
 		BusRoute result = null;
-		for (BusRoute br : busRoutes) {
+		for (final BusRoute br : busRoutes) {
 			if (br.getId().equals(routeId)) {
 				result = br;
 				break;
@@ -188,7 +188,7 @@ public class BusData {
 	}
 
 	public final boolean containsRoute(final String routeId) {
-		for (BusRoute br : busRoutes) {
+		for (final BusRoute br : busRoutes) {
 			if (br.getId().equals(routeId)) {
 				return true;
 			}
@@ -206,12 +206,12 @@ public class BusData {
 	 * @throws ParserException  a parser exception
 	 */
 	public final List<BusStop> loadBusStop(final String stopId, final String bound) throws ConnectException, ParserException {
-		CtaConnect connect = CtaConnect.getInstance();
-		MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
+		final CtaConnect connect = CtaConnect.getInstance();
+		final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
 		params.put("rt", stopId);
 		params.put("dir", bound);
-		String xmlResult = connect.connect(CtaRequestType.BUS_STOP_LIST, params);
-		Xml xml = new Xml();
+		final String xmlResult = connect.connect(CtaRequestType.BUS_STOP_LIST, params);
+		final Xml xml = new Xml();
 		return xml.parseBusBounds(xmlResult);
 	}
 
@@ -232,7 +232,7 @@ public class BusData {
 	 */
 	public final BusStop readOneBus(final int id) {
 		BusStop res = null;
-		for (BusStop busStop : busStops) {
+		for (final BusStop busStop : busStops) {
 			if (busStop.getId() == id) {
 				res = busStop;
 				break;
@@ -251,18 +251,18 @@ public class BusData {
 
 		final double dist = 0.004472;
 
-		List<BusStop> res = new ArrayList<>();
-		double latitude = position.getLatitude();
-		double longitude = position.getLongitude();
+		final List<BusStop> res = new ArrayList<>();
+		final double latitude = position.getLatitude();
+		final double longitude = position.getLongitude();
 
-		double latMax = latitude + dist;
-		double latMin = latitude - dist;
-		double lonMax = longitude + dist;
-		double lonMin = longitude - dist;
+		final double latMax = latitude + dist;
+		final double latMin = latitude - dist;
+		final double lonMax = longitude + dist;
+		final double lonMin = longitude - dist;
 
-		for (BusStop busStop : busStops) {
-			double busLatitude = busStop.getPosition().getLatitude();
-			double busLongitude = busStop.getPosition().getLongitude();
+		for (final BusStop busStop : busStops) {
+			final double busLatitude = busStop.getPosition().getLatitude();
+			final double busLongitude = busStop.getPosition().getLongitude();
 			if (busLatitude <= latMax && busLatitude >= latMin && busLongitude <= lonMax && busLongitude >= lonMin) {
 				res.add(busStop);
 			}

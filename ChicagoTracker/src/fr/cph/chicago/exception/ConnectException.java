@@ -36,7 +36,7 @@ public class ConnectException extends TrackerException {
 	 * @param message
 	 *            the message
 	 */
-	public ConnectException(String message) {
+	public ConnectException(final String message) {
 		super(message);
 	}
 
@@ -48,7 +48,7 @@ public class ConnectException extends TrackerException {
 	 * @param e
 	 *            the exception
 	 */
-	public ConnectException(String message, Exception e) {
+	public ConnectException(final String message, final Exception e) {
 		super(message, e);
 	}
 

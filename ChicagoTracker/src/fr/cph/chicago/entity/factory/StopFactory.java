@@ -42,7 +42,7 @@ public final class StopFactory {
 	 * @return a stop
 	 */
 	public static Stop buildStop(final Integer id, final String description, final TrainDirection direction) {
-		Stop stop = new Stop();
+		final Stop stop = new Stop();
 		stop.setId(id);
 		stop.setDescription(description);
 		stop.setDirection(direction);

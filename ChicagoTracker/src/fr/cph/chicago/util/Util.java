@@ -73,7 +73,7 @@ public class Util {
 	 * @return the value of the property
 	 */
 	public static String getProperty(final String property) {
-		Properties prop = new Properties();
+		final Properties prop = new Properties();
 		try {
 			prop.load(ChicagoTracker.getAppContext().getAssets().open("app.properties"));
 		} catch (IOException e) {
@@ -90,7 +90,7 @@ public class Util {
 	 * @param preference the preference
 	 */
 	public static void addToTrainFavorites(final Integer stationId, final String preference) {
-		List<Integer> favorites = Preferences.getTrainFavorites(preference);
+		final List<Integer> favorites = Preferences.getTrainFavorites(preference);
 		if (!favorites.contains(stationId)) {
 			favorites.add(stationId);
 			Preferences.saveTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN, favorites);
@@ -105,7 +105,7 @@ public class Util {
 	 * @param preference the preference
 	 */
 	public static void removeFromTrainFavorites(final Integer stationId, final String preference) {
-		List<Integer> favorites = Preferences.getTrainFavorites(preference);
+		final List<Integer> favorites = Preferences.getTrainFavorites(preference);
 		favorites.remove(stationId);
 		Preferences.saveTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN, favorites);
 		Toast.makeText(ChicagoTracker.getAppContext(), "Removing from favorites", Toast.LENGTH_SHORT).show();
@@ -120,8 +120,8 @@ public class Util {
 	 * @param preference the preference
 	 */
 	public static void removeFromBusFavorites(final String busRouteId, final String busStopId, final String bound, final String preference) {
-		String id = busRouteId + "_" + busStopId + "_" + bound;
-		List<String> favorites = Preferences.getBusFavorites(preference);
+		final String id = busRouteId + "_" + busStopId + "_" + bound;
+		final List<String> favorites = Preferences.getBusFavorites(preference);
 		favorites.remove(id);
 		Preferences.saveBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS, favorites);
 		Toast.makeText(ChicagoTracker.getAppContext(), "Removing from favorites", Toast.LENGTH_SHORT).show();
@@ -136,8 +136,8 @@ public class Util {
 	 * @param preference the preference
 	 */
 	public static void addToBusFavorites(final String busRouteId, final String busStopId, final String bound, final String preference) {
-		String id = busRouteId + "_" + busStopId + "_" + bound;
-		List<String> favorites = Preferences.getBusFavorites(preference);
+		final String id = busRouteId + "_" + busStopId + "_" + bound;
+		final List<String> favorites = Preferences.getBusFavorites(preference);
 		if (!favorites.contains(id)) {
 			favorites.add(id);
 			Preferences.saveBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS, favorites);
@@ -146,7 +146,7 @@ public class Util {
 	}
 
 	public static void addToBikeFavorites(final int stationId, final String preference) {
-		List<String> favorites = Preferences.getBikeFavorites(preference);
+		final List<String> favorites = Preferences.getBikeFavorites(preference);
 		if (!favorites.contains(String.valueOf(stationId))) {
 			favorites.add(String.valueOf(stationId));
 			Preferences.saveBikeFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BIKE, favorites);
@@ -155,7 +155,7 @@ public class Util {
 	}
 
 	public static void removeFromBikeFavorites(final int stationId, final String preference) {
-		List<String> favorites = Preferences.getBikeFavorites(preference);
+		final List<String> favorites = Preferences.getBikeFavorites(preference);
 		favorites.remove(String.valueOf(stationId));
 		Preferences.saveBikeFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BIKE, favorites);
 		Toast.makeText(ChicagoTracker.getAppContext(), "Removing from favorites", Toast.LENGTH_SHORT).show();
@@ -168,12 +168,12 @@ public class Util {
 	 * @return a tab containing the route id, the stop id and the bound
 	 */
 	public static String[] decodeBusFavorite(final String fav) {
-		String[] res = new String[3];
-		int first = fav.indexOf('_');
-		String routeId = fav.substring(0, first);
-		int sec = fav.indexOf('_', first + 1);
-		String stopId = fav.substring(first + 1, sec);
-		String bound = fav.substring(sec + 1, fav.length());
+		final String[] res = new String[3];
+		final int first = fav.indexOf('_');
+		final String routeId = fav.substring(0, first);
+		final int sec = fav.indexOf('_', first + 1);
+		final String stopId = fav.substring(first + 1, sec);
+		final String bound = fav.substring(sec + 1, fav.length());
 		res[0] = routeId;
 		res[1] = stopId;
 		res[2] = bound;
@@ -184,22 +184,22 @@ public class Util {
 
 	private static final class BikeStationComparator implements Comparator<BikeStation> {
 		@Override
-		public int compare(BikeStation station1, BikeStation station2) {
+		public int compare(final BikeStation station1, final BikeStation station2) {
 			return station1.getName().compareTo(station2.getName());
 		}
-
 	}
 
 	public static boolean isNetworkAvailable() {
-		ConnectivityManager connectivityManager = (ConnectivityManager) ChicagoTracker.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+		final ConnectivityManager connectivityManager = (ConnectivityManager) ChicagoTracker.getAppContext()
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		final NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
 		return activeNetworkInfo != null && activeNetworkInfo.isConnected();
 	}
 
 	public static int[] getScreenSize() {
-		WindowManager wm = (WindowManager) ChicagoTracker.getAppContext().getSystemService(Context.WINDOW_SERVICE);
-		Display display = wm.getDefaultDisplay();
-		Point size = new Point();
+		final WindowManager wm = (WindowManager) ChicagoTracker.getAppContext().getSystemService(Context.WINDOW_SERVICE);
+		final Display display = wm.getDefaultDisplay();
+		final Point size = new Point();
 		display.getSize(size);
 		return new int[] { size.x, size.y };
 	}
@@ -208,24 +208,24 @@ public class Util {
 	 * Google analytics track screen
 	 *
 	 * @param screen the screen name
-	 * @param str      the label to send
+	 * @param str    the label to send
 	 */
 	public static void trackScreen(final String screen) {
-		Tracker t = ChicagoTracker.getTracker();
+		final Tracker t = ChicagoTracker.getTracker();
 		t.setScreenName(screen);
 		t.send(new HitBuilders.AppViewBuilder().build());
 	}
 
 	public static void trackAction(Activity activity, int category, int action, int label, int value) {
-		Tracker tracker = ChicagoTracker.getTracker();
+		final Tracker tracker = ChicagoTracker.getTracker();
 		tracker.send(new HitBuilders.EventBuilder().setCategory(activity.getString(category)).setAction(activity.getString(action))
 				.setLabel(activity.getString(label)).setValue(value).build());
 	}
 
-	public static void setToolbarColor(final Activity activity, final Toolbar toolbar, final TrainLine trainLine){
+	public static void setToolbarColor(final Activity activity, final Toolbar toolbar, final TrainLine trainLine) {
 		int backgroundColor = 0;
 		int statusBarColor = 0;
-		switch (trainLine){
+		switch (trainLine) {
 		case BLUE:
 			backgroundColor = R.color.blueLine;
 			statusBarColor = R.color.blueLineDark;

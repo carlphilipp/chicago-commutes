@@ -46,7 +46,7 @@ public enum PredictionType {
 	 */
 	public static PredictionType fromString(final String text) {
 		if (text != null) {
-			for (PredictionType b : PredictionType.values()) {
+			for (final PredictionType b : PredictionType.values()) {
 				if (text.equalsIgnoreCase(b.message)) {
 					return b;
 				}

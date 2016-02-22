@@ -234,7 +234,7 @@ public final class SearchAdapter extends BaseAdapter {
 
 				final LayoutInflater layoutInflater = (LayoutInflater) searchActivity.getBaseContext()
 						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				View popupView = layoutInflater.inflate(R.layout.popup_bus, null);
+				final View popupView = layoutInflater.inflate(R.layout.popup_bus, null);
 
 				final int[] screenSize = Util.getScreenSize();
 				final PopupWindow popup = new PopupWindow(popupView, (int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);

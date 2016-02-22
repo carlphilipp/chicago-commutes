@@ -433,8 +433,8 @@ public final class BusArrival implements Parcelable {
 	};
 
 	public static List<BusArrival> getRealBusArrival(List<BusArrival> arrivals) {
-		List<BusArrival> res = new ArrayList<>();
-		for (BusArrival arrival : arrivals) {
+		final List<BusArrival> res = new ArrayList<>();
+		for (final BusArrival arrival : arrivals) {
 			if (!arrival.getTimeLeft().equals(NO_SERVICE)) {
 				res.add(arrival);
 			}

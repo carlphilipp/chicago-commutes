@@ -53,11 +53,11 @@ public final class Preferences {
 	 * @return a boolean
 	 */
 	public static boolean hasFavorites(final String trains, final String bus, final String bike) {
-		Context context = ChicagoTracker.getAppContext();
-		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
-		Set<String> setPref1 = sharedPref.getStringSet(trains, null);
-		Set<String> setPref2 = sharedPref.getStringSet(bus, null);
-		Set<String> setPref3 = sharedPref.getStringSet(bike, null);
+		final Context context = ChicagoTracker.getAppContext();
+		final SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+		final Set<String> setPref1 = sharedPref.getStringSet(trains, null);
+		final Set<String> setPref2 = sharedPref.getStringSet(bus, null);
+		final Set<String> setPref3 = sharedPref.getStringSet(bike, null);
 		boolean res = true;
 		if ((setPref1 == null || setPref1.size() == 0) && (setPref2 == null || setPref2.size() == 0) && (setPref3 == null || setPref3.size() == 0)) {
 			res = false;
@@ -66,11 +66,11 @@ public final class Preferences {
 	}
 
 	public static void saveBikeFavorites(final String name, final List<String> favorites) {
-		Context context = ChicagoTracker.getAppContext();
-		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
-		SharedPreferences.Editor editor = sharedPref.edit();
-		Set<String> set = new LinkedHashSet<>();
-		for (String fav : favorites) {
+		final Context context = ChicagoTracker.getAppContext();
+		final SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+		final SharedPreferences.Editor editor = sharedPref.edit();
+		final Set<String> set = new LinkedHashSet<>();
+		for (final String fav : favorites) {
 			set.add(fav);
 		}
 		Log.v(TAG, "Put bike favorites: " + set.toString());
@@ -79,12 +79,12 @@ public final class Preferences {
 	}
 
 	public static List<String> getBikeFavorites(final String name) {
-		Context context = ChicagoTracker.getAppContext();
-		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
-		Set<String> setPref = sharedPref.getStringSet(name, null);
-		List<String> favorites = new ArrayList<>();
+		final Context context = ChicagoTracker.getAppContext();
+		final SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+		final Set<String> setPref = sharedPref.getStringSet(name, null);
+		final List<String> favorites = new ArrayList<>();
 		if (setPref != null) {
-			for (String value : setPref) {
+			for (final String value : setPref) {
 				favorites.add(value);
 			}
 		}
@@ -94,18 +94,20 @@ public final class Preferences {
 	}
 
 	public static void addBikeRouteNameMapping(final String bikeId, final String bikeName) {
-		Context context = ChicagoTracker.getAppContext();
-		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BIKE_NAME_MAPPING, Context.MODE_PRIVATE);
-		SharedPreferences.Editor editor = sharedPref.edit();
+		final Context context = ChicagoTracker.getAppContext();
+		final SharedPreferences sharedPref = context
+				.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BIKE_NAME_MAPPING, Context.MODE_PRIVATE);
+		final SharedPreferences.Editor editor = sharedPref.edit();
 		editor.putString(bikeId, bikeName);
 		Log.v(TAG, "Add bike name mapping : " + bikeId + " => " + bikeName);
 		editor.apply();
 	}
 
 	public static String getBikeRouteNameMapping(final String bikeId) {
-		Context context = ChicagoTracker.getAppContext();
-		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BIKE_NAME_MAPPING, Context.MODE_PRIVATE);
-		String bikeName = sharedPref.getString(bikeId, null);
+		final Context context = ChicagoTracker.getAppContext();
+		final SharedPreferences sharedPref = context
+				.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BIKE_NAME_MAPPING, Context.MODE_PRIVATE);
+		final String bikeName = sharedPref.getString(bikeId, null);
 		Log.v(TAG, "Get bike name mapping : " + bikeId + " => " + bikeName);
 		return bikeName;
 	}
@@ -117,11 +119,11 @@ public final class Preferences {
 	 * @param favorites the list of favorites to save
 	 */
 	public static void saveBusFavorites(final String name, final List<String> favorites) {
-		Context context = ChicagoTracker.getAppContext();
-		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
-		SharedPreferences.Editor editor = sharedPref.edit();
-		Set<String> set = new LinkedHashSet<>();
-		for (String fav : favorites) {
+		final Context context = ChicagoTracker.getAppContext();
+		final SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+		final SharedPreferences.Editor editor = sharedPref.edit();
+		final Set<String> set = new LinkedHashSet<>();
+		for (final String fav : favorites) {
 			set.add(fav);
 		}
 		Log.v(TAG, "Put bus favorites: " + favorites.toString());
@@ -136,22 +138,22 @@ public final class Preferences {
 	 * @return a list of favorites bus
 	 */
 	public static List<String> getBusFavorites(final String name) {
-		Context context = ChicagoTracker.getAppContext();
-		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
-		Set<String> setPref = sharedPref.getStringSet(name, null);
-		List<String> favorites = new ArrayList<>();
+		final Context context = ChicagoTracker.getAppContext();
+		final SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+		final Set<String> setPref = sharedPref.getStringSet(name, null);
+		final List<String> favorites = new ArrayList<>();
 		if (setPref != null) {
-			for (String value : setPref) {
+			for (final String value : setPref) {
 				favorites.add(value);
 			}
 		}
 		Collections.sort(favorites, new Comparator<String>() {
 			@Override
 			public int compare(String str1, String str2) {
-				String str1Decoded = Util.decodeBusFavorite(str1)[0];
-				String str2Decoded = Util.decodeBusFavorite(str2)[0];
-				Integer int1 = null;
-				Integer int2 = null;
+				final String str1Decoded = Util.decodeBusFavorite(str1)[0];
+				final String str2Decoded = Util.decodeBusFavorite(str2)[0];
+				Integer int1;
+				Integer int2;
 				try {
 					int1 = Integer.valueOf(str1Decoded);
 				} catch (NumberFormatException e) {
@@ -170,35 +172,39 @@ public final class Preferences {
 	}
 
 	public static void addBusRouteNameMapping(final String busStopId, final String routeName) {
-		Context context = ChicagoTracker.getAppContext();
-		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING, Context.MODE_PRIVATE);
-		SharedPreferences.Editor editor = sharedPref.edit();
+		final Context context = ChicagoTracker.getAppContext();
+		final SharedPreferences sharedPref = context
+				.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING, Context.MODE_PRIVATE);
+		final SharedPreferences.Editor editor = sharedPref.edit();
 		editor.putString(busStopId, routeName);
 		Log.v(TAG, "Add bus route name mapping : " + busStopId + " => " + routeName);
 		editor.apply();
 	}
 
 	public static String getBusRouteNameMapping(final String busStopId) {
-		Context context = ChicagoTracker.getAppContext();
-		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING, Context.MODE_PRIVATE);
-		String routeName = sharedPref.getString(busStopId, null);
+		final Context context = ChicagoTracker.getAppContext();
+		final SharedPreferences sharedPref = context
+				.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING, Context.MODE_PRIVATE);
+		final String routeName = sharedPref.getString(busStopId, null);
 		Log.v(TAG, "Get bus route name mapping : " + busStopId + " => " + routeName);
 		return routeName;
 	}
 
 	public static void addBusStopNameMapping(final String busStopId, final String stopName) {
-		Context context = ChicagoTracker.getAppContext();
-		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING, Context.MODE_PRIVATE);
-		SharedPreferences.Editor editor = sharedPref.edit();
+		final Context context = ChicagoTracker.getAppContext();
+		final SharedPreferences sharedPref = context
+				.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING, Context.MODE_PRIVATE);
+		final SharedPreferences.Editor editor = sharedPref.edit();
 		editor.putString(busStopId, stopName);
 		Log.v(TAG, "Add bus stop name mapping : " + busStopId + " => " + stopName);
 		editor.apply();
 	}
 
 	public static String getBusStopNameMapping(final String busStopId) {
-		Context context = ChicagoTracker.getAppContext();
-		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING, Context.MODE_PRIVATE);
-		String stopName = sharedPref.getString(busStopId, null);
+		final Context context = ChicagoTracker.getAppContext();
+		final SharedPreferences sharedPref = context
+				.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING, Context.MODE_PRIVATE);
+		final String stopName = sharedPref.getString(busStopId, null);
 		Log.v(TAG, "Get bus stop name mapping : " + busStopId + " => " + stopName);
 		return stopName;
 	}
@@ -210,11 +216,11 @@ public final class Preferences {
 	 * @param favorites the favorites
 	 */
 	public static void saveTrainFavorites(final String name, final List<Integer> favorites) {
-		Context context = ChicagoTracker.getAppContext();
-		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
-		SharedPreferences.Editor editor = sharedPref.edit();
-		Set<String> set = new LinkedHashSet<>();
-		for (Integer favorite : favorites) {
+		final Context context = ChicagoTracker.getAppContext();
+		final SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+		final SharedPreferences.Editor editor = sharedPref.edit();
+		final Set<String> set = new LinkedHashSet<>();
+		for (final Integer favorite : favorites) {
 			set.add(favorite.toString());
 		}
 		Log.v(TAG, "Put train favorites: " + favorites.toString());
@@ -229,24 +235,24 @@ public final class Preferences {
 	 * @return the favorites
 	 */
 	public static List<Integer> getTrainFavorites(final String name) {
-		Context context = ChicagoTracker.getAppContext();
-		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
-		Set<String> setPref = sharedPref.getStringSet(name, null);
-		List<Integer> favorites = new ArrayList<>();
+		final Context context = ChicagoTracker.getAppContext();
+		final SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+		final Set<String> setPref = sharedPref.getStringSet(name, null);
+		final List<Integer> favorites = new ArrayList<>();
 		if (setPref != null) {
-			for (String value : setPref) {
+			for (final String value : setPref) {
 				favorites.add(Integer.valueOf(value));
 			}
 		}
-		DataHolder dataHolder = DataHolder.getInstance();
-		List<Station> stations = new ArrayList<>();
-		for (Integer favorite : favorites) {
-			Station station = dataHolder.getTrainData().getStation(favorite);
+		final DataHolder dataHolder = DataHolder.getInstance();
+		final List<Station> stations = new ArrayList<>();
+		for (final Integer favorite : favorites) {
+			final Station station = dataHolder.getTrainData().getStation(favorite);
 			stations.add(station);
 		}
 		Collections.sort(stations);
-		List<Integer> res = new ArrayList<>();
-		for (Station station : stations) {
+		final List<Integer> res = new ArrayList<>();
+		for (final Station station : stations) {
 			res.add(station.getId());
 		}
 		Log.v(TAG, "Read train favorites : " + res.toString());
@@ -262,9 +268,9 @@ public final class Preferences {
 	 * @param value     the value
 	 */
 	public static void saveTrainFilter(final Integer stationId, final TrainLine line, final TrainDirection direction, final boolean value) {
-		Context context = ChicagoTracker.getAppContext();
-		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
-		SharedPreferences.Editor editor = sharedPref.edit();
+		final Context context = ChicagoTracker.getAppContext();
+		final SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+		final SharedPreferences.Editor editor = sharedPref.edit();
 		editor.putBoolean(String.valueOf(stationId) + "_" + line + "_" + direction, value);
 		editor.apply();
 	}
@@ -278,22 +284,22 @@ public final class Preferences {
 	 * @return if a train is filtered
 	 */
 	public static boolean getTrainFilter(final Integer stationId, final TrainLine line, final TrainDirection direction) {
-		Context context = ChicagoTracker.getAppContext();
-		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+		final Context context = ChicagoTracker.getAppContext();
+		final SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
 		return sharedPref.getBoolean(String.valueOf(stationId) + "_" + line + "_" + direction, true);
 	}
 
 	public static void saveHideShowNearby(boolean hide) {
-		Context context = ChicagoTracker.getAppContext();
-		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
-		SharedPreferences.Editor editor = sharedPref.edit();
+		final Context context = ChicagoTracker.getAppContext();
+		final SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+		final SharedPreferences.Editor editor = sharedPref.edit();
 		editor.putBoolean("hideNearby", hide);
 		editor.apply();
 	}
 
 	public static boolean getHideShowNearby() {
-		Context context = ChicagoTracker.getAppContext();
-		SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+		final Context context = ChicagoTracker.getAppContext();
+		final SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
 		return sharedPref.getBoolean("hideNearby", true);
 	}
 }

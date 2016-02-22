@@ -25,6 +25,7 @@ import fr.cph.chicago.entity.enumeration.PredictionType;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -39,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * XML parser
@@ -68,7 +68,7 @@ public final class Xml {
 	@SuppressLint("SimpleDateFormat")
 	public Xml() throws ParserException {
 		try {
-			XmlPullParserFactory pullParserFactory = XmlPullParserFactory.newInstance();
+			final XmlPullParserFactory pullParserFactory = XmlPullParserFactory.newInstance();
 			parser = pullParserFactory.newPullParser();
 			simpleDateFormatTrain = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
 			simpleDateFormatBus = new SimpleDateFormat("yyyyMMdd HH:mm");
@@ -86,9 +86,10 @@ public final class Xml {
 	 * @throws ParserException the parser exception
 	 */
 	public final SparseArray<TrainArrival> parseArrivals(final String xml, final TrainData data) throws ParserException {
-		InputStream is = new ByteArrayInputStream(xml.getBytes());
+		InputStream is = null;
 		SparseArray<TrainArrival> arrivals = null;
 		try {
+			is = new ByteArrayInputStream(xml.getBytes());
 			parser.setInput(is, "UTF-8");
 			int eventType = parser.getEventType();
 			XmlArrivalTrainTag tag = null;
@@ -116,14 +117,14 @@ public final class Xml {
 				} else if (eventType == XmlPullParser.END_TAG) {
 					tag = null;
 				} else if (eventType == XmlPullParser.TEXT) {
-					String text = parser.getText();
+					final String text = parser.getText();
 					switch (tag) {
 					case ETA:
 						break;
 					case OTHER:
 						if (tagName.equals("staId")) {
 							staId = Integer.valueOf(text);
-							TrainArrival arri = arrivals.get(staId, new TrainArrival());
+							final TrainArrival arri = arrivals.get(staId, new TrainArrival());
 							arri.setErrorCode(errCd);
 							arri.setErrorMessage(errNum);
 							arri.setTimeStamp(tmst);
@@ -132,123 +133,123 @@ public final class Xml {
 								etas = new ArrayList<>();
 								arri.setEtas(etas);
 							}
-							Eta eta = new Eta();
-							Station station = data.getStation(Integer.valueOf(text));
+							final Eta eta = new Eta();
+							final Station station = data.getStation(Integer.valueOf(text));
 							eta.setStation(station);
 							etas.add(eta);
 
 							arrivals.append(staId, arri);
 						} else if (tagName.equals("stpId")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-								Stop stop = data.getStop(Integer.valueOf(text));
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Stop stop = data.getStop(Integer.valueOf(text));
 								currentEta.setStop(stop);
 							}
 						} else if (tagName.equals("staNm")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-								Station station = currentEta.getStation();
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Station station = currentEta.getStation();
 								station.setName(text);
 							}
 
 						} else if (tagName.equals("stpDe")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-								Stop stop = currentEta.getStop();
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Stop stop = currentEta.getStop();
 								stop.setDescription(text);
 							}
 						} else if (tagName.equals("rn")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setRunNumber(Integer.valueOf(text));
 							}
 						} else if (tagName.equals("rt")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-								TrainLine line = TrainLine.fromXmlString(text);
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final TrainLine line = TrainLine.fromXmlString(text);
 								currentEta.setRouteName(line);
 							}
 						} else if (tagName.equals("destSt")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-								Integer i = Integer.valueOf(text);
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Integer i = Integer.valueOf(text);
 								currentEta.setDestSt(i);
 							}
 						} else if (tagName.equals("destNm")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setDestName(text);
 							}
 						} else if (tagName.equals("trDr")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setTrainRouteDirectionCode(Integer.valueOf(text));
 							}
 						} else if (tagName.equals("prdt")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setPredictionDate(simpleDateFormatTrain.parse(text));
 							}
 						} else if (tagName.equals("arrT")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setArrivalDepartureDate(simpleDateFormatTrain.parse(text));
 							}
 						} else if (tagName.equals("isApp")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setIsApp(BooleanUtils.toBoolean(Integer.valueOf(text)));
 							}
 						} else if (tagName.equals("isSch")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setIsSch(BooleanUtils.toBoolean(Integer.valueOf(text)));
 							}
 						} else if (tagName.equals("isDly")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setIsDly(BooleanUtils.toBoolean(Integer.valueOf(text)));
 							}
 						} else if (tagName.equals("isFlt")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setIsFlt(BooleanUtils.toBoolean(Integer.valueOf(text)));
 							}
 						} else if (tagName.equals("flags")) {
 
 						} else if (tagName.equals("lat")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-								Position position = new Position();
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Position position = new Position();
 								position.setLatitude(Double.valueOf(text));
 								currentEta.setPosition(position);
 							}
 						} else if (tagName.equals("lon")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-								Position position = currentEta.getPosition();
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Position position = currentEta.getPosition();
 								position.setLongitude(Double.valueOf(text));
 							}
 						} else if (tagName.equals("heading")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setHeading(Integer.valueOf(text));
 							}
 						}
@@ -268,8 +269,10 @@ public final class Xml {
 				}
 				eventType = parser.next();
 			}
-		} catch (XmlPullParserException | ParseException | IOException e) {
+		} catch (final XmlPullParserException | ParseException | IOException e) {
 			throw new ParserException(TrackerException.ERROR, e);
+		} finally {
+			IOUtils.closeQuietly(is);
 		}
 		return arrivals;
 	}
@@ -283,12 +286,13 @@ public final class Xml {
 	 */
 	public final List<BusRoute> parseBusRoutes(final String xml) throws ParserException {
 		List<BusRoute> routes = null;
+		InputStream is = null;
 		try {
-			InputStream is = new ByteArrayInputStream(xml.getBytes());
+			is = new ByteArrayInputStream(xml.getBytes());
 			parser.setInput(is, "UTF-8");
 			int eventType = parser.getEventType();
 			XmlArrivalBusTag tag = null;
-			String tagName = null;
+			String tagName;
 			BusRoute busRoute = null;
 			while (eventType != XmlPullParser.END_DOCUMENT) {
 				if (eventType == XmlPullParser.START_DOCUMENT) {
@@ -331,8 +335,10 @@ public final class Xml {
 				}
 				eventType = parser.next();
 			}
-		} catch (IOException | XmlPullParserException e) {
+		} catch (final IOException | XmlPullParserException e) {
 			throw new ParserException(TrackerException.ERROR, e);
+		} finally {
+			IOUtils.closeQuietly(is);
 		}
 		return routes;
 	}
@@ -347,8 +353,9 @@ public final class Xml {
 	 */
 	public final BusDirections parseBusDirections(final String xml, final String id) throws ParserException {
 		BusDirections directions = null;
+		InputStream is = null;
 		try {
-			InputStream is = new ByteArrayInputStream(xml.getBytes());
+			is = new ByteArrayInputStream(xml.getBytes());
 			parser.setInput(is, "UTF-8");
 			int eventType = parser.getEventType();
 			while (eventType != XmlPullParser.END_DOCUMENT) {
@@ -360,16 +367,18 @@ public final class Xml {
 				} else if (eventType == XmlPullParser.END_TAG) {
 					// TODO something ?
 				} else if (eventType == XmlPullParser.TEXT) {
-					String text = parser.getText();
-					BusDirection busDirection = BusDirection.fromString(text);
+					final String text = parser.getText();
+					final BusDirection busDirection = BusDirection.fromString(text);
 					if (busDirection != null) {
 						directions.addBusDirection(busDirection);
 					}
 				}
 				eventType = parser.next();
 			}
-		} catch (IOException | XmlPullParserException e) {
+		} catch (final IOException | XmlPullParserException e) {
 			throw new ParserException(TrackerException.ERROR, e);
+		} finally {
+			IOUtils.closeQuietly(is);
 		}
 		return directions;
 	}
@@ -385,9 +394,9 @@ public final class Xml {
 		List<BusStop> busStops = null;
 		String tagName = null;
 		BusStop busStop = null;
-
+		InputStream is = null;
 		try {
-			InputStream is = new ByteArrayInputStream(xml.getBytes());
+			is = new ByteArrayInputStream(xml.getBytes());
 			parser.setInput(is, "UTF-8");
 			int eventType = parser.getEventType();
 			while (eventType != XmlPullParser.END_DOCUMENT) {
@@ -407,7 +416,7 @@ public final class Xml {
 						} else if (tagName.equals("stpnm")) {
 							busStop.setName(text);
 						} else if (tagName.equals("lat")) {
-							Position position = new Position();
+							final Position position = new Position();
 							position.setLatitude(Double.valueOf(text));
 							busStop.setPosition(position);
 						} else if (tagName.equals("lon")) {
@@ -419,8 +428,10 @@ public final class Xml {
 				}
 				eventType = parser.next();
 			}
-		} catch (IOException | XmlPullParserException e) {
+		} catch (final IOException | XmlPullParserException e) {
 			throw new ParserException(TrackerException.ERROR, e);
+		} finally {
+			IOUtils.closeQuietly(is);
 		}
 		return busStops;
 	}
@@ -437,8 +448,9 @@ public final class Xml {
 		List<BusArrival> busArrivals = null;
 		String tagName = null;
 		BusArrival busArrival = null;
-		InputStream is = new ByteArrayInputStream(xml.getBytes());
+		InputStream is = null;
 		try {
+			is = new ByteArrayInputStream(xml.getBytes());
 			parser.setInput(is, "UTF-8");
 			int eventType = parser.getEventType();
 			while (eventType != XmlPullParser.END_DOCUMENT) {
@@ -486,8 +498,10 @@ public final class Xml {
 				}
 				eventType = parser.next();
 			}
-		} catch (XmlPullParserException | ParseException | IOException e) {
+		} catch (final XmlPullParserException | ParseException | IOException e) {
 			throw new ParserException(TrackerException.ERROR, e);
+		} finally {
+			IOUtils.closeQuietly(is);
 		}
 		return busArrivals;
 	}
@@ -505,8 +519,9 @@ public final class Xml {
 		BusPattern pattern = null;
 		PatternPoint patternPoint = null;
 		Position position = null;
-		InputStream is = new ByteArrayInputStream(xml.getBytes());
+		InputStream is = null;
 		try {
+			is = new ByteArrayInputStream(xml.getBytes());
 			parser.setInput(is, "UTF-8");
 			int eventType = parser.getEventType();
 			while (eventType != XmlPullParser.END_DOCUMENT) {
@@ -554,8 +569,10 @@ public final class Xml {
 				}
 				eventType = parser.next();
 			}
-		} catch (XmlPullParserException | IOException e) {
+		} catch (final XmlPullParserException | IOException e) {
 			throw new ParserException(TrackerException.ERROR, e);
+		} finally {
+			IOUtils.closeQuietly(is);
 		}
 		return patterns;
 	}
@@ -565,8 +582,9 @@ public final class Xml {
 		String tagName = null;
 		Bus bus = null;
 		Position position = null;
-		InputStream is = new ByteArrayInputStream(xml.getBytes());
+		InputStream is = null;
 		try {
+			is = new ByteArrayInputStream(xml.getBytes());
 			parser.setInput(is, "UTF-8");
 			int eventType = parser.getEventType();
 			while (eventType != XmlPullParser.END_DOCUMENT) {
@@ -611,6 +629,8 @@ public final class Xml {
 			}
 		} catch (XmlPullParserException | IOException e) {
 			throw new ParserException(TrackerException.ERROR, e);
+		} finally {
+			IOUtils.closeQuietly(is);
 		}
 		return buses;
 	}
@@ -620,8 +640,9 @@ public final class Xml {
 		String tagName = null;
 		Train train = null;
 		Position position = null;
-		InputStream is = new ByteArrayInputStream(xml.getBytes());
+		InputStream is = null;
 		try {
+			is = new ByteArrayInputStream(xml.getBytes());
 			parser.setInput(is, "UTF-8");
 			int eventType = parser.getEventType();
 			while (eventType != XmlPullParser.END_DOCUMENT) {
@@ -663,14 +684,17 @@ public final class Xml {
 			}
 		} catch (XmlPullParserException | IOException e) {
 			throw new ParserException(TrackerException.ERROR, e);
+		} finally {
+			IOUtils.closeQuietly(is);
 		}
 		return trains;
 	}
 
 	public final List<Eta> parseTrainsFollow(final String xml, final TrainData data) throws ParserException {
-		InputStream is = new ByteArrayInputStream(xml.getBytes());
+		InputStream is = null;
 		SparseArray<TrainArrival> arrivals = null;
 		try {
+			is = new ByteArrayInputStream(xml.getBytes());
 			parser.setInput(is, "UTF-8");
 			int eventType = parser.getEventType();
 			XmlArrivalTrainTag tag = null;
@@ -705,7 +729,7 @@ public final class Xml {
 					case OTHER:
 						if (tagName.equals("staId")) {
 							staId = Integer.valueOf(text);
-							TrainArrival arri = arrivals.get(staId, new TrainArrival());
+							final TrainArrival arri = arrivals.get(staId, new TrainArrival());
 							arri.setErrorCode(errCd);
 							arri.setErrorMessage(errNum);
 							arri.setTimeStamp(tmst);
@@ -714,100 +738,100 @@ public final class Xml {
 								etas = new ArrayList<>();
 								arri.setEtas(etas);
 							}
-							Eta eta = new Eta();
+							final Eta eta = new Eta();
 							Station station = data.getStation(Integer.valueOf(text));
 							eta.setStation(station);
 							etas.add(eta);
 
 							arrivals.append(staId, arri);
 						} else if (tagName.equals("stpId")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-								Stop stop = data.getStop(Integer.valueOf(text));
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Stop stop = data.getStop(Integer.valueOf(text));
 								currentEta.setStop(stop);
 							}
 						} else if (tagName.equals("staNm")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-								Station station = currentEta.getStation();
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Station station = currentEta.getStation();
 								station.setName(text);
 							}
 
 						} else if (tagName.equals("stpDe")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-								Stop stop = currentEta.getStop();
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Stop stop = currentEta.getStop();
 								stop.setDescription(text);
 							}
 						} else if (tagName.equals("rn")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setRunNumber(Integer.valueOf(text));
 							}
 						} else if (tagName.equals("rt")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-								TrainLine line = TrainLine.fromXmlString(text);
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final TrainLine line = TrainLine.fromXmlString(text);
 								currentEta.setRouteName(line);
 							}
 						} else if (tagName.equals("destSt")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-								Integer i = Integer.valueOf(text);
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Integer i = Integer.valueOf(text);
 								currentEta.setDestSt(i);
 							}
 						} else if (tagName.equals("destNm")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setDestName(text);
 							}
 						} else if (tagName.equals("trDr")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setTrainRouteDirectionCode(Integer.valueOf(text));
 							}
 						} else if (tagName.equals("prdt")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setPredictionDate(simpleDateFormatTrain.parse(text));
 							}
 						} else if (tagName.equals("arrT")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setArrivalDepartureDate(simpleDateFormatTrain.parse(text));
 							}
 						} else if (tagName.equals("isApp")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setIsApp(BooleanUtils.toBoolean(Integer.valueOf(text)));
 							}
 						} else if (tagName.equals("isSch")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setIsSch(BooleanUtils.toBoolean(Integer.valueOf(text)));
 							}
 						} else if (tagName.equals("isDly")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setIsDly(BooleanUtils.toBoolean(Integer.valueOf(text)));
 							}
 						} else if (tagName.equals("isFlt")) {
-							TrainArrival arri = arrivals.get(staId, null);
+							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
-								Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
+								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setIsFlt(BooleanUtils.toBoolean(Integer.valueOf(text)));
 							}
 						}
@@ -829,12 +853,14 @@ public final class Xml {
 			}
 		} catch (XmlPullParserException | ParseException | IOException e) {
 			throw new ParserException(TrackerException.ERROR, e);
+		} finally {
+			IOUtils.closeQuietly(is);
 		}
-		List<Eta> res = new ArrayList<>();
+		final List<Eta> res = new ArrayList<>();
 		int index = 0;
 		while (index < arrivals.size()) {
-			TrainArrival arri = arrivals.valueAt(index++);
-			List<Eta> etas = arri.getEtas();
+			final TrainArrival arri = arrivals.valueAt(index++);
+			final List<Eta> etas = arri.getEtas();
 			if (etas != null && etas.size() != 0) {
 				res.add(etas.get(0));
 			}

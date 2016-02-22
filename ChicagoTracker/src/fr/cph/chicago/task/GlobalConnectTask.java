@@ -233,15 +233,11 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 						final List<Eta> etas2 = new ArrayList<>();
 						etas2.addAll(etas);
 						int j = 0;
-						Eta eta;
-						Station station;
-						TrainLine line;
-						TrainDirection direction;
 						for (int i = 0; i < etas2.size(); i++) {
-							eta = etas2.get(i);
-							station = eta.getStation();
-							line = eta.getRouteName();
-							direction = eta.getStop().getDirection();
+							final Eta eta = etas2.get(i);
+							final Station station = eta.getStation();
+							final TrainLine line = eta.getRouteName();
+							final TrainDirection direction = eta.getStop().getDirection();
 							final boolean toRemove = Preferences.getTrainFilter(station.getId(), line, direction);
 							if (!toRemove) {
 								etas.remove(i - j++);

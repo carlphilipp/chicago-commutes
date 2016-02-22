@@ -101,7 +101,7 @@ public class BikeFragment extends Fragment {
 	}
 
 	@Override
-	public final void onCreate(Bundle savedInstanceState) {
+	public final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (savedInstanceState != null) {
 			this.bikeStations = savedInstanceState.getParcelableArrayList("bikeStations");
@@ -136,8 +136,8 @@ public class BikeFragment extends Fragment {
 			listView = (ListView) rootView.findViewById(R.id.bike_list);
 			filterView = (TextView) rootView.findViewById(R.id.bike_filter);
 			if (Util.isNetworkAvailable()) {
-				SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mainActivity);
-				boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
+				final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mainActivity);
+				final boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
 				if (loadBike) {
 					if (bikeStations == null || bikeStations.size() != 0) {
 						loadList();
@@ -159,7 +159,7 @@ public class BikeFragment extends Fragment {
 	}
 
 	private void loadList() {
-		EditText filter = (EditText) rootView.findViewById(R.id.bike_filter);
+		final EditText filter = (EditText) rootView.findViewById(R.id.bike_filter);
 		if (bikeAdapter == null) {
 			bikeAdapter = new BikeAdapter(mainActivity);
 		}
@@ -169,13 +169,13 @@ public class BikeFragment extends Fragment {
 			private List<BikeStation> bikeStations = null;
 
 			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+			public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
 				this.bikeStations = new ArrayList<>();
 			}
 
 			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				for (BikeStation bikeStation : BikeFragment.this.bikeStations) {
+			public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
+				for (final BikeStation bikeStation : BikeFragment.this.bikeStations) {
 					if (StringUtils.containsIgnoreCase(bikeStation.getName(), s.toString().trim())) {
 						this.bikeStations.add(bikeStation);
 					}
@@ -191,7 +191,7 @@ public class BikeFragment extends Fragment {
 		listView.setVisibility(ListView.VISIBLE);
 		filterView.setVisibility(ListView.VISIBLE);
 		loadingLayout.setVisibility(RelativeLayout.INVISIBLE);
-		RelativeLayout errorLayout = (RelativeLayout) rootView.findViewById(R.id.error_layout);
+		final RelativeLayout errorLayout = (RelativeLayout) rootView.findViewById(R.id.error_layout);
 		errorLayout.setVisibility(RelativeLayout.INVISIBLE);
 	}
 
@@ -204,19 +204,18 @@ public class BikeFragment extends Fragment {
 	public final boolean onOptionsItemSelected(final MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_refresh:
-			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mainActivity);
-			boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
+			final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mainActivity);
+			final boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
 			if (loadBike) {
 				item.setActionView(R.layout.progressbar);
 				item.expandActionView();
 
 				new DivvyAsyncTask().execute();
 
-				Bundle bundle = mainActivity.getIntent().getExtras();
-				List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
+				final Bundle bundle = mainActivity.getIntent().getExtras();
+				final List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
 
 				if (bikeStations == null) {
-					//mainActivity.startRefreshAnimation();
 					mainActivity.new LoadData().execute();
 				}
 			}
@@ -242,7 +241,7 @@ public class BikeFragment extends Fragment {
 					Log.e(TAG, e.getMessage(), e);
 				}
 			}
-			List<BikeStation> bikeStationsBundle = bundle.getParcelableArrayList("bikeStations");
+			final List<BikeStation> bikeStationsBundle = bundle.getParcelableArrayList("bikeStations");
 			if (bikeStationsBundle == null) {
 				return false;
 			} else {
@@ -263,7 +262,7 @@ public class BikeFragment extends Fragment {
 
 	private void loadError() {
 		loadingLayout.setVisibility(RelativeLayout.INVISIBLE);
-		RelativeLayout errorLayout = (RelativeLayout) rootView.findViewById(R.id.error_layout);
+		final RelativeLayout errorLayout = (RelativeLayout) rootView.findViewById(R.id.error_layout);
 		errorLayout.setVisibility(RelativeLayout.VISIBLE);
 	}
 
@@ -272,9 +271,9 @@ public class BikeFragment extends Fragment {
 		protected List<BikeStation> doInBackground(Void... params) {
 			List<BikeStation> bikeStations = new ArrayList<>();
 			try {
-				Json json = new Json();
-				DivvyConnect divvyConnect = DivvyConnect.getInstance();
-				String bikeContent = divvyConnect.connect();
+				final Json json = new Json();
+				final DivvyConnect divvyConnect = DivvyConnect.getInstance();
+				final String bikeContent = divvyConnect.connect();
 				bikeStations = json.parseStations(bikeContent);
 				Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
 				Util.trackAction(BikeFragment.this.mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_divvy,
@@ -310,7 +309,6 @@ public class BikeFragment extends Fragment {
 				BikeFragment.this.mainActivity.getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) result);
 				//BikeFragment.this.mainActivity.onNewIntent(mainActivity.getIntent());
 			}
-			//BikeFragment.this.mainActivity.stopRefreshAnimation();
 		}
 	}
 }

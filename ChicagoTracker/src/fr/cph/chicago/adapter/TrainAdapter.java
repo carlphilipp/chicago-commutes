@@ -63,8 +63,8 @@ public final class TrainAdapter extends BaseAdapter {
 	 */
 	public TrainAdapter(final TrainLine line, final Activity activity, final FrameLayout container) {
 		// Load data
-		DataHolder dataHolder = DataHolder.getInstance();
-		TrainData data = dataHolder.getTrainData();
+		final DataHolder dataHolder = DataHolder.getInstance();
+		final TrainData data = dataHolder.getTrainData();
 		this.stations = data.getStationsForLine(line);
 		this.context = ChicagoTracker.getAppContext();
 		this.activity = activity;
@@ -88,19 +88,19 @@ public final class TrainAdapter extends BaseAdapter {
 
 	@Override
 	public final View getView(final int position, View convertView, final ViewGroup parent) {
-		Station station = stations.get(position);
-		Set<TrainLine> lines = station.getLines();
+		final Station station = stations.get(position);
+		final Set<TrainLine> lines = station.getLines();
 
-		LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		convertView = vi.inflate(R.layout.list_train, parent, false);
 
-		TextView stationNameView = (TextView) convertView.findViewById(R.id.station_name_value);
-		LinearLayout stationColorView = (LinearLayout) convertView.findViewById(R.id.station_color);
+		final TextView stationNameView = (TextView) convertView.findViewById(R.id.station_name_value);
+		final LinearLayout stationColorView = (LinearLayout) convertView.findViewById(R.id.station_color);
 
 		stationNameView.setText(station.getName());
 
 		int indice = 0;
-		for (TrainLine tl : lines) {
+		for (final TrainLine tl : lines) {
 			TextView textView = new TextView(context);
 			textView.setBackgroundColor(tl.getColor());
 			textView.setText(" ");

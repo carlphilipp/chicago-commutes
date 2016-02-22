@@ -45,18 +45,18 @@ public class ErrorActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.error);
 
-		View loadLayout = findViewById(R.id.loading_layout);
+		final View loadLayout = findViewById(R.id.loading_layout);
 		loadLayout.setVisibility(View.GONE);
 		if (error == null) {
 			error = getIntent().getExtras().getString("error");
 		}
-		TextView errorText = (TextView) findViewById(R.id.error_message);
+		final TextView errorText = (TextView) findViewById(R.id.error_message);
 		errorText.setText(error);
-		Button button = (Button) findViewById(R.id.retry_button);
+		final Button button = (Button) findViewById(R.id.retry_button);
 		button.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(ErrorActivity.this, BaseActivity.class);
+				final Intent intent = new Intent(ErrorActivity.this, BaseActivity.class);
 				intent.putExtra("error", true);
 				finish();
 				startActivity(intent);
@@ -79,9 +79,9 @@ public class ErrorActivity extends Activity {
 	@Override
 	public final boolean onCreateOptionsMenu(final Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		MenuInflater inflater = getMenuInflater();
+		final MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.empty, menu);
-		ActionBar actionBar = getActionBar();
+		final ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		actionBar.setDisplayShowTitleEnabled(true);
 		actionBar.setTitle("Error");

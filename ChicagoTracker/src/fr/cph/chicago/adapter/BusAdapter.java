@@ -84,7 +84,7 @@ public final class BusAdapter extends BaseAdapter {
 	 */
 	public BusAdapter(final MainActivity activity) {
 		this.mainActivity = activity;
-		BusData busData = DataHolder.getInstance().getBusData();
+		final BusData busData = DataHolder.getInstance().getBusData();
 		this.busRoutes = busData.getRoutes();
 		this.firstLayout = ChicagoTracker.container;
 	}
@@ -109,12 +109,12 @@ public final class BusAdapter extends BaseAdapter {
 
 		final BusRoute route = (BusRoute) getItem(position);
 
-		TextView routeNameView = null;
-		TextView routeNumberView = null;
-		LinearLayout detailsLayout = null;
+		TextView routeNameView;
+		TextView routeNumberView;
+		LinearLayout detailsLayout;
 
 		if (convertView == null) {
-			LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = vi.inflate(R.layout.list_bus, parent, false);
 
 			final ViewHolder holder = new ViewHolder();
@@ -194,14 +194,14 @@ public final class BusAdapter extends BaseAdapter {
 
 		@Override
 		protected final BusDirections doInBackground(final Object... params) {
-			CtaConnect connect = CtaConnect.getInstance();
+			final CtaConnect connect = CtaConnect.getInstance();
 			BusDirections busDirections = null;
 			try {
-				MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
+				final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
 				busRoute = (BusRoute) params[0];
 				reqParams.put("rt", busRoute.getId());
-				Xml xml = new Xml();
-				String xmlResult = connect.connect(CtaRequestType.BUS_DIRECTION, reqParams);
+				final Xml xml = new Xml();
+				final String xmlResult = connect.connect(CtaRequestType.BUS_DIRECTION, reqParams);
 				busDirections = xml.parseBusDirections(xmlResult, busRoute.getId());
 				convertView = (LinearLayout) params[1];
 			} catch (ParserException | ConnectException e) {
@@ -214,7 +214,6 @@ public final class BusAdapter extends BaseAdapter {
 
 		@Override
 		protected final void onPostExecute(final BusDirections result) {
-			//mainActivity.stopRefreshAnimation();
 			if (trackerException == null) {
 				final List<BusDirection> busDirections = result.getlBusDirection();
 				final List<String> data = new ArrayList<>();
@@ -223,22 +222,22 @@ public final class BusAdapter extends BaseAdapter {
 				}
 				data.add("Follow all buses on line " + result.getId());
 
-				LayoutInflater layoutInflater = (LayoutInflater) mainActivity.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				View popupView = layoutInflater.inflate(R.layout.popup_bus, null);
+				final LayoutInflater layoutInflater = (LayoutInflater) mainActivity.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				final View popupView = layoutInflater.inflate(R.layout.popup_bus, null);
 
 				final int[] screenSize = Util.getScreenSize();
 				final PopupWindow popup = new PopupWindow(popupView, (int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
 
-				ListView listView = (ListView) popupView.findViewById(R.id.details);
-				PopupBusAdapter ada = new PopupBusAdapter(mainActivity, data);
+				final ListView listView = (ListView) popupView.findViewById(R.id.details);
+				final PopupBusAdapter ada = new PopupBusAdapter(mainActivity, data);
 				listView.setAdapter(ada);
 
 				listView.setOnItemClickListener(new OnItemClickListener() {
 					@Override
 					public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 						if (position != data.size() - 1) {
-							Intent intent = new Intent(mainActivity, BusBoundActivity.class);
-							Bundle extras = new Bundle();
+							final Intent intent = new Intent(mainActivity, BusBoundActivity.class);
+							final Bundle extras = new Bundle();
 							extras.putString("busRouteId", busRoute.getId());
 							extras.putString("busRouteName", busRoute.getName());
 							extras.putString("bound", data.get(position));
@@ -246,18 +245,17 @@ public final class BusAdapter extends BaseAdapter {
 							intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 							ChicagoTracker.getAppContext().startActivity(intent);
 						} else {
-							String[] busDirectionArray = new String[busDirections.size()];
+							final String[] busDirectionArray = new String[busDirections.size()];
 							int i = 0;
-							for (BusDirection busDir : busDirections) {
+							for (final BusDirection busDir : busDirections) {
 								busDirectionArray[i++] = busDir.toString();
 							}
-							Intent intent = new Intent(ChicagoTracker.getAppContext(), BusMapActivity.class);
-							Bundle extras = new Bundle();
+							final Intent intent = new Intent(ChicagoTracker.getAppContext(), BusMapActivity.class);
+							final Bundle extras = new Bundle();
 							extras.putString("busRouteId", result.getId());
 							extras.putStringArray("bounds", busDirectionArray);
 							intent.putExtras(extras);
 							mainActivity.startActivity(intent);
-							//mainActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 						}
 
 						popup.dismiss();

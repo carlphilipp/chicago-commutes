@@ -35,13 +35,13 @@ import java.util.List;
  */
 public class Json {
 	public List<BikeStation> parseStations(final String jsonString) throws ParserException {
-		List<BikeStation> stations = new ArrayList<>();
+		final List<BikeStation> stations = new ArrayList<>();
 		try {
-			JSONObject json = new JSONObject(jsonString);
-			JSONArray stationList = json.getJSONArray("stationBeanList");
+			final JSONObject json = new JSONObject(jsonString);
+			final JSONArray stationList = json.getJSONArray("stationBeanList");
 			for (int i = 0; i < stationList.length(); i++) {
-				JSONObject jsonStation = stationList.getJSONObject(i);
-				BikeStation station = new BikeStation();
+				final JSONObject jsonStation = stationList.getJSONObject(i);
+				final BikeStation station = new BikeStation();
 				station.setId(jsonStation.getInt("id"));
 				station.setName(jsonStation.getString("stationName"));
 				station.setAvailableDocks(jsonStation.getInt("availableDocks"));
@@ -64,7 +64,7 @@ public class Json {
 				station.setLandMark(jsonStation.getInt("landMark"));
 				stations.add(station);
 			}
-		} catch (JSONException e) {
+		} catch (final JSONException e) {
 			throw new ParserException(TrackerException.ERROR, e);
 		}
 		return stations;

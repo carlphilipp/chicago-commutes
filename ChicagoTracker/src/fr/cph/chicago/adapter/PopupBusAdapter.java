@@ -48,9 +48,9 @@ public class PopupBusAdapter extends ArrayAdapter<String> {
 
 	@Override
 	public final View getView(final int position, final View convertView, final ViewGroup parent) {
-		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View rowView = inflater.inflate(R.layout.popup_bus_cell, parent, false);
-		TextView textView = (TextView) rowView.findViewById(R.id.label);
+		final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		final View rowView = inflater.inflate(R.layout.popup_bus_cell, parent, false);
+		final TextView textView = (TextView) rowView.findViewById(R.id.label);
 		textView.setText(values.get(position));
 		return rowView;
 	}

@@ -55,22 +55,22 @@ public class TrainStationActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		if (!this.isFinishing()) {
 			// Load data
-			DataHolder dataHolder = DataHolder.getInstance();
-			this.trainData = dataHolder.getTrainData();
+			final DataHolder dataHolder = DataHolder.getInstance();
+			trainData = dataHolder.getTrainData();
 
 			if (trainLine == null && lineParam == null) {
 				lineParam = getIntent().getExtras().getString("line");
 				trainLine = TrainLine.fromString(lineParam);
 			}
 
-			this.setTitle(trainLine.toStringWithLine());
+			setTitle(trainLine.toStringWithLine());
 
 			setContentView(R.layout.activity_train_station);
 
-			FrameLayout container = (FrameLayout) findViewById(R.id.container);
+			final FrameLayout container = (FrameLayout) findViewById(R.id.container);
 			container.getForeground().setAlpha(0);
 
-			Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+			final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 			Util.setToolbarColor(this, toolbar, trainLine);
 			toolbar.setTitle(trainLine.toString() + " Line");
 
@@ -82,7 +82,7 @@ public class TrainStationActivity extends ListActivity {
 				}
 			});
 
-			TrainAdapter ada = new TrainAdapter(trainLine, this, container);
+			final TrainAdapter ada = new TrainAdapter(trainLine, this, container);
 			setListAdapter(ada);
 		}
 	}

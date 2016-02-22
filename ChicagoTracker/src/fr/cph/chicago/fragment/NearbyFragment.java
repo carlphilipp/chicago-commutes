@@ -22,14 +22,11 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.pm.PackageManager;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -39,6 +36,9 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -54,7 +54,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMapOptions;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -157,8 +156,8 @@ public class NearbyFragment extends Fragment {
 	 * @return
 	 */
 	public static NearbyFragment newInstance(final int sectionNumber) {
-		NearbyFragment fragment = new NearbyFragment();
-		Bundle args = new Bundle();
+		final NearbyFragment fragment = new NearbyFragment();
+		final Bundle args = new Bundle();
 		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
 		fragment.setArguments(args);
 		return fragment;
@@ -182,7 +181,7 @@ public class NearbyFragment extends Fragment {
 
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.fragment_nearby, container, false);
+		final View rootView = inflater.inflate(R.layout.fragment_nearby, container, false);
 		if (!mainActivity.isFinishing()) {
 			nearbyAdapter = new NearbyAdapter(mainActivity);
 			listView = (ListView) rootView.findViewById(R.id.fragment_nearby_list);
@@ -216,10 +215,10 @@ public class NearbyFragment extends Fragment {
 	@Override
 	public final void onStart() {
 		super.onStart();
-		FragmentManager fm = mainActivity.getSupportFragmentManager();
+		final FragmentManager fm = mainActivity.getSupportFragmentManager();
 		mapFragment = (SupportMapFragment) fm.findFragmentById(R.id.map);
-		GoogleMapOptions options = new GoogleMapOptions();
-		CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 7, 0, 0);
+		final GoogleMapOptions options = new GoogleMapOptions();
+		final CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 7, 0, 0);
 		options.camera(camera);
 		mapFragment = SupportMapFragment.newInstance(options);
 		mapFragment.setRetainInstance(true);
@@ -247,7 +246,6 @@ public class NearbyFragment extends Fragment {
 		DataHolder.getInstance().setTrainData(null);
 		DataHolder.getInstance().setBusData(null);
 		ChicagoTracker.displayError(mainActivity, exceptionToBeThrown);
-		//mainActivity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 	}
 
 	/**
@@ -294,10 +292,10 @@ public class NearbyFragment extends Fragment {
 			busArrivalsMap = new SparseArray<>();
 			trainArrivals = new SparseArray<>();
 
-			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mainActivity);
-			boolean loadTrain = sharedPref.getBoolean("cta_train", true);
-			boolean loadBus = sharedPref.getBoolean("cta_bus", true);
-			boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
+			final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mainActivity);
+			final boolean loadTrain = sharedPref.getBoolean("cta_train", true);
+			final boolean loadBus = sharedPref.getBoolean("cta_bus", true);
+			final boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
 
 			CtaConnect cta = CtaConnect.getInstance();
 
@@ -315,45 +313,45 @@ public class NearbyFragment extends Fragment {
 
 					// Buses
 					try {
-						MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
+						final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
 						reqParams.put("stpid", busStop.getId().toString());
 
-						String xmlRes = cta.connect(CtaRequestType.BUS_ARRIVALS, reqParams);
-						Xml xml = new Xml();
-						List<BusArrival> busArrivals = xml.parseBusArrivals(xmlRes);
-						for (BusArrival busArrival : busArrivals) {
-							String direction = busArrival.getRouteDirection();
+						final String xmlRes = cta.connect(CtaRequestType.BUS_ARRIVALS, reqParams);
+						final Xml xml = new Xml();
+						final List<BusArrival> busArrivals = xml.parseBusArrivals(xmlRes);
+						for (final BusArrival busArrival : busArrivals) {
+							final String direction = busArrival.getRouteDirection();
 							if (tempMap.containsKey(direction)) {
-								List<BusArrival> temp = tempMap.get(direction);
+								final List<BusArrival> temp = tempMap.get(direction);
 								temp.add(busArrival);
 							} else {
-								List<BusArrival> temp = new ArrayList<>();
+								final List<BusArrival> temp = new ArrayList<>();
 								temp.add(busArrival);
 								tempMap.put(direction, temp);
 							}
 						}
 						Util.trackAction(NearbyFragment.this.mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_bus,
 								R.string.analytics_action_get_bus_arrival, 0);
-					} catch (ConnectException | ParserException e) {
+					} catch (final ConnectException | ParserException e) {
 						Log.e(TAG, e.getMessage(), e);
 					}
 				}
 			}
 			if (loadTrain) {
 				// Train
-				for (Station station : stations) {
+				for (final Station station : stations) {
 					try {
-						MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
+						final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
 						reqParams.put("mapid", String.valueOf(station.getId()));
-						String xmlRes = cta.connect(CtaRequestType.TRAIN_ARRIVALS, reqParams);
-						Xml xml = new Xml();
-						SparseArray<TrainArrival> temp = xml.parseArrivals(xmlRes, DataHolder.getInstance().getTrainData());
+						final String xmlRes = cta.connect(CtaRequestType.TRAIN_ARRIVALS, reqParams);
+						final Xml xml = new Xml();
+						final SparseArray<TrainArrival> temp = xml.parseArrivals(xmlRes, DataHolder.getInstance().getTrainData());
 						for (int j = 0; j < temp.size(); j++) {
 							trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
 						}
 						Util.trackAction(NearbyFragment.this.mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_train,
 								R.string.analytics_action_get_train_arrivals, 0);
-					} catch (ConnectException | ParserException e) {
+					} catch (final ConnectException | ParserException e) {
 						Log.e(TAG, e.getMessage(), e);
 					}
 				}
@@ -361,12 +359,12 @@ public class NearbyFragment extends Fragment {
 			// TODO: modify the second check
 			if (loadBike && bikeStationsTemp != null) {
 				// Bike
-				DivvyConnect connect = DivvyConnect.getInstance();
+				final DivvyConnect connect = DivvyConnect.getInstance();
 				try {
-					Json json = new Json();
-					String content = connect.connect();
-					List<BikeStation> bikeStationUpdated = json.parseStations(content);
-					for (BikeStation station : bikeStationUpdated) {
+					final Json json = new Json();
+					final String content = connect.connect();
+					final List<BikeStation> bikeStationUpdated = json.parseStations(content);
+					for (final BikeStation station : bikeStationUpdated) {
 						if (bikeStationsTemp.contains(station)) {
 							bikeStationsRes.add(station);
 						}
@@ -374,7 +372,7 @@ public class NearbyFragment extends Fragment {
 					Collections.sort(bikeStationsRes, Util.BIKE_COMPARATOR_NAME);
 					Util.trackAction(NearbyFragment.this.mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_divvy,
 							R.string.analytics_action_get_divvy_all, 0);
-				} catch (ConnectException | ParserException e) {
+				} catch (final ConnectException | ParserException e) {
 					Log.e(TAG, e.getMessage(), e);
 				}
 			}
@@ -385,8 +383,8 @@ public class NearbyFragment extends Fragment {
 		@Override
 		protected final void onPostExecute(final Void result) {
 			if (hideStationsStops) {
-				List<BusStop> busStopTmp = new ArrayList<>();
-				for (BusStop busStop : busStops) {
+				final List<BusStop> busStopTmp = new ArrayList<>();
+				for (final BusStop busStop : busStops) {
 					if (busArrivalsMap.get(busStop.getId()).size() == 0) {
 						busArrivalsMap.remove(busStop.getId());
 					} else {
@@ -396,8 +394,8 @@ public class NearbyFragment extends Fragment {
 				busStops.clear();
 				busStops = busStopTmp;
 
-				List<Station> trainStationTmp = new ArrayList<>();
-				for (Station station : stations) {
+				final List<Station> trainStationTmp = new ArrayList<>();
+				for (final Station station : stations) {
 					if (trainArrivals.get(station.getId()) == null || trainArrivals.get(station.getId()).getEtas().size() == 0) {
 						trainArrivals.remove(station.getId());
 					} else {
@@ -426,7 +424,7 @@ public class NearbyFragment extends Fragment {
 		// The minimum distance to change Updates in meters
 		private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
 		// The minimum time between updates in milliseconds
-		private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
+		private static final long MIN_TIME_BW_UPDATES = 1000 * 60; // 1 minute
 		// flag for GPS status
 		private boolean isGPSEnabled = false;
 		// flag for network status
@@ -466,7 +464,7 @@ public class NearbyFragment extends Fragment {
 
 		private MainActivity activity;
 
-		public LoadNearby(MainActivity activity){
+		public LoadNearby(MainActivity activity) {
 			this.activity = activity;
 		}
 
@@ -476,9 +474,9 @@ public class NearbyFragment extends Fragment {
 			trainStations = new ArrayList<>();
 			bikeStations = NearbyFragment.this.mainActivity.getIntent().getExtras().getParcelableArrayList("bikeStations");
 
-			DataHolder dataHolder = DataHolder.getInstance();
-			BusData busData = dataHolder.getBusData();
-			TrainData trainData = dataHolder.getTrainData();
+			final DataHolder dataHolder = DataHolder.getInstance();
+			final BusData busData = dataHolder.getBusData();
+			final TrainData trainData = dataHolder.getTrainData();
 
 			locationManager = (LocationManager) mainActivity.getSystemService(Context.LOCATION_SERVICE);
 
@@ -497,12 +495,6 @@ public class NearbyFragment extends Fragment {
 							!= PackageManager.PERMISSION_GRANTED
 							&& ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
 							!= PackageManager.PERMISSION_GRANTED) {
-						// TODO: Consider calling
-						//    ActivityCompat#requestPermissions
-						// here to request the missing permissions, and then overriding
-						//   public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
-						// to handle the case where the user grants the permission. See the documentation
-						// for ActivityCompat#requestPermissions for more details.
 						ActivityCompat.requestPermissions(activity,
 								new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
 						return null;
@@ -524,12 +516,6 @@ public class NearbyFragment extends Fragment {
 								!= PackageManager.PERMISSION_GRANTED
 								&& ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
 								!= PackageManager.PERMISSION_GRANTED) {
-							// TODO: Consider calling
-							//    ActivityCompat#requestPermissions
-							// here to request the missing permissions, and then overriding
-							//   public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
-							// to handle the case where the user grants the permission. See the documentation
-							// for ActivityCompat#requestPermissions for more details.
 							ActivityCompat.requestPermissions(activity,
 									new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
 							return null;
@@ -549,10 +535,10 @@ public class NearbyFragment extends Fragment {
 				position.setLatitude(latitude);
 				position.setLongitude(longitude);
 
-				SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mainActivity);
-				boolean loadTrain = sharedPref.getBoolean("cta_train", true);
-				boolean loadBus = sharedPref.getBoolean("cta_bus", true);
-				boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
+				final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mainActivity);
+				final boolean loadTrain = sharedPref.getBoolean("cta_train", true);
+				final boolean loadBus = sharedPref.getBoolean("cta_bus", true);
+				final boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
 
 				if (loadBus) {
 					busStops = busData.readNearbyStops(position);
@@ -578,7 +564,7 @@ public class NearbyFragment extends Fragment {
 					!= PackageManager.PERMISSION_GRANTED) {
 				ActivityCompat.requestPermissions(activity,
 						new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
-				return ;
+				return;
 			}
 			locationManager.removeUpdates(LoadNearby.this);
 		}
@@ -607,7 +593,7 @@ public class NearbyFragment extends Fragment {
 				public void run() {
 					NearbyFragment.this.mainActivity.runOnUiThread(new Runnable() {
 						public void run() {
-							AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(NearbyFragment.this.getActivity());
+							final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(NearbyFragment.this.getActivity());
 							alertDialogBuilder.setTitle("GPS settings");
 							alertDialogBuilder.setMessage("GPS is not enabled. Do you want to go to settings menu?");
 							alertDialogBuilder.setCancelable(false).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -620,7 +606,7 @@ public class NearbyFragment extends Fragment {
 									dialog.cancel();
 								}
 							});
-							AlertDialog alertDialog = alertDialogBuilder.create();
+							final AlertDialog alertDialog = alertDialogBuilder.create();
 							alertDialog.show();
 						}
 					});
@@ -645,11 +631,11 @@ public class NearbyFragment extends Fragment {
 				!= PackageManager.PERMISSION_GRANTED) {
 			ActivityCompat.requestPermissions(mainActivity,
 					new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
-			return ;
+			return;
 		}
 		googleMap.setMyLocationEnabled(true);
 		if (positon != null) {
-			LatLng latLng = new LatLng(positon.getLatitude(), positon.getLongitude());
+			final LatLng latLng = new LatLng(positon.getLatitude(), positon.getLongitude());
 			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
 		} else {
 			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CHICAGO, 10));
@@ -667,14 +653,14 @@ public class NearbyFragment extends Fragment {
 	 */
 	private void load(final List<BusStop> buses, final SparseArray<Map<String, List<BusArrival>>> busArrivals, final List<Station> stations,
 			final SparseArray<TrainArrival> trainArrivals, final List<BikeStation> bikeStations) {
-		List<Marker> markers = new ArrayList<>();
-		BitmapDescriptor azure = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE);
-		BitmapDescriptor violet = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
-		BitmapDescriptor yellow = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
+		final List<Marker> markers = new ArrayList<>();
+		final BitmapDescriptor azure = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE);
+		final BitmapDescriptor violet = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
+		final BitmapDescriptor yellow = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
 		MarkerOptions options;
 		Marker marker;
 		LatLng point;
-		for (BusStop busStop : buses) {
+		for (final BusStop busStop : buses) {
 			point = new LatLng(busStop.getPosition().getLatitude(), busStop.getPosition().getLongitude());
 			options = new MarkerOptions().position(point).title(busStop.getName()).snippet(busStop.getId().toString());
 			options.icon(azure);
@@ -682,8 +668,8 @@ public class NearbyFragment extends Fragment {
 			markers.add(marker);
 
 		}
-		for (Station station : stations) {
-			for (Position position : station.getStopsPosition()) {
+		for (final Station station : stations) {
+			for (final Position position : station.getStopsPosition()) {
 				point = new LatLng(position.getLatitude(), position.getLongitude());
 				options = new MarkerOptions().position(point).title(station.getName()).snippet(station.getId().toString());
 				options.icon(violet);
@@ -691,7 +677,7 @@ public class NearbyFragment extends Fragment {
 				markers.add(marker);
 			}
 		}
-		for (BikeStation station : bikeStations) {
+		for (final BikeStation station : bikeStations) {
 			point = new LatLng(station.getPosition().getLatitude(), station.getPosition().getLongitude());
 			options = new MarkerOptions().position(point).title(station.getName()).snippet(station.getId() + "");
 			options.icon(yellow);
@@ -766,8 +752,7 @@ public class NearbyFragment extends Fragment {
 			} else {
 				loadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
 			}
-			//mainActivity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-		} catch (IllegalStateException e) {
+		} catch (final IllegalStateException e) {
 			Log.w(TAG, e.getMessage(), e);
 		}
 	}

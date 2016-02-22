@@ -87,8 +87,8 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 		if (!Util.isNetworkAvailable()) {
 			Toast.makeText(activity, "No network connection detected!", Toast.LENGTH_LONG).show();
 		} else {
-			LayoutInflater layoutInflater = (LayoutInflater) activity.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			View popupView = layoutInflater.inflate(R.layout.popup_train, null);
+			final LayoutInflater layoutInflater = (LayoutInflater) activity.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			final View popupView = layoutInflater.inflate(R.layout.popup_train, null);
 
 			final int[] screenSize = Util.getScreenSize();
 
@@ -97,15 +97,15 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 			popup.setBackgroundDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.any_selector));
 			firstLayout.getForeground().setAlpha(210);
 
-			ListView listView = (ListView) popupView.findViewById(R.id.details);
+			final ListView listView = (ListView) popupView.findViewById(R.id.details);
 			final List<String> values = new ArrayList<>();
 			final List<Integer> colors = new ArrayList<>();
 			values.add("Open details");
-			for (TrainLine line : trainLines) {
+			for (final TrainLine line : trainLines) {
 				values.add(line.toString() + " line - All trains");
 				colors.add(line.getColor());
 			}
-			PopupTrainAdapter ada = new PopupTrainAdapter(activity, values, colors);
+			final PopupTrainAdapter ada = new PopupTrainAdapter(activity, values, colors);
 			listView.setAdapter(ada);
 			final List<TrainLine> lines = new ArrayList<>();
 			lines.addAll(trainLines);
@@ -114,15 +114,15 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 					if (position == 0) {
-						Intent intent = new Intent(ChicagoTracker.getAppContext(), StationActivity.class);
-						Bundle extras = new Bundle();
+						final Intent intent = new Intent(ChicagoTracker.getAppContext(), StationActivity.class);
+						final Bundle extras = new Bundle();
 						extras.putInt("stationId", stationId);
 						intent.putExtras(extras);
 						activity.startActivity(intent);
 						popup.dismiss();
 					} else {
-						Intent intent = new Intent(ChicagoTracker.getAppContext(), TrainMapActivity.class);
-						Bundle extras = new Bundle();
+						final Intent intent = new Intent(ChicagoTracker.getAppContext(), TrainMapActivity.class);
+						final Bundle extras = new Bundle();
 						extras.putString("line", lines.get(position - 1).toTextString());
 						intent.putExtras(extras);
 						activity.startActivity(intent);

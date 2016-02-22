@@ -309,20 +309,20 @@ public final class BikeStation implements Parcelable {
 		}
 	};
 
-	public static List<BikeStation> readNearbyStation(List<BikeStation> bikeStations, Position position) {
+	public static List<BikeStation> readNearbyStation(final List<BikeStation> bikeStations, final Position position) {
 		final double dist = 0.004472;
-		double latitude = position.getLatitude();
-		double longitude = position.getLongitude();
+		final double latitude = position.getLatitude();
+		final double longitude = position.getLongitude();
 
-		double latMax = latitude + dist;
-		double latMin = latitude - dist;
-		double lonMax = longitude + dist;
-		double lonMin = longitude - dist;
+		final double latMax = latitude + dist;
+		final double latMin = latitude - dist;
+		final double lonMax = longitude + dist;
+		final double lonMin = longitude - dist;
 
-		List<BikeStation> bikeStationsRes = new ArrayList<>();
-		for (BikeStation station : bikeStations) {
-			double trainLatitude = station.getPosition().getLatitude();
-			double trainLongitude = station.getPosition().getLongitude();
+		final List<BikeStation> bikeStationsRes = new ArrayList<>();
+		for (final BikeStation station : bikeStations) {
+			final double trainLatitude = station.getPosition().getLatitude();
+			final double trainLongitude = station.getPosition().getLongitude();
 			if (trainLatitude <= latMax && trainLatitude >= latMin && trainLongitude <= lonMax && trainLongitude >= lonMin) {
 				bikeStationsRes.add(station);
 			}

@@ -81,8 +81,8 @@ public class MapFragment extends Fragment implements OnTouchListener {
 	 * @return the fragment
 	 */
 	public static MapFragment newInstance(final int sectionNumber) {
-		MapFragment fragment = new MapFragment();
-		Bundle args = new Bundle();
+		final MapFragment fragment = new MapFragment();
+		final Bundle args = new Bundle();
 		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
 		fragment.setArguments(args);
 		return fragment;
@@ -97,7 +97,7 @@ public class MapFragment extends Fragment implements OnTouchListener {
 
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.fragment_map, container, false);
+		final View rootView = inflater.inflate(R.layout.fragment_map, container, false);
 		view = (ImageView) rootView.findViewById(R.id.imageView);
 		view.setOnTouchListener(this);
 		view.setImageResource(R.drawable.ctamap);
@@ -113,17 +113,15 @@ public class MapFragment extends Fragment implements OnTouchListener {
 
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
-		ImageView view = (ImageView) v;
+		final ImageView view = (ImageView) v;
 		view.setScaleType(ScaleType.MATRIX);
 
 		switch (event.getAction() & MotionEvent.ACTION_MASK) {
 		case MotionEvent.ACTION_DOWN:
-
 			startTime = System.currentTimeMillis();
 			if (upCounter != 0) {
 				timeBetweenTwoClick = startTime - endTime;
 			}
-
 			savedMatrix.set(matrix);
 			start.set(event.getX(), event.getY());
 			mode = DRAG;
@@ -138,7 +136,6 @@ public class MapFragment extends Fragment implements OnTouchListener {
 			break;
 		case MotionEvent.ACTION_UP:
 		case MotionEvent.ACTION_POINTER_UP:
-
 			endTime = System.currentTimeMillis();
 			currentClickTime = endTime - startTime;
 			consecutiveTwoClickTime = currentClickTime + previousClickTime;

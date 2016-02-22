@@ -52,16 +52,16 @@ public class PopupTrainAdapter extends ArrayAdapter<String> {
 
 	@Override
 	public final View getView(final int position, final View convertView, final ViewGroup parent) {
-		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View rowView = null;
+		final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View rowView;
 		if (position == 0) {
 			rowView = inflater.inflate(R.layout.popup_train_cell_0, parent, false);
 		} else {
 			rowView = inflater.inflate(R.layout.popup_train_cell, parent, false);
-			TextView colorView = (TextView) rowView.findViewById(R.id.line_color);
+			final TextView colorView = (TextView) rowView.findViewById(R.id.line_color);
 			colorView.setBackgroundColor(colors.get(position - 1));
 		}
-		TextView textView = (TextView) rowView.findViewById(R.id.label);
+		final TextView textView = (TextView) rowView.findViewById(R.id.label);
 		textView.setText(values.get(position));
 		return rowView;
 	}

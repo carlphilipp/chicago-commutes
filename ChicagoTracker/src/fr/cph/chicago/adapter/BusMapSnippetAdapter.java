@@ -37,7 +37,9 @@ import java.util.List;
  * @version 1
  */
 public class BusMapSnippetAdapter extends BaseAdapter {
-	/** List of bus arrivals **/
+	/**
+	 * List of bus arrivals
+	 **/
 	private List<BusArrival> arrivals;
 
 	/**
@@ -64,22 +66,20 @@ public class BusMapSnippetAdapter extends BaseAdapter {
 
 	@Override
 	public final View getView(final int position, View convertView, final ViewGroup parent) {
-		BusArrival arrival = (BusArrival) getItem(position);
-		LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		final BusArrival arrival = (BusArrival) getItem(position);
+		final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		convertView = vi.inflate(R.layout.list_map_train, parent);
-		TextView name = (TextView) convertView.findViewById(R.id.station_name);
+		final TextView name = (TextView) convertView.findViewById(R.id.station_name);
 		name.setText(arrival.getStopName());
 
 		if (!(position == arrivals.size() - 1 && arrival.getTimeLeftDueDelay().equals("No service scheduled"))) {
-			TextView time = (TextView) convertView.findViewById(R.id.time);
+			final TextView time = (TextView) convertView.findViewById(R.id.time);
 			time.setText(arrival.getTimeLeftDueDelay());
 		} else {
 			name.setTextColor(ChicagoTracker.getAppContext().getResources().getColor(R.color.grey));
 			name.setTypeface(null, Typeface.BOLD);
 			name.setGravity(Gravity.CENTER);
 		}
-
 		return convertView;
 	}
-
 }

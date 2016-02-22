@@ -91,29 +91,29 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 		if (!Util.isNetworkAvailable()) {
 			Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_LONG).show();
 		} else {
-			LayoutInflater layoutInflater = (LayoutInflater) mainActivity.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			final LayoutInflater layoutInflater = (LayoutInflater) mainActivity.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			final View popupView = layoutInflater.inflate(R.layout.popup_bus, null);
 
-			int[] screenSize = Util.getScreenSize();
+			final int[] screenSize = Util.getScreenSize();
 			final PopupWindow popup = new PopupWindow(popupView, (int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
 			final List<BusArrival> busArrivals = new ArrayList<>();
 
-			ListView listView = (ListView) popupView.findViewById(R.id.details);
+			final ListView listView = (ListView) popupView.findViewById(R.id.details);
 			final List<String> values = new ArrayList<>();
-			Set<Entry<String, List<BusArrival>>> entrySet = mapBusArrivals.entrySet();
-			for (Entry<String, List<BusArrival>> entry : entrySet) {
-				StringBuilder sb = new StringBuilder();
+			final Set<Entry<String, List<BusArrival>>> entrySet = mapBusArrivals.entrySet();
+			for (final Entry<String, List<BusArrival>> entry : entrySet) {
+				final StringBuilder sb = new StringBuilder();
 				sb.append("Open details");
 				if (entrySet.size() > 1) {
 					sb.append(" (").append(entry.getKey()).append(")");
 				}
 				values.add(sb.toString());
 			}
-			for (Entry<String, List<BusArrival>> entry : entrySet) {
-				List<BusArrival> arrivals = BusArrival.getRealBusArrival(entry.getValue());
+			for (final Entry<String, List<BusArrival>> entry : entrySet) {
+				final List<BusArrival> arrivals = BusArrival.getRealBusArrival(entry.getValue());
 				busArrivals.addAll(arrivals);
-				for (BusArrival arrival : arrivals) {
-					StringBuilder sb = new StringBuilder();
+				for (final BusArrival arrival : arrivals) {
+					final StringBuilder sb = new StringBuilder();
 					sb.append("Follow bus - ").append(arrival.getTimeLeftDueDelay());
 					if (entrySet.size() > 1) {
 						sb.append(" (").append(entry.getKey()).append(")");
@@ -123,7 +123,7 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 			}
 			values.add("Follow all buses on line " + busRoute.getId());
 
-			PopupBusAdapter ada = new PopupBusAdapter(mainActivity, values);
+			final PopupBusAdapter ada = new PopupBusAdapter(mainActivity, values);
 			listView.setAdapter(ada);
 
 			listView.setOnItemClickListener(new OnItemClickListener() {
@@ -131,8 +131,8 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
 					int i = 0;
-					for (Entry<String, List<BusArrival>> entry : mapBusArrivals.entrySet()) {
-						BusArrival busArrival = entry.getValue().get(0);
+					for (final Entry<String, List<BusArrival>> entry : mapBusArrivals.entrySet()) {
+						final BusArrival busArrival = entry.getValue().get(0);
 						if (position == i) {
 							//mainActivity.startRefreshAnimation();
 							new FavoritesAdapter.BusBoundAsyncTask(mainActivity).execute(busArrival.getRouteId(), busArrival.getRouteDirection(),
@@ -141,12 +141,12 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 						}
 						i++;
 					}
-					for (Entry<String, List<BusArrival>> entry : mapBusArrivals.entrySet()) {
-						List<BusArrival> arrivals = BusArrival.getRealBusArrival(entry.getValue());
-						for (BusArrival arrival : arrivals) {
+					for (final Entry<String, List<BusArrival>> entry : mapBusArrivals.entrySet()) {
+						final List<BusArrival> arrivals = BusArrival.getRealBusArrival(entry.getValue());
+						for (final BusArrival arrival : arrivals) {
 							if (position == i) {
-								Intent intent = new Intent(ChicagoTracker.getAppContext(), BusMapActivity.class);
-								Bundle extras = new Bundle();
+								final Intent intent = new Intent(ChicagoTracker.getAppContext(), BusMapActivity.class);
+								final Bundle extras = new Bundle();
 								extras.putInt("busId", arrival.getBusId());
 								extras.putString("busRouteId", arrival.getRouteId());
 								extras.putStringArray("bounds", new String[] { entry.getKey() });
@@ -159,12 +159,12 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 						}
 					}
 					if (position == i) {
-						Set<String> bounds = new HashSet<>();
-						for (Entry<String, List<BusArrival>> stringListEntry : mapBusArrivals.entrySet()) {
+						final Set<String> bounds = new HashSet<>();
+						for (final Entry<String, List<BusArrival>> stringListEntry : mapBusArrivals.entrySet()) {
 							bounds.add(stringListEntry.getKey());
 						}
-						Intent intent = new Intent(ChicagoTracker.getAppContext(), BusMapActivity.class);
-						Bundle extras = new Bundle();
+						final Intent intent = new Intent(ChicagoTracker.getAppContext(), BusMapActivity.class);
+						final Bundle extras = new Bundle();
 						extras.putString("busRouteId", busRoute.getId());
 						extras.putStringArray("bounds", bounds.toArray(new String[bounds.size()]));
 						intent.putExtras(extras);

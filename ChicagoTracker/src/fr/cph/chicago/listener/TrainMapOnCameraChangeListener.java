@@ -53,7 +53,7 @@ public class TrainMapOnCameraChangeListener implements OnCameraChangeListener {
 	 *
 	 */
 	public TrainMapOnCameraChangeListener() {
-		Bitmap icon = BitmapFactory.decodeResource(ChicagoTracker.getAppContext().getResources(), R.drawable.train);
+		final Bitmap icon = BitmapFactory.decodeResource(ChicagoTracker.getAppContext().getResources(), R.drawable.train);
 		this.bitmap1 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 9, icon.getHeight() / 9, false);
 		this.bitmap2 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 5, icon.getHeight() / 5, false);
 		this.bitmap3 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 3, icon.getHeight() / 3, false);
@@ -73,25 +73,25 @@ public class TrainMapOnCameraChangeListener implements OnCameraChangeListener {
 			oldZoom = currentZoom;
 			currentZoom = position.zoom;
 			if (isIn(currentZoom, 12.9f, 11f) && !isIn(oldZoom, 12.9f, 11f)) {
-				for (Marker marker : trainMarkers) {
-					this.setCurrentBitmap(bitmap1);
+				for (final Marker marker : trainMarkers) {
+					setCurrentBitmap(bitmap1);
 					marker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap1));
 				}
 			} else if (isIn(currentZoom, 14.9f, 13f) && !isIn(oldZoom, 14.9f, 13f)) {
-				for (Marker marker : trainMarkers) {
-					this.setCurrentBitmap(bitmap2);
+				for (final Marker marker : trainMarkers) {
+					setCurrentBitmap(bitmap2);
 					marker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap2));
 				}
 			} else if (isIn(currentZoom, 21f, 15f) && !isIn(oldZoom, 21f, 15f)) {
-				for (Marker marker : trainMarkers) {
-					this.setCurrentBitmap(bitmap3);
+				for (final Marker marker : trainMarkers) {
+					setCurrentBitmap(bitmap3);
 					marker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap3));
 				}
 			}
 		}
 	}
 
-	private boolean isIn(float num, float sup, float inf) {
+	private boolean isIn(final float num, final float sup, final float inf) {
 		return num >= inf && num <= sup;
 	}
 

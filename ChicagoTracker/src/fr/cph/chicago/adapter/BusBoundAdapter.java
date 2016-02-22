@@ -36,7 +36,9 @@ import java.util.List;
  * @version 1
  */
 public class BusBoundAdapter extends BaseAdapter {
-	/** List of bus stop **/
+	/**
+	 * List of bus stop
+	 **/
 	private List<BusStop> busStops;
 	/** **/
 	private String stopId;
@@ -44,8 +46,7 @@ public class BusBoundAdapter extends BaseAdapter {
 	/**
 	 * Constructor
 	 *
-	 * @param stopId
-	 *            the stop id of the bu
+	 * @param stopId the stop id of the bu
 	 */
 	public BusBoundAdapter(final String stopId) {
 		this.busStops = new ArrayList<>();
@@ -70,16 +71,16 @@ public class BusBoundAdapter extends BaseAdapter {
 	@Override
 	public final View getView(final int position, View convertView, final ViewGroup parent) {
 
-		BusStop busStop = busStops.get(position);
+		final BusStop busStop = busStops.get(position);
 
-		TextView routNumberView = null;
-		TextView routNameView = null;
+		TextView routNumberView;
+		TextView routNameView;
 
 		if (convertView == null) {
-			LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = vi.inflate(R.layout.list_bus_bounds, parent, false);
 
-			ViewHolder holder = new ViewHolder();
+			final ViewHolder holder = new ViewHolder();
 			routNumberView = (TextView) convertView.findViewById(R.id.route_number);
 			holder.routNumberView = routNumberView;
 
@@ -88,7 +89,7 @@ public class BusBoundAdapter extends BaseAdapter {
 
 			convertView.setTag(holder);
 		} else {
-			ViewHolder viewHolder = (ViewHolder) convertView.getTag();
+			final ViewHolder viewHolder = (ViewHolder) convertView.getTag();
 			routNumberView = viewHolder.routNumberView;
 			routNameView = viewHolder.routNameView;
 		}
@@ -113,12 +114,10 @@ public class BusBoundAdapter extends BaseAdapter {
 	/**
 	 * Update of the bus stops
 	 *
-	 * @param result
-	 *            the list of bus stops
+	 * @param result the list of bus stops
 	 */
 	public final void update(final List<BusStop> result) {
 		this.busStops = null;
 		this.busStops = result;
 	}
-
 }

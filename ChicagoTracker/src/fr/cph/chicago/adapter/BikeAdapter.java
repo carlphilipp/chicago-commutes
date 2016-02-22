@@ -53,7 +53,7 @@ public final class BikeAdapter extends BaseAdapter {
 	 */
 	public BikeAdapter(final MainActivity activity) {
 		this.mainActivity = activity;
-		Bundle bundle = activity.getIntent().getExtras();
+		final Bundle bundle = activity.getIntent().getExtras();
 		this.bikeStations = bundle.getParcelableArrayList("bikeStations");
 		if (this.bikeStations == null) {
 			this.bikeStations = new ArrayList<>();
@@ -83,7 +83,7 @@ public final class BikeAdapter extends BaseAdapter {
 		ViewHolder holder;
 
 		if (convertView == null) {
-			LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = vi.inflate(R.layout.list_bike, parent, false);
 
 			holder = new ViewHolder();
@@ -109,7 +109,7 @@ public final class BikeAdapter extends BaseAdapter {
 		return convertView;
 	}
 
-	public void setBikeStations(List<BikeStation> bikeStations) {
+	public void setBikeStations(final List<BikeStation> bikeStations) {
 		this.bikeStations = bikeStations;
 	}
 

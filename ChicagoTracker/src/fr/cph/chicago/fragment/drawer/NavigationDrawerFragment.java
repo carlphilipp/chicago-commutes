@@ -85,7 +85,7 @@ public class NavigationDrawerFragment extends Fragment {
 
 		// Read in the flag indicating whether or not the user has demonstrated awareness of the
 		// drawer. See PREF_USER_LEARNED_DRAWER for details.
-		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		userLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
 
 		if (savedInstanceState != null) {
@@ -109,20 +109,20 @@ public class NavigationDrawerFragment extends Fragment {
 				selectItem(position, false);
 			}
 		});
-		List<DrawerItem> drawerItems = new ArrayList<>();
-		DrawerItem item1 = new DrawerItem(getString(R.string.favorites), R.drawable.ic_favorite_white_24dp);
-		DrawerItem item2 = new DrawerItem(getString(R.string.train), R.drawable.ic_train_white_24dp);
-		DrawerItem item3 = new DrawerItem(getString(R.string.bus), R.drawable.ic_directions_bus_white_24dp);
-		DrawerItem item4 = new DrawerItem(getString(R.string.divvy), R.drawable.ic_directions_bike_white_24dp);
-		DrawerItem item5 = new DrawerItem(getString(R.string.nearby), R.drawable.ic_near_me_white_24dp);
-		DrawerItem item8 = new DrawerItem(getString(R.string.settings), R.drawable.ic_settings_white_24dp);
+		final List<DrawerItem> drawerItems = new ArrayList<>();
+		final DrawerItem item1 = new DrawerItem(getString(R.string.favorites), R.drawable.ic_favorite_white_24dp);
+		final DrawerItem item2 = new DrawerItem(getString(R.string.train), R.drawable.ic_train_white_24dp);
+		final DrawerItem item3 = new DrawerItem(getString(R.string.bus), R.drawable.ic_directions_bus_white_24dp);
+		final DrawerItem item4 = new DrawerItem(getString(R.string.divvy), R.drawable.ic_directions_bike_white_24dp);
+		final DrawerItem item5 = new DrawerItem(getString(R.string.nearby), R.drawable.ic_near_me_white_24dp);
+		final DrawerItem item8 = new DrawerItem(getString(R.string.settings), R.drawable.ic_settings_white_24dp);
 		drawerItems.add(item1);
 		drawerItems.add(item2);
 		drawerItems.add(item3);
 		drawerItems.add(item4);
 		drawerItems.add(item5);
 		drawerItems.add(item8);
-		CustomDrawerAdapter ada = new CustomDrawerAdapter(getActivity(), R.layout.custom_drawer_item, drawerItems);
+		final CustomDrawerAdapter ada = new CustomDrawerAdapter(getActivity(), R.layout.custom_drawer_item, drawerItems);
 		drawerListView.setAdapter(ada);
 		drawerListView.setItemChecked(currentSelectedPosition, true);
 		drawerListView.setSelector(R.drawable.drawer_selector);
@@ -149,7 +149,7 @@ public class NavigationDrawerFragment extends Fragment {
 		this.drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 		// set up the drawer's list view with items and click listener
 
-		ActionBar actionBar = getActionBar();
+		final ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setHomeButtonEnabled(true);
 
@@ -169,7 +169,7 @@ public class NavigationDrawerFragment extends Fragment {
 				}
 
 				if (pendingRunnable != null) {
-					Handler mHandler = new Handler();
+					final Handler mHandler = new Handler();
 					mHandler.post(pendingRunnable);
 					pendingRunnable = null;
 				}
@@ -188,7 +188,7 @@ public class NavigationDrawerFragment extends Fragment {
 					// The user manually opened the drawer; store this flag to prevent auto-showing
 					// the navigation drawer automatically in the future.
 					userLearnedDrawer = true;
-					SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
+					final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
 					sp.edit().putBoolean(PREF_USER_LEARNED_DRAWER, true).apply();
 				}
 				getActivity().invalidateOptionsMenu(); // calls onPrepareOptionsMenu()
@@ -220,7 +220,7 @@ public class NavigationDrawerFragment extends Fragment {
 	 * @param backPressed
 	 *            if back pressed
 	 */
-	public void selectItem(final int position, boolean backPressed) {
+	public void selectItem(final int position, final boolean backPressed) {
 		currentSelectedPosition = position;
 		pendingRunnable = new Runnable() {
 			@Override
@@ -300,7 +300,7 @@ public class NavigationDrawerFragment extends Fragment {
 	 * screen.
 	 */
 	private void showGlobalContextActionBar() {
-		ActionBar actionBar = getActionBar();
+		final ActionBar actionBar = getActionBar();
 		actionBar.setDisplayShowTitleEnabled(true);
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		actionBar.setTitle(R.string.app_name);

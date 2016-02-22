@@ -68,8 +68,8 @@ public class BusFragment extends Fragment {
 	 * @return the fragment
 	 */
 	public static BusFragment newInstance(final int sectionNumber) {
-		BusFragment fragment = new BusFragment();
-		Bundle args = new Bundle();
+		final BusFragment fragment = new BusFragment();
+		final Bundle args = new Bundle();
 		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
 		fragment.setArguments(args);
 		return fragment;
@@ -91,13 +91,12 @@ public class BusFragment extends Fragment {
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		ChicagoTracker.checkBusData(mainActivity);
-
 		Util.trackScreen(getResources().getString(R.string.analytics_bus_fragment));
 	}
 
 	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.fragment_bus, container, false);
+		final View rootView = inflater.inflate(R.layout.fragment_bus, container, false);
 		if (!mainActivity.isFinishing()) {
 			textFilter = (EditText) rootView.findViewById(R.id.bus_filter);
 			listView = (ListView) rootView.findViewById(R.id.bus_list);
@@ -120,18 +119,18 @@ public class BusFragment extends Fragment {
 		textFilter.setVisibility(TextView.VISIBLE);
 		textFilter.addTextChangedListener(new TextWatcher() {
 
-			private BusData busData = DataHolder.getInstance().getBusData();
-			private List<BusRoute> busRoutes = null;
+			final BusData busData = DataHolder.getInstance().getBusData();
+			List<BusRoute> busRoutes = null;
 
 			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+			public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
 				busRoutes = new ArrayList<>();
 			}
 
 			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				List<BusRoute> busRoutes = busData.getRoutes();
-				for (BusRoute busRoute : busRoutes) {
+			public void onTextChanged(final CharSequence s, final int start, final int before,final  int count) {
+				final List<BusRoute> busRoutes = busData.getRoutes();
+				for (final BusRoute busRoute : busRoutes) {
 					if (StringUtils.containsIgnoreCase(busRoute.getId(), s.toString().trim())
 							|| StringUtils.containsIgnoreCase(busRoute.getName(), s.toString().trim())) {
 						this.busRoutes.add(busRoute);

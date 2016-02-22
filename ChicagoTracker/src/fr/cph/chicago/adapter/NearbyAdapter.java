@@ -135,7 +135,7 @@ public final class NearbyAdapter extends BaseAdapter {
 
 	@Override
 	public final Object getItem(int position) {
-		Object res = null;
+		Object res;
 		if (position < stations.size()) {
 			res = stations.get(position);
 		} else if (position < stations.size() + busStops.size()) {
@@ -150,7 +150,7 @@ public final class NearbyAdapter extends BaseAdapter {
 
 	@Override
 	public final long getItemId(int position) {
-		int id = 0;
+		int id;
 		if (position < stations.size()) {
 			id = stations.get(position).getId();
 		} else if (position < stations.size() + busStops.size()) {
@@ -166,12 +166,12 @@ public final class NearbyAdapter extends BaseAdapter {
 	@SuppressLint("NewApi")
 	@Override
 	public final View getView(final int position, View convertView, final ViewGroup parent) {
-		LinearLayout.LayoutParams paramsLayout = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-		LinearLayout.LayoutParams paramsTextView = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
-		int line1PaddingColor = (int) context.getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
-		int stopsPaddingTop = (int) context.getResources().getDimension(R.dimen.activity_station_stops_padding_top);
+		final LinearLayout.LayoutParams paramsLayout = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		final LinearLayout.LayoutParams paramsTextView = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
+		final int line1PaddingColor = (int) context.getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
+		final int stopsPaddingTop = (int) context.getResources().getDimension(R.dimen.activity_station_stops_padding_top);
 
-		LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		convertView = vi.inflate(R.layout.list_nearby, null);
 
 		if (position < stations.size()) {
@@ -181,10 +181,10 @@ public final class NearbyAdapter extends BaseAdapter {
 				@Override
 				public void onClick(View v) {
 					if (googleMap != null) {
-						LatLng latLng = new LatLng(station.getStopsPosition().get(0).getLatitude(), station.getStopsPosition().get(0).getLongitude());
-						CameraPosition current = new CameraPosition.Builder().target(latLng).zoom(15.5f).bearing(0).tilt(0).build();
+						final LatLng latLng = new LatLng(station.getStopsPosition().get(0).getLatitude(), station.getStopsPosition().get(0).getLongitude());
+						final CameraPosition current = new CameraPosition.Builder().target(latLng).zoom(15.5f).bearing(0).tilt(0).build();
 						googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(current), Math.max(1000, 1), null);
-						for (Marker marker : markers) {
+						for (final Marker marker : markers) {
 							if (marker.getSnippet().equals(station.getId().toString())) {
 								marker.showInfoWindow();
 								break;
@@ -204,30 +204,30 @@ public final class NearbyAdapter extends BaseAdapter {
 				layouts.put(station.getId(), resultLayout);
 				views.put(station.getId(), convertView);
 
-				TrainViewHolder holder = new TrainViewHolder();
+				final TrainViewHolder holder = new TrainViewHolder();
 
-				TextView routeView = (TextView) convertView.findViewById(R.id.station_name);
+				final TextView routeView = (TextView) convertView.findViewById(R.id.station_name);
 				routeView.setText(station.getName());
 				holder.stationNameView = routeView;
 
-				TextView typeView = (TextView) convertView.findViewById(R.id.train_bus_type);
+				final TextView typeView = (TextView) convertView.findViewById(R.id.train_bus_type);
 				typeView.setText("T");
 				holder.type = typeView;
 
 				convertView.setTag(holder);
 			}
 
-			LinearLayout.LayoutParams paramsArrival = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+			final LinearLayout.LayoutParams paramsArrival = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
-			Set<TrainLine> setTL = station.getLines();
+			final Set<TrainLine> setTL = station.getLines();
 
 			// Reset ETAs
 			for (int i = 0; i < resultLayout.getChildCount(); i++) {
-				LinearLayout layout = (LinearLayout) resultLayout.getChildAt(i);
-				LinearLayout layoutChild = (LinearLayout) layout.getChildAt(1);
+				final LinearLayout layout = (LinearLayout) resultLayout.getChildAt(i);
+				final LinearLayout layoutChild = (LinearLayout) layout.getChildAt(1);
 				for (int j = 0; j < layoutChild.getChildCount(); j++) {
-					LinearLayout layoutChildV = (LinearLayout) layoutChild.getChildAt(j);
-					TextView timing = (TextView) layoutChildV.getChildAt(1);
+					final LinearLayout layoutChildV = (LinearLayout) layoutChild.getChildAt(j);
+					final TextView timing = (TextView) layoutChildV.getChildAt(1);
 					// to delete ?
 					if (timing != null) {
 						timing.setText("");
@@ -235,27 +235,27 @@ public final class NearbyAdapter extends BaseAdapter {
 				}
 			}
 
-			for (TrainLine tl : setTL) {
+			for (final TrainLine tl : setTL) {
 				if (trainArrivals.get(station.getId()) != null) {
-					List<Eta> etas = trainArrivals.get(station.getId()).getEtas(tl);
+					final List<Eta> etas = trainArrivals.get(station.getId()).getEtas(tl);
 					if (etas.size() != 0) {
-						String key = station.getName() + "_" + tl.toString() + "_h";
-						String key2 = station.getName() + "_" + tl.toString() + "_v";
-						Integer idLayout = ids.get(key);
-						Integer idLayout2 = ids.get(key2);
+						final String key = station.getName() + "_" + tl.toString() + "_h";
+						final String key2 = station.getName() + "_" + tl.toString() + "_v";
+						final Integer idLayout = ids.get(key);
+						final Integer idLayout2 = ids.get(key2);
 
-						LinearLayout llh, llv;
+						final LinearLayout llh, llv;
 						if (idLayout == null) {
 							llh = new LinearLayout(context);
 							// llh.setBackgroundResource(R.drawable.border);
 							llh.setLayoutParams(paramsLayout);
 							llh.setOrientation(LinearLayout.HORIZONTAL);
 							llh.setPadding(line1PaddingColor, stopsPaddingTop, 0, 0);
-							int id = Util.generateViewId();
+							final int id = Util.generateViewId();
 							llh.setId(id);
 							ids.put(key, id);
 
-							TextView tlView = new TextView(context);
+							final TextView tlView = new TextView(context);
 							tlView.setBackgroundColor(tl.getColor());
 							tlView.setText("   ");
 							tlView.setLayoutParams(paramsTextView);
@@ -265,7 +265,7 @@ public final class NearbyAdapter extends BaseAdapter {
 							llv.setLayoutParams(paramsLayout);
 							llv.setOrientation(LinearLayout.VERTICAL);
 							llv.setPadding(line1PaddingColor, 0, 0, 0);
-							int id2 = Util.generateViewId();
+							final int id2 = Util.generateViewId();
 							llv.setId(id2);
 							ids.put(key2, id2);
 
@@ -276,24 +276,24 @@ public final class NearbyAdapter extends BaseAdapter {
 							llh = (LinearLayout) resultLayout.findViewById(idLayout);
 							llv = (LinearLayout) resultLayout.findViewById(idLayout2);
 						}
-						for (Eta eta : etas) {
-							Stop stop = eta.getStop();
-							String key3 = (station.getName() + "_" + tl.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName());
-							Integer idLayout3 = ids.get(key3);
+						for (final Eta eta : etas) {
+							final Stop stop = eta.getStop();
+							final String key3 = (station.getName() + "_" + tl.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName());
+							final Integer idLayout3 = ids.get(key3);
 							if (idLayout3 == null) {
-								LinearLayout insideLayout = new LinearLayout(context);
+								final LinearLayout insideLayout = new LinearLayout(context);
 								insideLayout.setOrientation(LinearLayout.HORIZONTAL);
 								insideLayout.setLayoutParams(paramsArrival);
-								int newId = Util.generateViewId();
+								final int newId = Util.generateViewId();
 								insideLayout.setId(newId);
 								ids.put(key3, newId);
 
-								TextView stopName = new TextView(context);
+								final TextView stopName = new TextView(context);
 								stopName.setText(eta.getDestName() + ": ");
 								stopName.setTextColor(context.getResources().getColor(R.color.grey_5));
 								insideLayout.addView(stopName);
 
-								TextView timing = new TextView(context);
+								final TextView timing = new TextView(context);
 								timing.setText(eta.getTimeLeftDueDelay() + " ");
 								timing.setTextColor(context.getResources().getColor(R.color.grey));
 								timing.setLines(1);
@@ -302,12 +302,11 @@ public final class NearbyAdapter extends BaseAdapter {
 
 								llv.addView(insideLayout);
 							} else {
-								// llv can be null sometimes (after a remove from favorites for
-								// example)
+								// llv can be null sometimes (after a remove from favorites for example)
 								if (llv != null) {
-									LinearLayout insideLayout = (LinearLayout) llv.findViewById(idLayout3);
+									final LinearLayout insideLayout = (LinearLayout) llv.findViewById(idLayout3);
 									// InsideLayout can be null too if removed before
-									TextView timing = (TextView) insideLayout.getChildAt(1);
+									final TextView timing = (TextView) insideLayout.getChildAt(1);
 									timing.setText(timing.getText() + eta.getTimeLeftDueDelay() + " ");
 								}
 							}
@@ -316,13 +315,13 @@ public final class NearbyAdapter extends BaseAdapter {
 				}
 			}
 		} else if (position < stations.size() + busStops.size()) {
-			int indice = position - stations.size();
+			final int indice = position - stations.size();
 			final BusStop busStop = busStops.get(indice);
 
-			TextView typeView = (TextView) convertView.findViewById(R.id.train_bus_type);
+			final TextView typeView = (TextView) convertView.findViewById(R.id.train_bus_type);
 			typeView.setText("B");
 
-			TextView routeView = (TextView) convertView.findViewById(R.id.station_name);
+			final TextView routeView = (TextView) convertView.findViewById(R.id.station_name);
 			routeView.setText(busStop.getName());
 
 			convertView.setOnClickListener(new OnClickListener() {
@@ -330,10 +329,10 @@ public final class NearbyAdapter extends BaseAdapter {
 				@Override
 				public void onClick(View v) {
 					if (googleMap != null) {
-						LatLng latLng = new LatLng(busStop.getPosition().getLatitude(), busStop.getPosition().getLongitude());
-						CameraPosition current = new CameraPosition.Builder().target(latLng).zoom(15.5f).bearing(0).tilt(0).build();
+						final LatLng latLng = new LatLng(busStop.getPosition().getLatitude(), busStop.getPosition().getLongitude());
+						final CameraPosition current = new CameraPosition.Builder().target(latLng).zoom(15.5f).bearing(0).tilt(0).build();
 						googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(current), Math.max(1000, 1), null);
-						for (Marker marker : markers) {
+						for (final Marker marker : markers) {
 							if (marker.getSnippet().equals(busStop.getId().toString())) {
 								marker.showInfoWindow();
 								break;
@@ -343,11 +342,11 @@ public final class NearbyAdapter extends BaseAdapter {
 				}
 			});
 
-			LinearLayout resultLayout = (LinearLayout) convertView.findViewById(R.id.nearby_results);
+			final LinearLayout resultLayout = (LinearLayout) convertView.findViewById(R.id.nearby_results);
 
 			if (busArrivals.size() > 0) {
-				for (Entry<String, List<BusArrival>> entry : busArrivals.get(busStop.getId()).entrySet()) {
-					LinearLayout llh = new LinearLayout(context);
+				for (final Entry<String, List<BusArrival>> entry : busArrivals.get(busStop.getId()).entrySet()) {
+					final LinearLayout llh = new LinearLayout(context);
 					llh.setLayoutParams(paramsLayout);
 					llh.setOrientation(LinearLayout.HORIZONTAL);
 					llh.setPadding(line1PaddingColor, stopsPaddingTop, 0, 0);
@@ -356,7 +355,7 @@ public final class NearbyAdapter extends BaseAdapter {
 						llh.setBackground(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.any_selector));
 					}
 
-					TextView tlView = new TextView(context);
+					final TextView tlView = new TextView(context);
 					tlView.setBackgroundColor(context.getResources().getColor(R.color.black));
 					tlView.setText("   ");
 					tlView.setLayoutParams(paramsTextView);
@@ -365,21 +364,21 @@ public final class NearbyAdapter extends BaseAdapter {
 					final String key2 = entry.getKey();
 					final List<BusArrival> buses = entry.getValue();
 
-					LinearLayout stopLayout = new LinearLayout(context);
+					final LinearLayout stopLayout = new LinearLayout(context);
 					stopLayout.setOrientation(LinearLayout.VERTICAL);
 					stopLayout.setPadding(line1PaddingColor, 0, 0, 0);
 
-					LinearLayout boundLayout = new LinearLayout(context);
+					final LinearLayout boundLayout = new LinearLayout(context);
 					boundLayout.setOrientation(LinearLayout.HORIZONTAL);
 
-					TextView bound = new TextView(context);
-					String routeId = busData.getRoute(buses.get(0).getRouteId()).getId();
+					final TextView bound = new TextView(context);
+					final String routeId = busData.getRoute(buses.get(0).getRouteId()).getId();
 					bound.setText(routeId + " (" + key2 + "): ");
 					bound.setTextColor(context.getResources().getColor(R.color.grey_5));
 					boundLayout.addView(bound);
 
-					for (BusArrival arri : buses) {
-						TextView timeView = new TextView(context);
+					for (final BusArrival arri : buses) {
+						final TextView timeView = new TextView(context);
 						timeView.setText(arri.getTimeLeftDueDelay() + " ");
 						timeView.setTextColor(context.getResources().getColor(R.color.grey));
 						timeView.setLines(1);
@@ -392,41 +391,41 @@ public final class NearbyAdapter extends BaseAdapter {
 				}
 			}
 		} else {
-			int index = position - (stations.size() + busStops.size());
+			final int index = position - (stations.size() + busStops.size());
 			final BikeStation bikeStation = bikeStations.get(index);
 
-			LinearLayout favoritesData = (LinearLayout) convertView.findViewById(R.id.nearby_results);
+			final LinearLayout favoritesData = (LinearLayout) convertView.findViewById(R.id.nearby_results);
 
-			TextView typeView = (TextView) convertView.findViewById(R.id.train_bus_type);
+			final TextView typeView = (TextView) convertView.findViewById(R.id.train_bus_type);
 			typeView.setText("D");
 
-			TextView routeView = (TextView) convertView.findViewById(R.id.station_name);
+			final TextView routeView = (TextView) convertView.findViewById(R.id.station_name);
 			routeView.setText(bikeStation.getName());
 
-			LinearLayout llh = new LinearLayout(context);
+			final LinearLayout llh = new LinearLayout(context);
 			llh.setLayoutParams(paramsLayout);
 			llh.setOrientation(LinearLayout.HORIZONTAL);
 			llh.setPadding(line1PaddingColor, stopsPaddingTop, 0, 0);
 
-			TextView tlView = new TextView(context);
+			final TextView tlView = new TextView(context);
 			tlView.setBackgroundColor(context.getResources().getColor(R.color.black));
 			tlView.setText("   ");
 			tlView.setLayoutParams(paramsTextView);
 			llh.addView(tlView);
 
-			LinearLayout availableLayout = new LinearLayout(context);
+			final LinearLayout availableLayout = new LinearLayout(context);
 			availableLayout.setOrientation(LinearLayout.VERTICAL);
 
-			LinearLayout availableBikes = new LinearLayout(context);
+			final LinearLayout availableBikes = new LinearLayout(context);
 			availableBikes.setOrientation(LinearLayout.HORIZONTAL);
 			availableBikes.setPadding(line1PaddingColor, 0, 0, 0);
 
-			TextView availableBike = new TextView(context);
+			final TextView availableBike = new TextView(context);
 			availableBike.setText("Available bikes: ");
 			availableBike.setTextColor(context.getResources().getColor(R.color.grey_5));
 			availableBikes.addView(availableBike);
 
-			TextView amountBike = new TextView(context);
+			final TextView amountBike = new TextView(context);
 			amountBike.setText("" + bikeStation.getAvailableBikes());
 			if (bikeStation.getAvailableBikes() == 0) {
 				amountBike.setTextColor(context.getResources().getColor(R.color.red));
@@ -437,16 +436,16 @@ public final class NearbyAdapter extends BaseAdapter {
 
 			availableLayout.addView(availableBikes);
 
-			LinearLayout availableDocks = new LinearLayout(context);
+			final LinearLayout availableDocks = new LinearLayout(context);
 			availableDocks.setOrientation(LinearLayout.HORIZONTAL);
 			availableDocks.setPadding(line1PaddingColor, 0, 0, 0);
 
-			TextView availableDock = new TextView(context);
+			final TextView availableDock = new TextView(context);
 			availableDock.setText("Available docks: ");
 			availableDock.setTextColor(context.getResources().getColor(R.color.grey_5));
 			availableDocks.addView(availableDock);
 
-			TextView amountDock = new TextView(context);
+			final TextView amountDock = new TextView(context);
 			amountDock.setText("" + bikeStation.getAvailableDocks());
 			if (bikeStation.getAvailableDocks() == 0) {
 				amountDock.setTextColor(context.getResources().getColor(R.color.red));
@@ -466,10 +465,10 @@ public final class NearbyAdapter extends BaseAdapter {
 				@Override
 				public void onClick(View v) {
 					if (googleMap != null) {
-						LatLng latLng = new LatLng(bikeStation.getPosition().getLatitude(), bikeStation.getPosition().getLongitude());
-						CameraPosition current = new CameraPosition.Builder().target(latLng).zoom(15.5f).bearing(0).tilt(0).build();
+						final LatLng latLng = new LatLng(bikeStation.getPosition().getLatitude(), bikeStation.getPosition().getLongitude());
+						final CameraPosition current = new CameraPosition.Builder().target(latLng).zoom(15.5f).bearing(0).tilt(0).build();
 						googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(current), Math.max(1000, 1), null);
-						for (Marker marker : markers) {
+						for (final Marker marker : markers) {
 							if (marker.getSnippet().equals(bikeStation.getId() + "")) {
 								marker.showInfoWindow();
 								break;

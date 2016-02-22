@@ -72,7 +72,7 @@ public class BaseActivity extends Activity {
 	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.loading);
-		Bundle extras = getIntent().getExtras();
+		final Bundle extras = getIntent().getExtras();
 		if (extras != null && error == null) {
 			error = extras.getBoolean(ERROR_PROPERTY);
 		} else {
@@ -125,15 +125,14 @@ public class BaseActivity extends Activity {
 	 */
 	private void startMainActivity(SparseArray<TrainArrival> trainArrivals, List<BusArrival> busArrivals) {
 		if (!isFinishing()) {
-			Intent intent = new Intent(this, MainActivity.class);
-			Bundle bundle = new Bundle();
+			final Intent intent = new Intent(this, MainActivity.class);
+			final Bundle bundle = new Bundle();
 			bundle.putParcelableArrayList("busArrivals", (ArrayList<BusArrival>) busArrivals);
 			bundle.putSparseParcelableArray("trainArrivals", trainArrivals);
 			intent.putExtras(bundle);
 
 			finish();
 			startActivity(intent);
-			//overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 		}
 	}
 
@@ -168,7 +167,7 @@ public class BaseActivity extends Activity {
 		@Override
 		protected final void onPostExecute(final Void result) {
 			// Put data into data holder
-			DataHolder dataHolder = DataHolder.getInstance();
+			final DataHolder dataHolder = DataHolder.getInstance();
 			dataHolder.setBusData(busData);
 			dataHolder.setTrainData(trainData);
 			try {
@@ -198,22 +197,22 @@ public class BaseActivity extends Activity {
 	 * @throws ParserException the exception
 	 */
 	private void loadData() throws ParserException {
-		MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
-		List<Integer> favorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
-		for (Integer fav : favorites) {
-			params.put("mapid", String.valueOf(fav));
+		final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
+		final List<Integer> favorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
+		for (final Integer favorite : favorites) {
+			params.put("mapid", String.valueOf(favorite));
 		}
 
-		MultiValuedMap<String, String> params2 = new ArrayListValuedHashMap<>();
-		List<String> busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
-		for (String str : busFavorites) {
-			String[] fav = Util.decodeBusFavorite(str);
+		final MultiValuedMap<String, String> params2 = new ArrayListValuedHashMap<>();
+		final List<String> busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+		for (final String busFavorite : busFavorites) {
+			final String[] fav = Util.decodeBusFavorite(busFavorite);
 			params2.put("rt", fav[0]);
 			params2.put("stpid", fav[1]);
 		}
 
 		// Get preferences to know if trains and buses need to be loaded
-		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+		final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 		boolean loadTrain = true;
 		boolean loadBus = true;
 		if (sharedPref.contains("cta_train")) {
@@ -231,7 +230,7 @@ public class BaseActivity extends Activity {
 			editor.apply();
 		}
 
-		GlobalConnectTask task = new GlobalConnectTask(this, BaseActivity.class, CtaRequestType.TRAIN_ARRIVALS, params, CtaRequestType.BUS_ARRIVALS,
+		final GlobalConnectTask task = new GlobalConnectTask(this, BaseActivity.class, CtaRequestType.TRAIN_ARRIVALS, params, CtaRequestType.BUS_ARRIVALS,
 				params2, loadTrain, loadBus, false);
 		task.execute((Void) null);
 		if (loadTrain) {

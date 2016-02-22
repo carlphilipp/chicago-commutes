@@ -84,18 +84,18 @@ public class TrainData {
 	public final void read() {
 		if (stations.size() == 0 && stops.size() == 0) {
 			try {
-				CSVReader reader = new CSVReader(new InputStreamReader(ChicagoTracker.getAppContext().getAssets().open("cta_L_stops_cph.csv")));
+				final CSVReader reader = new CSVReader(new InputStreamReader(ChicagoTracker.getAppContext().getAssets().open("cta_L_stops_cph.csv")));
 				reader.readNext();
-				String[] row = null;
+				String[] row;
 				while ((row = reader.readNext()) != null) {
-					Integer stopId = Integer.valueOf(row[0]); // STOP_ID
-					TrainDirection direction = TrainDirection.fromString(row[1]); // DIRECTION_ID
-					String stopName = row[2]; // STOP_NAME
-					String stationName = row[3];// STATION_NAME
+					final Integer stopId = Integer.valueOf(row[0]); // STOP_ID
+					final TrainDirection direction = TrainDirection.fromString(row[1]); // DIRECTION_ID
+					final String stopName = row[2]; // STOP_NAME
+					final String stationName = row[3];// STATION_NAME
 					// String stationDescription = row[4];//STATION_DESCRIPTIVE_NAME
-					Integer parentStopId = Integer.valueOf(row[5]);// MAP_ID (old PARENT_STOP_ID)
-					Boolean ada = Boolean.valueOf(row[6]);// ADA
-					List<TrainLine> lines = new ArrayList<>();
+					final Integer parentStopId = Integer.valueOf(row[5]);// MAP_ID (old PARENT_STOP_ID)
+					final Boolean ada = Boolean.valueOf(row[6]);// ADA
+					final List<TrainLine> lines = new ArrayList<>();
 					String red = row[7];// Red
 					String blue = row[8];// Blue
 					String green = row[9];// G
@@ -138,23 +138,23 @@ public class TrainData {
 					if (orange.equals("TRUE")) {
 						lines.add(TrainLine.ORANGE);
 					}
-					String location = row[16];// Location
-					String locationTrunk = location.substring(1);
-					String coordinates[] = locationTrunk.substring(0, locationTrunk.length() - 1).split(", ");
-					Double longitude = Double.valueOf(coordinates[0]);
-					Double latitude = Double.valueOf(coordinates[1]);
+					final String location = row[16];// Location
+					final String locationTrunk = location.substring(1);
+					final String coordinates[] = locationTrunk.substring(0, locationTrunk.length() - 1).split(", ");
+					final Double longitude = Double.valueOf(coordinates[0]);
+					final Double latitude = Double.valueOf(coordinates[1]);
 
-					Stop stop = StopFactory.buildStop(stopId, stopName, direction);
+					final Stop stop = StopFactory.buildStop(stopId, stopName, direction);
 					stop.setPosition(new Position(longitude, latitude));
-					Station station = StationFactory.buildStation(parentStopId, stationName, null);
+					final Station station = StationFactory.buildStation(parentStopId, stationName, null);
 					// stop.setStation(station);
 					stop.setAda(ada);
 					stop.setLines(lines);
 					stops.append(stopId, stop);
 
-					Station currentStation = stations.get(parentStopId, null);
+					final Station currentStation = stations.get(parentStopId, null);
 					if (currentStation == null) {
-						List<Stop> st = new ArrayList<>();
+						final List<Stop> st = new ArrayList<>();
 						st.add(stop);
 						station.setStops(st);
 						stations.append(parentStopId, station);
@@ -276,7 +276,7 @@ public class TrainData {
 	public final Station getStationByName(final String name) {
 		int index = 0;
 		while (index < stations.size()) {
-			Station station = stations.valueAt(index++);
+			final Station station = stations.valueAt(index++);
 			if (station.getName().equals(name)) {
 				return station;
 			}
@@ -334,7 +334,7 @@ public class TrainData {
 	public final Stop getStopByDesc(final String desc) {
 		int index = 0;
 		while (index < stops.size()) {
-			Stop stop = stops.valueAt(index++);
+			final Stop stop = stops.valueAt(index++);
 			if (stop.getDescription().equals(desc) || stop.getDescription().split(" ")[0].equals(desc)) {
 				return stop;
 			}
@@ -352,19 +352,19 @@ public class TrainData {
 
 		final double dist = 0.004472;
 
-		List<Station> res = new ArrayList<>();
-		double latitude = position.getLatitude();
-		double longitude = position.getLongitude();
+		final List<Station> res = new ArrayList<>();
+		final double latitude = position.getLatitude();
+		final double longitude = position.getLongitude();
 
-		double latMax = latitude + dist;
-		double latMin = latitude - dist;
-		double lonMax = longitude + dist;
-		double lonMin = longitude - dist;
+		final double latMax = latitude + dist;
+		final double latMin = latitude - dist;
+		final double lonMax = longitude + dist;
+		final double lonMin = longitude - dist;
 
-		for (Station station : stationsOrderByName) {
-			for (Position stopPosition : station.getStopsPosition()) {
-				double trainLatitude = stopPosition.getLatitude();
-				double trainLongitude = stopPosition.getLongitude();
+		for (final Station station : stationsOrderByName) {
+			for (final Position stopPosition : station.getStopsPosition()) {
+				final double trainLatitude = stopPosition.getLatitude();
+				final double trainLongitude = stopPosition.getLongitude();
 				if (trainLatitude <= latMax && trainLatitude >= latMin && trainLongitude <= lonMax && trainLongitude >= lonMin) {
 					res.add(station);
 					break;
@@ -375,21 +375,21 @@ public class TrainData {
 	}
 
 	public final List<Position> readPattern(final TrainLine line) {
-		List<Position> positions = new ArrayList<>();
+		final List<Position> positions = new ArrayList<>();
 		try {
-			CSVReader reader = new CSVReader(new InputStreamReader(ChicagoTracker.getAppContext().getAssets()
+			final CSVReader reader = new CSVReader(new InputStreamReader(ChicagoTracker.getAppContext().getAssets()
 					.open("train_pattern/" + line.toTextString() + "_pattern.csv")));
-			String[] row = null;
+			String[] row;
 			while ((row = reader.readNext()) != null) {
-				double longitude = Double.valueOf(row[0]);
-				double latitude = Double.valueOf(row[1]);
+				final double longitude = Double.valueOf(row[0]);
+				final double latitude = Double.valueOf(row[1]);
 				Position position = new Position();
 				position.setLatitude(latitude);
 				position.setLongitude(longitude);
 				positions.add(position);
 			}
 			reader.close();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			Log.e(TAG, e.getMessage(), e);
 		}
 		return positions;
@@ -399,21 +399,21 @@ public class TrainData {
 	 * Order stations
 	 */
 	private void order() {
-		List<Station> vals = new ArrayList<>();
+		final List<Station> vals = new ArrayList<>();
 		for (int i = 0; i < stations.size(); i++) {
 			vals.add(stations.valueAt(i));
 		}
 		Collections.sort(vals);
 		stationsOrderByName = new ArrayList<>();
 		stationsOrderByLineMap = new TreeMap<>();
-		for (Station station : vals) {
+		for (final Station station : vals) {
 			stationsOrderByName.add(station);
 		}
-		for (Station station : vals) {
-			Set<TrainLine> tls = station.getLines();
+		for (final Station station : vals) {
+			final Set<TrainLine> tls = station.getLines();
 			if (tls != null) {
-				for (TrainLine tl : tls) {
-					List<Station> stations = null;
+				for (final TrainLine tl : tls) {
+					List<Station> stations;
 					if (stationsOrderByLineMap.containsKey(tl)) {
 						stations = stationsOrderByLineMap.get(tl);
 					} else {
@@ -426,8 +426,8 @@ public class TrainData {
 			}
 		}
 		stationsOrderByLine = new ArrayList<>();
-		for (Entry<TrainLine, List<Station>> e : stationsOrderByLineMap.entrySet()) {
-			List<Station> temp = e.getValue();
+		for (final Entry<TrainLine, List<Station>> e : stationsOrderByLineMap.entrySet()) {
+			final List<Station> temp = e.getValue();
 			stationsOrderByLine.addAll(temp);
 		}
 	}
