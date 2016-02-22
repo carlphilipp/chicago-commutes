@@ -38,7 +38,6 @@ import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.activity.SearchActivity;
-import fr.cph.chicago.activity.SearchActivityOld;
 import fr.cph.chicago.adapter.FavoritesAdapter;
 import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.data.AlertData;
