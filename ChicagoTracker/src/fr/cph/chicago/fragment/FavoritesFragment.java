@@ -40,7 +40,6 @@ import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.activity.SearchActivity;
 import fr.cph.chicago.adapter.FavoritesAdapter;
 import fr.cph.chicago.connection.CtaRequestType;
-import fr.cph.chicago.data.AlertData;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
@@ -154,7 +153,6 @@ public class FavoritesFragment extends Fragment {
 					final boolean loadTrain = sharedPref.getBoolean("cta_train", true);
 					final boolean loadBus = sharedPref.getBoolean("cta_bus", true);
 					final boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
-					final boolean loadAlert = sharedPref.getBoolean("cta_alert", true);
 
 					final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
 					final List<Integer> trainFavorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
@@ -189,21 +187,17 @@ public class FavoritesFragment extends Fragment {
 						Util.trackAction(mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_divvy,
 								R.string.analytics_action_get_divvy_all, 0);
 					}
-					// Check if bus/bike or alert data are not loaded. If not, load them.
+					// Check if bus or bike data are not loaded. If not, load them.
 					// Can happen when the app has been loaded without any data connection
 					boolean loadData = false;
 					final DataHolder dataHolder = DataHolder.getInstance();
 
 					final BusData busData = dataHolder.getBusData();
-					final AlertData alertData = dataHolder.getAlertData();
 
 					final Bundle bundle = mainActivity.getIntent().getExtras();
 					final List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
 
 					if (loadBus && busData.getRoutes() != null && busData.getRoutes().size() == 0) {
-						loadData = true;
-					}
-					if (!loadData && loadAlert && alertData.getAlerts() != null && alertData.getAlerts().size() == 0) {
 						loadData = true;
 					}
 					if (!loadData && loadBike && bikeStations == null) {

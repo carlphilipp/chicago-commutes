@@ -115,16 +115,12 @@ public class NavigationDrawerFragment extends Fragment {
 		DrawerItem item3 = new DrawerItem(getString(R.string.bus), R.drawable.ic_directions_bus_white_24dp);
 		DrawerItem item4 = new DrawerItem(getString(R.string.divvy), R.drawable.ic_directions_bike_white_24dp);
 		DrawerItem item5 = new DrawerItem(getString(R.string.nearby), R.drawable.ic_near_me_white_24dp);
-//		DrawerItem item6 = new DrawerItem(getString(R.string.alerts), R.drawable.ic_dialog_alert);
-//		DrawerItem item7 = new DrawerItem(getString(R.string.map), R.drawable.ic_action_map);
 		DrawerItem item8 = new DrawerItem(getString(R.string.settings), R.drawable.ic_settings_white_24dp);
 		drawerItems.add(item1);
 		drawerItems.add(item2);
 		drawerItems.add(item3);
 		drawerItems.add(item4);
 		drawerItems.add(item5);
-//		drawerItems.add(item6);
-//		drawerItems.add(item7);
 		drawerItems.add(item8);
 		CustomDrawerAdapter ada = new CustomDrawerAdapter(getActivity(), R.layout.custom_drawer_item, drawerItems);
 		drawerListView.setAdapter(ada);

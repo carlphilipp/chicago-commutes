@@ -41,7 +41,6 @@ import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.connection.DivvyConnect;
-import fr.cph.chicago.data.AlertData;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
@@ -131,7 +130,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 					final boolean loadTrain = sharedPref.getBoolean("cta_train", true);
 					final boolean loadBus = sharedPref.getBoolean("cta_bus", true);
 					final boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
-					final boolean loadAlert = sharedPref.getBoolean("cta_alert", true);
 
 					final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
 					final List<Integer> trainFavorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
@@ -173,15 +171,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 					final DataHolder dataHolder = DataHolder.getInstance();
 
 					final BusData busData = dataHolder.getBusData();
-					final AlertData alertData = dataHolder.getAlertData();
 
 					final Bundle bundle = MainActivity.this.getIntent().getExtras();
 					final List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
 
 					if (loadBus && busData.getRoutes() != null && busData.getRoutes().size() == 0) {
-						loadData = true;
-					}
-					if (!loadData && loadAlert && alertData.getAlerts() != null && alertData.getAlerts().size() == 0) {
 						loadData = true;
 					}
 					if (!loadData && loadBike && bikeStations == null) {

@@ -22,14 +22,6 @@
 				android:id="@+id/navigation_nearby"
 				android:icon="@drawable/ic_near_me_white_24dp"
 				android:title="Nearby"/>
-<!--		<item
-				android:id="@+id/navigation_alert"
-				android:icon="@drawable/ic_dialog_alert"
-				android:title="Alerts"/>
-		<item
-				android:id="@+id/navigation_map"
-				android:icon="@drawable/ic_action_map"
-				android:title="'L' System Map"/>-->
 		<item
 				android:id="@+id/navigation_settings"
 				android:icon="@drawable/ic_settings_white_24dp"

@@ -83,14 +83,6 @@ public class CtaConnect {
 	 **/
 	private static final String BASE_URL_BUS_PATTERN = "http://www.ctabustracker.com/bustime/api/v1/getpatterns";
 	/**
-	 * The alert general address
-	 **/
-	private static final String BASE_URL_ALERT_GENERAL = "http://www.transitchicago.com/api/1.0/alerts.aspx";
-	/**
-	 * The alert routes address
-	 **/
-	private static final String BASE_URL_ALERT_ROUTES = "http://www.transitchicago.com/api/1.0/routes.aspx";
-	/**
 	 * The cta bus API key
 	 **/
 	private static String CTA_BUS_KEY;
@@ -156,12 +148,6 @@ public class CtaConnect {
 			break;
 		case BUS_PATTERN:
 			address = new StringBuilder(BASE_URL_BUS_PATTERN + "?key=" + CTA_BUS_KEY);
-			break;
-		case ALERTS_GENERAL:
-			address = new StringBuilder(BASE_URL_ALERT_GENERAL + "?activeonly=false");
-			break;
-		case ALERTS_ROUTES:
-			address = new StringBuilder(BASE_URL_ALERT_ROUTES + "?");
 			break;
 		default:
 			break;

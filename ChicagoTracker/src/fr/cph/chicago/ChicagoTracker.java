@@ -133,8 +133,7 @@ public class ChicagoTracker extends Application {
 	}
 
 	public static void checkData(Activity mActivity) {
-		if (DataHolder.getInstance().getBusData() == null || DataHolder.getInstance().getTrainData() == null
-				|| DataHolder.getInstance().getAlertData() == null) {
+		if (DataHolder.getInstance().getBusData() == null || DataHolder.getInstance().getTrainData() == null) {
 			startErrorActivity(mActivity);
 		}
 	}
@@ -149,14 +148,6 @@ public class ChicagoTracker extends Application {
 
 	public static boolean checkBusData(Activity mActivity) {
 		if (DataHolder.getInstance().getBusData() == null) {
-			startErrorActivity(mActivity);
-			return false;
-		}
-		return true;
-	}
-
-	public static boolean checkAlertData(Activity mActivity) {
-		if (DataHolder.getInstance().getAlertData() == null) {
 			startErrorActivity(mActivity);
 			return false;
 		}
