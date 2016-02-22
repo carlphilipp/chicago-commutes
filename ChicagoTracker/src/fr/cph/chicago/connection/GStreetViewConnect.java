@@ -20,6 +20,7 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.util.Util;
+import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -85,7 +86,7 @@ public class GStreetViewConnect {
 	 * @throws IOException an exception
 	 */
 	public final Drawable connect(final Position position) throws IOException {
-		StringBuilder address = new StringBuilder(BASE_URL);
+		final StringBuilder address = new StringBuilder(BASE_URL);
 		address.append("?key=");
 		address.append(GOOGLE_KEY);
 		address.append("&sensor=false");
@@ -106,11 +107,15 @@ public class GStreetViewConnect {
 	 */
 	private Drawable connectUrl(final String address) {
 		Log.v(TAG, "Address: " + address);
+		InputStream is = null;
 		try {
-			InputStream is = (InputStream) new URL(address).getContent();
+			is = (InputStream) new URL(address).getContent();
 			return Drawable.createFromStream(is, "src name");
-		} catch (Exception e) {
+		} catch (final Exception e) {
+			Log.e(TAG, e.getMessage(), e);
 			return null;
+		} finally {
+			IOUtils.closeQuietly(is);
 		}
 	}
 }

@@ -166,14 +166,14 @@ public class CtaConnect {
 		default:
 			break;
 		}
-		for (Entry<String, Collection<String>> entry : params.asMap().entrySet()) {
-			String key = entry.getKey();
-			Collection<String> values = entry.getValue();
-			for (String value : values) {
+		for (final Entry<String, Collection<String>> entry : params.asMap().entrySet()) {
+			final String key = entry.getKey();
+			final Collection<String> values = entry.getValue();
+			for (final String value : values) {
 				address.append("&").append(key).append("=").append(value);
 			}
 		}
-		String xml = connectUrl(address.toString());
+		final String xml = connectUrl(address.toString());
 		Log.v(TAG, "Result: " + xml);
 		return xml;
 	}
@@ -188,21 +188,23 @@ public class CtaConnect {
 	private String connectUrl(final String address) throws ConnectException {
 		String toReturn = null;
 		HttpURLConnection urlConnection = null;
+		InputStream inputStream = null;
 		try {
 			Log.v(TAG, "Address: " + address);
-			URL url = new URL(address);
+			final URL url = new URL(address);
 			urlConnection = (HttpURLConnection) url.openConnection();
 			urlConnection.setConnectTimeout(10000);
 			urlConnection.setReadTimeout(10000);
-			InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
+			inputStream = new BufferedInputStream(urlConnection.getInputStream());
 			toReturn = IOUtils.toString(inputStream);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			Log.e(TAG, e.getMessage(), e);
 			throw new ConnectException(ConnectException.ERROR, e);
 		} finally {
 			if (urlConnection != null) {
 				urlConnection.disconnect();
 			}
+			IOUtils.closeQuietly(inputStream);
 		}
 		return toReturn;
 	}
