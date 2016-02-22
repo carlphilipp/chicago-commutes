@@ -19,7 +19,6 @@ package fr.cph.chicago.activity;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -54,7 +53,6 @@ import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -130,11 +128,6 @@ public class BusActivity extends Activity {
 	 * Menu
 	 **/
 	private Menu menu;
-
-	@Override
-	protected void attachBaseContext(Context newBase) {
-		super.attachBaseContext(new CalligraphyContextWrapper(newBase));
-	}
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
@@ -262,9 +255,9 @@ public class BusActivity extends Activity {
 		actionBar.setTitle("Bus");
 
 		// Load top bar animation
-//		MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-//		refreshMenuItem.setActionView(R.layout.progressbar);
-//		refreshMenuItem.expandActionView();
+		//		MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+		//		refreshMenuItem.setActionView(R.layout.progressbar);
+		//		refreshMenuItem.expandActionView();
 
 		return true;
 	}
@@ -385,9 +378,9 @@ public class BusActivity extends Activity {
 		protected final void onProgressUpdate(final Void... values) {
 			// Get menu item and put it to loading mod
 			if (menu != null) {
-//				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-//				refreshMenuItem.setActionView(R.layout.progressbar);
-//				refreshMenuItem.expandActionView();
+				//				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+				//				refreshMenuItem.setActionView(R.layout.progressbar);
+				//				refreshMenuItem.expandActionView();
 			}
 		}
 
@@ -401,14 +394,14 @@ public class BusActivity extends Activity {
 			}
 			if (!isFirstLoad) {
 				// Stop refresh animation
-//				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-//				refreshMenuItem.collapseActionView();
-//				refreshMenuItem.setActionView(null);
+				//				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+				//				refreshMenuItem.collapseActionView();
+				//				refreshMenuItem.setActionView(null);
 			} else {
 				setFirstLoad();
-//				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-//				refreshMenuItem.collapseActionView();
-//				refreshMenuItem.setActionView(null);
+				//				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+				//				refreshMenuItem.collapseActionView();
+				//				refreshMenuItem.setActionView(null);
 			}
 		}
 	}
@@ -491,9 +484,9 @@ public class BusActivity extends Activity {
 			});
 
 			// Stop menu refresh animation
-//			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-//			refreshMenuItem.collapseActionView();
-//			refreshMenuItem.setActionView(null);
+			//			MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+			//			refreshMenuItem.collapseActionView();
+			//			refreshMenuItem.setActionView(null);
 			setFirstLoad();
 
 		}

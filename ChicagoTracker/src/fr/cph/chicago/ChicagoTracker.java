@@ -29,8 +29,6 @@ import fr.cph.chicago.activity.ErrorActivity;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.util.Util;
-import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import java.util.Date;
 
@@ -87,14 +85,8 @@ public class ChicagoTracker extends Application {
 	public static Tracker tracker;
 
 	@Override
-	protected void attachBaseContext(Context newBase) {
-		super.attachBaseContext(new CalligraphyContextWrapper(newBase));
-	}
-
-	@Override
 	public final void onCreate() {
 		super.onCreate();
-		CalligraphyConfig.initDefault("fonts/nevis.ttf", R.attr.fontPath);
 		ChicagoTracker.context = getApplicationContext();
 	}
 

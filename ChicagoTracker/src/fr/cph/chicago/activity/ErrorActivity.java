@@ -18,7 +18,6 @@ package fr.cph.chicago.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -28,7 +27,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 import fr.cph.chicago.R;
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * Error activity that can be thrown from anywhere in the app
@@ -41,11 +39,6 @@ public class ErrorActivity extends Activity {
 	 * Error
 	 **/
 	private String error;
-
-	@Override
-	protected void attachBaseContext(Context newBase) {
-		super.attachBaseContext(new CalligraphyContextWrapper(newBase));
-	}
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {

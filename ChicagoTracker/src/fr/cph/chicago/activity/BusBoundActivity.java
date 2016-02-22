@@ -20,7 +20,6 @@ import android.Manifest;
 import android.app.ActionBar;
 import android.app.FragmentManager;
 import android.app.ListActivity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -70,7 +69,6 @@ import fr.cph.chicago.xml.Xml;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.commons.lang3.StringUtils;
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,11 +113,6 @@ public class BusBoundActivity extends ListActivity {
 	 * The map
 	 **/
 	private GoogleMap googleMap;
-
-	@Override
-	protected void attachBaseContext(Context newBase) {
-		super.attachBaseContext(new CalligraphyContextWrapper(newBase));
-	}
 
 	@Override
 	public final void onCreate(final Bundle savedInstanceState) {

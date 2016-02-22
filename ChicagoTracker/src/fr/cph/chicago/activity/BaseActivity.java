@@ -17,7 +17,6 @@
 package fr.cph.chicago.activity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -41,7 +40,6 @@ import fr.cph.chicago.task.GlobalConnectTask;
 import fr.cph.chicago.util.Util;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -69,11 +67,6 @@ public class BaseActivity extends Activity {
 	 * Bus arrivals
 	 **/
 	private List<BusArrival> busArrivals;
-
-	@Override
-	protected void attachBaseContext(Context newBase) {
-		super.attachBaseContext(new CalligraphyContextWrapper(newBase));
-	}
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {

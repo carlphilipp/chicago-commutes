@@ -49,7 +49,6 @@ import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.json.Json;
 import fr.cph.chicago.util.Util;
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -100,11 +99,6 @@ public class BikeStationActivity extends Activity {
 	 * The menu
 	 **/
 	private Menu menu;
-
-	@Override
-	protected void attachBaseContext(Context newBase) {
-		super.attachBaseContext(new CalligraphyContextWrapper(newBase));
-	}
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
@@ -238,9 +232,9 @@ public class BikeStationActivity extends Activity {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main_no_search, menu);
 
-//		MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-//		refreshMenuItem.setActionView(R.layout.progressbar);
-//		refreshMenuItem.expandActionView();
+		//		MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+		//		refreshMenuItem.setActionView(R.layout.progressbar);
+		//		refreshMenuItem.expandActionView();
 
 		return true;
 	}
@@ -282,9 +276,9 @@ public class BikeStationActivity extends Activity {
 		this.bikeStation = station;
 		// setValue(bikeAvail);
 		setValue();
-//		MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-//		refreshMenuItem.collapseActionView();
-//		refreshMenuItem.setActionView(null);
+		//		MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+		//		refreshMenuItem.collapseActionView();
+		//		refreshMenuItem.setActionView(null);
 	}
 
 	private class DivvyAsyncTask extends AsyncTask<Void, Void, List<BikeStation>> {
@@ -403,9 +397,9 @@ public class BikeStationActivity extends Activity {
 					.getString(R.string.station_activity_street_view));
 
 			if (menu != null) {
-//				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-//				refreshMenuItem.collapseActionView();
-//				refreshMenuItem.setActionView(null);
+				//				MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
+				//				refreshMenuItem.collapseActionView();
+				//				refreshMenuItem.setActionView(null);
 			}
 		}
 	}

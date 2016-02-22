@@ -17,7 +17,6 @@
 package fr.cph.chicago.activity;
 
 import android.app.ListActivity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -30,7 +29,6 @@ import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.Util;
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * Activity the list of train stations
@@ -39,17 +37,18 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
  * @version 1
  */
 public class TrainStationActivity extends ListActivity {
-	/** The train data **/
+	/**
+	 * The train data
+	 **/
 	private TrainData trainData;
-	/** The line **/
+	/**
+	 * The line
+	 **/
 	private TrainLine trainLine;
-	/** The line param **/
+	/**
+	 * The line param
+	 **/
 	private String lineParam;
-
-	@Override
-	protected void attachBaseContext(Context newBase) {
-		super.attachBaseContext(new CalligraphyContextWrapper(newBase));
-	}
 
 	@Override
 	public final void onCreate(final Bundle savedInstanceState) {

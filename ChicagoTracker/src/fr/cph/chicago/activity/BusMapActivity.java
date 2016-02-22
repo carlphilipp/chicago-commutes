@@ -77,7 +77,6 @@ import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -150,11 +149,6 @@ public class BusMapActivity extends Activity {
 	private boolean centerMap = true;
 
 	private boolean loadPattern = true;
-
-	@Override
-	protected void attachBaseContext(Context newBase) {
-		super.attachBaseContext(new CalligraphyContextWrapper(newBase));
-	}
 
 	@Override
 	public final void onCreate(final Bundle savedInstanceState) {
