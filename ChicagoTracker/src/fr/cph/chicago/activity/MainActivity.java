@@ -67,9 +67,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
 	private static final String TAG = "MainActivity";
-
 	private static final String SELECTED_ID = "SELECTED_ID";
-
 	private static final int POSITION_BUS = 2;
 
 	private FavoritesFragment favoritesFragment;
@@ -88,16 +86,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 	private Toolbar toolbar;
 
-	private NavigationView mDrawer;
-
 	private DrawerLayout mDrawerLayout;
 
 	private ActionBarDrawerToggle drawerToggle;
 
-	private CharSequence title;
-
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_main);
@@ -113,30 +107,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		drawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 		mDrawerLayout.setDrawerListener(drawerToggle);
 		drawerToggle.syncState();
-		//default it set first item as selected
+
 		currentPosition = savedInstanceState == null ? R.id.navigation_favorites : savedInstanceState.getInt(SELECTED_ID);
 		itemSelection(currentPosition);
-
-		title = getTitle();
-
-		FragmentManager fragmentManager = getSupportFragmentManager();
-		favoritesFragment = FavoritesFragment.newInstance(currentPosition + 1);
-		fragmentManager.beginTransaction().replace(R.id.container, favoritesFragment).commit();
-	}
-
-	@Override
-	public void startActivity(final Intent intent) {
-		// check if search intent
-		Log.e(TAG, "Start activity with action: " + intent.getAction());
-		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-			ArrayList<BikeStation> bikeStations = getIntent().getExtras().getParcelableArrayList("bikeStations");
-			intent.putParcelableArrayListExtra("bikeStations", bikeStations);
-		}
-		super.startActivity(intent);
 	}
 
 	private void initView() {
-		mDrawer = (NavigationView) findViewById(R.id.main_drawer);
+		final NavigationView mDrawer = (NavigationView) findViewById(R.id.main_drawer);
 		mDrawer.setNavigationItemSelectedListener(this);
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 	}
@@ -150,29 +127,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 					if (favoritesFragment != null) {
 						favoritesFragment.startRefreshing();
 					}
-					SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-					boolean loadTrain = sharedPref.getBoolean("cta_train", true);
-					boolean loadBus = sharedPref.getBoolean("cta_bus", true);
-					boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
-					boolean loadAlert = sharedPref.getBoolean("cta_alert", true);
+					final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+					final boolean loadTrain = sharedPref.getBoolean("cta_train", true);
+					final boolean loadBus = sharedPref.getBoolean("cta_bus", true);
+					final boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
+					final boolean loadAlert = sharedPref.getBoolean("cta_alert", true);
 
 					final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
-					List<Integer> trainFavorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
-					for (Integer fav : trainFavorites) {
+					final List<Integer> trainFavorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
+					for (final Integer fav : trainFavorites) {
 						params.put("mapid", String.valueOf(fav));
 					}
 					final MultiValuedMap<String, String> params2 = new ArrayListValuedHashMap<>();
 					final List<String> busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
 					for (final String str : busFavorites) {
-						String[] fav = Util.decodeBusFavorite(str);
+						final String[] fav = Util.decodeBusFavorite(str);
 						params2.put("rt", fav[0]);
 						params2.put("stpid", fav[1]);
 					}
 					try {
-						GlobalConnectTask task = new GlobalConnectTask(favoritesFragment, FavoritesFragment.class, CtaRequestType.TRAIN_ARRIVALS,
+						final GlobalConnectTask task = new GlobalConnectTask(favoritesFragment, FavoritesFragment.class,
+								CtaRequestType.TRAIN_ARRIVALS,
 								params, CtaRequestType.BUS_ARRIVALS, params2, loadTrain, loadBus, loadBike);
 						task.execute((Void) null);
-					} catch (ParserException e) {
+					} catch (final ParserException e) {
 						ChicagoTracker.displayError(MainActivity.this, e);
 						return false;
 					}
@@ -210,14 +188,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 						loadData = true;
 					}
 					if (loadData) {
-						//startRefreshAnimation();
+						favoritesFragment.startRefreshing();
 						new LoadData().execute();
 					}
 					Util.trackAction(MainActivity.this, R.string.analytics_category_ui, R.string.analytics_action_press,
 							R.string.analytics_action_refresh_fav, 0);
-					if (favoritesFragment != null) {
-						favoritesFragment.stopRefreshing();
-					}
 					return true;
 				}
 			});
@@ -225,15 +200,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 				toolbar.setElevation(4);
 			}
-
 			toolbar.inflateMenu(R.menu.main);
 		}
+	}
+
+	@Override
+	public void startActivity(final Intent intent) {
+		// check if search intent
+		Log.e(TAG, "Start activity with action: " + intent.getAction());
+		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+			ArrayList<BikeStation> bikeStations = getIntent().getExtras().getParcelableArrayList("bikeStations");
+			intent.putParcelableArrayListExtra("bikeStations", bikeStations);
+		}
+		super.startActivity(intent);
 	}
 
 	private void itemSelection(final int position) {
 		final FragmentManager fragmentManager = getSupportFragmentManager();
 		currentPosition = position;
-
+		CharSequence title = null;
 		switch (position) {
 		case R.id.navigation_favorites:
 			title = getString(R.string.favorites);
@@ -244,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				fragmentManager.beginTransaction().replace(R.id.container, favoritesFragment).commit();
 			}
 			mDrawerLayout.closeDrawer(GravityCompat.START);
-			showMenu();
+			showActionBarMenu();
 			break;
 		case R.id.navigation_train:
 			title = getString(R.string.train);
@@ -255,7 +240,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				fragmentManager.beginTransaction().replace(R.id.container, trainFragment).commit();
 			}
 			mDrawerLayout.closeDrawer(GravityCompat.START);
-			hideMenu();
+			hideActionBarMenu();
 			break;
 		case R.id.navigation_bus:
 			title = getString(R.string.bus);
@@ -266,7 +251,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				fragmentManager.beginTransaction().replace(R.id.container, busFragment).commit();
 			}
 			mDrawerLayout.closeDrawer(GravityCompat.START);
-			hideMenu();
+			hideActionBarMenu();
 			break;
 		case R.id.navigation_bike:
 			title = getString(R.string.divvy);
@@ -277,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				fragmentManager.beginTransaction().replace(R.id.container, bikeFragment).commit();
 			}
 			mDrawerLayout.closeDrawer(GravityCompat.START);
-			hideMenu();
+			hideActionBarMenu();
 			break;
 		case R.id.navigation_nearby:
 			title = getString(R.string.nearby);
@@ -288,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
 			}
 			mDrawerLayout.closeDrawer(GravityCompat.START);
-			showMenu();
+			showActionBarMenu();
 			break;
 		case R.id.navigation_settings:
 			title = getString(R.string.settings);
@@ -299,36 +284,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				fragmentManager.beginTransaction().replace(R.id.container, settingsFragment).commit();
 			}
 			mDrawerLayout.closeDrawer(GravityCompat.START);
-			hideMenu();
+			hideActionBarMenu();
 			break;
 		}
 		toolbar.setTitle(title);
 	}
 
-	private void hideMenu() {
-		if(toolbar.getMenu().getItem(0).isVisible()) {
-			showHideMenu(false);
-		}
-	}
-
-	private void showMenu() {
-		if(!toolbar.getMenu().getItem(0).isVisible()) {
-			showHideMenu(true);
-		}
-	}
-
-	private void showHideMenu(final boolean bool){
-		toolbar.getMenu().getItem(0).setVisible(bool);
-	}
-
 	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
+	public void onConfigurationChanged(final Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 		drawerToggle.onConfigurationChanged(newConfig);
 	}
 
 	@Override
-	public boolean onNavigationItemSelected(MenuItem menuItem) {
+	public boolean onNavigationItemSelected(final MenuItem menuItem) {
 		menuItem.setChecked(true);
 		currentPosition = menuItem.getItemId();
 		itemSelection(currentPosition);
@@ -336,10 +305,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+	public void onSaveInstanceState(final Bundle outState, final PersistableBundle outPersistentState) {
 		super.onSaveInstanceState(outState, outPersistentState);
 		//save selected item so it will remains same even after orientation change
 		outState.putInt(SELECTED_ID, currentPosition);
+	}
+
+	private void hideActionBarMenu() {
+		if (toolbar.getMenu().getItem(0).isVisible()) {
+			showHideActionBarMenu(false);
+		}
+	}
+
+	private void showActionBarMenu() {
+		if (!toolbar.getMenu().getItem(0).isVisible()) {
+			showHideActionBarMenu(true);
+		}
+	}
+
+	private void showHideActionBarMenu(final boolean bool) {
+		toolbar.getMenu().getItem(0).setVisible(bool);
 	}
 
 	public final class LoadData extends AsyncTask<Void, Void, Void> {
@@ -358,18 +343,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 		@Override
 		protected final Void doInBackground(final Void... params) {
+			final DataHolder dataHolder = DataHolder.getInstance();
+			busData = dataHolder.getBusData();
 
-			DataHolder dataHolder = DataHolder.getInstance();
-			this.busData = dataHolder.getBusData();
-
-			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-			boolean loadBus = sharedPref.getBoolean("cta_bus", true);
-			this.loadBike = false;
+			final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+			final boolean loadBus = sharedPref.getBoolean("cta_bus", true);
+			loadBike = false;
 
 			if (sharedPref.contains("divvy_bike")) {
-				this.loadBike = sharedPref.getBoolean("divvy_bike", true);
+				loadBike = sharedPref.getBoolean("divvy_bike", true);
 			} else {
-				SharedPreferences.Editor editor = sharedPref.edit();
+				final SharedPreferences.Editor editor = sharedPref.edit();
 				editor.putBoolean("divvy_bike", false);
 				editor.apply();
 			}
@@ -377,7 +361,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			// Load bus API data
 			if (loadBus) {
 				try {
-					this.busData.loadBusRoutes();
+					busData.loadBusRoutes();
 					Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
 							R.string.analytics_action_get_bus_routes, 0);
 					publishProgress();
@@ -393,18 +377,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			}
 
 			// Load divvy
-			this.bikeStations = new ArrayList<>();
+			bikeStations = new ArrayList<>();
 			if (loadBike) {
 				try {
-					Json json = new Json();
-					DivvyConnect divvyConnect = DivvyConnect.getInstance();
-					String bikeContent = divvyConnect.connect();
+					final Json json = new Json();
+					final DivvyConnect divvyConnect = DivvyConnect.getInstance();
+					final String bikeContent = divvyConnect.connect();
 					bikeStations = json.parseStations(bikeContent);
 					Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
 					Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy,
 							R.string.analytics_action_get_divvy_all, 0);
 					publishProgress();
-				} catch (ConnectException | ParserException e) {
+				} catch (final ConnectException | ParserException e) {
 					Log.e(TAG, e.getMessage(), e);
 				}
 			}
@@ -418,7 +402,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		@Override
 		protected final void onPostExecute(final Void result) {
 			// Put data into data holder
-			DataHolder dataHolder = DataHolder.getInstance();
+			final DataHolder dataHolder = DataHolder.getInstance();
 			dataHolder.setBusData(busData);
 
 			if (loadBike) {

@@ -88,27 +88,25 @@ public class FavoritesFragment extends Fragment {
 
 	private SwipeRefreshLayout swipeRefreshLayout;
 
-	private FloatingActionButton floatingButton;
-
 	/**
 	 * Returns a new instance of this fragment for the given section number.
 	 *
-	 * @param sectionNumber
-	 * @return
+	 * @param sectionNumber the section number
+	 * @return a favorite fragment
 	 */
 	public static FavoritesFragment newInstance(final int sectionNumber) {
-		FavoritesFragment fragment = new FavoritesFragment();
-		Bundle args = new Bundle();
+		final FavoritesFragment fragment = new FavoritesFragment();
+		final Bundle args = new Bundle();
 		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
 		fragment.setArguments(args);
 		return fragment;
 	}
 
 	@Override
-	public final void onCreate(Bundle savedInstanceState) {
+	public final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (savedInstanceState == null) {
-			Bundle bundle = mainActivity.getIntent().getExtras();
+			final Bundle bundle = mainActivity.getIntent().getExtras();
 			busArrivals = bundle.getParcelableArrayList("busArrivals");
 			trainArrivals = bundle.getSparseParcelableArray("trainArrivals");
 			bikeStations = bundle.getParcelableArrayList("bikeStations");
@@ -124,7 +122,6 @@ public class FavoritesFragment extends Fragment {
 		if (bikeStations == null) {
 			bikeStations = new ArrayList<>();
 		}
-
 		Util.trackScreen(getResources().getString(R.string.analytics_favorites_fragment));
 	}
 
@@ -137,10 +134,10 @@ public class FavoritesFragment extends Fragment {
 				favoritesAdapter = new FavoritesAdapter(mainActivity);
 				favoritesAdapter.setArrivalsAndBikeStations(trainArrivals, busArrivals, bikeStations);
 			}
-			ListView listView = (ListView) rootView.findViewById(R.id.favorites_list);
+			final ListView listView = (ListView) rootView.findViewById(R.id.favorites_list);
 			listView.setAdapter(favoritesAdapter);
 			startRefreshTask();
-			floatingButton = (FloatingActionButton) rootView.findViewById(R.id.floating_button);
+			final FloatingActionButton floatingButton = (FloatingActionButton) rootView.findViewById(R.id.floating_button);
 			floatingButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(final View v) {
@@ -153,27 +150,27 @@ public class FavoritesFragment extends Fragment {
 			swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 				@Override
 				public void onRefresh() {
-					SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mainActivity);
-					boolean loadTrain = sharedPref.getBoolean("cta_train", true);
-					boolean loadBus = sharedPref.getBoolean("cta_bus", true);
-					boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
-					boolean loadAlert = sharedPref.getBoolean("cta_alert", true);
+					final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mainActivity);
+					final boolean loadTrain = sharedPref.getBoolean("cta_train", true);
+					final boolean loadBus = sharedPref.getBoolean("cta_bus", true);
+					final boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
+					final boolean loadAlert = sharedPref.getBoolean("cta_alert", true);
 
 					final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
-					List<Integer> trainFavorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
-					for (Integer fav : trainFavorites) {
+					final List<Integer> trainFavorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
+					for (final Integer fav : trainFavorites) {
 						params.put("mapid", String.valueOf(fav));
 					}
 					final MultiValuedMap<String, String> params2 = new ArrayListValuedHashMap<>();
 					final List<String> busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
 					for (final String str : busFavorites) {
-						String[] fav = Util.decodeBusFavorite(str);
+						final String[] fav = Util.decodeBusFavorite(str);
 						params2.put("rt", fav[0]);
 						params2.put("stpid", fav[1]);
 					}
 					try {
-						GlobalConnectTask task = new GlobalConnectTask(FavoritesFragment.this, FavoritesFragment.class, CtaRequestType.TRAIN_ARRIVALS,
-								params, CtaRequestType.BUS_ARRIVALS, params2, loadTrain, loadBus, loadBike);
+						final GlobalConnectTask task = new GlobalConnectTask(FavoritesFragment.this, FavoritesFragment.class,
+								CtaRequestType.TRAIN_ARRIVALS, params, CtaRequestType.BUS_ARRIVALS, params2, loadTrain, loadBus, loadBike);
 						task.execute((Void) null);
 					} catch (ParserException e) {
 						ChicagoTracker.displayError(mainActivity, e);
@@ -313,7 +310,6 @@ public class FavoritesFragment extends Fragment {
 		rootView.postDelayed(new Runnable() {
 			public void run() {
 				rootView.setBackgroundResource(R.drawable.bg_selector);
-				//mainActivity.stopRefreshAnimation();
 			}
 		}, 100);
 		stopRefreshing();
@@ -324,11 +320,11 @@ public class FavoritesFragment extends Fragment {
 	 *
 	 * @param trackerException the exception
 	 */
-	public final void displayError(TrackerException trackerException) {
+	public final void displayError(final TrackerException trackerException) {
 		ChicagoTracker.displayError(mainActivity, trackerException);
 	}
 
-	public final void setBikeStations(List<BikeStation> bikeStations) {
+	public final void setBikeStations(final List<BikeStation> bikeStations) {
 		this.bikeStations = bikeStations;
 		favoritesAdapter.setBikeStations(bikeStations);
 		favoritesAdapter.notifyDataSetChanged();
