@@ -20,7 +20,12 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -240,6 +245,13 @@ public class StationActivity extends Activity {
 					checkBox.setChecked(Preferences.getTrainFilter(stationId, line, stop.getDirection()));
 					checkBox.setText(stop.getDirection().toString());
 					checkBox.setTextColor(getResources().getColor(R.color.grey));
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+						checkBox.setBackgroundTintList(ColorStateList.valueOf(line.getColor()));
+						checkBox.setButtonTintList(ColorStateList.valueOf(line.getColor()));
+					}
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+						checkBox.setForegroundTintList(ColorStateList.valueOf(line.getColor()));
+					}
 
 					line2.addView(checkBox);
 					stopsView.addView(line2);

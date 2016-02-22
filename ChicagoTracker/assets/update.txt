@@ -1,21 +1,14 @@
+4.0.0
+New material design UI
+
 3.6.0
-Updated with last CTA data
+Update with last CTA data
 
 3.5.0
-Updated marker with new colors.
+Update marker with new colors.
 
 3.4.0
-Added quick access to follow trains/buses on Google map from more screens.
+Add quick access to follow trains/buses on Google map from more screens.
 
 3.3.3
 Minor bug fixes on welcome screen.
-
-3.3.2
-Changed google map markers to default color. Waiting for Google map fix.
-
-3.3.1
-Updated font.
-Minor bug fixes.
-
-3.2.4
-Minor bug fixes.
