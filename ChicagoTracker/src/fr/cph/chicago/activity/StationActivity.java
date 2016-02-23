@@ -27,13 +27,13 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils.TruncateAt;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,62 +86,32 @@ import java.util.Set;
 public class StationActivity extends Activity {
 
 	private static final String TAG = "StationActivity";
-	/**
-	 * Train data
-	 **/
+
 	private TrainData trainData;
-	/**
-	 * Train arrival
-	 **/
+
 	private TrainArrival trainArrival;
-	/**
-	 * The station id
-	 **/
+
 	private Integer stationId;
-	/**
-	 * The station
-	 **/
+
 	private Station station;
-	/**
-	 * Street view image
-	 **/
+
 	private ImageView streetViewImage;
-	/**
-	 * Street view text
-	 **/
+
 	private TextView streetViewText;
-	/**
-	 * Map image
-	 **/
+
 	private ImageView mapImage;
-	/**
-	 * Direction image
-	 **/
+
 	private ImageView directionImage;
-	/**
-	 * Favorite image
-	 **/
+
 	private ImageView favoritesImage;
-	/**
-	 * Is favorite
-	 **/
+
 	private boolean isFavorite;
-	/**
-	 * Map of ids
-	 **/
+
 	private Map<String, Integer> ids;
-	/**
-	 * Params stops
-	 **/
+
 	private LinearLayout.LayoutParams paramsStop;
-	/**
-	 * The menu
-	 **/
-	private Menu menu;
-	/**
-	 * The first load
-	 **/
-	private boolean firstLoad = true;
+
+	private SwipeRefreshLayout swipeRefreshLayout;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -168,6 +138,15 @@ public class StationActivity extends Activity {
 
 			final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
 			reqParams.put("mapid", String.valueOf(station.getId()));
+
+			swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_station_swipe_refresh_layout);
+			swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+				@Override
+				public void onRefresh() {
+					new LoadData().execute(reqParams);
+				}
+			});
+
 			new LoadData().execute(reqParams);
 
 			// Call google street api to load image
@@ -179,13 +158,9 @@ public class StationActivity extends Activity {
 			textView.setText(station.getName());
 
 			streetViewImage = (ImageView) findViewById(R.id.activity_bike_station_streetview_image);
-
 			streetViewText = (TextView) findViewById(R.id.activity_bike_station_steetview_text);
-
 			mapImage = (ImageView) findViewById(R.id.activity_bike_station_map_image);
-
 			directionImage = (ImageView) findViewById(R.id.activity_bike_station_map_direction);
-
 			favoritesImage = (ImageView) findViewById(R.id.activity_bike_station_favorite_star);
 			if (isFavorite) {
 				favoritesImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.ic_save_active));
@@ -196,13 +171,11 @@ public class StationActivity extends Activity {
 					StationActivity.this.switchFavorite();
 				}
 			});
-
 			final LinearLayout stopsView = (LinearLayout) findViewById(R.id.activity_bike_station_details);
-
 			paramsStop = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
 			final Map<TrainLine, List<Stop>> stops = station.getStopByLines();
-			CheckBox checkBox = null;
+			CheckBox checkBox;
 			for (final Entry<TrainLine, List<Stop>> e : stops.entrySet()) {
 				final TrainLine line = e.getKey();
 				final List<Stop> stopss = e.getValue();
@@ -266,15 +239,14 @@ public class StationActivity extends Activity {
 			}
 
 			final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
 			toolbar.inflateMenu(R.menu.main);
 			toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
 				@Override
-				public boolean onMenuItemClick(MenuItem item) {
+				public boolean onMenuItemClick(final MenuItem item) {
+					swipeRefreshLayout.setRefreshing(true);
 					final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
 					reqParams.put("mapid", String.valueOf(station.getId()));
 					new LoadData().execute(reqParams);
-
 					return false;
 				}
 			}));
@@ -320,11 +292,7 @@ public class StationActivity extends Activity {
 
 	@Override
 	public final boolean onCreateOptionsMenu(final Menu menu) {
-		super.onCreateOptionsMenu(menu);
-		this.menu = menu;
-		final MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.main_no_search, menu);
-		return true;
+		return super.onCreateOptionsMenu(menu);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -444,7 +412,6 @@ public class StationActivity extends Activity {
 
 			StationActivity.this.streetViewText.setText(ChicagoTracker.getAppContext().getResources()
 					.getString(R.string.station_activity_street_view));
-			firstLoad = false;
 		}
 	}
 
@@ -522,7 +489,7 @@ public class StationActivity extends Activity {
 				if (trainArrival != null) {
 					etas = trainArrival.getEtas();
 				} else {
-					etas = new ArrayList<>();
+					etas = Collections.emptyList();
 				}
 				reset(StationActivity.this.station);
 				for (final Eta eta : etas) {
@@ -530,6 +497,9 @@ public class StationActivity extends Activity {
 				}
 			} else {
 				ChicagoTracker.displayError(StationActivity.this, trackerException);
+			}
+			if (swipeRefreshLayout != null) {
+				swipeRefreshLayout.setRefreshing(false);
 			}
 		}
 	}

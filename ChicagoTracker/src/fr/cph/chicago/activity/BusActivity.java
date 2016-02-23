@@ -16,7 +16,6 @@
 
 package fr.cph.chicago.activity;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -26,10 +25,10 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,62 +71,34 @@ public class BusActivity extends Activity {
 	 * Tag
 	 **/
 	private static final String TAG = "BusActivity";
-	/**
-	 * List of bus arrivals
-	 **/
+
 	private List<BusArrival> busArrivals;
-	/**
-	 * Buse route id
-	 **/
+
 	private String busRouteId;
-	/**
-	 * Bound
-	 **/
+
 	private String bound;
-	/**
-	 * Bus stop id
-	 **/
+
 	private Integer busStopId;
-	/**
-	 * Bus stop name
-	 **/
+
 	private String busStopName;
-	/**
-	 * Bus route name
-	 **/
+
 	private String busRouteName;
-	/**
-	 * Position
-	 **/
+
 	private Double latitude, longitude;
-	/**
-	 * Images
-	 **/
+
 	private ImageView streetViewImage, mapImage, directionImage, favoritesImage;
-	/**
-	 * Street view text
-	 **/
+
 	private TextView streetViewText;
-	/**
-	 * Stop view
-	 **/
+
 	private LinearLayout stopsView;
-	/**
-	 * First time the activity is loaded
-	 **/
+
 	private boolean isFirstLoad = true;
-	/**
-	 * First time the activity is loaded count
-	 **/
+
 	private int firstLoadCount;
-	/**
-	 * Is added as favorite
-	 **/
+
 	private boolean isFavorite;
-	/**
-	 * Menu
-	 **/
-	private Menu menu;
+
+	private SwipeRefreshLayout swipeRefreshLayout;
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
@@ -157,6 +128,14 @@ public class BusActivity extends Activity {
 			this.isFavorite = isFavorite();
 
 			this.stopsView = (LinearLayout) findViewById(R.id.activity_bus_stops);
+
+			swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_bus_stop_swipe_refresh_layout);
+			swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+				@Override
+				public void onRefresh() {
+					new LoadData().execute();
+				}
+			});
 
 			final TextView busRouteNameView = (TextView) findViewById(R.id.activity_bus_station_name);
 			busRouteNameView.setText(busStopName);
@@ -191,6 +170,7 @@ public class BusActivity extends Activity {
 			toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
 				@Override
 				public boolean onMenuItemClick(MenuItem item) {
+					swipeRefreshLayout.setRefreshing(true);
 					new LoadData().execute();
 					return false;
 				}
@@ -241,19 +221,7 @@ public class BusActivity extends Activity {
 
 	@Override
 	public final boolean onCreateOptionsMenu(final Menu menu) {
-		super.onCreateOptionsMenu(menu);
-		this.menu = menu;
-
-		// Inflate menu with no search
-		final MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.main_no_search, menu);
-
-		// Modify action bar title
-		final ActionBar actionBar = getActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-		actionBar.setDisplayShowTitleEnabled(true);
-		actionBar.setTitle("Bus");
-		return true;
+		return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
@@ -382,6 +350,9 @@ public class BusActivity extends Activity {
 			if (isFirstLoad) {
 				setFirstLoad();
 			}
+			if (swipeRefreshLayout != null) {
+				swipeRefreshLayout.setRefreshing(false);
+			}
 		}
 	}
 
@@ -450,7 +421,8 @@ public class BusActivity extends Activity {
 					startActivity(i);
 				}
 			});
-			BusActivity.this.directionImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.ic_directions_walking));
+			BusActivity.this.directionImage
+					.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.ic_directions_walking));
 			BusActivity.this.directionImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {

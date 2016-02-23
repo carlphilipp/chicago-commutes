@@ -109,6 +109,10 @@ public class NearbyFragment extends Fragment {
 	 **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
 	/**
+	 * The Chicago position
+	 **/
+	public static final LatLng CHICAGO = new LatLng(41.8819, -87.6278);
+	/**
 	 * The main activity
 	 **/
 	private MainActivity mainActivity;
@@ -144,10 +148,6 @@ public class NearbyFragment extends Fragment {
 	 * Hide empty stations/stops
 	 **/
 	private boolean hideStationsStops;
-	/**
-	 * The Chicago position
-	 **/
-	public static final LatLng CHICAGO = new LatLng(41.8819, -87.6278);
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -175,7 +175,6 @@ public class NearbyFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 		ChicagoTracker.checkTrainData(mainActivity);
 		ChicagoTracker.checkBusData(mainActivity);
-
 		Util.trackScreen(getResources().getString(R.string.analytics_nearby_fragment));
 	}
 
@@ -301,11 +300,9 @@ public class NearbyFragment extends Fragment {
 
 			// Loop over bus stops around user
 			if (loadBus) {
-				for (BusStop busStop : busStops) {
-					Map<String, List<BusArrival>> tempMap;
-
+				for (final BusStop busStop : busStops) {
 					// Create
-					tempMap = busArrivalsMap.get(busStop.getId(), null);
+					Map<String, List<BusArrival>> tempMap = busArrivalsMap.get(busStop.getId(), null);
 					if (tempMap == null) {
 						tempMap = new HashMap<>();
 						busArrivalsMap.put(busStop.getId(), tempMap);
@@ -713,17 +710,17 @@ public class NearbyFragment extends Fragment {
 				}
 				if (!found) {
 					for (int i = 0; i < busStops.size(); i++) {
-						int indice = i + stations.size();
+						int index = i + stations.size();
 						if (marker.getSnippet().equals(busStops.get(i).getId().toString())) {
-							listView.smoothScrollToPosition(indice);
+							listView.smoothScrollToPosition(index);
 							break;
 						}
 					}
 				}
 				for (int i = 0; i < bikeStations.size(); i++) {
-					int indice = i + stations.size() + busStops.size();
+					int index = i + stations.size() + busStops.size();
 					if (marker.getSnippet().equals(bikeStations.get(i).getId() + "")) {
-						listView.smoothScrollToPosition(indice);
+						listView.smoothScrollToPosition(index);
 						break;
 					}
 				}

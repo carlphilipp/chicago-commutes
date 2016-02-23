@@ -89,9 +89,8 @@ public class MapFragment extends Fragment implements OnTouchListener {
 	}
 
 	@Override
-	public final void onCreate(Bundle savedInstanceState) {
+	public final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		Util.trackScreen(getResources().getString(R.string.analytics_L_fragment));
 	}
 

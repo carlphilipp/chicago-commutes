@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	private static final String TAG = "MainActivity";
 	private static final String SELECTED_ID = "SELECTED_ID";
 	private static final int POSITION_BUS = 2;
+	private static final int POSITION_NEARBY = 4;
 
 	private FavoritesFragment favoritesFragment;
 
@@ -123,74 +124,77 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
 				@Override
 				public boolean onMenuItemClick(final MenuItem item) {
-					if (favoritesFragment != null) {
-						favoritesFragment.startRefreshing();
-					}
-					final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-					final boolean loadTrain = sharedPref.getBoolean("cta_train", true);
-					final boolean loadBus = sharedPref.getBoolean("cta_bus", true);
-					final boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
+					if (toolbar.getTitle().equals(getString(R.string.nearby))) {
+						nearbyFragment.reloadData();
+					} else {
+						if (favoritesFragment != null) {
+							favoritesFragment.startRefreshing();
+						}
+						final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+						final boolean loadTrain = sharedPref.getBoolean("cta_train", true);
+						final boolean loadBus = sharedPref.getBoolean("cta_bus", true);
+						final boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
 
-					final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
-					final List<Integer> trainFavorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
-					for (final Integer fav : trainFavorites) {
-						params.put("mapid", String.valueOf(fav));
-					}
-					final MultiValuedMap<String, String> params2 = new ArrayListValuedHashMap<>();
-					final List<String> busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
-					for (final String str : busFavorites) {
-						final String[] fav = Util.decodeBusFavorite(str);
-						params2.put("rt", fav[0]);
-						params2.put("stpid", fav[1]);
-					}
-					try {
-						final GlobalConnectTask task = new GlobalConnectTask(favoritesFragment, FavoritesFragment.class,
-								CtaRequestType.TRAIN_ARRIVALS,
-								params, CtaRequestType.BUS_ARRIVALS, params2, loadTrain, loadBus, loadBike);
-						task.execute((Void) null);
-					} catch (final ParserException e) {
-						ChicagoTracker.displayError(MainActivity.this, e);
-						return false;
-					}
-					// Google analytics
-					if (loadTrain) {
-						Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train,
-								R.string.analytics_action_get_train_arrivals, 0);
-					}
-					if (loadBus) {
-						Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
-								R.string.analytics_action_get_bus_arrival, 0);
-					}
-					if (loadBike) {
-						Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy,
-								R.string.analytics_action_get_divvy_all, 0);
-					}
-					// Check if bus/bike or alert data are not loaded. If not, load them.
-					// Can happen when the app has been loaded without any data connection
-					boolean loadData = false;
-					final DataHolder dataHolder = DataHolder.getInstance();
+						final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
+						final List<Integer> trainFavorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
+						for (final Integer fav : trainFavorites) {
+							params.put("mapid", String.valueOf(fav));
+						}
+						final MultiValuedMap<String, String> params2 = new ArrayListValuedHashMap<>();
+						final List<String> busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+						for (final String str : busFavorites) {
+							final String[] fav = Util.decodeBusFavorite(str);
+							params2.put("rt", fav[0]);
+							params2.put("stpid", fav[1]);
+						}
+						try {
+							final GlobalConnectTask task = new GlobalConnectTask(favoritesFragment, FavoritesFragment.class,
+									CtaRequestType.TRAIN_ARRIVALS,
+									params, CtaRequestType.BUS_ARRIVALS, params2, loadTrain, loadBus, loadBike);
+							task.execute((Void) null);
+						} catch (final ParserException e) {
+							ChicagoTracker.displayError(MainActivity.this, e);
+							return false;
+						}
+						// Google analytics
+						if (loadTrain) {
+							Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train,
+									R.string.analytics_action_get_train_arrivals, 0);
+						}
+						if (loadBus) {
+							Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
+									R.string.analytics_action_get_bus_arrival, 0);
+						}
+						if (loadBike) {
+							Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy,
+									R.string.analytics_action_get_divvy_all, 0);
+						}
+						// Check if bus/bike or alert data are not loaded. If not, load them.
+						// Can happen when the app has been loaded without any data connection
+						boolean loadData = false;
+						final DataHolder dataHolder = DataHolder.getInstance();
 
-					final BusData busData = dataHolder.getBusData();
+						final BusData busData = dataHolder.getBusData();
 
-					final Bundle bundle = MainActivity.this.getIntent().getExtras();
-					final List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
+						final Bundle bundle = MainActivity.this.getIntent().getExtras();
+						final List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
 
-					if (loadBus && busData.getRoutes() != null && busData.getRoutes().size() == 0) {
-						loadData = true;
+						if (loadBus && busData.getRoutes() != null && busData.getRoutes().size() == 0) {
+							loadData = true;
+						}
+						if (!loadData && loadBike && bikeStations == null) {
+							loadData = true;
+						}
+						if (loadData) {
+							favoritesFragment.startRefreshing();
+							new LoadData().execute();
+						}
+						Util.trackAction(MainActivity.this, R.string.analytics_category_ui, R.string.analytics_action_press,
+								R.string.analytics_action_refresh_fav, 0);
 					}
-					if (!loadData && loadBike && bikeStations == null) {
-						loadData = true;
-					}
-					if (loadData) {
-						favoritesFragment.startRefreshing();
-						new LoadData().execute();
-					}
-					Util.trackAction(MainActivity.this, R.string.analytics_category_ui, R.string.analytics_action_press,
-							R.string.analytics_action_refresh_fav, 0);
 					return true;
 				}
 			});
-
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 				toolbar.setElevation(4);
 			}

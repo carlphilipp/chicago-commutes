@@ -25,111 +25,114 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"/>
 
-
-	<!-- Scroll view wrapping the layout to allow to scroll -->
-	<ScrollView
-			android:id="@+id/scrollViewTrainStation"
+	<android.support.v4.widget.SwipeRefreshLayout
+			android:id="@+id/activity_station_swipe_refresh_layout"
 			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:background="@drawable/bg_selector">
-
-		<!-- Main container. Vertical layout -->
-
-		<RelativeLayout
+			android:layout_height="wrap_content">
+		<!-- Scroll view wrapping the layout to allow to scroll -->
+		<ScrollView
+				android:id="@+id/scrollViewTrainStation"
 				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:paddingBottom="@dimen/activity_train_line_padding_bottom"
-				android:paddingLeft="@dimen/activity_train_line_padding_left"
-				android:paddingRight="@dimen/activity_train_line_padding_right"
-				android:paddingTop="@dimen/activity_train_line_padding_top">
+				android:layout_height="match_parent"
+				android:background="@drawable/bg_selector">
 
+			<!-- Main container. Vertical layout -->
 			<RelativeLayout
-					android:id="@+id/header"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content">
-
-				<TextView
-						android:id="@+id/activity_bike_station_station_name"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_alignParentLeft="true"
-						android:layout_centerVertical="true"
-						android:layout_toLeftOf="@+id/header_icon"
-						android:textColor="@color/black"
-						android:textIsSelectable="false"
-						android:textSize="@dimen/activity_station_title_text_size"
-						android:textStyle="bold"/>
-
-				<RelativeLayout
-						android:id="@+id/header_icon"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_alignParentRight="true"
-						android:layout_centerVertical="true"
-						android:layout_marginBottom="10dp">
-
-					<ImageView
-							android:id="@+id/activity_bike_station_map_image"
-							android:layout_width="35dp"
-							android:layout_height="35dp"
-							android:background="@drawable/any_selector"
-							android:clickable="true"
-							android:contentDescription="@string/station_activity_google_map_link_desc">
-					</ImageView>
-					<!-- android:layout_toRightOf="@+id/activity_bike_station_map_image" -->
-
-					<ImageView
-							android:id="@+id/activity_bike_station_map_direction"
-							android:layout_width="35dp"
-							android:layout_height="35dp"
-							android:layout_toRightOf="@+id/activity_bike_station_map_image"
-							android:background="@drawable/any_selector"
-							android:contentDescription="@string/station_activity_google_map_link_desc">
-					</ImageView>
-
-					<ImageView
-							android:id="@+id/activity_bike_station_favorite_star"
-							android:layout_width="35dp"
-							android:layout_height="35dp"
-							android:layout_toRightOf="@+id/activity_bike_station_map_direction"
-							android:background="@drawable/any_selector"
-							android:contentDescription="@string/station_activity_google_map_link_desc"
-							android:src="@drawable/ic_save_disabled">
-					</ImageView>
-				</RelativeLayout>
-			</RelativeLayout>
-
-			<RelativeLayout
-					android:id="@+id/activity_bike_station_streetview_container"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:layout_below="@+id/header"
+					android:paddingBottom="@dimen/activity_train_line_padding_bottom"
+					android:paddingLeft="@dimen/activity_train_line_padding_left"
+					android:paddingRight="@dimen/activity_train_line_padding_right"
 					android:paddingTop="@dimen/activity_train_line_padding_top">
 
-				<ImageView
-						android:id="@+id/activity_bike_station_streetview_image"
+				<RelativeLayout
+						android:id="@+id/header"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content">
+
+					<TextView
+							android:id="@+id/activity_bike_station_station_name"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:layout_alignParentLeft="true"
+							android:layout_centerVertical="true"
+							android:layout_toLeftOf="@+id/header_icon"
+							android:textColor="@color/black"
+							android:textIsSelectable="false"
+							android:textSize="@dimen/activity_station_title_text_size"
+							android:textStyle="bold"/>
+
+					<RelativeLayout
+							android:id="@+id/header_icon"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:layout_alignParentRight="true"
+							android:layout_centerVertical="true"
+							android:layout_marginBottom="10dp">
+
+						<ImageView
+								android:id="@+id/activity_bike_station_map_image"
+								android:layout_width="35dp"
+								android:layout_height="35dp"
+								android:background="@drawable/any_selector"
+								android:clickable="true"
+								android:contentDescription="@string/station_activity_google_map_link_desc">
+						</ImageView>
+						<!-- android:layout_toRightOf="@+id/activity_bike_station_map_image" -->
+
+						<ImageView
+								android:id="@+id/activity_bike_station_map_direction"
+								android:layout_width="35dp"
+								android:layout_height="35dp"
+								android:layout_toRightOf="@+id/activity_bike_station_map_image"
+								android:background="@drawable/any_selector"
+								android:contentDescription="@string/station_activity_google_map_link_desc">
+						</ImageView>
+
+						<ImageView
+								android:id="@+id/activity_bike_station_favorite_star"
+								android:layout_width="35dp"
+								android:layout_height="35dp"
+								android:layout_toRightOf="@+id/activity_bike_station_map_direction"
+								android:background="@drawable/any_selector"
+								android:contentDescription="@string/station_activity_google_map_link_desc"
+								android:src="@drawable/ic_save_disabled">
+						</ImageView>
+					</RelativeLayout>
+				</RelativeLayout>
+
+				<RelativeLayout
+						android:id="@+id/activity_bike_station_streetview_container"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
-						android:contentDescription="@string/station_activity_google_map_link_desc"
-						android:scaleType="centerCrop">
-				</ImageView>
+						android:layout_below="@+id/header"
+						android:paddingTop="@dimen/activity_train_line_padding_top">
 
-				<TextView
-						android:id="@+id/activity_bike_station_steetview_text"
+					<ImageView
+							android:id="@+id/activity_bike_station_streetview_image"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:contentDescription="@string/station_activity_google_map_link_desc"
+							android:scaleType="centerCrop">
+					</ImageView>
+
+					<TextView
+							android:id="@+id/activity_bike_station_steetview_text"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:layout_alignParentBottom="true"
+							android:layout_marginLeft="4dp"
+							android:textColor="@color/white"/>
+				</RelativeLayout>
+
+				<LinearLayout
+						android:id="@+id/activity_bike_station_details"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						android:layout_alignParentBottom="true"
-						android:layout_marginLeft="4dp"
-						android:textColor="@color/white"/>
+						android:layout_below="@+id/activity_bike_station_streetview_container"
+						android:orientation="vertical">
+				</LinearLayout>
 			</RelativeLayout>
-
-			<LinearLayout
-					android:id="@+id/activity_bike_station_details"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_below="@+id/activity_bike_station_streetview_container"
-					android:orientation="vertical">
-			</LinearLayout>
-		</RelativeLayout>
-	</ScrollView>
+		</ScrollView>
+	</android.support.v4.widget.SwipeRefreshLayout>
 </LinearLayout>
