@@ -67,7 +67,7 @@ public class FavoritesFragment extends Fragment {
 	 * The fragment argument representing the section number for this fragment.
 	 **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
-	private static final String TAG = "FavoritesFragment";
+	private static final String TAG = FavoritesFragment.class.getSimpleName();
 
 	private MainActivity mainActivity;
 

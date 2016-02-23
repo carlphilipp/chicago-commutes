@@ -47,7 +47,7 @@ public class BusData {
 	/**
 	 * Tag
 	 **/
-	private static final String TAG = "BusData";
+	private static final String TAG = BusData.class.getSimpleName();
 	/**
 	 * Singleton
 	 **/

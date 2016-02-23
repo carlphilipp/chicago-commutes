@@ -37,7 +37,7 @@ public class GStreetViewConnect {
 	/**
 	 * The tag
 	 **/
-	private static final String TAG = "GStreetViewConnect";
+	private static final String TAG = GStreetViewConnect.class.getSimpleName();
 	/**
 	 * The base url of API
 	 **/

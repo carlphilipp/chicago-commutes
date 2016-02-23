@@ -103,7 +103,7 @@ public class NearbyFragment extends Fragment {
 	/**
 	 * Tag
 	 **/
-	private static final String TAG = "NearbyFragment";
+	private static final String TAG = NearbyFragment.class.getSimpleName();
 	/**
 	 * The fragment argument representing the section number for this fragment.
 	 **/

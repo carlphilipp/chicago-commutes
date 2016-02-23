@@ -58,7 +58,7 @@ import java.util.List;
  */
 public class BikeFragment extends Fragment {
 	/** Tag **/
-	private static final String TAG = "BikeFragment";
+	private static final String TAG = BikeFragment.class.getSimpleName();
 	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
 	/** The main actvity **/

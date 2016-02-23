@@ -58,7 +58,7 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 	/**
 	 * Tag
 	 **/
-	private static final String TAG = "GlobalConnectTask";
+	private static final String TAG = GlobalConnectTask.class.getSimpleName();
 	/**
 	 * Instance of the class where the we will callback
 	 **/

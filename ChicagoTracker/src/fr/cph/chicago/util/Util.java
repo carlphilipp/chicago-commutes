@@ -49,7 +49,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class Util {
 
-	private static final String TAG = "Util";
+	private static final String TAG = Util.class.getSimpleName();
 	/** **/
 	private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
 

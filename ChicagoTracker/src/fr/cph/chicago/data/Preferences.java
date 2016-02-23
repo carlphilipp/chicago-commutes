@@ -43,7 +43,7 @@ public final class Preferences {
 	/**
 	 * Tag
 	 **/
-	private static final String TAG = "Preferences";
+	private static final String TAG = Preferences.class.getSimpleName();
 
 	/**
 	 * Check if the user has favorites already

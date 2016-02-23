@@ -31,7 +31,7 @@ public class DivvyConnect {
 	/**
 	 * Tag
 	 **/
-	private static final String TAG = "DivvyConnect";
+	private static final String TAG = DivvyConnect.class.getSimpleName();
 	/**
 	 * Singleton
 	 **/

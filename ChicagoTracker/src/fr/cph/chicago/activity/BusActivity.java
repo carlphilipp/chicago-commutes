@@ -70,7 +70,7 @@ public class BusActivity extends Activity {
 	/**
 	 * Tag
 	 **/
-	private static final String TAG = "BusActivity";
+	private static final String TAG = BusActivity.class.getSimpleName();
 
 	private List<BusArrival> busArrivals;
 

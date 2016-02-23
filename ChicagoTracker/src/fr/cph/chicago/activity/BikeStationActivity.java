@@ -65,7 +65,7 @@ public class BikeStationActivity extends Activity {
 	/**
 	 * Tag
 	 **/
-	private static final String TAG = "BikeStationActivity";
+	private static final String TAG = BikeStationActivity.class.getSimpleName();
 	/**
 	 * The station
 	 **/

@@ -84,7 +84,7 @@ public class BusBoundActivity extends ListActivity {
 	/**
 	 * Tag
 	 **/
-	private static final String TAG = "BusBoundActivity";
+	private static final String TAG = BusBoundActivity.class.getSimpleName();
 	/**
 	 * Bus route id
 	 **/

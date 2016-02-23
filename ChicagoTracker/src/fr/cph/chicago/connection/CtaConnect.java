@@ -41,7 +41,7 @@ public class CtaConnect {
 	/**
 	 * Tag
 	 **/
-	private static final String TAG = "CtaConnect";
+	private static final String TAG = CtaConnect.class.getSimpleName();
 	/**
 	 * Singleton
 	 **/

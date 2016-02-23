@@ -65,10 +65,9 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-	private static final String TAG = "MainActivity";
+	private static final String TAG = MainActivity.class.getSimpleName();
 	private static final String SELECTED_ID = "SELECTED_ID";
 	private static final int POSITION_BUS = 2;
-	private static final int POSITION_NEARBY = 4;
 
 	private FavoritesFragment favoritesFragment;
 

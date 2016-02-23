@@ -85,7 +85,7 @@ import java.util.Set;
  */
 public class StationActivity extends Activity {
 
-	private static final String TAG = "StationActivity";
+	private static final String TAG = StationActivity.class.getSimpleName();
 
 	private TrainData trainData;
 

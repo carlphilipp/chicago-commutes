@@ -48,7 +48,7 @@ public class TrainData {
 	/**
 	 * Tag
 	 **/
-	private static final String TAG = "TrainData";
+	private static final String TAG = TrainData.class.getSimpleName();
 	/**
 	 * List of stations
 	 **/

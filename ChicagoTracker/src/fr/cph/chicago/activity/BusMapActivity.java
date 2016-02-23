@@ -92,7 +92,7 @@ public class BusMapActivity extends Activity {
 	/**
 	 * Tag
 	 **/
-	private static final String TAG = "BusMapActivity";
+	private static final String TAG = BusMapActivity.class.getSimpleName();
 	/**
 	 * The map fragment from google api
 	 **/

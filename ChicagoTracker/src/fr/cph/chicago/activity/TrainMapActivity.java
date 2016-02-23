@@ -88,7 +88,7 @@ import java.util.Map;
  */
 public class TrainMapActivity extends Activity {
 
-	private static final String TAG = "TrainMapActivity";
+	private static final String TAG = TrainMapActivity.class.getSimpleName();
 
 	private MapFragment mapFragment;
 
