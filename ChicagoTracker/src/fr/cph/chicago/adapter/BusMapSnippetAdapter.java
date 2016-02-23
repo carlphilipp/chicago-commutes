@@ -67,7 +67,7 @@ public class BusMapSnippetAdapter extends BaseAdapter {
 	@Override
 	public final View getView(final int position, View convertView, final ViewGroup parent) {
 		final BusArrival arrival = (BusArrival) getItem(position);
-		final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		convertView = vi.inflate(R.layout.list_map_train, null);
 		final TextView stationNameTextView = (TextView) convertView.findViewById(R.id.station_name);
 		stationNameTextView.setText(arrival.getStopName());
@@ -76,7 +76,7 @@ public class BusMapSnippetAdapter extends BaseAdapter {
 			final TextView time = (TextView) convertView.findViewById(R.id.time);
 			time.setText(arrival.getTimeLeftDueDelay());
 		} else {
-			stationNameTextView.setTextColor(ChicagoTracker.getAppContext().getResources().getColor(R.color.grey));
+			stationNameTextView.setTextColor(ChicagoTracker.getContext().getResources().getColor(R.color.grey));
 			stationNameTextView.setTypeface(null, Typeface.BOLD);
 			stationNameTextView.setGravity(Gravity.CENTER);
 		}

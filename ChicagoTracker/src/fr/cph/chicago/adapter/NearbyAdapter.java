@@ -115,7 +115,7 @@ public final class NearbyAdapter extends BaseAdapter {
 
 	@SuppressLint("UseSparseArrays")
 	public NearbyAdapter(final MainActivity activity) {
-		this.context = ChicagoTracker.getAppContext();
+		this.context = ChicagoTracker.getContext();
 		this.busStops = new ArrayList<>();
 		this.busArrivals = new SparseArray<>();
 		this.stations = new ArrayList<>();
@@ -139,8 +139,8 @@ public final class NearbyAdapter extends BaseAdapter {
 		if (position < stations.size()) {
 			res = stations.get(position);
 		} else if (position < stations.size() + busStops.size()) {
-			int indice = position - stations.size();
-			res = busStops.get(indice);
+			int index = position - stations.size();
+			res = busStops.get(index);
 		} else {
 			int indice = position - (stations.size() + busStops.size());
 			res = bikeStations.get(indice);
@@ -154,11 +154,11 @@ public final class NearbyAdapter extends BaseAdapter {
 		if (position < stations.size()) {
 			id = stations.get(position).getId();
 		} else if (position < stations.size() + busStops.size()) {
-			int indice = position - stations.size();
-			id = busStops.get(indice).getId();
+			int index = position - stations.size();
+			id = busStops.get(index).getId();
 		} else {
-			int indice = position - (stations.size() + busStops.size());
-			id = bikeStations.get(indice).getId();
+			int index = position - (stations.size() + busStops.size());
+			id = bikeStations.get(index).getId();
 		}
 		return id;
 	}
@@ -171,7 +171,7 @@ public final class NearbyAdapter extends BaseAdapter {
 		final int line1PaddingColor = (int) context.getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
 		final int stopsPaddingTop = (int) context.getResources().getDimension(R.dimen.activity_station_stops_padding_top);
 
-		final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		convertView = vi.inflate(R.layout.list_nearby, null);
 
 		if (position < stations.size()) {
@@ -352,7 +352,7 @@ public final class NearbyAdapter extends BaseAdapter {
 					llh.setPadding(line1PaddingColor, stopsPaddingTop, 0, 0);
 
 					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-						llh.setBackground(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.any_selector));
+						llh.setBackground(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.any_selector));
 					}
 
 					final TextView tlView = new TextView(context);

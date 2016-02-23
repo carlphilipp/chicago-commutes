@@ -77,7 +77,7 @@ public class CustomDrawerAdapter extends ArrayAdapter<DrawerItem> {
 
 		final DrawerItem dItem = this.listItems.get(position);
 
-		drawerHolder.icon.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), dItem.getImgId()));
+		drawerHolder.icon.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), dItem.getImgId()));
 		drawerHolder.name.setText(dItem.getName());
 
 		return view;

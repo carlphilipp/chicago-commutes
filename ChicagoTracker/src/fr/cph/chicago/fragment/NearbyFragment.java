@@ -164,10 +164,9 @@ public class NearbyFragment extends Fragment {
 	}
 
 	@Override
-	public final void onAttach(final Activity activity) {
-		super.onAttach(activity);
-		mainActivity = (MainActivity) activity;
-		//((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
+	public final void onAttach(final Context context) {
+		super.onAttach(context);
+		mainActivity = context instanceof Activity ? (MainActivity) context : null;
 	}
 
 	@Override

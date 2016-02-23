@@ -94,7 +94,7 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 
 			final PopupWindow popup = new PopupWindow(popupView, (int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
 			popup.setFocusable(true);
-			popup.setBackgroundDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.any_selector));
+			popup.setBackgroundDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.any_selector));
 			firstLayout.getForeground().setAlpha(210);
 
 			final ListView listView = (ListView) popupView.findViewById(R.id.details);
@@ -114,14 +114,14 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 					if (position == 0) {
-						final Intent intent = new Intent(ChicagoTracker.getAppContext(), StationActivity.class);
+						final Intent intent = new Intent(ChicagoTracker.getContext(), StationActivity.class);
 						final Bundle extras = new Bundle();
 						extras.putInt("stationId", stationId);
 						intent.putExtras(extras);
 						activity.startActivity(intent);
 						popup.dismiss();
 					} else {
-						final Intent intent = new Intent(ChicagoTracker.getAppContext(), TrainMapActivity.class);
+						final Intent intent = new Intent(ChicagoTracker.getContext(), TrainMapActivity.class);
 						final Bundle extras = new Bundle();
 						extras.putString("line", lines.get(position - 1).toTextString());
 						intent.putExtras(extras);
@@ -131,7 +131,7 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 				}
 			});
 			popup.setFocusable(true);
-			popup.setBackgroundDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.any_selector));
+			popup.setBackgroundDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.any_selector));
 			firstLayout.getForeground().setAlpha(210);
 			popup.setOnDismissListener(new PopupWindow.OnDismissListener() {
 				@Override

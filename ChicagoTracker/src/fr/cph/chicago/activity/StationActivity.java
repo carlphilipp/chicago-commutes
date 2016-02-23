@@ -163,7 +163,7 @@ public class StationActivity extends Activity {
 			directionImage = (ImageView) findViewById(R.id.activity_bike_station_map_direction);
 			favoritesImage = (ImageView) findViewById(R.id.activity_bike_station_favorite_star);
 			if (isFavorite) {
-				favoritesImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.ic_save_active));
+				favoritesImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.ic_save_active));
 			}
 			favoritesImage.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -180,7 +180,7 @@ public class StationActivity extends Activity {
 				final TrainLine line = e.getKey();
 				final List<Stop> stopss = e.getValue();
 				Collections.sort(stopss);
-				final LayoutInflater layoutInflater = (LayoutInflater) ChicagoTracker.getAppContext()
+				final LayoutInflater layoutInflater = (LayoutInflater) ChicagoTracker.getContext()
 						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				final View view = layoutInflater.inflate(R.layout.activity_station_line_title, null);
 
@@ -295,30 +295,6 @@ public class StationActivity extends Activity {
 		return super.onCreateOptionsMenu(menu);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public final boolean onOptionsItemSelected(final MenuItem item) {
-		switch (item.getItemId()) {
-		case android.R.id.home:
-			finish();
-			return true;
-		case R.id.action_refresh:
-			item.setActionView(R.layout.progressbar);
-			item.expandActionView();
-
-			//			MultiMap<String, String> params = new MultiValueMap<>();
-			//			List<Integer> favorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
-			//			for (Integer fav : favorites) {
-			//				params.put("mapid", String.valueOf(fav));
-			//			}
-			final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-			reqParams.put("mapid", String.valueOf(station.getId()));
-			new LoadData().execute(reqParams);
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
-
 	/**
 	 * Is favorite or not ?
 	 *
@@ -387,7 +363,7 @@ public class StationActivity extends Activity {
 					}
 				}
 			});
-			StationActivity.this.mapImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.da_turn_arrive));
+			StationActivity.this.mapImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.da_turn_arrive));
 			StationActivity.this.mapImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -399,7 +375,7 @@ public class StationActivity extends Activity {
 			});
 
 			StationActivity.this.directionImage
-					.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.ic_directions_walking));
+					.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.ic_directions_walking));
 			StationActivity.this.directionImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -410,7 +386,7 @@ public class StationActivity extends Activity {
 				}
 			});
 
-			StationActivity.this.streetViewText.setText(ChicagoTracker.getAppContext().getResources()
+			StationActivity.this.streetViewText.setText(ChicagoTracker.getContext().getResources()
 					.getString(R.string.station_activity_street_view));
 		}
 	}
@@ -592,9 +568,9 @@ public class StationActivity extends Activity {
 			isFavorite = true;
 		}
 		if (isFavorite) {
-			favoritesImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.ic_save_active));
+			favoritesImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.ic_save_active));
 		} else {
-			favoritesImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.ic_save_disabled));
+			favoritesImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.ic_save_disabled));
 		}
 	}
 }

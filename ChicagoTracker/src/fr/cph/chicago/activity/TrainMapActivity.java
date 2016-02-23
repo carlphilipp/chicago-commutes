@@ -179,20 +179,10 @@ public class TrainMapActivity extends Activity {
 	}
 
 	@Override
-	public final void onPause() {
-		super.onPause();
-	}
-
-	@Override
 	public final void onStop() {
 		super.onStop();
 		centerMap = false;
 		googleMap = null;
-	}
-
-	@Override
-	public final void onDestroy() {
-		super.onDestroy();
 	}
 
 	@Override
@@ -425,10 +415,6 @@ public class TrainMapActivity extends Activity {
 		 **/
 		private boolean centerMap;
 		/**
-		 * Stop refresh
-		 **/
-		private boolean stopRefresh;
-		/**
 		 * Positions list
 		 **/
 		private List<Position> positions;
@@ -436,7 +422,6 @@ public class TrainMapActivity extends Activity {
 		@Override
 		protected List<Train> doInBackground(Boolean... params) {
 			centerMap = params[0];
-			stopRefresh = params[1];
 			List<Train> trains = null;
 			final CtaConnect connect = CtaConnect.getInstance();
 			final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();

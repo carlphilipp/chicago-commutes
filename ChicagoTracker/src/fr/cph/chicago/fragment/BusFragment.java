@@ -76,15 +76,9 @@ public class BusFragment extends Fragment {
 	}
 
 	@Override
-	public final void onAttach(final Context context){
+	public final void onAttach(final Context context) {
 		super.onAttach(context);
-	}
-
-	@Override
-	public final void onAttach(final Activity activity) {
-		super.onAttach(activity);
-		mainActivity = (MainActivity) activity;
-		//((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
+		mainActivity = context instanceof Activity ? (MainActivity) context : null;
 	}
 
 	@Override
@@ -103,7 +97,7 @@ public class BusFragment extends Fragment {
 			if (Util.isNetworkAvailable()) {
 				addView();
 			} else {
-				Toast.makeText(ChicagoTracker.getAppContext(), "No network connection detected!", Toast.LENGTH_SHORT).show();
+				Toast.makeText(ChicagoTracker.getContext(), "No network connection detected!", Toast.LENGTH_SHORT).show();
 			}
 		}
 		return rootView;

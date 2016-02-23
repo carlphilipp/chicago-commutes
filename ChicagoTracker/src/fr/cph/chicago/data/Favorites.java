@@ -118,15 +118,15 @@ public class Favorites {
 
 			}
 		} else {
-			final int indice = position - (trainFavorites.size() + fakeBusFavorites.size());
+			final int index = position - (trainFavorites.size() + fakeBusFavorites.size());
 			Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
 			for (final BikeStation bikeStation : bikeStations) {
-				if (String.valueOf(bikeStation.getId()).equals(bikeFavorites.get(indice))) {
+				if (String.valueOf(bikeStation.getId()).equals(bikeFavorites.get(index))) {
 					return bikeStation;
 				}
 			}
 			final BikeStation bikeStation = new BikeStation();
-			final String stationName = Preferences.getBikeRouteNameMapping(bikeFavorites.get(indice));
+			final String stationName = Preferences.getBikeRouteNameMapping(bikeFavorites.get(index));
 			bikeStation.setName(stationName);
 			return bikeStation;
 		}

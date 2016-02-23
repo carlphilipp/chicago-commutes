@@ -66,7 +66,7 @@ public final class TrainAdapter extends BaseAdapter {
 		final DataHolder dataHolder = DataHolder.getInstance();
 		final TrainData data = dataHolder.getTrainData();
 		this.stations = data.getStationsForLine(line);
-		this.context = ChicagoTracker.getAppContext();
+		this.context = ChicagoTracker.getContext();
 		this.activity = activity;
 		this.container = container;
 	}
@@ -91,7 +91,7 @@ public final class TrainAdapter extends BaseAdapter {
 		final Station station = stations.get(position);
 		final Set<TrainLine> lines = station.getLines();
 
-		final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		convertView = vi.inflate(R.layout.list_train, parent, false);
 
 		final TextView stationNameView = (TextView) convertView.findViewById(R.id.station_name_value);
@@ -99,21 +99,21 @@ public final class TrainAdapter extends BaseAdapter {
 
 		stationNameView.setText(station.getName());
 
-		int indice = 0;
+		int index = 0;
 		for (final TrainLine tl : lines) {
 			TextView textView = new TextView(context);
 			textView.setBackgroundColor(tl.getColor());
 			textView.setText(" ");
 			textView.setTextSize(context.getResources().getDimension(R.dimen.activity_list_station_colors));
 			stationColorView.addView(textView);
-			if (indice != lines.size()) {
+			if (index != lines.size()) {
 				textView = new TextView(context);
 				textView.setText("");
 				textView.setPadding(0, 0, (int) context.getResources().getDimension(R.dimen.activity_list_station_colors_space), 0);
 				textView.setTextSize(context.getResources().getDimension(R.dimen.activity_list_station_colors));
 				stationColorView.addView(textView);
 			}
-			indice++;
+			index++;
 		}
 		convertView.setOnClickListener(new FavoritesTrainOnClickListener(activity, container, station.getId(), lines));
 		return convertView;

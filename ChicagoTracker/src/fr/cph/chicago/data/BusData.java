@@ -89,7 +89,7 @@ public class BusData {
 	public final List<BusStop> readBusStops() {
 		if (busStops.size() == 0) {
 			try {
-				final CSVReader reader = new CSVReader(new InputStreamReader(ChicagoTracker.getAppContext().getAssets().open("stops.txt")));
+				final CSVReader reader = new CSVReader(new InputStreamReader(ChicagoTracker.getContext().getAssets().open("stops.txt")));
 				reader.readNext();
 				String[] row;
 				while ((row = reader.readNext()) != null) {
@@ -269,7 +269,6 @@ public class BusData {
 
 		}
 		Collections.sort(res, new Comparator<BusStop>() {
-
 			@Override
 			public int compare(BusStop lhs, BusStop rhs) {
 				return lhs.getName().compareTo(rhs.getName());

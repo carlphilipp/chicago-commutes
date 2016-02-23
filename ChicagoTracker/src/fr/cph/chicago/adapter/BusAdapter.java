@@ -114,7 +114,7 @@ public final class BusAdapter extends BaseAdapter {
 		LinearLayout detailsLayout;
 
 		if (convertView == null) {
-			final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = vi.inflate(R.layout.list_bus, parent, false);
 
 			final ViewHolder holder = new ViewHolder();
@@ -243,14 +243,14 @@ public final class BusAdapter extends BaseAdapter {
 							extras.putString("bound", data.get(position));
 							intent.putExtras(extras);
 							intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-							ChicagoTracker.getAppContext().startActivity(intent);
+							ChicagoTracker.getContext().startActivity(intent);
 						} else {
 							final String[] busDirectionArray = new String[busDirections.size()];
 							int i = 0;
 							for (final BusDirection busDir : busDirections) {
 								busDirectionArray[i++] = busDir.toString();
 							}
-							final Intent intent = new Intent(ChicagoTracker.getAppContext(), BusMapActivity.class);
+							final Intent intent = new Intent(ChicagoTracker.getContext(), BusMapActivity.class);
 							final Bundle extras = new Bundle();
 							extras.putString("busRouteId", result.getId());
 							extras.putStringArray("bounds", busDirectionArray);
@@ -262,7 +262,7 @@ public final class BusAdapter extends BaseAdapter {
 					}
 				});
 				popup.setFocusable(true);
-				popup.setBackgroundDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.any_selector));
+				popup.setBackgroundDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.any_selector));
 				firstLayout.getForeground().setAlpha(210);
 
 				popup.setOnDismissListener(new PopupWindow.OnDismissListener() {

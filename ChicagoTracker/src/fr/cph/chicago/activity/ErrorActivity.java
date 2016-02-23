@@ -75,16 +75,4 @@ public class ErrorActivity extends Activity {
 		savedInstanceState.putString("error", error);
 		super.onSaveInstanceState(savedInstanceState);
 	}
-
-	@Override
-	public final boolean onCreateOptionsMenu(final Menu menu) {
-		super.onCreateOptionsMenu(menu);
-		final MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.empty, menu);
-		final ActionBar actionBar = getActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-		actionBar.setDisplayShowTitleEnabled(true);
-		actionBar.setTitle("Error");
-		return true;
-	}
 }

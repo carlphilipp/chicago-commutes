@@ -17,6 +17,7 @@
 package fr.cph.chicago.fragment;
 
 import android.app.Activity;
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -94,10 +95,9 @@ public class BikeFragment extends Fragment {
 	}
 
 	@Override
-	public final void onAttach(final Activity activity) {
-		super.onAttach(activity);
-		mainActivity = (MainActivity) activity;
-		//mainActivity.onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
+	public final void onAttach(final Context context) {
+		super.onAttach(context);
+		mainActivity = context instanceof Activity ? (MainActivity) context : null;
 	}
 
 	@Override
@@ -152,7 +152,7 @@ public class BikeFragment extends Fragment {
 					filterView.setVisibility(TextView.INVISIBLE);
 				}
 			} else {
-				Toast.makeText(ChicagoTracker.getAppContext(), "No network connection detected!", Toast.LENGTH_SHORT).show();
+				Toast.makeText(ChicagoTracker.getContext(), "No network connection detected!", Toast.LENGTH_SHORT).show();
 			}
 		}
 		return rootView;
@@ -281,14 +281,14 @@ public class BikeFragment extends Fragment {
 			} catch (ConnectException e) {
 				BikeFragment.this.mainActivity.runOnUiThread(new Runnable() {
 					public void run() {
-						Toast.makeText(ChicagoTracker.getAppContext(), "Error, try again later!", Toast.LENGTH_SHORT).show();
+						Toast.makeText(ChicagoTracker.getContext(), "Error, try again later!", Toast.LENGTH_SHORT).show();
 					}
 				});
 				Log.e(TAG, "Connect error", e);
 			} catch (ParserException e) {
 				BikeFragment.this.mainActivity.runOnUiThread(new Runnable() {
 					public void run() {
-						Toast.makeText(ChicagoTracker.getAppContext(), "Error, try again later!", Toast.LENGTH_SHORT).show();
+						Toast.makeText(ChicagoTracker.getContext(), "Error, try again later!", Toast.LENGTH_SHORT).show();
 					}
 				});
 				Log.e(TAG, "Parser error", e);

@@ -17,6 +17,7 @@
 package fr.cph.chicago.fragment;
 
 import android.app.Activity;
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.graphics.Matrix;
 import android.graphics.PointF;
@@ -104,10 +105,9 @@ public class MapFragment extends Fragment implements OnTouchListener {
 	}
 
 	@Override
-	public final void onAttach(final Activity activity) {
-		super.onAttach(activity);
-		mainActivity = ((MainActivity) activity);
-		//mainActivity.onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
+	public final void onAttach(final Context context) {
+		super.onAttach(context);
+		mainActivity = context instanceof Activity ? (MainActivity) context : null;
 	}
 
 	@Override

@@ -75,7 +75,7 @@ public class Util {
 	public static String getProperty(final String property) {
 		final Properties prop = new Properties();
 		try {
-			prop.load(ChicagoTracker.getAppContext().getAssets().open("app.properties"));
+			prop.load(ChicagoTracker.getContext().getAssets().open("app.properties"));
 		} catch (IOException e) {
 			Log.e(TAG, e.getMessage(), e);
 			return null;
@@ -95,7 +95,7 @@ public class Util {
 			favorites.add(stationId);
 			Preferences.saveTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN, favorites);
 		}
-		Toast.makeText(ChicagoTracker.getAppContext(), "Adding to favorites", Toast.LENGTH_SHORT).show();
+		Toast.makeText(ChicagoTracker.getContext(), "Adding to favorites", Toast.LENGTH_SHORT).show();
 	}
 
 	/**
@@ -108,7 +108,7 @@ public class Util {
 		final List<Integer> favorites = Preferences.getTrainFavorites(preference);
 		favorites.remove(stationId);
 		Preferences.saveTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN, favorites);
-		Toast.makeText(ChicagoTracker.getAppContext(), "Removing from favorites", Toast.LENGTH_SHORT).show();
+		Toast.makeText(ChicagoTracker.getContext(), "Removing from favorites", Toast.LENGTH_SHORT).show();
 	}
 
 	/**
@@ -124,7 +124,7 @@ public class Util {
 		final List<String> favorites = Preferences.getBusFavorites(preference);
 		favorites.remove(id);
 		Preferences.saveBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS, favorites);
-		Toast.makeText(ChicagoTracker.getAppContext(), "Removing from favorites", Toast.LENGTH_SHORT).show();
+		Toast.makeText(ChicagoTracker.getContext(), "Removing from favorites", Toast.LENGTH_SHORT).show();
 	}
 
 	/**
@@ -142,7 +142,7 @@ public class Util {
 			favorites.add(id);
 			Preferences.saveBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS, favorites);
 		}
-		Toast.makeText(ChicagoTracker.getAppContext(), "Adding to favorites", Toast.LENGTH_SHORT).show();
+		Toast.makeText(ChicagoTracker.getContext(), "Adding to favorites", Toast.LENGTH_SHORT).show();
 	}
 
 	public static void addToBikeFavorites(final int stationId, final String preference) {
@@ -151,14 +151,14 @@ public class Util {
 			favorites.add(String.valueOf(stationId));
 			Preferences.saveBikeFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BIKE, favorites);
 		}
-		Toast.makeText(ChicagoTracker.getAppContext(), "Adding to favorites", Toast.LENGTH_SHORT).show();
+		Toast.makeText(ChicagoTracker.getContext(), "Adding to favorites", Toast.LENGTH_SHORT).show();
 	}
 
 	public static void removeFromBikeFavorites(final int stationId, final String preference) {
 		final List<String> favorites = Preferences.getBikeFavorites(preference);
 		favorites.remove(String.valueOf(stationId));
 		Preferences.saveBikeFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BIKE, favorites);
-		Toast.makeText(ChicagoTracker.getAppContext(), "Removing from favorites", Toast.LENGTH_SHORT).show();
+		Toast.makeText(ChicagoTracker.getContext(), "Removing from favorites", Toast.LENGTH_SHORT).show();
 	}
 
 	/**
@@ -190,14 +190,14 @@ public class Util {
 	}
 
 	public static boolean isNetworkAvailable() {
-		final ConnectivityManager connectivityManager = (ConnectivityManager) ChicagoTracker.getAppContext()
+		final ConnectivityManager connectivityManager = (ConnectivityManager) ChicagoTracker.getContext()
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		final NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
 		return activeNetworkInfo != null && activeNetworkInfo.isConnected();
 	}
 
 	public static int[] getScreenSize() {
-		final WindowManager wm = (WindowManager) ChicagoTracker.getAppContext().getSystemService(Context.WINDOW_SERVICE);
+		final WindowManager wm = (WindowManager) ChicagoTracker.getContext().getSystemService(Context.WINDOW_SERVICE);
 		final Display display = wm.getDefaultDisplay();
 		final Point size = new Point();
 		display.getSize(size);

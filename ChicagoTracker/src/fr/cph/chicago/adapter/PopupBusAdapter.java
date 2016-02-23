@@ -54,5 +54,4 @@ public class PopupBusAdapter extends ArrayAdapter<String> {
 		textView.setText(values.get(position));
 		return rowView;
 	}
-
 }

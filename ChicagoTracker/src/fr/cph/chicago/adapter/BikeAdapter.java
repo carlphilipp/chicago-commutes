@@ -83,7 +83,7 @@ public final class BikeAdapter extends BaseAdapter {
 		ViewHolder holder;
 
 		if (convertView == null) {
-			final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = vi.inflate(R.layout.list_bike, parent, false);
 
 			holder = new ViewHolder();
@@ -98,12 +98,11 @@ public final class BikeAdapter extends BaseAdapter {
 		convertView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(ChicagoTracker.getAppContext(), BikeStationActivity.class);
+				Intent intent = new Intent(ChicagoTracker.getContext(), BikeStationActivity.class);
 				Bundle extras = new Bundle();
 				extras.putParcelable("station", station);
 				intent.putExtras(extras);
 				mainActivity.startActivity(intent);
-				//mainActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 			}
 		});
 		return convertView;

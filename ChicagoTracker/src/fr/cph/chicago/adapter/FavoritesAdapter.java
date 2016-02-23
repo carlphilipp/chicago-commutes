@@ -132,7 +132,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 	@SuppressLint("UseSparseArrays")
 	public FavoritesAdapter(final MainActivity activity) {
-		this.context = ChicagoTracker.getAppContext();
+		this.context = ChicagoTracker.getContext();
 
 		this.mainActivity = activity;
 		this.firstLayout = ChicagoTracker.container;
@@ -189,7 +189,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 					updatedView.setText(this.lastUpdate);
 
 				} else {
-					final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+					final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 					convertView = vi.inflate(R.layout.list_favorites_train, null);
 					favoritesLayout = (LinearLayout) convertView.findViewById(R.id.favorites_list_main);
 					layouts.put(stationId, favoritesLayout);
@@ -366,7 +366,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 						llh.setPadding(line1Padding, stopsPaddingTop, 0, 0);
 
 						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-							llh.setBackground(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.any_selector));
+							llh.setBackground(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.any_selector));
 						}
 
 						final TextView tlView = new TextView(context);
@@ -514,7 +514,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 							if (!isNetworkAvailable) {
 								Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_LONG).show();
 							} else {
-								final Intent intent = new Intent(ChicagoTracker.getAppContext(), BikeStationActivity.class);
+								final Intent intent = new Intent(ChicagoTracker.getContext(), BikeStationActivity.class);
 								final Bundle extras = new Bundle();
 								extras.putParcelable("station", bikeStation);
 								intent.putExtras(extras);
@@ -648,7 +648,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 		@Override
 		protected final void onPostExecute(final BusStop busStop) {
 			if (trackerException == null) {
-				final Intent intent = new Intent(ChicagoTracker.getAppContext(), BusActivity.class);
+				final Intent intent = new Intent(ChicagoTracker.getContext(), BusActivity.class);
 				final Bundle extras = new Bundle();
 				extras.putInt("busStopId", busStop.getId());
 				extras.putString("busStopName", busStop.getName());

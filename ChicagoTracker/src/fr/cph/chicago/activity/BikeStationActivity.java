@@ -29,7 +29,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -94,10 +93,6 @@ public class BikeStationActivity extends Activity {
 	 * Is favorite
 	 **/
 	private boolean isFavorite;
-	/**
-	 * The menu
-	 **/
-	private Menu menu;
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
@@ -127,7 +122,7 @@ public class BikeStationActivity extends Activity {
 
 			favoritesImage = (ImageView) findViewById(R.id.activity_bike_station_favorite_star);
 			if (isFavorite) {
-				favoritesImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.ic_save_active));
+				favoritesImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.ic_save_active));
 			}
 			favoritesImage.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -170,7 +165,7 @@ public class BikeStationActivity extends Activity {
 	}
 
 	private void setValue() {
-		final Context context = ChicagoTracker.getAppContext();
+		final Context context = ChicagoTracker.getContext();
 		final LinearLayout favoritesData = (LinearLayout) findViewById(R.id.favorites_bikes_list);
 		favoritesData.removeAllViews();
 		final LinearLayout llh = new LinearLayout(context);
@@ -225,27 +220,7 @@ public class BikeStationActivity extends Activity {
 
 	@Override
 	public final boolean onCreateOptionsMenu(final Menu menu) {
-		super.onCreateOptionsMenu(menu);
-		this.menu = menu;
-		final MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.main_no_search, menu);
-		return true;
-	}
-
-	@Override
-	public final boolean onOptionsItemSelected(final MenuItem item) {
-		switch (item.getItemId()) {
-		case android.R.id.home:
-			finish();
-			return true;
-		case R.id.action_refresh:
-			item.setActionView(R.layout.progressbar);
-			item.expandActionView();
-
-			new DivvyAsyncTask().execute();
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
+		return super.onCreateOptionsMenu(menu);
 	}
 
 	/**
@@ -287,7 +262,7 @@ public class BikeStationActivity extends Activity {
 			} catch (final ConnectException | ParserException e) {
 				BikeStationActivity.this.runOnUiThread(new Runnable() {
 					public void run() {
-						Toast.makeText(ChicagoTracker.getAppContext(), "A surprising error has occurred. Try again!", Toast.LENGTH_SHORT).show();
+						Toast.makeText(ChicagoTracker.getContext(), "A surprising error has occurred. Try again!", Toast.LENGTH_SHORT).show();
 					}
 				});
 				Log.e(TAG, "Connect error", e);
@@ -360,7 +335,7 @@ public class BikeStationActivity extends Activity {
 					}
 				}
 			});
-			BikeStationActivity.this.mapImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.da_turn_arrive));
+			BikeStationActivity.this.mapImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.da_turn_arrive));
 			BikeStationActivity.this.mapImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -372,7 +347,7 @@ public class BikeStationActivity extends Activity {
 			});
 
 			BikeStationActivity.this.directionImage
-					.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.ic_directions_walking));
+					.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.ic_directions_walking));
 			BikeStationActivity.this.directionImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -383,7 +358,7 @@ public class BikeStationActivity extends Activity {
 				}
 			});
 
-			BikeStationActivity.this.streetViewText.setText(ChicagoTracker.getAppContext().getResources()
+			BikeStationActivity.this.streetViewText.setText(ChicagoTracker.getContext().getResources()
 					.getString(R.string.station_activity_street_view));
 		}
 	}
@@ -401,9 +376,9 @@ public class BikeStationActivity extends Activity {
 			isFavorite = true;
 		}
 		if (isFavorite) {
-			favoritesImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.ic_save_active));
+			favoritesImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.ic_save_active));
 		} else {
-			favoritesImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.ic_save_disabled));
+			favoritesImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.ic_save_disabled));
 		}
 	}
 }

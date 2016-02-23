@@ -16,10 +16,9 @@
 
 package fr.cph.chicago.fragment;
 
-import android.app.Activity;
-import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +27,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
-import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.activity.TrainStationActivity;
 import fr.cph.chicago.adapter.TrainStationAdapter;
 import fr.cph.chicago.entity.enumeration.TrainLine;
@@ -41,10 +39,10 @@ import fr.cph.chicago.util.Util;
  * @version 1
  */
 public final class TrainFragment extends Fragment {
-	/** The fragment argument representing the section number for this fragment. **/
+	/**
+	 * The fragment argument representing the section number for this fragment.
+	 **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
-	/** The main activity **/
-	private MainActivity mainActivity;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -83,7 +81,7 @@ public final class TrainFragment extends Fragment {
 					intent.putExtras(extras);
 					startActivity(intent);
 				} else {
-					Toast.makeText(ChicagoTracker.getAppContext(), "No network connection detected!", Toast.LENGTH_SHORT).show();
+					Toast.makeText(ChicagoTracker.getContext(), "No network connection detected!", Toast.LENGTH_SHORT).show();
 				}
 			}
 		});
@@ -93,12 +91,5 @@ public final class TrainFragment extends Fragment {
 	@Override
 	public final void onSaveInstanceState(final Bundle outState) {
 		super.onSaveInstanceState(outState);
-	}
-
-	@Override
-	public final void onAttach(final Activity activity) {
-		super.onAttach(activity);
-		mainActivity = (MainActivity) activity;
-		//mainActivity.onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 	}
 }

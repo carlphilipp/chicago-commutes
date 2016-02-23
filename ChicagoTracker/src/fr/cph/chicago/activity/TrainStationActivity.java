@@ -101,11 +101,6 @@ public class TrainStationActivity extends ListActivity {
 	}
 
 	@Override
-	public final boolean onCreateOptionsMenu(final Menu menu) {
-		return super.onCreateOptionsMenu(menu);
-	}
-
-	@Override
 	public final boolean onOptionsItemSelected(final MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:

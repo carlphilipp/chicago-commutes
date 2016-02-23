@@ -88,7 +88,7 @@ public final class SearchAdapter extends BaseAdapter {
 	 * @param container the container
 	 */
 	public SearchAdapter(final SearchActivity activity, final FrameLayout container) {
-		this.context = ChicagoTracker.getAppContext();
+		this.context = ChicagoTracker.getContext();
 		this.searchActivity = activity;
 		this.container = container;
 	}
@@ -177,7 +177,7 @@ public final class SearchAdapter extends BaseAdapter {
 			convertView.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					final Intent intent = new Intent(ChicagoTracker.getAppContext(), BikeStationActivity.class);
+					final Intent intent = new Intent(ChicagoTracker.getContext(), BikeStationActivity.class);
 					final Bundle extras = new Bundle();
 					extras.putParcelable("station", bikeStation);
 					intent.putExtras(extras);
@@ -261,7 +261,7 @@ public final class SearchAdapter extends BaseAdapter {
 							for (final BusDirection busDirection : busDirections) {
 								busDirectionArray[i++] = busDirection.toString();
 							}
-							final Intent intent = new Intent(ChicagoTracker.getAppContext(), BusMapActivity.class);
+							final Intent intent = new Intent(ChicagoTracker.getContext(), BusMapActivity.class);
 							final Bundle extras = new Bundle();
 							extras.putString("busRouteId", result.getId());
 							extras.putStringArray("bounds", busDirectionArray);
@@ -272,7 +272,7 @@ public final class SearchAdapter extends BaseAdapter {
 					}
 				});
 				popup.setFocusable(true);
-				popup.setBackgroundDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.any_selector));
+				popup.setBackgroundDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.any_selector));
 				container.getForeground().setAlpha(210);
 
 				popup.setOnDismissListener(new PopupWindow.OnDismissListener() {

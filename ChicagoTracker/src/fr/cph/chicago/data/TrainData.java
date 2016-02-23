@@ -84,7 +84,7 @@ public class TrainData {
 	public final void read() {
 		if (stations.size() == 0 && stops.size() == 0) {
 			try {
-				final CSVReader reader = new CSVReader(new InputStreamReader(ChicagoTracker.getAppContext().getAssets().open("cta_L_stops_cph.csv")));
+				final CSVReader reader = new CSVReader(new InputStreamReader(ChicagoTracker.getContext().getAssets().open("cta_L_stops_cph.csv")));
 				reader.readNext();
 				String[] row;
 				while ((row = reader.readNext()) != null) {
@@ -377,7 +377,7 @@ public class TrainData {
 	public final List<Position> readPattern(final TrainLine line) {
 		final List<Position> positions = new ArrayList<>();
 		try {
-			final CSVReader reader = new CSVReader(new InputStreamReader(ChicagoTracker.getAppContext().getAssets()
+			final CSVReader reader = new CSVReader(new InputStreamReader(ChicagoTracker.getContext().getAssets()
 					.open("train_pattern/" + line.toTextString() + "_pattern.csv")));
 			String[] row;
 			while ((row = reader.readNext()) != null) {

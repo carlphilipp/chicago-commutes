@@ -95,7 +95,7 @@ public class ChicagoTracker extends Application {
 	 *
 	 * @return the context
 	 */
-	public static Context getAppContext() {
+	public static Context getContext() {
 		return ChicagoTracker.context;
 	}
 
@@ -163,7 +163,7 @@ public class ChicagoTracker extends Application {
 	}
 
 	public static Tracker getTracker() {
-		final GoogleAnalytics analytics = GoogleAnalytics.getInstance(ChicagoTracker.getAppContext());
+		final GoogleAnalytics analytics = GoogleAnalytics.getInstance(ChicagoTracker.getContext());
 		if (tracker == null) {
 			final String key = Util.getProperty("google.analytics");
 			tracker = analytics.newTracker(key);

@@ -64,7 +64,7 @@ public class TrainMapSnippetAdapter extends BaseAdapter {
 	@Override
 	public final View getView(final int position, View convertView, final ViewGroup parent) {
 		final Eta eta = (Eta) getItem(position);
-		final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		convertView = vi.inflate(R.layout.list_map_train, null);
 		final TextView name = (TextView) convertView.findViewById(R.id.station_name);
 		name.setText(eta.getStation().getName());
@@ -73,7 +73,7 @@ public class TrainMapSnippetAdapter extends BaseAdapter {
 			final TextView time = (TextView) convertView.findViewById(R.id.time);
 			time.setText(eta.getTimeLeftDueDelay());
 		} else {
-			name.setTextColor(ChicagoTracker.getAppContext().getResources().getColor(R.color.grey));
+			name.setTextColor(ChicagoTracker.getContext().getResources().getColor(R.color.grey));
 			name.setTypeface(null, Typeface.BOLD);
 			name.setGravity(Gravity.CENTER);
 		}

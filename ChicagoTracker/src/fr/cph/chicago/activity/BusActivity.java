@@ -105,7 +105,6 @@ public class BusActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		ChicagoTracker.checkBusData(this);
 		if (!this.isFinishing()) {
-			// Load right xml
 			setContentView(R.layout.activity_bus);
 
 			if (busStopId == null && busRouteId == null && bound == null && busStopName == null && busRouteName == null && latitude == null
@@ -151,7 +150,7 @@ public class BusActivity extends Activity {
 
 			favoritesImage = (ImageView) findViewById(R.id.activity_bus_favorite_star);
 			if (isFavorite) {
-				favoritesImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.ic_save_active));
+				favoritesImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.ic_save_active));
 			}
 			favoritesImage.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -224,24 +223,6 @@ public class BusActivity extends Activity {
 		return super.onCreateOptionsMenu(menu);
 	}
 
-	@Override
-	public final boolean onOptionsItemSelected(final MenuItem item) {
-		switch (item.getItemId()) {
-		case android.R.id.home:
-			finish();
-			return true;
-		case R.id.action_refresh:
-			// Load top bar animation
-			item.setActionView(R.layout.progressbar);
-			item.expandActionView();
-			// Load data
-			new LoadData().execute();
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-
-	}
-
 	/**
 	 * Draw arrivals in current layout
 	 */
@@ -260,20 +241,20 @@ public class BusActivity extends Activity {
 								arrivalView.setText(arrivalView.getText() + " " + arrival.getTimeLeft());
 							}
 						} else {
-							final TextView arrivalView = new TextView(ChicagoTracker.getAppContext());
+							final TextView arrivalView = new TextView(ChicagoTracker.getContext());
 							if (arrival.getIsDly()) {
 								arrivalView.setText(arrival.getBusDestination() + ": Delay");
 							} else {
 								arrivalView.setText(arrival.getBusDestination() + ": " + arrival.getTimeLeft());
 							}
-							arrivalView.setTextColor(ChicagoTracker.getAppContext().getResources().getColor(R.color.grey));
+							arrivalView.setTextColor(ChicagoTracker.getContext().getResources().getColor(R.color.grey));
 							mapRes.put(destination, arrivalView);
 						}
 					}
 				}
 			} else {
-				final TextView arrivalView = new TextView(ChicagoTracker.getAppContext());
-				arrivalView.setTextColor(ChicagoTracker.getAppContext().getResources().getColor(R.color.grey));
+				final TextView arrivalView = new TextView(ChicagoTracker.getContext());
+				arrivalView.setTextColor(ChicagoTracker.getContext().getResources().getColor(R.color.grey));
 				arrivalView.setText("No service scheduled");
 				mapRes.put("", arrivalView);
 			}
@@ -411,7 +392,7 @@ public class BusActivity extends Activity {
 					}
 				}
 			});
-			BusActivity.this.mapImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.da_turn_arrive));
+			BusActivity.this.mapImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.da_turn_arrive));
 			BusActivity.this.mapImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -422,7 +403,7 @@ public class BusActivity extends Activity {
 				}
 			});
 			BusActivity.this.directionImage
-					.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.ic_directions_walking));
+					.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.ic_directions_walking));
 			BusActivity.this.directionImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {

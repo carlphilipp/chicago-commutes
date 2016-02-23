@@ -61,7 +61,7 @@ public class SearchActivity extends AppCompatActivity {
 				final ListView listView = (ListView) findViewById(R.id.search_list);
 				listView.setAdapter(searchAdapter);
 			} else {
-				Toast.makeText(ChicagoTracker.getAppContext(), "No network connection detected!", Toast.LENGTH_SHORT).show();
+				Toast.makeText(ChicagoTracker.getContext(), "No network connection detected!", Toast.LENGTH_SHORT).show();
 			}
 
 			// Associate searchable configuration with the SearchView

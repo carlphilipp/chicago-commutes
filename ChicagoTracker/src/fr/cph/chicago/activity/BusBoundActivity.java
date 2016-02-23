@@ -132,7 +132,7 @@ public class BusBoundActivity extends ListActivity {
 				@Override
 				public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 					final BusStop busStop = (BusStop) busBoundAdapter.getItem(position);
-					final Intent intent = new Intent(ChicagoTracker.getAppContext(), BusActivity.class);
+					final Intent intent = new Intent(ChicagoTracker.getContext(), BusActivity.class);
 
 					final Bundle extras = new Bundle();
 					extras.putInt("busStopId", busStop.getId());
@@ -237,27 +237,6 @@ public class BusBoundActivity extends ListActivity {
 		savedInstanceState.putString("busRouteName", busRouteName);
 		savedInstanceState.putString("bound", bound);
 		super.onSaveInstanceState(savedInstanceState);
-	}
-
-	@Override
-	public final boolean onCreateOptionsMenu(final Menu menu) {
-		super.onCreateOptionsMenu(menu);
-
-		final ActionBar actionBar = getActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-		actionBar.setDisplayShowTitleEnabled(true);
-		actionBar.setTitle(this.busRouteName + " (" + this.bound + ")");
-		return true;
-	}
-
-	@Override
-	public final boolean onOptionsItemSelected(final MenuItem item) {
-		switch (item.getItemId()) {
-		case android.R.id.home:
-			finish();
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
 	}
 
 	/**

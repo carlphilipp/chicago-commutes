@@ -145,7 +145,7 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 						final List<BusArrival> arrivals = BusArrival.getRealBusArrival(entry.getValue());
 						for (final BusArrival arrival : arrivals) {
 							if (position == i) {
-								final Intent intent = new Intent(ChicagoTracker.getAppContext(), BusMapActivity.class);
+								final Intent intent = new Intent(ChicagoTracker.getContext(), BusMapActivity.class);
 								final Bundle extras = new Bundle();
 								extras.putInt("busId", arrival.getBusId());
 								extras.putString("busRouteId", arrival.getRouteId());
@@ -163,7 +163,7 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 						for (final Entry<String, List<BusArrival>> stringListEntry : mapBusArrivals.entrySet()) {
 							bounds.add(stringListEntry.getKey());
 						}
-						final Intent intent = new Intent(ChicagoTracker.getAppContext(), BusMapActivity.class);
+						final Intent intent = new Intent(ChicagoTracker.getContext(), BusMapActivity.class);
 						final Bundle extras = new Bundle();
 						extras.putString("busRouteId", busRoute.getId());
 						extras.putStringArray("bounds", bounds.toArray(new String[bounds.size()]));
@@ -175,7 +175,7 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 				}
 			});
 			popup.setFocusable(true);
-			popup.setBackgroundDrawable(ContextCompat.getDrawable(ChicagoTracker.getAppContext(), R.drawable.any_selector));
+			popup.setBackgroundDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.any_selector));
 			firstLayout.getForeground().setAlpha(210);
 
 			popup.setOnDismissListener(new PopupWindow.OnDismissListener() {

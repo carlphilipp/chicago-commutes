@@ -178,7 +178,6 @@ public class BusMapActivity extends Activity {
 			toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
 				@Override
 				public boolean onMenuItemClick(MenuItem item) {
-					startRefreshAnimation();
 					new LoadCurrentPosition().execute();
 					new LoadBusPosition().execute(false, true);
 					return false;
@@ -255,7 +254,6 @@ public class BusMapActivity extends Activity {
 						if (!refreshingInfoWindow) {
 							selectedMarker = marker;
 							final String busId = marker.getSnippet();
-							startRefreshAnimation();
 							new LoadBusFollow(view, false).execute(busId);
 							status.put(marker, false);
 						}
@@ -274,7 +272,6 @@ public class BusMapActivity extends Activity {
 						if (!refreshingInfoWindow) {
 							selectedMarker = marker;
 							final String runNumber = marker.getSnippet();
-							startRefreshAnimation();
 							boolean current = status.get(marker);
 							new LoadBusFollow(view, !current).execute(runNumber);
 							status.put(marker, !current);
@@ -284,7 +281,6 @@ public class BusMapActivity extends Activity {
 			});
 		}
 		if (Util.isNetworkAvailable()) {
-			startRefreshAnimation();
 			new LoadCurrentPosition().execute();
 			new LoadBusPosition().execute(centerMap, !loadPattern);
 			if (loadPattern) {
@@ -311,29 +307,6 @@ public class BusMapActivity extends Activity {
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
-	@Override
-	public final boolean onCreateOptionsMenu(final Menu menu) {
-		this.menu = menu;
-		getMenuInflater().inflate(R.menu.main_no_search, menu);
-		startRefreshAnimation();
-		return super.onCreateOptionsMenu(menu);
-	}
-
-	@Override
-	public final boolean onOptionsItemSelected(final MenuItem item) {
-		switch (item.getItemId()) {
-		case android.R.id.home:
-			finish();
-			return true;
-		case R.id.action_refresh:
-			startRefreshAnimation();
-			new LoadCurrentPosition().execute();
-			new LoadBusPosition().execute(false, true);
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
-
 	/**
 	 *
 	 */
@@ -344,31 +317,6 @@ public class BusMapActivity extends Activity {
 		refreshingInfoWindow = true;
 		selectedMarker.showInfoWindow();
 		refreshingInfoWindow = false;
-		stopRefreshAnimation();
-	}
-
-	/**
-	 * Load animation in menu
-	 */
-	private void startRefreshAnimation() {
-		if (menu != null) {
-			final MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-			if (refreshMenuItem.getActionView() == null) {
-				refreshMenuItem.setActionView(R.layout.progressbar);
-				refreshMenuItem.expandActionView();
-			}
-		}
-	}
-
-	/**
-	 * Stop animation in menu
-	 */
-	private void stopRefreshAnimation() {
-		if (menu != null) {
-			final MenuItem refreshMenuItem = menu.findItem(R.id.action_refresh);
-			refreshMenuItem.collapseActionView();
-			refreshMenuItem.setActionView(null);
-		}
 	}
 
 	/**
@@ -483,15 +431,10 @@ public class BusMapActivity extends Activity {
 		 * Allow or not centering the map
 		 **/
 		private boolean centerMap;
-		/**
-		 * Stop refresh animation or not
-		 **/
-		private boolean stopRefresh;
 
 		@Override
 		protected List<Bus> doInBackground(Boolean... params) {
 			centerMap = params[0];
-			stopRefresh = params[1];
 			List<Bus> buses = null;
 			final CtaConnect connect = CtaConnect.getInstance();
 			final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
@@ -525,9 +468,6 @@ public class BusMapActivity extends Activity {
 				}
 			} else {
 				Toast.makeText(BusMapActivity.this, "Error while loading data!", Toast.LENGTH_SHORT).show();
-			}
-			if (stopRefresh) {
-				stopRefreshAnimation();
 			}
 		}
 	}
@@ -713,7 +653,7 @@ public class BusMapActivity extends Activity {
 					final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
 					reqParams.put("rt", busRouteId);
 					final Xml xml = new Xml();
-					String xmlResult = connect.connect(CtaRequestType.BUS_DIRECTION, reqParams);
+					final String xmlResult = connect.connect(CtaRequestType.BUS_DIRECTION, reqParams);
 					final BusDirections busDirections = xml.parseBusDirections(xmlResult, busRouteId);
 					bounds = new String[busDirections.getlBusDirection().size()];
 					for (int i = 0; i < busDirections.getlBusDirection().size(); i++) {
@@ -751,7 +691,6 @@ public class BusMapActivity extends Activity {
 			} else {
 				Toast.makeText(BusMapActivity.this, "Sorry, could not load the path!", Toast.LENGTH_SHORT).show();
 			}
-			stopRefreshAnimation();
 		}
 	}
 

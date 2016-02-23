@@ -16,13 +16,9 @@
 
 package fr.cph.chicago.fragment;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceFragmentCompat;
-import android.view.Menu;
-import android.view.MenuInflater;
 import fr.cph.chicago.R;
-import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.util.Util;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
@@ -31,10 +27,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 	 * The fragment argument representing the section number for this fragment.
 	 **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
-	/**
-	 * The main activity
-	 **/
-	private MainActivity mainActivity;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -48,12 +40,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
 		fragment.setArguments(args);
 		return fragment;
-	}
-
-	@Override
-	public final void onAttach(final Activity activity) {
-		super.onAttach(activity);
-		mainActivity = (MainActivity) activity;
 	}
 
 	@Override
