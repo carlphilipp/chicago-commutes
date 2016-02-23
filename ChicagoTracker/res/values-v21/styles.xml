@@ -9,5 +9,9 @@
                 <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
                 <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
                 <item name="android:navigationBarColor">@color/black</item>
+
+                <item name="android:windowActivityTransitions">true</item>
+                <item name="android:windowContentTransitions">true</item>
+                <item name="android:windowAllowEnterTransitionOverlap">true</item>
         </style>
 </resources>

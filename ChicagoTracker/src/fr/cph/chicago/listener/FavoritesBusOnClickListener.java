@@ -169,7 +169,6 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 						extras.putStringArray("bounds", bounds.toArray(new String[bounds.size()]));
 						intent.putExtras(extras);
 						mainActivity.startActivity(intent);
-						//mainActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 						popup.dismiss();
 					}
 				}
