@@ -54,50 +54,54 @@ import java.util.List;
  */
 public class BaseActivity extends Activity {
 
-	private static String ERROR_PROPERTY = "error";
-	/**
-	 * Error state
-	 **/
-	private Boolean error;
-	/**
-	 * Train arrivals
-	 **/
-	private SparseArray<TrainArrival> trainArrivals;
-	/**
-	 * Bus arrivals
-	 **/
-	private List<BusArrival> busArrivals;
-
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.loading);
-		final Bundle extras = getIntent().getExtras();
-		if (extras != null && error == null) {
-			error = extras.getBoolean(ERROR_PROPERTY);
-		} else {
-			error = false;
-		}
-
-		if (error) {
-			new LoadData().execute();
-		} else if (trainArrivals == null || busArrivals == null) {
-			new LoadData().execute();
-		} else {
-			startMainActivity(trainArrivals, busArrivals);
-		}
+		new LoadLocalData().execute();
 	}
 
-	@Override
-	public final void onRestoreInstanceState(final Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
-		error = savedInstanceState.getBoolean(ERROR_PROPERTY);
-	}
+	/**
+	 * Load Bus and train data into DataHolder. The data are load in a sequence mode. It means that if one of
+	 * the url contacted does not response, we will still process the other data, and won't throw any
+	 * exception
+	 *
+	 * @author Carl-Philipp Harmant
+	 */
+	private class LoadLocalData extends AsyncTask<Void, String, Void> {
+		/**
+		 * Bus data
+		 **/
+		private BusData busData;
+		/**
+		 * Train data
+		 **/
+		private TrainData trainData;
 
-	@Override
-	public final void onSaveInstanceState(final Bundle savedInstanceState) {
-		savedInstanceState.putBoolean(ERROR_PROPERTY, error);
-		super.onSaveInstanceState(savedInstanceState);
+		@Override
+		protected final Void doInBackground(final Void... params) {
+			// Load local CSV
+			trainData = new TrainData();
+			trainData.read();
+
+			busData = BusData.getInstance();
+			busData.readBusStops();
+			return null;
+		}
+
+		@Override
+		protected final void onPostExecute(final Void result) {
+			// Put data into data holder
+			final DataHolder dataHolder = DataHolder.getInstance();
+			dataHolder.setBusData(busData);
+			dataHolder.setTrainData(trainData);
+			try {
+				// Load favorites data
+				loadFavorites();
+			} catch (final ParserException e) {
+				displayError(e);
+			}
+		}
 	}
 
 	/**
@@ -123,59 +127,16 @@ public class BaseActivity extends Activity {
 	 * @param trainArrivals the train arrivals
 	 * @param busArrivals   the bus arrivals
 	 */
-	private void startMainActivity(SparseArray<TrainArrival> trainArrivals, List<BusArrival> busArrivals) {
+	private void startMainActivity(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals) {
 		if (!isFinishing()) {
 			final Intent intent = new Intent(this, MainActivity.class);
 			final Bundle bundle = new Bundle();
-			bundle.putParcelableArrayList("busArrivals", (ArrayList<BusArrival>) busArrivals);
-			bundle.putSparseParcelableArray("trainArrivals", trainArrivals);
+			bundle.putParcelableArrayList(getString(R.string.bundle_bus_arrivals), (ArrayList<BusArrival>) busArrivals);
+			bundle.putSparseParcelableArray(getString(R.string.bundle_train_arrivals), trainArrivals);
 			intent.putExtras(bundle);
 
 			finish();
 			startActivity(intent);
-		}
-	}
-
-	/**
-	 * Load Bus and train data into DataHolder. The data are load in a sequence mode. It means that if one of
-	 * the url contacted does not response, we will still process the other data, and won't throw any
-	 * exception
-	 *
-	 * @author Carl-Philipp Harmant
-	 */
-	private class LoadData extends AsyncTask<Void, String, Void> {
-		/**
-		 * Bus data
-		 **/
-		private BusData busData;
-		/**
-		 * Train data
-		 **/
-		private TrainData trainData;
-
-		@Override
-		protected final Void doInBackground(final Void... params) {
-			// Load local CSV
-			this.trainData = new TrainData();
-			this.trainData.read();
-
-			this.busData = BusData.getInstance();
-			this.busData.readBusStops();
-			return null;
-		}
-
-		@Override
-		protected final void onPostExecute(final Void result) {
-			// Put data into data holder
-			final DataHolder dataHolder = DataHolder.getInstance();
-			dataHolder.setBusData(busData);
-			dataHolder.setTrainData(trainData);
-			try {
-				// Load favorites data
-				loadData();
-			} catch (ParserException e) {
-				displayError(e);
-			}
 		}
 	}
 
@@ -195,43 +156,56 @@ public class BaseActivity extends Activity {
 	 *
 	 * @throws ParserException the exception
 	 */
-	private void loadData() throws ParserException {
-		final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
-		final List<Integer> favorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
-		for (final Integer favorite : favorites) {
-			params.put("mapid", String.valueOf(favorite));
-		}
-
-		final MultiValuedMap<String, String> params2 = new ArrayListValuedHashMap<>();
-		final List<String> busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
-		for (final String busFavorite : busFavorites) {
-			final String[] fav = Util.decodeBusFavorite(busFavorite);
-			params2.put("rt", fav[0]);
-			params2.put("stpid", fav[1]);
-		}
+	private void loadFavorites() throws ParserException {
+		final MultiValuedMap<String, String> paramsTrain = getParamsTrain();
+		final MultiValuedMap<String, String> paramsBus = getParamsBus();
 
 		// Get preferences to know if trains and buses need to be loaded
 		final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 		boolean loadTrain = true;
 		boolean loadBus = true;
-		if (sharedPref.contains("cta_train")) {
-			loadTrain = sharedPref.getBoolean("cta_train", true);
+		if (sharedPref.contains(getString(R.string.preferences_cta_train))) {
+			loadTrain = sharedPref.getBoolean(getString(R.string.preferences_cta_train), true);
 		} else {
-			SharedPreferences.Editor editor = sharedPref.edit();
-			editor.putBoolean("cta_train", true);
+			final SharedPreferences.Editor editor = sharedPref.edit();
+			editor.putBoolean(getString(R.string.preferences_cta_train), true);
 			editor.apply();
 		}
-		if (sharedPref.contains("cta_bus")) {
-			loadBus = sharedPref.getBoolean("cta_bus", true);
+		if (sharedPref.contains(getString(R.string.preferences_cta_bus))) {
+			loadBus = sharedPref.getBoolean(getString(R.string.preferences_cta_bus), true);
 		} else {
-			SharedPreferences.Editor editor = sharedPref.edit();
-			editor.putBoolean("cta_bus", true);
+			final SharedPreferences.Editor editor = sharedPref.edit();
+			editor.putBoolean(getString(R.string.preferences_cta_bus), true);
 			editor.apply();
 		}
 
-		final GlobalConnectTask task = new GlobalConnectTask(this, BaseActivity.class, CtaRequestType.TRAIN_ARRIVALS, params, CtaRequestType.BUS_ARRIVALS,
-				params2, loadTrain, loadBus, false);
+		final GlobalConnectTask task = new GlobalConnectTask(this, BaseActivity.class, CtaRequestType.TRAIN_ARRIVALS, paramsTrain,
+				CtaRequestType.BUS_ARRIVALS, paramsBus, loadTrain, loadBus, false);
 		task.execute((Void) null);
+		trackWithGoogleAnalytics(loadTrain, loadBus);
+	}
+
+	private MultiValuedMap<String, String> getParamsTrain() {
+		final MultiValuedMap<String, String> paramsTrain = new ArrayListValuedHashMap<>();
+		final List<Integer> favorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
+		for (final Integer favorite : favorites) {
+			paramsTrain.put("mapid", String.valueOf(favorite));
+		}
+		return paramsTrain;
+	}
+
+	private MultiValuedMap<String, String> getParamsBus() {
+		final MultiValuedMap<String, String> paramsBus = new ArrayListValuedHashMap<>();
+		final List<String> busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+		for (final String busFavorite : busFavorites) {
+			final String[] fav = Util.decodeBusFavorite(busFavorite);
+			paramsBus.put("rt", fav[0]);
+			paramsBus.put("stpid", fav[1]);
+		}
+		return paramsBus;
+	}
+
+	private void trackWithGoogleAnalytics(boolean loadTrain, boolean loadBus) {
 		if (loadTrain) {
 			Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train,
 					R.string.analytics_action_get_train_arrivals, 0);

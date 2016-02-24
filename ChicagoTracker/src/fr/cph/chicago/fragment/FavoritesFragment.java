@@ -35,7 +35,6 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -59,6 +58,7 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -74,22 +74,16 @@ public class FavoritesFragment extends Fragment {
 	private static final String ARG_SECTION_NUMBER = "section_number";
 	private static final String TAG = FavoritesFragment.class.getSimpleName();
 
-	private MainActivity mainActivity;
 
 	private FavoritesAdapter favoritesAdapter;
-
+	private List<BusArrival> busArrivals;
+	private SparseArray<TrainArrival> trainArrivals;
+	private List<BikeStation> bikeStations;
 	private RefreshTask refreshTimingTask;
 
-	private List<BusArrival> busArrivals;
-
-	private SparseArray<TrainArrival> trainArrivals;
-
-	private List<BikeStation> bikeStations;
-
+	private MainActivity mainActivity;
 	private RelativeLayout welcomeLayout;
-
 	private View rootView;
-
 	private SwipeRefreshLayout swipeRefreshLayout;
 
 	/**
@@ -124,7 +118,7 @@ public class FavoritesFragment extends Fragment {
 			}
 		}
 		if (bikeStations == null) {
-			bikeStations = new ArrayList<>();
+			bikeStations = Collections.emptyList();
 		}
 		Util.trackScreen(getResources().getString(R.string.analytics_favorites_fragment));
 	}
@@ -217,7 +211,8 @@ public class FavoritesFragment extends Fragment {
 						//startRefreshAnimation();
 						//new LoadData().execute();
 					}
-					Util.trackAction(mainActivity, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
+					Util.trackAction(mainActivity, R.string.analytics_category_ui, R.string.analytics_action_press,
+							R.string.analytics_action_refresh_fav, 0);
 					swipeRefreshLayout.setColorSchemeColors(Util.getRandomColor());
 				}
 			});
@@ -342,6 +337,7 @@ public class FavoritesFragment extends Fragment {
 	}
 
 	public void startRefreshing() {
+		swipeRefreshLayout.setColorSchemeColors(Util.getRandomColor());
 		swipeRefreshLayout.setRefreshing(true);
 	}
 

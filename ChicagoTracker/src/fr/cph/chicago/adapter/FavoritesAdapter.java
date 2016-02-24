@@ -519,7 +519,6 @@ public final class FavoritesAdapter extends BaseAdapter {
 								extras.putParcelable("station", bikeStation);
 								intent.putExtras(extras);
 								mainActivity.startActivity(intent);
-								//mainActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 							}
 						}
 					});

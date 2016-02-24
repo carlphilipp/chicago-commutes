@@ -18,6 +18,15 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="en">
 
+	<!-- Bundle -->
+	<string name="bundle_train_arrivals">trainArrivals</string>
+	<string name="bundle_bus_arrivals">busArrivals</string>
+	<string name="bundle_error">error</string>
+
+	<!-- Preferences -->
+	<string name="preferences_cta_train">cta_train</string>
+	<string name="preferences_cta_bus">cta_bus</string>
+
 	<string name="empty_string">&#160;</string>
 	<string name="double_empty_string">&#160;&#160;</string>
 	<string name="app_name">Chicago Commutes</string>
