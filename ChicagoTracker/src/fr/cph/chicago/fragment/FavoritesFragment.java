@@ -17,19 +17,16 @@
 package fr.cph.chicago.fragment;
 
 import android.app.Activity;
-import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.transition.Explode;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -58,7 +55,6 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -68,12 +64,9 @@ import java.util.List;
  * @version 1
  */
 public class FavoritesFragment extends Fragment {
-	/**
-	 * The fragment argument representing the section number for this fragment.
-	 **/
-	private static final String ARG_SECTION_NUMBER = "section_number";
-	private static final String TAG = FavoritesFragment.class.getSimpleName();
 
+	private static final String TAG = FavoritesFragment.class.getSimpleName();
+	private static final String ARG_SECTION_NUMBER = "section_number";
 
 	private FavoritesAdapter favoritesAdapter;
 	private List<BusArrival> busArrivals;
@@ -118,7 +111,7 @@ public class FavoritesFragment extends Fragment {
 			}
 		}
 		if (bikeStations == null) {
-			bikeStations = Collections.emptyList();
+			bikeStations = new ArrayList<>();
 		}
 		Util.trackScreen(getResources().getString(R.string.analytics_favorites_fragment));
 	}
@@ -139,13 +132,18 @@ public class FavoritesFragment extends Fragment {
 			floatingButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(final View v) {
-					final Intent intent = new Intent(mainActivity, SearchActivity.class);
-					intent.putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
+					final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mainActivity);
+					final boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
+					startSearchActivityWhenReady(loadBike);
+				}
 
-					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-						// set an exit transition
-						mainActivity.getWindow().setExitTransition(new Explode());
-						mainActivity.startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(mainActivity).toBundle());
+				private void startSearchActivityWhenReady(final boolean loadBike) {
+					if (loadBike && bikeStations.isEmpty()) {
+						Toast.makeText(mainActivity, "You are a bit fast! Try again in a second!", Toast.LENGTH_SHORT).show();
+					} else {
+						final Intent intent = new Intent(mainActivity, SearchActivity.class);
+						intent.putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
+						mainActivity.startActivity(intent);
 					}
 				}
 			});
@@ -242,11 +240,6 @@ public class FavoritesFragment extends Fragment {
 		if (refreshTimingTask != null) {
 			refreshTimingTask.cancel(true);
 		}
-	}
-
-	@Override
-	public final void onDestroyView() {
-		super.onDestroyView();
 	}
 
 	@Override
