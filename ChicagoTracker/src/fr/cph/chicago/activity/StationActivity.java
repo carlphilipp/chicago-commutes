@@ -175,6 +175,9 @@ public class StationActivity extends Activity {
 			paramsStop = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
 			final Map<TrainLine, List<Stop>> stops = station.getStopByLines();
+			final TrainLine randomTrainLine = getRandomLine(stops);
+			swipeRefreshLayout.setColorSchemeColors(randomTrainLine.getColor());
+
 			CheckBox checkBox;
 			for (final Entry<TrainLine, List<Stop>> e : stops.entrySet()) {
 				final TrainLine line = e.getKey();
@@ -254,8 +257,6 @@ public class StationActivity extends Activity {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 				toolbar.setElevation(4);
 			}
-
-			final TrainLine randomTrainLine = getRandomLine(stops);
 
 			Util.setToolbarColor(this, toolbar, randomTrainLine);
 

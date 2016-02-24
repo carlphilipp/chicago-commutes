@@ -33,12 +33,18 @@ import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
+import fr.cph.chicago.entity.Stop;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -208,7 +214,6 @@ public class Util {
 	 * Google analytics track screen
 	 *
 	 * @param screen the screen name
-	 * @param str    the label to send
 	 */
 	public static void trackScreen(final String screen) {
 		final Tracker t = ChicagoTracker.getTracker();
@@ -216,7 +221,7 @@ public class Util {
 		t.send(new HitBuilders.AppViewBuilder().build());
 	}
 
-	public static void trackAction(Activity activity, int category, int action, int label, int value) {
+	public static void trackAction(final Activity activity, final int category, final int action, final int label, final int value) {
 		final Tracker tracker = ChicagoTracker.getTracker();
 		tracker.send(new HitBuilders.EventBuilder().setCategory(activity.getString(category)).setAction(activity.getString(action))
 				.setLabel(activity.getString(label)).setValue(value).build());
@@ -268,5 +273,11 @@ public class Util {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			activity.getWindow().setStatusBarColor(activity.getResources().getColor(statusBarColor));
 		}
+	}
+
+	public static int getRandomColor() {
+		final Random random = new Random();
+		final List<TrainLine> keys = Collections.unmodifiableList(Arrays.asList(TrainLine.values()));
+		return keys.get(random.nextInt(keys.size())).getColor();
 	}
 }

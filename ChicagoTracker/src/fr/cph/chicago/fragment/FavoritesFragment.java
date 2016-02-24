@@ -217,8 +217,8 @@ public class FavoritesFragment extends Fragment {
 						//startRefreshAnimation();
 						//new LoadData().execute();
 					}
-					Util.trackAction(mainActivity, R.string.analytics_category_ui, R.string.analytics_action_press,
-							R.string.analytics_action_refresh_fav, 0);
+					Util.trackAction(mainActivity, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
+					swipeRefreshLayout.setColorSchemeColors(Util.getRandomColor());
 				}
 			});
 		}
