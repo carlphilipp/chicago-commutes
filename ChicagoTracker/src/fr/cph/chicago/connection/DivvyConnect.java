@@ -28,19 +28,11 @@ import java.net.URL;
 
 public class DivvyConnect {
 
-	/**
-	 * Tag
-	 **/
 	private static final String TAG = DivvyConnect.class.getSimpleName();
-	/**
-	 * Singleton
-	 **/
-	private static DivvyConnect instance = null;
-	/**
-	 * Divvy URL
-	 **/
 	private static final String URL = "http://www.divvybikes.com/stations/json";
 
+	private static DivvyConnect instance = null;
+	
 	private DivvyConnect() {
 	}
 

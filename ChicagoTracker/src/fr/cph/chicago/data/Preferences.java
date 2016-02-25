@@ -154,6 +154,7 @@ public final class Preferences {
 				final String str2Decoded = Util.decodeBusFavorite(str2)[0];
 				Integer int1;
 				Integer int2;
+				// TODO Refactor that delete exception
 				try {
 					int1 = Integer.valueOf(str1Decoded);
 				} catch (NumberFormatException e) {

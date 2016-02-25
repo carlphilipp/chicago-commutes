@@ -40,21 +40,19 @@ import java.util.List;
  * @version 1
  */
 public final class BikeAdapter extends BaseAdapter {
-	/** Main activity **/
+
 	private MainActivity mainActivity;
-	/** Bike data **/
 	private List<BikeStation> bikeStations;
 
 	/**
 	 * Constructor
 	 *
-	 * @param activity
-	 *            the main activity
+	 * @param activity the main activity
 	 */
 	public BikeAdapter(final MainActivity activity) {
 		this.mainActivity = activity;
 		final Bundle bundle = activity.getIntent().getExtras();
-		this.bikeStations = bundle.getParcelableArrayList("bikeStations");
+		this.bikeStations = bundle.getParcelableArrayList(mainActivity.getString(R.string.bundle_bike_stations));
 		if (this.bikeStations == null) {
 			this.bikeStations = new ArrayList<>();
 		}
@@ -100,7 +98,7 @@ public final class BikeAdapter extends BaseAdapter {
 			public void onClick(View v) {
 				Intent intent = new Intent(ChicagoTracker.getContext(), BikeStationActivity.class);
 				Bundle extras = new Bundle();
-				extras.putParcelable("station", station);
+				extras.putParcelable(mainActivity.getString(R.string.bundle_bike_station), station);
 				intent.putExtras(extras);
 				mainActivity.startActivity(intent);
 			}

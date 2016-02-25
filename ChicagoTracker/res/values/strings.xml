@@ -22,6 +22,18 @@
 	<string name="bundle_train_arrivals">trainArrivals</string>
 	<string name="bundle_bus_arrivals">busArrivals</string>
 	<string name="bundle_error">error</string>
+	<string name="bundle_bike_station">station</string>
+	<string name="bundle_bus_stop_id">busStopId</string>
+	<string name="bundle_bus_route_id">busRouteId</string>
+	<string name="bundle_bus_bound">bound</string>
+	<string name="bundle_bus_stop_name">busStopName</string>
+	<string name="bundle_bus_route_name">busRouteName</string>
+	<string name="bundle_bus_latitude">latitude</string>
+	<string name="bundle_bus_longitude">longitude</string>
+	<string name="bundle_bus_id">busId</string>
+	<string name="bundle_bus_bounds">bounds</string>
+	<string name="bundle_train_line">line</string>
+	<string name="bundle_bike_stations">bikeStations</string>
 
 	<!-- Preferences -->
 	<string name="preferences_cta_train">cta_train</string>
@@ -72,6 +84,8 @@
 	<string name="bus_station_activity">Bus</string>
 	<string name="bus_activity_google_map_link_desc">Link to google map</string>
 	<string name="bus_activity_street_view">Street view</string>
+	<string name="bus_activity_no_service">No service scheduled</string>
+	<string name="bus_activity_street_view_text">Street view</string>
 	<string name="bus_fragment_filter">Filter</string>
 	<string name="bus_fragment_notloaded">Divvy data deactivated</string>
 

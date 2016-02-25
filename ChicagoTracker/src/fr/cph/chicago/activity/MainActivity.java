@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		setToolbar();
 
 		drawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-		mDrawerLayout.setDrawerListener(drawerToggle);
+		mDrawerLayout.addDrawerListener(drawerToggle);
 		drawerToggle.syncState();
 
 		currentPosition = savedInstanceState == null ? R.id.navigation_favorites : savedInstanceState.getInt(SELECTED_ID);

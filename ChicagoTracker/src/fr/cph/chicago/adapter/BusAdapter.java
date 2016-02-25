@@ -64,17 +64,9 @@ import java.util.List;
  * @version 1
  */
 public final class BusAdapter extends BaseAdapter {
-	/**
-	 * Main activity
-	 **/
+
 	private MainActivity mainActivity;
-	/**
-	 * Bus data
-	 **/
 	private List<BusRoute> busRoutes;
-	/**
-	 * Layout that you can use as a black fade background
-	 **/
 	private FrameLayout firstLayout;
 
 	/**
@@ -133,7 +125,6 @@ public final class BusAdapter extends BaseAdapter {
 				@Override
 				public void onClick(View v) {
 					holder.detailsLayout.setVisibility(LinearLayout.VISIBLE);
-					//mainActivity.startRefreshAnimation();
 					new DirectionAsyncTask().execute(route, holder.detailsLayout);
 				}
 			});
@@ -147,15 +138,12 @@ public final class BusAdapter extends BaseAdapter {
 				@Override
 				public void onClick(View v) {
 					holder.detailsLayout.setVisibility(LinearLayout.VISIBLE);
-					//mainActivity.startRefreshAnimation();
 					new DirectionAsyncTask().execute(route, holder.detailsLayout);
 				}
 			});
 		}
-
 		routeNameView.setText(route.getName());
 		routeNumberView.setText(route.getId());
-
 		return convertView;
 	}
 
@@ -183,13 +171,8 @@ public final class BusAdapter extends BaseAdapter {
 	 */
 	private class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 
-		/**
-		 * Bus route
-		 **/
 		private BusRoute busRoute;
-		/** **/
 		private LinearLayout convertView;
-		/** **/
 		private TrackerException trackerException;
 
 		@Override
@@ -238,9 +221,9 @@ public final class BusAdapter extends BaseAdapter {
 						if (position != data.size() - 1) {
 							final Intent intent = new Intent(mainActivity, BusBoundActivity.class);
 							final Bundle extras = new Bundle();
-							extras.putString("busRouteId", busRoute.getId());
-							extras.putString("busRouteName", busRoute.getName());
-							extras.putString("bound", data.get(position));
+							extras.putString(mainActivity.getString(R.string.bundle_bus_route_id), busRoute.getId());
+							extras.putString(mainActivity.getString(R.string.bundle_bus_route_name), busRoute.getName());
+							extras.putString(mainActivity.getString(R.string.bundle_bus_bound), data.get(position));
 							intent.putExtras(extras);
 							intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 							ChicagoTracker.getContext().startActivity(intent);
@@ -252,8 +235,8 @@ public final class BusAdapter extends BaseAdapter {
 							}
 							final Intent intent = new Intent(ChicagoTracker.getContext(), BusMapActivity.class);
 							final Bundle extras = new Bundle();
-							extras.putString("busRouteId", result.getId());
-							extras.putStringArray("bounds", busDirectionArray);
+							extras.putString(mainActivity.getString(R.string.bundle_bus_route_id), result.getId());
+							extras.putStringArray(mainActivity.getString(R.string.bundle_bus_bounds), busDirectionArray);
 							intent.putExtras(extras);
 							mainActivity.startActivity(intent);
 						}

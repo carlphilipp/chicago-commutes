@@ -76,58 +76,22 @@ import java.util.Set;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+// TODO to analyze and refactor
 public final class FavoritesAdapter extends BaseAdapter {
-	/**
-	 * Main activity
-	 **/
-	private MainActivity mainActivity;
-	/**
-	 * The context
-	 **/
+
 	private Context context;
-	/**
-	 * The layout that is used to display a fade black background
-	 **/
-	private FrameLayout firstLayout;
-	/**
-	 * The model
-	 **/
-	private Favorites favorites;
-	/**
-	 * Ids of layouts
-	 **/
-	private Map<String, Integer> ids;
-	/**
-	 * Layouts
-	 **/
-	private Map<Integer, LinearLayout> layouts;
-	/**
-	 * Views
-	 **/
-	private Map<Integer, View> views;
-	/**
-	 * Map of textview that holds updates
-	 **/
-	private Map<String, TextView> updated;
-	/**
-	 * List update
-	 **/
-	private String lastUpdate;
-	/**
-	 * Params layout
-	 **/
 	private LinearLayout.LayoutParams paramsLayout;
-	/**
-	 * Params text view
-	 **/
 	private LinearLayout.LayoutParams paramsTextView;
-	/**
-	 * Padding color
-	 **/
+	private FrameLayout firstLayout;
+
+	private MainActivity mainActivity;
+	private Favorites favorites;
+	private Map<String, Integer> ids;
+	private Map<Integer, LinearLayout> layouts;
+	private Map<Integer, View> views;
+	private Map<String, TextView> updated;
+	private String lastUpdate;
 	private int line1Padding;
-	/**
-	 * Stops padding top
-	 **/
 	private int stopsPaddingTop;
 
 	@SuppressLint("UseSparseArrays")
@@ -229,79 +193,83 @@ public final class FavoritesAdapter extends BaseAdapter {
 					}
 				}
 
-				for (final TrainLine tl : setTL) {
-					if (favorites.getTrainArrival(stationId) != null) {
-						final List<Eta> etas = favorites.getTrainArrival(stationId).getEtas(tl);
-						if (etas.size() != 0) {
-							final String key = station.getName() + "_" + tl.toString() + "_h";
-							final String key2 = station.getName() + "_" + tl.toString() + "_v";
-							final Integer idLayout = ids.get(key);
-							final Integer idLayout2 = ids.get(key2);
+				if (setTL != null) {
+					for (final TrainLine tl : setTL) {
+						if (favorites.getTrainArrival(stationId) != null) {
+							final List<Eta> etas = favorites.getTrainArrival(stationId).getEtas(tl);
+							if (etas.size() != 0) {
+								final String key = station.getName() + "_" + tl.toString() + "_h";
+								final String key2 = station.getName() + "_" + tl.toString() + "_v";
+								final Integer idLayout = ids.get(key);
+								final Integer idLayout2 = ids.get(key2);
 
-							LinearLayout llh, llv;
-							if (idLayout == null) {
-								llh = new LinearLayout(context);
-								llh.setLayoutParams(paramsLayout);
-								llh.setOrientation(LinearLayout.HORIZONTAL);
-								llh.setPadding(line1Padding, stopsPaddingTop, 0, 0);
-								final int id = Util.generateViewId();
-								llh.setId(id);
-								ids.put(key, id);
+								LinearLayout llh, llv;
+								if (idLayout == null) {
+									llh = new LinearLayout(context);
+									llh.setLayoutParams(paramsLayout);
+									llh.setOrientation(LinearLayout.HORIZONTAL);
+									llh.setPadding(line1Padding, stopsPaddingTop, 0, 0);
+									final int id = Util.generateViewId();
+									llh.setId(id);
+									ids.put(key, id);
 
-								TextView tlView = new TextView(context);
-								tlView.setBackgroundColor(tl.getColor());
-								tlView.setText("   ");
-								tlView.setLayoutParams(paramsTextView);
-								llh.addView(tlView);
+									TextView tlView = new TextView(context);
+									tlView.setBackgroundColor(tl.getColor());
+									tlView.setText("   ");
+									tlView.setLayoutParams(paramsTextView);
+									llh.addView(tlView);
 
-								llv = new LinearLayout(context);
-								llv.setLayoutParams(paramsLayout);
-								llv.setOrientation(LinearLayout.VERTICAL);
-								llv.setPadding(line1Padding, 0, 0, 0);
-								final int id2 = Util.generateViewId();
-								llv.setId(id2);
-								ids.put(key2, id2);
+									llv = new LinearLayout(context);
+									llv.setLayoutParams(paramsLayout);
+									llv.setOrientation(LinearLayout.VERTICAL);
+									llv.setPadding(line1Padding, 0, 0, 0);
+									final int id2 = Util.generateViewId();
+									llv.setId(id2);
+									ids.put(key2, id2);
 
-								llh.addView(llv);
-								favoritesLayout.addView(llh);
+									llh.addView(llv);
+									favoritesLayout.addView(llh);
 
-							} else {
-								llh = (LinearLayout) favoritesLayout.findViewById(idLayout);
-								llv = (LinearLayout) favoritesLayout.findViewById(idLayout2);
-							}
-							for (final Eta eta : etas) {
-								final Stop stop = eta.getStop();
-								final String key3 = (station.getName() + "_" + tl.toString() + "_" + stop.getDirection().toString() + "_" + eta
-										.getDestName());
-								final Integer idLayout3 = ids.get(key3);
-								if (idLayout3 == null) {
-									final LinearLayout insideLayout = new LinearLayout(context);
-									insideLayout.setOrientation(LinearLayout.HORIZONTAL);
-									insideLayout.setLayoutParams(paramsArrival);
-									final int newId = Util.generateViewId();
-									insideLayout.setId(newId);
-									ids.put(key3, newId);
-
-									final TextView stopName = new TextView(context);
-									stopName.setText(eta.getDestName() + ": ");
-									stopName.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
-									insideLayout.addView(stopName);
-
-									final TextView timing = new TextView(context);
-									timing.setText(eta.getTimeLeftDueDelay() + " ");
-									timing.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
-									timing.setLines(1);
-									timing.setEllipsize(TruncateAt.END);
-									insideLayout.addView(timing);
-
-									llv.addView(insideLayout);
 								} else {
-									// llv can be null sometimes (after a remove from favorites for example)
-									if (llv != null) {
-										final LinearLayout insideLayout = (LinearLayout) llv.findViewById(idLayout3);
-										// InsideLayout can be null too if removed before
-										final TextView timing = (TextView) insideLayout.getChildAt(1);
-										timing.setText(timing.getText() + eta.getTimeLeftDueDelay() + " ");
+									llh = (LinearLayout) favoritesLayout.findViewById(idLayout);
+									llv = (LinearLayout) favoritesLayout.findViewById(idLayout2);
+								}
+								for (final Eta eta : etas) {
+									final Stop stop = eta.getStop();
+									final String key3 = (station.getName() + "_" + tl.toString() + "_" + stop.getDirection().toString() + "_" + eta
+											.getDestName());
+									final Integer idLayout3 = ids.get(key3);
+									if (idLayout3 == null) {
+										final LinearLayout insideLayout = new LinearLayout(context);
+										insideLayout.setOrientation(LinearLayout.HORIZONTAL);
+										insideLayout.setLayoutParams(paramsArrival);
+										final int newId = Util.generateViewId();
+										insideLayout.setId(newId);
+										ids.put(key3, newId);
+
+										final TextView stopName = new TextView(context);
+										final String stopNameData = eta.getDestName() + ": ";
+										stopName.setText(stopNameData);
+										stopName.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
+										insideLayout.addView(stopName);
+
+										final TextView timing = new TextView(context);
+										final String timingData = eta.getTimeLeftDueDelay() + " ";
+										timing.setText(timingData);
+										timing.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
+										timing.setLines(1);
+										timing.setEllipsize(TruncateAt.END);
+										insideLayout.addView(timing);
+
+										llv.addView(insideLayout);
+									} else {
+										// llv can be null sometimes (after a remove from favorites for example)
+										if (llv != null) {
+											final LinearLayout insideLayout = (LinearLayout) llv.findViewById(idLayout3);
+											final TextView timing = (TextView) insideLayout.getChildAt(1);
+											final String timingData = timing.getText() + eta.getTimeLeftDueDelay() + " ";
+											timing.setText(timingData);
+										}
 									}
 								}
 							}
@@ -478,7 +446,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 				availableDocks.setPadding(line1Padding, 0, 0, 0);
 
 				final TextView availableDock = new TextView(context);
-				availableDock.setText("Available docks: ");
+				availableDock.setText(mainActivity.getString(R.string.bike_available_docks));
 				availableDock.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
 				availableDocks.addView(availableDock);
 

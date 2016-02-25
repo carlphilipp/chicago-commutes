@@ -26,6 +26,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
@@ -87,31 +88,19 @@ public class StationActivity extends Activity {
 
 	private static final String TAG = StationActivity.class.getSimpleName();
 
-	private TrainData trainData;
-
-	private TrainArrival trainArrival;
-
-	private Integer stationId;
-
-	private Station station;
-
 	private ImageView streetViewImage;
-
 	private TextView streetViewText;
-
 	private ImageView mapImage;
-
 	private ImageView directionImage;
-
 	private ImageView favoritesImage;
+	private LinearLayout.LayoutParams paramsStop;
+	private SwipeRefreshLayout swipeRefreshLayout;
 
 	private boolean isFavorite;
-
+	private TrainData trainData;
+	private Integer stationId;
+	private Station station;
 	private Map<String, Integer> ids;
-
-	private LinearLayout.LayoutParams paramsStop;
-
-	private SwipeRefreshLayout swipeRefreshLayout;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -441,7 +430,7 @@ public class StationActivity extends Activity {
 					}
 				}
 			} catch (final ParserException | ConnectException e) {
-				this.trackerException = e;
+				trackerException = e;
 			}
 			Util.trackAction(StationActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train,
 					R.string.analytics_action_get_train_arrivals, 0);
@@ -459,9 +448,8 @@ public class StationActivity extends Activity {
 		}
 
 		@Override
-		protected final void onPostExecute(final TrainArrival result) {
-			if (this.trackerException == null) {
-				trainArrival = result;
+		protected final void onPostExecute(@Nullable final TrainArrival trainArrival) {
+			if (trackerException == null) {
 				List<Eta> etas;
 				if (trainArrival != null) {
 					etas = trainArrival.getEtas();
@@ -486,6 +474,7 @@ public class StationActivity extends Activity {
 	 *
 	 * @param station the station
 	 */
+	// TODO to refactor.
 	private void reset(final Station station) {
 		final Set<TrainLine> setTL = station.getLines();
 		if (setTL != null) {
@@ -535,13 +524,15 @@ public class StationActivity extends Activity {
 				ids.put(line.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName(), newId);
 
 				final TextView stopName = new TextView(this);
-				stopName.setText(eta.getDestName() + ": ");
+				final String stopNameData = eta.getDestName() + ": ";
+				stopName.setText(stopNameData);
 				stopName.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
 				stopName.setPadding(line3Padding, 0, 0, 0);
 				insideLayout.addView(stopName);
 
 				final TextView timing = new TextView(this);
-				timing.setText(eta.getTimeLeftDueDelay() + " ");
+				final String timingData = eta.getTimeLeftDueDelay() + " ";
+				timing.setText(timingData);
 				timing.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
 				timing.setLines(1);
 				timing.setEllipsize(TruncateAt.END);
@@ -551,7 +542,8 @@ public class StationActivity extends Activity {
 			} else {
 				final LinearLayout insideLayout = (LinearLayout) findViewById(id);
 				final TextView timing = (TextView) insideLayout.getChildAt(1);
-				timing.setText(timing.getText() + eta.getTimeLeftDueDelay() + " ");
+				final String timingData = timing.getText() + eta.getTimeLeftDueDelay() + " ";
+				timing.setText(timingData);
 			}
 			line3View.setVisibility(View.VISIBLE);
 		}

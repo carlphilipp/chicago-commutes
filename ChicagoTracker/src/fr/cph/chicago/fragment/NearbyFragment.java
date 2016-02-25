@@ -618,6 +618,7 @@ public class NearbyFragment extends Fragment {
 	 */
 	private void centerMap(final Position positon) {
 		// Because the fragment can possibly not be ready
+		// TODO upgrade to not deprecated api
 		while (mapFragment.getMap() == null) {
 		}
 		googleMap = mapFragment.getMap();

@@ -51,14 +51,14 @@ import java.util.List;
 public class BusFragment extends Fragment {
 	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
-	/** The main actvity **/
-	private MainActivity mainActivity;
-	/** Adapter **/
-	private BusAdapter busAdapter;
 
 	private EditText textFilter;
-
 	private ListView listView;
+
+	private MainActivity mainActivity;
+	private BusAdapter busAdapter;
+
+
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.

@@ -33,6 +33,7 @@ import java.util.List;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+// TODO find a better way to do that (jackson?)
 public class Json {
 	public List<BikeStation> parseStations(final String jsonString) throws ParserException {
 		final List<BikeStation> stations = new ArrayList<>();

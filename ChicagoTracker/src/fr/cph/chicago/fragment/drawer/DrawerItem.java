@@ -23,9 +23,8 @@ package fr.cph.chicago.fragment.drawer;
  * @version 1
  */
 public final class DrawerItem {
-	/** **/
+
 	private String name;
-	/** **/
 	private int imgId;
 
 	public DrawerItem(final String name, final int imgId) {

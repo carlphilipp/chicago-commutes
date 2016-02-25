@@ -48,7 +48,7 @@ public class ErrorActivity extends Activity {
 		final View loadLayout = findViewById(R.id.loading_layout);
 		loadLayout.setVisibility(View.GONE);
 		if (error == null) {
-			error = getIntent().getExtras().getString("error");
+			error = getIntent().getExtras().getString(getString(R.string.bundle_error));
 		}
 		final TextView errorText = (TextView) findViewById(R.id.error_message);
 		errorText.setText(error);

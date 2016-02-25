@@ -37,11 +37,9 @@ import java.util.List;
  * @version 1
  */
 public class CustomDrawerAdapter extends ArrayAdapter<DrawerItem> {
-	/** **/
+
 	private Context context;
-	/** **/
 	private List<DrawerItem> listItems;
-	/** **/
 	private int resource;
 
 	/**

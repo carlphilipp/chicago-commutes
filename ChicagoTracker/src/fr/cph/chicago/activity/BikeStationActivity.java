@@ -200,12 +200,12 @@ public class BikeStationActivity extends Activity {
 	@Override
 	public void onRestoreInstanceState(final Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		bikeStation = savedInstanceState.getParcelable("station");
+		bikeStation = savedInstanceState.getParcelable(getString(R.string.bundle_bike_station));
 	}
 
 	@Override
 	public void onSaveInstanceState(final Bundle savedInstanceState) {
-		savedInstanceState.putParcelable("station", bikeStation);
+		savedInstanceState.putParcelable(getString(R.string.bundle_bike_station), bikeStation);
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
@@ -226,7 +226,6 @@ public class BikeStationActivity extends Activity {
 
 	public final void refreshStation(final BikeStation station) {
 		this.bikeStation = station;
-		// setValue(bikeAvail);
 		drawData();
 	}
 
@@ -249,7 +248,7 @@ public class BikeStationActivity extends Activity {
 						Toast.makeText(ChicagoTracker.getContext(), "A surprising error has occurred. Try again!", Toast.LENGTH_SHORT).show();
 					}
 				});
-				Log.e(TAG, "Connect error", e);
+				Log.e(TAG, "Error while connecting or parsing divvy data", e);
 			}
 			return bikeStations;
 		}
@@ -260,7 +259,7 @@ public class BikeStationActivity extends Activity {
 				if (BikeStationActivity.this.bikeStation.getId() == station.getId()) {
 					BikeStationActivity.this.refreshStation(station);
 					final Bundle bundle = getIntent().getExtras();
-					bundle.putParcelable("station", station);
+					bundle.putParcelable(getString(R.string.bundle_bike_station), station);
 					break;
 				}
 			}
@@ -286,7 +285,7 @@ public class BikeStationActivity extends Activity {
 						R.string.analytics_action_get_google_map_street_view, 0);
 				return connect.connect(position);
 			} catch (IOException e) {
-				Log.e(TAG, "IOException", e);
+				Log.e(TAG, "Error while connecting to google street view API", e);
 				return null;
 			}
 		}
@@ -294,11 +293,12 @@ public class BikeStationActivity extends Activity {
 		@Override
 		protected final void onPostExecute(final Drawable result) {
 			final int height = (int) getResources().getDimension(R.dimen.activity_station_street_map_height);
-			LayoutParams params = (LayoutParams) BikeStationActivity.this.streetViewImage.getLayoutParams();
-			final ViewGroup.LayoutParams params2 = BikeStationActivity.this.streetViewImage.getLayoutParams();
-			params2.height = height;
-			params2.width = params.width;
-			BikeStationActivity.this.streetViewImage.setLayoutParams(params2);
+			final LayoutParams layoutParams = (LayoutParams) BikeStationActivity.this.streetViewImage.getLayoutParams();
+			final ViewGroup.LayoutParams params = BikeStationActivity.this.streetViewImage.getLayoutParams();
+			params.height = height;
+			params.width = layoutParams.width;
+
+			BikeStationActivity.this.streetViewImage.setLayoutParams(params);
 			BikeStationActivity.this.streetViewImage.setImageDrawable(result);
 			BikeStationActivity.this.streetViewImage.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -309,7 +309,7 @@ public class BikeStationActivity extends Activity {
 					intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
 					try {
 						startActivity(intent);
-					} catch (ActivityNotFoundException ex) {
+					} catch (final ActivityNotFoundException ex) {
 						uri = String.format(Locale.ENGLISH, "http://maps.google.com/maps?q=&layer=c&cbll=%f,%f&cbp=11,0,0,0,0",
 								position.getLatitude(), position.getLongitude());
 						final Intent unrestrictedIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
@@ -340,8 +340,8 @@ public class BikeStationActivity extends Activity {
 				}
 			});
 
-			BikeStationActivity.this.streetViewText.setText(ChicagoTracker.getContext().getResources()
-					.getString(R.string.station_activity_street_view));
+			BikeStationActivity.this.streetViewText
+					.setText(ChicagoTracker.getContext().getResources().getString(R.string.station_activity_street_view));
 		}
 	}
 
@@ -352,15 +352,12 @@ public class BikeStationActivity extends Activity {
 		if (isFavorite) {
 			Util.removeFromBikeFavorites(bikeStation.getId(), ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
 			isFavorite = false;
+			favoritesImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.ic_save_disabled));
 		} else {
 			Util.addToBikeFavorites(bikeStation.getId(), ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
 			Preferences.addBikeRouteNameMapping(String.valueOf(bikeStation.getId()), bikeStation.getName());
 			isFavorite = true;
-		}
-		if (isFavorite) {
 			favoritesImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.ic_save_active));
-		} else {
-			favoritesImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.ic_save_disabled));
 		}
 	}
 }

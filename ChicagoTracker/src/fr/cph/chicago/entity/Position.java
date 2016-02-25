@@ -92,7 +92,7 @@ public class Position implements Parcelable, Serializable {
 
 	@Override
 	public final String toString() {
-		return "[lattitude=" + latitude + ";longitude=" + longitude + "]";
+		return "[latitude=" + latitude + ";longitude=" + longitude + "]";
 	}
 
 	@Override
@@ -120,5 +120,4 @@ public class Position implements Parcelable, Serializable {
 			return new Position[size];
 		}
 	};
-
 }

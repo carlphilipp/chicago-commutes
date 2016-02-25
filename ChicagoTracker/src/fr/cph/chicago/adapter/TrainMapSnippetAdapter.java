@@ -37,7 +37,7 @@ import java.util.List;
  * @version 1
  */
 public class TrainMapSnippetAdapter extends BaseAdapter {
-	/** Eta list **/
+
 	private List<Eta> etas;
 
 	/**

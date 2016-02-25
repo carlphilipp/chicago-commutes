@@ -58,26 +58,18 @@ import java.util.List;
  * @version 1
  */
 public class BikeFragment extends Fragment {
-	/** Tag **/
+
 	private static final String TAG = BikeFragment.class.getSimpleName();
-	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
-	/** The main actvity **/
-	private MainActivity mainActivity;
-	/** Adapter **/
-	private BikeAdapter bikeAdapter;
-	/** Bike data **/
-	private List<BikeStation> bikeStations;
-	/** Root view **/
+
 	private View rootView;
-	/** Loading layout **/
 	private RelativeLayout loadingLayout;
-	/** Desactivated layout **/
-	private RelativeLayout desactivatedLayout;
-	/** The list view **/
 	private ListView listView;
-	/** The filter text view **/
 	private TextView filterView;
+
+	private MainActivity mainActivity;
+	private BikeAdapter bikeAdapter;
+	private List<BikeStation> bikeStations;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -87,8 +79,8 @@ public class BikeFragment extends Fragment {
 	 * @return the fragment
 	 */
 	public static BikeFragment newInstance(final int sectionNumber) {
-		BikeFragment fragment = new BikeFragment();
-		Bundle args = new Bundle();
+		final BikeFragment fragment = new BikeFragment();
+		final Bundle args = new Bundle();
 		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
 		fragment.setArguments(args);
 		return fragment;
@@ -132,7 +124,7 @@ public class BikeFragment extends Fragment {
 		rootView = inflater.inflate(R.layout.fragment_bike, container, false);
 		if (!mainActivity.isFinishing()) {
 			loadingLayout = (RelativeLayout) rootView.findViewById(R.id.loading_relativeLayout);
-			desactivatedLayout = (RelativeLayout) rootView.findViewById(R.id.desactivated_layout);
+			final RelativeLayout desactivatedLayout = (RelativeLayout) rootView.findViewById(R.id.desactivated_layout);
 			listView = (ListView) rootView.findViewById(R.id.bike_list);
 			filterView = (TextView) rootView.findViewById(R.id.bike_filter);
 			if (Util.isNetworkAvailable()) {

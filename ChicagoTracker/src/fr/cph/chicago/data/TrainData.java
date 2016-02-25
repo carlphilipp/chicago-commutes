@@ -44,30 +44,17 @@ import java.util.TreeMap;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+// TODO see if there is anyway to do it with better performance
 public class TrainData {
 	/**
 	 * Tag
 	 **/
 	private static final String TAG = TrainData.class.getSimpleName();
-	/**
-	 * List of stations
-	 **/
+
 	private SparseArray<Station> stations;
-	/**
-	 * List of stations ordered by name
-	 **/
 	private List<Station> stationsOrderByName;
-	/**
-	 * List of stations ordered by line and name
-	 **/
 	private List<Station> stationsOrderByLine;
-	/**
-	 * Map of stations ordered by line and map
-	 **/
 	private Map<TrainLine, List<Station>> stationsOrderByLineMap;
-	/**
-	 * List of stops
-	 **/
 	private SparseArray<Stop> stops;
 
 	/**

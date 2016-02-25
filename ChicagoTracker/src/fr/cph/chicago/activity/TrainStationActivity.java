@@ -37,17 +37,9 @@ import fr.cph.chicago.util.Util;
  * @version 1
  */
 public class TrainStationActivity extends ListActivity {
-	/**
-	 * The train data
-	 **/
-	private TrainData trainData;
-	/**
-	 * The line
-	 **/
+
 	private TrainLine trainLine;
-	/**
-	 * The line param
-	 **/
+
 	private String lineParam;
 
 	@Override
@@ -55,15 +47,13 @@ public class TrainStationActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		if (!this.isFinishing()) {
 			// Load data
-			final DataHolder dataHolder = DataHolder.getInstance();
-			trainData = dataHolder.getTrainData();
-
 			if (trainLine == null && lineParam == null) {
-				lineParam = getIntent().getExtras().getString("line");
+				lineParam = getIntent().getExtras().getString(getString(R.string.bundle_train_line));
 				trainLine = TrainLine.fromString(lineParam);
 			}
-
-			setTitle(trainLine.toStringWithLine());
+			if(trainLine != null) {
+				setTitle(trainLine.toStringWithLine());
+			}
 
 			setContentView(R.layout.activity_train_station);
 
@@ -88,15 +78,15 @@ public class TrainStationActivity extends ListActivity {
 	}
 
 	@Override
-	public void onRestoreInstanceState(Bundle savedInstanceState) {
+	public void onRestoreInstanceState(final Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		lineParam = savedInstanceState.getString("line");
+		lineParam = savedInstanceState.getString(getString(R.string.bundle_train_line));
 		trainLine = TrainLine.fromString(lineParam);
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle savedInstanceState) {
-		savedInstanceState.putString("line", lineParam);
+	public void onSaveInstanceState(final Bundle savedInstanceState) {
+		savedInstanceState.putString(getString(R.string.bundle_train_line), lineParam);
 		super.onSaveInstanceState(savedInstanceState);
 	}
 

@@ -157,13 +157,14 @@ public class BusMapActivity extends Activity {
 		if (!this.isFinishing()) {
 			setContentView(R.layout.activity_map);
 			if (savedInstanceState != null) {
-				busId = savedInstanceState.getInt("busId");
-				busRouteId = savedInstanceState.getString("busRouteId");
-				bounds = savedInstanceState.getStringArray("bounds");
+				busId = savedInstanceState.getInt(getString(R.string.bundle_bus_id));
+				busRouteId = savedInstanceState.getString(getString(R.string.bundle_bus_route_id));
+				bounds = savedInstanceState.getStringArray(getString(R.string.bundle_bus_bounds));
 			} else {
-				busId = getIntent().getExtras().getInt("busId");
-				busRouteId = getIntent().getExtras().getString("busRouteId");
-				bounds = getIntent().getExtras().getStringArray("bounds");
+				busId = getIntent().getExtras().getInt(getString(R.string.bundle_bus_id));
+				;
+				busRouteId = getIntent().getExtras().getString(getString(R.string.bundle_bus_route_id));
+				bounds = getIntent().getExtras().getStringArray(getString(R.string.bundle_bus_bounds));
 			}
 
 			busMarkers = new ArrayList<>();
@@ -194,7 +195,7 @@ public class BusMapActivity extends Activity {
 			toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
 			toolbar.setOnClickListener(new View.OnClickListener() {
 				@Override
-				public void onClick(View v) {
+				public void onClick(final View v) {
 					finish();
 				}
 			});
@@ -248,7 +249,7 @@ public class BusMapActivity extends Activity {
 				}
 
 				@Override
-				public View getInfoContents(Marker marker) {
+				public View getInfoContents(final Marker marker) {
 					if (!marker.getSnippet().equals("")) {
 						final View view = views.get(marker);
 						if (!refreshingInfoWindow) {
@@ -272,7 +273,7 @@ public class BusMapActivity extends Activity {
 						if (!refreshingInfoWindow) {
 							selectedMarker = marker;
 							final String runNumber = marker.getSnippet();
-							boolean current = status.get(marker);
+							final boolean current = status.get(marker);
 							new LoadBusFollow(view, !current).execute(runNumber);
 							status.put(marker, !current);
 						}
@@ -294,16 +295,16 @@ public class BusMapActivity extends Activity {
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		busId = savedInstanceState.getInt("busId");
-		busRouteId = savedInstanceState.getString("busRouteId");
-		bounds = savedInstanceState.getStringArray("bounds");
+		busId = savedInstanceState.getInt(getString(R.string.bundle_bus_id));
+		busRouteId = savedInstanceState.getString(getString(R.string.bundle_bus_route_id));
+		bounds = savedInstanceState.getStringArray(getString(R.string.bundle_bus_bounds));
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-		savedInstanceState.putInt("busId", busId);
-		savedInstanceState.putString("busRouteId", busRouteId);
-		savedInstanceState.putStringArray("bounds", bounds);
+		savedInstanceState.putInt(getString(R.string.bundle_bus_id), busId);
+		savedInstanceState.putString(getString(R.string.bundle_bus_route_id), busRouteId);
+		savedInstanceState.putStringArray(getString(R.string.bundle_bus_bounds), bounds);
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
@@ -355,8 +356,9 @@ public class BusMapActivity extends Activity {
 			final Bitmap bitmap = busListener.getCurrentBitmap();
 			for (final Bus bus : buses) {
 				final LatLng point = new LatLng(bus.getPosition().getLatitude(), bus.getPosition().getLongitude());
-				final Marker marker = googleMap.addMarker(new MarkerOptions().position(point).title("To " + bus.getDestination()).snippet(bus.getId() + "")
-						.icon(BitmapDescriptorFactory.fromBitmap(bitmap)).anchor(0.5f, 0.5f).rotation(bus.getHeading()).flat(true));
+				final Marker marker = googleMap
+						.addMarker(new MarkerOptions().position(point).title("To " + bus.getDestination()).snippet(bus.getId() + "")
+								.icon(BitmapDescriptorFactory.fromBitmap(bitmap)).anchor(0.5f, 0.5f).rotation(bus.getHeading()).flat(true));
 				busMarkers.add(marker);
 
 				final LayoutInflater layoutInflater = (LayoutInflater) BusMapActivity.this.getBaseContext().getSystemService(
@@ -419,9 +421,7 @@ public class BusMapActivity extends Activity {
 				googleMap.addPolyline(poly);
 				j++;
 			}
-
 			busListener.setBusStationMarkers(busStationMarkers);
-
 			googleMap.setOnCameraChangeListener(busListener);
 		}
 	}
@@ -433,7 +433,7 @@ public class BusMapActivity extends Activity {
 		private boolean centerMap;
 
 		@Override
-		protected List<Bus> doInBackground(Boolean... params) {
+		protected List<Bus> doInBackground(final Boolean... params) {
 			centerMap = params[0];
 			List<Bus> buses = null;
 			final CtaConnect connect = CtaConnect.getInstance();
@@ -504,15 +504,11 @@ public class BusMapActivity extends Activity {
 
 		@Override
 		protected final Void doInBackground(final Boolean... params) {
-
 			locationManager = (LocationManager) BusMapActivity.this.getSystemService(Context.LOCATION_SERVICE);
-
 			// getting GPS status
 			isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
 			// getting network status
 			isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
 			if (!isGPSEnabled && !isNetworkEnabled) {
 				// no network provider is enabled
 				showSettingsAlert();

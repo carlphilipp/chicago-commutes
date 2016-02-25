@@ -44,21 +44,11 @@ import java.util.List;
  * @version 1
  */
 public class BusData {
-	/**
-	 * Tag
-	 **/
+
 	private static final String TAG = BusData.class.getSimpleName();
-	/**
-	 * Singleton
-	 **/
 	private static BusData busData;
-	/**
-	 * List of bus routes
-	 **/
+
 	private List<BusRoute> busRoutes;
-	/**
-	 * List of bus stop
-	 **/
 	private List<BusStop> busStops;
 
 	/**

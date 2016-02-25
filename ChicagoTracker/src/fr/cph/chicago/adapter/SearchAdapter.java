@@ -69,17 +69,13 @@ import java.util.Set;
  */
 public final class SearchAdapter extends BaseAdapter {
 
-	private List<Station> trains;
-
-	private List<BusRoute> busRoutes;
-
-	private List<BikeStation> bikeStations;
-
 	private Context context;
-
-	private SearchActivity searchActivity;
-
 	private FrameLayout container;
+
+	private List<Station> trains;
+	private List<BusRoute> busRoutes;
+	private List<BikeStation> bikeStations;
+	private SearchActivity searchActivity;
 
 	/**
 	 * Constructor
@@ -214,7 +210,7 @@ public final class SearchAdapter extends BaseAdapter {
 				final Xml xml = new Xml();
 				final String xmlResult = connect.connect(CtaRequestType.BUS_DIRECTION, reqParams);
 				busDirections = xml.parseBusDirections(xmlResult, busRoute.getId());
-			} catch (ParserException | ConnectException e) {
+			} catch (final ParserException | ConnectException e) {
 				this.trackerException = e;
 			}
 			Util.trackAction(SearchAdapter.this.searchActivity, R.string.analytics_category_req, R.string.analytics_action_get_bus,

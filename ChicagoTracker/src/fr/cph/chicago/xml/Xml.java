@@ -47,6 +47,7 @@ import java.util.List;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+// TODO to refactor and optimize
 public final class Xml {
 
 	/**

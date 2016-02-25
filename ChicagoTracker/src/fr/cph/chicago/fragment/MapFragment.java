@@ -39,15 +39,10 @@ import fr.cph.chicago.util.Util;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+// TODO Refactor
 public class MapFragment extends Fragment implements OnTouchListener {
 	/** The fragment argument representing the section number for this fragment. **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
-	/** The main activity **/
-	private MainActivity mainActivity;
-	/** The matrix **/
-	private Matrix matrix = new Matrix();
-	/** The saved matrix **/
-	private Matrix savedMatrix = new Matrix();
 	/** Mode none **/
 	private static final int NONE = 0;
 	/** Mode drag **/
@@ -56,6 +51,10 @@ public class MapFragment extends Fragment implements OnTouchListener {
 	private static final int ZOOM = 2;
 	/** Default mode **/
 	private int mode = NONE;
+	/** The matrix **/
+	private Matrix matrix = new Matrix();
+	/** The saved matrix **/
+	private Matrix savedMatrix = new Matrix();
 	/** Start point **/
 	private PointF start = new PointF();
 	/** Mid point **/
@@ -105,12 +104,6 @@ public class MapFragment extends Fragment implements OnTouchListener {
 	}
 
 	@Override
-	public final void onAttach(final Context context) {
-		super.onAttach(context);
-		mainActivity = context instanceof Activity ? (MainActivity) context : null;
-	}
-
-	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 		final ImageView view = (ImageView) v;
 		view.setScaleType(ScaleType.MATRIX);
@@ -148,7 +141,6 @@ public class MapFragment extends Fragment implements OnTouchListener {
 					savedMatrix.set(matrix);
 					matrix.set(savedMatrix);
 					matrix.postScale((float) 2, (float) 2, event.getX(0), event.getY(0));
-
 				}
 			}
 			mode = NONE;

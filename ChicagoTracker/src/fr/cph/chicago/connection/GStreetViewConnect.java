@@ -34,36 +34,20 @@ import java.net.URL;
  */
 public class GStreetViewConnect {
 
-	/**
-	 * The tag
-	 **/
 	private static final String TAG = GStreetViewConnect.class.getSimpleName();
-	/**
-	 * The base url of API
-	 **/
 	private static final String BASE_URL = "http://maps.googleapis.com/maps/api/streetview";
-	/**
-	 * The google key
-	 **/
-	private String GOOGLE_KEY;
-	/**
-	 * Width of the picture
-	 **/
 	private static final int WIDTH = 1000;
-	/**
-	 * Height of the picture
-	 **/
 	private static final int HEIGHT = 300;
-	/**
-	 * This class is a singleton
-	 **/
+
+	private String googleKey;
+
 	private static GStreetViewConnect instance = null;
 
 	/**
 	 * Private constructor, that get the API key from property file
 	 */
 	private GStreetViewConnect() {
-		GOOGLE_KEY = Util.getProperty("google.streetmap.key");
+		googleKey = Util.getProperty("google.streetmap.key");
 	}
 
 	/**
@@ -88,7 +72,7 @@ public class GStreetViewConnect {
 	public final Drawable connect(final Position position) throws IOException {
 		final StringBuilder address = new StringBuilder(BASE_URL);
 		address.append("?key=");
-		address.append(GOOGLE_KEY);
+		address.append(googleKey);
 		address.append("&sensor=false");
 		address.append("&size=" + WIDTH + "x" + HEIGHT);
 		address.append("&fov=120");

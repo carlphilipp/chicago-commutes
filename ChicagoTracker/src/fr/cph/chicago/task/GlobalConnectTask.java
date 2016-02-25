@@ -53,6 +53,7 @@ import java.util.Map.Entry;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+// TODO refactor
 public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 
 	/**

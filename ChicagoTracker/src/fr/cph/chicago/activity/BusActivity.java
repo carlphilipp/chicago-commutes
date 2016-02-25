@@ -72,32 +72,18 @@ public class BusActivity extends Activity {
 	 **/
 	private static final String TAG = BusActivity.class.getSimpleName();
 
-	private List<BusArrival> busArrivals;
-
-	private String busRouteId;
-
-	private String bound;
-
-	private Integer busStopId;
-
-	private String busStopName;
-
-	private String busRouteName;
-
-	private Double latitude, longitude;
-
-	private ImageView streetViewImage, mapImage, directionImage, favoritesImage;
-
-	private TextView streetViewText;
-
-	private LinearLayout stopsView;
-
 	private boolean isFirstLoad = true;
-
+	private List<BusArrival> busArrivals;
+	private String busRouteId, bound;
+	private Integer busStopId;
+	private String busStopName, busRouteName;
+	private Double latitude, longitude;
 	private int firstLoadCount;
-
 	private boolean isFavorite;
 
+	private ImageView streetViewImage, mapImage, directionImage, favoritesImage;
+	private TextView streetViewText;
+	private LinearLayout stopsView;
 	private SwipeRefreshLayout swipeRefreshLayout;
 
 	@Override
@@ -109,45 +95,26 @@ public class BusActivity extends Activity {
 
 			if (busStopId == null && busRouteId == null && bound == null && busStopName == null && busRouteName == null && latitude == null
 					&& longitude == null) {
-				this.busStopId = getIntent().getExtras().getInt("busStopId");
-				this.busRouteId = getIntent().getExtras().getString("busRouteId");
-				this.bound = getIntent().getExtras().getString("bound");
-
-				this.busStopName = getIntent().getExtras().getString("busStopName");
-				this.busRouteName = getIntent().getExtras().getString("busRouteName");
-
-				this.latitude = getIntent().getExtras().getDouble("latitude");
-				this.longitude = getIntent().getExtras().getDouble("longitude");
+				busStopId = getIntent().getExtras().getInt(getString(R.string.bundle_bus_stop_id));
+				busRouteId = getIntent().getExtras().getString(getString(R.string.bundle_bus_route_id));
+				bound = getIntent().getExtras().getString(getString(R.string.bundle_bus_bound));
+				busStopName = getIntent().getExtras().getString(getString(R.string.bundle_bus_stop_name));
+				busRouteName = getIntent().getExtras().getString(getString(R.string.bundle_bus_route_name));
+				latitude = getIntent().getExtras().getDouble(getString(R.string.bundle_bus_latitude));
+				longitude = getIntent().getExtras().getDouble(getString(R.string.bundle_bus_longitude));
 			}
 
 			final Position position = new Position();
 			position.setLatitude(latitude);
 			position.setLongitude(longitude);
 
-			this.isFavorite = isFavorite();
+			isFavorite = isFavorite();
 
-			this.stopsView = (LinearLayout) findViewById(R.id.activity_bus_stops);
-
-			swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_bus_stop_swipe_refresh_layout);
-			swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-				@Override
-				public void onRefresh() {
-					new LoadData().execute();
-				}
-			});
-
-			final TextView busRouteNameView = (TextView) findViewById(R.id.activity_bus_station_name);
-			busRouteNameView.setText(busStopName);
-
-			final TextView busRouteNameView2 = (TextView) findViewById(R.id.activity_bus_station_value);
-			busRouteNameView2.setText(busRouteName + " (" + bound + ")");
-
+			stopsView = (LinearLayout) findViewById(R.id.activity_bus_stops);
 			streetViewImage = (ImageView) findViewById(R.id.activity_bus_streetview_image);
 			streetViewText = (TextView) findViewById(R.id.activity_bus_steetview_text);
 			mapImage = (ImageView) findViewById(R.id.activity_bus_map_image);
-
 			directionImage = (ImageView) findViewById(R.id.activity_bus_map_direction);
-
 			favoritesImage = (ImageView) findViewById(R.id.activity_bus_favorite_star);
 			if (isFavorite) {
 				favoritesImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.ic_save_active));
@@ -158,13 +125,26 @@ public class BusActivity extends Activity {
 					BusActivity.this.switchFavorite();
 				}
 			});
+			swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_bus_stop_swipe_refresh_layout);
+			swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+				@Override
+				public void onRefresh() {
+					new LoadData().execute();
+				}
+			});
 
+			final TextView busRouteNameView = (TextView) findViewById(R.id.activity_bus_station_name);
+			busRouteNameView.setText(busStopName);
+			final TextView busRouteNameView2 = (TextView) findViewById(R.id.activity_bus_station_value);
+			final String title = busRouteName + " (" + bound + ")";
+			busRouteNameView2.setText(title);
+
+			// Load google street picture and data
 			new DisplayGoogleStreetPicture().execute(position);
-
 			new LoadData().execute();
 
+			// Toolbar
 			final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
 			toolbar.inflateMenu(R.menu.main);
 			toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
 				@Override
@@ -174,13 +154,10 @@ public class BusActivity extends Activity {
 					return false;
 				}
 			}));
-
 			Util.setToolbarColor(this, toolbar, TrainLine.NA);
-
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 				toolbar.setElevation(4);
 			}
-
 			toolbar.setTitle("Bus stop");
 			toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
 			toolbar.setOnClickListener(new View.OnClickListener() {
@@ -190,31 +167,32 @@ public class BusActivity extends Activity {
 				}
 			});
 
+			// Google analytics
 			Util.trackScreen(getResources().getString(R.string.analytics_bus_details));
 		}
 	}
 
 	@Override
-	public void onRestoreInstanceState(Bundle savedInstanceState) {
+	public void onRestoreInstanceState(final Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		busStopId = savedInstanceState.getInt("busStopId");
-		busRouteId = savedInstanceState.getString("busRouteId");
-		bound = savedInstanceState.getString("bound");
-		busStopName = savedInstanceState.getString("busStopName");
-		busRouteName = savedInstanceState.getString("busRouteName");
-		latitude = savedInstanceState.getDouble("latitude");
-		longitude = savedInstanceState.getDouble("longitude");
+		busStopId = savedInstanceState.getInt(getString(R.string.bundle_bus_stop_id));
+		busRouteId = savedInstanceState.getString(getString(R.string.bundle_bus_route_id));
+		bound = savedInstanceState.getString(getString(R.string.bundle_bus_bound));
+		busStopName = savedInstanceState.getString(getString(R.string.bundle_bus_stop_name));
+		busRouteName = savedInstanceState.getString(getString(R.string.bundle_bus_route_name));
+		latitude = savedInstanceState.getDouble(getString(R.string.bundle_bus_latitude));
+		longitude = savedInstanceState.getDouble(getString(R.string.bundle_bus_longitude));
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle savedInstanceState) {
-		savedInstanceState.putInt("busStopId", busStopId);
-		savedInstanceState.putString("busRouteId", busRouteId);
-		savedInstanceState.putString("bound", bound);
-		savedInstanceState.putString("busStopName", busStopName);
-		savedInstanceState.putString("busRouteName", busRouteName);
-		savedInstanceState.putDouble("latitude", latitude);
-		savedInstanceState.putDouble("longitude", longitude);
+	public void onSaveInstanceState(final Bundle savedInstanceState) {
+		savedInstanceState.putInt(getString(R.string.bundle_bus_stop_id), busStopId);
+		savedInstanceState.putString(getString(R.string.bundle_bus_route_id), busRouteId);
+		savedInstanceState.putString(getString(R.string.bundle_bus_bound), bound);
+		savedInstanceState.putString(getString(R.string.bundle_bus_stop_name), busStopName);
+		savedInstanceState.putString(getString(R.string.bundle_bus_route_name), busRouteName);
+		savedInstanceState.putDouble(getString(R.string.bundle_bus_latitude), latitude);
+		savedInstanceState.putDouble(getString(R.string.bundle_bus_longitude), longitude);
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
@@ -232,21 +210,25 @@ public class BusActivity extends Activity {
 			if (busArrivals.size() != 0) {
 				for (final BusArrival arrival : busArrivals) {
 					if (arrival.getRouteDirection().equals(bound)) {
-						String destination = arrival.getBusDestination();
+						final String destination = arrival.getBusDestination();
 						if (mapRes.containsKey(destination)) {
 							final TextView arrivalView = mapRes.get(destination);
+							String arrivalText;
 							if (arrival.getIsDly()) {
-								arrivalView.setText(arrivalView.getText() + " Delay");
+								arrivalText = arrivalView.getText() + " Delay";
 							} else {
-								arrivalView.setText(arrivalView.getText() + " " + arrival.getTimeLeft());
+								arrivalText = arrivalView.getText() + " " + arrival.getTimeLeft();
 							}
+							arrivalView.setText(arrivalText);
 						} else {
 							final TextView arrivalView = new TextView(ChicagoTracker.getContext());
+							String arrivalText;
 							if (arrival.getIsDly()) {
-								arrivalView.setText(arrival.getBusDestination() + ": Delay");
+								arrivalText = arrival.getBusDestination() + ": Delay";
 							} else {
-								arrivalView.setText(arrival.getBusDestination() + ": " + arrival.getTimeLeft());
+								arrivalText = arrival.getBusDestination() + ": " + arrival.getTimeLeft();
 							}
+							arrivalView.setText(arrivalText);
 							arrivalView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
 							mapRes.put(destination, arrivalView);
 						}
@@ -254,15 +236,14 @@ public class BusActivity extends Activity {
 				}
 			} else {
 				final TextView arrivalView = new TextView(ChicagoTracker.getContext());
-				arrivalView.setTextColor(ChicagoTracker.getContext().getResources().getColor(R.color.grey));
-				arrivalView.setText("No service scheduled");
+				arrivalView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
+				arrivalView.setText(getString(R.string.bus_activity_no_service));
 				mapRes.put("", arrivalView);
 			}
 			stopsView.removeAllViews();
 			for (final Entry<String, TextView> entry : mapRes.entrySet()) {
 				stopsView.addView(entry.getValue());
 			}
-
 		}
 	}
 
@@ -302,10 +283,8 @@ public class BusActivity extends Activity {
 			final CtaConnect connect = CtaConnect.getInstance();
 			try {
 				final Xml xml = new Xml();
-
 				// Connect to CTA API bus to get XML result of inc buses
 				final String xmlResult = connect.connect(CtaRequestType.BUS_ARRIVALS, reqParams);
-
 				// Parse and return arrival buses
 				return xml.parseBusArrivals(xmlResult);
 			} catch (ParserException | ConnectException e) {
@@ -371,7 +350,7 @@ public class BusActivity extends Activity {
 			final ViewGroup.LayoutParams params2 = BusActivity.this.streetViewImage.getLayoutParams();
 			params2.height = height;
 			params2.width = params.width;
-			BusActivity.this.streetViewText.setText("Street view");
+			BusActivity.this.streetViewText.setText(getString(R.string.bus_activity_street_view_text));
 			BusActivity.this.streetViewImage.setLayoutParams(params2);
 			BusActivity.this.streetViewImage.setImageDrawable(result);
 			BusActivity.this.streetViewImage.setOnClickListener(new View.OnClickListener() {
@@ -387,7 +366,7 @@ public class BusActivity extends Activity {
 						// Redirect to browser if the user does not have google map installed
 						uri = String.format(Locale.ENGLISH, "http://maps.google.com/maps?q=&layer=c&cbll=%f,%f&cbp=11,0,0,0,0",
 								position.getLatitude(), position.getLongitude());
-						Intent unrestrictedIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+						final Intent unrestrictedIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
 						startActivity(unrestrictedIntent);
 					}
 				}
@@ -439,9 +418,9 @@ public class BusActivity extends Activity {
 			isFavorite = true;
 		}
 		if (isFavorite) {
-			favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_active));
+			favoritesImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.ic_save_active));
 		} else {
-			favoritesImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_save_disabled));
+			favoritesImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.ic_save_disabled));
 		}
 	}
 }

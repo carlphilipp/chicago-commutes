@@ -150,7 +150,7 @@ public class CtaConnect {
 			address = new StringBuilder(BASE_URL_BUS_PATTERN + "?key=" + CTA_BUS_KEY);
 			break;
 		default:
-			break;
+			address = new StringBuilder();
 		}
 		for (final Entry<String, Collection<String>> entry : params.asMap().entrySet()) {
 			final String key = entry.getKey();

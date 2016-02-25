@@ -43,18 +43,11 @@ import java.util.Set;
  * @version 1
  */
 public final class TrainAdapter extends BaseAdapter {
-	/**
-	 * List of stations
-	 **/
-	private List<Station> stations;
-	/**
-	 * The context
-	 **/
+
 	private Context context;
-
 	private Activity activity;
-
 	private FrameLayout container;
+	private List<Station> stations;
 
 	/**
 	 * Constructor
@@ -100,20 +93,22 @@ public final class TrainAdapter extends BaseAdapter {
 		stationNameView.setText(station.getName());
 
 		int index = 0;
-		for (final TrainLine tl : lines) {
-			TextView textView = new TextView(context);
-			textView.setBackgroundColor(tl.getColor());
-			textView.setText(" ");
-			textView.setTextSize(context.getResources().getDimension(R.dimen.activity_list_station_colors));
-			stationColorView.addView(textView);
-			if (index != lines.size()) {
-				textView = new TextView(context);
-				textView.setText("");
-				textView.setPadding(0, 0, (int) context.getResources().getDimension(R.dimen.activity_list_station_colors_space), 0);
+		if (lines != null) {
+			for (final TrainLine tl : lines) {
+				TextView textView = new TextView(context);
+				textView.setBackgroundColor(tl.getColor());
+				textView.setText(" ");
 				textView.setTextSize(context.getResources().getDimension(R.dimen.activity_list_station_colors));
 				stationColorView.addView(textView);
+				if (index != lines.size()) {
+					textView = new TextView(context);
+					textView.setText("");
+					textView.setPadding(0, 0, (int) context.getResources().getDimension(R.dimen.activity_list_station_colors_space), 0);
+					textView.setTextSize(context.getResources().getDimension(R.dimen.activity_list_station_colors));
+					stationColorView.addView(textView);
+				}
+				index++;
 			}
-			index++;
 		}
 		convertView.setOnClickListener(new FavoritesTrainOnClickListener(activity, container, station.getId(), lines));
 		return convertView;

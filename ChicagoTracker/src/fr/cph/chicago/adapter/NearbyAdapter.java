@@ -63,58 +63,28 @@ import java.util.Set;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+// TODO to analyze and refactor
 public final class NearbyAdapter extends BaseAdapter {
-	/**
-	 * The context
-	 **/
-	private Context context;
-	/**
-	 * The bus data
-	 **/
-	private BusData busData;
-	/**
-	 * List of bus stop
-	 **/
-	private List<BusStop> busStops;
-	/**
-	 * Bus arrivals
-	 **/
-	private SparseArray<Map<String, List<BusArrival>>> busArrivals;
-	/**
-	 * Trian arrivals
-	 **/
-	private SparseArray<TrainArrival> trainArrivals;
-	/**
-	 * List of stations
-	 **/
-	private List<Station> stations;
-	/**
-	 * Google map
-	 **/
+
 	private GoogleMap googleMap;
-	/**
-	 * Markers on the map
-	 **/
+	private Context context;
+	private MainActivity activity;
+
+	private BusData busData;
+	private SparseArray<Map<String, List<BusArrival>>> busArrivals;
+	private SparseArray<TrainArrival> trainArrivals;
+	private List<BusStop> busStops;
+	private List<Station> stations;
 	private List<Marker> markers;
-	/**
-	 * Layout ids
-	 **/
-	private Map<String, Integer> ids;
-	/**
-	 * Layouts
-	 **/
-	private Map<Integer, LinearLayout> layouts;
-	/**
-	 * View
-	 **/
-	private Map<Integer, View> views;
-	/**
-	 * List of bike stations
-	 **/
 	private List<BikeStation> bikeStations;
+	private Map<String, Integer> ids;
+	private Map<Integer, LinearLayout> layouts;
+	private Map<Integer, View> views;
+
 
 	@SuppressLint("UseSparseArrays")
 	public NearbyAdapter(final MainActivity activity) {
+		this.activity = activity;
 		this.context = ChicagoTracker.getContext();
 		this.busStops = new ArrayList<>();
 		this.busArrivals = new SparseArray<>();
@@ -134,7 +104,7 @@ public final class NearbyAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public final Object getItem(int position) {
+	public final Object getItem(final int position) {
 		Object res;
 		if (position < stations.size()) {
 			res = stations.get(position);
@@ -142,8 +112,8 @@ public final class NearbyAdapter extends BaseAdapter {
 			int index = position - stations.size();
 			res = busStops.get(index);
 		} else {
-			int indice = position - (stations.size() + busStops.size());
-			res = bikeStations.get(indice);
+			int index = position - (stations.size() + busStops.size());
+			res = bikeStations.get(index);
 		}
 		return res;
 	}
@@ -235,79 +205,81 @@ public final class NearbyAdapter extends BaseAdapter {
 				}
 			}
 
-			for (final TrainLine tl : setTL) {
-				if (trainArrivals.get(station.getId()) != null) {
-					final List<Eta> etas = trainArrivals.get(station.getId()).getEtas(tl);
-					if (etas.size() != 0) {
-						final String key = station.getName() + "_" + tl.toString() + "_h";
-						final String key2 = station.getName() + "_" + tl.toString() + "_v";
-						final Integer idLayout = ids.get(key);
-						final Integer idLayout2 = ids.get(key2);
+			if (setTL != null) {
+				for (final TrainLine tl : setTL) {
+					if (trainArrivals.get(station.getId()) != null) {
+						final List<Eta> etas = trainArrivals.get(station.getId()).getEtas(tl);
+						if (etas.size() != 0) {
+							final String key = station.getName() + "_" + tl.toString() + "_h";
+							final String key2 = station.getName() + "_" + tl.toString() + "_v";
+							final Integer idLayout = ids.get(key);
+							final Integer idLayout2 = ids.get(key2);
 
-						final LinearLayout llh, llv;
-						if (idLayout == null) {
-							llh = new LinearLayout(context);
-							// llh.setBackgroundResource(R.drawable.border);
-							llh.setLayoutParams(paramsLayout);
-							llh.setOrientation(LinearLayout.HORIZONTAL);
-							llh.setPadding(line1PaddingColor, stopsPaddingTop, 0, 0);
-							final int id = Util.generateViewId();
-							llh.setId(id);
-							ids.put(key, id);
+							final LinearLayout llh, llv;
+							if (idLayout == null) {
+								llh = new LinearLayout(context);
+								// llh.setBackgroundResource(R.drawable.border);
+								llh.setLayoutParams(paramsLayout);
+								llh.setOrientation(LinearLayout.HORIZONTAL);
+								llh.setPadding(line1PaddingColor, stopsPaddingTop, 0, 0);
+								final int id = Util.generateViewId();
+								llh.setId(id);
+								ids.put(key, id);
 
-							final TextView tlView = new TextView(context);
-							tlView.setBackgroundColor(tl.getColor());
-							tlView.setText("   ");
-							tlView.setLayoutParams(paramsTextView);
-							llh.addView(tlView);
+								final TextView tlView = new TextView(context);
+								tlView.setBackgroundColor(tl.getColor());
+								tlView.setText("   ");
+								tlView.setLayoutParams(paramsTextView);
+								llh.addView(tlView);
 
-							llv = new LinearLayout(context);
-							llv.setLayoutParams(paramsLayout);
-							llv.setOrientation(LinearLayout.VERTICAL);
-							llv.setPadding(line1PaddingColor, 0, 0, 0);
-							final int id2 = Util.generateViewId();
-							llv.setId(id2);
-							ids.put(key2, id2);
+								llv = new LinearLayout(context);
+								llv.setLayoutParams(paramsLayout);
+								llv.setOrientation(LinearLayout.VERTICAL);
+								llv.setPadding(line1PaddingColor, 0, 0, 0);
+								final int id2 = Util.generateViewId();
+								llv.setId(id2);
+								ids.put(key2, id2);
 
-							llh.addView(llv);
-							resultLayout.addView(llh);
+								llh.addView(llv);
+								resultLayout.addView(llh);
 
-						} else {
-							llh = (LinearLayout) resultLayout.findViewById(idLayout);
-							llv = (LinearLayout) resultLayout.findViewById(idLayout2);
-						}
-						for (final Eta eta : etas) {
-							final Stop stop = eta.getStop();
-							final String key3 = (station.getName() + "_" + tl.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName());
-							final Integer idLayout3 = ids.get(key3);
-							if (idLayout3 == null) {
-								final LinearLayout insideLayout = new LinearLayout(context);
-								insideLayout.setOrientation(LinearLayout.HORIZONTAL);
-								insideLayout.setLayoutParams(paramsArrival);
-								final int newId = Util.generateViewId();
-								insideLayout.setId(newId);
-								ids.put(key3, newId);
-
-								final TextView stopName = new TextView(context);
-								stopName.setText(eta.getDestName() + ": ");
-								stopName.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
-								insideLayout.addView(stopName);
-
-								final TextView timing = new TextView(context);
-								timing.setText(eta.getTimeLeftDueDelay() + " ");
-								timing.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
-								timing.setLines(1);
-								timing.setEllipsize(TruncateAt.END);
-								insideLayout.addView(timing);
-
-								llv.addView(insideLayout);
 							} else {
-								// llv can be null sometimes (after a remove from favorites for example)
-								if (llv != null) {
-									final LinearLayout insideLayout = (LinearLayout) llv.findViewById(idLayout3);
-									// InsideLayout can be null too if removed before
-									final TextView timing = (TextView) insideLayout.getChildAt(1);
-									timing.setText(timing.getText() + eta.getTimeLeftDueDelay() + " ");
+								llh = (LinearLayout) resultLayout.findViewById(idLayout);
+								llv = (LinearLayout) resultLayout.findViewById(idLayout2);
+							}
+							for (final Eta eta : etas) {
+								final Stop stop = eta.getStop();
+								final String key3 = (station.getName() + "_" + tl.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName());
+								final Integer idLayout3 = ids.get(key3);
+								if (idLayout3 == null) {
+									final LinearLayout insideLayout = new LinearLayout(context);
+									insideLayout.setOrientation(LinearLayout.HORIZONTAL);
+									insideLayout.setLayoutParams(paramsArrival);
+									final int newId = Util.generateViewId();
+									insideLayout.setId(newId);
+									ids.put(key3, newId);
+
+									final TextView stopName = new TextView(context);
+									stopName.setText(eta.getDestName() + ": ");
+									stopName.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
+									insideLayout.addView(stopName);
+
+									final TextView timing = new TextView(context);
+									timing.setText(eta.getTimeLeftDueDelay() + " ");
+									timing.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
+									timing.setLines(1);
+									timing.setEllipsize(TruncateAt.END);
+									insideLayout.addView(timing);
+
+									llv.addView(insideLayout);
+								} else {
+									// llv can be null sometimes (after a remove from favorites for example)
+									if (llv != null) {
+										final LinearLayout insideLayout = (LinearLayout) llv.findViewById(idLayout3);
+										// InsideLayout can be null too if removed before
+										final TextView timing = (TextView) insideLayout.getChildAt(1);
+										timing.setText(timing.getText() + eta.getTimeLeftDueDelay() + " ");
+									}
 								}
 							}
 						}
@@ -315,11 +287,11 @@ public final class NearbyAdapter extends BaseAdapter {
 				}
 			}
 		} else if (position < stations.size() + busStops.size()) {
-			final int indice = position - stations.size();
-			final BusStop busStop = busStops.get(indice);
+			final int index = position - stations.size();
+			final BusStop busStop = busStops.get(index);
 
 			final TextView typeView = (TextView) convertView.findViewById(R.id.train_bus_type);
-			typeView.setText("B");
+			typeView.setText(activity.getString(R.string.B));
 
 			final TextView routeView = (TextView) convertView.findViewById(R.id.station_name);
 			routeView.setText(busStop.getName());
@@ -356,7 +328,7 @@ public final class NearbyAdapter extends BaseAdapter {
 					}
 
 					final TextView tlView = new TextView(context);
-					tlView.setBackgroundColor(context.getResources().getColor(R.color.black));
+					tlView.setBackgroundColor(ContextCompat.getColor(context, R.color.black));
 					tlView.setText("   ");
 					tlView.setLayoutParams(paramsTextView);
 					llh.addView(tlView);
@@ -374,13 +346,13 @@ public final class NearbyAdapter extends BaseAdapter {
 					final TextView bound = new TextView(context);
 					final String routeId = busData.getRoute(buses.get(0).getRouteId()).getId();
 					bound.setText(routeId + " (" + key2 + "): ");
-					bound.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
+					bound.setTextColor(ContextCompat.getColor(context, R.color.grey_5));
 					boundLayout.addView(bound);
 
 					for (final BusArrival arri : buses) {
 						final TextView timeView = new TextView(context);
 						timeView.setText(arri.getTimeLeftDueDelay() + " ");
-						timeView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
+						timeView.setTextColor(ContextCompat.getColor(context, R.color.grey));
 						timeView.setLines(1);
 						timeView.setEllipsize(TruncateAt.END);
 						boundLayout.addView(timeView);
@@ -408,7 +380,7 @@ public final class NearbyAdapter extends BaseAdapter {
 			llh.setPadding(line1PaddingColor, stopsPaddingTop, 0, 0);
 
 			final TextView tlView = new TextView(context);
-			tlView.setBackgroundColor(context.getResources().getColor(R.color.black));
+			tlView.setBackgroundColor(ContextCompat.getColor(context, R.color.black));
 			tlView.setText("   ");
 			tlView.setLayoutParams(paramsTextView);
 			llh.addView(tlView);
@@ -421,16 +393,16 @@ public final class NearbyAdapter extends BaseAdapter {
 			availableBikes.setPadding(line1PaddingColor, 0, 0, 0);
 
 			final TextView availableBike = new TextView(context);
-			availableBike.setText("Available bikes: ");
-			availableBike.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
+			availableBike.setText(activity.getString(R.string.bike_available_bikes));
+			availableBike.setTextColor(ContextCompat.getColor(context, R.color.grey_5));
 			availableBikes.addView(availableBike);
 
 			final TextView amountBike = new TextView(context);
 			amountBike.setText("" + bikeStation.getAvailableBikes());
 			if (bikeStation.getAvailableBikes() == 0) {
-				amountBike.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.red));
+				amountBike.setTextColor(ContextCompat.getColor(context, R.color.red));
 			} else {
-				amountBike.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.green));
+				amountBike.setTextColor(ContextCompat.getColor(context, R.color.green));
 			}
 			availableBikes.addView(amountBike);
 
@@ -441,16 +413,16 @@ public final class NearbyAdapter extends BaseAdapter {
 			availableDocks.setPadding(line1PaddingColor, 0, 0, 0);
 
 			final TextView availableDock = new TextView(context);
-			availableDock.setText("Available docks: ");
-			availableDock.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
+			availableDock.setText(activity.getString(R.string.bike_available_docks));
+			availableDock.setTextColor(ContextCompat.getColor(context, R.color.grey_5));
 			availableDocks.addView(availableDock);
 
 			final TextView amountDock = new TextView(context);
 			amountDock.setText("" + bikeStation.getAvailableDocks());
 			if (bikeStation.getAvailableDocks() == 0) {
-				amountDock.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.red));
+				amountDock.setTextColor(ContextCompat.getColor(context, R.color.red));
 			} else {
-				amountDock.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.green));
+				amountDock.setTextColor(ContextCompat.getColor(context, R.color.green));
 			}
 			availableDocks.addView(amountDock);
 

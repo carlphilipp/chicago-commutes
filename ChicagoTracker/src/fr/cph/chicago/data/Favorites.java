@@ -39,25 +39,20 @@ import java.util.TreeMap;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+// TODO to analyze and refactor
 public class Favorites {
-	/** The list of train arrival **/
-	private SparseArray<TrainArrival> trainArrivals;
-	/** The list of bus arrival **/
-	private List<BusArrival> busArrivals;
-	/** Bike stations **/
-	private List<BikeStation> bikeStations;
-	/** The list of train favorites **/
-	private List<Integer> trainFavorites;
-	/** THe list of bus favorites **/
-	private List<String> busFavorites;
-	/** The list of bike favorites **/
-	private List<String> bikeFavorites;
-	/** The list of fake bus favorites **/
-	private List<String> fakeBusFavorites;
-	/** Train data **/
+
 	private TrainData trainData;
-	/** Bus data **/
 	private BusData busData;
+
+	private SparseArray<TrainArrival> trainArrivals;
+	private List<BusArrival> busArrivals;
+	private List<BikeStation> bikeStations;
+	private List<Integer> trainFavorites;
+	private List<String> busFavorites;
+	private List<String> bikeFavorites;
+	private List<String> fakeBusFavorites;
+
 
 	/**
 	 * Public constructor
@@ -66,7 +61,6 @@ public class Favorites {
 		this.trainArrivals = new SparseArray<>();
 		this.busArrivals = new ArrayList<>();
 		this.bikeStations = new ArrayList<>();
-
 		this.trainFavorites = new ArrayList<>();
 		this.busFavorites = new ArrayList<>();
 		this.fakeBusFavorites = new ArrayList<>();
@@ -413,6 +407,7 @@ public class Favorites {
 	 *
 	 * @param busArrivals
 	 */
+	// TODO Do that when populating the list
 	private void removeDuplicates(final List<BusArrival> busArrivals) {
 		final Set<BusArrival> stBusArrivals = new LinkedHashSet<>(busArrivals);
 		busArrivals.clear();

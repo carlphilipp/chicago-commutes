@@ -96,6 +96,7 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 
 			final int[] screenSize = Util.getScreenSize();
 			final PopupWindow popup = new PopupWindow(popupView, (int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
+			// TODO see why this is never used. Refactor
 			final List<BusArrival> busArrivals = new ArrayList<>();
 
 			final ListView listView = (ListView) popupView.findViewById(R.id.details);
