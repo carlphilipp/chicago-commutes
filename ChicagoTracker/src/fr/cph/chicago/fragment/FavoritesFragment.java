@@ -132,12 +132,13 @@ public class FavoritesFragment extends Fragment {
 			floatingButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(final View v) {
+					Log.e(TAG, "bikeStations " + bikeStations.size());
 					final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mainActivity);
 					final boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
-					startSearchActivityWhenReady(loadBike);
+					startSearchActivityIfReady(loadBike);
 				}
 
-				private void startSearchActivityWhenReady(final boolean loadBike) {
+				private void startSearchActivityIfReady(final boolean loadBike) {
 					if (loadBike && bikeStations.isEmpty()) {
 						Toast.makeText(mainActivity, "You are a bit fast! Try again in a second!", Toast.LENGTH_SHORT).show();
 					} else {
@@ -295,6 +296,7 @@ public class FavoritesFragment extends Fragment {
 			favoritesAdapter.refreshUpdated();
 			favoritesAdapter.refreshUpdatedView();
 			favoritesAdapter.notifyDataSetChanged();
+			this.bikeStations = bikeStations;
 		}
 		// Highlight background
 		rootView.setBackgroundResource(R.drawable.highlight_selector);
@@ -347,7 +349,7 @@ public class FavoritesFragment extends Fragment {
 	private class RefreshTask extends AsyncTask<Void, Void, Void> {
 
 		@Override
-		protected final void onProgressUpdate(Void... values) {
+		protected final void onProgressUpdate(final Void... values) {
 			super.onProgressUpdate();
 			favoritesAdapter.refreshUpdatedView();
 		}
