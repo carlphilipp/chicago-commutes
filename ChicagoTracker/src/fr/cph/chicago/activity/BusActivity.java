@@ -247,7 +247,7 @@ public class BusActivity extends Activity {
 							} else {
 								arrivalView.setText(arrival.getBusDestination() + ": " + arrival.getTimeLeft());
 							}
-							arrivalView.setTextColor(ChicagoTracker.getContext().getResources().getColor(R.color.grey));
+							arrivalView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
 							mapRes.put(destination, arrivalView);
 						}
 					}

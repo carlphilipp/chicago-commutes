@@ -22,6 +22,7 @@ import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Display;
@@ -268,8 +269,8 @@ public class Util {
 			statusBarColor = R.color.primaryColorDark;
 			break;
 		}
-		toolbar.setBackgroundColor(activity.getResources().getColor(backgroundColor));
-		toolbar.setTitleTextColor(activity.getResources().getColor(R.color.white));
+		toolbar.setBackgroundColor(ContextCompat.getColor(ChicagoTracker.getContext(), backgroundColor));
+		toolbar.setTitleTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.white));
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			activity.getWindow().setStatusBarColor(activity.getResources().getColor(statusBarColor));
 		}

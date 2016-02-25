@@ -217,7 +217,7 @@ public class StationActivity extends Activity {
 					});
 					checkBox.setChecked(Preferences.getTrainFilter(stationId, line, stop.getDirection()));
 					checkBox.setText(stop.getDirection().toString());
-					checkBox.setTextColor(getResources().getColor(R.color.grey));
+					checkBox.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
 					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 						checkBox.setBackgroundTintList(ColorStateList.valueOf(line.getColor()));
 						checkBox.setButtonTintList(ColorStateList.valueOf(line.getColor()));
@@ -536,13 +536,13 @@ public class StationActivity extends Activity {
 
 				final TextView stopName = new TextView(this);
 				stopName.setText(eta.getDestName() + ": ");
-				stopName.setTextColor(getResources().getColor(R.color.grey));
+				stopName.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
 				stopName.setPadding(line3Padding, 0, 0, 0);
 				insideLayout.addView(stopName);
 
 				final TextView timing = new TextView(this);
 				timing.setText(eta.getTimeLeftDueDelay() + " ");
-				timing.setTextColor(getResources().getColor(R.color.grey));
+				timing.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
 				timing.setLines(1);
 				timing.setEllipsize(TruncateAt.END);
 				insideLayout.addView(timing);

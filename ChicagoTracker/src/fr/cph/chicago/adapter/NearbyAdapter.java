@@ -290,12 +290,12 @@ public final class NearbyAdapter extends BaseAdapter {
 
 								final TextView stopName = new TextView(context);
 								stopName.setText(eta.getDestName() + ": ");
-								stopName.setTextColor(context.getResources().getColor(R.color.grey_5));
+								stopName.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
 								insideLayout.addView(stopName);
 
 								final TextView timing = new TextView(context);
 								timing.setText(eta.getTimeLeftDueDelay() + " ");
-								timing.setTextColor(context.getResources().getColor(R.color.grey));
+								timing.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
 								timing.setLines(1);
 								timing.setEllipsize(TruncateAt.END);
 								insideLayout.addView(timing);
@@ -374,13 +374,13 @@ public final class NearbyAdapter extends BaseAdapter {
 					final TextView bound = new TextView(context);
 					final String routeId = busData.getRoute(buses.get(0).getRouteId()).getId();
 					bound.setText(routeId + " (" + key2 + "): ");
-					bound.setTextColor(context.getResources().getColor(R.color.grey_5));
+					bound.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
 					boundLayout.addView(bound);
 
 					for (final BusArrival arri : buses) {
 						final TextView timeView = new TextView(context);
 						timeView.setText(arri.getTimeLeftDueDelay() + " ");
-						timeView.setTextColor(context.getResources().getColor(R.color.grey));
+						timeView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
 						timeView.setLines(1);
 						timeView.setEllipsize(TruncateAt.END);
 						boundLayout.addView(timeView);
@@ -422,15 +422,15 @@ public final class NearbyAdapter extends BaseAdapter {
 
 			final TextView availableBike = new TextView(context);
 			availableBike.setText("Available bikes: ");
-			availableBike.setTextColor(context.getResources().getColor(R.color.grey_5));
+			availableBike.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
 			availableBikes.addView(availableBike);
 
 			final TextView amountBike = new TextView(context);
 			amountBike.setText("" + bikeStation.getAvailableBikes());
 			if (bikeStation.getAvailableBikes() == 0) {
-				amountBike.setTextColor(context.getResources().getColor(R.color.red));
+				amountBike.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.red));
 			} else {
-				amountBike.setTextColor(context.getResources().getColor(R.color.green));
+				amountBike.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.green));
 			}
 			availableBikes.addView(amountBike);
 
@@ -442,15 +442,15 @@ public final class NearbyAdapter extends BaseAdapter {
 
 			final TextView availableDock = new TextView(context);
 			availableDock.setText("Available docks: ");
-			availableDock.setTextColor(context.getResources().getColor(R.color.grey_5));
+			availableDock.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
 			availableDocks.addView(availableDock);
 
 			final TextView amountDock = new TextView(context);
 			amountDock.setText("" + bikeStation.getAvailableDocks());
 			if (bikeStation.getAvailableDocks() == 0) {
-				amountDock.setTextColor(context.getResources().getColor(R.color.red));
+				amountDock.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.red));
 			} else {
-				amountDock.setTextColor(context.getResources().getColor(R.color.green));
+				amountDock.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.green));
 			}
 			availableDocks.addView(amountDock);
 

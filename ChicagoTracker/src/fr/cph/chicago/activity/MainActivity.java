@@ -68,25 +68,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	private static final String SELECTED_ID = "SELECTED_ID";
 	private static final int POSITION_BUS = 2;
 
-	private FavoritesFragment favoritesFragment;
-
-	private TrainFragment trainFragment;
-
-	private BusFragment busFragment;
-
-	private BikeFragment bikeFragment;
-
-	private NearbyFragment nearbyFragment;
-
-	private SettingsFragment settingsFragment;
-
 	private int currentPosition;
 
 	private Toolbar toolbar;
-
 	private DrawerLayout mDrawerLayout;
-
 	private ActionBarDrawerToggle drawerToggle;
+
+	private FavoritesFragment favoritesFragment;
+	private TrainFragment trainFragment;
+	private BusFragment busFragment;
+	private BikeFragment bikeFragment;
+	private NearbyFragment nearbyFragment;
+	private SettingsFragment settingsFragment;
 
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
@@ -147,8 +140,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 						}
 						try {
 							final GlobalConnectTask task = new GlobalConnectTask(favoritesFragment, FavoritesFragment.class,
-									CtaRequestType.TRAIN_ARRIVALS,
-									params, CtaRequestType.BUS_ARRIVALS, params2, loadTrain, loadBus, loadBike);
+									CtaRequestType.TRAIN_ARRIVALS, params, CtaRequestType.BUS_ARRIVALS, params2, loadTrain, loadBus, loadBike);
 							task.execute((Void) null);
 						} catch (final ParserException e) {
 							ChicagoTracker.displayError(MainActivity.this, e);
@@ -362,7 +354,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			}
 
 			// Load divvy
-			bikeStations = new ArrayList<>();
+			//bikeStations = new ArrayList<>();
 			if (loadBike) {
 				try {
 					final Json json = new Json();
@@ -381,7 +373,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		}
 
 		@Override
-		protected final void onProgressUpdate(Void... progress) {
+		protected final void onProgressUpdate(final Void... progress) {
 		}
 
 		@Override

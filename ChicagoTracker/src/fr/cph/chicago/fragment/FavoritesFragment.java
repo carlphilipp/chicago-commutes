@@ -290,7 +290,6 @@ public class FavoritesFragment extends Fragment {
 		} else {
 			// Put into intent new bike stations data
 			mainActivity.getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
-			//mainActivity.onNewIntent(mainActivity.getIntent());
 
 			favoritesAdapter.setArrivalsAndBikeStations(trainArrivals, busArrivals, bikeStations);
 			favoritesAdapter.refreshUpdated();

@@ -18,6 +18,7 @@ package fr.cph.chicago.adapter;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -73,7 +74,7 @@ public class TrainMapSnippetAdapter extends BaseAdapter {
 			final TextView time = (TextView) convertView.findViewById(R.id.time);
 			time.setText(eta.getTimeLeftDueDelay());
 		} else {
-			name.setTextColor(ChicagoTracker.getContext().getResources().getColor(R.color.grey));
+			name.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
 			name.setTypeface(null, Typeface.BOLD);
 			name.setGravity(Gravity.CENTER);
 		}
