@@ -103,6 +103,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		itemSelection(currentPosition);
 	}
 
+	@Override
+	public void onBackPressed() {
+		if (currentPosition == R.id.navigation_favorites) {
+			finish();
+		} else {
+			itemSelection(R.id.navigation_favorites);
+		}
+	}
+
 	private void initView() {
 		final NavigationView mDrawer = (NavigationView) findViewById(R.id.main_drawer);
 		mDrawer.setNavigationItemSelectedListener(this);

@@ -119,7 +119,7 @@ public class BusBoundActivity extends ListActivity {
 			setContentView(R.layout.activity_bus_bound);
 
 			if (busRouteId == null && busRouteName == null && bound == null) {
-				busRouteId = getIntent().getExtras().getString(getString(R.string.bundle_bus_stop_id));
+				busRouteId = getIntent().getExtras().getString(getString(R.string.bundle_bus_route_id));
 				busRouteName = getIntent().getExtras().getString(getString(R.string.bundle_bus_route_name));
 				bound = getIntent().getExtras().getString(getString(R.string.bundle_bus_bound));
 			}
