@@ -102,7 +102,7 @@ public class BikeStationActivity extends Activity {
 			bikeStation = getIntent().getExtras().getParcelable("station");
 
 			// Call google street api to load image
-			new DisplayGoogleStreetPicture().execute(bikeStation.getPosition());
+			new DisplayGoogleStreetPicture().execute(bikeStation.getLatitude(), bikeStation.getLongitude());
 
 			isFavorite = isFavorite();
 
@@ -272,18 +272,20 @@ public class BikeStationActivity extends Activity {
 	 * @author Carl-Philipp Harmant
 	 * @version 1
 	 */
-	private final class DisplayGoogleStreetPicture extends AsyncTask<Position, Void, Drawable> {
+	private final class DisplayGoogleStreetPicture extends AsyncTask<Double, Void, Drawable> {
 
-		private Position position;
+		private Double latitude;
+		private Double longitude;
 
 		@Override
-		protected final Drawable doInBackground(final Position... params) {
+		protected final Drawable doInBackground(final Double... params) {
 			try {
 				final GStreetViewConnect connect = GStreetViewConnect.getInstance();
-				this.position = params[0];
+				latitude = params[0];
+				longitude = params[1];
 				Util.trackAction(BikeStationActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_google,
 						R.string.analytics_action_get_google_map_street_view, 0);
-				return connect.connect(position);
+				return connect.connect(latitude, longitude);
 			} catch (IOException e) {
 				Log.e(TAG, "Error while connecting to google street view API", e);
 				return null;
@@ -303,15 +305,15 @@ public class BikeStationActivity extends Activity {
 			BikeStationActivity.this.streetViewImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					String uri = String.format(Locale.ENGLISH, "google.streetview:cbll=%f,%f&cbp=1,180,,0,1&mz=1", position.getLatitude(),
-							position.getLongitude());
+					String uri = String.format(Locale.ENGLISH, "google.streetview:cbll=%f,%f&cbp=1,180,,0,1&mz=1", latitude,
+							longitude);
 					final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
 					intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
 					try {
 						startActivity(intent);
 					} catch (final ActivityNotFoundException ex) {
 						uri = String.format(Locale.ENGLISH, "http://maps.google.com/maps?q=&layer=c&cbll=%f,%f&cbp=11,0,0,0,0",
-								position.getLatitude(), position.getLongitude());
+								latitude, longitude);
 						final Intent unrestrictedIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
 						startActivity(unrestrictedIntent);
 					}
@@ -321,7 +323,7 @@ public class BikeStationActivity extends Activity {
 			BikeStationActivity.this.mapImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					final String uri = "http://maps.google.com/maps?z=12&t=m&q=loc:" + position.getLatitude() + "+" + position.getLongitude();
+					final String uri = "http://maps.google.com/maps?z=12&t=m&q=loc:" + latitude + "+" + longitude;
 					final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
 					i.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
 					startActivity(i);
@@ -333,7 +335,7 @@ public class BikeStationActivity extends Activity {
 			BikeStationActivity.this.directionImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					final String uri = "http://maps.google.com/?f=d&daddr=" + position.getLatitude() + "," + position.getLongitude() + "&dirflg=w";
+					final String uri = "http://maps.google.com/?f=d&daddr=" + latitude + "," + longitude + "&dirflg=w";
 					final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
 					i.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
 					startActivity(i);

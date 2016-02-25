@@ -18,6 +18,7 @@ package fr.cph.chicago.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,39 +30,78 @@ import java.util.List;
  * @version 1
  */
 public final class BikeStation implements Parcelable {
-	/** Station id **/
+	/**
+	 * Station id
+	 **/
 	private int id;
-	/** Station name **/
+	/**
+	 * Station name
+	 **/
+	@JsonProperty("stationName")
 	private String name;
-	/** Available docks **/
+	/**
+	 * Available docks
+	 **/
 	private Integer availableDocks;
-	/** Total docks **/
+	/**
+	 * Total docks
+	 **/
 	private Integer totalDocks;
-	/** The position **/
-	private Position position;
-	/** Status value **/
+	/**
+	 * The latitude
+	 **/
+	private Double latitude;
+	/**
+	 * The longitude
+	 **/
+	private Double longitude;
+	/**
+	 * Status value
+	 **/
 	private String statusValue;
-	/** Status key **/
+	/**
+	 * Status key
+	 **/
 	private String statusKey;
-	/** Available bikes **/
+	/**
+	 * Available bikes
+	 **/
 	private Integer availableBikes;
-	/** Street address 1 **/
+	/**
+	 * Street address 1
+	 **/
 	private String stAddress1;
-	/** Street address 2 **/
+	/**
+	 * Street address 2
+	 **/
 	private String stAddress2;
-	/** City **/
+	/**
+	 * City
+	 **/
 	private String city;
-	/** Postal code **/
+	/**
+	 * Postal code
+	 **/
 	private String postalCode;
-	/** Location **/
+	/**
+	 * Location
+	 **/
 	private String location;
-	/** Altitude **/
+	/**
+	 * Altitude
+	 **/
 	private String altitude;
-	/** Test station **/
+	/**
+	 * Test station
+	 **/
 	private boolean testStation;
-	/** Last communication time **/
+	/**
+	 * Last communication time
+	 **/
 	private String lastCommunicationTime;
-	/** Land mark **/
+	/**
+	 * Land mark
+	 **/
 	private int landMark;
 
 	public BikeStation() {
@@ -69,7 +109,6 @@ public final class BikeStation implements Parcelable {
 	}
 
 	/**
-	 *
 	 * @param in
 	 */
 	private BikeStation(Parcel in) {
@@ -106,14 +145,6 @@ public final class BikeStation implements Parcelable {
 
 	public final void setTotalDocks(final Integer totalDocks) {
 		this.totalDocks = totalDocks;
-	}
-
-	public final Position getPosition() {
-		return position;
-	}
-
-	public final void setPosition(final Position position) {
-		this.position = position;
 	}
 
 	public final String getStatusValue() {
@@ -228,7 +259,8 @@ public final class BikeStation implements Parcelable {
 		dest.writeString(name);
 		dest.writeInt(availableDocks);
 		dest.writeInt(totalDocks);
-		dest.writeParcelable(position, PARCELABLE_WRITE_RETURN_VALUE);
+		dest.writeDouble(latitude);
+		dest.writeDouble(longitude);
 		dest.writeString(statusValue);
 		dest.writeString(statusKey);
 		dest.writeInt(availableBikes);
@@ -248,7 +280,8 @@ public final class BikeStation implements Parcelable {
 		name = in.readString();
 		availableDocks = in.readInt();
 		totalDocks = in.readInt();
-		position = in.readParcelable(Position.class.getClassLoader());
+		latitude = in.readDouble();
+		longitude = in.readDouble();
 		statusValue = in.readString();
 		statusKey = in.readString();
 		availableBikes = in.readInt();
@@ -276,7 +309,8 @@ public final class BikeStation implements Parcelable {
 		result = prime * result + ((lastCommunicationTime == null) ? 0 : lastCommunicationTime.hashCode());
 		result = prime * result + ((location == null) ? 0 : location.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((position == null) ? 0 : position.hashCode());
+		result = prime * result + ((latitude == null) ? 0 : latitude.hashCode());
+		result = prime * result + ((longitude == null) ? 0 : longitude.hashCode());
 		result = prime * result + ((postalCode == null) ? 0 : postalCode.hashCode());
 		result = prime * result + ((stAddress1 == null) ? 0 : stAddress1.hashCode());
 		result = prime * result + ((stAddress2 == null) ? 0 : stAddress2.hashCode());
@@ -321,12 +355,28 @@ public final class BikeStation implements Parcelable {
 
 		final List<BikeStation> bikeStationsRes = new ArrayList<>();
 		for (final BikeStation station : bikeStations) {
-			final double trainLatitude = station.getPosition().getLatitude();
-			final double trainLongitude = station.getPosition().getLongitude();
-			if (trainLatitude <= latMax && trainLatitude >= latMin && trainLongitude <= lonMax && trainLongitude >= lonMin) {
+			final double bikeLatitude = station.getLatitude();
+			final double bikeLongitude = station.getLongitude();
+			if (bikeLatitude <= latMax && bikeLatitude >= latMin && bikeLongitude <= lonMax && bikeLongitude >= lonMin) {
 				bikeStationsRes.add(station);
 			}
 		}
 		return bikeStationsRes;
+	}
+
+	public Double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
+	}
+
+	public Double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(Double longitude) {
+		this.longitude = longitude;
 	}
 }

@@ -28,11 +28,17 @@ import java.io.Serializable;
  * @version 1
  */
 public class Position implements Parcelable, Serializable {
-	/** Serializable **/
+	/**
+	 * Serializable
+	 **/
 	private static final long serialVersionUID = 0L;
-	/** The latitude **/
+	/**
+	 * The latitude
+	 **/
 	private Double latitude;
-	/** The longitude **/
+	/**
+	 * The longitude
+	 **/
 	private Double longitude;
 
 	/**
@@ -44,10 +50,8 @@ public class Position implements Parcelable, Serializable {
 	/**
 	 * Public constructor
 	 *
-	 * @param latitude
-	 *            the latitude
-	 * @param longitude
-	 *            the longitude
+	 * @param latitude  the latitude
+	 * @param longitude the longitude
 	 */
 	public Position(final Double latitude, final Double longitude) {
 		this.latitude = latitude;
@@ -59,7 +63,6 @@ public class Position implements Parcelable, Serializable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final Double getLatitude() {
@@ -67,7 +70,6 @@ public class Position implements Parcelable, Serializable {
 	}
 
 	/**
-	 *
 	 * @param latitude
 	 */
 	public final void setLatitude(final Double latitude) {
@@ -75,7 +77,6 @@ public class Position implements Parcelable, Serializable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final Double getLongitude() {
@@ -83,7 +84,6 @@ public class Position implements Parcelable, Serializable {
 	}
 
 	/**
-	 *
 	 * @param longitude
 	 */
 	public final void setLongitude(final Double longitude) {

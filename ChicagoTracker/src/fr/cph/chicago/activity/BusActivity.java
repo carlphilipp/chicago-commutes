@@ -140,7 +140,7 @@ public class BusActivity extends Activity {
 			busRouteNameView2.setText(title);
 
 			// Load google street picture and data
-			new DisplayGoogleStreetPicture().execute(position);
+			new DisplayGoogleStreetPicture().execute(position.getLatitude(), position.getLongitude());
 			new LoadData().execute();
 
 			// Toolbar
@@ -322,21 +322,20 @@ public class BusActivity extends Activity {
 	 * @author Carl-Philipp Harmant
 	 * @version 1
 	 */
-	private class DisplayGoogleStreetPicture extends AsyncTask<Position, Void, Drawable> {
+	private class DisplayGoogleStreetPicture extends AsyncTask<Double, Void, Drawable> {
 
-		/**
-		 * Position of the stop
-		 **/
-		private Position position;
+		private Double latitude;
+		private Double longitude;
 
 		@Override
-		protected final Drawable doInBackground(final Position... params) {
+		protected final Drawable doInBackground(final Double... params) {
 			final GStreetViewConnect connect = GStreetViewConnect.getInstance();
 			try {
-				position = params[0];
+				latitude = params[0];
+				longitude = params[1];
 				Util.trackAction(BusActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_google,
 						R.string.analytics_action_get_google_map_street_view, 0);
-				return connect.connect(params[0]);
+				return connect.connect(latitude, longitude);
 			} catch (final IOException e) {
 				Log.e(TAG, e.getMessage(), e);
 				return null;
@@ -356,16 +355,14 @@ public class BusActivity extends Activity {
 			BusActivity.this.streetViewImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					String uri = String.format(Locale.ENGLISH, "google.streetview:cbll=%f,%f&cbp=1,180,,0,1&mz=1", position.getLatitude(),
-							position.getLongitude());
+					String uri = String.format(Locale.ENGLISH, "google.streetview:cbll=%f,%f&cbp=1,180,,0,1&mz=1", latitude, longitude);
 					final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
 					intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
 					try {
 						startActivity(intent);
 					} catch (final ActivityNotFoundException ex) {
 						// Redirect to browser if the user does not have google map installed
-						uri = String.format(Locale.ENGLISH, "http://maps.google.com/maps?q=&layer=c&cbll=%f,%f&cbp=11,0,0,0,0",
-								position.getLatitude(), position.getLongitude());
+						uri = String.format(Locale.ENGLISH, "http://maps.google.com/maps?q=&layer=c&cbll=%f,%f&cbp=11,0,0,0,0", latitude, longitude);
 						final Intent unrestrictedIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
 						startActivity(unrestrictedIntent);
 					}
@@ -375,7 +372,7 @@ public class BusActivity extends Activity {
 			BusActivity.this.mapImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					final String uri = "http://maps.google.com/maps?z=12&t=m&q=loc:" + position.getLatitude() + "+" + position.getLongitude();
+					final String uri = "http://maps.google.com/maps?z=12&t=m&q=loc:" + latitude + "+" + longitude;
 					final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
 					i.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
 					startActivity(i);
@@ -386,7 +383,7 @@ public class BusActivity extends Activity {
 			BusActivity.this.directionImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					final String uri = "http://maps.google.com/?f=d&daddr=" + position.getLatitude() + "," + position.getLongitude() + "&dirflg=w";
+					final String uri = "http://maps.google.com/?f=d&daddr=" + latitude + "," + longitude + "&dirflg=w";
 					final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
 					i.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
 					startActivity(i);

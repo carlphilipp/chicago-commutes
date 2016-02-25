@@ -62,14 +62,7 @@ public class GStreetViewConnect {
 		return instance;
 	}
 
-	/**
-	 * Build Url
-	 *
-	 * @param position position that we want to access
-	 * @return a drawable
-	 * @throws IOException an exception
-	 */
-	public final Drawable connect(final Position position) throws IOException {
+	public final Drawable connect(final Double latitude, final Double longitude) throws IOException {
 		final StringBuilder address = new StringBuilder(BASE_URL);
 		address.append("?key=");
 		address.append(googleKey);
@@ -77,8 +70,8 @@ public class GStreetViewConnect {
 		address.append("&size=" + WIDTH + "x" + HEIGHT);
 		address.append("&fov=120");
 		address.append("&location=");
-		address.append(position.getLatitude());
-		address.append(",").append(position.getLongitude());
+		address.append(latitude);
+		address.append(",").append(longitude);
 		return connectUrl(address.toString());
 	}
 

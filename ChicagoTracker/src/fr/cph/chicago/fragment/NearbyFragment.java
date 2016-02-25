@@ -675,7 +675,7 @@ public class NearbyFragment extends Fragment {
 			}
 		}
 		for (final BikeStation station : bikeStations) {
-			point = new LatLng(station.getPosition().getLatitude(), station.getPosition().getLongitude());
+			point = new LatLng(station.getLatitude(), station.getLongitude());
 			options = new MarkerOptions().position(point).title(station.getName()).snippet(station.getId() + "");
 			options.icon(yellow);
 			marker = googleMap.addMarker(options);

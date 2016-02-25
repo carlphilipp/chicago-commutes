@@ -474,7 +474,8 @@ public final class FavoritesAdapter extends BaseAdapter {
 				final boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
 
 				final boolean isNetworkAvailable = Util.isNetworkAvailable();
-				if (bikeStation.getPosition() != null) {
+
+				if (bikeStation.getLatitude() != null && bikeStation.getLongitude() != null) {
 
 					convertView.setOnClickListener(new View.OnClickListener() {
 						@Override
@@ -513,7 +514,6 @@ public final class FavoritesAdapter extends BaseAdapter {
 						}
 					});
 				}
-
 			}
 		}
 		return convertView;

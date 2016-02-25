@@ -437,7 +437,7 @@ public final class NearbyAdapter extends BaseAdapter {
 				@Override
 				public void onClick(View v) {
 					if (googleMap != null) {
-						final LatLng latLng = new LatLng(bikeStation.getPosition().getLatitude(), bikeStation.getPosition().getLongitude());
+						final LatLng latLng = new LatLng(bikeStation.getLatitude(), bikeStation.getLongitude());
 						final CameraPosition current = new CameraPosition.Builder().target(latLng).zoom(15.5f).bearing(0).tilt(0).build();
 						googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(current), Math.max(1000, 1), null);
 						for (final Marker marker : markers) {

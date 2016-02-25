@@ -16,15 +16,15 @@
 
 package fr.cph.chicago.json;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.cph.chicago.entity.BikeStation;
-import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -33,41 +33,16 @@ import java.util.List;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-// TODO find a better way to do that (jackson?)
 public class Json {
 	public List<BikeStation> parseStations(final String jsonString) throws ParserException {
-		final List<BikeStation> stations = new ArrayList<>();
 		try {
 			final JSONObject json = new JSONObject(jsonString);
-			final JSONArray stationList = json.getJSONArray("stationBeanList");
-			for (int i = 0; i < stationList.length(); i++) {
-				final JSONObject jsonStation = stationList.getJSONObject(i);
-				final BikeStation station = new BikeStation();
-				station.setId(jsonStation.getInt("id"));
-				station.setName(jsonStation.getString("stationName"));
-				station.setAvailableDocks(jsonStation.getInt("availableDocks"));
-				station.setTotalDocks(jsonStation.getInt("totalDocks"));
-				Position position = new Position();
-				position.setLatitude(jsonStation.getDouble("latitude"));
-				position.setLongitude(jsonStation.getDouble("longitude"));
-				station.setPosition(position);
-				station.setStatusValue(jsonStation.getString("statusValue"));
-				station.setStatusKey(jsonStation.getString("statusKey"));
-				station.setAvailableBikes(jsonStation.getInt("availableBikes"));
-				station.setStAddress1(jsonStation.getString("stAddress1"));
-				station.setStAddress2(jsonStation.getString("stAddress2"));
-				station.setCity(jsonStation.getString("city"));
-				station.setPostalCode(jsonStation.getString("postalCode"));
-				station.setLocation(jsonStation.getString("location"));
-				station.setAltitude(jsonStation.getString("altitude"));
-				station.setTestStation(jsonStation.getBoolean("testStation"));
-				station.setLastCommunicationTime(jsonStation.getString("lastCommunicationTime"));
-				station.setLandMark(jsonStation.getInt("landMark"));
-				stations.add(station);
-			}
-		} catch (final JSONException e) {
+			final String stationList = json.getString("stationBeanList");
+			final ObjectMapper mapper = new ObjectMapper();
+			return mapper.readValue(stationList, new TypeReference<List<BikeStation>>() {
+			});
+		} catch (final JSONException | IOException e) {
 			throw new ParserException(TrackerException.ERROR, e);
 		}
-		return stations;
 	}
 }
