@@ -28,6 +28,20 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.7.1'
 }
 
+allprojects {
+    afterEvaluate { project ->
+        def propsFile = rootProject.file('keystore.properties')
+        def configName = 'release'
+
+        if (propsFile.exists() && android.signingConfigs.hasProperty(configName)) {
+            def props = new Properties()
+            props.load(new FileInputStream(propsFile))
+            android.signingConfigs[configName].storeFile = file(props['storeFile'])
+            android.signingConfigs[configName].keyAlias = props['keyAlias']
+        }
+    }
+}
+
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
@@ -48,6 +62,33 @@ android {
             java.srcDirs = ['src']
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
+        }
+    }
+
+    signingConfigs {
+        if (gradle.startParameter.taskNames.any { it.contains('Release') || it.contains('build')}) {
+            release {
+                storeFile
+                storePassword new String(System.console().readPassword("\n\$ Enter keystore password: "))
+                keyAlias
+                keyPassword new String(System.console().readPassword("\n\$ Enter alias password: "))
+            }
+        } else {
+            release {
+                storeFile file('commutes')
+                storePassword 'commutes'
+                keyAlias 'commutes'
+                keyPassword 'commutes'
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFile 'proguard-optimize.cfg'
+            signingConfig signingConfigs.release
         }
     }
 

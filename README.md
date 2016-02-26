@@ -1,7 +1,9 @@
 # Chicago Commutes
 
 Build debug APK:
-./gradlew clean build
+
+`./gradlew clean assembleDebug`
 
 Build prod APK:
-./gradlew clean assembleRelease
+
+`./gradlew clean assembleRelease`
