@@ -43,6 +43,7 @@ import fr.cph.chicago.connection.DivvyConnect;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
+import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
@@ -84,23 +85,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		if (!isFinishing()) {
+			if (savedInstanceState != null) {
+				boolean first = savedInstanceState.getBoolean("first", false);
+				if (!first) {
+					DataHolder dataHolder = DataHolder.getInstance();
+					BusData busData = BusData.getInstance();
+					if (busData.readAllBusStops() == null || busData.readAllBusStops().size() == 0) {
+						busData.readBusStops();
+						dataHolder.setBusData(busData);
+					}
+					TrainData trainData = new TrainData();
+					if (trainData.isStationNull() || trainData.isStopsNull()) {
+						trainData.read();
+						dataHolder.setTrainData(trainData);
+					}
+				}
+			}
 
-		setContentView(R.layout.activity_main);
+			setContentView(R.layout.activity_main);
 
-		new LoadData().execute();
+			new LoadData().execute();
 
-		ChicagoTracker.container = (FrameLayout) findViewById(R.id.container);
-		ChicagoTracker.container.getForeground().setAlpha(0);
+			ChicagoTracker.container = (FrameLayout) findViewById(R.id.container);
+			ChicagoTracker.container.getForeground().setAlpha(0);
 
-		initView();
-		setToolbar();
+			initView();
+			setToolbar();
 
-		drawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-		mDrawerLayout.addDrawerListener(drawerToggle);
-		drawerToggle.syncState();
+			drawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+			mDrawerLayout.addDrawerListener(drawerToggle);
+			drawerToggle.syncState();
 
-		currentPosition = savedInstanceState == null ? R.id.navigation_favorites : savedInstanceState.getInt(SELECTED_ID);
-		itemSelection(currentPosition);
+			currentPosition = savedInstanceState == null ? R.id.navigation_favorites : savedInstanceState.getInt(SELECTED_ID);
+			itemSelection(currentPosition);
+		}
 	}
 
 	@Override
