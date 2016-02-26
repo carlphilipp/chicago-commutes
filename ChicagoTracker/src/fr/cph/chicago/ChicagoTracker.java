@@ -26,7 +26,9 @@ import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import fr.cph.chicago.activity.BaseActivity;
 import fr.cph.chicago.activity.ErrorActivity;
+import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
+import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.util.Util;
 
@@ -123,8 +125,8 @@ public class ChicagoTracker extends Application {
 	 * @param activity that is needed to lunch a new one
 	 * @param ex       the kind of exception. Used to display the error message
 	 */
-	public static void displayError(Activity activity, TrackerException ex) {
-		Intent intent = new Intent(activity, ErrorActivity.class);
+	public static void displayError(final Activity activity, final TrackerException ex) {
+		final Intent intent = new Intent(activity, ErrorActivity.class);
 		Bundle extras = new Bundle();
 		extras.putString("error", ex.getMessage());
 		intent.putExtras(extras);
@@ -132,13 +134,13 @@ public class ChicagoTracker extends Application {
 		activity.startActivity(intent);
 	}
 
-	public static void checkData(Activity mActivity) {
+	public static void checkData(final Activity mActivity) {
 		if (DataHolder.getInstance().getBusData() == null || DataHolder.getInstance().getTrainData() == null) {
 			startErrorActivity(mActivity);
 		}
 	}
 
-	public static boolean checkTrainData(Activity mActivity) {
+	public static boolean checkTrainData(final Activity mActivity) {
 		if (DataHolder.getInstance().getTrainData() == null) {
 			startErrorActivity(mActivity);
 			return false;
@@ -146,12 +148,26 @@ public class ChicagoTracker extends Application {
 		return true;
 	}
 
-	public static boolean checkBusData(Activity mActivity) {
+	public static boolean checkBusData(final Activity mActivity) {
 		if (DataHolder.getInstance().getBusData() == null) {
 			startErrorActivity(mActivity);
 			return false;
 		}
 		return true;
+	}
+
+	public static void reloadData() {
+		final DataHolder dataHolder = DataHolder.getInstance();
+		final BusData busData = BusData.getInstance();
+		if (busData.readAllBusStops() == null || busData.readAllBusStops().size() == 0) {
+			busData.readBusStops();
+			dataHolder.setBusData(busData);
+		}
+		final TrainData trainData = new TrainData();
+		if (trainData.isStationNull() || trainData.isStopsNull()) {
+			trainData.read();
+			dataHolder.setTrainData(trainData);
+		}
 	}
 
 	private static void startErrorActivity(Activity mActivity) {

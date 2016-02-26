@@ -87,20 +87,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		super.onCreate(savedInstanceState);
 		if (!isFinishing()) {
 			if (savedInstanceState != null) {
-				boolean first = savedInstanceState.getBoolean("first", false);
-				if (!first) {
-					DataHolder dataHolder = DataHolder.getInstance();
-					BusData busData = BusData.getInstance();
-					if (busData.readAllBusStops() == null || busData.readAllBusStops().size() == 0) {
-						busData.readBusStops();
-						dataHolder.setBusData(busData);
-					}
-					TrainData trainData = new TrainData();
-					if (trainData.isStationNull() || trainData.isStopsNull()) {
-						trainData.read();
-						dataHolder.setTrainData(trainData);
-					}
-				}
+				ChicagoTracker.reloadData();
 			}
 
 			setContentView(R.layout.activity_main);

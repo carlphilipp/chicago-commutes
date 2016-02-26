@@ -145,7 +145,7 @@ public class BaseActivity extends Activity {
 	 *
 	 * @param exceptionToBeThrown the exception that has been thrown
 	 */
-	public void displayError(final TrackerException exceptionToBeThrown) {
+	private void displayError(final TrackerException exceptionToBeThrown) {
 		DataHolder.getInstance().setTrainData(null);
 		DataHolder.getInstance().setBusData(null);
 		ChicagoTracker.displayError(this, exceptionToBeThrown);
