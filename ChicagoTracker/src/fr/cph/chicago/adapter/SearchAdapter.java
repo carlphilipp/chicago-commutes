@@ -52,6 +52,7 @@ import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.listener.FavoritesTrainOnClickListener;
+import fr.cph.chicago.task.DirectionAsyncTask;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
 import org.apache.commons.collections4.MultiValuedMap;
@@ -149,7 +150,7 @@ public final class SearchAdapter extends BaseAdapter {
 			final BusRoute busRoute = (BusRoute) getItem(position);
 
 			final TextView type = (TextView) convertView.findViewById(R.id.train_bus_type);
-			type.setText("B");
+			type.setText(searchActivity.getString(R.string.B));
 
 			final String name = busRoute.getId() + " " + busRoute.getName();
 			routeName.setText(name);
@@ -159,7 +160,7 @@ public final class SearchAdapter extends BaseAdapter {
 				@Override
 				public void onClick(final View v) {
 					loadingTextView.setVisibility(LinearLayout.VISIBLE);
-					new DirectionAsyncTask().execute(busRoute, loadingTextView);
+					new DirectionAsyncTask(searchActivity).execute(busRoute, loadingTextView);
 				}
 			});
 		} else {
@@ -182,107 +183,6 @@ public final class SearchAdapter extends BaseAdapter {
 			});
 		}
 		return convertView;
-	}
-
-	/**
-	 * Direction task
-	 *
-	 * @author Carl-Philipp Harmant
-	 * @version 1
-	 */
-	private class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
-
-		private BusRoute busRoute;
-		private TextView convertView;
-		private TrackerException trackerException;
-
-		@Override
-		protected final BusDirections doInBackground(final Object... params) {
-			busRoute = (BusRoute) params[0];
-			convertView = (TextView) params[1];
-
-			final CtaConnect connect = CtaConnect.getInstance();
-			BusDirections busDirections = null;
-			try {
-				final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-				reqParams.put("rt", busRoute.getId());
-
-				final Xml xml = new Xml();
-				final String xmlResult = connect.connect(CtaRequestType.BUS_DIRECTION, reqParams);
-				busDirections = xml.parseBusDirections(xmlResult, busRoute.getId());
-			} catch (final ParserException | ConnectException e) {
-				this.trackerException = e;
-			}
-			Util.trackAction(SearchAdapter.this.searchActivity, R.string.analytics_category_req, R.string.analytics_action_get_bus,
-					R.string.analytics_action_get_bus_direction, 0);
-			return busDirections;
-		}
-
-		@Override
-		protected final void onPostExecute(final BusDirections result) {
-			if (trackerException == null) {
-				final List<BusDirection> busDirections = result.getlBusDirection();
-				final List<String> data = new ArrayList<>();
-				for (final BusDirection busDirection : busDirections) {
-					data.add(busDirection.toString());
-				}
-				data.add("Follow all buses on line " + result.getId());
-
-				final LayoutInflater layoutInflater = (LayoutInflater) searchActivity.getBaseContext()
-						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				final View popupView = layoutInflater.inflate(R.layout.popup_bus, null);
-
-				final int[] screenSize = Util.getScreenSize();
-				final PopupWindow popup = new PopupWindow(popupView, (int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
-
-				final ListView listView = (ListView) popupView.findViewById(R.id.details);
-				final PopupBusAdapter ada = new PopupBusAdapter(searchActivity, data);
-				listView.setAdapter(ada);
-
-				listView.setOnItemClickListener(new OnItemClickListener() {
-					@Override
-					public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
-						if (position != data.size() - 1) {
-							final Intent intent = new Intent(searchActivity, BusBoundActivity.class);
-							final Bundle extras = new Bundle();
-							extras.putString("busRouteId", busRoute.getId());
-							extras.putString("busRouteName", busRoute.getName());
-							extras.putString("bound", data.get(position));
-							intent.putExtras(extras);
-							intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-							context.startActivity(intent);
-						} else {
-							final String[] busDirectionArray = new String[busDirections.size()];
-							int i = 0;
-							for (final BusDirection busDirection : busDirections) {
-								busDirectionArray[i++] = busDirection.toString();
-							}
-							final Intent intent = new Intent(ChicagoTracker.getContext(), BusMapActivity.class);
-							final Bundle extras = new Bundle();
-							extras.putString("busRouteId", result.getId());
-							extras.putStringArray("bounds", busDirectionArray);
-							intent.putExtras(extras);
-							searchActivity.startActivity(intent);
-						}
-						popup.dismiss();
-					}
-				});
-				popup.setFocusable(true);
-				popup.setBackgroundDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.any_selector));
-				container.getForeground().setAlpha(210);
-
-				popup.setOnDismissListener(new PopupWindow.OnDismissListener() {
-					@Override
-					public void onDismiss() {
-						container.getForeground().setAlpha(0);
-						convertView.setVisibility(LinearLayout.GONE);
-					}
-				});
-				popup.showAtLocation(container, Gravity.CENTER, 0, 0);
-			} else {
-				ChicagoTracker.displayError(searchActivity, trackerException);
-			}
-		}
 	}
 
 	/**
