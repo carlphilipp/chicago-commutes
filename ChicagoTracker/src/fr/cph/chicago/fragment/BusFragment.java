@@ -58,8 +58,6 @@ public class BusFragment extends Fragment {
 	private MainActivity mainActivity;
 	private BusAdapter busAdapter;
 
-
-
 	/**
 	 * Returns a new instance of this fragment for the given section number.
 	 *

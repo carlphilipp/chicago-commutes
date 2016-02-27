@@ -16,23 +16,18 @@
 
 package fr.cph.chicago.adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
@@ -67,7 +62,6 @@ public final class BusAdapter extends BaseAdapter {
 
 	private MainActivity mainActivity;
 	private List<BusRoute> busRoutes;
-	private FrameLayout firstLayout;
 
 	/**
 	 * Constructor
@@ -78,7 +72,6 @@ public final class BusAdapter extends BaseAdapter {
 		this.mainActivity = activity;
 		final BusData busData = DataHolder.getInstance().getBusData();
 		this.busRoutes = busData.getRoutes();
-		this.firstLayout = ChicagoTracker.container;
 	}
 
 	@Override
@@ -205,19 +198,18 @@ public final class BusAdapter extends BaseAdapter {
 				}
 				data.add("Follow all buses on line " + result.getId());
 
-				final LayoutInflater layoutInflater = (LayoutInflater) mainActivity.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				final LayoutInflater layoutInflater = (LayoutInflater) mainActivity.getBaseContext()
+						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				final View popupView = layoutInflater.inflate(R.layout.popup_bus, null);
-
-				final int[] screenSize = Util.getScreenSize();
-				final PopupWindow popup = new PopupWindow(popupView, (int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
-
 				final ListView listView = (ListView) popupView.findViewById(R.id.details);
 				final PopupBusAdapter ada = new PopupBusAdapter(mainActivity, data);
 				listView.setAdapter(ada);
 
-				listView.setOnItemClickListener(new OnItemClickListener() {
+				final AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);
+				builder.setAdapter(ada, new DialogInterface.OnClickListener() {
+
 					@Override
-					public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+					public void onClick(final DialogInterface dialog, final int position) {
 						if (position != data.size() - 1) {
 							final Intent intent = new Intent(mainActivity, BusBoundActivity.class);
 							final Bundle extras = new Bundle();
@@ -240,22 +232,18 @@ public final class BusAdapter extends BaseAdapter {
 							intent.putExtras(extras);
 							mainActivity.startActivity(intent);
 						}
-
-						popup.dismiss();
-					}
-				});
-				popup.setFocusable(true);
-				popup.setBackgroundDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.any_selector));
-				firstLayout.getForeground().setAlpha(210);
-
-				popup.setOnDismissListener(new PopupWindow.OnDismissListener() {
-					@Override
-					public void onDismiss() {
-						firstLayout.getForeground().setAlpha(0);
 						convertView.setVisibility(LinearLayout.GONE);
 					}
 				});
-				popup.showAtLocation(firstLayout, Gravity.CENTER, 0, 0);
+				builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+					@Override
+					public void onCancel(DialogInterface dialog) {
+						convertView.setVisibility(LinearLayout.GONE);
+					}
+				});
+
+				final AlertDialog dialog = builder.create();
+				dialog.show();
 			} else {
 				ChicagoTracker.displayError(mainActivity, trackerException);
 			}

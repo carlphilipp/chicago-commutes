@@ -24,9 +24,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
@@ -71,9 +69,6 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 			final LayoutInflater layoutInflater = (LayoutInflater) mainActivity.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			final View popupView = layoutInflater.inflate(R.layout.popup_bus, null);
 
-			final int[] screenSize = Util.getScreenSize();
-			final PopupWindow popup = new PopupWindow(popupView, (int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
-
 			final ListView listView = (ListView) popupView.findViewById(R.id.details);
 			final List<String> values = new ArrayList<>();
 			final Set<Entry<String, List<BusArrival>>> entrySet = mapBusArrivals.entrySet();
@@ -111,7 +106,6 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 						if (position == i) {
 							new FavoritesAdapter.BusBoundAsyncTask(mainActivity).execute(busArrival.getRouteId(), busArrival.getRouteDirection(),
 									String.valueOf(busArrival.getStopId()), busRoute.getName());
-							popup.dismiss();
 						}
 						i++;
 					}
@@ -126,7 +120,6 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 								extras.putStringArray("bounds", new String[] { entry.getKey() });
 								intent.putExtras(extras);
 								mainActivity.startActivity(intent);
-								popup.dismiss();
 							}
 							i++;
 						}
@@ -142,7 +135,6 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 						extras.putStringArray("bounds", bounds.toArray(new String[bounds.size()]));
 						intent.putExtras(extras);
 						mainActivity.startActivity(intent);
-						popup.dismiss();
 					}
 				}
 			});
