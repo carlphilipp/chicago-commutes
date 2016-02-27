@@ -16,18 +16,15 @@
 
 package fr.cph.chicago.listener;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.Toast;
@@ -55,33 +52,13 @@ import java.util.Set;
  * @version 1
  */
 public class FavoritesBusOnClickListener implements OnClickListener {
-	/**
-	 * The main activity
-	 **/
+
 	private MainActivity mainActivity;
-	/**
-	 * The layout that is used to display a fade black background
-	 **/
-	private FrameLayout firstLayout;
-	/**
-	 * Bus route
-	 **/
 	private BusRoute busRoute;
-	/**
-	 * Map bus arrivals
-	 **/
 	private Map<String, List<BusArrival>> mapBusArrivals;
 
-	/**
-	 * @param activity
-	 * @param firstLayout
-	 * @param busRoute
-	 * @param mapBusArrivals
-	 */
-	public FavoritesBusOnClickListener(final MainActivity activity, final FrameLayout firstLayout, final BusRoute busRoute,
-			final Map<String, List<BusArrival>> mapBusArrivals) {
+	public FavoritesBusOnClickListener(final MainActivity activity, final BusRoute busRoute, final Map<String, List<BusArrival>> mapBusArrivals) {
 		this.mainActivity = activity;
-		this.firstLayout = firstLayout;
 		this.busRoute = busRoute;
 		this.mapBusArrivals = mapBusArrivals;
 	}
@@ -96,8 +73,6 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 
 			final int[] screenSize = Util.getScreenSize();
 			final PopupWindow popup = new PopupWindow(popupView, (int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
-			// TODO see why this is never used. Refactor
-			final List<BusArrival> busArrivals = new ArrayList<>();
 
 			final ListView listView = (ListView) popupView.findViewById(R.id.details);
 			final List<String> values = new ArrayList<>();
@@ -112,7 +87,6 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 			}
 			for (final Entry<String, List<BusArrival>> entry : entrySet) {
 				final List<BusArrival> arrivals = BusArrival.getRealBusArrival(entry.getValue());
-				busArrivals.addAll(arrivals);
 				for (final BusArrival arrival : arrivals) {
 					final StringBuilder sb = new StringBuilder();
 					sb.append("Follow bus - ").append(arrival.getTimeLeftDueDelay());
@@ -127,15 +101,14 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 			final PopupBusAdapter ada = new PopupBusAdapter(mainActivity, values);
 			listView.setAdapter(ada);
 
-			listView.setOnItemClickListener(new OnItemClickListener() {
+			final AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);
+			builder.setAdapter(ada, new DialogInterface.OnClickListener() {
 				@Override
-				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+				public void onClick(final DialogInterface dialog, final int position) {
 					int i = 0;
 					for (final Entry<String, List<BusArrival>> entry : mapBusArrivals.entrySet()) {
 						final BusArrival busArrival = entry.getValue().get(0);
 						if (position == i) {
-							//mainActivity.startRefreshAnimation();
 							new FavoritesAdapter.BusBoundAsyncTask(mainActivity).execute(busArrival.getRouteId(), busArrival.getRouteDirection(),
 									String.valueOf(busArrival.getStopId()), busRoute.getName());
 							popup.dismiss();
@@ -153,7 +126,6 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 								extras.putStringArray("bounds", new String[] { entry.getKey() });
 								intent.putExtras(extras);
 								mainActivity.startActivity(intent);
-								//mainActivity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 								popup.dismiss();
 							}
 							i++;
@@ -174,18 +146,9 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 					}
 				}
 			});
-			popup.setFocusable(true);
-			popup.setBackgroundDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.any_selector));
-			firstLayout.getForeground().setAlpha(210);
 
-			popup.setOnDismissListener(new PopupWindow.OnDismissListener() {
-				@Override
-				public void onDismiss() {
-					firstLayout.getForeground().setAlpha(0);
-				}
-			});
-			popup.setAnimationStyle(R.style.popupAnimation);
-			popup.showAtLocation(firstLayout, Gravity.CENTER, 0, 0);
+			final AlertDialog dialog = builder.create();
+			dialog.show();
 		}
 	}
 }

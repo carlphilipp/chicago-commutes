@@ -110,7 +110,7 @@ public final class TrainAdapter extends BaseAdapter {
 				index++;
 			}
 		}
-		convertView.setOnClickListener(new FavoritesTrainOnClickListener(activity, container, station.getId(), lines));
+		convertView.setOnClickListener(new FavoritesTrainOnClickListener(activity, station.getId(), lines));
 		return convertView;
 	}
 }

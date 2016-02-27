@@ -144,7 +144,7 @@ public final class SearchAdapter extends BaseAdapter {
 					index++;
 				}
 			}
-			convertView.setOnClickListener(new FavoritesTrainOnClickListener(searchActivity, container, station.getId(), lines));
+			convertView.setOnClickListener(new FavoritesTrainOnClickListener(searchActivity, station.getId(), lines));
 		} else if (position < trains.size() + busRoutes.size()) {
 			final BusRoute busRoute = (BusRoute) getItem(position);
 

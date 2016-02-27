@@ -17,20 +17,12 @@
 package fr.cph.chicago.listener;
 
 import android.app.Activity;
-import android.content.Context;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.FrameLayout;
-import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
@@ -56,10 +48,6 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 	 **/
 	private Activity activity;
 	/**
-	 * The layout that is used to display a fade black background
-	 **/
-	private FrameLayout firstLayout;
-	/**
 	 * The station id
 	 **/
 	private int stationId;
@@ -68,16 +56,8 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 	 **/
 	private Set<TrainLine> trainLines;
 
-	/**
-	 * @param activity
-	 * @param firstLayout
-	 * @param stationId
-	 * @param trainLines
-	 */
-	public FavoritesTrainOnClickListener(final Activity activity, final FrameLayout firstLayout, final int stationId,
-			final Set<TrainLine> trainLines) {
+	public FavoritesTrainOnClickListener(final Activity activity, final int stationId, final Set<TrainLine> trainLines) {
 		this.activity = activity;
-		this.firstLayout = firstLayout;
 		this.stationId = stationId;
 		this.trainLines = trainLines;
 	}
@@ -87,17 +67,6 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 		if (!Util.isNetworkAvailable()) {
 			Toast.makeText(activity, "No network connection detected!", Toast.LENGTH_LONG).show();
 		} else {
-			final LayoutInflater layoutInflater = (LayoutInflater) activity.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			final View popupView = layoutInflater.inflate(R.layout.popup_train, null);
-
-			final int[] screenSize = Util.getScreenSize();
-
-			final PopupWindow popup = new PopupWindow(popupView, (int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
-			popup.setFocusable(true);
-			popup.setBackgroundDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.any_selector));
-			firstLayout.getForeground().setAlpha(210);
-
-			final ListView listView = (ListView) popupView.findViewById(R.id.details);
 			final List<String> values = new ArrayList<>();
 			final List<Integer> colors = new ArrayList<>();
 			values.add("Open details");
@@ -106,41 +75,31 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 				colors.add(line.getColor());
 			}
 			final PopupTrainAdapter ada = new PopupTrainAdapter(activity, values, colors);
-			listView.setAdapter(ada);
+
 			final List<TrainLine> lines = new ArrayList<>();
 			lines.addAll(trainLines);
 
-			listView.setOnItemClickListener(new OnItemClickListener() {
+			final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+			builder.setAdapter(ada, new DialogInterface.OnClickListener() {
 				@Override
-				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				public void onClick(final DialogInterface dialog, final int position) {
+					final Bundle extras = new Bundle();
 					if (position == 0) {
 						final Intent intent = new Intent(ChicagoTracker.getContext(), StationActivity.class);
-						final Bundle extras = new Bundle();
-						extras.putInt("stationId", stationId);
+						extras.putInt(activity.getResources().getString(R.string.bundle_train_stationId), stationId);
 						intent.putExtras(extras);
 						activity.startActivity(intent);
-						popup.dismiss();
 					} else {
 						final Intent intent = new Intent(ChicagoTracker.getContext(), TrainMapActivity.class);
-						final Bundle extras = new Bundle();
-						extras.putString("line", lines.get(position - 1).toTextString());
+						extras.putString(activity.getResources().getString(R.string.bundle_train_line), lines.get(position - 1).toTextString());
 						intent.putExtras(extras);
 						activity.startActivity(intent);
-						popup.dismiss();
 					}
 				}
 			});
-			popup.setFocusable(true);
-			popup.setBackgroundDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.any_selector));
-			firstLayout.getForeground().setAlpha(210);
-			popup.setOnDismissListener(new PopupWindow.OnDismissListener() {
-				@Override
-				public void onDismiss() {
-					firstLayout.getForeground().setAlpha(0);
-				}
-			});
-			popup.setAnimationStyle(R.style.popupAnimation);
-			popup.showAtLocation(firstLayout, Gravity.CENTER, 0, 0);
+
+			final AlertDialog dialog = builder.create();
+			dialog.show();
 		}
 	}
 }

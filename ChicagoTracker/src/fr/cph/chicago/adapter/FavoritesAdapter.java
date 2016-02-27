@@ -277,7 +277,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 					}
 				}
 
-				convertView.setOnClickListener(new FavoritesTrainOnClickListener(mainActivity, firstLayout, stationId, setTL));
+				convertView.setOnClickListener(new FavoritesTrainOnClickListener(mainActivity, stationId, setTL));
 
 				// Remove empty bloc
 				for (int i = 0; i < favoritesLayout.getChildCount(); i++) {
@@ -346,7 +346,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 						final String key = entry.getKey();
 						final Map<String, List<BusArrival>> value = entry.getValue();
 
-						llh.setOnClickListener(new FavoritesBusOnClickListener(mainActivity, firstLayout, busRoute, value));
+						llh.setOnClickListener(new FavoritesBusOnClickListener(mainActivity, busRoute, value));
 
 						final LinearLayout stopLayout = new LinearLayout(context);
 						stopLayout.setOrientation(LinearLayout.VERTICAL);
