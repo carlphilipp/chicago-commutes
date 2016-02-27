@@ -13,19 +13,19 @@ dependencies {
     repositories {
         jcenter()
     }
-    compile 'com.google.android.gms:play-services-maps:8.4.0'
-    compile 'com.google.android.gms:play-services-analytics:8.4.0'
-    compile 'org.apache.commons:commons-collections4:4.1'
-    compile 'commons-io:commons-io:2.4'
-    compile 'org.apache.commons:commons-lang3:3.4'
-    compile 'net.sf.opencsv:opencsv:2.3'
-    compile 'com.android.support:appcompat-v7:23.2.0'
-    compile 'com.android.support:design:23.2.0'
-    compile 'com.android.support:support-v4:23.2.0'
-    compile 'com.android.support:preference-v7:23.2.0'
-    compile 'com.fasterxml.jackson.core:jackson-core:2.7.1'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.7.1-1'
-    compile 'com.fasterxml.jackson.core:jackson-annotations:2.7.1'
+    compile group: 'com.google.android.gms', name: 'play-services-maps', version: '8.4.0'
+    compile group: 'com.google.android.gms', name: 'play-services-analytics', version: '8.4.0'
+    compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.1'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
+    compile group: 'commons-io', name: 'commons-io', version: '2.4'
+    compile group: 'net.sf.opencsv', name: 'opencsv', version: '2.3'
+    compile group: 'com.android.support', name: 'appcompat-v7', version: '23.2.0'
+    compile group: 'com.android.support', name: 'design', version: '23.2.0'
+    compile group: 'com.android.support', name: 'support-v4', version: '23.2.0'
+    compile group: 'com.android.support', name: 'preference-v7', version: '23.2.0'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.7.1'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.7.1'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.7.1'
 }
 
 allprojects {
@@ -36,15 +36,18 @@ allprojects {
         if (propsFile.exists() && android.signingConfigs.hasProperty(configName)) {
             def props = new Properties()
             props.load(new FileInputStream(propsFile))
-            android.signingConfigs[configName].storeFile = file(props['storeFile'])
-            android.signingConfigs[configName].keyAlias = props['keyAlias']
+            File storeFile = new File(props['storeFile'].toString());
+            if(storeFile.isFile()) {
+                android.signingConfigs[configName].storeFile = storeFile
+                android.signingConfigs[configName].keyAlias = props['keyAlias']
+            }
         }
     }
 }
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion '23.0.2'
 
     defaultConfig {
         minSdkVersion 14
@@ -66,7 +69,7 @@ android {
     }
 
     signingConfigs {
-        if (gradle.startParameter.taskNames.any { it.contains('Release') || it.contains('build')}) {
+        if (gradle.startParameter.taskNames.any { it.contains('Release') || it.contains('build') }) {
             release {
                 storeFile
                 storePassword new String(System.console().readPassword("\n\$ Enter keystore password: "))
