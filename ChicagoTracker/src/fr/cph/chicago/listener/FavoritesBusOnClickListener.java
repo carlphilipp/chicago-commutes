@@ -145,14 +145,14 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 			final List<BusArrival> arrivals = BusArrival.getRealBusArrival(entry.getValue());
 			for (final BusArrival arrival : arrivals) {
 				final StringBuilder sb = new StringBuilder();
-				sb.append("Follow bus - ").append(arrival.getTimeLeftDueDelay());
+				sb.append("See bus - ").append(arrival.getTimeLeftDueDelay());
 				if (entrySet.size() > 1) {
 					sb.append(" (").append(entry.getKey()).append(")");
 				}
 				values.add(sb.toString());
 			}
 		}
-		values.add("Follow all buses on line " + busRoute.getId());
+		values.add("See all buses on line " + busRoute.getId());
 		return values;
 	}
 }

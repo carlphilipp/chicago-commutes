@@ -92,9 +92,9 @@ public class Favorites {
 			final Integer stationId = trainFavorites.get(position);
 			result = trainData.getStation(stationId);
 		} else if (position < trainFavorites.size() + fakeBusFavorites.size()) {
-			final int indice = position - trainFavorites.size();
-			if (indice < fakeBusFavorites.size()) {
-				final String res[] = Util.decodeBusFavorite(fakeBusFavorites.get(indice));
+			final int index = position - trainFavorites.size();
+			if (index < fakeBusFavorites.size()) {
+				final String res[] = Util.decodeBusFavorite(fakeBusFavorites.get(index));
 				if (busData.containsRoute(res[0])) {
 					return busData.getRoute(res[0]);
 				} else {

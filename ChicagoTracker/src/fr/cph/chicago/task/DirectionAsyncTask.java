@@ -94,7 +94,7 @@ public class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 			for (BusDirection busDir : busDirections) {
 				data.add(busDir.toString());
 			}
-			data.add("Follow all buses on line " + result.getId());
+			data.add("See all buses on line " + result.getId());
 
 			final View popupView = activity.getLayoutInflater().inflate(R.layout.popup_bus, viewGroup, false);
 			final ListView listView = (ListView) popupView.findViewById(R.id.details);

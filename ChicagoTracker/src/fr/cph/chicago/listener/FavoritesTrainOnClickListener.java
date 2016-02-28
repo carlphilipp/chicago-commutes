@@ -72,7 +72,7 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 			final List<Integer> colors = new ArrayList<>();
 			values.add("Open details");
 			for (final TrainLine line : trainLines) {
-				values.add(line.toString() + " line - All trains");
+				values.add(line.toString() + " line - See trains");
 				colors.add(line.getColor());
 			}
 			final PopupTrainAdapter ada = new PopupTrainAdapter(activity, values, colors);
