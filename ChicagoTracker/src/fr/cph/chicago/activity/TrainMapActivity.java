@@ -236,9 +236,6 @@ public class TrainMapActivity extends Activity {
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
-	/**
-	 * Refresh windows
-	 */
 	private void refreshInfoWindow() {
 		if (selectedMarker == null) {
 			return;
@@ -248,9 +245,6 @@ public class TrainMapActivity extends Activity {
 		refreshingInfoWindow = false;
 	}
 
-	/**
-	 * @param result
-	 */
 	private void centerMapOnBus(final List<Train> result) {
 		mapFragment.getMapAsync(new OnMapReadyCallback() {
 			@Override
@@ -271,10 +265,6 @@ public class TrainMapActivity extends Activity {
 		});
 	}
 
-	/**
-	 * @param trains    the list of trains
-	 * @param positions the list of positions
-	 */
 	private void drawTrains(final List<Train> trains, final List<Position> positions) {
 		if (googleMap != null) {
 			if (views != null) {

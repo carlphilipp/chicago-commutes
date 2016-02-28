@@ -454,27 +454,11 @@ public final class NearbyAdapter extends BaseAdapter {
 		return convertView;
 	}
 
-	/**
-	 * DP view holder
-	 *
-	 * @author Carl-Philipp Harmant
-	 * @version 1
-	 */
 	static class TrainViewHolder {
 		TextView stationNameView;
 		TextView type;
 	}
 
-	/**
-	 * Update data
-	 *
-	 * @param busStops      the bus stops
-	 * @param busArrivals   the bus arrivals
-	 * @param stations      the stations
-	 * @param trainArrivals the train arrivals
-	 * @param map           the map
-	 * @param markers       the markers
-	 */
 	public final void updateData(final List<BusStop> busStops, final SparseArray<Map<String, List<BusArrival>>> busArrivals,
 			final List<Station> stations, final SparseArray<TrainArrival> trainArrivals, final List<BikeStation> bikeStations, final GoogleMap map,
 			final List<Marker> markers) {

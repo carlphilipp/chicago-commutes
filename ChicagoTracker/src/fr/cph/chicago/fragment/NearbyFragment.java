@@ -204,10 +204,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 			}
 		});
 	}
-
-	/**
-	 * Load error
-	 */
+	
 	public final void displayError(final TrackerException exceptionToBeThrown) {
 		DataHolder.getInstance().setTrainData(null);
 		DataHolder.getInstance().setBusData(null);
@@ -218,12 +215,6 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 		this.googleMap = googleMap;
 	}
 
-	/**
-	 * Load arrivals
-	 *
-	 * @author Carl-Philipp Harmant
-	 * @version 1
-	 */
 	private class LoadArrivals extends AsyncTask<List<?>, Void, Void> {
 
 		/**
@@ -380,11 +371,6 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 		}
 	}
 
-	/**
-	 * Load nearby data
-	 *
-	 * @author Carl-Philipp Harmant
-	 */
 	private class LoadNearby extends AsyncTask<Void, Void, Void> implements LocationListener {
 
 		// The minimum distance to change Updates in meters
@@ -582,14 +568,6 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 		}
 	}
 
-	/**
-	 * Load data
-	 *
-	 * @param buses         the list of buses
-	 * @param busArrivals   the list of bus arrivals
-	 * @param stations      the list of station
-	 * @param trainArrivals the list of train arrival
-	 */
 	private void load(final List<BusStop> buses, final SparseArray<Map<String, List<BusArrival>>> busArrivals, final List<Station> stations,
 			final SparseArray<TrainArrival> trainArrivals, final List<BikeStation> bikeStations) {
 		final List<Marker> markers = new ArrayList<>();
@@ -631,12 +609,6 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 
 	}
 
-	/**
-	 * Add click events to markers
-	 *
-	 * @param busStops the list of bus stops
-	 * @param stations the list of stations
-	 */
 	private void addClickEventsToMarkers(final List<BusStop> busStops, final List<Station> stations, final List<BikeStation> bikeStations) {
 		googleMap.setOnMarkerClickListener(new OnMarkerClickListener() {
 
@@ -671,11 +643,6 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 		});
 	}
 
-	/**
-	 * Show progress bar
-	 *
-	 * @param show true or false
-	 */
 	private void showProgress(final boolean show) {
 		try {
 			int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
@@ -691,9 +658,6 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 		}
 	}
 
-	/**
-	 * Reload data
-	 */
 	public final void reloadData() {
 		if (Util.isNetworkAvailable()) {
 			googleMap.clear();
