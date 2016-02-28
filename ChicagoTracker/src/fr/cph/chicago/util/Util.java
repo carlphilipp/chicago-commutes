@@ -16,12 +16,15 @@
 
 package fr.cph.chicago.util;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -30,11 +33,18 @@ import android.view.WindowManager;
 import android.widget.Toast;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
+import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.enumeration.TrainLine;
+import fr.cph.chicago.fragment.GoogleMapAbility;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -54,6 +64,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Util {
 
 	private static final String TAG = Util.class.getSimpleName();
+
+	public static final LatLng CHICAGO = new LatLng(41.8819, -87.6278);
 
 	private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
 
@@ -277,5 +289,29 @@ public class Util {
 		final Random random = new Random();
 		final List<TrainLine> keys = Collections.unmodifiableList(Arrays.asList(TrainLine.values()));
 		return keys.get(random.nextInt(keys.size())).getColor();
+	}
+
+	public static void centerMap(final GoogleMapAbility googleFragment, final SupportMapFragment mapFragment, final Activity activity, final Position position) {
+		mapFragment.getMapAsync(new OnMapReadyCallback() {
+			@Override
+			public void onMapReady(final GoogleMap googleMap) {
+				googleFragment.setGoogleMap(googleMap);
+				if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
+						!= PackageManager.PERMISSION_GRANTED
+						&& ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
+						!= PackageManager.PERMISSION_GRANTED) {
+					ActivityCompat.requestPermissions(activity,
+							new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
+					return;
+				}
+				googleMap.setMyLocationEnabled(true);
+				if (position != null) {
+					final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
+					googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
+				} else {
+					googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CHICAGO, 10));
+				}
+			}
+		});
 	}
 }

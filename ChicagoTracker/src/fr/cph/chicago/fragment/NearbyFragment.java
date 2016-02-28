@@ -48,7 +48,6 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMapOptions;
@@ -98,11 +97,10 @@ import java.util.Map;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class NearbyFragment extends Fragment {
+public class NearbyFragment extends Fragment implements GoogleMapAbility {
 
 	private static final String TAG = NearbyFragment.class.getSimpleName();
 	private static final String ARG_SECTION_NUMBER = "section_number";
-	public static final LatLng CHICAGO = new LatLng(41.8819, -87.6278);
 
 	private SupportMapFragment mapFragment;
 	private View loadLayout;
@@ -180,7 +178,7 @@ public class NearbyFragment extends Fragment {
 	public final void onStart() {
 		super.onStart();
 		final GoogleMapOptions options = new GoogleMapOptions();
-		final CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 7, 0, 0);
+		final CameraPosition camera = new CameraPosition(Util.CHICAGO, 7, 0, 0);
 		final FragmentManager fm = mainActivity.getSupportFragmentManager();
 		options.camera(camera);
 		mapFragment = SupportMapFragment.newInstance(options);
@@ -214,6 +212,10 @@ public class NearbyFragment extends Fragment {
 		DataHolder.getInstance().setTrainData(null);
 		DataHolder.getInstance().setBusData(null);
 		ChicagoTracker.displayError(mainActivity, exceptionToBeThrown);
+	}
+
+	public void setGoogleMap(GoogleMap googleMap) {
+		this.googleMap = googleMap;
 	}
 
 	/**
@@ -342,7 +344,6 @@ public class NearbyFragment extends Fragment {
 					Log.e(TAG, e.getMessage(), e);
 				}
 			}
-
 			return null;
 		}
 
@@ -371,7 +372,6 @@ public class NearbyFragment extends Fragment {
 				stations.clear();
 				stations = trainStationTmp;
 			}
-
 			mainActivity.runOnUiThread(new Runnable() {
 				public void run() {
 					load(busStops, busArrivalsMap, stations, trainArrivals, bikeStationsRes);
@@ -523,7 +523,8 @@ public class NearbyFragment extends Fragment {
 		@Override
 		protected final void onPostExecute(final Void result) {
 			new LoadArrivals().execute(busStops, trainStations, bikeStations);
-			centerMap(position);
+			Util.centerMap(NearbyFragment.this, mapFragment, mainActivity, position);
+
 			if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
 					!= PackageManager.PERMISSION_GRANTED
 					&& ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -579,35 +580,6 @@ public class NearbyFragment extends Fragment {
 				}
 			}.start();
 		}
-	}
-
-	/**
-	 * Center map
-	 *
-	 * @param position the position we want to center on
-	 */
-	private void centerMap(final Position position) {
-		mapFragment.getMapAsync(new OnMapReadyCallback() {
-			@Override
-			public void onMapReady(final GoogleMap googleMap) {
-				NearbyFragment.this.googleMap = googleMap;
-				if (ActivityCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_FINE_LOCATION)
-						!= PackageManager.PERMISSION_GRANTED
-						&& ActivityCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_COARSE_LOCATION)
-						!= PackageManager.PERMISSION_GRANTED) {
-					ActivityCompat.requestPermissions(mainActivity,
-							new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
-					return;
-				}
-				googleMap.setMyLocationEnabled(true);
-				if (position != null) {
-					final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
-					googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
-				} else {
-					googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CHICAGO, 10));
-				}
-			}
-		});
 	}
 
 	/**

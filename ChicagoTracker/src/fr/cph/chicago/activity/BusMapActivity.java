@@ -16,25 +16,14 @@
 
 package fr.cph.chicago.activity;
 
-import android.Manifest;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Looper;
-import android.provider.Settings;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -72,8 +61,8 @@ import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
-import fr.cph.chicago.fragment.NearbyFragment;
 import fr.cph.chicago.listener.BusMapOnCameraChangeListener;
+import fr.cph.chicago.task.LoadCurrentPosition;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
 import org.apache.commons.collections4.MultiValuedMap;
@@ -147,7 +136,7 @@ public class BusMapActivity extends Activity {
 			final FragmentManager fm = getFragmentManager();
 			mapFragment = (MapFragment) fm.findFragmentById(R.id.map);
 			final GoogleMapOptions options = new GoogleMapOptions();
-			final CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 10, 0, 0);
+			final CameraPosition camera = new CameraPosition(Util.CHICAGO, 10, 0, 0);
 			options.camera(camera);
 			mapFragment = MapFragment.newInstance(options);
 			mapFragment.setRetainInstance(true);
@@ -219,7 +208,7 @@ public class BusMapActivity extends Activity {
 					}
 				});
 				if (Util.isNetworkAvailable()) {
-					new LoadCurrentPosition().execute();
+					new LoadCurrentPosition(BusMapActivity.this, mapFragment).execute();
 					new LoadBusPosition().execute(centerMap, !loadPattern);
 					if (loadPattern) {
 						new LoadPattern().execute();
@@ -232,7 +221,7 @@ public class BusMapActivity extends Activity {
 	}
 
 	@Override
-	public void onRestoreInstanceState(Bundle savedInstanceState) {
+	public void onRestoreInstanceState(final Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
 		busId = savedInstanceState.getInt(getString(R.string.bundle_bus_id));
 		busRouteId = savedInstanceState.getString(getString(R.string.bundle_bus_route_id));
@@ -240,7 +229,7 @@ public class BusMapActivity extends Activity {
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle savedInstanceState) {
+	public void onSaveInstanceState(final Bundle savedInstanceState) {
 		savedInstanceState.putInt(getString(R.string.bundle_bus_id), busId);
 		savedInstanceState.putString(getString(R.string.bundle_bus_route_id), busRouteId);
 		savedInstanceState.putStringArray(getString(R.string.bundle_bus_bounds), bounds);
@@ -254,7 +243,7 @@ public class BusMapActivity extends Activity {
 		toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
-				new LoadCurrentPosition().execute();
+				new LoadCurrentPosition(BusMapActivity.this, mapFragment).execute();
 				new LoadBusPosition().execute(false, true);
 				return false;
 			}
@@ -276,9 +265,6 @@ public class BusMapActivity extends Activity {
 		});
 	}
 
-	/**
-	 *
-	 */
 	private void refreshInfoWindow() {
 		if (selectedMarker == null) {
 			return;
@@ -428,166 +414,6 @@ public class BusMapActivity extends Activity {
 		}
 	}
 
-	private class LoadCurrentPosition extends AsyncTask<Boolean, Void, Void> implements LocationListener {
-		// The minimum distance to change Updates in meters
-		private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
-		// The minimum time between updates in milliseconds
-		private static final long MIN_TIME_BW_UPDATES = 1000 * 60; // 1 minute
-		// flag for GPS status
-		private boolean isGPSEnabled = false;
-		// flag for network status
-		private boolean isNetworkEnabled = false;
-		/**
-		 * The location
-		 **/
-		private Location location;
-		/**
-		 * The position
-		 **/
-		private Position position;
-		/**
-		 * The latitude
-		 **/
-		private double latitude;
-		/**
-		 * THe longitude
-		 **/
-		private double longitude;
-		/**
-		 * The location manager
-		 **/
-		private LocationManager locationManager;
-
-		@Override
-		protected final Void doInBackground(final Boolean... params) {
-			locationManager = (LocationManager) BusMapActivity.this.getSystemService(Context.LOCATION_SERVICE);
-			// getting GPS status
-			isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-			// getting network status
-			isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-			if (!isGPSEnabled && !isNetworkEnabled) {
-				// no network provider is enabled
-				showSettingsAlert();
-			} else {
-				if (isNetworkEnabled) {
-					if (ActivityCompat.checkSelfPermission(BusMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
-							!= PackageManager.PERMISSION_GRANTED
-							&& ActivityCompat.checkSelfPermission(BusMapActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
-							!= PackageManager.PERMISSION_GRANTED) {
-						ActivityCompat.requestPermissions(BusMapActivity.this,
-								new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
-						return null;
-					}
-					locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES,
-							this, Looper.getMainLooper());
-					if (locationManager != null) {
-						location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-						if (location != null) {
-							latitude = location.getLatitude();
-							longitude = location.getLongitude();
-						}
-					}
-				}
-				// if GPS Enabled get lat/long using GPS Services
-				if (isGPSEnabled) {
-					if (location == null) {
-						if (ActivityCompat.checkSelfPermission(BusMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
-								!= PackageManager.PERMISSION_GRANTED
-								&& ActivityCompat.checkSelfPermission(BusMapActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
-								!= PackageManager.PERMISSION_GRANTED) {
-							ActivityCompat.requestPermissions(BusMapActivity.this,
-									new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
-							return null;
-						}
-						locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES,
-								this, Looper.getMainLooper());
-						if (locationManager != null) {
-							location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-							if (location != null) {
-								latitude = location.getLatitude();
-								longitude = location.getLongitude();
-							}
-						}
-					}
-				}
-				position = new Position();
-				position.setLatitude(latitude);
-				position.setLongitude(longitude);
-			}
-			return null;
-		}
-
-		@Override
-		protected final void onPostExecute(final Void result) {
-			mapFragment.getMapAsync(new OnMapReadyCallback() {
-				@Override
-				public void onMapReady(final GoogleMap googleMap) {
-					BusMapActivity.this.googleMap = googleMap;
-					if (ActivityCompat.checkSelfPermission(BusMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
-							!= PackageManager.PERMISSION_GRANTED
-							&& ActivityCompat.checkSelfPermission(BusMapActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
-							!= PackageManager.PERMISSION_GRANTED) {
-						ActivityCompat.requestPermissions(BusMapActivity.this,
-								new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
-						return;
-					}
-					googleMap.setMyLocationEnabled(true);
-					locationManager.removeUpdates(LoadCurrentPosition.this);
-				}
-			});
-		}
-
-		@Override
-		public final void onLocationChanged(final Location location) {
-		}
-
-		@Override
-		public final void onProviderDisabled(final String provider) {
-		}
-
-		@Override
-		public final void onProviderEnabled(final String provider) {
-		}
-
-		@Override
-		public final void onStatusChanged(final String provider, final int status, final Bundle extras) {
-		}
-
-		/**
-		 * Function to show settings alert dialog
-		 */
-		private void showSettingsAlert() {
-			new Thread() {
-				public void run() {
-					BusMapActivity.this.runOnUiThread(new Runnable() {
-						public void run() {
-							final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(BusMapActivity.this);
-							alertDialogBuilder.setTitle("GPS settings");
-							alertDialogBuilder.setMessage("GPS is not enabled. Do you want to go to settings menu?");
-							alertDialogBuilder.setCancelable(false).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog, int id) {
-									Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-									BusMapActivity.this.startActivity(intent);
-								}
-							}).setNegativeButton("No", new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog, int id) {
-									dialog.cancel();
-								}
-							});
-							final AlertDialog alertDialog = alertDialogBuilder.create();
-							alertDialog.show();
-						}
-					});
-				}
-			}.start();
-		}
-	}
-
-	/**
-	 * Load nearby data
-	 *
-	 * @author Carl-Philipp Harmant
-	 */
 	private class LoadPattern extends AsyncTask<Void, Void, List<BusPattern>> {
 		/**
 		 * List of bus pattern

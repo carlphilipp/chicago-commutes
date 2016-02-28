@@ -16,17 +16,15 @@
 
 package fr.cph.chicago.activity;
 
-import android.Manifest;
-import android.app.FragmentManager;
+import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -36,12 +34,11 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Toast;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.GoogleMapOptions;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -56,12 +53,11 @@ import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BusPattern;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.PatternPoint;
-import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
-import fr.cph.chicago.fragment.NearbyFragment;
+import fr.cph.chicago.fragment.GoogleMapAbility;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
 import org.apache.commons.collections4.MultiValuedMap;
@@ -78,19 +74,24 @@ import java.util.Locale;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class BusBoundActivity extends ListActivity {
+public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
 	/**
 	 * Tag
 	 **/
 	private static final String TAG = BusBoundActivity.class.getSimpleName();
 
-	private MapFragment mapFragment;
+	private SupportMapFragment mapFragment;
+	private MainActivity mainActivity;
 	private GoogleMap googleMap;
 	private String busRouteId;
 	private String busRouteName;
 	private String bound;
 	private BusBoundAdapter busBoundAdapter;
 	private List<BusStop> busStops;
+
+	public BusBoundActivity(final Activity mainActivity) {
+		this.mainActivity = (MainActivity) mainActivity;
+	}
 
 	@Override
 	public final void onCreate(final Bundle savedInstanceState) {
@@ -174,11 +175,11 @@ public class BusBoundActivity extends ListActivity {
 	@Override
 	public final void onStart() {
 		super.onStart();
-		final FragmentManager fm = getFragmentManager();
+		final FragmentManager fm = mainActivity.getSupportFragmentManager();
 		final GoogleMapOptions options = new GoogleMapOptions();
-		final CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 7, 0, 0);
+		final CameraPosition camera = new CameraPosition(Util.CHICAGO, 7, 0, 0);
 		options.camera(camera);
-		mapFragment = MapFragment.newInstance(options);
+		mapFragment = SupportMapFragment.newInstance(options);
 		mapFragment.setRetainInstance(true);
 		fm.beginTransaction().replace(R.id.map, mapFragment).commit();
 	}
@@ -225,6 +226,11 @@ public class BusBoundActivity extends ListActivity {
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
+	@Override
+	public void setGoogleMap(final GoogleMap googleMap) {
+		this.googleMap = googleMap;
+	}
+
 	/**
 	 * Task that connect to API to get the bound of the selected stop
 	 *
@@ -263,11 +269,6 @@ public class BusBoundActivity extends ListActivity {
 		}
 	}
 
-	/**
-	 * Load nearby data
-	 *
-	 * @author Carl-Philipp Harmant
-	 */
 	private class LoadPattern extends AsyncTask<Void, Void, BusPattern> implements LocationListener {
 
 		private BusPattern busPattern;
@@ -301,7 +302,7 @@ public class BusBoundActivity extends ListActivity {
 		protected final void onPostExecute(final BusPattern result) {
 			if (result != null) {
 				final int center = result.getPoints().size() / 2;
-				centerMap(result.getPoints().get(center).getPosition());
+				Util.centerMap(BusBoundActivity.this, mapFragment, mainActivity, result.getPoints().get(center).getPosition());
 				drawPattern(result);
 			} else {
 				Toast.makeText(BusBoundActivity.this, "Sorry, could not load the path!", Toast.LENGTH_SHORT).show();
@@ -323,34 +324,6 @@ public class BusBoundActivity extends ListActivity {
 		@Override
 		public final void onStatusChanged(final String provider, final int status, final Bundle extras) {
 		}
-	}
-
-	/**
-	 * Center map
-	 *
-	 * @param position the position we want to center on
-	 */
-	private void centerMap(final Position position) {
-		mapFragment.getMapAsync(new OnMapReadyCallback() {
-			@Override
-			public void onMapReady(final GoogleMap googleMap) {
-				BusBoundActivity.this.googleMap = googleMap;
-				googleMap.getUiSettings().setMyLocationButtonEnabled(false);
-				googleMap.getUiSettings().setZoomControlsEnabled(false);
-				if (ActivityCompat.checkSelfPermission(BusBoundActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
-						!= PackageManager.PERMISSION_GRANTED
-						&& ActivityCompat.checkSelfPermission(BusBoundActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
-						!= PackageManager.PERMISSION_GRANTED) {
-					ActivityCompat.requestPermissions(BusBoundActivity.this,
-							new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
-					return;
-				}
-				googleMap.setMyLocationEnabled(true);
-				final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
-				googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
-				googleMap.animateCamera(CameraUpdateFactory.zoomTo(9), 500, null);
-			}
-		});
 	}
 
 	private void drawPattern(final BusPattern pattern) {
