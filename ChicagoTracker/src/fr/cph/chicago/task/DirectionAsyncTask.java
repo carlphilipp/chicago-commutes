@@ -72,11 +72,11 @@ public class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 		try {
 			final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
 			busRoute = (BusRoute) params[0];
+			convertView = (View) params[1];
 			reqParams.put("rt", busRoute.getId());
 			final Xml xml = new Xml();
 			final String xmlResult = connect.connect(CtaRequestType.BUS_DIRECTION, reqParams);
 			busDirections = xml.parseBusDirections(xmlResult, busRoute.getId());
-			convertView = (View) params[1];
 		} catch (ParserException | ConnectException e) {
 			this.trackerException = e;
 		}
@@ -104,26 +104,23 @@ public class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 
 			final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 			builder.setAdapter(ada, new DialogInterface.OnClickListener() {
-
 				@Override
 				public void onClick(final DialogInterface dialog, final int position) {
+					final Bundle extras = new Bundle();
 					if (position != data.size() - 1) {
 						final Intent intent = new Intent(activity, BusBoundActivity.class);
-						final Bundle extras = new Bundle();
 						extras.putString(activity.getString(R.string.bundle_bus_route_id), busRoute.getId());
 						extras.putString(activity.getString(R.string.bundle_bus_route_name), busRoute.getName());
 						extras.putString(activity.getString(R.string.bundle_bus_bound), data.get(position));
 						intent.putExtras(extras);
-						intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-						ChicagoTracker.getContext().startActivity(intent);
+						activity.startActivity(intent);
 					} else {
 						final String[] busDirectionArray = new String[busDirections.size()];
 						int i = 0;
 						for (final BusDirection busDir : busDirections) {
 							busDirectionArray[i++] = busDir.toString();
 						}
-						final Intent intent = new Intent(ChicagoTracker.getContext(), BusMapActivity.class);
-						final Bundle extras = new Bundle();
+						final Intent intent = new Intent(activity, BusMapActivity.class);
 						extras.putString(activity.getString(R.string.bundle_bus_route_id), result.getId());
 						extras.putStringArray(activity.getString(R.string.bundle_bus_bounds), busDirectionArray);
 						intent.putExtras(extras);
@@ -138,7 +135,6 @@ public class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 					convertView.setVisibility(LinearLayout.GONE);
 				}
 			});
-
 			final AlertDialog dialog = builder.create();
 			dialog.show();
 		} else {

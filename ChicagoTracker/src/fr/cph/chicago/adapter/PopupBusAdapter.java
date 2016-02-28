@@ -40,7 +40,7 @@ public class PopupBusAdapter extends ArrayAdapter<String> {
 	 * @param context
 	 * @param values
 	 */
-	public PopupBusAdapter(Context context, List<String> values) {
+	public PopupBusAdapter(final Context context, final List<String> values) {
 		super(context, R.layout.popup_bus_cell, values);
 		this.context = context;
 		this.values = values;

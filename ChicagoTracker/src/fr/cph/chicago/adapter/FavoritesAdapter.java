@@ -82,7 +82,6 @@ public final class FavoritesAdapter extends BaseAdapter {
 	private Context context;
 	private LinearLayout.LayoutParams paramsLayout;
 	private LinearLayout.LayoutParams paramsTextView;
-	private FrameLayout firstLayout;
 
 	private MainActivity mainActivity;
 	private Favorites favorites;
@@ -99,7 +98,6 @@ public final class FavoritesAdapter extends BaseAdapter {
 		this.context = ChicagoTracker.getContext();
 
 		this.mainActivity = activity;
-		this.firstLayout = ChicagoTracker.container;
 		this.favorites = new Favorites();
 
 		this.ids = new HashMap<>();
@@ -346,7 +344,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 						final String key = entry.getKey();
 						final Map<String, List<BusArrival>> value = entry.getValue();
 
-						llh.setOnClickListener(new FavoritesBusOnClickListener(mainActivity, busRoute, value));
+						llh.setOnClickListener(new FavoritesBusOnClickListener(mainActivity, parent, busRoute, value));
 
 						final LinearLayout stopLayout = new LinearLayout(context);
 						stopLayout.setOrientation(LinearLayout.VERTICAL);
