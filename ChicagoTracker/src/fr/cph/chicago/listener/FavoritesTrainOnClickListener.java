@@ -16,6 +16,7 @@
 
 package fr.cph.chicago.listener;
 
+import android.view.ViewGroup.LayoutParams;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -85,11 +86,13 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 				public void onClick(final DialogInterface dialog, final int position) {
 					final Bundle extras = new Bundle();
 					if (position == 0) {
+						// Start station activity
 						final Intent intent = new Intent(ChicagoTracker.getContext(), StationActivity.class);
 						extras.putInt(activity.getResources().getString(R.string.bundle_train_stationId), stationId);
 						intent.putExtras(extras);
 						activity.startActivity(intent);
 					} else {
+						// Follow all trains from given line on google map view
 						final Intent intent = new Intent(ChicagoTracker.getContext(), TrainMapActivity.class);
 						extras.putString(activity.getResources().getString(R.string.bundle_train_line), lines.get(position - 1).toTextString());
 						intent.putExtras(extras);
@@ -98,8 +101,10 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 				}
 			});
 
+			final int[] screenSize = Util.getScreenSize();
 			final AlertDialog dialog = builder.create();
 			dialog.show();
+			dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
 		}
 	}
 }

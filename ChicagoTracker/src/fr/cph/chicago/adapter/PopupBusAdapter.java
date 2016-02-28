@@ -17,10 +17,12 @@
 package fr.cph.chicago.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 import fr.cph.chicago.R;
 
@@ -31,9 +33,13 @@ import java.util.List;
  * @version 1
  */
 public class PopupBusAdapter extends ArrayAdapter<String> {
-	/** Context **/
+	/**
+	 * Context
+	 **/
 	private final Context context;
-	/** Values **/
+	/**
+	 * Values
+	 **/
 	private final List<String> values;
 
 	/**
@@ -49,9 +55,18 @@ public class PopupBusAdapter extends ArrayAdapter<String> {
 	@Override
 	public final View getView(final int position, final View convertView, final ViewGroup parent) {
 		final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		final View rowView = inflater.inflate(R.layout.popup_bus_cell, parent, false);
+		View rowView;
+		if (position == 0) {
+			rowView = inflater.inflate(R.layout.popup_bus_cell_0, parent, false);
+
+		} else {
+			rowView = inflater.inflate(R.layout.popup_bus_cell, parent, false);
+			final ImageView imageView = (ImageView) rowView.findViewById(R.id.popup_map_map);
+			imageView.setColorFilter(Color.BLACK);
+		}
 		final TextView textView = (TextView) rowView.findViewById(R.id.label);
 		textView.setText(values.get(position));
+
 		return rowView;
 	}
 }

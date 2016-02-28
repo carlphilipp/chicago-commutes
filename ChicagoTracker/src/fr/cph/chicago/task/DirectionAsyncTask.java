@@ -25,6 +25,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import fr.cph.chicago.ChicagoTracker;
@@ -135,8 +136,10 @@ public class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 					convertView.setVisibility(LinearLayout.GONE);
 				}
 			});
+			final int[] screenSize = Util.getScreenSize();
 			final AlertDialog dialog = builder.create();
 			dialog.show();
+			dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), ViewGroup.LayoutParams.WRAP_CONTENT);
 		} else {
 			ChicagoTracker.displayError(activity, trackerException);
 		}

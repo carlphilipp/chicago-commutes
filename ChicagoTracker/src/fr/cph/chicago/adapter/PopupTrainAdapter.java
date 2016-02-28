@@ -16,11 +16,14 @@
 
 package fr.cph.chicago.adapter;
 
-import android.content.Context;
+import android.app.Activity;
+import android.content.res.ColorStateList;
+import android.graphics.ColorFilter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 import fr.cph.chicago.R;
 
@@ -31,39 +34,31 @@ import java.util.List;
  * @version 1
  */
 public class PopupTrainAdapter extends ArrayAdapter<String> {
-	/** The context **/
-	private final Context context;
-	/** The values **/
+
+	private final Activity activity;
 	private final List<String> values;
-	/** The colors **/
 	private final List<Integer> colors;
 
-	/**
-	 * @param context
-	 * @param values
-	 * @param colors
-	 */
-	public PopupTrainAdapter(final Context context, final List<String> values, final List<Integer> colors) {
-		super(context, R.layout.popup_train_cell, values);
-		this.context = context;
+	public PopupTrainAdapter(final Activity activity, final List<String> values, final List<Integer> colors) {
+		super(activity, R.layout.popup_train_cell, values);
+		this.activity = activity;
 		this.values = values;
 		this.colors = colors;
 	}
 
 	@Override
 	public final View getView(final int position, final View convertView, final ViewGroup parent) {
-		final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		final LayoutInflater inflater = activity.getLayoutInflater();
 		View rowView;
 		if (position == 0) {
 			rowView = inflater.inflate(R.layout.popup_train_cell_0, parent, false);
 		} else {
 			rowView = inflater.inflate(R.layout.popup_train_cell, parent, false);
-			final TextView colorView = (TextView) rowView.findViewById(R.id.line_color);
-			colorView.setBackgroundColor(colors.get(position - 1));
+			final ImageView imageView = (ImageView) rowView.findViewById(R.id.popup_train_map);
+			imageView.setColorFilter(colors.get(position - 1));
 		}
 		final TextView textView = (TextView) rowView.findViewById(R.id.label);
 		textView.setText(values.get(position));
 		return rowView;
 	}
-
 }

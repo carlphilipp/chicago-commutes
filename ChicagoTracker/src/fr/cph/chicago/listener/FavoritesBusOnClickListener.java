@@ -121,8 +121,10 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 					}
 				}
 			});
+			final int[] screenSize = Util.getScreenSize();
 			final AlertDialog dialog = builder.create();
 			dialog.show();
+			dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), ViewGroup.LayoutParams.WRAP_CONTENT);
 		}
 	}
 
