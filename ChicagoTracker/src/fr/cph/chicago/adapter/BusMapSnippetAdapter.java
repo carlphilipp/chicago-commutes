@@ -16,11 +16,10 @@
 
 package fr.cph.chicago.adapter;
 
-import android.content.Context;
+import android.app.Activity;
 import android.graphics.Typeface;
 import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -38,15 +37,17 @@ import java.util.List;
  * @version 1
  */
 public class BusMapSnippetAdapter extends BaseAdapter {
-	/**
-	 * List of bus arrivals
-	 **/
+
+	private Activity activity;
+	private ViewGroup viewGroup;
 	private List<BusArrival> arrivals;
 
 	/**
 	 * @param arrivals
 	 */
-	public BusMapSnippetAdapter(final List<BusArrival> arrivals) {
+	public BusMapSnippetAdapter(final Activity activity, final ViewGroup viewGroup, final List<BusArrival> arrivals) {
+		this.activity = activity;
+		this.viewGroup = viewGroup;
 		this.arrivals = arrivals;
 	}
 
@@ -68,8 +69,7 @@ public class BusMapSnippetAdapter extends BaseAdapter {
 	@Override
 	public final View getView(final int position, View convertView, final ViewGroup parent) {
 		final BusArrival arrival = (BusArrival) getItem(position);
-		final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		convertView = vi.inflate(R.layout.list_map_train, null);
+		convertView = activity.getLayoutInflater().inflate(R.layout.list_map_train, viewGroup, false);
 		final TextView stationNameTextView = (TextView) convertView.findViewById(R.id.station_name);
 		stationNameTextView.setText(arrival.getStopName());
 

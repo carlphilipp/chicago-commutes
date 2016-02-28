@@ -17,8 +17,6 @@
 package fr.cph.chicago.adapter;
 
 import android.app.Activity;
-import android.content.res.ColorStateList;
-import android.graphics.ColorFilter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

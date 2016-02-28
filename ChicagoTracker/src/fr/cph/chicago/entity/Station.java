@@ -19,7 +19,6 @@ package fr.cph.chicago.entity;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
 import java.util.ArrayList;
@@ -36,11 +35,17 @@ import java.util.TreeSet;
  * @version 1
  */
 public class Station implements Comparable<Station>, Parcelable {
-	/** The id **/
+	/**
+	 * The id
+	 **/
 	private Integer id;
-	/** The name **/
+	/**
+	 * The name
+	 **/
 	private String name;
-	/** The stops list **/
+	/**
+	 * The stops list
+	 **/
 	private List<Stop> stops;
 
 	public Station() {
@@ -48,7 +53,6 @@ public class Station implements Comparable<Station>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @param in
 	 */
 	private Station(Parcel in) {
@@ -56,7 +60,6 @@ public class Station implements Comparable<Station>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final Integer getId() {
@@ -64,7 +67,6 @@ public class Station implements Comparable<Station>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @param id
 	 */
 	public final void setId(final Integer id) {
@@ -72,7 +74,6 @@ public class Station implements Comparable<Station>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final String getName() {
@@ -80,7 +81,6 @@ public class Station implements Comparable<Station>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @param name
 	 */
 	public final void setName(final String name) {
@@ -88,7 +88,6 @@ public class Station implements Comparable<Station>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final List<Stop> getStops() {
@@ -96,7 +95,6 @@ public class Station implements Comparable<Station>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @param stops
 	 */
 	public final void setStops(final List<Stop> stops) {
@@ -119,7 +117,6 @@ public class Station implements Comparable<Station>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final Set<TrainLine> getLines() {

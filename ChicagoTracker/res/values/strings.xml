@@ -56,7 +56,7 @@
 	<string name="action_refresh">Refresh</string>
 	<string name="action_search">Search</string>
 	<string name="progress_error">Error, try to refresh</string>
-	<string name="progress_message">Loading...</string>
+	<string name="progress_message">Loading&#8230;</string>
 	<string name="progress_wait">Please wait</string>
 	<string name="progress_bike">Bike data</string>
 	<string name="progress_train">Train data</string>
@@ -99,7 +99,7 @@
 
 	<!-- Search -->
 	<string name="search_title">Search</string>
-	<string name="search_hint">Search...</string>
+	<string name="search_hint">Search&#8230;</string>
 
 	<!-- Nearby -->
 	<string name="nearby_title">Nearby</string>

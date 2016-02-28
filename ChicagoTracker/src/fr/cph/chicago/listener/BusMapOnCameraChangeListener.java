@@ -35,21 +35,12 @@ import java.util.List;
  * @version 1
  */
 public class BusMapOnCameraChangeListener implements OnCameraChangeListener {
-	/** **/
-	private float currentZoom = -1;
-	/** **/
-	private float oldZoom = -1;
-	/** **/
+
 	private Bitmap bitmap1;
-	/** **/
 	private Bitmap bitmap2;
-	/** **/
 	private Bitmap bitmap3;
-	/** **/
 	private Bitmap currentBitmap;
-	/** **/
 	private List<Marker> busMarkers;
-	/** **/
 	private List<Marker> busStationMarkers;
 
 	public BusMapOnCameraChangeListener() {
@@ -72,8 +63,9 @@ public class BusMapOnCameraChangeListener implements OnCameraChangeListener {
 
 	@Override
 	public void onCameraChange(final CameraPosition position) {
+		float currentZoom = -1;
 		if (position.zoom != currentZoom) {
-			oldZoom = currentZoom;
+			float oldZoom = currentZoom;
 			currentZoom = position.zoom;
 			if (isIn(currentZoom, 12.9f, 11f) && !isIn(oldZoom, 12.9f, 11f)) {
 				for (final Marker marker : busMarkers) {
@@ -103,7 +95,7 @@ public class BusMapOnCameraChangeListener implements OnCameraChangeListener {
 		}
 	}
 
-	public boolean isIn(final float num, final float sup, final float inf) {
+	private boolean isIn(final float num, final float sup, final float inf) {
 		return num >= inf && num <= sup;
 	}
 

@@ -234,11 +234,7 @@ public class BikeFragment extends Fragment {
 				}
 			}
 			final List<BikeStation> bikeStationsBundle = bundle.getParcelableArrayList("bikeStations");
-			if (bikeStationsBundle == null) {
-				return false;
-			} else {
-				return bikeStationsBundle.size() != 0;
-			}
+			return bikeStationsBundle != null && bikeStationsBundle.size() != 0;
 
 		}
 

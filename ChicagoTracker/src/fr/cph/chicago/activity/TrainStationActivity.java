@@ -19,14 +19,11 @@ package fr.cph.chicago.activity;
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import fr.cph.chicago.R;
 import fr.cph.chicago.adapter.TrainAdapter;
-import fr.cph.chicago.data.DataHolder;
-import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.Util;
 
@@ -39,7 +36,6 @@ import fr.cph.chicago.util.Util;
 public class TrainStationActivity extends ListActivity {
 
 	private TrainLine trainLine;
-
 	private String lineParam;
 
 	@Override
@@ -51,7 +47,7 @@ public class TrainStationActivity extends ListActivity {
 				lineParam = getIntent().getExtras().getString(getString(R.string.bundle_train_line));
 				trainLine = TrainLine.fromString(lineParam);
 			}
-			if(trainLine != null) {
+			if (trainLine != null) {
 				setTitle(trainLine.toStringWithLine());
 			}
 
@@ -72,7 +68,7 @@ public class TrainStationActivity extends ListActivity {
 				}
 			});
 
-			final TrainAdapter ada = new TrainAdapter(trainLine, this, container);
+			final TrainAdapter ada = new TrainAdapter(trainLine, this);
 			setListAdapter(ada);
 		}
 	}

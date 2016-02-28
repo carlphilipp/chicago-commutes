@@ -42,7 +42,6 @@ import fr.cph.chicago.connection.DivvyConnect;
 import fr.cph.chicago.connection.GStreetViewConnect;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
-import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
@@ -224,7 +223,7 @@ public class BikeStationActivity extends Activity {
 		return false;
 	}
 
-	public final void refreshStation(final BikeStation station) {
+	private void refreshStation(final BikeStation station) {
 		this.bikeStation = station;
 		drawData();
 	}

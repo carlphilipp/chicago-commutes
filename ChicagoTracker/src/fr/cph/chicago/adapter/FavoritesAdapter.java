@@ -34,7 +34,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -152,7 +151,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 				} else {
 					final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-					convertView = vi.inflate(R.layout.list_favorites_train, null);
+					convertView = vi.inflate(R.layout.list_favorites_train, parent, false);
 					favoritesLayout = (LinearLayout) convertView.findViewById(R.id.favorites_list_main);
 					layouts.put(stationId, favoritesLayout);
 					views.put(stationId, convertView);
@@ -336,7 +335,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 						}
 
 						final TextView tlView = new TextView(context);
-						tlView.setBackgroundColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.black));
+						tlView.setBackgroundColor(ContextCompat.getColor(context, R.color.black));
 						tlView.setText("   ");
 						tlView.setLayoutParams(paramsTextView);
 						llh.addView(tlView);
@@ -352,7 +351,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 						final TextView stopName = new TextView(context);
 						stopName.setText(String.valueOf(key));
-						stopName.setTextColor(context.getResources().getColor(R.color.grey_5));
+						stopName.setTextColor(ContextCompat.getColor(context, R.color.grey_5));
 						stopName.setTypeface(Typeface.DEFAULT_BOLD);
 
 						stopLayout.addView(stopName);
@@ -389,7 +388,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 			} else {
 				final BikeStation bikeStation = (BikeStation) object;
 				final LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				convertView = vi.inflate(R.layout.list_favorites_bike, null);
+				convertView = vi.inflate(R.layout.list_favorites_bike, parent, false);
 				final TextView bikeStationName = (TextView) convertView.findViewById(R.id.bike_station_name);
 				bikeStationName.setText(bikeStation.getName());
 
@@ -406,7 +405,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 				llh.setPadding(line1Padding, stopsPaddingTop, 0, 0);
 
 				final TextView tlView = new TextView(context);
-				tlView.setBackgroundColor(context.getResources().getColor(R.color.black));
+				tlView.setBackgroundColor(ContextCompat.getColor(context, R.color.black));
 				tlView.setText("   ");
 				tlView.setLayoutParams(paramsTextView);
 				llh.addView(tlView);

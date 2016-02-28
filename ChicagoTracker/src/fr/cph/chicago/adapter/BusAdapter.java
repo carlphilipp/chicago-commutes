@@ -16,41 +16,21 @@
 
 package fr.cph.chicago.adapter;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
-import fr.cph.chicago.activity.BusBoundActivity;
-import fr.cph.chicago.activity.BusMapActivity;
 import fr.cph.chicago.activity.MainActivity;
-import fr.cph.chicago.connection.CtaConnect;
-import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
-import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusRoute;
-import fr.cph.chicago.entity.enumeration.BusDirection;
-import fr.cph.chicago.exception.ConnectException;
-import fr.cph.chicago.exception.ParserException;
-import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.task.DirectionAsyncTask;
-import fr.cph.chicago.util.Util;
-import fr.cph.chicago.xml.Xml;
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

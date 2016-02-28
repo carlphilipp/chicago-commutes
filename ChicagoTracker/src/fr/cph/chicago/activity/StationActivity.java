@@ -88,6 +88,7 @@ public class StationActivity extends Activity {
 
 	private static final String TAG = StationActivity.class.getSimpleName();
 
+	private ViewGroup viewGroup;
 	private ImageView streetViewImage;
 	private TextView streetViewText;
 	private ImageView mapImage;
@@ -108,6 +109,7 @@ public class StationActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		ChicagoTracker.checkTrainData(this);
 		if (!this.isFinishing()) {
+			viewGroup = (ViewGroup) findViewById(android.R.id.content);
 			// Load data
 			final DataHolder dataHolder = DataHolder.getInstance();
 			trainData = dataHolder.getTrainData();
@@ -175,7 +177,7 @@ public class StationActivity extends Activity {
 				Collections.sort(stopss);
 				final LayoutInflater layoutInflater = (LayoutInflater) ChicagoTracker.getContext()
 						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				final View view = layoutInflater.inflate(R.layout.activity_station_line_title, null);
+				final View view = layoutInflater.inflate(R.layout.activity_station_line_title, viewGroup, false);
 
 				final TextView lineTextView = (TextView) view.findViewById(R.id.activity_bus_station_value);
 				lineTextView.setText(line.toStringWithLine());

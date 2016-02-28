@@ -84,7 +84,7 @@ public class ChicagoTracker extends Application {
 	/**
 	 * Analytics stuff
 	 **/
-	public static Tracker tracker;
+	private static Tracker tracker;
 
 	@Override
 	public final void onCreate() {

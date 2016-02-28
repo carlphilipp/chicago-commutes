@@ -18,7 +18,6 @@ package fr.cph.chicago.connection;
 
 import android.graphics.drawable.Drawable;
 import android.util.Log;
-import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.util.Util;
 import org.apache.commons.io.IOUtils;
 

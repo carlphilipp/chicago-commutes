@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class BusArrival implements Parcelable {
 	/** **/
-	public static String NO_SERVICE = "No service scheduled";
+	private static String NO_SERVICE = "No service scheduled";
 	/** Timestamp **/
 	private Date timeStamp;
 	/** Error message **/

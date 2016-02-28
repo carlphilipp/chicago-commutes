@@ -204,7 +204,7 @@ public class BusActivity extends Activity {
 	/**
 	 * Draw arrivals in current layout
 	 */
-	public final void drawArrivals() {
+	private void drawArrivals() {
 		if (busArrivals != null) {
 			final Map<String, TextView> mapRes = new HashMap<>();
 			if (busArrivals.size() != 0) {
@@ -250,7 +250,7 @@ public class BusActivity extends Activity {
 	/**
 	 * @return
 	 */
-	public final boolean isFavorite() {
+	private boolean isFavorite() {
 		boolean isFavorite = false;
 		final List<String> favorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
 		for (final String favorite : favorites) {

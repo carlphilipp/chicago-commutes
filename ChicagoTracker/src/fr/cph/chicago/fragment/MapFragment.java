@@ -16,12 +16,10 @@
 
 package fr.cph.chicago.fragment;
 
-import android.app.Activity;
-import android.content.Context;
-import android.support.v4.app.Fragment;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -30,7 +28,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import fr.cph.chicago.R;
-import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.util.Util;
 
 /**
@@ -41,27 +38,49 @@ import fr.cph.chicago.util.Util;
  */
 // TODO Refactor
 public class MapFragment extends Fragment implements OnTouchListener {
-	/** The fragment argument representing the section number for this fragment. **/
+	/**
+	 * The fragment argument representing the section number for this fragment.
+	 **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
-	/** Mode none **/
+	/**
+	 * Mode none
+	 **/
 	private static final int NONE = 0;
-	/** Mode drag **/
+	/**
+	 * Mode drag
+	 **/
 	private static final int DRAG = 1;
-	/** Mode zoom **/
+	/**
+	 * Mode zoom
+	 **/
 	private static final int ZOOM = 2;
-	/** Default mode **/
+	/**
+	 * Default mode
+	 **/
 	private int mode = NONE;
-	/** The matrix **/
+	/**
+	 * The matrix
+	 **/
 	private Matrix matrix = new Matrix();
-	/** The saved matrix **/
+	/**
+	 * The saved matrix
+	 **/
 	private Matrix savedMatrix = new Matrix();
-	/** Start point **/
+	/**
+	 * Start point
+	 **/
 	private PointF start = new PointF();
-	/** Mid point **/
+	/**
+	 * Mid point
+	 **/
 	private PointF mid = new PointF();
-	/** Old distance **/
+	/**
+	 * Old distance
+	 **/
 	private float oldDist = 1f;
-	/** Image view **/
+	/**
+	 * Image view
+	 **/
 	private ImageView view;
 
 	private Long currentClickTime = (long) 0;
@@ -76,8 +95,7 @@ public class MapFragment extends Fragment implements OnTouchListener {
 	/**
 	 * Returns a new instance of this fragment for the given section number.
 	 *
-	 * @param sectionNumber
-	 *            the section number
+	 * @param sectionNumber the section number
 	 * @return the fragment
 	 */
 	public static MapFragment newInstance(final int sectionNumber) {
@@ -200,10 +218,8 @@ public class MapFragment extends Fragment implements OnTouchListener {
 	/**
 	 * Calculate the mid point of the first two fingers
 	 *
-	 * @param point
-	 *            the point
-	 * @param event
-	 *            the event
+	 * @param point the point
+	 * @param event the event
 	 */
 	private void midPoint(PointF point, MotionEvent event) {
 		float x = event.getX(0) + event.getX(1);

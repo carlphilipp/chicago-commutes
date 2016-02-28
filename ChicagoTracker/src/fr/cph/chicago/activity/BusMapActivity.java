@@ -38,9 +38,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -92,6 +92,7 @@ import java.util.Map;
 public class BusMapActivity extends Activity {
 
 	private static final String TAG = BusMapActivity.class.getSimpleName();
+	private ViewGroup viewGroup;
 	private MapFragment mapFragment;
 	private GoogleMap googleMap;
 	private Marker selectedMarker;
@@ -116,6 +117,7 @@ public class BusMapActivity extends Activity {
 		ChicagoTracker.checkBusData(this);
 		if (!this.isFinishing()) {
 			setContentView(R.layout.activity_map);
+			viewGroup = (ViewGroup) findViewById(android.R.id.content);
 			if (savedInstanceState != null) {
 				busId = savedInstanceState.getInt(getString(R.string.bundle_bus_id));
 				busRouteId = savedInstanceState.getString(getString(R.string.bundle_bus_route_id));
@@ -245,7 +247,7 @@ public class BusMapActivity extends Activity {
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
-	private void setToolbar(){
+	private void setToolbar() {
 		final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
 		toolbar.inflateMenu(R.menu.main);
@@ -320,8 +322,9 @@ public class BusMapActivity extends Activity {
 								.icon(BitmapDescriptorFactory.fromBitmap(bitmap)).anchor(0.5f, 0.5f).rotation(bus.getHeading()).flat(true));
 				busMarkers.add(marker);
 
-				final LayoutInflater layoutInflater = (LayoutInflater) BusMapActivity.this.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				final View view = layoutInflater.inflate(R.layout.marker_train, null);
+				final LayoutInflater layoutInflater = (LayoutInflater) BusMapActivity.this.getBaseContext()
+						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				final View view = layoutInflater.inflate(R.layout.marker_train, viewGroup, false);
 				final TextView title = (TextView) view.findViewById(R.id.title);
 				title.setText(marker.getTitle());
 
@@ -682,7 +685,7 @@ public class BusMapActivity extends Activity {
 			final ListView arrivals = (ListView) view.findViewById(R.id.arrivals);
 			final TextView error = (TextView) view.findViewById(R.id.error);
 			if (result.size() != 0) {
-				final BusMapSnippetAdapter ada = new BusMapSnippetAdapter(result);
+				final BusMapSnippetAdapter ada = new BusMapSnippetAdapter(BusMapActivity.this, BusMapActivity.this.viewGroup, result);
 				arrivals.setAdapter(ada);
 				arrivals.setVisibility(ListView.VISIBLE);
 				error.setVisibility(TextView.GONE);

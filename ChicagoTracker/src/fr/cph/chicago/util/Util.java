@@ -34,16 +34,13 @@ import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
-import fr.cph.chicago.entity.Stop;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -57,7 +54,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Util {
 
 	private static final String TAG = Util.class.getSimpleName();
-	/** **/
+
 	private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
 
 	public static int generateViewId() {
@@ -219,7 +216,7 @@ public class Util {
 	public static void trackScreen(final String screen) {
 		final Tracker t = ChicagoTracker.getTracker();
 		t.setScreenName(screen);
-		t.send(new HitBuilders.AppViewBuilder().build());
+		t.send(new HitBuilders.ScreenViewBuilder().build());
 	}
 
 	public static void trackAction(final Activity activity, final int category, final int action, final int label, final int value) {
@@ -272,7 +269,7 @@ public class Util {
 		toolbar.setBackgroundColor(ContextCompat.getColor(ChicagoTracker.getContext(), backgroundColor));
 		toolbar.setTitleTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.white));
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			activity.getWindow().setStatusBarColor(activity.getResources().getColor(statusBarColor));
+			activity.getWindow().setStatusBarColor(ContextCompat.getColor(activity, statusBarColor));
 		}
 	}
 

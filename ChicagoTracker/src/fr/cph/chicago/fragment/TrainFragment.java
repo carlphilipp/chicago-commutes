@@ -16,6 +16,8 @@
 
 package fr.cph.chicago.fragment;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -27,6 +29,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
+import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.activity.TrainStationActivity;
 import fr.cph.chicago.adapter.TrainStationAdapter;
 import fr.cph.chicago.entity.enumeration.TrainLine;
@@ -39,10 +42,8 @@ import fr.cph.chicago.util.Util;
  * @version 1
  */
 public final class TrainFragment extends Fragment {
-	/**
-	 * The fragment argument representing the section number for this fragment.
-	 **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
+	private MainActivity mainActivity;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -65,6 +66,12 @@ public final class TrainFragment extends Fragment {
 	}
 
 	@Override
+	public final void onAttach(final Context context) {
+		super.onAttach(context);
+		mainActivity = context instanceof Activity ? (MainActivity) context : null;
+	}
+
+	@Override
 	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		final View rootView = inflater.inflate(R.layout.fragment_train, container, false);
 		final TrainStationAdapter ada = new TrainStationAdapter();
@@ -74,7 +81,7 @@ public final class TrainFragment extends Fragment {
 			@Override
 			public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
 				if (Util.isNetworkAvailable()) {
-					final Intent intent = new Intent(TrainFragment.this.getView().getContext(), TrainStationActivity.class);
+					final Intent intent = new Intent(mainActivity, TrainStationActivity.class);
 					final Bundle extras = new Bundle();
 					final String line = TrainLine.values()[position].toString();
 					extras.putString("line", line);

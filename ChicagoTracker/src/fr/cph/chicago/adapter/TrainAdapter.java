@@ -46,7 +46,6 @@ public final class TrainAdapter extends BaseAdapter {
 
 	private Context context;
 	private Activity activity;
-	private FrameLayout container;
 	private List<Station> stations;
 
 	/**
@@ -54,14 +53,13 @@ public final class TrainAdapter extends BaseAdapter {
 	 *
 	 * @param line the train line
 	 */
-	public TrainAdapter(final TrainLine line, final Activity activity, final FrameLayout container) {
+	public TrainAdapter(final TrainLine line, final Activity activity) {
 		// Load data
 		final DataHolder dataHolder = DataHolder.getInstance();
 		final TrainData data = dataHolder.getTrainData();
 		this.stations = data.getStationsForLine(line);
 		this.context = ChicagoTracker.getContext();
 		this.activity = activity;
-		this.container = container;
 	}
 
 	@Override

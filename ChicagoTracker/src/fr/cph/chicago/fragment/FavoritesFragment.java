@@ -335,7 +335,7 @@ public class FavoritesFragment extends Fragment {
 		swipeRefreshLayout.setRefreshing(true);
 	}
 
-	public void stopRefreshing() {
+	private void stopRefreshing() {
 		swipeRefreshLayout.setRefreshing(false);
 	}
 
