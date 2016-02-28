@@ -19,7 +19,6 @@ package fr.cph.chicago.fragment;
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -31,7 +30,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.preference.PreferenceManager;
@@ -54,6 +52,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMapOptions;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -100,53 +99,19 @@ import java.util.Map;
  * @version 1
  */
 public class NearbyFragment extends Fragment {
-	/**
-	 * Tag
-	 **/
+
 	private static final String TAG = NearbyFragment.class.getSimpleName();
-	/**
-	 * The fragment argument representing the section number for this fragment.
-	 **/
 	private static final String ARG_SECTION_NUMBER = "section_number";
-	/**
-	 * The Chicago position
-	 **/
 	public static final LatLng CHICAGO = new LatLng(41.8819, -87.6278);
-	/**
-	 * The main activity
-	 **/
-	private MainActivity mainActivity;
-	/**
-	 * The map fragment from google api
-	 **/
+
 	private SupportMapFragment mapFragment;
-	/**
-	 * The load layout
-	 **/
 	private View loadLayout;
-	/**
-	 * The list layout
-	 **/
 	private RelativeLayout nearbyContainer;
-	/**
-	 * The map
-	 **/
-	private GoogleMap googleMap;
-	/**
-	 * The adapter
-	 **/
-	private NearbyAdapter nearbyAdapter;
-	/**
-	 * The list view
-	 **/
 	private ListView listView;
-	/**
-	 * The only check box
-	 **/
-	private CheckBox checkBox;
-	/**
-	 * Hide empty stations/stops
-	 **/
+
+	private MainActivity mainActivity;
+	private GoogleMap googleMap;
+	private NearbyAdapter nearbyAdapter;
 	private boolean hideStationsStops;
 
 	/**
@@ -170,7 +135,7 @@ public class NearbyFragment extends Fragment {
 	}
 
 	@Override
-	public final void onCreate(Bundle savedInstanceState) {
+	public final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		ChicagoTracker.checkTrainData(mainActivity);
 		ChicagoTracker.checkBusData(mainActivity);
@@ -187,12 +152,13 @@ public class NearbyFragment extends Fragment {
 			setHasOptionsMenu(true);
 			loadLayout = rootView.findViewById(R.id.loading_layout);
 			nearbyContainer = (RelativeLayout) rootView.findViewById(R.id.nerby_list_container);
-			checkBox = (CheckBox) rootView.findViewById(R.id.hideEmptyStops);
+
 			hideStationsStops = Preferences.getHideShowNearby();
+			final CheckBox checkBox = (CheckBox) rootView.findViewById(R.id.hideEmptyStops);
 			checkBox.setChecked(hideStationsStops);
 			checkBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 				@Override
-				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
 					Preferences.saveHideShowNearby(isChecked);
 					hideStationsStops = isChecked;
 					if (Util.isNetworkAvailable()) {
@@ -213,10 +179,9 @@ public class NearbyFragment extends Fragment {
 	@Override
 	public final void onStart() {
 		super.onStart();
-		final FragmentManager fm = mainActivity.getSupportFragmentManager();
-		mapFragment = (SupportMapFragment) fm.findFragmentById(R.id.map);
 		final GoogleMapOptions options = new GoogleMapOptions();
 		final CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 7, 0, 0);
+		final FragmentManager fm = mainActivity.getSupportFragmentManager();
 		options.camera(camera);
 		mapFragment = SupportMapFragment.newInstance(options);
 		mapFragment.setRetainInstance(true);
@@ -226,15 +191,20 @@ public class NearbyFragment extends Fragment {
 	@Override
 	public final void onResume() {
 		super.onResume();
-		if (googleMap == null) {
-			googleMap = mapFragment.getMap();
-		}
-		if (Util.isNetworkAvailable()) {
-			new LoadNearby(mainActivity).execute();
-		} else {
-			Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
-			showProgress(false);
-		}
+		mapFragment.getMapAsync(new OnMapReadyCallback() {
+			@Override
+			public void onMapReady(final GoogleMap googleMap) {
+				NearbyFragment.this.googleMap = googleMap;
+				if (Util.isNetworkAvailable()) {
+					new LoadNearby(mainActivity).execute();
+					nearbyContainer.setVisibility(View.GONE);
+					showProgress(true);
+				} else {
+					Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
+					showProgress(false);
+				}
+			}
+		});
 	}
 
 	/**
@@ -295,7 +265,7 @@ public class NearbyFragment extends Fragment {
 			final boolean loadBus = sharedPref.getBoolean("cta_bus", true);
 			final boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
 
-			CtaConnect cta = CtaConnect.getInstance();
+			final CtaConnect cta = CtaConnect.getInstance();
 
 			// Loop over bus stops around user
 			if (loadBus) {
@@ -614,30 +584,30 @@ public class NearbyFragment extends Fragment {
 	/**
 	 * Center map
 	 *
-	 * @param positon the position we want to center on
+	 * @param position the position we want to center on
 	 */
-	private void centerMap(final Position positon) {
-		// Because the fragment can possibly not be ready
-		// TODO upgrade to not deprecated api
-		while (mapFragment.getMap() == null) {
-		}
-		googleMap = mapFragment.getMap();
-		if (ActivityCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_FINE_LOCATION)
-				!= PackageManager.PERMISSION_GRANTED
-				&& ActivityCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_COARSE_LOCATION)
-				!= PackageManager.PERMISSION_GRANTED) {
-			ActivityCompat.requestPermissions(mainActivity,
-					new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
-			return;
-		}
-		googleMap.setMyLocationEnabled(true);
-		if (positon != null) {
-			final LatLng latLng = new LatLng(positon.getLatitude(), positon.getLongitude());
-			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
-		} else {
-			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CHICAGO, 10));
-		}
-		// map.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
+	private void centerMap(final Position position) {
+		mapFragment.getMapAsync(new OnMapReadyCallback() {
+			@Override
+			public void onMapReady(final GoogleMap googleMap) {
+				NearbyFragment.this.googleMap = googleMap;
+				if (ActivityCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_FINE_LOCATION)
+						!= PackageManager.PERMISSION_GRANTED
+						&& ActivityCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_COARSE_LOCATION)
+						!= PackageManager.PERMISSION_GRANTED) {
+					ActivityCompat.requestPermissions(mainActivity,
+							new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
+					return;
+				}
+				googleMap.setMyLocationEnabled(true);
+				if (position != null) {
+					final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
+					googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
+				} else {
+					googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CHICAGO, 10));
+				}
+			}
+		});
 	}
 
 	/**
@@ -732,23 +702,18 @@ public class NearbyFragment extends Fragment {
 	/**
 	 * Show progress bar
 	 *
-	 * @param show true or falseO
+	 * @param show true or false
 	 */
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
 	private void showProgress(final boolean show) {
 		try {
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-				int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-				loadLayout.setVisibility(View.VISIBLE);
-				loadLayout.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-					@Override
-					public void onAnimationEnd(Animator animation) {
-						loadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
-					}
-				});
-			} else {
-				loadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
-			}
+			int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+			loadLayout.setVisibility(View.VISIBLE);
+			loadLayout.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					loadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+				}
+			});
 		} catch (final IllegalStateException e) {
 			Log.w(TAG, e.getMessage(), e);
 		}

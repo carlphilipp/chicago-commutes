@@ -50,6 +50,7 @@ import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -89,65 +90,24 @@ import java.util.Map;
  * @version 1
  */
 public class BusMapActivity extends Activity {
-	/**
-	 * Tag
-	 **/
+
 	private static final String TAG = BusMapActivity.class.getSimpleName();
-	/**
-	 * The map fragment from google api
-	 **/
 	private MapFragment mapFragment;
-	/**
-	 * The map
-	 **/
 	private GoogleMap googleMap;
-	/**
-	 * Bus id
-	 **/
-	private Integer busId;
-	/**
-	 * Bus route id
-	 **/
-	private String busRouteId;
-	/**
-	 * Bounds
-	 **/
-	private String[] bounds;
-	/**
-	 * Bus Markers
-	 **/
-	private List<Marker> busMarkers;
-	/**
-	 * Station Markers
-	 **/
-	private List<Marker> busStationMarkers;
-	/**
-	 * Menu
-	 **/
-	private Menu menu;
-	/**
-	 * Refreshing info window
-	 **/
-	private boolean refreshingInfoWindow = false;
-	/**
-	 * Selected marker
-	 **/
 	private Marker selectedMarker;
-	/**
-	 * Map views
-	 **/
+
+	private List<Marker> busMarkers;
+	private List<Marker> busStationMarkers;
 	private Map<Marker, View> views;
-	/**
-	 * Map status
-	 **/
 	private Map<Marker, Boolean> status;
-	/**
-	 * On camera change zoom listener
-	 **/
+
+	private Integer busId;
+	private String busRouteId;
+	private String[] bounds;
 	private BusMapOnCameraChangeListener busListener;
 
+	private boolean refreshingInfoWindow = false;
 	private boolean centerMap = true;
-
 	private boolean loadPattern = true;
 
 	@Override
@@ -162,7 +122,6 @@ public class BusMapActivity extends Activity {
 				bounds = savedInstanceState.getStringArray(getString(R.string.bundle_bus_bounds));
 			} else {
 				busId = getIntent().getExtras().getInt(getString(R.string.bundle_bus_id));
-				;
 				busRouteId = getIntent().getExtras().getString(getString(R.string.bundle_bus_route_id));
 				bounds = getIntent().getExtras().getStringArray(getString(R.string.bundle_bus_bounds));
 			}
@@ -173,32 +132,7 @@ public class BusMapActivity extends Activity {
 			status = new HashMap<>();
 			busListener = new BusMapOnCameraChangeListener();
 
-			final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
-			toolbar.inflateMenu(R.menu.main);
-			toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
-				@Override
-				public boolean onMenuItemClick(MenuItem item) {
-					new LoadCurrentPosition().execute();
-					new LoadBusPosition().execute(false, true);
-					return false;
-				}
-			}));
-
-			Util.setToolbarColor(this, toolbar, TrainLine.NA);
-
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-				toolbar.setElevation(4);
-			}
-
-			toolbar.setTitle(busRouteId);
-			toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-			toolbar.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(final View v) {
-					finish();
-				}
-			});
+			setToolbar();
 
 			Util.trackScreen(getResources().getString(R.string.analytics_bus_map));
 		}
@@ -240,56 +174,59 @@ public class BusMapActivity extends Activity {
 	@Override
 	public final void onResume() {
 		super.onResume();
-		if (googleMap == null) {
-			googleMap = mapFragment.getMap();
-			googleMap.setInfoWindowAdapter(new InfoWindowAdapter() {
-				@Override
-				public View getInfoWindow(Marker marker) {
-					return null;
-				}
-
-				@Override
-				public View getInfoContents(final Marker marker) {
-					if (!marker.getSnippet().equals("")) {
-						final View view = views.get(marker);
-						if (!refreshingInfoWindow) {
-							selectedMarker = marker;
-							final String busId = marker.getSnippet();
-							new LoadBusFollow(view, false).execute(busId);
-							status.put(marker, false);
-						}
-						return view;
-					} else {
+		mapFragment.getMapAsync(new OnMapReadyCallback() {
+			@Override
+			public void onMapReady(final GoogleMap googleMap) {
+				BusMapActivity.this.googleMap = googleMap;
+				googleMap.setInfoWindowAdapter(new InfoWindowAdapter() {
+					@Override
+					public View getInfoWindow(Marker marker) {
 						return null;
 					}
-				}
-			});
 
-			googleMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
-				@Override
-				public void onInfoWindowClick(Marker marker) {
-					if (!marker.getSnippet().equals("")) {
-						final View view = views.get(marker);
-						if (!refreshingInfoWindow) {
-							selectedMarker = marker;
-							final String runNumber = marker.getSnippet();
-							final boolean current = status.get(marker);
-							new LoadBusFollow(view, !current).execute(runNumber);
-							status.put(marker, !current);
+					@Override
+					public View getInfoContents(final Marker marker) {
+						if (!marker.getSnippet().equals("")) {
+							final View view = views.get(marker);
+							if (!refreshingInfoWindow) {
+								selectedMarker = marker;
+								final String busId = marker.getSnippet();
+								new LoadBusFollow(view, false).execute(busId);
+								status.put(marker, false);
+							}
+							return view;
+						} else {
+							return null;
 						}
 					}
+				});
+
+				googleMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
+					@Override
+					public void onInfoWindowClick(Marker marker) {
+						if (!marker.getSnippet().equals("")) {
+							final View view = views.get(marker);
+							if (!refreshingInfoWindow) {
+								selectedMarker = marker;
+								final String runNumber = marker.getSnippet();
+								final boolean current = status.get(marker);
+								new LoadBusFollow(view, !current).execute(runNumber);
+								status.put(marker, !current);
+							}
+						}
+					}
+				});
+				if (Util.isNetworkAvailable()) {
+					new LoadCurrentPosition().execute();
+					new LoadBusPosition().execute(centerMap, !loadPattern);
+					if (loadPattern) {
+						new LoadPattern().execute();
+					}
+				} else {
+					Toast.makeText(BusMapActivity.this, "No network connection detected!", Toast.LENGTH_SHORT).show();
 				}
-			});
-		}
-		if (Util.isNetworkAvailable()) {
-			new LoadCurrentPosition().execute();
-			new LoadBusPosition().execute(centerMap, !loadPattern);
-			if (loadPattern) {
-				new LoadPattern().execute();
 			}
-		} else {
-			Toast.makeText(this, "No network connection detected!", Toast.LENGTH_SHORT).show();
-		}
+		});
 	}
 
 	@Override
@@ -308,6 +245,35 @@ public class BusMapActivity extends Activity {
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
+	private void setToolbar(){
+		final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+		toolbar.inflateMenu(R.menu.main);
+		toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				new LoadCurrentPosition().execute();
+				new LoadBusPosition().execute(false, true);
+				return false;
+			}
+		}));
+
+		Util.setToolbarColor(this, toolbar, TrainLine.NA);
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			toolbar.setElevation(4);
+		}
+
+		toolbar.setTitle(busRouteId);
+		toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+		toolbar.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(final View v) {
+				finish();
+			}
+		});
+	}
+
 	/**
 	 *
 	 */
@@ -320,33 +286,26 @@ public class BusMapActivity extends Activity {
 		refreshingInfoWindow = false;
 	}
 
-	/**
-	 * @param result
-	 */
 	private void centerMapOnBus(final List<Bus> result) {
-		int i = 0;
-		while (googleMap == null && i < 20) {
-			googleMap = mapFragment.getMap();
-			i++;
-		}
-		Position position;
-		int zoom;
-		if (result.size() == 1) {
-			position = result.get(0).getPosition();
-			zoom = 15;
-		} else {
-			position = Bus.getBestPosition(result);
-			zoom = 11;
-		}
-		if (googleMap != null) {
-			final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
-			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
-		}
+		mapFragment.getMapAsync(new OnMapReadyCallback() {
+			@Override
+			public void onMapReady(final GoogleMap googleMap) {
+				BusMapActivity.this.googleMap = googleMap;
+				final Position position;
+				final int zoom;
+				if (result.size() == 1) {
+					position = result.get(0).getPosition();
+					zoom = 15;
+				} else {
+					position = Bus.getBestPosition(result);
+					zoom = 11;
+				}
+				final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
+				googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+			}
+		});
 	}
 
-	/**
-	 * @param buses
-	 */
 	private void drawBuses(final List<Bus> buses) {
 		if (googleMap != null) {
 			for (Marker marker : busMarkers) {
@@ -361,8 +320,7 @@ public class BusMapActivity extends Activity {
 								.icon(BitmapDescriptorFactory.fromBitmap(bitmap)).anchor(0.5f, 0.5f).rotation(bus.getHeading()).flat(true));
 				busMarkers.add(marker);
 
-				final LayoutInflater layoutInflater = (LayoutInflater) BusMapActivity.this.getBaseContext().getSystemService(
-						Context.LAYOUT_INFLATER_SERVICE);
+				final LayoutInflater layoutInflater = (LayoutInflater) BusMapActivity.this.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				final View view = layoutInflater.inflate(R.layout.marker_train, null);
 				final TextView title = (TextView) view.findViewById(R.id.title);
 				title.setText(marker.getTitle());
@@ -376,54 +334,49 @@ public class BusMapActivity extends Activity {
 		}
 	}
 
-	/**
-	 * @param patterns
-	 */
 	private void drawPattern(final List<BusPattern> patterns) {
-		int i = 0;
-		while (googleMap == null && i < 20) {
-			googleMap = mapFragment.getMap();
-			i++;
-		}
-		if (googleMap != null) {
-			int j = 0;
-			final BitmapDescriptor red = BitmapDescriptorFactory.defaultMarker();
-			BitmapDescriptor blue = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
-			MarkerOptions options;
-			for (final BusPattern pattern : patterns) {
-				final PolylineOptions poly = new PolylineOptions();
-				if (j == 0) {
-					poly.geodesic(true).color(Color.RED);
-				} else if (j == 1) {
-					poly.geodesic(true).color(Color.BLUE);
-				} else {
-					poly.geodesic(true).color(Color.YELLOW);
-				}
-				poly.width(7f);
-				for (final PatternPoint patternPoint : pattern.getPoints()) {
-					final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
-					poly.add(point);
-					if (patternPoint.getStopId() != null) {
-						options = new MarkerOptions();
-						options.position(point).title(patternPoint.getStopName() + " (" + pattern.getDirection() + ")").snippet("");
-						if (j == 0) {
-							options.icon(red);
-						} else {
-							// To modify to blue when no freeze issue
-							options.icon(blue);
-						}
-
-						final Marker marker = googleMap.addMarker(options);
-						busStationMarkers.add(marker);
-						marker.setVisible(false);
+		mapFragment.getMapAsync(new OnMapReadyCallback() {
+			@Override
+			public void onMapReady(final GoogleMap googleMap) {
+				BusMapActivity.this.googleMap = googleMap;
+				int j = 0;
+				final BitmapDescriptor red = BitmapDescriptorFactory.defaultMarker();
+				BitmapDescriptor blue = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
+				MarkerOptions options;
+				for (final BusPattern pattern : patterns) {
+					final PolylineOptions poly = new PolylineOptions();
+					if (j == 0) {
+						poly.geodesic(true).color(Color.RED);
+					} else if (j == 1) {
+						poly.geodesic(true).color(Color.BLUE);
+					} else {
+						poly.geodesic(true).color(Color.YELLOW);
 					}
+					poly.width(7f);
+					for (final PatternPoint patternPoint : pattern.getPoints()) {
+						final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
+						poly.add(point);
+						if (patternPoint.getStopId() != null) {
+							options = new MarkerOptions();
+							options.position(point).title(patternPoint.getStopName() + " (" + pattern.getDirection() + ")").snippet("");
+							if (j == 0) {
+								options.icon(red);
+							} else {
+								options.icon(blue);
+							}
+
+							final Marker marker = googleMap.addMarker(options);
+							busStationMarkers.add(marker);
+							marker.setVisible(false);
+						}
+					}
+					googleMap.addPolyline(poly);
+					j++;
 				}
-				googleMap.addPolyline(poly);
-				j++;
+				busListener.setBusStationMarkers(busStationMarkers);
+				googleMap.setOnCameraChangeListener(busListener);
 			}
-			busListener.setBusStationMarkers(busStationMarkers);
-			googleMap.setOnCameraChangeListener(busListener);
-		}
+		});
 	}
 
 	private class LoadBusPosition extends AsyncTask<Boolean, Void, List<Bus>> {
@@ -563,24 +516,22 @@ public class BusMapActivity extends Activity {
 
 		@Override
 		protected final void onPostExecute(final Void result) {
-			int i = 0;
-			while (googleMap == null && i < 20) {
-				googleMap = mapFragment.getMap();
-				i++;
-			}
-			if (googleMap != null) {
-				googleMap = mapFragment.getMap();
-				if (ActivityCompat.checkSelfPermission(BusMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
-						!= PackageManager.PERMISSION_GRANTED
-						&& ActivityCompat.checkSelfPermission(BusMapActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
-						!= PackageManager.PERMISSION_GRANTED) {
-					ActivityCompat.requestPermissions(BusMapActivity.this,
-							new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
-					return;
+			mapFragment.getMapAsync(new OnMapReadyCallback() {
+				@Override
+				public void onMapReady(final GoogleMap googleMap) {
+					BusMapActivity.this.googleMap = googleMap;
+					if (ActivityCompat.checkSelfPermission(BusMapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+							!= PackageManager.PERMISSION_GRANTED
+							&& ActivityCompat.checkSelfPermission(BusMapActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
+							!= PackageManager.PERMISSION_GRANTED) {
+						ActivityCompat.requestPermissions(BusMapActivity.this,
+								new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
+						return;
+					}
+					googleMap.setMyLocationEnabled(true);
+					locationManager.removeUpdates(LoadCurrentPosition.this);
 				}
-				googleMap.setMyLocationEnabled(true);
-				locationManager.removeUpdates(LoadCurrentPosition.this);
-			}
+			});
 		}
 
 		@Override
@@ -691,15 +642,10 @@ public class BusMapActivity extends Activity {
 	}
 
 	private class LoadBusFollow extends AsyncTask<String, Void, List<BusArrival>> {
-		/** **/
+
 		private View view;
-		/** **/
 		private boolean loadAll;
 
-		/**
-		 * @param view
-		 * @param loadAll
-		 */
 		public LoadBusFollow(final View view, final boolean loadAll) {
 			this.view = view;
 			this.loadAll = loadAll;

@@ -41,6 +41,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -82,34 +83,14 @@ public class BusBoundActivity extends ListActivity {
 	 * Tag
 	 **/
 	private static final String TAG = BusBoundActivity.class.getSimpleName();
-	/**
-	 * Bus route id
-	 **/
-	private String busRouteId;
-	/**
-	 * Bus route name
-	 **/
-	private String busRouteName;
-	/**
-	 * Bound
-	 **/
-	private String bound;
-	/**
-	 * Adapter
-	 **/
-	private BusBoundAdapter busBoundAdapter;
-	/**
-	 * List of bus stop get via API
-	 **/
-	private List<BusStop> busStops;
-	/**
-	 * The map fragment from google api
-	 **/
+
 	private MapFragment mapFragment;
-	/**
-	 * The map
-	 **/
 	private GoogleMap googleMap;
+	private String busRouteId;
+	private String busRouteName;
+	private String bound;
+	private BusBoundAdapter busBoundAdapter;
+	private List<BusStop> busStops;
 
 	@Override
 	public final void onCreate(final Bundle savedInstanceState) {
@@ -127,7 +108,7 @@ public class BusBoundActivity extends ListActivity {
 			setListAdapter(busBoundAdapter);
 			getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
 				@Override
-				public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+				public void onItemClick(final AdapterView<?> adapterView, final View view, final int position, final long id) {
 					final BusStop busStop = (BusStop) busBoundAdapter.getItem(position);
 					final Intent intent = new Intent(ChicagoTracker.getContext(), BusActivity.class);
 
@@ -194,7 +175,6 @@ public class BusBoundActivity extends ListActivity {
 	public final void onStart() {
 		super.onStart();
 		final FragmentManager fm = getFragmentManager();
-		mapFragment = (MapFragment) fm.findFragmentById(R.id.map);
 		final GoogleMapOptions options = new GoogleMapOptions();
 		final CameraPosition camera = new CameraPosition(NearbyFragment.CHICAGO, 7, 0, 0);
 		options.camera(camera);
@@ -213,11 +193,20 @@ public class BusBoundActivity extends ListActivity {
 	public final void onResume() {
 		super.onResume();
 		if (googleMap == null) {
-			googleMap = mapFragment.getMap();
-			googleMap.getUiSettings().setMyLocationButtonEnabled(false);
-			googleMap.getUiSettings().setZoomControlsEnabled(false);
+			mapFragment.getMapAsync(new OnMapReadyCallback() {
+				@Override
+				public void onMapReady(final GoogleMap googleMap) {
+					BusBoundActivity.this.googleMap = googleMap;
+					googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+					googleMap.getUiSettings().setZoomControlsEnabled(false);
+					if (Util.isNetworkAvailable()) {
+						new LoadPattern().execute();
+					} else {
+						Toast.makeText(BusBoundActivity.this, "No network connection detected!", Toast.LENGTH_SHORT).show();
+					}
+				}
+			});
 		}
-		new LoadPattern().execute();
 	}
 
 	@Override
@@ -342,29 +331,26 @@ public class BusBoundActivity extends ListActivity {
 	 * @param position the position we want to center on
 	 */
 	private void centerMap(final Position position) {
-		// Because the fragment can possibly not be ready
-		int i = 0;
-		while (googleMap == null && i < 20) {
-			googleMap = mapFragment.getMap();
-			i++;
-		}
-		if (googleMap != null) {
-			googleMap.getUiSettings().setMyLocationButtonEnabled(false);
-			googleMap.getUiSettings().setZoomControlsEnabled(false);
-			if (ActivityCompat.checkSelfPermission(BusBoundActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
-					!= PackageManager.PERMISSION_GRANTED
-					&& ActivityCompat.checkSelfPermission(BusBoundActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
-					!= PackageManager.PERMISSION_GRANTED) {
-				ActivityCompat.requestPermissions(BusBoundActivity.this,
-						new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
-				return;
+		mapFragment.getMapAsync(new OnMapReadyCallback() {
+			@Override
+			public void onMapReady(final GoogleMap googleMap) {
+				BusBoundActivity.this.googleMap = googleMap;
+				googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+				googleMap.getUiSettings().setZoomControlsEnabled(false);
+				if (ActivityCompat.checkSelfPermission(BusBoundActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+						!= PackageManager.PERMISSION_GRANTED
+						&& ActivityCompat.checkSelfPermission(BusBoundActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
+						!= PackageManager.PERMISSION_GRANTED) {
+					ActivityCompat.requestPermissions(BusBoundActivity.this,
+							new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
+					return;
+				}
+				googleMap.setMyLocationEnabled(true);
+				final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
+				googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
+				googleMap.animateCamera(CameraUpdateFactory.zoomTo(9), 500, null);
 			}
-			googleMap.setMyLocationEnabled(true);
-			final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
-			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
-			googleMap.animateCamera(CameraUpdateFactory.zoomTo(9), 500, null);
-		}
-
+		});
 	}
 
 	private void drawPattern(final BusPattern pattern) {
@@ -380,7 +366,6 @@ public class BusBoundActivity extends ListActivity {
 				if (patternPoint.getStopId() != null) {
 					marker = googleMap.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName())
 							.snippet(String.valueOf(patternPoint.getSequence())));
-					// .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 					markers.add(marker);
 					marker.setVisible(false);
 				}
