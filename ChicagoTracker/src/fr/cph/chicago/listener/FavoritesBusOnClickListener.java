@@ -30,7 +30,7 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BusMapActivity;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.FavoritesAdapter;
-import fr.cph.chicago.adapter.PopupBusAdapter;
+import fr.cph.chicago.adapter.PopupBusFavoritesAdapter;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.util.Util;
@@ -73,7 +73,7 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 			final ListView listView = (ListView) popupView.findViewById(R.id.details);
 			final List<String> values = extractValues();
 
-			final PopupBusAdapter ada = new PopupBusAdapter(mainActivity, values);
+			final PopupBusFavoritesAdapter ada = new PopupBusFavoritesAdapter(mainActivity, values);
 			listView.setAdapter(ada);
 
 			final AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);

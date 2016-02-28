@@ -18,47 +18,24 @@ package fr.cph.chicago.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BikeStationActivity;
-import fr.cph.chicago.activity.BusBoundActivity;
-import fr.cph.chicago.activity.BusMapActivity;
 import fr.cph.chicago.activity.SearchActivity;
-import fr.cph.chicago.connection.CtaConnect;
-import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.entity.BikeStation;
-import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.Station;
-import fr.cph.chicago.entity.enumeration.BusDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.exception.ConnectException;
-import fr.cph.chicago.exception.ParserException;
-import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.listener.FavoritesTrainOnClickListener;
 import fr.cph.chicago.task.DirectionAsyncTask;
-import fr.cph.chicago.util.Util;
-import fr.cph.chicago.xml.Xml;
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -71,7 +48,6 @@ import java.util.Set;
 public final class SearchAdapter extends BaseAdapter {
 
 	private Context context;
-	private FrameLayout container;
 
 	private List<Station> trains;
 	private List<BusRoute> busRoutes;
@@ -84,10 +60,9 @@ public final class SearchAdapter extends BaseAdapter {
 	 * @param activity  the search activity
 	 * @param container the container
 	 */
-	public SearchAdapter(final SearchActivity activity, final FrameLayout container) {
+	public SearchAdapter(final SearchActivity activity) {
 		this.context = ChicagoTracker.getContext();
 		this.searchActivity = activity;
-		this.container = container;
 	}
 
 	@Override
@@ -160,14 +135,14 @@ public final class SearchAdapter extends BaseAdapter {
 				@Override
 				public void onClick(final View v) {
 					loadingTextView.setVisibility(LinearLayout.VISIBLE);
-					new DirectionAsyncTask(searchActivity).execute(busRoute, loadingTextView);
+					new DirectionAsyncTask(searchActivity, parent).execute(busRoute, loadingTextView);
 				}
 			});
 		} else {
 			final BikeStation bikeStation = (BikeStation) getItem(position);
 
 			final TextView type = (TextView) convertView.findViewById(R.id.train_bus_type);
-			type.setText("D");
+			type.setText(searchActivity.getString(R.string.D));
 
 			routeName.setText(bikeStation.getName());
 

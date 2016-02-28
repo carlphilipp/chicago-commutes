@@ -91,7 +91,7 @@ public final class BusAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public final View getView(final int position, View convertView, ViewGroup parent) {
+	public final View getView(final int position, View convertView, final ViewGroup parent) {
 
 		final BusRoute route = (BusRoute) getItem(position);
 
@@ -119,7 +119,7 @@ public final class BusAdapter extends BaseAdapter {
 				@Override
 				public void onClick(View v) {
 					holder.detailsLayout.setVisibility(LinearLayout.VISIBLE);
-					new DirectionAsyncTask(mainActivity).execute(route, holder.detailsLayout);
+					new DirectionAsyncTask(mainActivity, parent).execute(route, holder.detailsLayout);
 				}
 			});
 		} else {
@@ -132,7 +132,7 @@ public final class BusAdapter extends BaseAdapter {
 				@Override
 				public void onClick(View v) {
 					holder.detailsLayout.setVisibility(LinearLayout.VISIBLE);
-					new DirectionAsyncTask(mainActivity).execute(route, holder.detailsLayout);
+					new DirectionAsyncTask(mainActivity, parent).execute(route, holder.detailsLayout);
 				}
 			});
 		}

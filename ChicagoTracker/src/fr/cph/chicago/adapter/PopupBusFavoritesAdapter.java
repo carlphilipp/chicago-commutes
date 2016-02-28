@@ -16,8 +16,9 @@
 
 package fr.cph.chicago.adapter;
 
-import android.app.Activity;
+import android.content.Context;
 import android.support.v4.content.ContextCompat;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -31,30 +32,31 @@ import java.util.List;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class PopupBusAdapter extends ArrayAdapter<String> {
+public class PopupBusFavoritesAdapter extends ArrayAdapter<String> {
 
-	private final Activity activity;
+	private final Context context;
 	private final List<String> values;
 
 	/**
 	 * @param context
 	 * @param values
 	 */
-	public PopupBusAdapter(final Activity activity, final List<String> values) {
-		super(activity, R.layout.popup_bus_cell, values);
-		this.activity = activity;
+	public PopupBusFavoritesAdapter(final Context context, final List<String> values) {
+		super(context, R.layout.popup_bus_cell, values);
+		this.context = context;
 		this.values = values;
 	}
 
 	@Override
 	public final View getView(final int position, final View convertView, final ViewGroup parent) {
+		final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View rowView;
-		if (position != values.size() - 1) {
-			rowView = activity.getLayoutInflater().inflate(R.layout.popup_bus_cell_0, parent, false);
+		if (position == 0) {
+			rowView = inflater.inflate(R.layout.popup_bus_cell_0, parent, false);
 		} else {
-			rowView = activity.getLayoutInflater().inflate(R.layout.popup_bus_cell, parent, false);
+			rowView = inflater.inflate(R.layout.popup_bus_cell, parent, false);
 			final ImageView imageView = (ImageView) rowView.findViewById(R.id.popup_map_map);
-			imageView.setColorFilter(ContextCompat.getColor(activity, R.color.grey_5));
+			imageView.setColorFilter(ContextCompat.getColor(context, R.color.grey_5));
 		}
 		final TextView textView = (TextView) rowView.findViewById(R.id.label);
 		textView.setText(values.get(position));

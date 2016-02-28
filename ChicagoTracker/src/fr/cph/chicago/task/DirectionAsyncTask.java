@@ -18,12 +18,10 @@ package fr.cph.chicago.task;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -60,10 +58,12 @@ public class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 	private Activity activity;
 	private BusRoute busRoute;
 	private View convertView;
+	private ViewGroup viewGroup;
 	private TrackerException trackerException;
 
-	public DirectionAsyncTask(final Activity activity) {
+	public DirectionAsyncTask(final Activity activity, final ViewGroup viewGroup) {
 		this.activity = activity;
+		this.viewGroup = viewGroup;
 	}
 
 	@Override
@@ -96,9 +96,7 @@ public class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 			}
 			data.add("Follow all buses on line " + result.getId());
 
-			final LayoutInflater layoutInflater = (LayoutInflater) activity.getBaseContext()
-					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			final View popupView = layoutInflater.inflate(R.layout.popup_bus, null);
+			final View popupView = activity.getLayoutInflater().inflate(R.layout.popup_bus, viewGroup, false);
 			final ListView listView = (ListView) popupView.findViewById(R.id.details);
 			final PopupBusAdapter ada = new PopupBusAdapter(activity, data);
 			listView.setAdapter(ada);
