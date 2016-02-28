@@ -17,7 +17,7 @@
 package fr.cph.chicago.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,7 +62,7 @@ public class PopupBusAdapter extends ArrayAdapter<String> {
 		} else {
 			rowView = inflater.inflate(R.layout.popup_bus_cell, parent, false);
 			final ImageView imageView = (ImageView) rowView.findViewById(R.id.popup_map_map);
-			imageView.setColorFilter(Color.BLACK);
+			imageView.setColorFilter(ContextCompat.getColor(context, R.color.grey_5));
 		}
 		final TextView textView = (TextView) rowView.findViewById(R.id.label);
 		textView.setText(values.get(position));
