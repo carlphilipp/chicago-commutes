@@ -30,7 +30,8 @@
     <dimen name="activity_station_stops_padding_top">5dp</dimen>
     <dimen name="activity_station_stops_line1_padding_top">14dp</dimen>
     <dimen name="activity_station_stops_line1_padding_color">4dp</dimen>
-    <dimen name="activity_station_stops_line3">7dp</dimen>
+    <dimen name="activity_station_stops_line3_padding_left">7dp</dimen>
+    <dimen name="activity_station_stops_line3_padding_top">6dp</dimen>
     <!-- Activity station google street image size -->
     <dimen name="activity_station_street_map_height">100dp</dimen>
     <!-- Activity train station -->

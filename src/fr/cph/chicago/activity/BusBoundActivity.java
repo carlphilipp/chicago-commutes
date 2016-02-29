@@ -16,15 +16,16 @@
 
 package fr.cph.chicago.activity;
 
-import android.app.Activity;
+import android.Manifest;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -34,11 +35,12 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Toast;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.GoogleMapOptions;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -53,6 +55,7 @@ import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BusPattern;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.PatternPoint;
+import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
@@ -80,18 +83,13 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
 	 **/
 	private static final String TAG = BusBoundActivity.class.getSimpleName();
 
-	private SupportMapFragment mapFragment;
-	private MainActivity mainActivity;
+	private MapFragment mapFragment;
 	private GoogleMap googleMap;
 	private String busRouteId;
 	private String busRouteName;
 	private String bound;
 	private BusBoundAdapter busBoundAdapter;
 	private List<BusStop> busStops;
-
-	public BusBoundActivity(final Activity mainActivity) {
-		this.mainActivity = (MainActivity) mainActivity;
-	}
 
 	@Override
 	public final void onCreate(final Bundle savedInstanceState) {
@@ -175,13 +173,15 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
 	@Override
 	public final void onStart() {
 		super.onStart();
-		final FragmentManager fm = mainActivity.getSupportFragmentManager();
-		final GoogleMapOptions options = new GoogleMapOptions();
-		final CameraPosition camera = new CameraPosition(Util.CHICAGO, 7, 0, 0);
-		options.camera(camera);
-		mapFragment = SupportMapFragment.newInstance(options);
-		mapFragment.setRetainInstance(true);
-		fm.beginTransaction().replace(R.id.map, mapFragment).commit();
+		if (mapFragment == null) {
+			final android.app.FragmentManager fm = getFragmentManager();
+			final GoogleMapOptions options = new GoogleMapOptions();
+			final CameraPosition camera = new CameraPosition(Util.CHICAGO, 7, 0, 0);
+			options.camera(camera);
+			mapFragment = MapFragment.newInstance(options);
+			mapFragment.setRetainInstance(true);
+			fm.beginTransaction().replace(R.id.map, mapFragment).commit();
+		}
 	}
 
 	@Override
@@ -302,7 +302,27 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
 		protected final void onPostExecute(final BusPattern result) {
 			if (result != null) {
 				final int center = result.getPoints().size() / 2;
-				Util.centerMap(BusBoundActivity.this, mapFragment, mainActivity, result.getPoints().get(center).getPosition());
+				final Position position = result.getPoints().get(center).getPosition();
+				mapFragment.getMapAsync(new OnMapReadyCallback() {
+					@Override
+					public void onMapReady(final GoogleMap googleMap) {
+						BusBoundActivity.this.googleMap = googleMap;
+						if (ActivityCompat.checkSelfPermission(BusBoundActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+								!= PackageManager.PERMISSION_GRANTED
+								&& ActivityCompat.checkSelfPermission(BusBoundActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
+								!= PackageManager.PERMISSION_GRANTED) {
+							ActivityCompat.requestPermissions(BusBoundActivity.this, new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
+							return;
+						}
+						googleMap.setMyLocationEnabled(true);
+						if (position != null) {
+							final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
+							googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
+						} else {
+							googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Util.CHICAGO, 10));
+						}
+					}
+				});
 				drawPattern(result);
 			} else {
 				Toast.makeText(BusBoundActivity.this, "Sorry, could not load the path!", Toast.LENGTH_SHORT).show();

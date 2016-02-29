@@ -76,12 +76,13 @@
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content">
 
-					<RelativeLayout
+					<LinearLayout
 							android:id="@+id/header_icon"
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
 							android:layout_centerVertical="true"
-							android:layout_marginBottom="10dp">
+							android:layout_marginBottom="10dp"
+							android:orientation="horizontal">
 
 						<ImageView
 								android:id="@+id/activity_bike_station_favorite_star"
@@ -96,7 +97,6 @@
 								android:id="@+id/activity_bike_station_map_image"
 								android:layout_width="35dp"
 								android:layout_height="35dp"
-								android:layout_toRightOf="@+id/activity_bike_station_favorite_star"
 								android:background="@drawable/any_selector"
 								android:clickable="true"
 								android:contentDescription="@string/station_activity_google_map_link_desc">
@@ -106,18 +106,16 @@
 								android:id="@+id/activity_bike_station_map_direction"
 								android:layout_width="35dp"
 								android:layout_height="35dp"
-								android:layout_toRightOf="@+id/activity_bike_station_map_image"
 								android:background="@drawable/any_selector"
 								android:contentDescription="@string/station_activity_google_map_link_desc">
 						</ImageView>
-					</RelativeLayout>
+					</LinearLayout>
 				</RelativeLayout>
 
 				<LinearLayout
-						android:id="@+id/activity_bike_station_details"
-						android:layout_width="wrap_content"
+						android:id="@+id/activity_train_station_details"
+						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
-						android:layout_below="@+id/activity_bike_station_streetview_container"
 						android:orientation="vertical">
 				</LinearLayout>
 			</LinearLayout>
