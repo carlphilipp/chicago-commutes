@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
+
+    <TextView
+        android:id="@+id/station_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textIsSelectable="false"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/time"
+        android:textStyle="normal" />
+    
+    <TextView
+        android:id="@+id/time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/green"
+        android:textIsSelectable="false"
+        android:layout_alignParentRight="true"
+       	android:layout_centerVertical="true"
+        android:textStyle="normal" />
+
+</RelativeLayout>
