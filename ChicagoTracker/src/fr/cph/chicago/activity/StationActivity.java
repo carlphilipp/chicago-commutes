@@ -21,6 +21,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.ColorFilter;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -88,7 +89,6 @@ public class StationActivity extends Activity {
 
 	private static final String TAG = StationActivity.class.getSimpleName();
 
-	private ViewGroup viewGroup;
 	private ImageView streetViewImage;
 	private TextView streetViewText;
 	private ImageView mapImage;
@@ -109,7 +109,7 @@ public class StationActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		ChicagoTracker.checkTrainData(this);
 		if (!this.isFinishing()) {
-			viewGroup = (ViewGroup) findViewById(android.R.id.content);
+			final ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
 			// Load data
 			final DataHolder dataHolder = DataHolder.getInstance();
 			trainData = dataHolder.getTrainData();
@@ -146,16 +146,15 @@ public class StationActivity extends Activity {
 
 			isFavorite = isFavorite();
 
-			final TextView textView = (TextView) findViewById(R.id.activity_bike_station_station_name);
-			textView.setText(station.getName());
-
 			streetViewImage = (ImageView) findViewById(R.id.activity_bike_station_streetview_image);
 			streetViewText = (TextView) findViewById(R.id.activity_bike_station_steetview_text);
 			mapImage = (ImageView) findViewById(R.id.activity_bike_station_map_image);
+			mapImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
 			directionImage = (ImageView) findViewById(R.id.activity_bike_station_map_direction);
+			directionImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
 			favoritesImage = (ImageView) findViewById(R.id.activity_bike_station_favorite_star);
 			if (isFavorite) {
-				favoritesImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.ic_save_active));
+				favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
 			}
 			favoritesImage.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -252,7 +251,7 @@ public class StationActivity extends Activity {
 
 			Util.setToolbarColor(this, toolbar, randomTrainLine);
 
-			toolbar.setTitle("Train station");
+			toolbar.setTitle(station.getName());
 			toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
 			toolbar.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -265,20 +264,14 @@ public class StationActivity extends Activity {
 		}
 	}
 
-	private TrainLine getRandomLine(final Map<TrainLine, List<Stop>> stops) {
-		final Random random = new Random();
-		final List<TrainLine> keys = new ArrayList<>(stops.keySet());
-		return keys.get(random.nextInt(keys.size()));
-	}
-
 	@Override
-	public void onRestoreInstanceState(Bundle savedInstanceState) {
+	public void onRestoreInstanceState(final Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
 		stationId = savedInstanceState.getInt("stationId");
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle savedInstanceState) {
+	public void onSaveInstanceState(final Bundle savedInstanceState) {
 		savedInstanceState.putInt("stationId", stationId);
 		super.onSaveInstanceState(savedInstanceState);
 	}
@@ -356,7 +349,7 @@ public class StationActivity extends Activity {
 					}
 				}
 			});
-			StationActivity.this.mapImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.da_turn_arrive));
+			StationActivity.this.mapImage.setImageDrawable(ContextCompat.getDrawable(StationActivity.this, R.drawable.ic_place_white_24dp));
 			StationActivity.this.mapImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -367,8 +360,7 @@ public class StationActivity extends Activity {
 				}
 			});
 
-			StationActivity.this.directionImage
-					.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.ic_directions_walking));
+			StationActivity.this.directionImage.setImageDrawable(ContextCompat.getDrawable(StationActivity.this, R.drawable.ic_directions_walk_white_24dp));
 			StationActivity.this.directionImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -564,9 +556,15 @@ public class StationActivity extends Activity {
 			isFavorite = true;
 		}
 		if (isFavorite) {
-			favoritesImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.ic_save_active));
+			favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
 		} else {
-			favoritesImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.ic_save_disabled));
+			favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
 		}
+	}
+
+	private TrainLine getRandomLine(final Map<TrainLine, List<Stop>> stops) {
+		final Random random = new Random();
+		final List<TrainLine> keys = new ArrayList<>(stops.keySet());
+		return keys.get(random.nextInt(keys.size()));
 	}
 }

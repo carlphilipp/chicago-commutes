@@ -88,7 +88,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			if (savedInstanceState != null) {
 				ChicagoTracker.reloadData();
 			}
-
 			setContentView(R.layout.activity_main);
 
 			new LoadData().execute();

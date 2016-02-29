@@ -204,7 +204,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 			}
 		});
 	}
-	
+
 	public final void displayError(final TrackerException exceptionToBeThrown) {
 		DataHolder.getInstance().setTrainData(null);
 		DataHolder.getInstance().setBusData(null);
