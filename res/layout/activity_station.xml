@@ -78,10 +78,9 @@
 
 					<LinearLayout
 							android:id="@+id/header_icon"
-							android:layout_width="wrap_content"
+							android:layout_width="match_parent"
 							android:layout_height="wrap_content"
 							android:layout_centerVertical="true"
-							android:layout_marginBottom="10dp"
 							android:orientation="horizontal">
 
 						<ImageView
@@ -99,7 +98,8 @@
 								android:layout_height="35dp"
 								android:background="@drawable/any_selector"
 								android:clickable="true"
-								android:contentDescription="@string/station_activity_google_map_link_desc">
+								android:contentDescription="@string/station_activity_google_map_link_desc"
+								android:src="@drawable/ic_place_white_24dp">
 						</ImageView>
 
 						<ImageView
@@ -107,7 +107,8 @@
 								android:layout_width="35dp"
 								android:layout_height="35dp"
 								android:background="@drawable/any_selector"
-								android:contentDescription="@string/station_activity_google_map_link_desc">
+								android:contentDescription="@string/station_activity_google_map_link_desc"
+								android:src="@drawable/ic_directions_walk_white_24dp">
 						</ImageView>
 					</LinearLayout>
 				</RelativeLayout>

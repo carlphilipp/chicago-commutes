@@ -108,15 +108,13 @@ public class StationActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		ChicagoTracker.checkTrainData(this);
 		if (!this.isFinishing()) {
+
+			setContentView(R.layout.activity_station);
+
 			final ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
 			// Load data
 			final DataHolder dataHolder = DataHolder.getInstance();
 			trainData = dataHolder.getTrainData();
-
-			ids = new HashMap<>();
-
-			// Load right xml
-			setContentView(R.layout.activity_station);
 
 			// Get station id from bundle extra
 			if (stationId == null) {
@@ -140,7 +138,7 @@ public class StationActivity extends Activity {
 			new LoadData().execute(reqParams);
 
 			// Call google street api to load image
-			Position position = station.getStops().get(0).getPosition();
+			final Position position = station.getStops().get(0).getPosition();
 			new DisplayGoogleStreetPicture().execute(position.getLatitude(), position.getLongitude());
 
 			isFavorite = isFavorite();
@@ -170,9 +168,9 @@ public class StationActivity extends Activity {
 			final TrainLine randomTrainLine = getRandomLine(stopByLines);
 			swipeRefreshLayout.setColorSchemeColors(randomTrainLine.getColor());
 
-			for (final Entry<TrainLine, List<Stop>> e : stopByLines.entrySet()) {
-				final TrainLine line = e.getKey();
-				final List<Stop> stops = e.getValue();
+			for (final Entry<TrainLine, List<Stop>> entry : stopByLines.entrySet()) {
+				final TrainLine line = entry.getKey();
+				final List<Stop> stops = entry.getValue();
 				Collections.sort(stops);
 				final View lineTitleView = getLayoutInflater().inflate(R.layout.activity_station_line_title, viewGroup, false);
 
@@ -182,6 +180,7 @@ public class StationActivity extends Activity {
 
 				stopsView.addView(lineTitleView);
 
+				ids = new HashMap<>();
 				for (final Stop stop : stops) {
 					final LinearLayout line2 = new LinearLayout(this);
 					line2.setOrientation(LinearLayout.HORIZONTAL);
@@ -229,36 +228,40 @@ public class StationActivity extends Activity {
 				}
 			}
 
-			final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-			toolbar.inflateMenu(R.menu.main);
-			toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
-				@Override
-				public boolean onMenuItemClick(final MenuItem item) {
-					swipeRefreshLayout.setRefreshing(true);
-					final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-					reqParams.put("mapid", String.valueOf(station.getId()));
-					new LoadData().execute(reqParams);
-					return false;
-				}
-			}));
-
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-				toolbar.setElevation(4);
-			}
-
-			Util.setToolbarColor(this, toolbar, randomTrainLine);
-
-			toolbar.setTitle(station.getName());
-			toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-			toolbar.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					finish();
-				}
-			});
+			setToolBar(randomTrainLine);
 
 			Util.trackScreen(getResources().getString(R.string.analytics_train_details));
 		}
+	}
+
+	private void setToolBar(final TrainLine randomTrainLine){
+		final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		toolbar.inflateMenu(R.menu.main);
+		toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(final MenuItem item) {
+				swipeRefreshLayout.setRefreshing(true);
+				final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
+				reqParams.put("mapid", String.valueOf(station.getId()));
+				new LoadData().execute(reqParams);
+				return false;
+			}
+		}));
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			toolbar.setElevation(4);
+		}
+
+		Util.setToolbarColor(this, toolbar, randomTrainLine);
+
+		toolbar.setTitle(station.getName());
+		toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+		toolbar.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
 	}
 
 	@Override
@@ -346,7 +349,7 @@ public class StationActivity extends Activity {
 					}
 				}
 			});
-			StationActivity.this.mapImage.setImageDrawable(ContextCompat.getDrawable(StationActivity.this, R.drawable.ic_place_white_24dp));
+			//StationActivity.this.mapImage.setImageDrawable(ContextCompat.getDrawable(StationActivity.this, R.drawable.ic_place_white_24dp));
 			StationActivity.this.mapImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -357,7 +360,7 @@ public class StationActivity extends Activity {
 				}
 			});
 
-			StationActivity.this.directionImage.setImageDrawable(ContextCompat.getDrawable(StationActivity.this, R.drawable.ic_directions_walk_white_24dp));
+			//StationActivity.this.directionImage.setImageDrawable(ContextCompat.getDrawable(StationActivity.this, R.drawable.ic_directions_walk_white_24dp));
 			StationActivity.this.directionImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {

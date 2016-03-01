@@ -240,6 +240,7 @@ public class Util {
 	public static void setToolbarColor(final Activity activity, final Toolbar toolbar, final TrainLine trainLine) {
 		int backgroundColor = 0;
 		int statusBarColor = 0;
+		int textTitleColor =  R.color.white;
 		switch (trainLine) {
 		case BLUE:
 			backgroundColor = R.color.blueLine;
@@ -272,6 +273,7 @@ public class Util {
 		case YELLOW:
 			backgroundColor = R.color.yellowLine;
 			statusBarColor = R.color.yellowLineDark;
+			textTitleColor =  R.color.black;
 			break;
 		case NA:
 			backgroundColor = R.color.primaryColor;
@@ -279,7 +281,7 @@ public class Util {
 			break;
 		}
 		toolbar.setBackgroundColor(ContextCompat.getColor(ChicagoTracker.getContext(), backgroundColor));
-		toolbar.setTitleTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.white));
+		toolbar.setTitleTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), textTitleColor));
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			activity.getWindow().setStatusBarColor(ContextCompat.getColor(activity, statusBarColor));
 		}
