@@ -96,6 +96,8 @@ public class StationActivity extends Activity {
 	private ImageView favoritesImage;
 	private LinearLayout.LayoutParams paramsStop;
 	private SwipeRefreshLayout swipeRefreshLayout;
+	private LinearLayout walkContainer;
+	private LinearLayout mapContainer;
 
 	private boolean isFavorite;
 	private TrainData trainData;
@@ -118,7 +120,6 @@ public class StationActivity extends Activity {
 			trainData = dataHolder.getTrainData();
 
 			ids = new HashMap<>();
-
 
 			// Get station id from bundle extra
 			if (stationId == null) {
@@ -149,19 +150,22 @@ public class StationActivity extends Activity {
 
 			streetViewImage = (ImageView) findViewById(R.id.activity_bike_station_streetview_image);
 			streetViewText = (TextView) findViewById(R.id.activity_bike_station_steetview_text);
-			mapImage = (ImageView) findViewById(R.id.activity_bike_station_map_image);
+			mapImage = (ImageView) findViewById(R.id.activity_train_station_map_image);
 			mapImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
-			directionImage = (ImageView) findViewById(R.id.activity_bike_station_map_direction);
+			mapContainer = (LinearLayout) findViewById(R.id.map_container);
+			directionImage = (ImageView) findViewById(R.id.activity_train_station_map_direction);
 			directionImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
-			favoritesImage = (ImageView) findViewById(R.id.activity_bike_station_favorite_star);
+			walkContainer = (LinearLayout) findViewById(R.id.walk_container);
+			favoritesImage = (ImageView) findViewById(R.id.activity_train_station_favorite_star);
+			final LinearLayout favoritesImageContainer = (LinearLayout) findViewById(R.id.favorites_container);
 			if (isFavorite) {
 				favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
 			} else {
 				favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
 			}
-			favoritesImage.setOnClickListener(new View.OnClickListener() {
+			favoritesImageContainer.setOnClickListener(new View.OnClickListener() {
 				@Override
-				public void onClick(View v) {
+				public void onClick(final View v) {
 					StationActivity.this.switchFavorite();
 				}
 			});
@@ -202,7 +206,7 @@ public class StationActivity extends Activity {
 				final CheckBox checkBox = new CheckBox(this);
 				checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 					@Override
-					public void onCheckedChanged(final CompoundButton buttonView,final boolean isChecked) {
+					public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
 						Preferences.saveTrainFilter(stationId, line, stop.getDirection(), isChecked);
 					}
 				});
@@ -242,7 +246,7 @@ public class StationActivity extends Activity {
 		}
 	}
 
-	private void setToolBar(final TrainLine randomTrainLine){
+	private void setToolBar(final TrainLine randomTrainLine) {
 		final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		toolbar.inflateMenu(R.menu.main);
 		toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
@@ -357,30 +361,27 @@ public class StationActivity extends Activity {
 					}
 				}
 			});
-			//StationActivity.this.mapImage.setImageDrawable(ContextCompat.getDrawable(StationActivity.this, R.drawable.ic_place_white_24dp));
-			StationActivity.this.mapImage.setOnClickListener(new View.OnClickListener() {
+			StationActivity.this.mapContainer.setOnClickListener(new View.OnClickListener() {
 				@Override
-				public void onClick(View v) {
-					String uri = "http://maps.google.com/maps?z=12&t=m&q=loc:" + latitude + "+" + longitude;
-					Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+				public void onClick(final View v) {
+					final String uri = "http://maps.google.com/maps?z=12&t=m&q=loc:" + latitude + "+" + longitude;
+					final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
 					i.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
 					startActivity(i);
 				}
 			});
 
-			//StationActivity.this.directionImage.setImageDrawable(ContextCompat.getDrawable(StationActivity.this, R.drawable.ic_directions_walk_white_24dp));
-			StationActivity.this.directionImage.setOnClickListener(new View.OnClickListener() {
+			StationActivity.this.walkContainer.setOnClickListener(new View.OnClickListener() {
 				@Override
-				public void onClick(View v) {
-					String uri = "http://maps.google.com/?f=d&daddr=" + latitude + "," + longitude + "&dirflg=w";
-					Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+				public void onClick(final View v) {
+					final String uri = "http://maps.google.com/?f=d&daddr=" + latitude + "," + longitude + "&dirflg=w";
+					final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
 					i.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
 					startActivity(i);
 				}
 			});
 
-			StationActivity.this.streetViewText.setText(ChicagoTracker.getContext().getResources()
-					.getString(R.string.station_activity_street_view));
+			StationActivity.this.streetViewText.setText(ChicagoTracker.getContext().getResources().getString(R.string.station_activity_street_view));
 		}
 	}
 

@@ -79,6 +79,9 @@
 	<string name="train_station_activity">Stations</string>
 	<string name="station_activity_google_map_link_desc">Link to google map</string>
 	<string name="station_activity_street_view">Street view</string>
+	<string name="station_activity_favorite_icon">Favorite</string>
+	<string name="station_activity_map_icon">Map</string>
+	<string name="station_activity_walk_icon">Walk</string>
 
 	<!-- Bus -->
 	<string name="bus_login_progress">Station</string>

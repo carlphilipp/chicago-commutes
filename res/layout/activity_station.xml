@@ -16,7 +16,7 @@
   limitations under the License.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			  android:layout_width="match_parent"
+			  xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
 			  android:layout_height="match_parent"
 			  android:orientation="vertical">
 
@@ -43,8 +43,10 @@
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:paddingBottom="@dimen/activity_train_line_padding_bottom"
+					android:paddingStart="@dimen/activity_train_line_padding_left"
 					android:paddingLeft="@dimen/activity_train_line_padding_left"
 					android:paddingRight="@dimen/activity_train_line_padding_right"
+					android:paddingEnd="@dimen/activity_train_line_padding_right"
 					android:paddingTop="@dimen/activity_train_line_padding_top"
 					android:orientation="vertical">
 
@@ -68,50 +70,100 @@
 							android:layout_height="wrap_content"
 							android:layout_alignParentBottom="true"
 							android:layout_marginLeft="4dp"
+							android:layout_marginStart="4dp"
 							android:textColor="@color/white"/>
 				</RelativeLayout>
-
-				<RelativeLayout
-						android:id="@+id/header"
+				<LinearLayout
+						android:id="@+id/icons"
 						android:layout_width="match_parent"
-						android:layout_height="wrap_content">
+						android:layout_height="wrap_content"
+						android:layout_gravity="center"
+						android:layout_marginTop="15dp"
+						android:baselineAligned="false"
+						android:layout_marginLeft="15dp"
+						android:layout_marginStart="15dp"
+						android:layout_marginRight="15dp"
+						android:layout_marginEnd="15dp"
+						android:orientation="horizontal">
+					<LinearLayout
+							android:id="@+id/favorites_container"
+							android:layout_width="0px"
+							android:layout_weight="1"
+							android:layout_height="wrap_content"
+							android:orientation="vertical"
+							android:clickable="true"
+							android:background="@drawable/any_selector"
+							tools:ignore="UseCompoundDrawables">
+						<ImageView
+								android:id="@+id/activity_train_station_favorite_star"
+								android:layout_width="wrap_content"
+								android:layout_height="wrap_content"
+								android:contentDescription="@string/station_activity_google_map_link_desc"
+								android:src="@drawable/ic_favorite_white_24dp"
+								android:layout_gravity="center_horizontal">
+						</ImageView>
+						<TextView
+								android:layout_width="wrap_content"
+								android:layout_height="wrap_content"
+								android:text="@string/station_activity_favorite_icon"
+								android:layout_gravity="center_horizontal"
+								android:textStyle="bold">
+						</TextView>
+
+					</LinearLayout>
 
 					<LinearLayout
-							android:id="@+id/header_icon"
-							android:layout_width="match_parent"
+							android:id="@+id/map_container"
+							android:layout_width="0px"
+							android:layout_weight="1"
 							android:layout_height="wrap_content"
-							android:layout_centerVertical="true"
-							android:orientation="horizontal">
-
+							android:orientation="vertical"
+							android:clickable="true"
+							android:background="@drawable/any_selector"
+							tools:ignore="UseCompoundDrawables">
 						<ImageView
-								android:id="@+id/activity_bike_station_favorite_star"
-								android:layout_width="35dp"
-								android:layout_height="35dp"
-								android:background="@drawable/any_selector"
-								android:contentDescription="@string/station_activity_google_map_link_desc"
-								android:src="@drawable/ic_favorite_white_24dp">
-						</ImageView>
-
-						<ImageView
-								android:id="@+id/activity_bike_station_map_image"
-								android:layout_width="35dp"
-								android:layout_height="35dp"
-								android:background="@drawable/any_selector"
+								android:id="@+id/activity_train_station_map_image"
+								android:layout_width="wrap_content"
+								android:layout_height="wrap_content"
 								android:clickable="true"
 								android:contentDescription="@string/station_activity_google_map_link_desc"
-								android:src="@drawable/ic_place_white_24dp">
+								android:src="@drawable/ic_place_white_24dp"
+								android:layout_gravity="center_horizontal">
 						</ImageView>
-
-						<ImageView
-								android:id="@+id/activity_bike_station_map_direction"
-								android:layout_width="35dp"
-								android:layout_height="35dp"
-								android:background="@drawable/any_selector"
-								android:contentDescription="@string/station_activity_google_map_link_desc"
-								android:src="@drawable/ic_directions_walk_white_24dp">
-						</ImageView>
+						<TextView
+								android:layout_width="wrap_content"
+								android:layout_height="wrap_content"
+								android:layout_gravity="center_horizontal"
+								android:text="@string/station_activity_map_icon"
+								android:textStyle="bold">
+						</TextView>
 					</LinearLayout>
-				</RelativeLayout>
+					<LinearLayout
+							android:id="@+id/walk_container"
+							android:layout_width="0px"
+							android:layout_weight="1"
+							android:layout_height="wrap_content"
+							android:orientation="vertical"
+							android:clickable="true"
+							android:background="@drawable/any_selector"
+							tools:ignore="UseCompoundDrawables">
+						<ImageView
+								android:id="@+id/activity_train_station_map_direction"
+								android:layout_width="wrap_content"
+								android:layout_height="wrap_content"
+								android:contentDescription="@string/station_activity_google_map_link_desc"
+								android:src="@drawable/ic_directions_walk_white_24dp"
+								android:layout_gravity="center_horizontal">
+						</ImageView>
+						<TextView
+								android:layout_width="wrap_content"
+								android:layout_height="wrap_content"
+								android:text="@string/station_activity_walk_icon"
+								android:layout_gravity="center_horizontal"
+								android:textStyle="bold">
+						</TextView>
+					</LinearLayout>
+				</LinearLayout>
 
 				<LinearLayout
 						android:id="@+id/activity_train_station_details"
