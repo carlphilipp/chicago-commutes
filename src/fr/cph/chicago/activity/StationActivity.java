@@ -88,6 +88,7 @@ public class StationActivity extends Activity {
 
 	private static final String TAG = StationActivity.class.getSimpleName();
 
+	private ViewGroup viewGroup;
 	private ImageView streetViewImage;
 	private TextView streetViewText;
 	private ImageView mapImage;
@@ -111,10 +112,13 @@ public class StationActivity extends Activity {
 
 			setContentView(R.layout.activity_station);
 
-			final ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
+			viewGroup = (ViewGroup) findViewById(android.R.id.content);
 			// Load data
 			final DataHolder dataHolder = DataHolder.getInstance();
 			trainData = dataHolder.getTrainData();
+
+			ids = new HashMap<>();
+
 
 			// Get station id from bundle extra
 			if (stationId == null) {
@@ -161,76 +165,80 @@ public class StationActivity extends Activity {
 					StationActivity.this.switchFavorite();
 				}
 			});
-			final LinearLayout stopsView = (LinearLayout) findViewById(R.id.activity_train_station_details);
+
 			paramsStop = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
 			final Map<TrainLine, List<Stop>> stopByLines = station.getStopByLines();
 			final TrainLine randomTrainLine = getRandomLine(stopByLines);
 			swipeRefreshLayout.setColorSchemeColors(randomTrainLine.getColor());
 
-			for (final Entry<TrainLine, List<Stop>> entry : stopByLines.entrySet()) {
-				final TrainLine line = entry.getKey();
-				final List<Stop> stops = entry.getValue();
-				Collections.sort(stops);
-				final View lineTitleView = getLayoutInflater().inflate(R.layout.activity_station_line_title, viewGroup, false);
-
-				final TextView testView = (TextView) lineTitleView.findViewById(R.id.train_line_title);
-				testView.setText(WordUtils.capitalize(line.toStringWithLine()));
-				testView.setBackgroundColor(line.getColor());
-
-				stopsView.addView(lineTitleView);
-
-				ids = new HashMap<>();
-				for (final Stop stop : stops) {
-					final LinearLayout line2 = new LinearLayout(this);
-					line2.setOrientation(LinearLayout.HORIZONTAL);
-					line2.setLayoutParams(paramsStop);
-
-					final CheckBox checkBox = new CheckBox(this);
-					checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-						@Override
-						public void onCheckedChanged(final CompoundButton buttonView,final boolean isChecked) {
-							Preferences.saveTrainFilter(stationId, line, stop.getDirection(), isChecked);
-						}
-					});
-					checkBox.setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick(final View v) {
-							// Update timing
-							final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-							reqParams.put("mapid", String.valueOf(station.getId()));
-							new LoadData().execute(reqParams);
-						}
-					});
-					checkBox.setChecked(Preferences.getTrainFilter(stationId, line, stop.getDirection()));
-					checkBox.setTypeface(checkBox.getTypeface(), Typeface.BOLD);
-					checkBox.setText(stop.getDirection().toString());
-					checkBox.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
-					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-						checkBox.setBackgroundTintList(ColorStateList.valueOf(line.getColor()));
-						checkBox.setButtonTintList(ColorStateList.valueOf(line.getColor()));
-					}
-					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-						checkBox.setForegroundTintList(ColorStateList.valueOf(line.getColor()));
-					}
-
-					line2.addView(checkBox);
-
-					final LinearLayout arrivalTrainsLayout = new LinearLayout(this);
-					arrivalTrainsLayout.setOrientation(LinearLayout.VERTICAL);
-					arrivalTrainsLayout.setLayoutParams(paramsStop);
-					int id3 = Util.generateViewId();
-					arrivalTrainsLayout.setId(id3);
-					ids.put(line.toString() + "_" + stop.getDirection().toString(), id3);
-
-					line2.addView(arrivalTrainsLayout);
-					stopsView.addView(line2);
-				}
-			}
+			setUpStopLayouts(stopByLines);
 
 			setToolBar(randomTrainLine);
 
 			Util.trackScreen(getResources().getString(R.string.analytics_train_details));
+		}
+	}
+
+	private void setUpStopLayouts(final Map<TrainLine, List<Stop>> stopByLines) {
+		final LinearLayout stopsView = (LinearLayout) findViewById(R.id.activity_train_station_details);
+		for (final Entry<TrainLine, List<Stop>> entry : stopByLines.entrySet()) {
+			final TrainLine line = entry.getKey();
+			final List<Stop> stops = entry.getValue();
+			Collections.sort(stops);
+			final View lineTitleView = getLayoutInflater().inflate(R.layout.activity_station_line_title, viewGroup, false);
+
+			final TextView testView = (TextView) lineTitleView.findViewById(R.id.train_line_title);
+			testView.setText(WordUtils.capitalize(line.toStringWithLine()));
+			testView.setBackgroundColor(line.getColor());
+
+			stopsView.addView(lineTitleView);
+
+			for (final Stop stop : stops) {
+				final LinearLayout line2 = new LinearLayout(this);
+				line2.setOrientation(LinearLayout.HORIZONTAL);
+				line2.setLayoutParams(paramsStop);
+
+				final CheckBox checkBox = new CheckBox(this);
+				checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+					@Override
+					public void onCheckedChanged(final CompoundButton buttonView,final boolean isChecked) {
+						Preferences.saveTrainFilter(stationId, line, stop.getDirection(), isChecked);
+					}
+				});
+				checkBox.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(final View v) {
+						// Update timing
+						final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
+						reqParams.put("mapid", String.valueOf(station.getId()));
+						new LoadData().execute(reqParams);
+					}
+				});
+				checkBox.setChecked(Preferences.getTrainFilter(stationId, line, stop.getDirection()));
+				checkBox.setTypeface(checkBox.getTypeface(), Typeface.BOLD);
+				checkBox.setText(stop.getDirection().toString());
+				checkBox.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+					checkBox.setBackgroundTintList(ColorStateList.valueOf(line.getColor()));
+					checkBox.setButtonTintList(ColorStateList.valueOf(line.getColor()));
+				}
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+					checkBox.setForegroundTintList(ColorStateList.valueOf(line.getColor()));
+				}
+
+				line2.addView(checkBox);
+
+				final LinearLayout arrivalTrainsLayout = new LinearLayout(this);
+				arrivalTrainsLayout.setOrientation(LinearLayout.VERTICAL);
+				arrivalTrainsLayout.setLayoutParams(paramsStop);
+				int id3 = Util.generateViewId();
+				arrivalTrainsLayout.setId(id3);
+				ids.put(line.toString() + "_" + stop.getDirection().toString(), id3);
+
+				line2.addView(arrivalTrainsLayout);
+				stopsView.addView(line2);
+			}
 		}
 	}
 
@@ -473,9 +481,9 @@ public class StationActivity extends Activity {
 	private void reset(final Station station) {
 		final Set<TrainLine> setTL = station.getLines();
 		if (setTL != null) {
-			for (TrainLine tl : setTL) {
-				for (TrainDirection d : TrainDirection.values()) {
-					final Integer id = ids.get(tl.toString() + "_" + d.toString());
+			for (final TrainLine tl : setTL) {
+				for (final TrainDirection trainDirection : TrainDirection.values()) {
+					final Integer id = ids.get(tl.toString() + "_" + trainDirection.toString());
 					if (id != null) {
 						final LinearLayout line3View = (LinearLayout) findViewById(id);
 						if (line3View != null) {
