@@ -26,6 +26,7 @@
 	<string name="bundle_bus_stop_id">busStopId</string>
 	<string name="bundle_bus_route_id">busRouteId</string>
 	<string name="bundle_bus_bound">bound</string>
+	<string name="bundle_bus_bound_title">boundTitle</string>
 	<string name="bundle_bus_stop_name">busStopName</string>
 	<string name="bundle_bus_route_name">busRouteName</string>
 	<string name="bundle_bus_latitude">latitude</string>

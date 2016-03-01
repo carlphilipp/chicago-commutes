@@ -88,6 +88,7 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
 	private String busRouteId;
 	private String busRouteName;
 	private String bound;
+	private String boundTitle;
 	private BusBoundAdapter busBoundAdapter;
 	private List<BusStop> busStops;
 
@@ -98,10 +99,11 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
 		if (!this.isFinishing()) {
 			setContentView(R.layout.activity_bus_bound);
 
-			if (busRouteId == null && busRouteName == null && bound == null) {
+			if (busRouteId == null && busRouteName == null && bound == null && boundTitle == null) {
 				busRouteId = getIntent().getExtras().getString(getString(R.string.bundle_bus_route_id));
 				busRouteName = getIntent().getExtras().getString(getString(R.string.bundle_bus_route_name));
 				bound = getIntent().getExtras().getString(getString(R.string.bundle_bus_bound));
+				boundTitle = getIntent().getExtras().getString(getString(R.string.bundle_bus_bound_title));
 			}
 			busBoundAdapter = new BusBoundAdapter(busRouteId);
 			setListAdapter(busBoundAdapter);
@@ -117,6 +119,7 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
 					extras.putString(getString(R.string.bundle_bus_route_id), busRouteId);
 					extras.putString(getString(R.string.bundle_bus_route_name), busRouteName);
 					extras.putString(getString(R.string.bundle_bus_bound), bound);
+					extras.putString(getString(R.string.bundle_bus_bound_title), boundTitle);
 					extras.putDouble(getString(R.string.bundle_bus_latitude), busStop.getPosition().getLatitude());
 					extras.putDouble(getString(R.string.bundle_bus_longitude), busStop.getPosition().getLongitude());
 
@@ -155,7 +158,7 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
 
 			final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 			Util.setToolbarColor(this, toolbar, TrainLine.NA);
-			toolbar.setTitle(busRouteName + " - " + bound);
+			toolbar.setTitle(busRouteName + " - " + boundTitle);
 
 			toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
 			toolbar.setOnClickListener(new View.OnClickListener() {
@@ -218,6 +221,7 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
 		busRouteId = savedInstanceState.getString(getString(R.string.bundle_bus_route_id));
 		busRouteName = savedInstanceState.getString(getString(R.string.bundle_bus_route_name));
 		bound = savedInstanceState.getString(getString(R.string.bundle_bus_bound));
+		boundTitle = savedInstanceState.getString(getString(R.string.bundle_bus_bound_title));
 	}
 
 	@Override
@@ -225,6 +229,7 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
 		savedInstanceState.putString(getString(R.string.bundle_bus_route_id), busRouteId);
 		savedInstanceState.putString(getString(R.string.bundle_bus_route_name), busRouteName);
 		savedInstanceState.putString(getString(R.string.bundle_bus_bound), bound);
+		savedInstanceState.putString(getString(R.string.bundle_bus_bound_title), boundTitle);
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
@@ -280,14 +285,14 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
 			final CtaConnect connect = CtaConnect.getInstance();
 			final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
 			connectParam.put("rt", busRouteId);
-			final String boundIgnoreCase = bound.toLowerCase(Locale.US);
+			final String boundIgnoreCase = boundTitle.toLowerCase(Locale.US);
 			try {
 				final String content = connect.connect(CtaRequestType.BUS_PATTERN, connectParam);
 				final Xml xml = new Xml();
 				final List<BusPattern> patterns = xml.parsePatterns(content);
 				for (final BusPattern pattern : patterns) {
 					final String directionIgnoreCase = pattern.getDirection().toLowerCase(Locale.US);
-					if (pattern.getDirection().equals(bound) || boundIgnoreCase.contains(directionIgnoreCase)) {
+					if (pattern.getDirection().equals(boundTitle) || boundIgnoreCase.contains(directionIgnoreCase)) {
 						this.busPattern = pattern;
 						break;
 					}

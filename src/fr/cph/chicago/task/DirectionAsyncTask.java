@@ -91,8 +91,8 @@ public class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 		if (trackerException == null) {
 			final List<BusDirection> busDirections = result.getlBusDirection();
 			final List<String> data = new ArrayList<>();
-			for (BusDirection busDir : busDirections) {
-				data.add(busDir.toString());
+			for (final BusDirection busDir : busDirections) {
+				data.add(busDir.getBusDirectionEnum().toString());
 			}
 			data.add("See all buses on line " + result.getId());
 
@@ -110,14 +110,15 @@ public class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 						final Intent intent = new Intent(activity, BusBoundActivity.class);
 						extras.putString(activity.getString(R.string.bundle_bus_route_id), busRoute.getId());
 						extras.putString(activity.getString(R.string.bundle_bus_route_name), busRoute.getName());
-						extras.putString(activity.getString(R.string.bundle_bus_bound), data.get(position));
+						extras.putString(activity.getString(R.string.bundle_bus_bound), busDirections.get(position).getBusTextReceived());
+						extras.putString(activity.getString(R.string.bundle_bus_bound_title), busDirections.get(position).getBusDirectionEnum().toString());
 						intent.putExtras(extras);
 						activity.startActivity(intent);
 					} else {
 						final String[] busDirectionArray = new String[busDirections.size()];
 						int i = 0;
 						for (final BusDirection busDir : busDirections) {
-							busDirectionArray[i++] = busDir.toString();
+							busDirectionArray[i++] = busDir.getBusDirectionEnum().toString();
 						}
 						final Intent intent = new Intent(activity, BusMapActivity.class);
 						extras.putString(activity.getString(R.string.bundle_bus_route_id), result.getId());

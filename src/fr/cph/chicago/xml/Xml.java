@@ -369,8 +369,8 @@ public final class Xml {
 					// TODO something ?
 				} else if (eventType == XmlPullParser.TEXT) {
 					final String text = parser.getText();
-					final BusDirection busDirection = BusDirection.fromString(text);
-					if (busDirection != null) {
+					final BusDirection busDirection = new BusDirection(text);
+					if (busDirection.isOk()) {
 						directions.addBusDirection(busDirection);
 					}
 				}
@@ -423,7 +423,7 @@ public final class Xml {
 						} else if (tagName.equals("lon")) {
 							busStop.getPosition().setLongitude(Double.valueOf(text));
 						} else if (tagName.equals("msg")) {
-							throw new ParserException(TrackerException.ERROR);
+							throw new ParserException(text);
 						}
 					}
 				}
@@ -486,7 +486,7 @@ public final class Xml {
 								busArrival.setRouteId(text);
 							}
 						} else if (tagName.equals("rtdir")) {
-							text = BusDirection.fromString(text).toString();
+							text = BusDirection.BusDirectionEnum.fromString(text).toString();
 							busArrival.setRouteDirection(text);
 						} else if (tagName.equals("des")) {
 							busArrival.setBusDestination(text);
@@ -544,7 +544,7 @@ public final class Xml {
 						} else if (tagName.equals("ln")) {
 							pattern.setLength(Double.valueOf(text));
 						} else if (tagName.equals("rtdir")) {
-							text = BusDirection.fromString(text).toString();
+							text = BusDirection.BusDirectionEnum.fromString(text).toString();
 							pattern.setDirection(text);
 						} else if (tagName.equals("pt")) {
 							patternPoint = new PatternPoint();

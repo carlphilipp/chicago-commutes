@@ -433,7 +433,7 @@ public class BusMapActivity extends Activity {
 					final BusDirections busDirections = xml.parseBusDirections(xmlResult, busRouteId);
 					bounds = new String[busDirections.getlBusDirection().size()];
 					for (int i = 0; i < busDirections.getlBusDirection().size(); i++) {
-						bounds[i] = busDirections.getlBusDirection().get(i).toString();
+						bounds[i] = busDirections.getlBusDirection().get(i).getBusDirectionEnum().toString();
 					}
 					Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
 							R.string.analytics_action_get_bus_direction, 0);

@@ -24,47 +24,60 @@ import java.util.Locale;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public enum BusDirection {
 
-	NORTHBOUND("Northbound"), WESTBOUND("Westbound"), SOUTHBOUND("Southbound"), EASTBOUND("Eastbound");
+public class BusDirection {
 
-	/** The text **/
-	private String text;
+	private String textReceived;
+	private BusDirectionEnum busDirectionEnum;
 
-	/**
-	 * Private constructor
-	 *
-	 * @param text
-	 *            the text
-	 */
-	BusDirection(String text) {
-		this.text = text;
+	public BusDirection(final String textReceived) {
+		this.textReceived = textReceived;
 	}
 
-	/**
-	 * Get bus direction from string
-	 *
-	 * @param textthe
-	 *            text
-	 * @return a bus direction
-	 */
-	public static BusDirection fromString(final String text) {
-		if (text != null) {
-			for (final BusDirection b : BusDirection.values()) {
-				if (text.equalsIgnoreCase(b.text)) {
-					return b;
-				} else if (b.text.toLowerCase(Locale.US).contains(text.toLowerCase(Locale.US))) {
-					return b;
-				} else if (b.text.toLowerCase(Locale.US).contains(text.toLowerCase(Locale.US))) {
-					return b;
+	public boolean isOk() {
+		final BusDirectionEnum en = BusDirectionEnum.fromString(textReceived);
+		if (en != null) {
+			busDirectionEnum = en;
+			return true;
+		}
+		return false;
+	}
+
+	public String getBusTextReceived() {
+		return textReceived;
+	}
+
+	public BusDirectionEnum getBusDirectionEnum() {
+		return busDirectionEnum;
+	}
+
+	public enum BusDirectionEnum {
+
+		NORTHBOUND("Northbound"), WESTBOUND("Westbound"), SOUTHBOUND("Southbound"), EASTBOUND("Eastbound");
+
+		private String text;
+
+		BusDirectionEnum(final String text) {
+			this.text = text;
+		}
+
+		public static BusDirectionEnum fromString(final String text) {
+			if (text != null) {
+				for (final BusDirectionEnum b : BusDirectionEnum.values()) {
+					if (text.equalsIgnoreCase(b.text)) {
+						return b;
+					} else if (b.text.toLowerCase(Locale.US).contains(text.toLowerCase(Locale.US))) {
+						return b;
+					}
 				}
 			}
+			return null;
 		}
-		return null;
-	}
 
-	@Override
-	public final String toString() {
-		return text;
+		@Override
+		public final String toString() {
+			return text;
+		}
 	}
 }
+

@@ -28,9 +28,7 @@ import java.util.List;
  * @version 1
  */
 public final class BusDirections {
-	/** The id **/
 	private String id;
-	/** List of bus direction **/
 	private List<BusDirection> lBusDirection;
 
 	/**
