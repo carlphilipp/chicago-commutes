@@ -207,8 +207,8 @@ public class FavoritesFragment extends Fragment {
 						loadData = true;
 					}
 					if (loadData) {
-						//startRefreshAnimation();
-						//new LoadData().execute();
+						MainActivity.LoadData reload = mainActivity.new LoadData();
+						reload.execute();
 					}
 					Util.trackAction(mainActivity, R.string.analytics_category_ui, R.string.analytics_action_press,
 							R.string.analytics_action_refresh_fav, 0);

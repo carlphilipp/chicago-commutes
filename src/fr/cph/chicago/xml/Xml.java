@@ -423,7 +423,7 @@ public final class Xml {
 						} else if (tagName.equals("lon")) {
 							busStop.getPosition().setLongitude(Double.valueOf(text));
 						} else if (tagName.equals("msg")) {
-							throw new ParserException(text);
+							throw new ParserException(TrackerException.ERROR);
 						}
 					}
 				}

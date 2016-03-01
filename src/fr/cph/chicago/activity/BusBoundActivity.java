@@ -137,9 +137,11 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
 
 				@Override
 				public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
-					for (final BusStop busStop : busStops) {
-						if (StringUtils.containsIgnoreCase(busStop.getName(), s)) {
-							busStopsFiltered.add(busStop);
+					if (busStops != null) {
+						for (final BusStop busStop : busStops) {
+							if (StringUtils.containsIgnoreCase(busStop.getName(), s)) {
+								busStopsFiltered.add(busStop);
+							}
 						}
 					}
 				}
@@ -264,7 +266,7 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
 				busBoundAdapter.update(result);
 				busBoundAdapter.notifyDataSetChanged();
 			} else {
-				ChicagoTracker.displayError(BusBoundActivity.this, trackerException);
+				Toast.makeText(ChicagoTracker.getContext(), trackerException.getMessage(), Toast.LENGTH_SHORT).show();
 			}
 		}
 	}
@@ -317,7 +319,8 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
 						googleMap.setMyLocationEnabled(true);
 						if (position != null) {
 							final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
-							googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
+							googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
+							googleMap.animateCamera(CameraUpdateFactory.zoomTo(9), 500, null);
 						} else {
 							googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Util.CHICAGO, 10));
 						}
