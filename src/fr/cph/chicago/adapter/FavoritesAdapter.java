@@ -577,6 +577,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 		private String busRouteId;
 		private String bound;
+		private String boundTitle;
 		private String stopId;
 		private String busRouteName;
 		private TrackerException trackerException;
@@ -592,8 +593,9 @@ public final class FavoritesAdapter extends BaseAdapter {
 			try {
 				busRouteId = params[0];
 				bound = params[1];
-				stopId = params[2];
-				busRouteName = params[3];
+				boundTitle = params[2];
+				stopId = params[3];
+				busRouteName = params[4];
 				final List<BusStop> busStops = DataHolder.getInstance().getBusData().loadBusStop(busRouteId, bound);
 
 				for (final BusStop bus : busStops) {
@@ -619,6 +621,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 				extras.putString("busRouteId", busRouteId);
 				extras.putString("busRouteName", busRouteName);
 				extras.putString("bound", bound);
+				extras.putString("boundTitle", boundTitle);
 				extras.putDouble("latitude", busStop.getPosition().getLatitude());
 				extras.putDouble("longitude", busStop.getPosition().getLongitude());
 

@@ -174,8 +174,7 @@ public final class Preferences {
 
 	public static void addBusRouteNameMapping(final String busStopId, final String routeName) {
 		final Context context = ChicagoTracker.getContext();
-		final SharedPreferences sharedPref = context
-				.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING, Context.MODE_PRIVATE);
+		final SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING, Context.MODE_PRIVATE);
 		final SharedPreferences.Editor editor = sharedPref.edit();
 		editor.putString(busStopId, routeName);
 		Log.v(TAG, "Add bus route name mapping : " + busStopId + " => " + routeName);
@@ -184,8 +183,7 @@ public final class Preferences {
 
 	public static String getBusRouteNameMapping(final String busStopId) {
 		final Context context = ChicagoTracker.getContext();
-		final SharedPreferences sharedPref = context
-				.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING, Context.MODE_PRIVATE);
+		final SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING, Context.MODE_PRIVATE);
 		final String routeName = sharedPref.getString(busStopId, null);
 		Log.v(TAG, "Get bus route name mapping : " + busStopId + " => " + routeName);
 		return routeName;
@@ -193,8 +191,7 @@ public final class Preferences {
 
 	public static void addBusStopNameMapping(final String busStopId, final String stopName) {
 		final Context context = ChicagoTracker.getContext();
-		final SharedPreferences sharedPref = context
-				.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING, Context.MODE_PRIVATE);
+		final SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING, Context.MODE_PRIVATE);
 		final SharedPreferences.Editor editor = sharedPref.edit();
 		editor.putString(busStopId, stopName);
 		Log.v(TAG, "Add bus stop name mapping : " + busStopId + " => " + stopName);

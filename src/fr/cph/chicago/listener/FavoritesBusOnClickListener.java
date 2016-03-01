@@ -33,6 +33,7 @@ import fr.cph.chicago.adapter.FavoritesAdapter;
 import fr.cph.chicago.adapter.PopupBusFavoritesAdapter;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusRoute;
+import fr.cph.chicago.entity.enumeration.BusDirection;
 import fr.cph.chicago.util.Util;
 
 import java.util.ArrayList;
@@ -85,7 +86,9 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 						final BusArrival busArrival = mapBusArrivals.get(key).get(0);
 						if (position == i) {
 							// Open details
-							new FavoritesAdapter.BusBoundAsyncTask(mainActivity).execute(busArrival.getRouteId(), busArrival.getRouteDirection(),
+							final String boundTitle = busArrival.getRouteDirection();
+							final BusDirection.BusDirectionEnum busDirectionEnum = BusDirection.BusDirectionEnum.fromString(boundTitle);
+							new FavoritesAdapter.BusBoundAsyncTask(mainActivity).execute(busArrival.getRouteId(), busDirectionEnum.getShortUpperCase(), boundTitle,
 									String.valueOf(busArrival.getStopId()), busRoute.getName());
 						}
 						i++;
@@ -132,7 +135,7 @@ public class FavoritesBusOnClickListener implements OnClickListener {
 		final List<String> values = new ArrayList<>();
 		final Set<String> keySet = mapBusArrivals.keySet();
 		// In case of several bounds, we put at the top of the list the ability to open details for those bounds. Very not common
-		for(final String key : keySet){
+		for (final String key : keySet) {
 			final StringBuilder openDetails = new StringBuilder("Open details");
 			if (keySet.size() > 1) {
 				openDetails.append(" (").append(key).append(")");

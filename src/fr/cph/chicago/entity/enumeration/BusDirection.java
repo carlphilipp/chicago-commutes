@@ -53,18 +53,22 @@ public class BusDirection {
 
 	public enum BusDirectionEnum {
 
-		NORTHBOUND("Northbound"), WESTBOUND("Westbound"), SOUTHBOUND("Southbound"), EASTBOUND("Eastbound");
+		NORTHBOUND("Northbound", "NORTH"), WESTBOUND("Westbound", "WEST"), SOUTHBOUND("Southbound", "SOUTH"), EASTBOUND("Eastbound", "EAST");
 
 		private String text;
+		private String shortUpperCase;
 
-		BusDirectionEnum(final String text) {
+		BusDirectionEnum(final String text, final String shortUpperCase) {
 			this.text = text;
+			this.shortUpperCase = shortUpperCase;
 		}
 
 		public static BusDirectionEnum fromString(final String text) {
 			if (text != null) {
 				for (final BusDirectionEnum b : BusDirectionEnum.values()) {
 					if (text.equalsIgnoreCase(b.text)) {
+						return b;
+					} else if (text.equalsIgnoreCase(b.shortUpperCase)) {
 						return b;
 					} else if (b.text.toLowerCase(Locale.US).contains(text.toLowerCase(Locale.US))) {
 						return b;
@@ -77,6 +81,10 @@ public class BusDirection {
 		@Override
 		public final String toString() {
 			return text;
+		}
+
+		public final String getShortUpperCase() {
+			return shortUpperCase;
 		}
 	}
 }

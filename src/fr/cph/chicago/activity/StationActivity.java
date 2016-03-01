@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.ColorFilter;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -91,8 +92,6 @@ public class StationActivity extends Activity {
 	private ViewGroup viewGroup;
 	private ImageView streetViewImage;
 	private TextView streetViewText;
-	private ImageView mapImage;
-	private ImageView directionImage;
 	private ImageView favoritesImage;
 	private LinearLayout.LayoutParams paramsStop;
 	private SwipeRefreshLayout swipeRefreshLayout;
@@ -150,10 +149,10 @@ public class StationActivity extends Activity {
 
 			streetViewImage = (ImageView) findViewById(R.id.activity_bike_station_streetview_image);
 			streetViewText = (TextView) findViewById(R.id.activity_bike_station_steetview_text);
-			mapImage = (ImageView) findViewById(R.id.activity_train_station_map_image);
+			final ImageView mapImage = (ImageView) findViewById(R.id.activity_train_station_map_image);
 			mapImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
 			mapContainer = (LinearLayout) findViewById(R.id.map_container);
-			directionImage = (ImageView) findViewById(R.id.activity_train_station_map_direction);
+			final ImageView directionImage = (ImageView) findViewById(R.id.activity_train_station_map_direction);
 			directionImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
 			walkContainer = (LinearLayout) findViewById(R.id.walk_container);
 			favoritesImage = (ImageView) findViewById(R.id.activity_train_station_favorite_star);
@@ -195,6 +194,9 @@ public class StationActivity extends Activity {
 			final TextView testView = (TextView) lineTitleView.findViewById(R.id.train_line_title);
 			testView.setText(WordUtils.capitalize(line.toStringWithLine()));
 			testView.setBackgroundColor(line.getColor());
+			if(line == TrainLine.YELLOW){
+				testView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.black));
+			}
 
 			stopsView.addView(lineTitleView);
 
@@ -268,6 +270,7 @@ public class StationActivity extends Activity {
 
 		toolbar.setTitle(station.getName());
 		toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+
 		toolbar.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
