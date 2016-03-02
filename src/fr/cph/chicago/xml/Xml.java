@@ -25,6 +25,7 @@ import fr.cph.chicago.entity.enumeration.PredictionType;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
+import fr.cph.chicago.util.Util;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.xmlpull.v1.XmlPullParser;
@@ -330,7 +331,7 @@ public final class Xml {
 	 * @throws ParserException a parser exception
 	 */
 	public final List<BusRoute> parseBusRoutes(final String xml) throws ParserException {
-		List<BusRoute> routes = null;
+		List<BusRoute> routes = new ArrayList<>();
 		InputStream is = null;
 		try {
 			is = new ByteArrayInputStream(xml.getBytes());
@@ -340,9 +341,7 @@ public final class Xml {
 			String tagName;
 			BusRoute busRoute = null;
 			while (eventType != XmlPullParser.END_DOCUMENT) {
-				if (eventType == XmlPullParser.START_DOCUMENT) {
-					routes = new ArrayList<>();
-				} else if (eventType == XmlPullParser.START_TAG) {
+				if (eventType == XmlPullParser.START_TAG) {
 					tagName = parser.getName();
 					switch (tagName) {
 					case "route":
@@ -365,7 +364,7 @@ public final class Xml {
 				} else if (eventType == XmlPullParser.END_TAG) {
 					tag = XmlArrivalBusTag.OTHER;
 				} else if (eventType == XmlPullParser.TEXT) {
-					String text = parser.getText();
+					final String text = parser.getText();
 					if (tag != null) {
 						switch (tag) {
 						case ROUTE:
@@ -373,9 +372,11 @@ public final class Xml {
 							routes.add(busRoute);
 							break;
 						case RT:
+							assert busRoute != null;
 							busRoute.setId(text);
 							break;
 						case RTNM:
+							assert busRoute != null;
 							busRoute.setName(text);
 							break;
 						case ERROR:
@@ -404,21 +405,15 @@ public final class Xml {
 	 * @throws ParserException a parser exception
 	 */
 	public final BusDirections parseBusDirections(final String xml, final String id) throws ParserException {
-		BusDirections directions = null;
+		BusDirections directions = new BusDirections();
+		directions.setId(id);
 		InputStream is = null;
 		try {
 			is = new ByteArrayInputStream(xml.getBytes());
 			parser.setInput(is, "UTF-8");
 			int eventType = parser.getEventType();
 			while (eventType != XmlPullParser.END_DOCUMENT) {
-				if (eventType == XmlPullParser.START_DOCUMENT) {
-					directions = new BusDirections();
-					directions.setId(id);
-				} else if (eventType == XmlPullParser.START_TAG) {
-					// TODO something ?
-				} else if (eventType == XmlPullParser.END_TAG) {
-					// TODO something ?
-				} else if (eventType == XmlPullParser.TEXT) {
+				if (eventType == XmlPullParser.TEXT) {
 					final String text = parser.getText();
 					final BusDirection busDirection = new BusDirection(text);
 					if (busDirection.isOk()) {
@@ -443,7 +438,7 @@ public final class Xml {
 	 * @throws ParserException a parser exception
 	 */
 	public final List<BusStop> parseBusBounds(final String xml) throws ParserException {
-		List<BusStop> busStops = null;
+		List<BusStop> busStops = new ArrayList<>();
 		String tagName = null;
 		BusStop busStop = null;
 		InputStream is = null;
@@ -452,9 +447,7 @@ public final class Xml {
 			parser.setInput(is, "UTF-8");
 			int eventType = parser.getEventType();
 			while (eventType != XmlPullParser.END_DOCUMENT) {
-				if (eventType == XmlPullParser.START_DOCUMENT) {
-					busStops = new ArrayList<>();
-				} else if (eventType == XmlPullParser.START_TAG) {
+				if (eventType == XmlPullParser.START_TAG) {
 					tagName = parser.getName();
 				} else if (eventType == XmlPullParser.END_TAG) {
 					tagName = null;
@@ -468,14 +461,17 @@ public final class Xml {
 							busStops.add(busStop);
 							break;
 						case "stpnm":
+							assert busStop != null;
 							busStop.setName(text);
 							break;
 						case "lat":
 							final Position position = new Position();
 							position.setLatitude(Double.valueOf(text));
+							assert busStop != null;
 							busStop.setPosition(position);
 							break;
 						case "lon":
+							assert busStop != null;
 							busStop.getPosition().setLongitude(Double.valueOf(text));
 							break;
 						case "msg":
@@ -502,7 +498,7 @@ public final class Xml {
 	 */
 	public final List<BusArrival> parseBusArrivals(String xml) throws ParserException {
 		xml = xml.replaceAll("&", "&amp;");
-		List<BusArrival> busArrivals = null;
+		List<BusArrival> busArrivals = new ArrayList<>();
 		String tagName = null;
 		BusArrival busArrival = null;
 		InputStream is = null;
@@ -511,9 +507,7 @@ public final class Xml {
 			parser.setInput(is, "UTF-8");
 			int eventType = parser.getEventType();
 			while (eventType != XmlPullParser.END_DOCUMENT) {
-				if (eventType == XmlPullParser.START_DOCUMENT) {
-					busArrivals = new ArrayList<>();
-				} else if (eventType == XmlPullParser.START_TAG) {
+				if (eventType == XmlPullParser.START_TAG) {
 					tagName = parser.getName();
 				} else if (eventType == XmlPullParser.END_TAG) {
 					tagName = null;
@@ -527,10 +521,12 @@ public final class Xml {
 							busArrivals.add(busArrival);
 							break;
 						case "typ":
+							assert busArrival != null;
 							busArrival.setPredictionType(PredictionType.fromString(text));
 							break;
 						case "stpnm":
 							text = text.replaceAll("&amp;", "&");
+							assert busArrival != null;
 							busArrival.setStopName(text);
 							break;
 						case "stpid":
@@ -539,9 +535,11 @@ public final class Xml {
 							}
 							break;
 						case "vid":
+							assert busArrival != null;
 							busArrival.setBusId(Integer.valueOf(text));
 							break;
 						case "dstp":
+							assert busArrival != null;
 							busArrival.setDistanceToStop(Integer.valueOf(text));
 							break;
 						case "rt":
@@ -551,15 +549,19 @@ public final class Xml {
 							break;
 						case "rtdir":
 							text = BusDirection.BusDirectionEnum.fromString(text).toString();
+							assert busArrival != null;
 							busArrival.setRouteDirection(text);
 							break;
 						case "des":
+							assert busArrival != null;
 							busArrival.setBusDestination(text);
 							break;
 						case "prdtm":
+							assert busArrival != null;
 							busArrival.setPredictionTime(simpleDateFormatBus.parse(text));
 							break;
 						case "dly":
+							assert busArrival != null;
 							busArrival.setIsDly(BooleanUtils.toBoolean(text));
 							break;
 						}
@@ -583,7 +585,7 @@ public final class Xml {
 	 * @throws ParserException a parser exception
 	 */
 	public final List<BusPattern> parsePatterns(final String xml) throws ParserException {
-		List<BusPattern> patterns = null;
+		List<BusPattern> patterns = new ArrayList<>();
 		String tagName = null;
 		BusPattern pattern = null;
 		PatternPoint patternPoint = null;
@@ -594,9 +596,7 @@ public final class Xml {
 			parser.setInput(is, "UTF-8");
 			int eventType = parser.getEventType();
 			while (eventType != XmlPullParser.END_DOCUMENT) {
-				if (eventType == XmlPullParser.START_DOCUMENT) {
-					patterns = new ArrayList<>();
-				} else if (eventType == XmlPullParser.START_TAG) {
+				if (eventType == XmlPullParser.START_TAG) {
 					tagName = parser.getName();
 					if (tagName.equals("ptr")) {
 						pattern = new BusPattern();
@@ -608,41 +608,52 @@ public final class Xml {
 					if (tagName != null) {
 						switch (tagName) {
 						case "pid":
+							assert pattern != null;
 							pattern.setId(Integer.valueOf(text));
 							patterns.add(pattern);
 							break;
 						case "ln":
+							assert pattern != null;
 							pattern.setLength(Double.valueOf(text));
 							break;
 						case "rtdir":
 							text = BusDirection.BusDirectionEnum.fromString(text).toString();
+							assert pattern != null;
 							pattern.setDirection(text);
 							break;
 						case "pt":
 							patternPoint = new PatternPoint();
+							assert pattern != null;
 							pattern.addPoint(patternPoint);
 							break;
 						case "seq":
+							assert patternPoint != null;
 							patternPoint.setSequence(Integer.valueOf(text));
 							break;
 						case "lat":
 							position = new Position();
+							assert patternPoint != null;
 							patternPoint.setPosition(position);
 							position.setLatitude(Double.valueOf(text));
 							break;
 						case "lon":
+							assert position != null;
 							position.setLongitude(Double.valueOf(text));
 							break;
 						case "typ":
+							assert patternPoint != null;
 							patternPoint.setType(text);
 							break;
 						case "stpid":
+							assert patternPoint != null;
 							patternPoint.setStopId(Integer.valueOf(text));
 							break;
 						case "stpnm":
+							assert patternPoint != null;
 							patternPoint.setStopName(text);
 							break;
 						case "pdist":
+							assert patternPoint != null;
 							patternPoint.setDistance(Double.valueOf(text));
 							break;
 						}
@@ -659,7 +670,7 @@ public final class Xml {
 	}
 
 	public final List<Bus> parseVehicles(final String xml) throws ParserException {
-		List<Bus> buses = null;
+		List<Bus> buses = new ArrayList<>();
 		String tagName = null;
 		Bus bus = null;
 		Position position = null;
@@ -669,9 +680,7 @@ public final class Xml {
 			parser.setInput(is, "UTF-8");
 			int eventType = parser.getEventType();
 			while (eventType != XmlPullParser.END_DOCUMENT) {
-				if (eventType == XmlPullParser.START_DOCUMENT) {
-					buses = new ArrayList<>();
-				} else if (eventType == XmlPullParser.START_TAG) {
+				if (eventType == XmlPullParser.START_TAG) {
 					tagName = parser.getName();
 					if (tagName.equals("vehicle")) {
 						bus = new Bus();
@@ -686,30 +695,36 @@ public final class Xml {
 					if (tagName != null) {
 						switch (tagName) {
 						case "vid":
+							assert bus != null;
 							bus.setId(Integer.valueOf(text));
 							buses.add(bus);
 							break;
 						case "tmstmp":
-
 							break;
 						case "lat":
 							position = new Position();
+							assert bus != null;
 							bus.setPosition(position);
 							position.setLatitude(Double.valueOf(text));
 							break;
 						case "lon":
+							assert position != null;
 							position.setLongitude(Double.valueOf(text));
 							break;
 						case "hdg":
+							assert bus != null;
 							bus.setHeading(Integer.valueOf(text));
 							break;
 						case "pid":
+							assert bus != null;
 							bus.setPatternId((Integer.valueOf(text)));
 							break;
 						case "rt":
+							assert bus != null;
 							bus.setRouteId(text);
 							break;
 						case "des":
+							assert bus != null;
 							bus.setDestination(text);
 							break;
 						}
@@ -726,7 +741,7 @@ public final class Xml {
 	}
 
 	public final List<Train> parseTrainsLocation(String xml) throws ParserException {
-		List<Train> trains = null;
+		List<Train> trains = new ArrayList<>();
 		String tagName = null;
 		Train train = null;
 		Position position = null;
@@ -736,9 +751,7 @@ public final class Xml {
 			parser.setInput(is, "UTF-8");
 			int eventType = parser.getEventType();
 			while (eventType != XmlPullParser.END_DOCUMENT) {
-				if (eventType == XmlPullParser.START_DOCUMENT) {
-					trains = new ArrayList<>();
-				} else if (eventType == XmlPullParser.START_TAG) {
+				if (eventType == XmlPullParser.START_TAG) {
 					tagName = parser.getName();
 					if (tagName.equals("train")) {
 						train = new Train();
@@ -750,30 +763,38 @@ public final class Xml {
 					if (tagName != null) {
 						switch (tagName) {
 						case "rn":
+							assert train != null;
 							train.setRouteNumber(Integer.valueOf(text));
 							trains.add(train);
 							break;
 						case "destSt":
+							assert train != null;
 							train.setDestStation(Integer.valueOf(text));
 							break;
 						case "destNm":
+							assert train != null;
 							train.setDestName(text);
 							break;
 						case "lat":
 							position = new Position();
+							assert train != null;
 							train.setPosition(position);
 							position.setLatitude(Double.valueOf(text));
 							break;
 						case "lon":
+							assert position != null;
 							position.setLongitude(Double.valueOf(text));
 							break;
 						case "heading":
+							assert train != null;
 							train.setHeading(Integer.valueOf(text));
 							break;
 						case "isApp":
+							assert train != null;
 							train.setApp(Boolean.valueOf(text));
 							break;
 						case "isDly":
+							assert train != null;
 							train.setDly(Boolean.valueOf(text));
 							break;
 						}
@@ -941,7 +962,7 @@ public final class Xml {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-								currentEta.setIsApp(BooleanUtils.toBoolean(Integer.valueOf(text)));
+								currentEta.setIsApp(Util.textNumberToBoolean(text));
 							}
 							break;
 						}
@@ -949,7 +970,7 @@ public final class Xml {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-								currentEta.setIsSch(BooleanUtils.toBoolean(Integer.valueOf(text)));
+								currentEta.setIsSch(Util.textNumberToBoolean(text));
 							}
 							break;
 						}
@@ -957,7 +978,7 @@ public final class Xml {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-								currentEta.setIsDly(BooleanUtils.toBoolean(Integer.valueOf(text)));
+								currentEta.setIsDly(Util.textNumberToBoolean(text));
 							}
 							break;
 						}
@@ -965,7 +986,7 @@ public final class Xml {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-								currentEta.setIsFlt(BooleanUtils.toBoolean(Integer.valueOf(text)));
+								currentEta.setIsFlt(Util.textNumberToBoolean(text));
 							}
 							break;
 						}

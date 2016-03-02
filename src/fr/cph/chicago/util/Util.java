@@ -24,6 +24,7 @@ import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
@@ -45,6 +46,7 @@ import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.fragment.GoogleMapAbility;
+import org.apache.commons.lang3.BooleanUtils;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -315,5 +317,9 @@ public class Util {
 				}
 			}
 		});
+	}
+
+	public static boolean textNumberToBoolean(@NonNull final String number){
+		return BooleanUtils.toBoolean(Integer.valueOf(number));
 	}
 }
