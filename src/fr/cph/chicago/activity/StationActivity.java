@@ -20,7 +20,6 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.ColorFilter;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -30,6 +29,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils.TruncateAt;
 import android.util.Log;
@@ -39,7 +39,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.support.v7.widget.AppCompatCheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -194,7 +193,7 @@ public class StationActivity extends Activity {
 			final TextView testView = (TextView) lineTitleView.findViewById(R.id.train_line_title);
 			testView.setText(WordUtils.capitalize(line.toStringWithLine()));
 			testView.setBackgroundColor(line.getColor());
-			if(line == TrainLine.YELLOW){
+			if (line == TrainLine.YELLOW) {
 				testView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.black));
 			}
 

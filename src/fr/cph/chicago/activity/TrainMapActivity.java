@@ -139,6 +139,14 @@ public class TrainMapActivity extends Activity {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			toolbar.setElevation(4);
 		}
+		toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+		toolbar.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
+
 		toolbar.setTitle(trainLine.toString() + " Line");
 	}
 
