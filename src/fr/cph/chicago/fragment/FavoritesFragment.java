@@ -72,7 +72,7 @@ public class FavoritesFragment extends Fragment {
 	private List<BusArrival> busArrivals;
 	private SparseArray<TrainArrival> trainArrivals;
 	private List<BikeStation> bikeStations;
-	private RefreshTask refreshTimingTask;
+	private RefreshTimingTask refreshTimingTask;
 
 	private MainActivity mainActivity;
 	private RelativeLayout welcomeLayout;
@@ -179,16 +179,13 @@ public class FavoritesFragment extends Fragment {
 					}
 					// Google analytics
 					if (loadTrain) {
-						Util.trackAction(mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_train,
-								R.string.analytics_action_get_train_arrivals, 0);
+						Util.trackAction(mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
 					}
 					if (loadBus) {
-						Util.trackAction(mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_bus,
-								R.string.analytics_action_get_bus_arrival, 0);
+						Util.trackAction(mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
 					}
 					if (loadBike) {
-						Util.trackAction(mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_divvy,
-								R.string.analytics_action_get_divvy_all, 0);
+						Util.trackAction(mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
 					}
 					// Check if bus or bike data are not loaded. If not, load them.
 					// Can happen when the app has been loaded without any data connection
@@ -252,8 +249,7 @@ public class FavoritesFragment extends Fragment {
 			startRefreshTask();
 		}
 		if (welcomeLayout != null) {
-			boolean hasFav = Preferences.hasFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN, ChicagoTracker.PREFERENCE_FAVORITES_BUS,
-					ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
+			boolean hasFav = Preferences.hasFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN, ChicagoTracker.PREFERENCE_FAVORITES_BUS, ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
 			if (!hasFav) {
 				welcomeLayout.setVisibility(View.VISIBLE);
 			} else {
@@ -326,7 +322,7 @@ public class FavoritesFragment extends Fragment {
 	 * Start refresh task
 	 */
 	private void startRefreshTask() {
-		refreshTimingTask = (RefreshTask) new RefreshTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		refreshTimingTask = (RefreshTimingTask) new RefreshTimingTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		favoritesAdapter.refreshUpdatedView();
 	}
 
@@ -345,7 +341,7 @@ public class FavoritesFragment extends Fragment {
 	 * @author Carl-Philipp Harmant
 	 * @version 1
 	 */
-	private class RefreshTask extends AsyncTask<Void, Void, Void> {
+	private class RefreshTimingTask extends AsyncTask<Void, Void, Void> {
 
 		@Override
 		protected final void onProgressUpdate(final Void... values) {

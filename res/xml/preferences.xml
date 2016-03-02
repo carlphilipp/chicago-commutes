@@ -30,7 +30,7 @@
             android:summary="@string/pref_buses_summary"
             android:title="@string/pref_buses_title" />
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="divvy_bike"
             android:summary="@string/pref_bikes_summary"
             android:title="@string/pref_bikes_title" />

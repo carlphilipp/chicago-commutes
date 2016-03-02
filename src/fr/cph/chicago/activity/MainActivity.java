@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	private BusFragment busFragment;
 	private BikeFragment bikeFragment;
 	private NearbyFragment nearbyFragment;
-	private SettingsFragment settingsFragment;
+	//private SettingsFragment settingsFragment;
 
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
@@ -265,17 +265,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			mDrawerLayout.closeDrawer(GravityCompat.START);
 			showActionBarMenu();
 			break;
-		case R.id.navigation_settings:
-			title = getString(R.string.settings);
-			if (settingsFragment == null) {
-				settingsFragment = SettingsFragment.newInstance(position + 1);
-			}
-			if (!this.isFinishing()) {
-				fragmentManager.beginTransaction().replace(R.id.container, settingsFragment).commit();
-			}
-			mDrawerLayout.closeDrawer(GravityCompat.START);
-			hideActionBarMenu();
-			break;
+//		case R.id.navigation_settings:
+//			title = getString(R.string.settings);
+//			if (settingsFragment == null) {
+//				settingsFragment = SettingsFragment.newInstance(position + 1);
+//			}
+//			if (!this.isFinishing()) {
+//				fragmentManager.beginTransaction().replace(R.id.container, settingsFragment).commit();
+//			}
+//			mDrawerLayout.closeDrawer(GravityCompat.START);
+//			hideActionBarMenu();
+//			break;
 		}
 		toolbar.setTitle(title);
 	}
@@ -344,7 +344,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				loadBike = sharedPref.getBoolean("divvy_bike", true);
 			} else {
 				final SharedPreferences.Editor editor = sharedPref.edit();
-				editor.putBoolean("divvy_bike", false);
+				// Was false before fix
+				editor.putBoolean("divvy_bike", true);
 				editor.apply();
 			}
 

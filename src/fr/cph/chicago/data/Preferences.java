@@ -95,8 +95,7 @@ public final class Preferences {
 
 	public static void addBikeRouteNameMapping(final String bikeId, final String bikeName) {
 		final Context context = ChicagoTracker.getContext();
-		final SharedPreferences sharedPref = context
-				.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BIKE_NAME_MAPPING, Context.MODE_PRIVATE);
+		final SharedPreferences sharedPref = context.getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BIKE_NAME_MAPPING, Context.MODE_PRIVATE);
 		final SharedPreferences.Editor editor = sharedPref.edit();
 		editor.putString(bikeId, bikeName);
 		Log.v(TAG, "Add bike name mapping : " + bikeId + " => " + bikeName);
