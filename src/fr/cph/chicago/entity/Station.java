@@ -134,24 +134,23 @@ public class Station implements Comparable<Station>, Parcelable {
 	}
 
 	public final Map<TrainLine, List<Stop>> getStopByLines() {
-		Map<TrainLine, List<Stop>> map = new TreeMap<>();
+		Map<TrainLine, List<Stop>> result = new TreeMap<>();
 		List<Stop> stops = getStops();
-		for (Stop stop : stops) {
+		for (final Stop stop : stops) {
 			List<TrainLine> lines = stop.getLines();
 			for (TrainLine tl : lines) {
 				List<Stop> stopss;
-				if (map.containsKey(tl)) {
-					stopss = map.get(tl);
+				if (result.containsKey(tl)) {
+					stopss = result.get(tl);
 					stopss.add(stop);
 				} else {
 					stopss = new ArrayList<>();
 					stopss.add(stop);
-					map.put(tl, stopss);
+					result.put(tl, stopss);
 				}
-
 			}
 		}
-		return map;
+		return result;
 	}
 
 	@Override

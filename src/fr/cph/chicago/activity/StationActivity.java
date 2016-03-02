@@ -410,7 +410,7 @@ public class StationActivity extends Activity {
 			try {
 				final Xml xml = new Xml();
 				final String xmlResult = connect.connect(CtaRequestType.TRAIN_ARRIVALS, params[0]);
-				// String xmlResult = connectTest();
+				//String xmlResult = connectTest();
 				arrivals = xml.parseArrivals(xmlResult, StationActivity.this.trainData);
 				// Apply filters
 				int index = 0;
@@ -419,13 +419,12 @@ public class StationActivity extends Activity {
 					final List<Eta> etas = arri.getEtas();
 					// Sort Eta by arriving time
 					Collections.sort(etas);
-					// Copy data into new list to be able to avoid looping on a list that we want to
-					// modify
-					final List<Eta> etas2 = new ArrayList<>();
-					etas2.addAll(etas);
+					// Copy data into new list to be able to avoid looping on a list that we want to modify
+					final List<Eta> etasCopy = new ArrayList<>();
+					etasCopy.addAll(etas);
 					int j = 0;
-					for (int i = 0; i < etas2.size(); i++) {
-						final Eta eta = etas2.get(i);
+					for (int i = 0; i < etasCopy.size(); i++) {
+						final Eta eta = etasCopy.get(i);
 						final Station station = eta.getStation();
 						final TrainLine line = eta.getRouteName();
 						final TrainDirection direction = eta.getStop().getDirection();
@@ -436,10 +435,10 @@ public class StationActivity extends Activity {
 					}
 				}
 			} catch (final ParserException | ConnectException e) {
+				Log.e(TAG, e.getMessage(), e);
 				trackerException = e;
 			}
-			Util.trackAction(StationActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train,
-					R.string.analytics_action_get_train_arrivals, 0);
+			Util.trackAction(StationActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
 			if (arrivals.size() == 1) {
 				@SuppressWarnings("unchecked")
 				final String id = ((List<String>) params[0].get("mapid")).get(0);

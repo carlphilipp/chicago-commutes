@@ -208,7 +208,11 @@ public final class Xml {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-								currentEta.setDestName(text);
+								if (text.equalsIgnoreCase("See train") && currentEta.getStop().getDescription().contains("Loop")) {
+									currentEta.setDestName("Loop");
+								} else {
+									currentEta.setDestName(text);
+								}
 							}
 							break;
 						}
