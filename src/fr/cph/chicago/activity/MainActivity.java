@@ -353,8 +353,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			if (loadBus) {
 				try {
 					busData.loadBusRoutes();
-					Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
-							R.string.analytics_action_get_bus_routes, 0);
+					Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_routes, 0);
 					publishProgress();
 				} catch (final ParserException | ConnectException e) {
 					new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -368,7 +367,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			}
 
 			// Load divvy
-			//bikeStations = new ArrayList<>();
 			if (loadBike) {
 				try {
 					final Json json = new Json();
@@ -376,8 +374,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 					final String bikeContent = divvyConnect.connect();
 					bikeStations = json.parseStations(bikeContent);
 					Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
-					Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy,
-							R.string.analytics_action_get_divvy_all, 0);
+					Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
 					publishProgress();
 				} catch (final ConnectException | ParserException e) {
 					Log.e(TAG, e.getMessage(), e);

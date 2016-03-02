@@ -120,7 +120,7 @@ public class CtaConnect {
 	 * @throws ConnectException
 	 */
 	public final String connect(final CtaRequestType requestType, final MultiValuedMap<String, String> params) throws ConnectException {
-		StringBuilder address = null;
+		final StringBuilder address;
 		switch (requestType) {
 		case TRAIN_ARRIVALS:
 			address = new StringBuilder(BASE_URL_TRAIN_ARRIVALS + "?key=" + CTA_TRAIN_KEY);

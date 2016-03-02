@@ -104,16 +104,22 @@ public final class Xml {
 					arrivals = new SparseArray<>();
 				} else if (eventType == XmlPullParser.START_TAG) {
 					tagName = parser.getName();
-					if (tagName.equals("tmst")) {
+					switch (tagName) {
+					case "tmst":
 						tag = XmlArrivalTrainTag.TMST;
-					} else if (tagName.equals("errCd")) {
+						break;
+					case "errCd":
 						tag = XmlArrivalTrainTag.ERRCD;
-					} else if (tagName.equals("errNm")) {
+						break;
+					case "errNm":
 						tag = XmlArrivalTrainTag.ERRNM;
-					} else if (tagName.equals("eta")) {
+						break;
+					case "eta":
 						tag = XmlArrivalTrainTag.ETA;
-					} else {
+						break;
+					default:
 						tag = XmlArrivalTrainTag.OTHER;
+						break;
 					}
 				} else if (eventType == XmlPullParser.END_TAG) {
 					tag = null;
@@ -123,7 +129,8 @@ public final class Xml {
 					case ETA:
 						break;
 					case OTHER:
-						if (tagName.equals("staId")) {
+						switch (tagName) {
+						case "staId": {
 							staId = Integer.valueOf(text);
 							final TrainArrival arri = arrivals.get(staId, new TrainArrival());
 							arri.setErrorCode(errCd);
@@ -140,14 +147,18 @@ public final class Xml {
 							etas.add(eta);
 
 							arrivals.append(staId, arri);
-						} else if (tagName.equals("stpId")) {
+							break;
+						}
+						case "stpId": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								final Stop stop = data.getStop(Integer.valueOf(text));
 								currentEta.setStop(stop);
 							}
-						} else if (tagName.equals("staNm")) {
+							break;
+						}
+						case "staNm": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
@@ -155,84 +166,111 @@ public final class Xml {
 								station.setName(text);
 							}
 
-						} else if (tagName.equals("stpDe")) {
+							break;
+						}
+						case "stpDe": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								final Stop stop = currentEta.getStop();
 								stop.setDescription(text);
 							}
-						} else if (tagName.equals("rn")) {
+							break;
+						}
+						case "rn": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setRunNumber(Integer.valueOf(text));
 							}
-						} else if (tagName.equals("rt")) {
+							break;
+						}
+						case "rt": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								final TrainLine line = TrainLine.fromXmlString(text);
 								currentEta.setRouteName(line);
 							}
-						} else if (tagName.equals("destSt")) {
+							break;
+						}
+						case "destSt": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								final Integer i = Integer.valueOf(text);
 								currentEta.setDestSt(i);
 							}
-						} else if (tagName.equals("destNm")) {
+							break;
+						}
+						case "destNm": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setDestName(text);
 							}
-						} else if (tagName.equals("trDr")) {
+							break;
+						}
+						case "trDr": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setTrainRouteDirectionCode(Integer.valueOf(text));
 							}
-						} else if (tagName.equals("prdt")) {
+							break;
+						}
+						case "prdt": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setPredictionDate(simpleDateFormatTrain.parse(text));
 							}
-						} else if (tagName.equals("arrT")) {
+							break;
+						}
+						case "arrT": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setArrivalDepartureDate(simpleDateFormatTrain.parse(text));
 							}
-						} else if (tagName.equals("isApp")) {
+							break;
+						}
+						case "isApp": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setIsApp(BooleanUtils.toBoolean(Integer.valueOf(text)));
 							}
-						} else if (tagName.equals("isSch")) {
+							break;
+						}
+						case "isSch": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setIsSch(BooleanUtils.toBoolean(Integer.valueOf(text)));
 							}
-						} else if (tagName.equals("isDly")) {
+							break;
+						}
+						case "isDly": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setIsDly(BooleanUtils.toBoolean(Integer.valueOf(text)));
 							}
-						} else if (tagName.equals("isFlt")) {
+							break;
+						}
+						case "isFlt": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setIsFlt(BooleanUtils.toBoolean(Integer.valueOf(text)));
 							}
-						} else if (tagName.equals("flags")) {
+							break;
+						}
+						case "flags":
 
-						} else if (tagName.equals("lat")) {
+							break;
+						case "lat": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
@@ -240,19 +278,25 @@ public final class Xml {
 								position.setLatitude(Double.valueOf(text));
 								currentEta.setPosition(position);
 							}
-						} else if (tagName.equals("lon")) {
+							break;
+						}
+						case "lon": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								final Position position = currentEta.getPosition();
 								position.setLongitude(Double.valueOf(text));
 							}
-						} else if (tagName.equals("heading")) {
+							break;
+						}
+						case "heading": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setHeading(Integer.valueOf(text));
 							}
+							break;
+						}
 						}
 						break;
 					case TMST:
@@ -300,16 +344,23 @@ public final class Xml {
 					routes = new ArrayList<>();
 				} else if (eventType == XmlPullParser.START_TAG) {
 					tagName = parser.getName();
-					if (tagName.equals("route")) {
+					switch (tagName) {
+					case "route":
 						tag = XmlArrivalBusTag.ROUTE;
-					} else if (tagName.equals("rt")) {
+						break;
+					case "rt":
 						tag = XmlArrivalBusTag.RT;
-					} else if (tagName.equals("rtnm")) {
+						break;
+					case "rtnm":
 						tag = XmlArrivalBusTag.RTNM;
-					} else if (tagName.equals("bustime-response") || tagName.equals("SCRIPT")) {
+						break;
+					case "bustime-response":
+					case "SCRIPT":
 						tag = XmlArrivalBusTag.OTHER;
-					} else if (tagName.equals("msg")) {
+						break;
+					case "msg":
 						tag = XmlArrivalBusTag.ERROR;
+						break;
 					}
 				} else if (eventType == XmlPullParser.END_TAG) {
 					tag = XmlArrivalBusTag.OTHER;
@@ -410,19 +461,24 @@ public final class Xml {
 				} else if (eventType == XmlPullParser.TEXT) {
 					String text = parser.getText();
 					if (tagName != null) {
-						if (tagName.equals("stpid")) {
+						switch (tagName) {
+						case "stpid":
 							busStop = new BusStop();
 							busStop.setId(Integer.valueOf(text));
 							busStops.add(busStop);
-						} else if (tagName.equals("stpnm")) {
+							break;
+						case "stpnm":
 							busStop.setName(text);
-						} else if (tagName.equals("lat")) {
+							break;
+						case "lat":
 							final Position position = new Position();
 							position.setLatitude(Double.valueOf(text));
 							busStop.setPosition(position);
-						} else if (tagName.equals("lon")) {
+							break;
+						case "lon":
 							busStop.getPosition().setLongitude(Double.valueOf(text));
-						} else if (tagName.equals("msg")) {
+							break;
+						case "msg":
 							throw new ParserException(text);
 						}
 					}
@@ -464,36 +520,48 @@ public final class Xml {
 				} else if (eventType == XmlPullParser.TEXT) {
 					String text = parser.getText();
 					if (tagName != null) {
-						if (tagName.equals("tmstmp")) {
+						switch (tagName) {
+						case "tmstmp":
 							busArrival = new BusArrival();
 							busArrival.setTimeStamp(simpleDateFormatBus.parse(text));
 							busArrivals.add(busArrival);
-						} else if (tagName.equals("typ")) {
+							break;
+						case "typ":
 							busArrival.setPredictionType(PredictionType.fromString(text));
-						} else if (tagName.equals("stpnm")) {
+							break;
+						case "stpnm":
 							text = text.replaceAll("&amp;", "&");
 							busArrival.setStopName(text);
-						} else if (tagName.equals("stpid")) {
+							break;
+						case "stpid":
 							if (busArrival != null) {
 								busArrival.setStopId(Integer.valueOf(text));
 							}
-						} else if (tagName.equals("vid")) {
+							break;
+						case "vid":
 							busArrival.setBusId(Integer.valueOf(text));
-						} else if (tagName.equals("dstp")) {
+							break;
+						case "dstp":
 							busArrival.setDistanceToStop(Integer.valueOf(text));
-						} else if (tagName.equals("rt")) {
+							break;
+						case "rt":
 							if (busArrival != null) {
 								busArrival.setRouteId(text);
 							}
-						} else if (tagName.equals("rtdir")) {
+							break;
+						case "rtdir":
 							text = BusDirection.BusDirectionEnum.fromString(text).toString();
 							busArrival.setRouteDirection(text);
-						} else if (tagName.equals("des")) {
+							break;
+						case "des":
 							busArrival.setBusDestination(text);
-						} else if (tagName.equals("prdtm")) {
+							break;
+						case "prdtm":
 							busArrival.setPredictionTime(simpleDateFormatBus.parse(text));
-						} else if (tagName.equals("dly")) {
+							break;
+						case "dly":
 							busArrival.setIsDly(BooleanUtils.toBoolean(text));
+							break;
 						}
 					}
 				}
@@ -538,33 +606,45 @@ public final class Xml {
 				} else if (eventType == XmlPullParser.TEXT) {
 					String text = parser.getText();
 					if (tagName != null) {
-						if (tagName.equals("pid")) {
+						switch (tagName) {
+						case "pid":
 							pattern.setId(Integer.valueOf(text));
 							patterns.add(pattern);
-						} else if (tagName.equals("ln")) {
+							break;
+						case "ln":
 							pattern.setLength(Double.valueOf(text));
-						} else if (tagName.equals("rtdir")) {
+							break;
+						case "rtdir":
 							text = BusDirection.BusDirectionEnum.fromString(text).toString();
 							pattern.setDirection(text);
-						} else if (tagName.equals("pt")) {
+							break;
+						case "pt":
 							patternPoint = new PatternPoint();
 							pattern.addPoint(patternPoint);
-						} else if (tagName.equals("seq")) {
+							break;
+						case "seq":
 							patternPoint.setSequence(Integer.valueOf(text));
-						} else if (tagName.equals("lat")) {
+							break;
+						case "lat":
 							position = new Position();
 							patternPoint.setPosition(position);
 							position.setLatitude(Double.valueOf(text));
-						} else if (tagName.equals("lon")) {
+							break;
+						case "lon":
 							position.setLongitude(Double.valueOf(text));
-						} else if (tagName.equals("typ")) {
+							break;
+						case "typ":
 							patternPoint.setType(text);
-						} else if (tagName.equals("stpid")) {
+							break;
+						case "stpid":
 							patternPoint.setStopId(Integer.valueOf(text));
-						} else if (tagName.equals("stpnm")) {
+							break;
+						case "stpnm":
 							patternPoint.setStopName(text);
-						} else if (tagName.equals("pdist")) {
+							break;
+						case "pdist":
 							patternPoint.setDistance(Double.valueOf(text));
+							break;
 						}
 					}
 				}
@@ -604,25 +684,34 @@ public final class Xml {
 				} else if (eventType == XmlPullParser.TEXT) {
 					String text = parser.getText();
 					if (tagName != null) {
-						if (tagName.equals("vid")) {
+						switch (tagName) {
+						case "vid":
 							bus.setId(Integer.valueOf(text));
 							buses.add(bus);
-						} else if (tagName.equals("tmstmp")) {
+							break;
+						case "tmstmp":
 
-						} else if (tagName.equals("lat")) {
+							break;
+						case "lat":
 							position = new Position();
 							bus.setPosition(position);
 							position.setLatitude(Double.valueOf(text));
-						} else if (tagName.equals("lon")) {
+							break;
+						case "lon":
 							position.setLongitude(Double.valueOf(text));
-						} else if (tagName.equals("hdg")) {
+							break;
+						case "hdg":
 							bus.setHeading(Integer.valueOf(text));
-						} else if (tagName.equals("pid")) {
+							break;
+						case "pid":
 							bus.setPatternId((Integer.valueOf(text)));
-						} else if (tagName.equals("rt")) {
+							break;
+						case "rt":
 							bus.setRouteId(text);
-						} else if (tagName.equals("des")) {
+							break;
+						case "des":
 							bus.setDestination(text);
+							break;
 						}
 					}
 				}
@@ -659,25 +748,34 @@ public final class Xml {
 				} else if (eventType == XmlPullParser.TEXT) {
 					String text = parser.getText();
 					if (tagName != null) {
-						if (tagName.equals("rn")) {
+						switch (tagName) {
+						case "rn":
 							train.setRouteNumber(Integer.valueOf(text));
 							trains.add(train);
-						} else if (tagName.equals("destSt")) {
+							break;
+						case "destSt":
 							train.setDestStation(Integer.valueOf(text));
-						} else if (tagName.equals("destNm")) {
+							break;
+						case "destNm":
 							train.setDestName(text);
-						} else if (tagName.equals("lat")) {
+							break;
+						case "lat":
 							position = new Position();
 							train.setPosition(position);
 							position.setLatitude(Double.valueOf(text));
-						} else if (tagName.equals("lon")) {
+							break;
+						case "lon":
 							position.setLongitude(Double.valueOf(text));
-						} else if (tagName.equals("heading")) {
+							break;
+						case "heading":
 							train.setHeading(Integer.valueOf(text));
-						} else if (tagName.equals("isApp")) {
+							break;
+						case "isApp":
 							train.setApp(Boolean.valueOf(text));
-						} else if (tagName.equals("isDly")) {
+							break;
+						case "isDly":
 							train.setDly(Boolean.valueOf(text));
+							break;
 						}
 					}
 				}
@@ -709,16 +807,22 @@ public final class Xml {
 					arrivals = new SparseArray<>();
 				} else if (eventType == XmlPullParser.START_TAG) {
 					tagName = parser.getName();
-					if (tagName.equals("tmst")) {
+					switch (tagName) {
+					case "tmst":
 						tag = XmlArrivalTrainTag.TMST;
-					} else if (tagName.equals("errCd")) {
+						break;
+					case "errCd":
 						tag = XmlArrivalTrainTag.ERRCD;
-					} else if (tagName.equals("errNm")) {
+						break;
+					case "errNm":
 						tag = XmlArrivalTrainTag.ERRNM;
-					} else if (tagName.equals("eta")) {
+						break;
+					case "eta":
 						tag = XmlArrivalTrainTag.ETA;
-					} else {
+						break;
+					default:
 						tag = XmlArrivalTrainTag.OTHER;
+						break;
 					}
 				} else if (eventType == XmlPullParser.END_TAG) {
 					tag = null;
@@ -728,7 +832,8 @@ public final class Xml {
 					case ETA:
 						break;
 					case OTHER:
-						if (tagName.equals("staId")) {
+						switch (tagName) {
+						case "staId": {
 							staId = Integer.valueOf(text);
 							final TrainArrival arri = arrivals.get(staId, new TrainArrival());
 							arri.setErrorCode(errCd);
@@ -740,101 +845,130 @@ public final class Xml {
 								arri.setEtas(etas);
 							}
 							final Eta eta = new Eta();
-							Station station = data.getStation(Integer.valueOf(text));
+							final Station station = data.getStation(Integer.valueOf(text));
 							eta.setStation(station);
 							etas.add(eta);
 
 							arrivals.append(staId, arri);
-						} else if (tagName.equals("stpId")) {
+							break;
+						}
+						case "stpId": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								final Stop stop = data.getStop(Integer.valueOf(text));
 								currentEta.setStop(stop);
 							}
-						} else if (tagName.equals("staNm")) {
+							break;
+						}
+						case "staNm": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								final Station station = currentEta.getStation();
 								station.setName(text);
 							}
-
-						} else if (tagName.equals("stpDe")) {
+							break;
+						}
+						case "stpDe": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								final Stop stop = currentEta.getStop();
 								stop.setDescription(text);
 							}
-						} else if (tagName.equals("rn")) {
+							break;
+						}
+						case "rn": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setRunNumber(Integer.valueOf(text));
 							}
-						} else if (tagName.equals("rt")) {
+							break;
+						}
+						case "rt": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								final TrainLine line = TrainLine.fromXmlString(text);
 								currentEta.setRouteName(line);
 							}
-						} else if (tagName.equals("destSt")) {
+							break;
+						}
+						case "destSt": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								final Integer i = Integer.valueOf(text);
 								currentEta.setDestSt(i);
 							}
-						} else if (tagName.equals("destNm")) {
+							break;
+						}
+						case "destNm": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setDestName(text);
 							}
-						} else if (tagName.equals("trDr")) {
+							break;
+						}
+						case "trDr": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setTrainRouteDirectionCode(Integer.valueOf(text));
 							}
-						} else if (tagName.equals("prdt")) {
+							break;
+						}
+						case "prdt": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setPredictionDate(simpleDateFormatTrain.parse(text));
 							}
-						} else if (tagName.equals("arrT")) {
+							break;
+						}
+						case "arrT": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setArrivalDepartureDate(simpleDateFormatTrain.parse(text));
 							}
-						} else if (tagName.equals("isApp")) {
+							break;
+						}
+						case "isApp": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setIsApp(BooleanUtils.toBoolean(Integer.valueOf(text)));
 							}
-						} else if (tagName.equals("isSch")) {
+							break;
+						}
+						case "isSch": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setIsSch(BooleanUtils.toBoolean(Integer.valueOf(text)));
 							}
-						} else if (tagName.equals("isDly")) {
+							break;
+						}
+						case "isDly": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setIsDly(BooleanUtils.toBoolean(Integer.valueOf(text)));
 							}
-						} else if (tagName.equals("isFlt")) {
+							break;
+						}
+						case "isFlt": {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
 								currentEta.setIsFlt(BooleanUtils.toBoolean(Integer.valueOf(text)));
 							}
+							break;
+						}
 						}
 						break;
 					case TMST:
