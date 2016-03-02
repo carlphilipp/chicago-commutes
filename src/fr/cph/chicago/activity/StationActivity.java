@@ -39,7 +39,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.CheckBox;
+import android.support.v7.widget.AppCompatCheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -205,7 +205,7 @@ public class StationActivity extends Activity {
 				line2.setOrientation(LinearLayout.HORIZONTAL);
 				line2.setLayoutParams(paramsStop);
 
-				final CheckBox checkBox = new CheckBox(this);
+				final AppCompatCheckBox checkBox = new AppCompatCheckBox(this);
 				checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 					@Override
 					public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
