@@ -42,7 +42,10 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
@@ -102,6 +105,11 @@ public class StationActivity extends Activity {
 	private Integer stationId;
 	private Station station;
 	private Map<String, Integer> ids;
+	/**
+	 * ATTENTION: This was auto-generated to implement the App Indexing API.
+	 * See https://g.co/AppIndexing/AndroidStudio for more information.
+	 */
+	private GoogleApiClient client;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -180,6 +188,9 @@ public class StationActivity extends Activity {
 
 			Util.trackScreen(getResources().getString(R.string.analytics_train_details));
 		}
+		// ATTENTION: This was auto-generated to implement the App Indexing API.
+		// See https://g.co/AppIndexing/AndroidStudio for more information.
+		client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
 	}
 
 	private void setUpStopLayouts(final Map<TrainLine, List<Stop>> stopByLines) {
@@ -194,7 +205,7 @@ public class StationActivity extends Activity {
 			testView.setText(WordUtils.capitalize(line.toStringWithLine()));
 			testView.setBackgroundColor(line.getColor());
 			if (line == TrainLine.YELLOW) {
-				testView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.black));
+				testView.setBackgroundColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.yellowLine));
 			}
 
 			stopsView.addView(lineTitleView);
@@ -227,9 +238,16 @@ public class StationActivity extends Activity {
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 					checkBox.setBackgroundTintList(ColorStateList.valueOf(line.getColor()));
 					checkBox.setButtonTintList(ColorStateList.valueOf(line.getColor()));
+					if (line == TrainLine.YELLOW) {
+						checkBox.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.yellowLine)));
+						checkBox.setButtonTintList(ColorStateList.valueOf(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.yellowLine)));
+					}
 				}
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 					checkBox.setForegroundTintList(ColorStateList.valueOf(line.getColor()));
+					if (line == TrainLine.YELLOW) {
+						checkBox.setForegroundTintList(ColorStateList.valueOf(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.yellowLine)));
+					}
 				}
 
 				line2.addView(checkBox);
@@ -329,8 +347,7 @@ public class StationActivity extends Activity {
 			try {
 				latitude = params[0];
 				longitude = params[1];
-				Util.trackAction(StationActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_google,
-						R.string.analytics_action_get_google_map_street_view, 0);
+				Util.trackAction(StationActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_google, R.string.analytics_action_get_google_map_street_view, 0);
 				return connect.connect(latitude, longitude);
 			} catch (IOException e) {
 				Log.e(TAG, e.getMessage(), e);
@@ -341,9 +358,8 @@ public class StationActivity extends Activity {
 		@Override
 		protected final void onPostExecute(final Drawable result) {
 			final int height = (int) getResources().getDimension(R.dimen.activity_station_street_map_height);
-			android.widget.RelativeLayout.LayoutParams params = (android.widget.RelativeLayout.LayoutParams) StationActivity.this.streetViewImage
-					.getLayoutParams();
-			final ViewGroup.LayoutParams params2 = StationActivity.this.streetViewImage.getLayoutParams();
+			RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) StationActivity.this.streetViewImage.getLayoutParams();
+			final LayoutParams params2 = StationActivity.this.streetViewImage.getLayoutParams();
 			params2.height = height;
 			params2.width = params.width;
 			StationActivity.this.streetViewImage.setLayoutParams(params2);

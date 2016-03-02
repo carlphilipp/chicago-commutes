@@ -50,6 +50,6 @@
 	<color name="purpleLineDark">#7B1FA2</color>
 	<color name="redLine">#F44336</color>
 	<color name="redLineDark">#D32F2F</color>
-	<color name="yellowLine">#FFEB3B</color>
-	<color name="yellowLineDark">#FBC02D</color>
+	<color name="yellowLine">#FDD835</color>
+	<color name="yellowLineDark">#F9A825</color>
 </resources>

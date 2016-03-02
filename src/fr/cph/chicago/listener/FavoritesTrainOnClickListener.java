@@ -16,14 +16,15 @@
 
 package fr.cph.chicago.listener;
 
-import android.view.ViewGroup.LayoutParams;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
@@ -73,7 +74,11 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 			values.add("Open details");
 			for (final TrainLine line : trainLines) {
 				values.add(line.toString() + " line - See trains");
-				colors.add(line.getColor());
+				if (line != TrainLine.YELLOW) {
+					colors.add(line.getColor());
+				} else {
+					colors.add(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.yellowLine));
+				}
 			}
 			final PopupTrainAdapter ada = new PopupTrainAdapter(activity, values, colors);
 

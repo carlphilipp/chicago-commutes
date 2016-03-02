@@ -275,7 +275,6 @@ public class Util {
 		case YELLOW:
 			backgroundColor = R.color.yellowLine;
 			statusBarColor = R.color.yellowLineDark;
-			textTitleColor =  R.color.black;
 			break;
 		case NA:
 			backgroundColor = R.color.primaryColor;

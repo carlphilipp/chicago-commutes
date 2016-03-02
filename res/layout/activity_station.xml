@@ -59,7 +59,7 @@
 					<ImageView
 							android:id="@+id/activity_bike_station_streetview_image"
 							android:layout_width="match_parent"
-							android:layout_height="wrap_content"
+							android:layout_height="@dimen/activity_station_street_map_height"
 							android:contentDescription="@string/station_activity_google_map_link_desc"
 							android:scaleType="centerCrop">
 					</ImageView>
