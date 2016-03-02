@@ -6,4 +6,4 @@ Build debug APK:
 
 Build prod APK:
 
-`./gradlew clean assembleRelease`
+`./gradlew clean build`
