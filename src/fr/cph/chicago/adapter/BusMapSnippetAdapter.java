@@ -39,15 +39,13 @@ import java.util.List;
 public class BusMapSnippetAdapter extends BaseAdapter {
 
 	private Activity activity;
-	private ViewGroup viewGroup;
 	private List<BusArrival> arrivals;
 
 	/**
 	 * @param arrivals
 	 */
-	public BusMapSnippetAdapter(final Activity activity, final ViewGroup viewGroup, final List<BusArrival> arrivals) {
+	public BusMapSnippetAdapter(final Activity activity, final List<BusArrival> arrivals) {
 		this.activity = activity;
-		this.viewGroup = viewGroup;
 		this.arrivals = arrivals;
 	}
 
@@ -69,7 +67,9 @@ public class BusMapSnippetAdapter extends BaseAdapter {
 	@Override
 	public final View getView(final int position, View convertView, final ViewGroup parent) {
 		final BusArrival arrival = (BusArrival) getItem(position);
-		convertView = activity.getLayoutInflater().inflate(R.layout.list_map_train, viewGroup, false);
+		if (convertView == null) {
+			convertView = activity.getLayoutInflater().inflate(R.layout.list_map_train, parent, false);
+		}
 		final TextView stationNameTextView = (TextView) convertView.findViewById(R.id.station_name);
 		stationNameTextView.setText(arrival.getStopName());
 

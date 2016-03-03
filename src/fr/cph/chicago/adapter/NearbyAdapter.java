@@ -142,7 +142,9 @@ public final class NearbyAdapter extends BaseAdapter {
 		final int stopsPaddingTop = (int) context.getResources().getDimension(R.dimen.activity_station_stops_padding_top);
 
 		final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		convertView = vi.inflate(R.layout.list_nearby, parent, false);
+		if (convertView == null) {
+			convertView = vi.inflate(R.layout.list_nearby, parent, false);
+		}
 
 		if (position < stations.size()) {
 			final Station station = stations.get(position);

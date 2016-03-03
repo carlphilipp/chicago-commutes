@@ -57,8 +57,7 @@ public final class SearchAdapter extends BaseAdapter {
 	/**
 	 * Constructor
 	 *
-	 * @param activity  the search activity
-	 * @param container the container
+	 * @param activity the search activity
 	 */
 	public SearchAdapter(final SearchActivity activity) {
 		this.context = ChicagoTracker.getContext();
@@ -90,8 +89,10 @@ public final class SearchAdapter extends BaseAdapter {
 
 	@Override
 	public final View getView(final int position, View convertView, final ViewGroup parent) {
-		final LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		convertView = vi.inflate(R.layout.list_search, parent, false);
+		if (convertView == null) {
+			final LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			convertView = vi.inflate(R.layout.list_search, parent, false);
+		}
 
 		final TextView routeName = (TextView) convertView.findViewById(R.id.station_name);
 

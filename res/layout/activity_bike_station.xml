@@ -39,7 +39,9 @@
 				android:layout_height="wrap_content"
 				android:paddingBottom="@dimen/activity_train_line_padding_bottom"
 				android:paddingLeft="@dimen/activity_train_line_padding_left"
+				android:paddingStart="@dimen/activity_train_line_padding_left"
 				android:paddingRight="@dimen/activity_train_line_padding_right"
+				android:paddingEnd="@dimen/activity_train_line_padding_right"
 				android:paddingTop="@dimen/activity_train_line_padding_top">
 
 			<RelativeLayout
@@ -52,8 +54,10 @@
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_alignParentLeft="true"
+						android:layout_alignParentStart="true"
 						android:layout_centerVertical="true"
 						android:layout_toLeftOf="@+id/header_icon"
+						android:layout_toStartOf="@+id/header_icon"
 						android:textColor="@color/black"
 						android:textIsSelectable="false"
 						android:textSize="@dimen/activity_station_title_text_size"
@@ -64,6 +68,7 @@
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_alignParentRight="true"
+						android:layout_alignParentEnd="true"
 						android:layout_centerVertical="true"
 						android:layout_marginBottom="10dp">
 
@@ -82,6 +87,7 @@
 							android:layout_width="35dp"
 							android:layout_height="35dp"
 							android:layout_toRightOf="@+id/activity_bike_station_map_image"
+							android:layout_toEndOf="@+id/activity_bike_station_map_image"
 							android:background="@drawable/any_selector"
 							android:contentDescription="@string/station_activity_google_map_link_desc">
 					</ImageView>
@@ -91,6 +97,7 @@
 							android:layout_width="35dp"
 							android:layout_height="35dp"
 							android:layout_toRightOf="@+id/activity_bike_station_map_direction"
+							android:layout_toEndOf="@+id/activity_bike_station_map_direction"
 							android:background="@drawable/any_selector"
 							android:contentDescription="@string/station_activity_google_map_link_desc"
 							android:src="@drawable/ic_save_disabled">

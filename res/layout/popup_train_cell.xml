@@ -14,7 +14,8 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_centerVertical="true"
-				android:src="@drawable/ic_map_white_24dp">
+				android:src="@drawable/ic_map_white_24dp"
+				android:contentDescription="@string/empty_string">
 		</ImageView>
 
 		<TextView

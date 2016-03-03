@@ -51,8 +51,10 @@ public final class TrainStationAdapter extends BaseAdapter {
 
 	@Override
 	public final View getView(final int position, View convertView, final ViewGroup parent) {
-		final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		convertView = vi.inflate(R.layout.list_train_line, parent, false);
+		if (convertView == null) {
+			final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			convertView = vi.inflate(R.layout.list_train_line, parent, false);
+		}
 
 		TextView textView = (TextView) convertView.findViewById(R.id.station_color_value);
 		textView.setBackgroundColor(TrainLine.values()[position].getColor());

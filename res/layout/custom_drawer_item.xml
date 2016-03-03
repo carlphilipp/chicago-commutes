@@ -1,27 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:layout_marginLeft="15dp"
-    android:background="?android:attr/activatedBackgroundIndicator"
-    android:minHeight="50dp" >
+				android:layout_width="fill_parent"
+				android:layout_height="fill_parent"
+				android:layout_marginLeft="15dp"
+				android:layout_marginStart="15dp"
+				android:background="?android:attr/activatedBackgroundIndicator"
+				android:minHeight="50dp">
 
-    <ImageView
-        android:id="@+id/drawer_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="20dp" />
+	<ImageView
+			android:id="@+id/drawer_icon"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerVertical="true"
+			android:layout_marginLeft="20dp"
+			android:layout_marginStart="20dp"
+			android:contentDescription="@string/empty_string"/>
 
-    <TextView
-        android:id="@+id/drawer_itemName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="15dp"
-        android:layout_toRightOf="@+id/drawer_icon"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="@color/white"
-        android:textSize="@dimen/drawer_text_size_main" />
+	<TextView
+			android:id="@+id/drawer_itemName"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerVertical="true"
+			android:layout_marginLeft="15dp"
+			android:layout_marginStart="15dp"
+			android:layout_toRightOf="@+id/drawer_icon"
+			android:layout_toEndOf="@+id/drawer_icon"
+			android:textAppearance="?android:attr/textAppearanceLarge"
+			android:textColor="@color/white"
+			android:textSize="@dimen/drawer_text_size_main"/>
 
 </RelativeLayout>

@@ -511,7 +511,7 @@ public class BusMapActivity extends Activity {
 			final ListView arrivals = (ListView) view.findViewById(R.id.arrivals);
 			final TextView error = (TextView) view.findViewById(R.id.error);
 			if (result.size() != 0) {
-				final BusMapSnippetAdapter ada = new BusMapSnippetAdapter(BusMapActivity.this, BusMapActivity.this.viewGroup, result);
+				final BusMapSnippetAdapter ada = new BusMapSnippetAdapter(BusMapActivity.this, result);
 				arrivals.setAdapter(ada);
 				arrivals.setVisibility(ListView.VISIBLE);
 				error.setVisibility(TextView.GONE);
