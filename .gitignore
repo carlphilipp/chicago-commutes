@@ -3,7 +3,6 @@
 /bin
 /proguard.cfg
 /proguard
-/lint.xml
 /.idea
 /build
 /.gradle

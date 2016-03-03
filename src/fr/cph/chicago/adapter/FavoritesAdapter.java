@@ -16,7 +16,6 @@
 
 package fr.cph.chicago.adapter;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
@@ -92,7 +91,6 @@ public final class FavoritesAdapter extends BaseAdapter {
 	private int line1Padding;
 	private int stopsPaddingTop;
 
-	@SuppressLint("UseSparseArrays")
 	public FavoritesAdapter(final MainActivity activity) {
 		this.context = ChicagoTracker.getContext();
 

@@ -104,7 +104,6 @@ public class StationActivity extends Activity {
 	private Station station;
 	private Map<String, Integer> ids;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -446,7 +445,6 @@ public class StationActivity extends Activity {
 			}
 			Util.trackAction(StationActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
 			if (arrivals.size() == 1) {
-				@SuppressWarnings("unchecked")
 				final String id = ((List<String>) params[0].get("mapid")).get(0);
 				return arrivals.get(Integer.valueOf(id));
 			} else {
