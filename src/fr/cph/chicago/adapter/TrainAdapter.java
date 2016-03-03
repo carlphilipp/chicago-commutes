@@ -22,7 +22,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import fr.cph.chicago.ChicagoTracker;
@@ -79,38 +78,50 @@ public final class TrainAdapter extends BaseAdapter {
 
 	@Override
 	public final View getView(final int position, View convertView, final ViewGroup parent) {
-		final Station station = stations.get(position);
-		final Set<TrainLine> lines = station.getLines();
-
+		ViewHolder holder;
 		if (convertView == null) {
+			holder = new ViewHolder();
 			final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = vi.inflate(R.layout.list_train, parent, false);
+
+			final TextView stationNameView = (TextView) convertView.findViewById(R.id.station_name_value);
+			final LinearLayout stationColorView = (LinearLayout) convertView.findViewById(R.id.station_color);
+			holder.stationNameView = stationNameView;
+			holder.stationColorView = stationColorView;
+			convertView.setTag(holder);
+		} else {
+			holder = (ViewHolder) convertView.getTag();
 		}
+		final Station station = (Station) getItem(position);
+		final Set<TrainLine> lines = station.getLines();
 
-		final TextView stationNameView = (TextView) convertView.findViewById(R.id.station_name_value);
-		final LinearLayout stationColorView = (LinearLayout) convertView.findViewById(R.id.station_color);
+		holder.stationNameView.setText(station.getName());
 
-		stationNameView.setText(station.getName());
-
-		int index = 0;
 		if (lines != null) {
+			holder.stationColorView.removeAllViews();
+			int index = 0;
 			for (final TrainLine tl : lines) {
-				TextView textView = new TextView(context);
-				textView.setBackgroundColor(tl.getColor());
-				textView.setText(" ");
-				textView.setTextSize(context.getResources().getDimension(R.dimen.activity_list_station_colors));
-				stationColorView.addView(textView);
+				final TextView blankTextView = new TextView(context);
+				blankTextView.setBackgroundColor(tl.getColor());
+				blankTextView.setText(" ");
+				blankTextView.setTextSize(context.getResources().getDimension(R.dimen.activity_list_station_colors));
+				holder.stationColorView.addView(blankTextView);
 				if (index != lines.size()) {
-					textView = new TextView(context);
-					textView.setText("");
-					textView.setPadding(0, 0, (int) context.getResources().getDimension(R.dimen.activity_list_station_colors_space), 0);
-					textView.setTextSize(context.getResources().getDimension(R.dimen.activity_list_station_colors));
-					stationColorView.addView(textView);
+					final TextView spaceTextView = new TextView(context);
+					spaceTextView.setText("");
+					spaceTextView.setPadding(0, 0, (int) context.getResources().getDimension(R.dimen.activity_list_station_colors_space), 0);
+					spaceTextView.setTextSize(context.getResources().getDimension(R.dimen.activity_list_station_colors));
+					holder.stationColorView.addView(spaceTextView);
 				}
 				index++;
 			}
 		}
 		convertView.setOnClickListener(new FavoritesTrainOnClickListener(activity, station.getId(), lines));
 		return convertView;
+	}
+
+	private static class ViewHolder {
+		TextView stationNameView;
+		LinearLayout stationColorView;
 	}
 }
