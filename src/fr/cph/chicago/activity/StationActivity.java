@@ -44,8 +44,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
@@ -105,11 +103,6 @@ public class StationActivity extends Activity {
 	private Integer stationId;
 	private Station station;
 	private Map<String, Integer> ids;
-	/**
-	 * ATTENTION: This was auto-generated to implement the App Indexing API.
-	 * See https://g.co/AppIndexing/AndroidStudio for more information.
-	 */
-	private GoogleApiClient client;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -188,9 +181,6 @@ public class StationActivity extends Activity {
 
 			Util.trackScreen(getResources().getString(R.string.analytics_train_details));
 		}
-		// ATTENTION: This was auto-generated to implement the App Indexing API.
-		// See https://g.co/AppIndexing/AndroidStudio for more information.
-		client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
 	}
 
 	private void setUpStopLayouts(final Map<TrainLine, List<Stop>> stopByLines) {

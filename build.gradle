@@ -28,23 +28,6 @@ dependencies {
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.7.1'
 }
 
-allprojects {
-    afterEvaluate { project ->
-        def propsFile = rootProject.file('keystore.properties')
-        def configName = 'release'
-
-        if (propsFile.exists() && android.signingConfigs.hasProperty(configName)) {
-            def props = new Properties()
-            props.load(new FileInputStream(propsFile))
-            File storeFile = new File(props['storeFile'].toString());
-            if(storeFile.isFile()) {
-                android.signingConfigs[configName].storeFile = storeFile
-                android.signingConfigs[configName].keyAlias = props['keyAlias']
-            }
-        }
-    }
-}
-
 android {
     compileSdkVersion 23
     buildToolsVersion '23.0.2'
@@ -69,19 +52,22 @@ android {
     }
 
     signingConfigs {
-        if (gradle.startParameter.taskNames.any { it.contains('Release') || it.contains('build') }) {
-            release {
-                storeFile
+        release {
+            def propsFile = rootProject.file('keystore.properties')
+            if (propsFile.exists() && gradle.startParameter.taskNames.any { it.contains('Release') || it.contains('build') }) {
+                def props = new Properties()
+                props.load(new FileInputStream(propsFile))
+                File storeF = new File(props['storeFile'].toString())
+
+                storeFile = storeF
                 storePassword new String(System.console().readPassword("\n\$ Enter keystore password: "))
-                keyAlias
+                keyAlias = props['keyAlias']
                 keyPassword new String(System.console().readPassword("\n\$ Enter alias password: "))
-            }
-        } else {
-            release {
-                storeFile file('commutes')
-                storePassword 'commutes'
-                keyAlias 'commutes'
-                keyPassword 'commutes'
+            } else {
+                storeFile file('default')
+                storePassword 'default'
+                keyAlias 'default'
+                keyPassword 'default'
             }
         }
     }
@@ -90,7 +76,7 @@ android {
         release {
             minifyEnabled true
             shrinkResources true
-            proguardFile 'proguard-optimize.cfg'
+            proguardFile 'proguard-android-optimize.txt'
             signingConfig signingConfigs.release
         }
     }

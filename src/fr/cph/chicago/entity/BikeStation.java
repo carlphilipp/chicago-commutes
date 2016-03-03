@@ -33,6 +33,7 @@ public final class BikeStation implements Parcelable {
 	/**
 	 * Station id
 	 **/
+	@JsonProperty("id")
 	private int id;
 	/**
 	 * Station name
@@ -42,66 +43,82 @@ public final class BikeStation implements Parcelable {
 	/**
 	 * Available docks
 	 **/
+	@JsonProperty("availableDocks")
 	private Integer availableDocks;
 	/**
 	 * Total docks
 	 **/
+	@JsonProperty("totalDocks")
 	private Integer totalDocks;
 	/**
 	 * The latitude
 	 **/
+	@JsonProperty("latitude")
 	private Double latitude;
 	/**
 	 * The longitude
 	 **/
+	@JsonProperty("longitude")
 	private Double longitude;
 	/**
 	 * Status value
 	 **/
+	@JsonProperty("statusValue")
 	private String statusValue;
 	/**
 	 * Status key
 	 **/
+	@JsonProperty("statusKey")
 	private String statusKey;
 	/**
 	 * Available bikes
 	 **/
+	@JsonProperty("availableBikes")
 	private Integer availableBikes;
 	/**
 	 * Street address 1
 	 **/
+	@JsonProperty("stAddress1")
 	private String stAddress1;
 	/**
 	 * Street address 2
 	 **/
+	@JsonProperty("stAddress2")
 	private String stAddress2;
 	/**
 	 * City
 	 **/
+	@JsonProperty("city")
 	private String city;
 	/**
 	 * Postal code
 	 **/
+	@JsonProperty("postalCode")
 	private String postalCode;
 	/**
 	 * Location
 	 **/
+	@JsonProperty("location")
 	private String location;
 	/**
 	 * Altitude
 	 **/
+	@JsonProperty("altitude")
 	private String altitude;
 	/**
 	 * Test station
 	 **/
+	@JsonProperty("testStation")
 	private boolean testStation;
 	/**
 	 * Last communication time
 	 **/
+	@JsonProperty("lastCommunicationTime")
 	private String lastCommunicationTime;
 	/**
 	 * Land mark
 	 **/
+	@JsonProperty("landMark")
 	private int landMark;
 
 	public BikeStation() {
