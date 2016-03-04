@@ -16,7 +16,8 @@
   limitations under the License.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			  xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+			  xmlns:tools="http://schemas.android.com/tools"
+			  android:layout_width="match_parent"
 			  android:layout_height="match_parent"
 			  android:orientation="vertical">
 
@@ -36,7 +37,13 @@
 				android:id="@+id/scrollViewTrainStation"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
-				android:background="@drawable/bg_selector">
+				android:background="@drawable/bg_selector"
+				android:paddingBottom="@dimen/activity_train_line_padding_bottom"
+				android:paddingLeft="@dimen/activity_train_line_padding_left"
+				android:paddingStart="@dimen/activity_train_line_padding_left"
+				android:paddingRight="@dimen/activity_train_line_padding_right"
+				android:paddingEnd="@dimen/activity_train_line_padding_right"
+				android:paddingTop="@dimen/activity_train_line_padding_top">
 
 			<!-- Main container. Vertical layout -->
 			<LinearLayout
@@ -51,13 +58,13 @@
 					android:orientation="vertical">
 
 				<RelativeLayout
-						android:id="@+id/activity_bike_station_streetview_container"
+						android:id="@+id/activity_train_station_streetview_container"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:paddingTop="@dimen/activity_train_line_padding_top">
 
 					<ImageView
-							android:id="@+id/activity_bike_station_streetview_image"
+							android:id="@+id/activity_train_station_streetview_image"
 							android:layout_width="match_parent"
 							android:layout_height="@dimen/activity_station_street_map_height"
 							android:contentDescription="@string/station_activity_google_map_link_desc"
@@ -65,7 +72,7 @@
 					</ImageView>
 
 					<TextView
-							android:id="@+id/activity_bike_station_steetview_text"
+							android:id="@+id/activity_train_station_steetview_text"
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
 							android:layout_alignParentBottom="true"

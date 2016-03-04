@@ -80,9 +80,10 @@ public class BusActivity extends Activity {
 	private Double latitude, longitude;
 	private int firstLoadCount;
 	private boolean isFavorite;
+	private LinearLayout walkContainer;
+	private LinearLayout mapContainer;
 
-	private ImageView streetViewImage, mapImage, directionImage, favoritesImage;
-	private TextView streetViewText;
+	private ImageView streetViewImage, favoritesImage;
 	private LinearLayout stopsView;
 	private SwipeRefreshLayout swipeRefreshLayout;
 
@@ -113,12 +114,17 @@ public class BusActivity extends Activity {
 
 			stopsView = (LinearLayout) findViewById(R.id.activity_bus_stops);
 			streetViewImage = (ImageView) findViewById(R.id.activity_bus_streetview_image);
-			streetViewText = (TextView) findViewById(R.id.activity_bus_steetview_text);
-			mapImage = (ImageView) findViewById(R.id.activity_bus_map_image);
-			directionImage = (ImageView) findViewById(R.id.activity_bus_map_direction);
-			favoritesImage = (ImageView) findViewById(R.id.activity_bus_favorite_star);
+			final ImageView mapImage = (ImageView) findViewById(R.id.activity_bus_station_map_image);
+			mapImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
+			final ImageView directionImage = (ImageView) findViewById(R.id.activity_bus_station_map_direction);
+			directionImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
+			walkContainer = (LinearLayout) findViewById(R.id.walk_container);
+			mapContainer = (LinearLayout) findViewById(R.id.map_container);
+			favoritesImage = (ImageView) findViewById(R.id.activity_bus_station_favorite_star);
 			if (isFavorite) {
-				favoritesImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.ic_save_active));
+				favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
+			} else {
+				favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
 			}
 			favoritesImage.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -134,8 +140,7 @@ public class BusActivity extends Activity {
 				}
 			});
 
-			final TextView busRouteNameView = (TextView) findViewById(R.id.activity_bus_station_name);
-			busRouteNameView.setText(busStopName);
+
 			final TextView busRouteNameView2 = (TextView) findViewById(R.id.activity_bus_station_value);
 			final String title = busRouteName + " (" + boundTitle + ")";
 			busRouteNameView2.setText(title);
@@ -159,7 +164,7 @@ public class BusActivity extends Activity {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 				toolbar.setElevation(4);
 			}
-			toolbar.setTitle("Bus stop");
+			toolbar.setTitle(busStopName);
 			toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
 			toolbar.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -352,7 +357,6 @@ public class BusActivity extends Activity {
 			final ViewGroup.LayoutParams params2 = BusActivity.this.streetViewImage.getLayoutParams();
 			params2.height = height;
 			params2.width = params.width;
-			BusActivity.this.streetViewText.setText(getString(R.string.bus_activity_street_view_text));
 			BusActivity.this.streetViewImage.setLayoutParams(params2);
 			BusActivity.this.streetViewImage.setImageDrawable(result);
 			BusActivity.this.streetViewImage.setOnClickListener(new View.OnClickListener() {
@@ -371,8 +375,7 @@ public class BusActivity extends Activity {
 					}
 				}
 			});
-			BusActivity.this.mapImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.da_turn_arrive));
-			BusActivity.this.mapImage.setOnClickListener(new View.OnClickListener() {
+			BusActivity.this.mapContainer.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					final String uri = "http://maps.google.com/maps?z=12&t=m&q=loc:" + latitude + "+" + longitude;
@@ -381,9 +384,7 @@ public class BusActivity extends Activity {
 					startActivity(i);
 				}
 			});
-			BusActivity.this.directionImage
-					.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.ic_directions_walking));
-			BusActivity.this.directionImage.setOnClickListener(new View.OnClickListener() {
+			BusActivity.this.walkContainer.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					final String uri = "http://maps.google.com/?f=d&daddr=" + latitude + "," + longitude + "&dirflg=w";
@@ -418,9 +419,9 @@ public class BusActivity extends Activity {
 			isFavorite = true;
 		}
 		if (isFavorite) {
-			favoritesImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.ic_save_active));
+			favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
 		} else {
-			favoritesImage.setImageDrawable(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.ic_save_disabled));
+			favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
 		}
 	}
 }

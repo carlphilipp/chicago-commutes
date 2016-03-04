@@ -146,8 +146,8 @@ public class StationActivity extends Activity {
 
 			isFavorite = isFavorite();
 
-			streetViewImage = (ImageView) findViewById(R.id.activity_bike_station_streetview_image);
-			streetViewText = (TextView) findViewById(R.id.activity_bike_station_steetview_text);
+			streetViewImage = (ImageView) findViewById(R.id.activity_train_station_streetview_image);
+			streetViewText = (TextView) findViewById(R.id.activity_train_station_steetview_text);
 			final ImageView mapImage = (ImageView) findViewById(R.id.activity_train_station_map_image);
 			mapImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
 			mapContainer = (LinearLayout) findViewById(R.id.map_container);
