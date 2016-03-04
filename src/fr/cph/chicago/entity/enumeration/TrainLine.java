@@ -17,6 +17,9 @@
 package fr.cph.chicago.entity.enumeration;
 
 import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
+import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.R;
 
 /**
  * Enumeration, train line
@@ -32,9 +35,8 @@ public enum TrainLine {
 	ORANGE("Org", "Orange", "Orange line", Color.rgb(255, 128, 0)),
 	PINK("Pink", "Pink", "Pink line", Color.rgb(204, 0, 102)),
 	PURPLE("P", "Purple", "Purple line", Color.rgb(102, 0, 102)),
-	// PURPLE_EXPRESS("Pexp", "Purple Express","Purple line express", Color.rgb(102, 0, 102)),
 	RED("Red", "Red", "Red line", Color.rgb(240, 0, 0)),
-	YELLOW("Y", "Yellow", "Yellow line", Color.rgb(255, 255, 0)),
+	YELLOW("Y", "Yellow", "Yellow line", ContextCompat.getColor(ChicagoTracker.getContext(), R.color.yellowLine)),
 	NA("N/A", "N/A", "N/A line", Color.BLACK);
 
 	/** The text **/
