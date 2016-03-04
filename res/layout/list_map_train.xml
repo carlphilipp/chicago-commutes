@@ -12,7 +12,9 @@
         android:ellipsize="end"
         android:maxLines="2"
         android:layout_alignParentLeft="true"
+		android:layout_alignParentStart="true"
         android:layout_toLeftOf="@+id/time"
+		android:layout_toStartOf="@+id/time"
         android:textStyle="normal" />
     
     <TextView
@@ -22,6 +24,7 @@
         android:textColor="@color/green"
         android:textIsSelectable="false"
         android:layout_alignParentRight="true"
+		android:layout_alignParentEnd="true"
        	android:layout_centerVertical="true"
         android:textStyle="normal" />
 
