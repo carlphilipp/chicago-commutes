@@ -46,7 +46,6 @@ import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.fragment.GoogleMapAbility;
-import org.apache.commons.lang3.BooleanUtils;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -63,7 +62,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class Util {
+public final class Util {
 
 	private static final String TAG = Util.class.getSimpleName();
 
@@ -186,16 +185,12 @@ public class Util {
 	 * @return a tab containing the route id, the stop id and the bound
 	 */
 	public static String[] decodeBusFavorite(final String fav) {
-		final String[] res = new String[3];
 		final int first = fav.indexOf('_');
 		final String routeId = fav.substring(0, first);
 		final int sec = fav.indexOf('_', first + 1);
 		final String stopId = fav.substring(first + 1, sec);
 		final String bound = fav.substring(sec + 1, fav.length());
-		res[0] = routeId;
-		res[1] = stopId;
-		res[2] = bound;
-		return res;
+		return new String[] { routeId, stopId, bound };
 	}
 
 	public static final Comparator<BikeStation> BIKE_COMPARATOR_NAME = new BikeStationComparator();
@@ -208,8 +203,7 @@ public class Util {
 	}
 
 	public static boolean isNetworkAvailable() {
-		final ConnectivityManager connectivityManager = (ConnectivityManager) ChicagoTracker.getContext()
-				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		final ConnectivityManager connectivityManager = (ConnectivityManager) ChicagoTracker.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 		final NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
 		return activeNetworkInfo != null && activeNetworkInfo.isConnected();
 	}
@@ -235,14 +229,17 @@ public class Util {
 
 	public static void trackAction(final Activity activity, final int category, final int action, final int label, final int value) {
 		final Tracker tracker = ChicagoTracker.getTracker();
-		tracker.send(new HitBuilders.EventBuilder().setCategory(activity.getString(category)).setAction(activity.getString(action))
-				.setLabel(activity.getString(label)).setValue(value).build());
+		tracker.send(new HitBuilders.EventBuilder()
+				.setCategory(activity.getString(category))
+				.setAction(activity.getString(action))
+				.setLabel(activity.getString(label))
+				.setValue(value).build());
 	}
 
 	public static void setToolbarColor(final Activity activity, final Toolbar toolbar, final TrainLine trainLine) {
 		int backgroundColor = 0;
 		int statusBarColor = 0;
-		int textTitleColor =  R.color.white;
+		int textTitleColor = R.color.white;
 		switch (trainLine) {
 		case BLUE:
 			backgroundColor = R.color.blueLine;
@@ -318,7 +315,7 @@ public class Util {
 		});
 	}
 
-	public static boolean textNumberToBoolean(@NonNull final String number){
-		return BooleanUtils.toBoolean(Integer.valueOf(number));
+	public static boolean textNumberToBoolean(@NonNull final String number) {
+		return Boolean.parseBoolean(number);
 	}
 }
