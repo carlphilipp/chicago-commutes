@@ -85,6 +85,7 @@ public class BusActivity extends Activity {
 
 	private ImageView streetViewImage, favoritesImage;
 	private LinearLayout stopsView;
+	private TextView streetViewText;
 	private SwipeRefreshLayout swipeRefreshLayout;
 
 	@Override
@@ -114,6 +115,7 @@ public class BusActivity extends Activity {
 
 			stopsView = (LinearLayout) findViewById(R.id.activity_bus_stops);
 			streetViewImage = (ImageView) findViewById(R.id.activity_bus_streetview_image);
+			streetViewText = (TextView) findViewById(R.id.activity_bus_steetview_text);
 			final ImageView mapImage = (ImageView) findViewById(R.id.activity_bus_station_map_image);
 			mapImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
 			final ImageView directionImage = (ImageView) findViewById(R.id.activity_bus_station_map_direction);
@@ -164,7 +166,7 @@ public class BusActivity extends Activity {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 				toolbar.setElevation(4);
 			}
-			toolbar.setTitle(busStopName);
+			toolbar.setTitle(busRouteId + " - " + busStopName);
 			toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
 			toolbar.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -393,6 +395,7 @@ public class BusActivity extends Activity {
 					startActivity(i);
 				}
 			});
+			BusActivity.this.streetViewText.setText(ChicagoTracker.getContext().getResources().getString(R.string.station_activity_street_view));
 			setFirstLoad();
 		}
 	}

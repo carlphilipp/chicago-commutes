@@ -599,6 +599,8 @@ public final class FavoritesAdapter extends BaseAdapter {
 				boundTitle = params[2];
 				stopId = params[3];
 				busRouteName = params[4];
+				// FIXME If the CTA change again what they send back, just need to change from boundTitle to bound
+				// It would change the param from Sounthbound to SOUTH.
 				final List<BusStop> busStops = DataHolder.getInstance().getBusData().loadBusStop(busRouteId, boundTitle);
 
 				for (final BusStop bus : busStops) {

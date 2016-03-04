@@ -387,7 +387,6 @@ public class StationActivity extends Activity {
 					startActivity(i);
 				}
 			});
-
 			StationActivity.this.streetViewText.setText(ChicagoTracker.getContext().getResources().getString(R.string.station_activity_street_view));
 		}
 	}
