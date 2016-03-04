@@ -43,7 +43,8 @@
 		<RelativeLayout
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:paddingLeft="@dimen/activity_train_line_padding_left">
+				android:paddingLeft="@dimen/activity_train_line_padding_left"
+				android:paddingStart="@dimen/activity_train_line_padding_left">
 
 			<CheckBox
 					android:id="@+id/hideEmptyStops"
@@ -56,6 +57,7 @@
 					android:layout_height="wrap_content"
 					android:layout_alignBaseline="@+id/hideEmptyStops"
 					android:layout_toRightOf="@+id/hideEmptyStops"
+					android:layout_toEndOf="@+id/hideEmptyStops"
 					android:ellipsize="end"
 					android:lines="1"
 					android:text="@string/nearby_check_box"/>

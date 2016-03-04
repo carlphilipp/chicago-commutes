@@ -9,6 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:paddingLeft="10dp"
+        android:paddingStart="10dp"
         android:textStyle="bold" >
     </TextView>
 

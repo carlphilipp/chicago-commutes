@@ -262,12 +262,14 @@ public final class NearbyAdapter extends BaseAdapter {
 									ids.put(key3, newId);
 
 									final TextView stopName = new TextView(context);
-									stopName.setText(eta.getDestName() + ": ");
+									final String destName = eta.getDestName() + ": ";
+									stopName.setText(destName);
 									stopName.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
 									insideLayout.addView(stopName);
 
 									final TextView timing = new TextView(context);
-									timing.setText(eta.getTimeLeftDueDelay() + " ");
+									final String timeLeftDueDelay = eta.getTimeLeftDueDelay() + " ";
+									timing.setText(timeLeftDueDelay);
 									timing.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
 									timing.setLines(1);
 									timing.setEllipsize(TruncateAt.END);
@@ -280,7 +282,8 @@ public final class NearbyAdapter extends BaseAdapter {
 										final LinearLayout insideLayout = (LinearLayout) llv.findViewById(idLayout3);
 										// InsideLayout can be null too if removed before
 										final TextView timing = (TextView) insideLayout.getChildAt(1);
-										timing.setText(timing.getText() + eta.getTimeLeftDueDelay() + " ");
+										final String timingText = timing.getText() + eta.getTimeLeftDueDelay() + " ";
+										timing.setText(timingText);
 									}
 								}
 							}
@@ -347,13 +350,15 @@ public final class NearbyAdapter extends BaseAdapter {
 
 					final TextView bound = new TextView(context);
 					final String routeId = busData.getRoute(buses.get(0).getRouteId()).getId();
-					bound.setText(routeId + " (" + key2 + "): ");
+					final String routeIdText = routeId + " (" + key2 + "): ";
+					bound.setText(routeIdText);
 					bound.setTextColor(ContextCompat.getColor(context, R.color.grey_5));
 					boundLayout.addView(bound);
 
 					for (final BusArrival arri : buses) {
 						final TextView timeView = new TextView(context);
-						timeView.setText(arri.getTimeLeftDueDelay() + " ");
+						final String timeLeftDueDelay = arri.getTimeLeftDueDelay() + " ";
+						timeView.setText(timeLeftDueDelay);
 						timeView.setTextColor(ContextCompat.getColor(context, R.color.grey));
 						timeView.setLines(1);
 						timeView.setEllipsize(TruncateAt.END);
@@ -400,7 +405,8 @@ public final class NearbyAdapter extends BaseAdapter {
 			availableBikes.addView(availableBike);
 
 			final TextView amountBike = new TextView(context);
-			amountBike.setText("" + bikeStation.getAvailableBikes());
+			final String amountBikeText = bikeStation.getAvailableBikes().toString();
+			amountBike.setText(amountBikeText);
 			if (bikeStation.getAvailableBikes() == 0) {
 				amountBike.setTextColor(ContextCompat.getColor(context, R.color.red));
 			} else {
@@ -420,7 +426,8 @@ public final class NearbyAdapter extends BaseAdapter {
 			availableDocks.addView(availableDock);
 
 			final TextView amountDock = new TextView(context);
-			amountDock.setText("" + bikeStation.getAvailableDocks());
+			final String amountDockText = bikeStation.getAvailableDocks().toString();
+			amountDock.setText(amountDockText);
 			if (bikeStation.getAvailableDocks() == 0) {
 				amountDock.setTextColor(ContextCompat.getColor(context, R.color.red));
 			} else {
@@ -452,7 +459,6 @@ public final class NearbyAdapter extends BaseAdapter {
 				}
 			});
 		}
-
 		return convertView;
 	}
 

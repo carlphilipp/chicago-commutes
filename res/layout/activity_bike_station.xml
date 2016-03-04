@@ -126,6 +126,7 @@
 						android:layout_height="wrap_content"
 						android:layout_alignParentBottom="true"
 						android:layout_marginLeft="4dp"
+						android:layout_marginStart="4dp"
 						android:textColor="@color/white"/>
 			</RelativeLayout>
 
@@ -142,6 +143,7 @@
 						android:layout_height="wrap_content"
 						android:layout_alignParentBottom="true"
 						android:paddingRight="@dimen/activity_station_stops_line1_padding_color"
+						android:paddingEnd="@dimen/activity_station_stops_line1_padding_color"
 						android:text="@string/D"
 						android:textColor="@color/grey_M_B"
 						android:textSize="25sp"
@@ -153,6 +155,7 @@
 						android:layout_height="wrap_content"
 						android:layout_alignBaseline="@+id/activity_bus_T"
 						android:layout_toRightOf="@+id/activity_bus_T"
+						android:layout_toEndOf="@+id/activity_bus_T"
 						android:background="@color/grey_5"
 						android:text="@string/empty_string"
 						android:textIsSelectable="false"
@@ -164,9 +167,11 @@
 						android:layout_height="wrap_content"
 						android:layout_alignBaseline="@+id/activity_bus_T"
 						android:layout_toRightOf="@+id/activity_bus_color"
+						android:layout_toEndOf="@+id/activity_bus_color"
 						android:ellipsize="end"
 						android:lines="1"
 						android:paddingLeft="@dimen/activity_station_stops_line1_padding_color"
+						android:paddingStart="@dimen/activity_station_stops_line1_padding_color"
 						android:scrollHorizontally="true"
 						android:textColor="@color/black"
 						android:textIsSelectable="false"

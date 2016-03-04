@@ -42,7 +42,6 @@
 	<string name="preferences_cta_bus">cta_bus</string>
 
 	<string name="empty_string">&#160;</string>
-	<string name="double_empty_string">&#160;&#160;</string>
 	<string name="app_name">Chicago Commutes</string>
 	<string name="favorites">Favorites</string>
 	<string name="train">Train</string>
@@ -55,22 +54,14 @@
 	<string name="navigation_drawer_close">Close navigation drawer</string>
 	<string name="action_settings">Settings</string>
 	<string name="action_refresh">Refresh</string>
-	<string name="action_search">Search</string>
 	<string name="progress_error">Error, try to refresh</string>
 	<string name="progress_message">Loading&#8230;</string>
 	<string name="progress_wait">Please wait</string>
-	<string name="progress_bike">Bike data</string>
-	<string name="progress_train">Train data</string>
-	<string name="progress_bus">Bus data</string>
-	<string name="progress_favorites">Favorites</string>
-	<string name="M">M</string>
 	<string name="B">B</string>
 	<string name="T">T</string>
 	<string name="D">D</string>
 
 	<!-- Favorites -->
-	<string name="station_name">Station:</string>
-	<string name="route_name">RouteName</string>
 	<string name="no_fav">Welcome to Chicago Commutes!</string>
 	<string name="add_fav">Add favorites from</string>
 	<string name="add_fav2">train/bus/bike tab</string>
@@ -85,8 +76,6 @@
 	<string name="station_activity_walk_icon">Walk</string>
 
 	<!-- Bus -->
-	<string name="bus_login_progress">Station</string>
-	<string name="bus_station_activity">Bus</string>
 	<string name="bus_activity_google_map_link_desc">Link to google map</string>
 	<string name="bus_activity_street_view">Street view</string>
 	<string name="bus_activity_no_service">No service scheduled</string>
@@ -106,14 +95,10 @@
 	<string name="search_hint">Search&#8230;</string>
 
 	<!-- Nearby -->
-	<string name="nearby_title">Nearby</string>
 	<string name="nearby_check_box">Hide stations/stops with no results</string>
 
 	<!-- CTA System map -->
 	<string name="fragment_image_description">A nice description</string>
-	<string name="fragment_train">Train</string>
-	<string name="fragment_bus">Bus</string>
-	<string name="fragment_bike">Bike</string>
 
 	<!-- Loading -->
 	<string name="loading_image_description">A nice description</string>
@@ -130,7 +115,6 @@
 	<string name="pref_trains_summary">Use trains data</string>
 	<string name="pref_buses_title">CTA buses</string>
 	<string name="pref_buses_summary">Use buses data</string>
-	<string name="pref_alert_title">CTA alerts</string>
 	<string name="pref_bikes_title">Divvy bikes</string>
 	<string name="pref_bikes_summary">Use bikes data</string>
 
@@ -177,8 +161,5 @@
 	<string name="analytics_action_get_bus_pattern">http://www.ctabustracker.com/bustime/api/v1/getpatterns</string>
 
 	<string name="analytics_action_refresh_fav">Refresh favorites</string>
-	<string name="analytics_action_refresh_nearby">Refresh nearby</string>
-	<string name="analytics_action_refresh_alert">Refresh alert</string>
 	<string name="analytics_action_refresh_bike">Refresh bike</string>
-	<string name="analytics_action_search">Search</string>
 </resources>

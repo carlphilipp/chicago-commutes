@@ -308,7 +308,8 @@ public final class FavoritesAdapter extends BaseAdapter {
 				routeIdView.setText(busRoute.getId());
 
 				final TextView routeNameView = (TextView) convertView.findViewById(R.id.station_name);
-				routeNameView.setText(" " + busRoute.getName());
+				final String routeName = " " + busRoute.getName();
+				routeNameView.setText(routeName);
 
 				final LinearLayout favoritesLayout = (LinearLayout) convertView.findViewById(R.id.favorites_list);
 
@@ -362,13 +363,15 @@ public final class FavoritesAdapter extends BaseAdapter {
 							boundLayout.setOrientation(LinearLayout.HORIZONTAL);
 
 							final TextView bound = new TextView(context);
-							bound.setText(key2 + ": ");
+							final String boundText = key2 + ": ";
+							bound.setText(boundText);
 							bound.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
 							boundLayout.addView(bound);
 
 							for (final BusArrival arri : buses) {
 								final TextView timeView = new TextView(context);
-								timeView.setText(arri.getTimeLeftDueDelay() + " ");
+								final String timeText = arri.getTimeLeftDueDelay() + " ";
+								timeView.setText(timeText);
 								timeView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
 								timeView.setLines(1);
 								timeView.setEllipsize(TruncateAt.END);
@@ -416,7 +419,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 				availableBikes.setPadding(line1Padding, 0, 0, 0);
 
 				final TextView availableBike = new TextView(context);
-				availableBike.setText("Available bikes: ");
+				availableBike.setText(mainActivity.getString(R.string.bike_available_bikes));
 				availableBike.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
 				availableBikes.addView(availableBike);
 
@@ -425,7 +428,8 @@ public final class FavoritesAdapter extends BaseAdapter {
 					amountBike.setText("?");
 					amountBike.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.orange));
 				} else {
-					amountBike.setText("" + bikeStation.getAvailableBikes());
+					final String availableBikesText = bikeStation.getAvailableBikes().toString();
+					amountBike.setText(availableBikesText);
 					if (bikeStation.getAvailableBikes() == 0) {
 						amountBike.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.red));
 					} else {
@@ -450,7 +454,8 @@ public final class FavoritesAdapter extends BaseAdapter {
 					amountDock.setText("?");
 					amountDock.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.orange));
 				} else {
-					amountDock.setText("" + bikeStation.getAvailableDocks());
+					final String availableDocksText = bikeStation.getAvailableDocks().toString();
+					amountDock.setText(availableDocksText);
 					if (bikeStation.getAvailableDocks() == 0) {
 						amountDock.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.red));
 					} else {

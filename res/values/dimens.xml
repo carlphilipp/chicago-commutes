@@ -15,41 +15,27 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
- 
-<resources>
-    <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
 
-        <!-- Per the design guidelines, navigation drawers should be between 240dp and 320dp:
-         https://developer.android.com/design/patterns/navigation-drawer.html -->
-    <dimen name="navigation_drawer_width">240dp</dimen>
-    
-    <!-- Font activity station -->
-    <dimen name="activity_station_title_text_size">18sp</dimen>
-    <dimen name="activity_station_stops_padding_top">5dp</dimen>
-    <dimen name="activity_station_stops_line1_padding_top">14dp</dimen>
-    <dimen name="activity_station_stops_line1_padding_color">4dp</dimen>
-    <dimen name="activity_station_stops_line3_padding_left">7dp</dimen>
-    <dimen name="activity_station_stops_line3_padding_top">6dp</dimen>
-    <!-- Activity station google street image size -->
-    <dimen name="activity_station_street_map_height">100dp</dimen>
-    <!-- Activity train station -->
-    <dimen name="activity_train_line_M">25sp</dimen>
-    <dimen name="activity_train_station_name">18sp</dimen>
-    <dimen name="activity_train_line_color">10sp</dimen>
-    <dimen name="activity_train_line_padding_left">10dp</dimen>
-    <dimen name="activity_train_line_padding_top">8dp</dimen>
-    <dimen name="activity_train_line_padding_bottom">8dp</dimen>
-    <dimen name="activity_train_line_padding_right">10dp</dimen>
-    <!-- Activity list train station for one line -->
-    <dimen name="activity_list_station_colors">8dp</dimen>
-    <dimen name="activity_list_station_colors_space">2dp</dimen>
-     <!-- Bus Adapter -->
-     <dimen name="bus_adapter_button_text_size">30sp</dimen>
-     <dimen name="bus_adapter_button_width">100dp</dimen>
-     <dimen name="bus_adapter_button_height">5dp</dimen>
-     <!-- Drawer -->
-     <dimen name="drawer_text_size_main">15dp</dimen>
-     <dimen name="drawer_text_size_extra">5dp</dimen>
+<resources>
+	<!-- Default screen margins, per the Android Design guidelines. -->
+	<dimen name="activity_vertical_margin">16dp</dimen>
+
+	<!-- Font activity station -->
+	<dimen name="activity_station_title_text_size">18sp</dimen>
+	<dimen name="activity_station_stops_padding_top">5dp</dimen>
+	<dimen name="activity_station_stops_line1_padding_color">4dp</dimen>
+	<dimen name="activity_station_stops_line3_padding_left">7dp</dimen>
+	<dimen name="activity_station_stops_line3_padding_top">6dp</dimen>
+	<!-- Activity station google street image size -->
+	<dimen name="activity_station_street_map_height">100dp</dimen>
+	<!-- Activity train station -->
+	<dimen name="activity_train_line_M">25sp</dimen>
+	<dimen name="activity_train_station_name">18sp</dimen>
+	<dimen name="activity_train_line_padding_left">10dp</dimen>
+	<dimen name="activity_train_line_padding_top">8dp</dimen>
+	<dimen name="activity_train_line_padding_bottom">8dp</dimen>
+	<dimen name="activity_train_line_padding_right">10dp</dimen>
+	<!-- Activity list train station for one line -->
+	<dimen name="activity_list_station_colors">8dp</dimen>
+	<dimen name="activity_list_station_colors_space">2dp</dimen>
 </resources>
