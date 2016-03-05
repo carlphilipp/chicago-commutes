@@ -155,7 +155,7 @@ public final class NearbyAdapter extends BaseAdapter {
 						final CameraPosition current = new CameraPosition.Builder().target(latLng).zoom(15.5f).bearing(0).tilt(0).build();
 						googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(current), Math.max(1000, 1), null);
 						for (final Marker marker : markers) {
-							if (marker.getSnippet().equals(station.getId().toString())) {
+							if (marker.getSnippet().equals(String.valueOf(station.getId()))) {
 								marker.showInfoWindow();
 								break;
 							}
@@ -308,7 +308,7 @@ public final class NearbyAdapter extends BaseAdapter {
 						final CameraPosition current = new CameraPosition.Builder().target(latLng).zoom(15.5f).bearing(0).tilt(0).build();
 						googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(current), Math.max(1000, 1), null);
 						for (final Marker marker : markers) {
-							if (marker.getSnippet().equals(busStop.getId().toString())) {
+							if (marker.getSnippet().equals(Integer.toString(busStop.getId()))) {
 								marker.showInfoWindow();
 								break;
 							}
@@ -403,7 +403,7 @@ public final class NearbyAdapter extends BaseAdapter {
 			availableBikes.addView(availableBike);
 
 			final TextView amountBike = new TextView(context);
-			final String amountBikeText = bikeStation.getAvailableBikes().toString();
+			final String amountBikeText = String.valueOf(bikeStation.getAvailableBikes());
 			amountBike.setText(amountBikeText);
 			if (bikeStation.getAvailableBikes() == 0) {
 				amountBike.setTextColor(ContextCompat.getColor(context, R.color.red));
@@ -424,7 +424,7 @@ public final class NearbyAdapter extends BaseAdapter {
 			availableDocks.addView(availableDock);
 
 			final TextView amountDock = new TextView(context);
-			final String amountDockText = bikeStation.getAvailableDocks().toString();
+			final String amountDockText = String.valueOf(bikeStation.getAvailableDocks());
 			amountDock.setText(amountDockText);
 			if (bikeStation.getAvailableDocks() == 0) {
 				amountDock.setTextColor(ContextCompat.getColor(context, R.color.red));

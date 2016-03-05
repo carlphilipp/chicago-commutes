@@ -161,7 +161,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 					holder.stationNameView = stationNameView;
 
 					updatedView = (TextView) convertView.findViewById(R.id.station_updated);
-					updated.put(station.getId().toString(), updatedView);
+					updated.put(String.valueOf(station.getId()), updatedView);
 					if (lastUpdate != null) {
 						updatedView.setText(this.lastUpdate);
 					}
@@ -424,11 +424,11 @@ public final class FavoritesAdapter extends BaseAdapter {
 				availableBikes.addView(availableBike);
 
 				final TextView amountBike = new TextView(context);
-				if (bikeStation.getAvailableBikes() == null) {
+				if (bikeStation.getAvailableBikes() == 0) {
 					amountBike.setText("?");
 					amountBike.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.orange));
 				} else {
-					final String availableBikesText = bikeStation.getAvailableBikes().toString();
+					final String availableBikesText = String.valueOf(bikeStation.getAvailableBikes());
 					amountBike.setText(availableBikesText);
 					if (bikeStation.getAvailableBikes() == 0) {
 						amountBike.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.red));
@@ -450,11 +450,11 @@ public final class FavoritesAdapter extends BaseAdapter {
 				availableDocks.addView(availableDock);
 
 				final TextView amountDock = new TextView(context);
-				if (bikeStation.getAvailableDocks() == null) {
+				if (bikeStation.getAvailableDocks() == 0) {
 					amountDock.setText("?");
 					amountDock.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.orange));
 				} else {
-					final String availableDocksText = bikeStation.getAvailableDocks().toString();
+					final String availableDocksText = String.valueOf(bikeStation.getAvailableDocks());
 					amountDock.setText(availableDocksText);
 					if (bikeStation.getAvailableDocks() == 0) {
 						amountDock.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.red));
@@ -475,7 +475,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 				final boolean isNetworkAvailable = Util.isNetworkAvailable();
 
-				if (bikeStation.getLatitude() != null && bikeStation.getLongitude() != null) {
+				if (bikeStation.getLatitude() != 0 && bikeStation.getLongitude() != 0) {
 
 					convertView.setOnClickListener(new View.OnClickListener() {
 						@Override

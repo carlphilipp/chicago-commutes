@@ -27,11 +27,11 @@ public class PatternPoint implements Parcelable {
 	/** The type **/
 	private String type;
 	/** The stop id **/
-	private Integer stopId;
+	private int stopId;
 	/** The stop name **/
 	private String stopName;
 	/** The distance **/
-	private Double distance;
+	private double distance;
 
 	/**
 	 *
@@ -92,14 +92,14 @@ public class PatternPoint implements Parcelable {
 	/**
 	 * @return
 	 */
-	public final Integer getStopId() {
+	public final int getStopId() {
 		return stopId;
 	}
 
 	/**
 	 * @param stopId
 	 */
-	public final void setStopId(Integer stopId) {
+	public final void setStopId(int stopId) {
 		this.stopId = stopId;
 	}
 
@@ -120,14 +120,14 @@ public class PatternPoint implements Parcelable {
 	/**
 	 * @return
 	 */
-	public final Double getDistance() {
+	public final double getDistance() {
 		return distance;
 	}
 
 	/**
 	 * @param distance
 	 */
-	public final void setDistance(Double distance) {
+	public final void setDistance(double distance) {
 		this.distance = distance;
 	}
 

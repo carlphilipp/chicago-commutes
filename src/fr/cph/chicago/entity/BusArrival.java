@@ -35,30 +35,54 @@ import java.util.concurrent.TimeUnit;
 public final class BusArrival implements Parcelable {
 	/** **/
 	private static String NO_SERVICE = "No service scheduled";
-	/** Timestamp **/
+	/**
+	 * Timestamp
+	 **/
 	private Date timeStamp;
-	/** Error message **/
+	/**
+	 * Error message
+	 **/
 	private String errorMessage;
-	/** TYpe of prediction **/
+	/**
+	 * TYpe of prediction
+	 **/
 	private PredictionType predictionType;
-	/** Stop name **/
+	/**
+	 * Stop name
+	 **/
 	private String stopName;
-	/** Stop id **/
-	private Integer stopId;
-	/** Bus id **/
-	private Integer busId;
-	/** Distance to stop **/
-	private Integer distanceToStop; // feets
-	/** Route id **/
+	/**
+	 * Stop id
+	 **/
+	private int stopId;
+	/**
+	 * Bus id
+	 **/
+	private int busId;
+	/**
+	 * Distance to stop
+	 **/
+	private int distanceToStop; // feets
+	/**
+	 * Route id
+	 **/
 	private String routeId;
-	/** Route direction **/
+	/**
+	 * Route direction
+	 **/
 	private String routeDirection;
-	/** Bus destination **/
+	/**
+	 * Bus destination
+	 **/
 	private String busDestination;
-	/** Prediction time **/
+	/**
+	 * Prediction time
+	 **/
 	private Date predictionTime;
-	/** Is delayed **/
-	private Boolean isDly = false;
+	/**
+	 * Is delayed
+	 **/
+	private boolean isDly;
 
 	/**
 	 *
@@ -68,15 +92,13 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 *
 	 * @param in
 	 */
-	private BusArrival(Parcel in) {
+	private BusArrival(final Parcel in) {
 		readFromParcel(in);
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final Date getTimeStamp() {
@@ -84,7 +106,6 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 *
 	 * @param timeStamp
 	 */
 	public final void setTimeStamp(final Date timeStamp) {
@@ -92,7 +113,6 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final String getErrorMessage() {
@@ -100,7 +120,6 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 *
 	 * @param errorMessage
 	 */
 	public final void setErrorMessage(final String errorMessage) {
@@ -108,7 +127,6 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final PredictionType getPredictionType() {
@@ -116,7 +134,6 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 *
 	 * @param predictionType
 	 */
 	public final void setPredictionType(final PredictionType predictionType) {
@@ -124,7 +141,6 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final String getStopName() {
@@ -132,7 +148,6 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 *
 	 * @param stopName
 	 */
 	public final void setStopName(final String stopName) {
@@ -140,55 +155,48 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
-	public final Integer getStopId() {
+	public final int getStopId() {
 		return stopId;
 	}
 
 	/**
-	 *
 	 * @param stopId
 	 */
-	public final void setStopId(final Integer stopId) {
+	public final void setStopId(final int stopId) {
 		this.stopId = stopId;
 	}
 
 	/**
-	 *
 	 * @return
 	 */
-	public final Integer getBusId() {
+	public final int getBusId() {
 		return busId;
 	}
 
 	/**
-	 *
 	 * @param busId
 	 */
-	public final void setBusId(final Integer busId) {
+	public final void setBusId(final int busId) {
 		this.busId = busId;
 	}
 
 	/**
-	 *
 	 * @return
 	 */
-	public final Integer getDistanceToStop() {
+	public final int getDistanceToStop() {
 		return distanceToStop;
 	}
 
 	/**
-	 *
 	 * @param distanceToStop
 	 */
-	public final void setDistanceToStop(final Integer distanceToStop) {
+	public final void setDistanceToStop(final int distanceToStop) {
 		this.distanceToStop = distanceToStop;
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final String getRouteId() {
@@ -196,7 +204,6 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 *
 	 * @param routeId
 	 */
 	public final void setRouteId(final String routeId) {
@@ -204,7 +211,6 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final String getRouteDirection() {
@@ -212,7 +218,6 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 *
 	 * @param routeDirection
 	 */
 	public final void setRouteDirection(final String routeDirection) {
@@ -220,7 +225,6 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final String getBusDestination() {
@@ -228,7 +232,6 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 *
 	 * @param busDestination
 	 */
 	public final void setBusDestination(final String busDestination) {
@@ -236,7 +239,6 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final Date getPredictionTime() {
@@ -244,7 +246,6 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 *
 	 * @param predictionTime
 	 */
 	public final void setPredictionTime(final Date predictionTime) {
@@ -252,23 +253,20 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
-	public final Boolean getIsDly() {
+	public final boolean getIsDly() {
 		return isDly;
 	}
 
 	/**
-	 *
 	 * @param isDly
 	 */
-	public final void setIsDly(final Boolean isDly) {
+	public final void setIsDly(final boolean isDly) {
 		this.isDly = isDly;
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final String getTimeLeft() {
@@ -281,7 +279,6 @@ public final class BusArrival implements Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final String getTimeLeftDueDelay() {
@@ -299,91 +296,55 @@ public final class BusArrival implements Parcelable {
 	}
 
 	@Override
-	public final int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((busDestination == null) ? 0 : busDestination.hashCode());
-		result = prime * result + ((busId == null) ? 0 : busId.hashCode());
-		result = prime * result + ((distanceToStop == null) ? 0 : distanceToStop.hashCode());
-		result = prime * result + ((errorMessage == null) ? 0 : errorMessage.hashCode());
-		result = prime * result + ((isDly == null) ? 0 : isDly.hashCode());
-		result = prime * result + ((predictionTime == null) ? 0 : predictionTime.hashCode());
-		result = prime * result + ((predictionType == null) ? 0 : predictionType.hashCode());
-		result = prime * result + ((routeDirection == null) ? 0 : routeDirection.hashCode());
-		result = prime * result + ((routeId == null) ? 0 : routeId.hashCode());
-		result = prime * result + ((stopId == null) ? 0 : stopId.hashCode());
-		result = prime * result + ((stopName == null) ? 0 : stopName.hashCode());
-		result = prime * result + ((timeStamp == null) ? 0 : timeStamp.hashCode());
+	public int hashCode() {
+		int result = timeStamp != null ? timeStamp.hashCode() : 0;
+		result = 31 * result + (errorMessage != null ? errorMessage.hashCode() : 0);
+		result = 31 * result + (predictionType != null ? predictionType.hashCode() : 0);
+		result = 31 * result + (stopName != null ? stopName.hashCode() : 0);
+		result = 31 * result + stopId;
+		result = 31 * result + busId;
+		result = 31 * result + distanceToStop;
+		result = 31 * result + (routeId != null ? routeId.hashCode() : 0);
+		result = 31 * result + (routeDirection != null ? routeDirection.hashCode() : 0);
+		result = 31 * result + (busDestination != null ? busDestination.hashCode() : 0);
+		result = 31 * result + (predictionTime != null ? predictionTime.hashCode() : 0);
+		result = 31 * result + (isDly ? 1 : 0);
 		return result;
 	}
 
 	@Override
-	public final boolean equals(final Object obj) {
-		if (this == obj)
+	public boolean equals(Object o) {
+		if (this == o)
 			return true;
-		if (obj == null)
+		if (o == null || getClass() != o.getClass())
 			return false;
-		if (getClass() != obj.getClass())
+
+		BusArrival that = (BusArrival) o;
+
+		if (stopId != that.stopId)
 			return false;
-		BusArrival other = (BusArrival) obj;
-		if (busDestination == null) {
-			if (other.busDestination != null)
-				return false;
-		} else if (!busDestination.equals(other.busDestination))
+		if (busId != that.busId)
 			return false;
-		if (busId == null) {
-			if (other.busId != null)
-				return false;
-		} else if (!busId.equals(other.busId))
+		if (distanceToStop != that.distanceToStop)
 			return false;
-		if (distanceToStop == null) {
-			if (other.distanceToStop != null)
-				return false;
-		} else if (!distanceToStop.equals(other.distanceToStop))
+		if (isDly != that.isDly)
 			return false;
-		if (errorMessage == null) {
-			if (other.errorMessage != null)
-				return false;
-		} else if (!errorMessage.equals(other.errorMessage))
+		if (timeStamp != null ? !timeStamp.equals(that.timeStamp) : that.timeStamp != null)
 			return false;
-		if (isDly == null) {
-			if (other.isDly != null)
-				return false;
-		} else if (!isDly.equals(other.isDly))
+		if (errorMessage != null ? !errorMessage.equals(that.errorMessage) : that.errorMessage != null)
 			return false;
-		if (predictionTime == null) {
-			if (other.predictionTime != null)
-				return false;
-		} else if (!predictionTime.equals(other.predictionTime))
+		if (predictionType != that.predictionType)
 			return false;
-		if (predictionType != other.predictionType)
+		if (stopName != null ? !stopName.equals(that.stopName) : that.stopName != null)
 			return false;
-		if (routeDirection == null) {
-			if (other.routeDirection != null)
-				return false;
-		} else if (!routeDirection.equals(other.routeDirection))
+		if (routeId != null ? !routeId.equals(that.routeId) : that.routeId != null)
 			return false;
-		if (routeId == null) {
-			if (other.routeId != null)
-				return false;
-		} else if (!routeId.equals(other.routeId))
+		if (routeDirection != null ? !routeDirection.equals(that.routeDirection) : that.routeDirection != null)
 			return false;
-		if (stopId == null) {
-			if (other.stopId != null)
-				return false;
-		} else if (!stopId.equals(other.stopId))
+		if (busDestination != null ? !busDestination.equals(that.busDestination) : that.busDestination != null)
 			return false;
-		if (stopName == null) {
-			if (other.stopName != null)
-				return false;
-		} else if (!stopName.equals(other.stopName))
-			return false;
-		if (timeStamp == null) {
-			if (other.timeStamp != null)
-				return false;
-		} else if (!timeStamp.equals(other.timeStamp))
-			return false;
-		return true;
+		return predictionTime != null ? predictionTime.equals(that.predictionTime) : that.predictionTime == null;
+
 	}
 
 	@Override
@@ -404,7 +365,7 @@ public final class BusArrival implements Parcelable {
 		dest.writeString(routeDirection);
 		dest.writeString(busDestination);
 		dest.writeLong(predictionTime.getTime());
-		dest.writeString(isDly.toString());
+		dest.writeString(String.valueOf(isDly));
 	}
 
 	private void readFromParcel(final Parcel in) {

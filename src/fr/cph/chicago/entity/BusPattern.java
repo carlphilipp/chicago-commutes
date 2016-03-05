@@ -28,9 +28,9 @@ import java.util.List;
  */
 public final class BusPattern implements Parcelable {
 	/** The pattern id **/
-	private Integer id;
+	private int id;
 	/** The length in feet **/
-	private Double length;
+	private double length;
 	/** The direction **/
 	private String direction;
 	/** The list of points **/
@@ -54,28 +54,28 @@ public final class BusPattern implements Parcelable {
 	/**
 	 * @return
 	 */
-	public final Integer getId() {
+	public final int getId() {
 		return id;
 	}
 
 	/**
 	 * @param id
 	 */
-	public final void setId(Integer id) {
+	public final void setId(int id) {
 		this.id = id;
 	}
 
 	/**
 	 * @return
 	 */
-	public final Double getLength() {
+	public final double getLength() {
 		return length;
 	}
 
 	/**
 	 * @param length
 	 */
-	public final void setLength(Double length) {
+	public final void setLength(double length) {
 		this.length = length;
 	}
 

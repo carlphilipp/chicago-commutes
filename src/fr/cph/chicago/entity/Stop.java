@@ -32,17 +32,29 @@ import java.util.List;
  * @version 1
  */
 public class Stop implements Comparable<Stop>, Parcelable {
-	/** The id **/
-	private Integer id;
-	/** The description **/
+	/**
+	 * The id
+	 **/
+	private int id;
+	/**
+	 * The description
+	 **/
 	private String description;
-	/** The train direction **/
+	/**
+	 * The train direction
+	 **/
 	private TrainDirection direction;
-	/** The position **/
+	/**
+	 * The position
+	 **/
 	private Position position;
-	/** Ada **/
-	private Boolean ada;
-	/** The list of train line **/
+	/**
+	 * Ada
+	 **/
+	private boolean ada;
+	/**
+	 * The list of train line
+	 **/
 	private List<TrainLine> lines;
 
 	/**
@@ -53,7 +65,6 @@ public class Stop implements Comparable<Stop>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @param in
 	 */
 	private Stop(Parcel in) {
@@ -61,7 +72,6 @@ public class Stop implements Comparable<Stop>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final Integer getId() {
@@ -69,15 +79,13 @@ public class Stop implements Comparable<Stop>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @param id
 	 */
-	public final void setId(final Integer id) {
+	public final void setId(final int id) {
 		this.id = id;
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final String getDescription() {
@@ -85,7 +93,6 @@ public class Stop implements Comparable<Stop>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @param description
 	 */
 	public final void setDescription(final String description) {
@@ -93,7 +100,6 @@ public class Stop implements Comparable<Stop>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final TrainDirection getDirection() {
@@ -101,7 +107,6 @@ public class Stop implements Comparable<Stop>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @param direction
 	 */
 	public final void setDirection(final TrainDirection direction) {
@@ -109,7 +114,6 @@ public class Stop implements Comparable<Stop>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final Position getPosition() {
@@ -117,7 +121,6 @@ public class Stop implements Comparable<Stop>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @param position
 	 */
 	public final void setPosition(final Position position) {
@@ -125,7 +128,6 @@ public class Stop implements Comparable<Stop>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final List<TrainLine> getLines() {
@@ -133,7 +135,6 @@ public class Stop implements Comparable<Stop>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @param lines
 	 */
 	public final void setLines(final List<TrainLine> lines) {
@@ -141,18 +142,16 @@ public class Stop implements Comparable<Stop>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
-	public final Boolean getAda() {
+	public final boolean getAda() {
 		return ada;
 	}
 
 	/**
-	 *
 	 * @param ada
 	 */
-	public final void setAda(final Boolean ada) {
+	public final void setAda(final boolean ada) {
 		this.ada = ada;
 	}
 
@@ -169,9 +168,7 @@ public class Stop implements Comparable<Stop>, Parcelable {
 		if (position != null) {
 			stb.append(";position=").append(position);
 		}
-		if (ada != null) {
-			stb.append(";ada=").append(ada);
-		}
+		stb.append(";ada=").append(ada);
 		if (lines != null) {
 			stb.append(";lines=").append(lines);
 		}
@@ -195,7 +192,7 @@ public class Stop implements Comparable<Stop>, Parcelable {
 		dest.writeString(description);
 		dest.writeString(direction.toTextString());
 		dest.writeParcelable(position, PARCELABLE_WRITE_RETURN_VALUE);
-		dest.writeString(ada.toString());
+		dest.writeString(String.valueOf(ada));
 		List<String> linesString = new ArrayList<>();
 		for (TrainLine line : lines) {
 			linesString.add(line.toTextString());

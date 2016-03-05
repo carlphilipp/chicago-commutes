@@ -33,11 +33,17 @@ public final class BusStop implements Comparable<BusStop>, Parcelable, Serializa
 	 *
 	 */
 	private static final long serialVersionUID = 0L;
-	/** The id **/
-	private Integer id;
-	/** The name **/
+	/**
+	 * The id
+	 **/
+	private int id;
+	/**
+	 * The name
+	 **/
 	private String name;
-	/** The position **/
+	/**
+	 * The position
+	 **/
 	private Position position;
 
 	/**
@@ -48,31 +54,27 @@ public final class BusStop implements Comparable<BusStop>, Parcelable, Serializa
 	}
 
 	/**
-	 *
 	 * @param in
 	 */
-	private BusStop(Parcel in) {
+	private BusStop(final Parcel in) {
 		readFromParcel(in);
 	}
 
 	/**
-	 *
 	 * @return
 	 */
-	public final Integer getId() {
+	public final int getId() {
 		return id;
 	}
 
 	/**
-	 *
 	 * @param id
 	 */
-	public final void setId(final Integer id) {
+	public final void setId(final int id) {
 		this.id = id;
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final String getName() {
@@ -80,7 +82,6 @@ public final class BusStop implements Comparable<BusStop>, Parcelable, Serializa
 	}
 
 	/**
-	 *
 	 * @param name
 	 */
 	public final void setName(final String name) {
@@ -88,7 +89,6 @@ public final class BusStop implements Comparable<BusStop>, Parcelable, Serializa
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final Position getPosition() {
@@ -96,7 +96,6 @@ public final class BusStop implements Comparable<BusStop>, Parcelable, Serializa
 	}
 
 	/**
-	 *
 	 * @param position
 	 */
 	public final void setPosition(final Position position) {
@@ -111,8 +110,8 @@ public final class BusStop implements Comparable<BusStop>, Parcelable, Serializa
 	@Override
 	public int compareTo(@NonNull final BusStop another) {
 		Position position = another.getPosition();
-		int latitude = getPosition().getLatitude().compareTo(position.getLatitude());
-		return latitude == 0 ? getPosition().getLongitude().compareTo(position.getLongitude()) : latitude;
+		int latitude = Double.compare(getPosition().getLatitude(), position.getLatitude());
+		return latitude == 0 ? Double.compare(getPosition().getLongitude(), position.getLongitude()) : latitude;
 	}
 
 	@Override

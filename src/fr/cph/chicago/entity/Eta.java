@@ -32,38 +32,68 @@ import java.util.concurrent.TimeUnit;
  * @version 1
  */
 public final class Eta implements Comparable<Eta>, Parcelable {
-	/** The station **/
+	/**
+	 * The station
+	 **/
 	private Station station;
-	/** The stop **/
+	/**
+	 * The stop
+	 **/
 	private Stop stop;
-	/** The bus number **/
-	private Integer runNumber;
-	/** The route name **/
+	/**
+	 * The bus number
+	 **/
+	private int runNumber;
+	/**
+	 * The route name
+	 **/
 	private TrainLine routeName;
-	/** The destination station **/
-	private Integer destSt;
-	/** The destination name **/
+	/**
+	 * The destination station
+	 **/
+	private int destSt;
+	/**
+	 * The destination name
+	 **/
 	private String destName;
-	/** The train route direction code **/
-	private Integer trainRouteDirectionCode;
-	/** The prediction date **/
+	/**
+	 * The train route direction code
+	 **/
+	private int trainRouteDirectionCode;
+	/**
+	 * The prediction date
+	 **/
 	private Date predictionDate;
-	/** The arrival departure date **/
+	/**
+	 * The arrival departure date
+	 **/
 	private Date arrivalDepartureDate;
-	/** Is approaching **/
-	private Boolean isApp;
-	/** Is scheduled **/
-	private Boolean isSch;
+	/**
+	 * Is approaching
+	 **/
+	private boolean isApp;
+	/**
+	 * Is scheduled
+	 **/
+	private boolean isSch;
 	/** **/
-	private Boolean isFlt;
-	/** Is delayed **/
-	private Boolean isDly;
-	/** Is flag **/
+	private boolean isFlt;
+	/**
+	 * Is delayed
+	 **/
+	private boolean isDly;
+	/**
+	 * Is flag
+	 **/
 	private String flags;
-	/** The position **/
+	/**
+	 * The position
+	 **/
 	private Position position;
-	/** Heading **/
-	private Integer heading;
+	/**
+	 * Heading
+	 **/
+	private int heading;
 
 	/**
 	 *
@@ -73,7 +103,6 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @param in
 	 */
 	private Eta(Parcel in) {
@@ -81,7 +110,6 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final Station getStation() {
@@ -89,7 +117,6 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @param station
 	 */
 	public final void setStation(final Station station) {
@@ -97,7 +124,6 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final Stop getStop() {
@@ -105,7 +131,6 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @param stop
 	 */
 	public final void setStop(final Stop stop) {
@@ -113,23 +138,20 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
-	public final Integer getRunNumber() {
+	public final int getRunNumber() {
 		return runNumber;
 	}
 
 	/**
-	 *
 	 * @param runNumber
 	 */
-	public final void setRunNumber(final Integer runNumber) {
+	public final void setRunNumber(final int runNumber) {
 		this.runNumber = runNumber;
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final TrainLine getRouteName() {
@@ -137,7 +159,6 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @param routeName
 	 */
 	public final void setRouteName(final TrainLine routeName) {
@@ -145,23 +166,20 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
-	public final Integer getTrainRouteDirectionCode() {
+	public final int getTrainRouteDirectionCode() {
 		return trainRouteDirectionCode;
 	}
 
 	/**
-	 *
 	 * @param trainRouteDirectionCode
 	 */
-	public final void setTrainRouteDirectionCode(final Integer trainRouteDirectionCode) {
+	public final void setTrainRouteDirectionCode(final int trainRouteDirectionCode) {
 		this.trainRouteDirectionCode = trainRouteDirectionCode;
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final Date getPredictionDate() {
@@ -169,7 +187,6 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @param predictionDate
 	 */
 	public final void setPredictionDate(final Date predictionDate) {
@@ -177,7 +194,6 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final Date getArrivalDepartureDate() {
@@ -185,7 +201,6 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @param arrivalDepartureDate
 	 */
 	public final void setArrivalDepartureDate(final Date arrivalDepartureDate) {
@@ -193,15 +208,13 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
-	public final Boolean getIsApp() {
+	public final boolean getIsApp() {
 		return isApp;
 	}
 
 	/**
-	 *
 	 * @param isApp
 	 */
 	public final void setIsApp(final Boolean isApp) {
@@ -209,55 +222,48 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
-	public final Boolean getIsSch() {
+	public final boolean getIsSch() {
 		return isSch;
 	}
 
 	/**
-	 *
 	 * @param isSch
 	 */
-	public final void setIsSch(final Boolean isSch) {
+	public final void setIsSch(final boolean isSch) {
 		this.isSch = isSch;
 	}
 
 	/**
-	 *
 	 * @return
 	 */
-	public final Boolean getIsFlt() {
+	public final boolean getIsFlt() {
 		return isFlt;
 	}
 
 	/**
-	 *
 	 * @param isFlt
 	 */
-	public final void setIsFlt(final Boolean isFlt) {
+	public final void setIsFlt(final boolean isFlt) {
 		this.isFlt = isFlt;
 	}
 
 	/**
-	 *
 	 * @return
 	 */
-	public final Boolean getIsDly() {
+	public final boolean getIsDly() {
 		return isDly;
 	}
 
 	/**
-	 *
 	 * @param isDly
 	 */
-	public final void setIsDly(final Boolean isDly) {
+	public final void setIsDly(final boolean isDly) {
 		this.isDly = isDly;
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final String getFlags() {
@@ -265,7 +271,6 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @param flags
 	 */
 	public final void setFlags(final String flags) {
@@ -273,7 +278,6 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final Position getPosition() {
@@ -281,7 +285,6 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @param position
 	 */
 	public final void setPosition(final Position position) {
@@ -289,23 +292,20 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
-	public final Integer getHeading() {
+	public final int getHeading() {
 		return heading;
 	}
 
 	/**
-	 *
 	 * @param heading
 	 */
-	public final void setHeading(final Integer heading) {
+	public final void setHeading(final int heading) {
 		this.heading = heading;
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final String getTimeLeft() {
@@ -314,7 +314,6 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final String getTimeLeftDueDelay() {
@@ -332,23 +331,20 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
-	public final Integer getDestSt() {
+	public final int getDestSt() {
 		return destSt;
 	}
 
 	/**
-	 *
 	 * @param destSt
 	 */
-	public final void setDestSt(final Integer destSt) {
+	public final void setDestSt(final int destSt) {
 		this.destSt = destSt;
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public final String getDestName() {
@@ -356,7 +352,6 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	/**
-	 *
 	 * @param destName
 	 */
 	public final void setDestName(final String destName) {
@@ -408,17 +403,13 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 		dest.writeInt(trainRouteDirectionCode);
 		dest.writeLong(predictionDate.getTime());
 		dest.writeLong(arrivalDepartureDate.getTime());
-		dest.writeString(isApp.toString());
-		dest.writeString(isSch.toString());
-		dest.writeString(isFlt.toString());
-		dest.writeString(isDly.toString());
+		dest.writeString(String.valueOf(isApp));
+		dest.writeString(String.valueOf(isSch));
+		dest.writeString(String.valueOf(isFlt));
+		dest.writeString(String.valueOf(isDly));
 		dest.writeString(this.flags);
 		dest.writeParcelable(position, flags);
-		if (heading != null) {
-			dest.writeInt(heading);
-		} else {
-			dest.writeInt(0);
-		}
+		dest.writeInt(heading);
 	}
 
 	private void readFromParcel(Parcel in) {

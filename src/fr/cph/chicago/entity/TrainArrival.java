@@ -34,7 +34,7 @@ public class TrainArrival implements Parcelable {
 	/** The timestamp **/
 	private Date timeStamp;
 	/** The error code **/
-	private Integer errorCode;
+	private int errorCode;
 	/** The error message **/
 	private String errorMessage;
 	/** A list of Eta **/
@@ -75,7 +75,7 @@ public class TrainArrival implements Parcelable {
 	 *
 	 * @return
 	 */
-	public final Integer getErrorCode() {
+	public final int getErrorCode() {
 		return errorCode;
 	}
 
@@ -83,7 +83,7 @@ public class TrainArrival implements Parcelable {
 	 *
 	 * @param errorCode
 	 */
-	public final void setErrorCode(final Integer errorCode) {
+	public final void setErrorCode(final int errorCode) {
 		this.errorCode = errorCode;
 	}
 

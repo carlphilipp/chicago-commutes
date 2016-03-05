@@ -16,11 +16,8 @@
 
 package fr.cph.chicago.data;
 
-import android.util.Log;
-import com.univocity.parsers.csv.CsvParser;
-import com.univocity.parsers.csv.CsvParserSettings;
-import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.connection.CtaConnect;
+import fr.cph.chicago.csv.BusStopCsvParser;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Position;
@@ -30,8 +27,6 @@ import fr.cph.chicago.xml.Xml;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -50,21 +45,17 @@ public class BusData {
 
 	private static final String TAG = BusData.class.getSimpleName();
 
-	private static final String STOP_FILE_PATH = "stops.txt";
-
 	private static BusData busData;
 
 	private List<BusRoute> busRoutes;
 	private List<BusStop> busStops;
 
-	private CsvParser parser;
+	private BusStopCsvParser parser;
 
 	private BusData() {
 		this.busRoutes = new ArrayList<>();
 		this.busStops = new ArrayList<>();
-		final CsvParserSettings settings = new CsvParserSettings();
-		settings.getFormat().setLineSeparator("\n");
-		this.parser = new CsvParser(settings);
+		this.parser = new BusStopCsvParser();
 	}
 
 	/**
@@ -86,31 +77,7 @@ public class BusData {
 	 */
 	public final List<BusStop> readBusStops() {
 		if (busStops.size() == 0) {
-			try {
-				final List<String[]> allRows = parser.parseAll(new InputStreamReader(ChicagoTracker.getContext().getAssets().open(STOP_FILE_PATH)));
-				int stopId = 0;
-				for (int i = 1; i < allRows.size() && stopId < 30000; i++) {
-					String[] row = allRows.get(i);
-					stopId = Integer.parseInt(row[0]); // stop_id
-					// String stopCode = TrainDirection.fromString(row[1]); // stop_code
-					final String stopName = row[2]; // stop_name
-					// String stopDesc = row[3]; // stop_desc
-					final double latitude = Double.parseDouble(row[4]);// stop_lat
-					final double longitude = Double.parseDouble(row[5]);// stop_lon
-
-					final BusStop busStop = new BusStop();
-					busStop.setId(stopId);
-					busStop.setName(stopName);
-					final Position position = new Position();
-					position.setLatitude(latitude);
-					position.setLongitude(longitude);
-					busStop.setPosition(position);
-
-					busStops.add(busStop);
-				}
-			} catch (final IOException e) {
-				Log.e(TAG, e.getMessage(), e);
-			}
+			busStops = parser.parse();
 		}
 		return busStops;
 	}

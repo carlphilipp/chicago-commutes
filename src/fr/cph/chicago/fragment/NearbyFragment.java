@@ -251,7 +251,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 					// Buses
 					try {
 						final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-						reqParams.put("stpid", busStop.getId().toString());
+						reqParams.put("stpid", Integer.toString(busStop.getId()));
 
 						final String xmlRes = cta.connect(BUS_ARRIVALS, reqParams);
 						final Xml xml = new Xml();
@@ -554,7 +554,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 		LatLng point;
 		for (final BusStop busStop : buses) {
 			point = new LatLng(busStop.getPosition().getLatitude(), busStop.getPosition().getLongitude());
-			options = new MarkerOptions().position(point).title(busStop.getName()).snippet(busStop.getId().toString());
+			options = new MarkerOptions().position(point).title(busStop.getName()).snippet(Integer.toString(busStop.getId()));
 			options.icon(azure);
 			marker = googleMap.addMarker(options);
 			markers.add(marker);
@@ -563,7 +563,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 		for (final Station station : stations) {
 			for (final Position position : station.getStopsPosition()) {
 				point = new LatLng(position.getLatitude(), position.getLongitude());
-				options = new MarkerOptions().position(point).title(station.getName()).snippet(station.getId().toString());
+				options = new MarkerOptions().position(point).title(station.getName()).snippet(String.valueOf(station.getId()));
 				options.icon(violet);
 				marker = googleMap.addMarker(options);
 				markers.add(marker);
@@ -591,7 +591,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 			public boolean onMarkerClick(Marker marker) {
 				boolean found = false;
 				for (int i = 0; i < stations.size(); i++) {
-					if (marker.getSnippet().equals(stations.get(i).getId().toString())) {
+					if (marker.getSnippet().equals(String.valueOf(stations.get(i).getId()))) {
 						listView.smoothScrollToPosition(i);
 						found = true;
 						break;
@@ -600,7 +600,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 				if (!found) {
 					for (int i = 0; i < busStops.size(); i++) {
 						int index = i + stations.size();
-						if (marker.getSnippet().equals(busStops.get(i).getId().toString())) {
+						if (marker.getSnippet().equals(Integer.toString(busStops.get(i).getId()))) {
 							listView.smoothScrollToPosition(index);
 							break;
 						}

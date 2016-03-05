@@ -361,11 +361,11 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
 			for (final PatternPoint patternPoint : pattern.getPoints()) {
 				final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
 				poly.add(point);
-				if (patternPoint.getStopId() != null) {
+				//if (patternPoint.getStopId() != null) {
 					marker = googleMap.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName()).snippet(String.valueOf(patternPoint.getSequence())));
 					markers.add(marker);
 					marker.setVisible(false);
-				}
+				//}
 			}
 			googleMap.addPolyline(poly);
 

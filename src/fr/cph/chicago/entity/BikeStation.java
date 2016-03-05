@@ -44,22 +44,22 @@ public final class BikeStation implements Parcelable {
 	 * Available docks
 	 **/
 	@JsonProperty("availableDocks")
-	private Integer availableDocks;
+	private int availableDocks;
 	/**
 	 * Total docks
 	 **/
 	@JsonProperty("totalDocks")
-	private Integer totalDocks;
+	private int totalDocks;
 	/**
 	 * The latitude
 	 **/
 	@JsonProperty("latitude")
-	private Double latitude;
+	private double latitude;
 	/**
 	 * The longitude
 	 **/
 	@JsonProperty("longitude")
-	private Double longitude;
+	private double longitude;
 	/**
 	 * Status value
 	 **/
@@ -74,7 +74,7 @@ public final class BikeStation implements Parcelable {
 	 * Available bikes
 	 **/
 	@JsonProperty("availableBikes")
-	private Integer availableBikes;
+	private int availableBikes;
 	/**
 	 * Street address 1
 	 **/
@@ -148,19 +148,19 @@ public final class BikeStation implements Parcelable {
 		this.name = name;
 	}
 
-	public final Integer getAvailableDocks() {
+	public final int getAvailableDocks() {
 		return availableDocks;
 	}
 
-	public final void setAvailableDocks(final Integer availableDocks) {
+	public final void setAvailableDocks(final int availableDocks) {
 		this.availableDocks = availableDocks;
 	}
 
-	public final Integer getTotalDocks() {
+	public final int getTotalDocks() {
 		return totalDocks;
 	}
 
-	public final void setTotalDocks(final Integer totalDocks) {
+	public final void setTotalDocks(final int totalDocks) {
 		this.totalDocks = totalDocks;
 	}
 
@@ -180,11 +180,11 @@ public final class BikeStation implements Parcelable {
 		this.statusKey = statusKey;
 	}
 
-	public final Integer getAvailableBikes() {
+	public final int getAvailableBikes() {
 		return availableBikes;
 	}
 
-	public final void setAvailableBikes(final Integer availableBikes) {
+	public final void setAvailableBikes(final int availableBikes) {
 		this.availableBikes = availableBikes;
 	}
 
@@ -314,31 +314,6 @@ public final class BikeStation implements Parcelable {
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((altitude == null) ? 0 : altitude.hashCode());
-		result = prime * result + availableBikes;
-		result = prime * result + availableDocks;
-		result = prime * result + ((city == null) ? 0 : city.hashCode());
-		result = prime * result + id;
-		result = prime * result + landMark;
-		result = prime * result + ((lastCommunicationTime == null) ? 0 : lastCommunicationTime.hashCode());
-		result = prime * result + ((location == null) ? 0 : location.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((latitude == null) ? 0 : latitude.hashCode());
-		result = prime * result + ((longitude == null) ? 0 : longitude.hashCode());
-		result = prime * result + ((postalCode == null) ? 0 : postalCode.hashCode());
-		result = prime * result + ((stAddress1 == null) ? 0 : stAddress1.hashCode());
-		result = prime * result + ((stAddress2 == null) ? 0 : stAddress2.hashCode());
-		result = prime * result + ((statusKey == null) ? 0 : statusKey.hashCode());
-		result = prime * result + ((statusValue == null) ? 0 : statusValue.hashCode());
-		result = prime * result + (testStation ? 1231 : 1237);
-		result = prime * result + totalDocks;
-		return result;
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -348,6 +323,33 @@ public final class BikeStation implements Parcelable {
 			return false;
 		BikeStation other = (BikeStation) obj;
 		return id == other.id;
+	}
+
+	@Override
+	public int hashCode() {
+		int result;
+		long temp;
+		result = id;
+		result = 31 * result + (name != null ? name.hashCode() : 0);
+		result = 31 * result + availableDocks;
+		result = 31 * result + totalDocks;
+		temp = Double.doubleToLongBits(latitude);
+		result = 31 * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(longitude);
+		result = 31 * result + (int) (temp ^ (temp >>> 32));
+		result = 31 * result + (statusValue != null ? statusValue.hashCode() : 0);
+		result = 31 * result + (statusKey != null ? statusKey.hashCode() : 0);
+		result = 31 * result + availableBikes;
+		result = 31 * result + (stAddress1 != null ? stAddress1.hashCode() : 0);
+		result = 31 * result + (stAddress2 != null ? stAddress2.hashCode() : 0);
+		result = 31 * result + (city != null ? city.hashCode() : 0);
+		result = 31 * result + (postalCode != null ? postalCode.hashCode() : 0);
+		result = 31 * result + (location != null ? location.hashCode() : 0);
+		result = 31 * result + (altitude != null ? altitude.hashCode() : 0);
+		result = 31 * result + (testStation ? 1 : 0);
+		result = 31 * result + (lastCommunicationTime != null ? lastCommunicationTime.hashCode() : 0);
+		result = 31 * result + landMark;
+		return result;
 	}
 
 	public static final Parcelable.Creator<BikeStation> CREATOR = new Parcelable.Creator<BikeStation>() {
@@ -381,19 +383,19 @@ public final class BikeStation implements Parcelable {
 		return bikeStationsRes;
 	}
 
-	public Double getLatitude() {
+	public double getLatitude() {
 		return latitude;
 	}
 
-	public void setLatitude(Double latitude) {
+	public void setLatitude(double latitude) {
 		this.latitude = latitude;
 	}
 
-	public Double getLongitude() {
+	public double getLongitude() {
 		return longitude;
 	}
 
-	public void setLongitude(Double longitude) {
+	public void setLongitude(double longitude) {
 		this.longitude = longitude;
 	}
 }

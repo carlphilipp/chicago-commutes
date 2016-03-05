@@ -35,11 +35,11 @@ public class Position implements Parcelable, Serializable {
 	/**
 	 * The latitude
 	 **/
-	private Double latitude;
+	private double latitude;
 	/**
 	 * The longitude
 	 **/
-	private Double longitude;
+	private double longitude;
 
 	/**
 	 * Public constructor
@@ -53,7 +53,7 @@ public class Position implements Parcelable, Serializable {
 	 * @param latitude  the latitude
 	 * @param longitude the longitude
 	 */
-	public Position(final Double latitude, final Double longitude) {
+	public Position(final double latitude, final double longitude) {
 		this.latitude = latitude;
 		this.longitude = longitude;
 	}
@@ -65,28 +65,28 @@ public class Position implements Parcelable, Serializable {
 	/**
 	 * @return
 	 */
-	public final Double getLatitude() {
+	public final double getLatitude() {
 		return latitude;
 	}
 
 	/**
 	 * @param latitude
 	 */
-	public final void setLatitude(final Double latitude) {
+	public final void setLatitude(final double latitude) {
 		this.latitude = latitude;
 	}
 
 	/**
 	 * @return
 	 */
-	public final Double getLongitude() {
+	public final double getLongitude() {
 		return longitude;
 	}
 
 	/**
 	 * @param longitude
 	 */
-	public final void setLongitude(final Double longitude) {
+	public final void setLongitude(final double longitude) {
 		this.longitude = longitude;
 	}
 

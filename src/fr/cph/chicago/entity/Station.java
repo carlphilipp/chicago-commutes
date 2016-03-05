@@ -38,7 +38,7 @@ public class Station implements Comparable<Station>, Parcelable {
 	/**
 	 * The id
 	 **/
-	private Integer id;
+	private int id;
 	/**
 	 * The name
 	 **/
@@ -62,14 +62,14 @@ public class Station implements Comparable<Station>, Parcelable {
 	/**
 	 * @return
 	 */
-	public final Integer getId() {
+	public final int getId() {
 		return id;
 	}
 
 	/**
 	 * @param id
 	 */
-	public final void setId(final Integer id) {
+	public final void setId(final int id) {
 		this.id = id;
 	}
 
