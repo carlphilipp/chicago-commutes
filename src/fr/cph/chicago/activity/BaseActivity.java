@@ -27,7 +27,6 @@ import android.util.SparseArray;
 import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
-import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
@@ -45,6 +44,9 @@ import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
+import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
 
 /**
  * This class represents the base activity of the application It will load the loading screen and/or the main
@@ -85,7 +87,7 @@ public class BaseActivity extends Activity {
 		protected final Void doInBackground(final Void... params) {
 			// Load local CSV
 			long startTime = System.currentTimeMillis();
-			trainData = new TrainData();
+			trainData = TrainData.getInstance();
 			trainData.read();
 			long stopTime = System.currentTimeMillis();
 			Log.e(TAG, "Load local train data: " + (stopTime - startTime) + " ms");
@@ -106,7 +108,10 @@ public class BaseActivity extends Activity {
 			dataHolder.setTrainData(trainData);
 			try {
 				// Load favorites data
+				long startTime = System.currentTimeMillis();
 				loadFavorites();
+				long stopTime = System.currentTimeMillis();
+				Log.e(TAG, "Load favorites: " + (stopTime - startTime) + " ms");
 			} catch (final ParserException e) {
 				displayError(e);
 			}
@@ -120,9 +125,8 @@ public class BaseActivity extends Activity {
 	 * @param trainArrivals list of train arrivals
 	 * @param busArrivals   list of bus arrivals
 	 */
-	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals,
-			final List<BikeStation> bikeStations, final Boolean trainBoolean, final Boolean busBoolean, final Boolean bikeBoolean,
-			final Boolean networkAvailable) {
+	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals, final List<BikeStation> bikeStations, final Boolean trainBoolean,
+			final Boolean busBoolean, final Boolean bikeBoolean, final Boolean networkAvailable) {
 		if (!networkAvailable) {
 			Toast.makeText(this, "No network connection detected!", Toast.LENGTH_SHORT).show();
 		}
@@ -188,8 +192,7 @@ public class BaseActivity extends Activity {
 			editor.apply();
 		}
 
-		final GlobalConnectTask task = new GlobalConnectTask(this, BaseActivity.class, CtaRequestType.TRAIN_ARRIVALS, paramsTrain,
-				CtaRequestType.BUS_ARRIVALS, paramsBus, loadTrain, loadBus, false);
+		final GlobalConnectTask task = new GlobalConnectTask(this, BaseActivity.class, TRAIN_ARRIVALS, paramsTrain, BUS_ARRIVALS, paramsBus, loadTrain, loadBus, false);
 		task.execute((Void) null);
 		trackWithGoogleAnalytics(loadTrain, loadBus);
 	}
@@ -216,12 +219,10 @@ public class BaseActivity extends Activity {
 
 	private void trackWithGoogleAnalytics(boolean loadTrain, boolean loadBus) {
 		if (loadTrain) {
-			Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train,
-					R.string.analytics_action_get_train_arrivals, 0);
+			Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
 		}
 		if (loadBus) {
-			Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
-					R.string.analytics_action_get_bus_arrival, 0);
+			Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
 		}
 	}
 }

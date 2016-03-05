@@ -47,7 +47,6 @@ import android.widget.TextView;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
-import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.connection.GStreetViewConnect;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
@@ -78,6 +77,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
+
+import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
 
 /**
  * Activity that represents the train station
@@ -413,7 +414,7 @@ public class StationActivity extends Activity {
 			final CtaConnect connect = CtaConnect.getInstance();
 			try {
 				final Xml xml = new Xml();
-				final String xmlResult = connect.connect(CtaRequestType.TRAIN_ARRIVALS, params[0]);
+				final String xmlResult = connect.connect(TRAIN_ARRIVALS, params[0]);
 				//String xmlResult = connectTest();
 				arrivals = xml.parseArrivals(xmlResult, StationActivity.this.trainData);
 				// Apply filters

@@ -17,10 +17,10 @@
 package fr.cph.chicago.data;
 
 import android.util.Log;
-import au.com.bytecode.opencsv.CSVReader;
+import com.univocity.parsers.csv.CsvParser;
+import com.univocity.parsers.csv.CsvParserSettings;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.connection.CtaConnect;
-import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Position;
@@ -37,6 +37,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import static fr.cph.chicago.connection.CtaRequestType.BUS_ROUTES;
+import static fr.cph.chicago.connection.CtaRequestType.BUS_STOP_LIST;
+
 /**
  * Class that handle bus data. Singleton
  *
@@ -46,17 +49,22 @@ import java.util.List;
 public class BusData {
 
 	private static final String TAG = BusData.class.getSimpleName();
+
+	private static final String STOP_FILE_PATH = "stops.txt";
+
 	private static BusData busData;
 
 	private List<BusRoute> busRoutes;
 	private List<BusStop> busStops;
 
-	/**
-	 * Private constuctor
-	 */
+	private CsvParser parser;
+
 	private BusData() {
 		this.busRoutes = new ArrayList<>();
 		this.busStops = new ArrayList<>();
+		final CsvParserSettings settings = new CsvParserSettings();
+		settings.getFormat().setLineSeparator("\n");
+		this.parser = new CsvParser(settings);
 	}
 
 	/**
@@ -79,34 +87,27 @@ public class BusData {
 	public final List<BusStop> readBusStops() {
 		if (busStops.size() == 0) {
 			try {
-				final CSVReader reader = new CSVReader(new InputStreamReader(ChicagoTracker.getContext().getAssets().open("stops.txt")));
-				reader.readNext();
-				String[] row;
-				while ((row = reader.readNext()) != null) {
-					// int locationType = Integer.valueOf(row[6]);// location_type
-					final Integer stopId = Integer.valueOf(row[0]); // stop_id
-					if (stopId < 30000) {
-						// String stopCode = TrainDirection.fromString(row[1]); // stop_code
-						final String stopName = row[2]; // stop_name
-						// String stopDesc = row[3]; // stop_desc
-						final Double latitude = Double.valueOf(row[4]);// stop_lat
-						final Double longitude = Double.valueOf(row[5]);// stop_lon
+				final List<String[]> allRows = parser.parseAll(new InputStreamReader(ChicagoTracker.getContext().getAssets().open(STOP_FILE_PATH)));
+				int stopId = 0;
+				for (int i = 1; i < allRows.size() && stopId < 30000; i++) {
+					String[] row = allRows.get(i);
+					stopId = Integer.parseInt(row[0]); // stop_id
+					// String stopCode = TrainDirection.fromString(row[1]); // stop_code
+					final String stopName = row[2]; // stop_name
+					// String stopDesc = row[3]; // stop_desc
+					final double latitude = Double.parseDouble(row[4]);// stop_lat
+					final double longitude = Double.parseDouble(row[5]);// stop_lon
 
-						final BusStop busStop = new BusStop();
-						busStop.setId(stopId);
-						busStop.setName(stopName);
-						final Position position = new Position();
-						position.setLatitude(latitude);
-						position.setLongitude(longitude);
-						busStop.setPosition(position);
+					final BusStop busStop = new BusStop();
+					busStop.setId(stopId);
+					busStop.setName(stopName);
+					final Position position = new Position();
+					position.setLatitude(latitude);
+					position.setLongitude(longitude);
+					busStop.setPosition(position);
 
-						busStops.add(busStop);
-					} else {
-						break;
-					}
+					busStops.add(busStop);
 				}
-				reader.close();
-				order();
 			} catch (final IOException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
@@ -126,7 +127,7 @@ public class BusData {
 			final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
 			final CtaConnect connect = CtaConnect.getInstance();
 			final Xml xml = new Xml();
-			final String xmlResult = connect.connect(CtaRequestType.BUS_ROUTES, params);
+			final String xmlResult = connect.connect(BUS_ROUTES, params);
 			busRoutes = xml.parseBusRoutes(xmlResult);
 		}
 		return busRoutes;
@@ -139,25 +140,6 @@ public class BusData {
 	 */
 	public final List<BusRoute> getRoutes() {
 		return busRoutes;
-	}
-
-	/**
-	 * Get number of route
-	 *
-	 * @return a number
-	 */
-	public final int getRouteSize() {
-		return busRoutes.size();
-	}
-
-	/**
-	 * Get a route
-	 *
-	 * @param position the position in the list
-	 * @return a bus route
-	 */
-	public final BusRoute getRoute(final int position) {
-		return busRoutes.get(position);
 	}
 
 	/**
@@ -200,7 +182,7 @@ public class BusData {
 		final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
 		params.put("rt", stopId);
 		params.put("dir", bound);
-		final String xmlResult = connect.connect(CtaRequestType.BUS_STOP_LIST, params);
+		final String xmlResult = connect.connect(BUS_STOP_LIST, params);
 		final Xml xml = new Xml();
 		return xml.parseBusBounds(xmlResult);
 	}
@@ -212,23 +194,6 @@ public class BusData {
 	 */
 	public final List<BusStop> readAllBusStops() {
 		return this.busStops;
-	}
-
-	/**
-	 * Get one bus from CSV
-	 *
-	 * @param id the id of the bus
-	 * @return a bus stop
-	 */
-	public final BusStop readOneBus(final int id) {
-		BusStop res = null;
-		for (final BusStop busStop : busStops) {
-			if (busStop.getId() == id) {
-				res = busStop;
-				break;
-			}
-		}
-		return res;
 	}
 
 	/**
@@ -256,23 +221,13 @@ public class BusData {
 			if (busLatitude <= latMax && busLatitude >= latMin && busLongitude <= lonMax && busLongitude >= lonMin) {
 				res.add(busStop);
 			}
-
 		}
 		Collections.sort(res, new Comparator<BusStop>() {
 			@Override
-			public int compare(BusStop lhs, BusStop rhs) {
+			public int compare(final BusStop lhs, final BusStop rhs) {
 				return lhs.getName().compareTo(rhs.getName());
 			}
 		});
 		return res;
-	}
-
-	/**
-	 * Sort stops list
-	 */
-	private void order() {
-		if (busStops.size() != 0) {
-			Collections.sort(busStops);
-		}
 	}
 }

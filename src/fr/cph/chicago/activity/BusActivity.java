@@ -39,7 +39,6 @@ import android.widget.TextView;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
-import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.connection.GStreetViewConnect;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BusArrival;
@@ -59,6 +58,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
 
 /**
  * Activity that represents the bus stop
@@ -141,7 +142,6 @@ public class BusActivity extends Activity {
 					new LoadData().execute();
 				}
 			});
-
 
 			final TextView busRouteNameView2 = (TextView) findViewById(R.id.activity_bus_station_value);
 			final String title = busRouteName + " (" + boundTitle + ")";
@@ -256,10 +256,7 @@ public class BusActivity extends Activity {
 			}
 		}
 	}
-
-	/**
-	 * @return
-	 */
+	
 	private boolean isFavorite() {
 		boolean isFavorite = false;
 		final List<String> favorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
@@ -294,7 +291,7 @@ public class BusActivity extends Activity {
 			try {
 				final Xml xml = new Xml();
 				// Connect to CTA API bus to get XML result of inc buses
-				final String xmlResult = connect.connect(CtaRequestType.BUS_ARRIVALS, reqParams);
+				final String xmlResult = connect.connect(BUS_ARRIVALS, reqParams);
 				// Parse and return arrival buses
 				return xml.parseBusArrivals(xmlResult);
 			} catch (ParserException | ConnectException e) {

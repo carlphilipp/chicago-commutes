@@ -50,7 +50,6 @@ import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.adapter.BusBoundAdapter;
 import fr.cph.chicago.connection.CtaConnect;
-import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BusPattern;
 import fr.cph.chicago.entity.BusStop;
@@ -71,6 +70,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import static fr.cph.chicago.connection.CtaRequestType.BUS_PATTERN;
+
 /**
  * Activity that represents the bus bound activity
  *
@@ -78,9 +79,7 @@ import java.util.Locale;
  * @version 1
  */
 public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
-	/**
-	 * Tag
-	 **/
+
 	private static final String TAG = BusBoundActivity.class.getSimpleName();
 
 	private MapFragment mapFragment;
@@ -259,8 +258,7 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
 			} catch (final ParserException | ConnectException e) {
 				this.trackerException = e;
 			}
-			Util.trackAction(BusBoundActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
-					R.string.analytics_action_get_bus_stop, 0);
+			Util.trackAction(BusBoundActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_stop, 0);
 			return lBuses;
 		}
 
@@ -287,7 +285,7 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
 			connectParam.put("rt", busRouteId);
 			final String boundIgnoreCase = boundTitle.toLowerCase(Locale.US);
 			try {
-				final String content = connect.connect(CtaRequestType.BUS_PATTERN, connectParam);
+				final String content = connect.connect(BUS_PATTERN, connectParam);
 				final Xml xml = new Xml();
 				final List<BusPattern> patterns = xml.parsePatterns(content);
 				for (final BusPattern pattern : patterns) {
@@ -300,8 +298,7 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
 			} catch (final ConnectException | ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
-			Util.trackAction(BusBoundActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
-					R.string.analytics_action_get_bus_pattern, 0);
+			Util.trackAction(BusBoundActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_pattern, 0);
 			return this.busPattern;
 		}
 
@@ -365,8 +362,7 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
 				final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
 				poly.add(point);
 				if (patternPoint.getStopId() != null) {
-					marker = googleMap.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName())
-							.snippet(String.valueOf(patternPoint.getSequence())));
+					marker = googleMap.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName()).snippet(String.valueOf(patternPoint.getSequence())));
 					markers.add(marker);
 					marker.setVisible(false);
 				}

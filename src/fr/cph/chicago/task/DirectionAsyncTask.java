@@ -32,7 +32,6 @@ import fr.cph.chicago.activity.BusBoundActivity;
 import fr.cph.chicago.activity.BusMapActivity;
 import fr.cph.chicago.adapter.PopupBusAdapter;
 import fr.cph.chicago.connection.CtaConnect;
-import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.enumeration.BusDirection;
@@ -46,6 +45,8 @@ import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static fr.cph.chicago.connection.CtaRequestType.BUS_DIRECTION;
 
 /**
  * Direction task
@@ -76,13 +77,12 @@ public class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 			convertView = (View) params[1];
 			reqParams.put("rt", busRoute.getId());
 			final Xml xml = new Xml();
-			final String xmlResult = connect.connect(CtaRequestType.BUS_DIRECTION, reqParams);
+			final String xmlResult = connect.connect(BUS_DIRECTION, reqParams);
 			busDirections = xml.parseBusDirections(xmlResult, busRoute.getId());
 		} catch (ParserException | ConnectException e) {
 			this.trackerException = e;
 		}
-		Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus,
-				R.string.analytics_action_get_bus_direction, 0);
+		Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_direction, 0);
 		return busDirections;
 	}
 

@@ -163,7 +163,7 @@ public class ChicagoTracker extends Application {
 			busData.readBusStops();
 			dataHolder.setBusData(busData);
 		}
-		final TrainData trainData = new TrainData();
+		final TrainData trainData = TrainData.getInstance();
 		if (trainData.isStationNull() || trainData.isStopsNull()) {
 			trainData.read();
 			dataHolder.setTrainData(trainData);

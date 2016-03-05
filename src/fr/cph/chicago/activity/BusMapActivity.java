@@ -51,7 +51,6 @@ import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.adapter.BusMapSnippetAdapter;
 import fr.cph.chicago.connection.CtaConnect;
-import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.entity.Bus;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusDirections;
@@ -73,6 +72,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
+import static fr.cph.chicago.connection.CtaRequestType.BUS_DIRECTION;
+import static fr.cph.chicago.connection.CtaRequestType.BUS_PATTERN;
+import static fr.cph.chicago.connection.CtaRequestType.BUS_VEHICLES;
 
 /**
  * @author Carl-Philipp Harmant
@@ -303,13 +307,12 @@ public class BusMapActivity extends Activity {
 			final Bitmap bitmap = busListener.getCurrentBitmap();
 			for (final Bus bus : buses) {
 				final LatLng point = new LatLng(bus.getPosition().getLatitude(), bus.getPosition().getLongitude());
-				final Marker marker = googleMap
-						.addMarker(new MarkerOptions().position(point).title("To " + bus.getDestination()).snippet(bus.getId() + "")
-								.icon(BitmapDescriptorFactory.fromBitmap(bitmap)).anchor(0.5f, 0.5f).rotation(bus.getHeading()).flat(true));
+				final Marker marker = googleMap.addMarker(
+						new MarkerOptions().position(point).title("To " + bus.getDestination()).snippet(bus.getId() + "").icon(BitmapDescriptorFactory.fromBitmap(bitmap)).anchor(0.5f, 0.5f)
+								.rotation(bus.getHeading()).flat(true));
 				busMarkers.add(marker);
 
-				final LayoutInflater layoutInflater = (LayoutInflater) BusMapActivity.this.getBaseContext()
-						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				final LayoutInflater layoutInflater = (LayoutInflater) BusMapActivity.this.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				final View view = layoutInflater.inflate(R.layout.marker_train, viewGroup, false);
 				final TextView title = (TextView) view.findViewById(R.id.title);
 				title.setText(marker.getTitle());
@@ -330,7 +333,7 @@ public class BusMapActivity extends Activity {
 				BusMapActivity.this.googleMap = googleMap;
 				int j = 0;
 				final BitmapDescriptor red = BitmapDescriptorFactory.defaultMarker();
-				BitmapDescriptor blue = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
+				final BitmapDescriptor blue = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
 				MarkerOptions options;
 				for (final BusPattern pattern : patterns) {
 					final PolylineOptions poly = new PolylineOptions();
@@ -386,14 +389,13 @@ public class BusMapActivity extends Activity {
 				connectParam.put("rt", busRouteId);
 			}
 			try {
-				final String content = connect.connect(CtaRequestType.BUS_VEHICLES, connectParam);
+				final String content = connect.connect(BUS_VEHICLES, connectParam);
 				final Xml xml = new Xml();
 				buses = xml.parseVehicles(content);
 			} catch (final ConnectException | ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
-			Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
-					R.string.analytics_action_get_bus_vehicles, 0);
+			Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_vehicles, 0);
 			return buses;
 		}
 
@@ -429,19 +431,18 @@ public class BusMapActivity extends Activity {
 					final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
 					reqParams.put("rt", busRouteId);
 					final Xml xml = new Xml();
-					final String xmlResult = connect.connect(CtaRequestType.BUS_DIRECTION, reqParams);
+					final String xmlResult = connect.connect(BUS_DIRECTION, reqParams);
 					final BusDirections busDirections = xml.parseBusDirections(xmlResult, busRouteId);
 					bounds = new String[busDirections.getlBusDirection().size()];
 					for (int i = 0; i < busDirections.getlBusDirection().size(); i++) {
 						bounds[i] = busDirections.getlBusDirection().get(i).getBusDirectionEnum().toString();
 					}
-					Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
-							R.string.analytics_action_get_bus_direction, 0);
+					Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_direction, 0);
 				}
 
 				final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
 				connectParam.put("rt", busRouteId);
-				final String content = connect.connect(CtaRequestType.BUS_PATTERN, connectParam);
+				final String content = connect.connect(BUS_PATTERN, connectParam);
 				final Xml xml = new Xml();
 				final List<BusPattern> patterns = xml.parsePatterns(content);
 				for (final BusPattern pattern : patterns) {
@@ -455,8 +456,7 @@ public class BusMapActivity extends Activity {
 			} catch (final ConnectException | ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
-			Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
-					R.string.analytics_action_get_bus_pattern, 0);
+			Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_pattern, 0);
 			return this.patterns;
 		}
 
@@ -488,14 +488,13 @@ public class BusMapActivity extends Activity {
 				CtaConnect connect = CtaConnect.getInstance();
 				MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
 				connectParam.put("vid", busId);
-				String content = connect.connect(CtaRequestType.BUS_ARRIVALS, connectParam);
+				String content = connect.connect(BUS_ARRIVALS, connectParam);
 				Xml xml = new Xml();
 				arrivals = xml.parseBusArrivals(content);
 			} catch (final ConnectException | ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
-			Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
-					R.string.analytics_action_get_bus_arrival, 0);
+			Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
 			if (!loadAll && arrivals.size() > 7) {
 				arrivals = arrivals.subList(0, 6);
 				final BusArrival arrival = new BusArrival();

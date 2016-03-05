@@ -47,7 +47,6 @@ import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.adapter.TrainMapSnippetAdapter;
 import fr.cph.chicago.connection.CtaConnect;
-import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.Eta;
@@ -70,6 +69,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static fr.cph.chicago.connection.CtaRequestType.TRAIN_FOLLOW;
+import static fr.cph.chicago.connection.CtaRequestType.TRAIN_LOCATION;
 
 /**
  * @author Carl-Philipp Harmant
@@ -289,8 +291,8 @@ public class TrainMapActivity extends Activity {
 				final String title = "To " + train.getDestName();
 				final String snippet = String.valueOf(train.getRouteNumber());
 
-				final Marker marker = googleMap.addMarker(new MarkerOptions().position(point).title(title).snippet(snippet)
-						.icon(BitmapDescriptorFactory.fromBitmap(bitmap)).anchor(0.5f, 0.5f).rotation(train.getHeading()).flat(true));
+				final Marker marker = googleMap.addMarker(
+						new MarkerOptions().position(point).title(title).snippet(snippet).icon(BitmapDescriptorFactory.fromBitmap(bitmap)).anchor(0.5f, 0.5f).rotation(train.getHeading()).flat(true));
 				markers.add(marker);
 
 				final View view = this.getLayoutInflater().inflate(R.layout.marker_train, viewGroup, false);
@@ -347,14 +349,13 @@ public class TrainMapActivity extends Activity {
 				final CtaConnect connect = CtaConnect.getInstance();
 				final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
 				connectParam.put("runnumber", runNumber);
-				final String content = connect.connect(CtaRequestType.TRAIN_FOLLOW, connectParam);
+				final String content = connect.connect(TRAIN_FOLLOW, connectParam);
 				final Xml xml = new Xml();
 				etas = xml.parseTrainsFollow(content, trainData);
 			} catch (final ConnectException | ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
-			Util.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train,
-					R.string.analytics_action_get_train_follow, 0);
+			Util.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_follow, 0);
 			if (!loadAll && etas.size() > 7) {
 				etas = etas.subList(0, 6);
 
@@ -409,14 +410,13 @@ public class TrainMapActivity extends Activity {
 			final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
 			connectParam.put("rt", line);
 			try {
-				final String content = connect.connect(CtaRequestType.TRAIN_LOCATION, connectParam);
+				final String content = connect.connect(TRAIN_LOCATION, connectParam);
 				final Xml xml = new Xml();
 				trains = xml.parseTrainsLocation(content);
-			} catch (ConnectException | ParserException e) {
+			} catch (final ConnectException | ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
-			Util.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train,
-					R.string.analytics_action_get_train_location, 0);
+			Util.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_location, 0);
 			TrainData data = TrainMapActivity.this.trainData;
 			if (data == null) {
 				final DataHolder dataHolder = DataHolder.getInstance();
@@ -442,5 +442,4 @@ public class TrainMapActivity extends Activity {
 			}
 		}
 	}
-
 }

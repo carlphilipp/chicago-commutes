@@ -40,7 +40,6 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.activity.SearchActivity;
 import fr.cph.chicago.adapter.FavoritesAdapter;
-import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
@@ -56,6 +55,9 @@ import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
+import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
 
 /**
  * Favorites Fragment
@@ -170,8 +172,8 @@ public class FavoritesFragment extends Fragment {
 						params2.put("stpid", fav[1]);
 					}
 					try {
-						final GlobalConnectTask task = new GlobalConnectTask(FavoritesFragment.this, FavoritesFragment.class,
-								CtaRequestType.TRAIN_ARRIVALS, params, CtaRequestType.BUS_ARRIVALS, params2, loadTrain, loadBus, loadBike);
+						final GlobalConnectTask task = new GlobalConnectTask(FavoritesFragment.this, FavoritesFragment.class, TRAIN_ARRIVALS, params, BUS_ARRIVALS, params2, loadTrain, loadBus,
+								loadBike);
 						task.execute((Void) null);
 					} catch (ParserException e) {
 						ChicagoTracker.displayError(mainActivity, e);
@@ -277,9 +279,8 @@ public class FavoritesFragment extends Fragment {
 	 * @param trainArrivals the train arrivals list
 	 * @param busArrivals   the bus arrivals list
 	 */
-	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals,
-			final List<BikeStation> bikeStations, final Boolean trainBoolean, final Boolean busBoolean, final Boolean bikeBoolean,
-			final Boolean networkAvailable) {
+	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals, final List<BikeStation> bikeStations, final Boolean trainBoolean,
+			final Boolean busBoolean, final Boolean bikeBoolean, final Boolean networkAvailable) {
 		if (!networkAvailable) {
 			Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
 		} else {

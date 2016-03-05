@@ -38,7 +38,6 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
-import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.connection.DivvyConnect;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
@@ -60,6 +59,9 @@ import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
+import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -151,8 +153,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 							params2.put("stpid", fav[1]);
 						}
 						try {
-							final GlobalConnectTask task = new GlobalConnectTask(favoritesFragment, FavoritesFragment.class,
-									CtaRequestType.TRAIN_ARRIVALS, params, CtaRequestType.BUS_ARRIVALS, params2, loadTrain, loadBus, loadBike);
+							final GlobalConnectTask task = new GlobalConnectTask(favoritesFragment, FavoritesFragment.class, TRAIN_ARRIVALS, params, BUS_ARRIVALS, params2, loadTrain, loadBus,
+									loadBike);
 							task.execute((Void) null);
 						} catch (final ParserException e) {
 							ChicagoTracker.displayError(MainActivity.this, e);
@@ -160,16 +162,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 						}
 						// Google analytics
 						if (loadTrain) {
-							Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train,
-									R.string.analytics_action_get_train_arrivals, 0);
+							Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
 						}
 						if (loadBus) {
-							Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
-									R.string.analytics_action_get_bus_arrival, 0);
+							Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
 						}
 						if (loadBike) {
-							Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy,
-									R.string.analytics_action_get_divvy_all, 0);
+							Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
 						}
 						// Check if bus/bike or alert data are not loaded. If not, load them.
 						// Can happen when the app has been loaded without any data connection
@@ -264,17 +263,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			mDrawerLayout.closeDrawer(GravityCompat.START);
 			showActionBarMenu();
 			break;
-//		case R.id.navigation_settings:
-//			title = getString(R.string.settings);
-//			if (settingsFragment == null) {
-//				settingsFragment = SettingsFragment.newInstance(position + 1);
-//			}
-//			if (!this.isFinishing()) {
-//				fragmentManager.beginTransaction().replace(R.id.container, settingsFragment).commit();
-//			}
-//			mDrawerLayout.closeDrawer(GravityCompat.START);
-//			hideActionBarMenu();
-//			break;
+		//		case R.id.navigation_settings:
+		//			title = getString(R.string.settings);
+		//			if (settingsFragment == null) {
+		//				settingsFragment = SettingsFragment.newInstance(position + 1);
+		//			}
+		//			if (!this.isFinishing()) {
+		//				fragmentManager.beginTransaction().replace(R.id.container, settingsFragment).commit();
+		//			}
+		//			mDrawerLayout.closeDrawer(GravityCompat.START);
+		//			hideActionBarMenu();
+		//			break;
 		}
 		toolbar.setTitle(title);
 	}

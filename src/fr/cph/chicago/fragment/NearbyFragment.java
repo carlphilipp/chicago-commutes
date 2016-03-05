@@ -64,7 +64,6 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.NearbyAdapter;
 import fr.cph.chicago.connection.CtaConnect;
-import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.connection.DivvyConnect;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
@@ -91,6 +90,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
+import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
+
 /**
  * Map Fragment
  *
@@ -111,13 +113,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 	private GoogleMap googleMap;
 	private NearbyAdapter nearbyAdapter;
 	private boolean hideStationsStops;
-
-	/**
-	 * Returns a new instance of this fragment for the given section number.
-	 *
-	 * @param sectionNumber
-	 * @return
-	 */
+	
 	public static NearbyFragment newInstance(final int sectionNumber) {
 		final NearbyFragment fragment = new NearbyFragment();
 		final Bundle args = new Bundle();
@@ -217,29 +213,11 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 
 	private class LoadArrivals extends AsyncTask<List<?>, Void, Void> {
 
-		/**
-		 * Bus arrival map
-		 **/
 		private SparseArray<Map<String, List<BusArrival>>> busArrivalsMap;
-		/**
-		 * Train arrivals
-		 **/
 		private SparseArray<TrainArrival> trainArrivals;
-		/**
-		 * Bus stops
-		 **/
 		private List<BusStop> busStops;
-		/**
-		 * Stations
-		 **/
 		private List<Station> stations;
-		/**
-		 * List of bike stations result
-		 **/
 		private List<BikeStation> bikeStationsRes;
-		/**
-		 * List of bike stations result
-		 **/
 		private List<BikeStation> bikeStationsTemp;
 
 		@SuppressWarnings("unchecked")
@@ -275,7 +253,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 						final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
 						reqParams.put("stpid", busStop.getId().toString());
 
-						final String xmlRes = cta.connect(CtaRequestType.BUS_ARRIVALS, reqParams);
+						final String xmlRes = cta.connect(BUS_ARRIVALS, reqParams);
 						final Xml xml = new Xml();
 						final List<BusArrival> busArrivals = xml.parseBusArrivals(xmlRes);
 						for (final BusArrival busArrival : busArrivals) {
@@ -289,8 +267,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 								tempMap.put(direction, temp);
 							}
 						}
-						Util.trackAction(NearbyFragment.this.mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_bus,
-								R.string.analytics_action_get_bus_arrival, 0);
+						Util.trackAction(NearbyFragment.this.mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
 					} catch (final ConnectException | ParserException e) {
 						Log.e(TAG, e.getMessage(), e);
 					}
@@ -302,14 +279,13 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 					try {
 						final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
 						reqParams.put("mapid", String.valueOf(station.getId()));
-						final String xmlRes = cta.connect(CtaRequestType.TRAIN_ARRIVALS, reqParams);
+						final String xmlRes = cta.connect(TRAIN_ARRIVALS, reqParams);
 						final Xml xml = new Xml();
 						final SparseArray<TrainArrival> temp = xml.parseArrivals(xmlRes, DataHolder.getInstance().getTrainData());
 						for (int j = 0; j < temp.size(); j++) {
 							trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
 						}
-						Util.trackAction(NearbyFragment.this.mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_train,
-								R.string.analytics_action_get_train_arrivals, 0);
+						Util.trackAction(NearbyFragment.this.mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
 					} catch (final ConnectException | ParserException e) {
 						Log.e(TAG, e.getMessage(), e);
 					}
@@ -329,8 +305,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 						}
 					}
 					Collections.sort(bikeStationsRes, Util.BIKE_COMPARATOR_NAME);
-					Util.trackAction(NearbyFragment.this.mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_divvy,
-							R.string.analytics_action_get_divvy_all, 0);
+					Util.trackAction(NearbyFragment.this.mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
 				} catch (final ConnectException | ParserException e) {
 					Log.e(TAG, e.getMessage(), e);
 				}
