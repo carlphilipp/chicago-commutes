@@ -22,6 +22,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.util.SparseArray;
 import android.widget.Toast;
 import fr.cph.chicago.ChicagoTracker;
@@ -54,6 +55,8 @@ import java.util.List;
  */
 public class BaseActivity extends Activity {
 
+	private static final String TAG = BaseActivity.class.getSimpleName();
+
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -81,11 +84,17 @@ public class BaseActivity extends Activity {
 		@Override
 		protected final Void doInBackground(final Void... params) {
 			// Load local CSV
+			long startTime = System.currentTimeMillis();
 			trainData = new TrainData();
 			trainData.read();
+			long stopTime = System.currentTimeMillis();
+			Log.e(TAG, "Load local train data: " + (stopTime - startTime) + " ms");
 
+			startTime = System.currentTimeMillis();
 			busData = BusData.getInstance();
 			busData.readBusStops();
+			stopTime = System.currentTimeMillis();
+			Log.e(TAG, "Load local bus data: " + (stopTime - startTime) + " ms");
 			return null;
 		}
 

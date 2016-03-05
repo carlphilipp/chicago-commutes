@@ -208,7 +208,7 @@ public class BikeFragment extends Fragment {
 				final List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
 
 				if (bikeStations == null) {
-					mainActivity.new LoadData().execute();
+					mainActivity.new LoadBusAndBikeData().execute();
 				}
 			}
 			Util.trackAction(mainActivity, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_bike, 0);

@@ -82,28 +82,25 @@ public class BusData {
 				final CSVReader reader = new CSVReader(new InputStreamReader(ChicagoTracker.getContext().getAssets().open("stops.txt")));
 				reader.readNext();
 				String[] row;
-				while ((row = reader.readNext()) != null) {
+				int stopId = 0;
+				while ((row = reader.readNext()) != null && stopId < 3000) {
 					// int locationType = Integer.valueOf(row[6]);// location_type
-					final Integer stopId = Integer.valueOf(row[0]); // stop_id
-					if (stopId < 30000) {
-						// String stopCode = TrainDirection.fromString(row[1]); // stop_code
-						final String stopName = row[2]; // stop_name
-						// String stopDesc = row[3]; // stop_desc
-						final Double latitude = Double.valueOf(row[4]);// stop_lat
-						final Double longitude = Double.valueOf(row[5]);// stop_lon
+					stopId = Integer.parseInt(row[0]); // stop_id
+					// String stopCode = TrainDirection.fromString(row[1]); // stop_code
+					final String stopName = row[2]; // stop_name
+					// String stopDesc = row[3]; // stop_desc
+					final double latitude = Double.parseDouble(row[4]);// stop_lat
+					final double longitude = Double.parseDouble(row[5]);// stop_lon
 
-						final BusStop busStop = new BusStop();
-						busStop.setId(stopId);
-						busStop.setName(stopName);
-						final Position position = new Position();
-						position.setLatitude(latitude);
-						position.setLongitude(longitude);
-						busStop.setPosition(position);
+					final BusStop busStop = new BusStop();
+					busStop.setId(stopId);
+					busStop.setName(stopName);
+					final Position position = new Position();
+					position.setLatitude(latitude);
+					position.setLongitude(longitude);
+					busStop.setPosition(position);
 
-						busStops.add(busStop);
-					} else {
-						break;
-					}
+					busStops.add(busStop);
 				}
 				reader.close();
 				order();

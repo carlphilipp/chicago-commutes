@@ -50,7 +50,6 @@ import fr.cph.chicago.fragment.BikeFragment;
 import fr.cph.chicago.fragment.BusFragment;
 import fr.cph.chicago.fragment.FavoritesFragment;
 import fr.cph.chicago.fragment.NearbyFragment;
-import fr.cph.chicago.fragment.SettingsFragment;
 import fr.cph.chicago.fragment.TrainFragment;
 import fr.cph.chicago.json.Json;
 import fr.cph.chicago.task.GlobalConnectTask;
@@ -90,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			}
 			setContentView(R.layout.activity_main);
 
-			new LoadData().execute();
+			new LoadBusAndBikeData().execute();
 
 			ChicagoTracker.container = (FrameLayout) findViewById(R.id.container);
 			ChicagoTracker.container.getForeground().setAlpha(0);
@@ -190,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 						}
 						if (loadData) {
 							favoritesFragment.startRefreshing();
-							new LoadData().execute();
+							new LoadBusAndBikeData().execute();
 						}
 						Util.trackAction(MainActivity.this, R.string.analytics_category_ui, R.string.analytics_action_press,
 								R.string.analytics_action_refresh_fav, 0);
@@ -317,7 +316,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		toolbar.getMenu().getItem(0).setVisible(bool);
 	}
 
-	public final class LoadData extends AsyncTask<Void, Void, Void> {
+	public final class LoadBusAndBikeData extends AsyncTask<Void, Void, Void> {
 		/**
 		 * Bus data
 		 **/

@@ -204,7 +204,7 @@ public class FavoritesFragment extends Fragment {
 						loadData = true;
 					}
 					if (loadData) {
-						MainActivity.LoadData reload = mainActivity.new LoadData();
+						MainActivity.LoadBusAndBikeData reload = mainActivity.new LoadBusAndBikeData();
 						reload.execute();
 					}
 					Util.trackAction(mainActivity, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
