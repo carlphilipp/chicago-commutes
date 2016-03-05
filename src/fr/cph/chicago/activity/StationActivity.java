@@ -91,12 +91,10 @@ public class StationActivity extends Activity {
 
 	private ViewGroup viewGroup;
 	private ImageView streetViewImage;
-	private TextView streetViewText;
 	private ImageView favoritesImage;
 	private LinearLayout.LayoutParams paramsStop;
 	private SwipeRefreshLayout swipeRefreshLayout;
-	private LinearLayout walkContainer;
-	private LinearLayout mapContainer;
+	private TextView streetViewText;
 
 	private boolean isFavorite;
 	private TrainData trainData;
@@ -142,6 +140,8 @@ public class StationActivity extends Activity {
 
 			// Call google street api to load image
 			final Position position = station.getStops().get(0).getPosition();
+			final double latitude = position.getLatitude();
+			final double longitude = position.getLongitude();
 			new DisplayGoogleStreetPicture().execute(position.getLatitude(), position.getLongitude());
 
 			isFavorite = isFavorite();
@@ -150,29 +150,64 @@ public class StationActivity extends Activity {
 			streetViewText = (TextView) findViewById(R.id.activity_train_station_steetview_text);
 			final ImageView mapImage = (ImageView) findViewById(R.id.activity_map_image);
 			mapImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
-			mapContainer = (LinearLayout) findViewById(R.id.map_container);
+			final LinearLayout mapContainer = (LinearLayout) findViewById(R.id.map_container);
 			final ImageView directionImage = (ImageView) findViewById(R.id.activity_map_direction);
 			directionImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
-			walkContainer = (LinearLayout) findViewById(R.id.walk_container);
+			final LinearLayout walkContainer = (LinearLayout) findViewById(R.id.walk_container);
 			favoritesImage = (ImageView) findViewById(R.id.activity_favorite_star);
 			final LinearLayout favoritesImageContainer = (LinearLayout) findViewById(R.id.favorites_container);
-			if (isFavorite) {
-				favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
-			} else {
-				favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
-			}
 			favoritesImageContainer.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(final View v) {
 					StationActivity.this.switchFavorite();
 				}
 			});
+			if (isFavorite) {
+				favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
+			} else {
+				favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
+			}
 
 			paramsStop = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
 			final Map<TrainLine, List<Stop>> stopByLines = station.getStopByLines();
 			final TrainLine randomTrainLine = getRandomLine(stopByLines);
 			swipeRefreshLayout.setColorSchemeColors(randomTrainLine.getColor());
+
+			streetViewImage.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					String uri = String.format(Locale.ENGLISH, "google.streetview:cbll=%f,%f&cbp=1,180,,0,1&mz=1", latitude, longitude);
+					final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+					intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+					try {
+						startActivity(intent);
+					} catch (ActivityNotFoundException ex) {
+						uri = String.format(Locale.ENGLISH, "http://maps.google.com/maps?q=&layer=c&cbll=%f,%f&cbp=11,0,0,0,0", latitude, longitude);
+						Intent unrestrictedIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+						startActivity(unrestrictedIntent);
+					}
+				}
+			});
+			mapContainer.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(final View v) {
+					final String uri = "http://maps.google.com/maps?z=12&t=m&q=loc:" + latitude + "+" + longitude;
+					final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+					i.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+					startActivity(i);
+				}
+			});
+
+			walkContainer.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(final View v) {
+					final String uri = "http://maps.google.com/?f=d&daddr=" + latitude + "," + longitude + "&dirflg=w";
+					final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+					i.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+					startActivity(i);
+				}
+			});
 
 			setUpStopLayouts(stopByLines);
 
@@ -353,40 +388,6 @@ public class StationActivity extends Activity {
 			params2.width = params.width;
 			StationActivity.this.streetViewImage.setLayoutParams(params2);
 			StationActivity.this.streetViewImage.setImageDrawable(result);
-			StationActivity.this.streetViewImage.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					String uri = String.format(Locale.ENGLISH, "google.streetview:cbll=%f,%f&cbp=1,180,,0,1&mz=1", latitude, longitude);
-					final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-					intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
-					try {
-						startActivity(intent);
-					} catch (ActivityNotFoundException ex) {
-						uri = String.format(Locale.ENGLISH, "http://maps.google.com/maps?q=&layer=c&cbll=%f,%f&cbp=11,0,0,0,0", latitude, longitude);
-						Intent unrestrictedIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-						startActivity(unrestrictedIntent);
-					}
-				}
-			});
-			StationActivity.this.mapContainer.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(final View v) {
-					final String uri = "http://maps.google.com/maps?z=12&t=m&q=loc:" + latitude + "+" + longitude;
-					final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-					i.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
-					startActivity(i);
-				}
-			});
-
-			StationActivity.this.walkContainer.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(final View v) {
-					final String uri = "http://maps.google.com/?f=d&daddr=" + latitude + "," + longitude + "&dirflg=w";
-					final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-					i.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
-					startActivity(i);
-				}
-			});
 			StationActivity.this.streetViewText.setText(ChicagoTracker.getContext().getResources().getString(R.string.station_activity_street_view));
 		}
 	}
@@ -565,14 +566,11 @@ public class StationActivity extends Activity {
 		if (isFavorite) {
 			Util.removeFromTrainFavorites(stationId, ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
 			isFavorite = false;
+			favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
 		} else {
 			Util.addToTrainFavorites(stationId, ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
 			isFavorite = true;
-		}
-		if (isFavorite) {
 			favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
-		} else {
-			favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
 		}
 	}
 

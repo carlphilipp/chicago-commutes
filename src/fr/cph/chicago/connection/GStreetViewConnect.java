@@ -61,7 +61,7 @@ public class GStreetViewConnect {
 		return instance;
 	}
 
-	public final Drawable connect(final Double latitude, final Double longitude) throws IOException {
+	public final Drawable connect(final double latitude, final double longitude) throws IOException {
 		final StringBuilder address = new StringBuilder(BASE_URL);
 		address.append("?key=");
 		address.append(googleKey);
