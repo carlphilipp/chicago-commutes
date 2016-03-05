@@ -347,7 +347,7 @@ public class StationActivity extends Activity {
 		@Override
 		protected final void onPostExecute(final Drawable result) {
 			final int height = (int) getResources().getDimension(R.dimen.activity_station_street_map_height);
-			RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) StationActivity.this.streetViewImage.getLayoutParams();
+			final RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) StationActivity.this.streetViewImage.getLayoutParams();
 			final LayoutParams params2 = StationActivity.this.streetViewImage.getLayoutParams();
 			params2.height = height;
 			params2.width = params.width;
