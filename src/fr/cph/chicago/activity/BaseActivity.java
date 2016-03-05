@@ -86,6 +86,7 @@ public class BaseActivity extends Activity {
 		@Override
 		protected final Void doInBackground(final Void... params) {
 			// Load local CSV
+			// TODO remove all perf logging in the class
 			long startTime = System.currentTimeMillis();
 			trainData = TrainData.getInstance();
 			trainData.read();
