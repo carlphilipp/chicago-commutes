@@ -23,7 +23,7 @@
 			  android:orientation="vertical">
 
 	<include
-			layout="@layout/app_bar"
+			layout="@layout/toolbar"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"/>
 
@@ -80,97 +80,12 @@
 							android:layout_marginStart="4dp"
 							android:textColor="@color/white"/>
 				</RelativeLayout>
-				<LinearLayout
-						android:id="@+id/icons"
+
+				<include
+						layout="@layout/activity_header_fav_layout"
 						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:layout_gravity="center"
-						android:layout_marginTop="15dp"
-						android:baselineAligned="false"
-						android:layout_marginLeft="15dp"
-						android:layout_marginStart="15dp"
-						android:layout_marginRight="15dp"
-						android:layout_marginEnd="15dp"
-						android:orientation="horizontal">
-					<LinearLayout
-							android:id="@+id/favorites_container"
-							android:layout_width="0px"
-							android:layout_weight="1"
-							android:layout_height="wrap_content"
-							android:orientation="vertical"
-							android:clickable="true"
-							android:background="@drawable/any_selector"
-							tools:ignore="UseCompoundDrawables">
-						<ImageView
-								android:id="@+id/activity_bus_station_favorite_star"
-								android:layout_width="wrap_content"
-								android:layout_height="wrap_content"
-								android:contentDescription="@string/station_activity_google_map_link_desc"
-								android:src="@drawable/ic_favorite_white_24dp"
-								android:layout_gravity="center_horizontal">
-						</ImageView>
-						<TextView
-								android:layout_width="wrap_content"
-								android:layout_height="wrap_content"
-								android:text="@string/station_activity_favorite_icon"
-								android:layout_gravity="center_horizontal"
-								android:textStyle="bold">
-						</TextView>
+						android:layout_height="wrap_content"/>
 
-					</LinearLayout>
-
-					<LinearLayout
-							android:id="@+id/map_container"
-							android:layout_width="0px"
-							android:layout_weight="1"
-							android:layout_height="wrap_content"
-							android:orientation="vertical"
-							android:clickable="true"
-							android:background="@drawable/any_selector"
-							tools:ignore="UseCompoundDrawables">
-						<ImageView
-								android:id="@+id/activity_bus_station_map_image"
-								android:layout_width="wrap_content"
-								android:layout_height="wrap_content"
-								android:clickable="true"
-								android:contentDescription="@string/station_activity_google_map_link_desc"
-								android:src="@drawable/ic_place_white_24dp"
-								android:layout_gravity="center_horizontal">
-						</ImageView>
-						<TextView
-								android:layout_width="wrap_content"
-								android:layout_height="wrap_content"
-								android:layout_gravity="center_horizontal"
-								android:text="@string/station_activity_map_icon"
-								android:textStyle="bold">
-						</TextView>
-					</LinearLayout>
-					<LinearLayout
-							android:id="@+id/walk_container"
-							android:layout_width="0px"
-							android:layout_weight="1"
-							android:layout_height="wrap_content"
-							android:orientation="vertical"
-							android:clickable="true"
-							android:background="@drawable/any_selector"
-							tools:ignore="UseCompoundDrawables">
-						<ImageView
-								android:id="@+id/activity_bus_station_map_direction"
-								android:layout_width="wrap_content"
-								android:layout_height="wrap_content"
-								android:contentDescription="@string/station_activity_google_map_link_desc"
-								android:src="@drawable/ic_directions_walk_white_24dp"
-								android:layout_gravity="center_horizontal">
-						</ImageView>
-						<TextView
-								android:layout_width="wrap_content"
-								android:layout_height="wrap_content"
-								android:text="@string/station_activity_walk_icon"
-								android:layout_gravity="center_horizontal"
-								android:textStyle="bold">
-						</TextView>
-					</LinearLayout>
-				</LinearLayout>
 				<RelativeLayout
 						android:id="@+id/activity_bike_title2"
 						android:layout_width="match_parent"

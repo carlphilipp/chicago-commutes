@@ -148,13 +148,13 @@ public class StationActivity extends Activity {
 
 			streetViewImage = (ImageView) findViewById(R.id.activity_train_station_streetview_image);
 			streetViewText = (TextView) findViewById(R.id.activity_train_station_steetview_text);
-			final ImageView mapImage = (ImageView) findViewById(R.id.activity_train_station_map_image);
+			final ImageView mapImage = (ImageView) findViewById(R.id.activity_map_image);
 			mapImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
 			mapContainer = (LinearLayout) findViewById(R.id.map_container);
-			final ImageView directionImage = (ImageView) findViewById(R.id.activity_train_station_map_direction);
+			final ImageView directionImage = (ImageView) findViewById(R.id.activity_map_direction);
 			directionImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
 			walkContainer = (LinearLayout) findViewById(R.id.walk_container);
-			favoritesImage = (ImageView) findViewById(R.id.activity_train_station_favorite_star);
+			favoritesImage = (ImageView) findViewById(R.id.activity_favorite_star);
 			final LinearLayout favoritesImageContainer = (LinearLayout) findViewById(R.id.favorites_container);
 			if (isFavorite) {
 				favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));

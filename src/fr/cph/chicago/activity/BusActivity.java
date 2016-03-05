@@ -116,13 +116,13 @@ public class BusActivity extends Activity {
 			stopsView = (LinearLayout) findViewById(R.id.activity_bus_stops);
 			streetViewImage = (ImageView) findViewById(R.id.activity_bus_streetview_image);
 			streetViewText = (TextView) findViewById(R.id.activity_bus_steetview_text);
-			final ImageView mapImage = (ImageView) findViewById(R.id.activity_bus_station_map_image);
+			final ImageView mapImage = (ImageView) findViewById(R.id.activity_map_image);
 			mapImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
-			final ImageView directionImage = (ImageView) findViewById(R.id.activity_bus_station_map_direction);
+			final ImageView directionImage = (ImageView) findViewById(R.id.activity_map_direction);
 			directionImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
 			walkContainer = (LinearLayout) findViewById(R.id.walk_container);
 			mapContainer = (LinearLayout) findViewById(R.id.map_container);
-			favoritesImage = (ImageView) findViewById(R.id.activity_bus_station_favorite_star);
+			favoritesImage = (ImageView) findViewById(R.id.activity_favorite_star);
 			if (isFavorite) {
 				favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
 			} else {
