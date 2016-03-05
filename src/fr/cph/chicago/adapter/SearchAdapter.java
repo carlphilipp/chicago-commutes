@@ -89,10 +89,8 @@ public final class SearchAdapter extends BaseAdapter {
 
 	@Override
 	public final View getView(final int position, View convertView, final ViewGroup parent) {
-		if (convertView == null) {
-			final LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			convertView = vi.inflate(R.layout.list_search, parent, false);
-		}
+		final LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		convertView = vi.inflate(R.layout.list_search, parent, false);
 
 		final TextView routeName = (TextView) convertView.findViewById(R.id.station_name);
 
