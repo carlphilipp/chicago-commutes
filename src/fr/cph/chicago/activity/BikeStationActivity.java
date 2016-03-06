@@ -17,11 +17,8 @@
 package fr.cph.chicago.activity;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -47,12 +44,14 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.json.Json;
+import fr.cph.chicago.listener.GoogleMapDirectionOnClickListener;
+import fr.cph.chicago.listener.GoogleMapOnClickListener;
+import fr.cph.chicago.listener.GoogleStreetOnClickListener;
 import fr.cph.chicago.util.Util;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Activity the list of train stations
@@ -68,8 +67,6 @@ public class BikeStationActivity extends Activity {
 	private TextView streetViewText;
 	private SwipeRefreshLayout swipeRefreshLayout;
 	private ImageView favoritesImage;
-	private LinearLayout walkContainer;
-	private LinearLayout mapContainer;
 
 	private BikeStation bikeStation;
 	private boolean isFavorite;
@@ -80,52 +77,59 @@ public class BikeStationActivity extends Activity {
 		if (!this.isFinishing()) {
 			setContentView(R.layout.activity_bike_station);
 			bikeStation = getIntent().getExtras().getParcelable("station");
+			if (bikeStation != null) {
+				final double latitude = bikeStation.getLatitude();
+				final double longitude = bikeStation.getLongitude();
 
-			// Call google street api to load image
-			new DisplayGoogleStreetPicture().execute(bikeStation.getLatitude(), bikeStation.getLongitude());
+				// Call google street api to load image
+				new DisplayGoogleStreetPicture().execute(latitude, longitude);
 
-			swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_station_swipe_refresh_layout);
-			swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-				@Override
-				public void onRefresh() {
-					new DivvyAsyncTask().execute();
+				swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_station_swipe_refresh_layout);
+				swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+					@Override
+					public void onRefresh() {
+						new DivvyAsyncTask().execute();
+					}
+				});
+
+				isFavorite = isFavorite();
+
+				streetViewImage = (ImageView) findViewById(R.id.activity_bike_station_streetview_image);
+				streetViewText = (TextView) findViewById(R.id.activity_bike_station_steetview_text);
+				final ImageView mapImage = (ImageView) findViewById(R.id.activity_map_image);
+				mapImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
+				final ImageView directionImage = (ImageView) findViewById(R.id.activity_map_direction);
+				directionImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
+				favoritesImage = (ImageView) findViewById(R.id.activity_favorite_star);
+				final LinearLayout mapContainer = (LinearLayout) findViewById(R.id.map_container);
+				final LinearLayout walkContainer = (LinearLayout) findViewById(R.id.walk_container);
+				if (isFavorite) {
+					favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
+				} else {
+					favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
 				}
-			});
+				final LinearLayout favoritesImageContainer = (LinearLayout) findViewById(R.id.favorites_container);
+				favoritesImageContainer.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						BikeStationActivity.this.switchFavorite();
+					}
+				});
 
-			isFavorite = isFavorite();
+				final TextView bikeStationValue = (TextView) findViewById(R.id.activity_bike_station_value);
+				bikeStationValue.setText(bikeStation.getStAddress1());
 
-			streetViewImage = (ImageView) findViewById(R.id.activity_bike_station_streetview_image);
-			streetViewText = (TextView) findViewById(R.id.activity_bike_station_steetview_text);
-			final ImageView mapImage = (ImageView) findViewById(R.id.activity_map_image);
-			mapImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
-			final ImageView directionImage = (ImageView) findViewById(R.id.activity_map_direction);
-			directionImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
-			favoritesImage = (ImageView) findViewById(R.id.activity_favorite_star);
-			mapContainer = (LinearLayout) findViewById(R.id.map_container);
-			walkContainer = (LinearLayout) findViewById(R.id.walk_container);
-			if (isFavorite) {
-				favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
-			} else {
-				favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
+				streetViewImage.setOnClickListener(new GoogleStreetOnClickListener(this, latitude, longitude));
+				mapContainer.setOnClickListener(new GoogleMapOnClickListener(this, latitude, longitude));
+				walkContainer.setOnClickListener(new GoogleMapDirectionOnClickListener(this, latitude, longitude));
+
+				drawData();
 			}
-			final LinearLayout favoritesImageContainer = (LinearLayout) findViewById(R.id.favorites_container);
-			favoritesImageContainer.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					BikeStationActivity.this.switchFavorite();
-				}
-			});
-
-			final TextView bikeStationValue = (TextView) findViewById(R.id.activity_bike_station_value);
-			bikeStationValue.setText(bikeStation.getStAddress1());
-
-			drawData();
-
 			setToolBar();
 		}
 	}
 
-	private void setToolBar(){
+	private void setToolBar() {
 		final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		toolbar.inflateMenu(R.menu.main);
 		toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
@@ -301,39 +305,6 @@ public class BikeStationActivity extends Activity {
 
 			BikeStationActivity.this.streetViewImage.setLayoutParams(params);
 			BikeStationActivity.this.streetViewImage.setImageDrawable(result);
-			BikeStationActivity.this.streetViewImage.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					String uri = String.format(Locale.ENGLISH, "google.streetview:cbll=%f,%f&cbp=1,180,,0,1&mz=1", latitude, longitude);
-					final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-					intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
-					try {
-						startActivity(intent);
-					} catch (final ActivityNotFoundException ex) {
-						uri = String.format(Locale.ENGLISH, "http://maps.google.com/maps?q=&layer=c&cbll=%f,%f&cbp=11,0,0,0,0", latitude, longitude);
-						final Intent unrestrictedIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-						startActivity(unrestrictedIntent);
-					}
-				}
-			});
-			BikeStationActivity.this.mapContainer.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					final String uri = "http://maps.google.com/maps?z=12&t=m&q=loc:" + latitude + "+" + longitude;
-					final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-					i.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
-					startActivity(i);
-				}
-			});
-			BikeStationActivity.this.walkContainer.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					final String uri = "http://maps.google.com/?f=d&daddr=" + latitude + "," + longitude + "&dirflg=w";
-					final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-					i.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
-					startActivity(i);
-				}
-			});
 			BikeStationActivity.this.streetViewText.setText(ChicagoTracker.getContext().getResources().getString(R.string.station_activity_street_view));
 		}
 	}

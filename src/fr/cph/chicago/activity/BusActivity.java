@@ -17,10 +17,7 @@
 package fr.cph.chicago.activity;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,7 +25,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +43,9 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
+import fr.cph.chicago.listener.GoogleMapDirectionOnClickListener;
+import fr.cph.chicago.listener.GoogleMapOnClickListener;
+import fr.cph.chicago.listener.GoogleStreetOnClickListener;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
 import org.apache.commons.collections4.MultiValuedMap;
@@ -55,7 +54,6 @@ import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -73,21 +71,17 @@ public class BusActivity extends Activity {
 	 **/
 	private static final String TAG = BusActivity.class.getSimpleName();
 
-	private boolean isFirstLoad = true;
 	private List<BusArrival> busArrivals;
 	private String busRouteId, bound, boundTitle;
 	private Integer busStopId;
 	private String busStopName, busRouteName;
-	private Double latitude, longitude;
-	private int firstLoadCount;
+	private double latitude, longitude;
 	private boolean isFavorite;
-	private LinearLayout walkContainer;
-	private LinearLayout mapContainer;
 
 	private ImageView streetViewImage, favoritesImage;
 	private LinearLayout stopsView;
-	private TextView streetViewText;
 	private SwipeRefreshLayout swipeRefreshLayout;
+	private TextView streetViewText;
 
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
@@ -96,8 +90,7 @@ public class BusActivity extends Activity {
 		if (!this.isFinishing()) {
 			setContentView(R.layout.activity_bus);
 
-			if (busStopId == null && busRouteId == null && bound == null && busStopName == null && busRouteName == null && latitude == null
-					&& longitude == null && boundTitle == null) {
+			if (busStopId == null || busRouteId == null || bound == null || busStopName == null || busRouteName == null || boundTitle == null) {
 				busStopId = getIntent().getExtras().getInt(getString(R.string.bundle_bus_stop_id));
 				busRouteId = getIntent().getExtras().getString(getString(R.string.bundle_bus_route_id));
 				bound = getIntent().getExtras().getString(getString(R.string.bundle_bus_bound));
@@ -121,27 +114,31 @@ public class BusActivity extends Activity {
 			mapImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
 			final ImageView directionImage = (ImageView) findViewById(R.id.activity_map_direction);
 			directionImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
-			walkContainer = (LinearLayout) findViewById(R.id.walk_container);
-			mapContainer = (LinearLayout) findViewById(R.id.map_container);
+			final LinearLayout favoritesImageContainer = (LinearLayout) findViewById(R.id.favorites_container);
+			favoritesImageContainer.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(final View v) {
+					BusActivity.this.switchFavorite();
+				}
+			});
+			final LinearLayout walkContainer = (LinearLayout) findViewById(R.id.walk_container);
+			final LinearLayout mapContainer = (LinearLayout) findViewById(R.id.map_container);
 			favoritesImage = (ImageView) findViewById(R.id.activity_favorite_star);
 			if (isFavorite) {
 				favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
 			} else {
 				favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
 			}
-			favoritesImage.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					BusActivity.this.switchFavorite();
-				}
-			});
 			swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_bus_stop_swipe_refresh_layout);
 			swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 				@Override
 				public void onRefresh() {
-					new LoadData().execute();
+					new LoadStationData().execute();
 				}
 			});
+			streetViewImage.setOnClickListener(new GoogleStreetOnClickListener(this, latitude, longitude));
+			mapContainer.setOnClickListener(new GoogleMapOnClickListener(this, latitude, longitude));
+			walkContainer.setOnClickListener(new GoogleMapDirectionOnClickListener(this, latitude, longitude));
 
 			final TextView busRouteNameView2 = (TextView) findViewById(R.id.activity_bus_station_value);
 			final String title = busRouteName + " (" + boundTitle + ")";
@@ -149,35 +146,38 @@ public class BusActivity extends Activity {
 
 			// Load google street picture and data
 			new DisplayGoogleStreetPicture().execute(position.getLatitude(), position.getLongitude());
-			new LoadData().execute();
+			new LoadStationData().execute();
 
-			// Toolbar
-			final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-			toolbar.inflateMenu(R.menu.main);
-			toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
-				@Override
-				public boolean onMenuItemClick(MenuItem item) {
-					swipeRefreshLayout.setRefreshing(true);
-					new LoadData().execute();
-					return false;
-				}
-			}));
-			Util.setToolbarColor(this, toolbar, TrainLine.NA);
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-				toolbar.setElevation(4);
-			}
-			toolbar.setTitle(busRouteId + " - " + busStopName);
-			toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-			toolbar.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					finish();
-				}
-			});
+			setToolBar();
 
 			// Google analytics
 			Util.trackScreen(getResources().getString(R.string.analytics_bus_details));
 		}
+	}
+
+	private void setToolBar() {
+		final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		toolbar.inflateMenu(R.menu.main);
+		toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				swipeRefreshLayout.setRefreshing(true);
+				new LoadStationData().execute();
+				return false;
+			}
+		}));
+		Util.setToolbarColor(this, toolbar, TrainLine.NA);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			toolbar.setElevation(4);
+		}
+		toolbar.setTitle(busRouteId + " - " + busStopName);
+		toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+		toolbar.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
 	}
 
 	@Override
@@ -204,11 +204,6 @@ public class BusActivity extends Activity {
 		savedInstanceState.putDouble(getString(R.string.bundle_bus_latitude), latitude);
 		savedInstanceState.putDouble(getString(R.string.bundle_bus_longitude), longitude);
 		super.onSaveInstanceState(savedInstanceState);
-	}
-
-	@Override
-	public final boolean onCreateOptionsMenu(final Menu menu) {
-		return super.onCreateOptionsMenu(menu);
 	}
 
 	/**
@@ -275,7 +270,7 @@ public class BusActivity extends Activity {
 	 * @author Carl-Philipp Harmant
 	 * @version 1
 	 */
-	private class LoadData extends AsyncTask<Void, Void, List<BusArrival>> {
+	private class LoadStationData extends AsyncTask<Void, Void, List<BusArrival>> {
 
 		/**
 		 * The exception that could potentially been thrown during request
@@ -297,8 +292,7 @@ public class BusActivity extends Activity {
 			} catch (ParserException | ConnectException e) {
 				this.trackerException = e;
 			}
-			Util.trackAction(BusActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus,
-					R.string.analytics_action_get_bus_arrival, 0);
+			Util.trackAction(BusActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
 			return null;
 		}
 
@@ -314,9 +308,6 @@ public class BusActivity extends Activity {
 			} else {
 				ChicagoTracker.displayError(BusActivity.this, trackerException);
 			}
-			if (isFirstLoad) {
-				setFirstLoad();
-			}
 			if (swipeRefreshLayout != null) {
 				swipeRefreshLayout.setRefreshing(false);
 			}
@@ -331,8 +322,8 @@ public class BusActivity extends Activity {
 	 */
 	private class DisplayGoogleStreetPicture extends AsyncTask<Double, Void, Drawable> {
 
-		private Double latitude;
-		private Double longitude;
+		private double latitude;
+		private double longitude;
 
 		@Override
 		protected final Drawable doInBackground(final Double... params) {
@@ -340,8 +331,7 @@ public class BusActivity extends Activity {
 			try {
 				latitude = params[0];
 				longitude = params[1];
-				Util.trackAction(BusActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_google,
-						R.string.analytics_action_get_google_map_street_view, 0);
+				Util.trackAction(BusActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_google, R.string.analytics_action_get_google_map_street_view, 0);
 				return connect.connect(latitude, longitude);
 			} catch (final IOException e) {
 				Log.e(TAG, e.getMessage(), e);
@@ -358,50 +348,8 @@ public class BusActivity extends Activity {
 			params2.width = params.width;
 			BusActivity.this.streetViewImage.setLayoutParams(params2);
 			BusActivity.this.streetViewImage.setImageDrawable(result);
-			BusActivity.this.streetViewImage.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					String uri = String.format(Locale.ENGLISH, "google.streetview:cbll=%f,%f&cbp=1,180,,0,1&mz=1", latitude, longitude);
-					final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-					intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
-					try {
-						startActivity(intent);
-					} catch (final ActivityNotFoundException ex) {
-						// Redirect to browser if the user does not have google map installed
-						uri = String.format(Locale.ENGLISH, "http://maps.google.com/maps?q=&layer=c&cbll=%f,%f&cbp=11,0,0,0,0", latitude, longitude);
-						final Intent unrestrictedIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-						startActivity(unrestrictedIntent);
-					}
-				}
-			});
-			BusActivity.this.mapContainer.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					final String uri = "http://maps.google.com/maps?z=12&t=m&q=loc:" + latitude + "+" + longitude;
-					final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-					i.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
-					startActivity(i);
-				}
-			});
-			BusActivity.this.walkContainer.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					final String uri = "http://maps.google.com/?f=d&daddr=" + latitude + "," + longitude + "&dirflg=w";
-					final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-					i.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
-					startActivity(i);
-				}
-			});
 			BusActivity.this.streetViewText.setText(ChicagoTracker.getContext().getResources().getString(R.string.station_activity_street_view));
-			setFirstLoad();
 		}
-	}
-
-	private void setFirstLoad() {
-		if (isFirstLoad && firstLoadCount == 1) {
-			isFirstLoad = false;
-		}
-		firstLoadCount++;
 	}
 
 	/**
@@ -410,18 +358,15 @@ public class BusActivity extends Activity {
 	private void switchFavorite() {
 		if (isFavorite) {
 			Util.removeFromBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+			favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
 			isFavorite = false;
 		} else {
 			Util.addToBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
 			Log.i(TAG, "busRouteName: " + busRouteName);
 			Preferences.addBusRouteNameMapping(String.valueOf(busStopId), busRouteName);
 			Preferences.addBusStopNameMapping(String.valueOf(busStopId), busStopName);
-			isFavorite = true;
-		}
-		if (isFavorite) {
 			favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
-		} else {
-			favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
+			isFavorite = true;
 		}
 	}
 }
