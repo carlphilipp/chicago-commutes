@@ -97,24 +97,22 @@ public final class TrainAdapter extends BaseAdapter {
 
 		holder.stationNameView.setText(station.getName());
 
-		if (lines != null) {
-			holder.stationColorView.removeAllViews();
-			int index = 0;
-			for (final TrainLine tl : lines) {
-				final TextView blankTextView = new TextView(context);
-				blankTextView.setBackgroundColor(tl.getColor());
-				blankTextView.setText(" ");
-				blankTextView.setTextSize(context.getResources().getDimension(R.dimen.activity_list_station_colors));
-				holder.stationColorView.addView(blankTextView);
-				if (index != lines.size()) {
-					final TextView spaceTextView = new TextView(context);
-					spaceTextView.setText("");
-					spaceTextView.setPadding(0, 0, (int) context.getResources().getDimension(R.dimen.activity_list_station_colors_space), 0);
-					spaceTextView.setTextSize(context.getResources().getDimension(R.dimen.activity_list_station_colors));
-					holder.stationColorView.addView(spaceTextView);
-				}
-				index++;
+		holder.stationColorView.removeAllViews();
+		int index = 0;
+		for (final TrainLine tl : lines) {
+			final TextView blankTextView = new TextView(context);
+			blankTextView.setBackgroundColor(tl.getColor());
+			blankTextView.setText(" ");
+			blankTextView.setTextSize(context.getResources().getDimension(R.dimen.activity_list_station_colors));
+			holder.stationColorView.addView(blankTextView);
+			if (index != lines.size()) {
+				final TextView spaceTextView = new TextView(context);
+				spaceTextView.setText("");
+				spaceTextView.setPadding(0, 0, (int) context.getResources().getDimension(R.dimen.activity_list_station_colors_space), 0);
+				spaceTextView.setTextSize(context.getResources().getDimension(R.dimen.activity_list_station_colors));
+				holder.stationColorView.addView(spaceTextView);
 			}
+			index++;
 		}
 		convertView.setOnClickListener(new FavoritesTrainOnClickListener(activity, station.getId(), lines));
 		return convertView;

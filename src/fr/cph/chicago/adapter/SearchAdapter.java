@@ -101,23 +101,21 @@ public final class SearchAdapter extends BaseAdapter {
 			final LinearLayout stationColorView = (LinearLayout) convertView.findViewById(R.id.station_color);
 
 			final Set<TrainLine> lines = station.getLines();
-			if (lines != null) {
-				int index = 0;
-				for (final TrainLine trainLine : lines) {
-					TextView textView = new TextView(context);
-					textView.setBackgroundColor(trainLine.getColor());
-					textView.setText(" ");
+			int index = 0;
+			for (final TrainLine trainLine : lines) {
+				TextView textView = new TextView(context);
+				textView.setBackgroundColor(trainLine.getColor());
+				textView.setText(" ");
+				textView.setTextSize(context.getResources().getDimension(R.dimen.activity_list_station_colors));
+				stationColorView.addView(textView);
+				if (index != lines.size()) {
+					textView = new TextView(context);
+					textView.setText("");
+					textView.setPadding(0, 0, (int) context.getResources().getDimension(R.dimen.activity_list_station_colors_space), 0);
 					textView.setTextSize(context.getResources().getDimension(R.dimen.activity_list_station_colors));
 					stationColorView.addView(textView);
-					if (index != lines.size()) {
-						textView = new TextView(context);
-						textView.setText("");
-						textView.setPadding(0, 0, (int) context.getResources().getDimension(R.dimen.activity_list_station_colors_space), 0);
-						textView.setTextSize(context.getResources().getDimension(R.dimen.activity_list_station_colors));
-						stationColorView.addView(textView);
-					}
-					index++;
 				}
+				index++;
 			}
 			convertView.setOnClickListener(new FavoritesTrainOnClickListener(searchActivity, station.getId(), lines));
 		} else if (position < trains.size() + busRoutes.size()) {

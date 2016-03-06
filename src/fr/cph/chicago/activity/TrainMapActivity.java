@@ -217,7 +217,7 @@ public class TrainMapActivity extends Activity {
 							if (!refreshingInfoWindow) {
 								selectedMarker = marker;
 								final String runNumber = marker.getSnippet();
-								final boolean current = status.get(marker);
+								final Boolean current = status.get(marker);
 								new LoadTrainFollow(view, !current).execute(runNumber);
 								status.put(marker, !current);
 							}

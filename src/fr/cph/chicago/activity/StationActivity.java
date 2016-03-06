@@ -311,15 +311,13 @@ public class StationActivity extends Activity {
 	 * @return if the station is favorite
 	 */
 	private boolean isFavorite() {
-		boolean isFavorite = false;
 		final List<Integer> favorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
 		for (final Integer favorite : favorites) {
 			if (favorite.intValue() == stationId) {
-				isFavorite = true;
-				break;
+				return true;
 			}
 		}
-		return isFavorite;
+		return false;
 	}
 
 	/**
@@ -433,9 +431,9 @@ public class StationActivity extends Activity {
 				} else {
 					etas = Collections.emptyList();
 				}
-				reset(StationActivity.this.station);
+				hideAllArrivalViews(StationActivity.this.station);
 				for (final Eta eta : etas) {
-					drawLine3(eta);
+					drawAllArrivalsTrain(eta);
 				}
 			} else {
 				ChicagoTracker.displayError(StationActivity.this, trackerException);
@@ -451,24 +449,23 @@ public class StationActivity extends Activity {
 	 *
 	 * @param station the station
 	 */
-	// TODO to refactor.
-	private void reset(final Station station) {
-		final Set<TrainLine> setTL = station.getLines();
-		if (setTL != null) {
-			for (final TrainLine tl : setTL) {
-				for (final TrainDirection trainDirection : TrainDirection.values()) {
-					final Integer id = ids.get(tl.toString() + "_" + trainDirection.toString());
-					if (id != null) {
-						final LinearLayout line3View = (LinearLayout) findViewById(id);
-						if (line3View != null) {
-							line3View.setVisibility(View.GONE);
-							if (line3View.getChildCount() > 0) {
-								for (int i = 0; i < line3View.getChildCount(); i++) {
-									final LinearLayout view = (LinearLayout) line3View.getChildAt(i);
-									final TextView timing = (TextView) view.getChildAt(1);
-									if (timing != null) {
-										timing.setText("");
-									}
+	// FIXME: delete view instead of hiding it
+	private void hideAllArrivalViews(final Station station) {
+		final Set<TrainLine> trainLines = station.getLines();
+		for (final TrainLine trainLine : trainLines) {
+			for (final TrainDirection trainDirection : TrainDirection.values()) {
+				final String key = trainLine.toString() + "_" + trainDirection.toString();
+				if(ids.containsKey(key)){
+					final int id = ids.get(key);
+					final LinearLayout line3View = (LinearLayout) findViewById(id);
+					if (line3View != null) {
+						line3View.setVisibility(View.GONE);
+						if (line3View.getChildCount() > 0) {
+							for (int i = 0; i < line3View.getChildCount(); i++) {
+								final LinearLayout view = (LinearLayout) line3View.getChildAt(i);
+								final TextView timing = (TextView) view.getChildAt(1);
+								if (timing != null) {
+									timing.setText("");
 								}
 							}
 						}
@@ -483,14 +480,15 @@ public class StationActivity extends Activity {
 	 *
 	 * @param eta the eta
 	 */
-	private void drawLine3(final Eta eta) {
+	private void drawAllArrivalsTrain(final Eta eta) {
 		final TrainLine line = eta.getRouteName();
 		final Stop stop = eta.getStop();
 		final int line3PaddingLeft = (int) getResources().getDimension(R.dimen.activity_station_stops_line3_padding_left);
 		final int line3PaddingTop = (int) getResources().getDimension(R.dimen.activity_station_stops_line3_padding_top);
-		final Integer viewId = ids.get(line.toString() + "_" + stop.getDirection().toString());
+		final String key = line.toString() + "_" + stop.getDirection().toString();
 		// viewId might be not there if CTA API provide wrong data
-		if (viewId != null) {
+		if(ids.containsKey(key)){
+			final int viewId = ids.get(key);
 			final LinearLayout line3View = (LinearLayout) findViewById(viewId);
 			final Integer id = ids.get(line.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName());
 			if (id == null) {

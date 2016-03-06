@@ -275,17 +275,15 @@ public class TrainData {
 		for (int i = 0; i < stations.size(); i++) {
 			final Station station = stations.valueAt(i);
 			final Set<TrainLine> tls = station.getLines();
-			if (tls != null) {
-				for (final TrainLine tl : tls) {
-					if (stationsOrderByLineMap.containsKey(tl)) {
-						final List<Station> stations = stationsOrderByLineMap.get(tl);
-						stations.add(station);
-						Collections.sort(stations);
-					} else {
-						final List<Station> stations = new ArrayList<>();
-						stationsOrderByLineMap.put(tl, stations);
-						stations.add(station);
-					}
+			for (final TrainLine tl : tls) {
+				if (stationsOrderByLineMap.containsKey(tl)) {
+					final List<Station> stations = stationsOrderByLineMap.get(tl);
+					stations.add(station);
+					Collections.sort(stations);
+				} else {
+					final List<Station> stations = new ArrayList<>();
+					stationsOrderByLineMap.put(tl, stations);
+					stations.add(station);
 				}
 			}
 		}

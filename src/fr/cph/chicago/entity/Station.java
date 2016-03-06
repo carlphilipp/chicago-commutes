@@ -22,6 +22,7 @@ import android.support.annotation.NonNull;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -109,7 +110,7 @@ public class Station implements Comparable<Station>, Parcelable {
 		if (stops != null) {
 			stb.append(";stops=").append(stops);
 		}
-		if (getLines() != null) {
+		if (getLines().size() > 0) {
 			stb.append(";lines=").append(getLines());
 		}
 		stb.append("]");
@@ -122,14 +123,14 @@ public class Station implements Comparable<Station>, Parcelable {
 	public final Set<TrainLine> getLines() {
 		if (stops != null) {
 			Set<TrainLine> lines = new TreeSet<>();
-			for (Stop stop : stops) {
-				for (TrainLine tl : stop.getLines()) {
-					lines.add(tl);
+			for (final Stop stop : stops) {
+				for (final TrainLine trainLine : stop.getLines()) {
+					lines.add(trainLine);
 				}
 			}
 			return lines;
 		} else {
-			return null;
+			return Collections.emptySet();
 		}
 	}
 

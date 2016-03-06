@@ -116,7 +116,6 @@ public class BikeFragment extends Fragment {
 		if (boolTrain) {
 			ChicagoTracker.checkBusData(mainActivity);
 		}
-
 	}
 
 	@Override

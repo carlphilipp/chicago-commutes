@@ -140,9 +140,9 @@ public class ChicagoTracker extends Application {
 		}
 	}
 
-	public static boolean checkTrainData(final Activity mActivity) {
+	public static boolean checkTrainData(final Activity activity) {
 		if (DataHolder.getInstance().getTrainData() == null) {
-			startErrorActivity(mActivity);
+			startErrorActivity(activity);
 			return false;
 		}
 		return true;

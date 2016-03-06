@@ -81,7 +81,6 @@ public final class NearbyAdapter extends BaseAdapter {
 	private Map<Integer, LinearLayout> layouts;
 	private Map<Integer, View> views;
 
-
 	@SuppressLint("UseSparseArrays")
 	public NearbyAdapter(final MainActivity activity) {
 		this.activity = activity;
@@ -205,84 +204,82 @@ public final class NearbyAdapter extends BaseAdapter {
 				}
 			}
 
-			if (setTL != null) {
-				for (final TrainLine tl : setTL) {
-					if (trainArrivals.get(station.getId()) != null) {
-						final List<Eta> etas = trainArrivals.get(station.getId()).getEtas(tl);
-						if (etas.size() != 0) {
-							final String key = station.getName() + "_" + tl.toString() + "_h";
-							final String key2 = station.getName() + "_" + tl.toString() + "_v";
-							final Integer idLayout = ids.get(key);
-							final Integer idLayout2 = ids.get(key2);
+			for (final TrainLine tl : setTL) {
+				if (trainArrivals.get(station.getId()) != null) {
+					final List<Eta> etas = trainArrivals.get(station.getId()).getEtas(tl);
+					if (etas.size() != 0) {
+						final String key = station.getName() + "_" + tl.toString() + "_h";
+						final String key2 = station.getName() + "_" + tl.toString() + "_v";
+						final Integer idLayout = ids.get(key);
+						final Integer idLayout2 = ids.get(key2);
 
-							final LinearLayout llh, llv;
-							if (idLayout == null) {
-								llh = new LinearLayout(context);
-								// llh.setBackgroundResource(R.drawable.border);
-								llh.setLayoutParams(paramsLayout);
-								llh.setOrientation(LinearLayout.HORIZONTAL);
-								llh.setPadding(line1PaddingColor, stopsPaddingTop, 0, 0);
-								final int id = Util.generateViewId();
-								llh.setId(id);
-								ids.put(key, id);
+						final LinearLayout llh, llv;
+						if (idLayout == null) {
+							llh = new LinearLayout(context);
+							// llh.setBackgroundResource(R.drawable.border);
+							llh.setLayoutParams(paramsLayout);
+							llh.setOrientation(LinearLayout.HORIZONTAL);
+							llh.setPadding(line1PaddingColor, stopsPaddingTop, 0, 0);
+							final int id = Util.generateViewId();
+							llh.setId(id);
+							ids.put(key, id);
 
-								final TextView tlView = new TextView(context);
-								tlView.setBackgroundColor(tl.getColor());
-								tlView.setText("   ");
-								tlView.setLayoutParams(paramsTextView);
-								llh.addView(tlView);
+							final TextView tlView = new TextView(context);
+							tlView.setBackgroundColor(tl.getColor());
+							tlView.setText("   ");
+							tlView.setLayoutParams(paramsTextView);
+							llh.addView(tlView);
 
-								llv = new LinearLayout(context);
-								llv.setLayoutParams(paramsLayout);
-								llv.setOrientation(LinearLayout.VERTICAL);
-								llv.setPadding(line1PaddingColor, 0, 0, 0);
-								final int id2 = Util.generateViewId();
-								llv.setId(id2);
-								ids.put(key2, id2);
+							llv = new LinearLayout(context);
+							llv.setLayoutParams(paramsLayout);
+							llv.setOrientation(LinearLayout.VERTICAL);
+							llv.setPadding(line1PaddingColor, 0, 0, 0);
+							final int id2 = Util.generateViewId();
+							llv.setId(id2);
+							ids.put(key2, id2);
 
-								llh.addView(llv);
-								resultLayout.addView(llh);
+							llh.addView(llv);
+							resultLayout.addView(llh);
 
+						} else {
+							llh = (LinearLayout) resultLayout.findViewById(idLayout);
+							llv = (LinearLayout) resultLayout.findViewById(idLayout2);
+						}
+						for (final Eta eta : etas) {
+							final Stop stop = eta.getStop();
+							final String key3 = (station.getName() + "_" + tl.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName());
+							final Integer idLayout3 = ids.get(key3);
+							if (idLayout3 == null) {
+								final LinearLayout insideLayout = new LinearLayout(context);
+								insideLayout.setOrientation(LinearLayout.HORIZONTAL);
+								insideLayout.setLayoutParams(paramsArrival);
+								final int newId = Util.generateViewId();
+								insideLayout.setId(newId);
+								ids.put(key3, newId);
+
+								final TextView stopName = new TextView(context);
+								final String destName = eta.getDestName() + ": ";
+								stopName.setText(destName);
+								stopName.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
+								insideLayout.addView(stopName);
+
+								final TextView timing = new TextView(context);
+								final String timeLeftDueDelay = eta.getTimeLeftDueDelay() + " ";
+								timing.setText(timeLeftDueDelay);
+								timing.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
+								timing.setLines(1);
+								timing.setEllipsize(TruncateAt.END);
+								insideLayout.addView(timing);
+
+								llv.addView(insideLayout);
 							} else {
-								llh = (LinearLayout) resultLayout.findViewById(idLayout);
-								llv = (LinearLayout) resultLayout.findViewById(idLayout2);
-							}
-							for (final Eta eta : etas) {
-								final Stop stop = eta.getStop();
-								final String key3 = (station.getName() + "_" + tl.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName());
-								final Integer idLayout3 = ids.get(key3);
-								if (idLayout3 == null) {
-									final LinearLayout insideLayout = new LinearLayout(context);
-									insideLayout.setOrientation(LinearLayout.HORIZONTAL);
-									insideLayout.setLayoutParams(paramsArrival);
-									final int newId = Util.generateViewId();
-									insideLayout.setId(newId);
-									ids.put(key3, newId);
-
-									final TextView stopName = new TextView(context);
-									final String destName = eta.getDestName() + ": ";
-									stopName.setText(destName);
-									stopName.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
-									insideLayout.addView(stopName);
-
-									final TextView timing = new TextView(context);
-									final String timeLeftDueDelay = eta.getTimeLeftDueDelay() + " ";
-									timing.setText(timeLeftDueDelay);
-									timing.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
-									timing.setLines(1);
-									timing.setEllipsize(TruncateAt.END);
-									insideLayout.addView(timing);
-
-									llv.addView(insideLayout);
-								} else {
-									// llv can be null sometimes (after a remove from favorites for example)
-									if (llv != null) {
-										final LinearLayout insideLayout = (LinearLayout) llv.findViewById(idLayout3);
-										// InsideLayout can be null too if removed before
-										final TextView timing = (TextView) insideLayout.getChildAt(1);
-										final String timingText = timing.getText() + eta.getTimeLeftDueDelay() + " ";
-										timing.setText(timingText);
-									}
+								// llv can be null sometimes (after a remove from favorites for example)
+								if (llv != null) {
+									final LinearLayout insideLayout = (LinearLayout) llv.findViewById(idLayout3);
+									// InsideLayout can be null too if removed before
+									final TextView timing = (TextView) insideLayout.getChildAt(1);
+									final String timingText = timing.getText() + eta.getTimeLeftDueDelay() + " ";
+									timing.setText(timingText);
 								}
 							}
 						}
