@@ -24,16 +24,10 @@ import android.view.View;
 
 import java.util.Locale;
 
-public class GoogleStreetOnClickListener implements View.OnClickListener {
-
-	private Activity activity;
-	private double latitude;
-	private double longitude;
+public class GoogleStreetOnClickListener extends GoogleMapListener {
 
 	public GoogleStreetOnClickListener(final Activity activity, final double latitude, final double longitude) {
-		this.activity = activity;
-		this.latitude = latitude;
-		this.longitude = longitude;
+		super(activity, latitude, longitude);
 	}
 
 	@Override

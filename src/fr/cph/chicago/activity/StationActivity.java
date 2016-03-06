@@ -17,12 +17,9 @@
 package fr.cph.chicago.activity;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
-import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -62,6 +59,7 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
+import fr.cph.chicago.listener.GoogleMapDirectionOnClickListener;
 import fr.cph.chicago.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.listener.GoogleStreetOnClickListener;
 import fr.cph.chicago.util.Util;
@@ -75,7 +73,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -178,16 +175,7 @@ public class StationActivity extends Activity {
 
 			streetViewImage.setOnClickListener(new GoogleStreetOnClickListener(this, latitude, longitude));
 			mapContainer.setOnClickListener(new GoogleMapOnClickListener(this, latitude, longitude));
-
-			walkContainer.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(final View v) {
-					final String uri = "http://maps.google.com/?f=d&daddr=" + latitude + "," + longitude + "&dirflg=w";
-					final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-					i.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
-					startActivity(i);
-				}
-			});
+			walkContainer.setOnClickListener(new GoogleMapDirectionOnClickListener(this, latitude,longitude));
 
 			setUpStopLayouts(stopByLines);
 

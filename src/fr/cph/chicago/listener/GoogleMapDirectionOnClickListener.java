@@ -21,15 +21,15 @@ import android.content.Intent;
 import android.net.Uri;
 import android.view.View;
 
-public class GoogleMapOnClickListener extends GoogleMapListener {
+public class GoogleMapDirectionOnClickListener extends GoogleMapListener {
 
-	public GoogleMapOnClickListener(final Activity activity, final double latitude, final double longitude) {
+	public GoogleMapDirectionOnClickListener(final Activity activity, final double latitude, final double longitude) {
 		super(activity, latitude, longitude);
 	}
 
 	@Override
 	public void onClick(final View v) {
-		final String uri = "http://maps.google.com/maps?z=12&t=m&q=loc:" + latitude + "+" + longitude;
+		final String uri = "http://maps.google.com/?f=d&daddr=" + latitude + "," + longitude + "&dirflg=w";
 		final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
 		i.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
 		activity.startActivity(i);
