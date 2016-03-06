@@ -122,24 +122,16 @@ public class BikeFragment extends Fragment {
 		rootView = inflater.inflate(R.layout.fragment_bike, container, false);
 		if (!mainActivity.isFinishing()) {
 			loadingLayout = (RelativeLayout) rootView.findViewById(R.id.loading_relativeLayout);
-			final RelativeLayout desactivatedLayout = (RelativeLayout) rootView.findViewById(R.id.desactivated_layout);
 			listView = (ListView) rootView.findViewById(R.id.bike_list);
 			filterView = (TextView) rootView.findViewById(R.id.bike_filter);
 			if (Util.isNetworkAvailable()) {
-				final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mainActivity);
-				final boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
-				if (loadBike) {
-					if (bikeStations == null || bikeStations.size() != 0) {
-						loadList();
-					} else {
-						loadingLayout.setVisibility(RelativeLayout.VISIBLE);
-						listView.setVisibility(ListView.INVISIBLE);
-						filterView.setVisibility(TextView.INVISIBLE);
-						new WaitForRefreshData().execute();
-					}
+				if (bikeStations == null || bikeStations.size() != 0) {
+					loadList();
 				} else {
-					desactivatedLayout.setVisibility(RelativeLayout.VISIBLE);
+					loadingLayout.setVisibility(RelativeLayout.VISIBLE);
+					listView.setVisibility(ListView.INVISIBLE);
 					filterView.setVisibility(TextView.INVISIBLE);
+					new WaitForRefreshData().execute();
 				}
 			} else {
 				Toast.makeText(ChicagoTracker.getContext(), "No network connection detected!", Toast.LENGTH_SHORT).show();

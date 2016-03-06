@@ -16,7 +16,7 @@
 
 package fr.cph.chicago.xml;
 
-import android.annotation.SuppressLint;
+import android.util.Log;
 import android.util.SparseArray;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.*;
@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * XML parser
@@ -49,33 +50,30 @@ import java.util.List;
  * @version 1
  */
 // TODO to refactor and optimize
-public final class Xml {
+public final class XmlParser {
 
-	/**
-	 * The parser
-	 **/
+	private static final String TAG = XmlParser.class.getSimpleName();
+
+	private static XmlParser instance;
 	private XmlPullParser parser;
-	/**
-	 * The train date format
-	 **/
 	private SimpleDateFormat simpleDateFormatTrain;
-	/**
-	 * The bus date format
-	 **/
 	private SimpleDateFormat simpleDateFormatBus;
 
-	/**
-	 * @throws ParserException
-	 */
-	@SuppressLint("SimpleDateFormat")
-	public Xml() throws ParserException {
+	public static XmlParser getInstance() {
+		if (instance == null) {
+			instance = new XmlParser();
+		}
+		return instance;
+	}
+
+	private XmlParser() {
 		try {
 			final XmlPullParserFactory pullParserFactory = XmlPullParserFactory.newInstance();
 			parser = pullParserFactory.newPullParser();
-			simpleDateFormatTrain = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
-			simpleDateFormatBus = new SimpleDateFormat("yyyyMMdd HH:mm");
-		} catch (XmlPullParserException e) {
-			throw new ParserException(TrackerException.ERROR, e);
+			simpleDateFormatTrain = new SimpleDateFormat("yyyyMMdd HH:mm:ss", Locale.US);
+			simpleDateFormatBus = new SimpleDateFormat("yyyyMMdd HH:mm", Locale.US);
+		} catch (final XmlPullParserException e) {
+			Log.e(TAG, TrackerException.ERROR, e);
 		}
 	}
 

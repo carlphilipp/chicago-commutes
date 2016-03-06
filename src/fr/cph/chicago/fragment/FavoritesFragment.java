@@ -19,11 +19,9 @@ package fr.cph.chicago.fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -134,14 +132,7 @@ public class FavoritesFragment extends Fragment {
 			floatingButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(final View v) {
-					Log.e(TAG, "bikeStations " + bikeStations.size());
-					final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mainActivity);
-					final boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
-					startSearchActivityIfReady(loadBike);
-				}
-
-				private void startSearchActivityIfReady(final boolean loadBike) {
-					if (loadBike && bikeStations.isEmpty()) {
+					if (bikeStations.isEmpty()) {
 						Toast.makeText(mainActivity, "You are a bit fast! Try again in a second!", Toast.LENGTH_SHORT).show();
 					} else {
 						final Intent intent = new Intent(mainActivity, SearchActivity.class);
@@ -152,13 +143,9 @@ public class FavoritesFragment extends Fragment {
 			});
 			swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.activity_main_swipe_refresh_layout);
 			swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+
 				@Override
 				public void onRefresh() {
-					final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mainActivity);
-					final boolean loadTrain = sharedPref.getBoolean("cta_train", true);
-					final boolean loadBus = sharedPref.getBoolean("cta_bus", true);
-					final boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
-
 					final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
 					final List<Integer> trainFavorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
 					for (final Integer fav : trainFavorites) {
@@ -172,37 +159,30 @@ public class FavoritesFragment extends Fragment {
 						params2.put(getResources().getString(R.string.request_stop_id), fav[1]);
 					}
 					try {
-						final GlobalConnectTask task = new GlobalConnectTask(FavoritesFragment.this, FavoritesFragment.class, TRAIN_ARRIVALS, params, BUS_ARRIVALS, params2, loadTrain, loadBus,
-								loadBike);
+						final GlobalConnectTask task = new GlobalConnectTask(FavoritesFragment.this, FavoritesFragment.class, TRAIN_ARRIVALS, params, BUS_ARRIVALS, params2);
 						task.execute((Void) null);
 					} catch (ParserException e) {
 						ChicagoTracker.displayError(mainActivity, e);
 						return;
 					}
 					// Google analytics
-					if (loadTrain) {
-						Util.trackAction(mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
-					}
-					if (loadBus) {
-						Util.trackAction(mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
-					}
-					if (loadBike) {
-						Util.trackAction(mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
-					}
+					Util.trackAction(mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
+					Util.trackAction(mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
+					Util.trackAction(mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
+
 					// Check if bus or bike data are not loaded. If not, load them.
 					// Can happen when the app has been loaded without any data connection
 					boolean loadData = false;
 					final DataHolder dataHolder = DataHolder.getInstance();
-
 					final BusData busData = dataHolder.getBusData();
 
 					final Bundle bundle = mainActivity.getIntent().getExtras();
 					final List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
 
-					if (loadBus && busData.getRoutes() != null && busData.getRoutes().size() == 0) {
+					if (busData.getRoutes() != null && busData.getRoutes().size() == 0) {
 						loadData = true;
 					}
-					if (!loadData && loadBike && bikeStations == null) {
+					if (!loadData && bikeStations == null) {
 						loadData = true;
 					}
 					if (loadData) {
@@ -279,6 +259,7 @@ public class FavoritesFragment extends Fragment {
 	 * @param trainArrivals the train arrivals list
 	 * @param busArrivals   the bus arrivals list
 	 */
+	// TODO handle result 3 booleans that indicate if the update failed or not
 	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals, final List<BikeStation> bikeStations, final Boolean trainBoolean,
 			final Boolean busBoolean, final Boolean bikeBoolean, final Boolean networkAvailable) {
 		if (!networkAvailable) {

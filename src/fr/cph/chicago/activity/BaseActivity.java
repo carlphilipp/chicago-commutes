@@ -18,10 +18,8 @@ package fr.cph.chicago.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.SparseArray;
 import android.widget.Toast;
@@ -169,28 +167,9 @@ public class BaseActivity extends Activity {
 		final MultiValuedMap<String, String> paramsTrain = getParamsTrain();
 		final MultiValuedMap<String, String> paramsBus = getParamsBus();
 
-		// Get preferences to know if trains and buses need to be loaded
-		final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-		boolean loadTrain = true;
-		boolean loadBus = true;
-		if (sharedPref.contains(getString(R.string.preferences_cta_train))) {
-			loadTrain = sharedPref.getBoolean(getString(R.string.preferences_cta_train), true);
-		} else {
-			final SharedPreferences.Editor editor = sharedPref.edit();
-			editor.putBoolean(getString(R.string.preferences_cta_train), true);
-			editor.apply();
-		}
-		if (sharedPref.contains(getString(R.string.preferences_cta_bus))) {
-			loadBus = sharedPref.getBoolean(getString(R.string.preferences_cta_bus), true);
-		} else {
-			final SharedPreferences.Editor editor = sharedPref.edit();
-			editor.putBoolean(getString(R.string.preferences_cta_bus), true);
-			editor.apply();
-		}
-
-		final GlobalConnectTask task = new GlobalConnectTask(this, BaseActivity.class, TRAIN_ARRIVALS, paramsTrain, BUS_ARRIVALS, paramsBus, loadTrain, loadBus, false);
+		final GlobalConnectTask task = new GlobalConnectTask(this, BaseActivity.class, TRAIN_ARRIVALS, paramsTrain, BUS_ARRIVALS, paramsBus);
 		task.execute((Void) null);
-		trackWithGoogleAnalytics(loadTrain, loadBus);
+		trackWithGoogleAnalytics();
 	}
 
 	private MultiValuedMap<String, String> getParamsTrain() {
@@ -213,12 +192,8 @@ public class BaseActivity extends Activity {
 		return paramsBus;
 	}
 
-	private void trackWithGoogleAnalytics(final boolean loadTrain, final boolean loadBus) {
-		if (loadTrain) {
-			Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
-		}
-		if (loadBus) {
-			Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
-		}
+	private void trackWithGoogleAnalytics() {
+		Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
+		Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
 	}
 }

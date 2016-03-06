@@ -47,7 +47,7 @@ import fr.cph.chicago.listener.GoogleMapDirectionOnClickListener;
 import fr.cph.chicago.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.listener.GoogleStreetOnClickListener;
 import fr.cph.chicago.util.Util;
-import fr.cph.chicago.xml.Xml;
+import fr.cph.chicago.xml.XmlParser;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
@@ -284,7 +284,7 @@ public class BusActivity extends Activity {
 			reqParams.put(getResources().getString(R.string.request_stop_id), String.valueOf(busStopId));
 			final CtaConnect connect = CtaConnect.getInstance();
 			try {
-				final Xml xml = new Xml();
+				final XmlParser xml = XmlParser.getInstance();
 				// Connect to CTA API bus to get XML result of inc buses
 				final String xmlResult = connect.connect(BUS_ARRIVALS, reqParams);
 				// Parse and return arrival buses

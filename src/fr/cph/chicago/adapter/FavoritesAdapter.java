@@ -467,9 +467,6 @@ public final class FavoritesAdapter extends BaseAdapter {
 
 				favoritesData.addView(llh);
 
-				final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mainActivity);
-				final boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
-
 				final boolean isNetworkAvailable = Util.isNetworkAvailable();
 
 				if (bikeStation.getLatitude() != 0 && bikeStation.getLongitude() != 0) {
@@ -488,17 +485,6 @@ public final class FavoritesAdapter extends BaseAdapter {
 							}
 						}
 					});
-				} else if (loadBike) {
-					convertView.setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							if (!isNetworkAvailable) {
-								Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
-							} else {
-								Toast.makeText(mainActivity, "Not ready yet. Please try again in few seconds!", Toast.LENGTH_SHORT).show();
-							}
-						}
-					});
 				} else {
 					convertView.setOnClickListener(new View.OnClickListener() {
 						@Override
@@ -506,7 +492,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 							if (!isNetworkAvailable) {
 								Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
 							} else {
-								Toast.makeText(mainActivity, "You must activate divvy bikes data", Toast.LENGTH_SHORT).show();
+								Toast.makeText(mainActivity, "Not ready yet. Please try again in few seconds!", Toast.LENGTH_SHORT).show();
 							}
 						}
 					});

@@ -61,7 +61,7 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.fragment.GoogleMapAbility;
 import fr.cph.chicago.util.Util;
-import fr.cph.chicago.xml.Xml;
+import fr.cph.chicago.xml.XmlParser;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.commons.lang3.StringUtils;
@@ -286,7 +286,7 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
 			final String boundIgnoreCase = boundTitle.toLowerCase(Locale.US);
 			try {
 				final String content = connect.connect(BUS_PATTERN, connectParam);
-				final Xml xml = new Xml();
+				final XmlParser xml = XmlParser.getInstance();
 				final List<BusPattern> patterns = xml.parsePatterns(content);
 				for (final BusPattern pattern : patterns) {
 					final String directionIgnoreCase = pattern.getDirection().toLowerCase(Locale.US);

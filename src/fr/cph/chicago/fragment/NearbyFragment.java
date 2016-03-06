@@ -80,7 +80,7 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.json.JsonParser;
 import fr.cph.chicago.util.Util;
-import fr.cph.chicago.xml.Xml;
+import fr.cph.chicago.xml.XmlParser;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
@@ -114,7 +114,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 	private GoogleMap googleMap;
 	private NearbyAdapter nearbyAdapter;
 	private boolean hideStationsStops;
-	
+
 	public static NearbyFragment newInstance(final int sectionNumber) {
 		final NearbyFragment fragment = new NearbyFragment();
 		final Bundle args = new Bundle();
@@ -232,68 +232,59 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 			busArrivalsMap = new SparseArray<>();
 			trainArrivals = new SparseArray<>();
 
-			final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mainActivity);
-			final boolean loadTrain = sharedPref.getBoolean("cta_train", true);
-			final boolean loadBus = sharedPref.getBoolean("cta_bus", true);
-			final boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
-
 			final CtaConnect cta = CtaConnect.getInstance();
 
 			// Loop over bus stops around user
-			if (loadBus) {
-				for (final BusStop busStop : busStops) {
-					// Create
-					Map<String, List<BusArrival>> tempMap = busArrivalsMap.get(busStop.getId(), null);
-					if (tempMap == null) {
-						tempMap = new HashMap<>();
-						busArrivalsMap.put(busStop.getId(), tempMap);
-					}
+			for (final BusStop busStop : busStops) {
+				// Create
+				Map<String, List<BusArrival>> tempMap = busArrivalsMap.get(busStop.getId(), null);
+				if (tempMap == null) {
+					tempMap = new HashMap<>();
+					busArrivalsMap.put(busStop.getId(), tempMap);
+				}
 
-					// Buses
-					try {
-						final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-						reqParams.put(getResources().getString(R.string.request_stop_id), Integer.toString(busStop.getId()));
+				// Buses
+				try {
+					final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
+					reqParams.put(getResources().getString(R.string.request_stop_id), Integer.toString(busStop.getId()));
 
-						final String xmlRes = cta.connect(BUS_ARRIVALS, reqParams);
-						final Xml xml = new Xml();
-						final List<BusArrival> busArrivals = xml.parseBusArrivals(xmlRes);
-						for (final BusArrival busArrival : busArrivals) {
-							final String direction = busArrival.getRouteDirection();
-							if (tempMap.containsKey(direction)) {
-								final List<BusArrival> temp = tempMap.get(direction);
-								temp.add(busArrival);
-							} else {
-								final List<BusArrival> temp = new ArrayList<>();
-								temp.add(busArrival);
-								tempMap.put(direction, temp);
-							}
+					final String xmlRes = cta.connect(BUS_ARRIVALS, reqParams);
+					final XmlParser xml = XmlParser.getInstance();
+					final List<BusArrival> busArrivals = xml.parseBusArrivals(xmlRes);
+					for (final BusArrival busArrival : busArrivals) {
+						final String direction = busArrival.getRouteDirection();
+						if (tempMap.containsKey(direction)) {
+							final List<BusArrival> temp = tempMap.get(direction);
+							temp.add(busArrival);
+						} else {
+							final List<BusArrival> temp = new ArrayList<>();
+							temp.add(busArrival);
+							tempMap.put(direction, temp);
 						}
-						Util.trackAction(NearbyFragment.this.mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
-					} catch (final ConnectException | ParserException e) {
-						Log.e(TAG, e.getMessage(), e);
 					}
+					Util.trackAction(NearbyFragment.this.mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
+				} catch (final ConnectException | ParserException e) {
+					Log.e(TAG, e.getMessage(), e);
 				}
 			}
-			if (loadTrain) {
-				// Train
-				for (final Station station : stations) {
-					try {
-						final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-						reqParams.put(getResources().getString(R.string.request_map_id), String.valueOf(station.getId()));
-						final String xmlRes = cta.connect(TRAIN_ARRIVALS, reqParams);
-						final Xml xml = new Xml();
-						final SparseArray<TrainArrival> temp = xml.parseArrivals(xmlRes, DataHolder.getInstance().getTrainData());
-						for (int j = 0; j < temp.size(); j++) {
-							trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
-						}
-						Util.trackAction(NearbyFragment.this.mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
-					} catch (final ConnectException | ParserException e) {
-						Log.e(TAG, e.getMessage(), e);
+			// Train
+			for (final Station station : stations) {
+				try {
+					final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
+					reqParams.put(getResources().getString(R.string.request_map_id), String.valueOf(station.getId()));
+					final String xmlRes = cta.connect(TRAIN_ARRIVALS, reqParams);
+					final XmlParser xml = XmlParser.getInstance();;
+					final SparseArray<TrainArrival> temp = xml.parseArrivals(xmlRes, DataHolder.getInstance().getTrainData());
+					for (int j = 0; j < temp.size(); j++) {
+						trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
 					}
+					Util.trackAction(NearbyFragment.this.mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
+				} catch (final ConnectException | ParserException e) {
+					Log.e(TAG, e.getMessage(), e);
 				}
 			}
-			// TODO: modify the second check
-			if (loadBike && bikeStationsTemp != null) {
+			// TODO: modify the check
+			if (bikeStationsTemp != null) {
 				// Bike
 				final DivvyConnect connect = DivvyConnect.getInstance();
 				try {

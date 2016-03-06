@@ -16,7 +16,6 @@
 
 package fr.cph.chicago.activity;
 
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -24,7 +23,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.PersistableBundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
@@ -60,8 +58,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
 import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
@@ -137,11 +133,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 						if (favoritesFragment != null) {
 							favoritesFragment.startRefreshing();
 						}
-						final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-						final boolean loadTrain = sharedPref.getBoolean("cta_train", true);
-						final boolean loadBus = sharedPref.getBoolean("cta_bus", true);
-						final boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
-
 						final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
 						final List<Integer> trainFavorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
 						for (final Integer fav : trainFavorites) {
@@ -155,23 +146,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 							params2.put(getResources().getString(R.string.request_stop_id), fav[1]);
 						}
 						try {
-							final GlobalConnectTask task = new GlobalConnectTask(favoritesFragment, FavoritesFragment.class, TRAIN_ARRIVALS, params, BUS_ARRIVALS, params2, loadTrain, loadBus,
-									loadBike);
+							final GlobalConnectTask task = new GlobalConnectTask(favoritesFragment, FavoritesFragment.class, TRAIN_ARRIVALS, params, BUS_ARRIVALS, params2);
 							task.execute((Void) null);
 						} catch (final ParserException e) {
 							ChicagoTracker.displayError(MainActivity.this, e);
 							return false;
 						}
 						// Google analytics
-						if (loadTrain) {
-							Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
-						}
-						if (loadBus) {
-							Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
-						}
-						if (loadBike) {
-							Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
-						}
+						Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
+						Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
+						Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
 						// Check if bus/bike or alert data are not loaded. If not, load them.
 						// Can happen when the app has been loaded without any data connection
 						boolean loadData = false;
@@ -182,18 +166,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 						final Bundle bundle = MainActivity.this.getIntent().getExtras();
 						final List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
 
-						if (loadBus && busData.getRoutes() != null && busData.getRoutes().size() == 0) {
+						if (busData.getRoutes() != null && busData.getRoutes().size() == 0) {
 							loadData = true;
 						}
-						if (!loadData && loadBike && bikeStations == null) {
+						if (!loadData && bikeStations == null) {
 							loadData = true;
 						}
 						if (loadData) {
 							favoritesFragment.startRefreshing();
 							new LoadBusAndBikeData().execute();
 						}
-						Util.trackAction(MainActivity.this, R.string.analytics_category_ui, R.string.analytics_action_press,
-								R.string.analytics_action_refresh_fav, 0);
+						Util.trackAction(MainActivity.this, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
 					}
 					return true;
 				}
@@ -312,62 +295,44 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 		private BusData busData;
 		private List<BikeStation> bikeStations;
-		private boolean loadBike;
 
 		@Override
 		protected final Void doInBackground(final Void... params) {
 			final DataHolder dataHolder = DataHolder.getInstance();
 			busData = dataHolder.getBusData();
 
-			final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-			final boolean loadBus = sharedPref.getBoolean("cta_bus", true);
-			loadBike = false;
-
-			if (sharedPref.contains("divvy_bike")) {
-				loadBike = sharedPref.getBoolean("divvy_bike", true);
-			} else {
-				final SharedPreferences.Editor editor = sharedPref.edit();
-				// Was false before fix
-				editor.putBoolean("divvy_bike", true);
-				editor.apply();
+			// Load buses data
+			try {
+				busData.loadBusRoutes();
+				Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_routes, 0);
+				publishProgress();
+			} catch (final ParserException | ConnectException e) {
+				new Handler(Looper.getMainLooper()).post(new Runnable() {
+					@Override
+					public void run() {
+						Toast.makeText(MainActivity.this, "Bus error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+					}
+				});
+				Log.e(TAG, e.getMessage(), e);
 			}
 
-			// Load bus API data
-			if (loadBus) {
-				try {
-					busData.loadBusRoutes();
-					Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_routes, 0);
-					publishProgress();
-				} catch (final ParserException | ConnectException e) {
-					new Handler(Looper.getMainLooper()).post(new Runnable() {
-						@Override
-						public void run() {
-							Toast.makeText(MainActivity.this, "Bus error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-						}
-					});
-					Log.e(TAG, e.getMessage(), e);
-				}
-			}
-
-			// Load divvy
-			if (loadBike) {
-				try {
-					final JsonParser json = JsonParser.getInstance();
-					final DivvyConnect divvyConnect = DivvyConnect.getInstance();
-					long startTime = System.currentTimeMillis();
-					final InputStream bikeContent = divvyConnect.connect();
-					long stopTime = System.currentTimeMillis();
-					Log.e(TAG, "Load divvy data online: " + (stopTime - startTime) + " ms");
-					startTime = System.currentTimeMillis();
-					bikeStations = json.parseStations(bikeContent);
-					stopTime = System.currentTimeMillis();
-					Log.e(TAG, "Parse divvy data: " + (stopTime - startTime) + " ms");
-					Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
-					Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
-					publishProgress();
-				} catch (final ConnectException | ParserException e) {
-					Log.e(TAG, e.getMessage(), e);
-				}
+			// Load divvy data
+			try {
+				final JsonParser json = JsonParser.getInstance();
+				final DivvyConnect divvyConnect = DivvyConnect.getInstance();
+				long startTime = System.currentTimeMillis();
+				final InputStream bikeContent = divvyConnect.connect();
+				long stopTime = System.currentTimeMillis();
+				Log.e(TAG, "Load divvy data online: " + (stopTime - startTime) + " ms");
+				startTime = System.currentTimeMillis();
+				bikeStations = json.parseStations(bikeContent);
+				stopTime = System.currentTimeMillis();
+				Log.e(TAG, "Parse divvy data: " + (stopTime - startTime) + " ms");
+				Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
+				Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
+				publishProgress();
+			} catch (final ConnectException | ParserException e) {
+				Log.e(TAG, e.getMessage(), e);
 			}
 			return null;
 		}
@@ -382,15 +347,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			final DataHolder dataHolder = DataHolder.getInstance();
 			dataHolder.setBusData(busData);
 
-			if (loadBike) {
-				getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
-				onNewIntent(getIntent());
-				if (favoritesFragment != null) {
-					favoritesFragment.setBikeStations(bikeStations);
-				}
-				if (bikeFragment != null) {
-					bikeFragment.setBikeStations(bikeStations);
-				}
+			getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
+			onNewIntent(getIntent());
+			if (favoritesFragment != null) {
+				favoritesFragment.setBikeStations(bikeStations);
+			}
+			if (bikeFragment != null) {
+				bikeFragment.setBikeStations(bikeStations);
 			}
 			if (currentPosition == POSITION_BUS && busFragment != null) {
 				busFragment.update();

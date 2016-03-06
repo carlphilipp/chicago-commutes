@@ -24,7 +24,7 @@ import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
-import fr.cph.chicago.xml.Xml;
+import fr.cph.chicago.xml.XmlParser;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
@@ -94,7 +94,7 @@ public class BusData {
 		if (busRoutes.size() == 0) {
 			final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
 			final CtaConnect connect = CtaConnect.getInstance();
-			final Xml xml = new Xml();
+			final XmlParser xml = XmlParser.getInstance();
 			long startTime = System.currentTimeMillis();
 			final String xmlResult = connect.connect(BUS_ROUTES, params);
 			long stopTime = System.currentTimeMillis();
@@ -157,7 +157,7 @@ public class BusData {
 		params.put("rt", stopId);
 		params.put("dir", bound);
 		final String xmlResult = connect.connect(BUS_STOP_LIST, params);
-		final Xml xml = new Xml();
+		final XmlParser xml = XmlParser.getInstance();
 		return xml.parseBusBounds(xmlResult);
 	}
 

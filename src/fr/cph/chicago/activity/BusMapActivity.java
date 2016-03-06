@@ -63,7 +63,7 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.listener.BusMapOnCameraChangeListener;
 import fr.cph.chicago.task.LoadCurrentPosition;
 import fr.cph.chicago.util.Util;
-import fr.cph.chicago.xml.Xml;
+import fr.cph.chicago.xml.XmlParser;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
@@ -390,7 +390,7 @@ public class BusMapActivity extends Activity {
 			}
 			try {
 				final String content = connect.connect(BUS_VEHICLES, connectParam);
-				final Xml xml = new Xml();
+				final XmlParser xml = XmlParser.getInstance();
 				buses = xml.parseVehicles(content);
 			} catch (final ConnectException | ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
@@ -430,7 +430,7 @@ public class BusMapActivity extends Activity {
 				if (busId == 0) {
 					final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
 					reqParams.put(getResources().getString(R.string.request_rt), busRouteId);
-					final Xml xml = new Xml();
+					final XmlParser xml = XmlParser.getInstance();
 					final String xmlResult = connect.connect(BUS_DIRECTION, reqParams);
 					final BusDirections busDirections = xml.parseBusDirections(xmlResult, busRouteId);
 					bounds = new String[busDirections.getlBusDirection().size()];
@@ -443,7 +443,7 @@ public class BusMapActivity extends Activity {
 				final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
 				connectParam.put(getResources().getString(R.string.request_rt), busRouteId);
 				final String content = connect.connect(BUS_PATTERN, connectParam);
-				final Xml xml = new Xml();
+				final XmlParser xml = XmlParser.getInstance();
 				final List<BusPattern> patterns = xml.parsePatterns(content);
 				for (final BusPattern pattern : patterns) {
 					String directionIgnoreCase = pattern.getDirection().toLowerCase(Locale.US);
@@ -489,7 +489,7 @@ public class BusMapActivity extends Activity {
 				MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
 				connectParam.put("vid", busId);
 				String content = connect.connect(BUS_ARRIVALS, connectParam);
-				Xml xml = new Xml();
+				XmlParser xml = XmlParser.getInstance();
 				arrivals = xml.parseBusArrivals(content);
 			} catch (final ConnectException | ParserException e) {
 				Log.e(TAG, e.getMessage(), e);

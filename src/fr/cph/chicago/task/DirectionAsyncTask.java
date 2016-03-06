@@ -39,7 +39,7 @@ import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.util.Util;
-import fr.cph.chicago.xml.Xml;
+import fr.cph.chicago.xml.XmlParser;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
@@ -76,7 +76,7 @@ public class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 			busRoute = (BusRoute) params[0];
 			convertView = (View) params[1];
 			reqParams.put(activity.getResources().getString(R.string.request_rt), busRoute.getId());
-			final Xml xml = new Xml();
+			final XmlParser xml = XmlParser.getInstance();
 			final String xmlResult = connect.connect(BUS_DIRECTION, reqParams);
 			busDirections = xml.parseBusDirections(xmlResult, busRoute.getId());
 		} catch (ParserException | ConnectException e) {

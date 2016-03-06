@@ -62,7 +62,7 @@ import fr.cph.chicago.listener.GoogleMapDirectionOnClickListener;
 import fr.cph.chicago.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.listener.GoogleStreetOnClickListener;
 import fr.cph.chicago.util.Util;
-import fr.cph.chicago.xml.Xml;
+import fr.cph.chicago.xml.XmlParser;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.commons.lang3.text.WordUtils;
@@ -379,7 +379,7 @@ public class StationActivity extends Activity {
 			SparseArray<TrainArrival> arrivals = new SparseArray<>();
 			final CtaConnect connect = CtaConnect.getInstance();
 			try {
-				final Xml xml = new Xml();
+				final XmlParser xml = XmlParser.getInstance();
 				final String xmlResult = connect.connect(TRAIN_ARRIVALS, params[0]);
 				//String xmlResult = connectTest();
 				arrivals = xml.parseArrivals(xmlResult, StationActivity.this.trainData);

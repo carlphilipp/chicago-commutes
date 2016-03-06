@@ -59,7 +59,7 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.listener.TrainMapOnCameraChangeListener;
 import fr.cph.chicago.task.LoadCurrentPosition;
 import fr.cph.chicago.util.Util;
-import fr.cph.chicago.xml.Xml;
+import fr.cph.chicago.xml.XmlParser;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
@@ -350,7 +350,7 @@ public class TrainMapActivity extends Activity {
 				final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
 				connectParam.put("runnumber", runNumber);
 				final String content = connect.connect(TRAIN_FOLLOW, connectParam);
-				final Xml xml = new Xml();
+				final XmlParser xml = XmlParser.getInstance();
 				etas = xml.parseTrainsFollow(content, trainData);
 			} catch (final ConnectException | ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
@@ -411,7 +411,7 @@ public class TrainMapActivity extends Activity {
 			connectParam.put(getResources().getString(R.string.request_rt), line);
 			try {
 				final String content = connect.connect(TRAIN_LOCATION, connectParam);
-				final Xml xml = new Xml();
+				final XmlParser xml = XmlParser.getInstance();
 				trains = xml.parseTrainsLocation(content);
 			} catch (final ConnectException | ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
