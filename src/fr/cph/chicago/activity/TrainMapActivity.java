@@ -408,7 +408,7 @@ public class TrainMapActivity extends Activity {
 			List<Train> trains = null;
 			final CtaConnect connect = CtaConnect.getInstance();
 			final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
-			connectParam.put("rt", line);
+			connectParam.put(getResources().getString(R.string.request_rt), line);
 			try {
 				final String content = connect.connect(TRAIN_LOCATION, connectParam);
 				final Xml xml = new Xml();

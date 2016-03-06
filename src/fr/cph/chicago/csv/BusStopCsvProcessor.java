@@ -33,7 +33,7 @@ public class BusStopCsvProcessor implements RowProcessor {
 	 */
 	@Override
 	public void rowProcessed(final String[] row, final ParsingContext context) {
-		int stopId = Integer.parseInt(row[0]); // stop_id
+		final int stopId = Integer.parseInt(row[0]); // stop_id
 		// String stopCode = TrainDirection.fromString(row[1]); // stop_code
 		final String stopName = row[2]; // stop_name
 		// String stopDesc = row[3]; // stop_desc

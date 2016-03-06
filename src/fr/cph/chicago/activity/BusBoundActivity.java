@@ -282,7 +282,7 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
 		protected final BusPattern doInBackground(final Void... params) {
 			final CtaConnect connect = CtaConnect.getInstance();
 			final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
-			connectParam.put("rt", busRouteId);
+			connectParam.put(getResources().getString(R.string.request_rt), busRouteId);
 			final String boundIgnoreCase = boundTitle.toLowerCase(Locale.US);
 			try {
 				final String content = connect.connect(BUS_PATTERN, connectParam);

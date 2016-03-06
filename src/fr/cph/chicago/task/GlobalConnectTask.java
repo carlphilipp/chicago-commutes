@@ -189,7 +189,7 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 				try {
 					for (final Entry<String, Collection<String>> entry : params.asMap().entrySet()) {
 						final String key = entry.getKey();
-						if (key.equals("mapid")) {
+						if ("mapid".equals(key)) {
 							final List<String> list = (List<String>) entry.getValue();
 							if (list.size() < 5) {
 								final String xmlResult = ctaConnect.connect(requestType, params);
@@ -263,9 +263,9 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 						for (final String v : values) {
 							str.append(v).append(",");
 							if (i == 9 || i == values.size() - 1) {
-								if (key.equals("rt")) {
+								if ("rt".equals(key)) {
 									rts.add(str.toString());
-								} else if (key.equals("stpid")) {
+								} else if ("stpid".equals(key)) {
 									stpids.add(str.toString());
 								}
 								str = new StringBuilder();

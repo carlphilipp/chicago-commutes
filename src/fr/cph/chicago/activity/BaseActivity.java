@@ -74,13 +74,8 @@ public class BaseActivity extends Activity {
 	 * @author Carl-Philipp Harmant
 	 */
 	private class LoadLocalData extends AsyncTask<Void, String, Void> {
-		/**
-		 * Bus data
-		 **/
+
 		private BusData busData;
-		/**
-		 * Train data
-		 **/
 		private TrainData trainData;
 
 		@Override
@@ -202,7 +197,7 @@ public class BaseActivity extends Activity {
 		final MultiValuedMap<String, String> paramsTrain = new ArrayListValuedHashMap<>();
 		final List<Integer> favorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
 		for (final Integer favorite : favorites) {
-			paramsTrain.put("mapid", String.valueOf(favorite));
+			paramsTrain.put(getResources().getString(R.string.request_map_id), String.valueOf(favorite));
 		}
 		return paramsTrain;
 	}
@@ -212,13 +207,13 @@ public class BaseActivity extends Activity {
 		final List<String> busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
 		for (final String busFavorite : busFavorites) {
 			final String[] fav = Util.decodeBusFavorite(busFavorite);
-			paramsBus.put("rt", fav[0]);
-			paramsBus.put("stpid", fav[1]);
+			paramsBus.put(getResources().getString(R.string.request_rt), fav[0]);
+			paramsBus.put(getResources().getString(R.string.request_stop_id), fav[1]);
 		}
 		return paramsBus;
 	}
 
-	private void trackWithGoogleAnalytics(boolean loadTrain, boolean loadBus) {
+	private void trackWithGoogleAnalytics(final boolean loadTrain, final boolean loadBus) {
 		if (loadTrain) {
 			Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
 		}

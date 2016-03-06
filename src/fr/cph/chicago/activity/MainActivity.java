@@ -143,14 +143,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 						final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
 						final List<Integer> trainFavorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
 						for (final Integer fav : trainFavorites) {
-							params.put("mapid", String.valueOf(fav));
+							params.put(getResources().getString(R.string.request_map_id), String.valueOf(fav));
 						}
 						final MultiValuedMap<String, String> params2 = new ArrayListValuedHashMap<>();
 						final List<String> busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
 						for (final String str : busFavorites) {
 							final String[] fav = Util.decodeBusFavorite(str);
-							params2.put("rt", fav[0]);
-							params2.put("stpid", fav[1]);
+							params2.put(getResources().getString(R.string.request_rt), fav[0]);
+							params2.put(getResources().getString(R.string.request_stop_id), fav[1]);
 						}
 						try {
 							final GlobalConnectTask task = new GlobalConnectTask(favoritesFragment, FavoritesFragment.class, TRAIN_ARRIVALS, params, BUS_ARRIVALS, params2, loadTrain, loadBus,

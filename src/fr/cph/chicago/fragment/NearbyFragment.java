@@ -251,7 +251,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 					// Buses
 					try {
 						final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-						reqParams.put("stpid", Integer.toString(busStop.getId()));
+						reqParams.put(getResources().getString(R.string.request_stop_id), Integer.toString(busStop.getId()));
 
 						final String xmlRes = cta.connect(BUS_ARRIVALS, reqParams);
 						final Xml xml = new Xml();
@@ -278,7 +278,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 				for (final Station station : stations) {
 					try {
 						final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-						reqParams.put("mapid", String.valueOf(station.getId()));
+						reqParams.put(getResources().getString(R.string.request_map_id), String.valueOf(station.getId()));
 						final String xmlRes = cta.connect(TRAIN_ARRIVALS, reqParams);
 						final Xml xml = new Xml();
 						final SparseArray<TrainArrival> temp = xml.parseArrivals(xmlRes, DataHolder.getInstance().getTrainData());

@@ -280,8 +280,8 @@ public class BusActivity extends Activity {
 		@Override
 		protected List<BusArrival> doInBackground(final Void... params) {
 			final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-			reqParams.put("rt", busRouteId);
-			reqParams.put("stpid", String.valueOf(busStopId));
+			reqParams.put(getResources().getString(R.string.request_rt), busRouteId);
+			reqParams.put(getResources().getString(R.string.request_stop_id), String.valueOf(busStopId));
 			final CtaConnect connect = CtaConnect.getInstance();
 			try {
 				final Xml xml = new Xml();

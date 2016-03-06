@@ -386,7 +386,7 @@ public class BusMapActivity extends Activity {
 			if (busId != 0) {
 				connectParam.put("vid", String.valueOf(busId));
 			} else {
-				connectParam.put("rt", busRouteId);
+				connectParam.put(getResources().getString(R.string.request_rt), busRouteId);
 			}
 			try {
 				final String content = connect.connect(BUS_VEHICLES, connectParam);
@@ -429,7 +429,7 @@ public class BusMapActivity extends Activity {
 			try {
 				if (busId == 0) {
 					final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-					reqParams.put("rt", busRouteId);
+					reqParams.put(getResources().getString(R.string.request_rt), busRouteId);
 					final Xml xml = new Xml();
 					final String xmlResult = connect.connect(BUS_DIRECTION, reqParams);
 					final BusDirections busDirections = xml.parseBusDirections(xmlResult, busRouteId);
@@ -441,7 +441,7 @@ public class BusMapActivity extends Activity {
 				}
 
 				final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
-				connectParam.put("rt", busRouteId);
+				connectParam.put(getResources().getString(R.string.request_rt), busRouteId);
 				final String content = connect.connect(BUS_PATTERN, connectParam);
 				final Xml xml = new Xml();
 				final List<BusPattern> patterns = xml.parsePatterns(content);

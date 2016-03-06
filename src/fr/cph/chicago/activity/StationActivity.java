@@ -124,7 +124,7 @@ public class StationActivity extends Activity {
 				station = trainData.getStation(stationId);
 
 				final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-				reqParams.put("mapid", String.valueOf(station.getId()));
+				reqParams.put(getResources().getString(R.string.request_map_id), String.valueOf(station.getId()));
 
 				swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_station_swipe_refresh_layout);
 				swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -219,7 +219,7 @@ public class StationActivity extends Activity {
 					public void onClick(final View v) {
 						// Update timing
 						final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-						reqParams.put("mapid", String.valueOf(station.getId()));
+						reqParams.put(getResources().getString(R.string.request_map_id), String.valueOf(station.getId()));
 						new LoadData().execute(reqParams);
 					}
 				});
@@ -265,7 +265,7 @@ public class StationActivity extends Activity {
 			public boolean onMenuItemClick(final MenuItem item) {
 				swipeRefreshLayout.setRefreshing(true);
 				final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-				reqParams.put("mapid", String.valueOf(station.getId()));
+				reqParams.put(getResources().getString(R.string.request_map_id), String.valueOf(station.getId()));
 				new LoadData().execute(reqParams);
 				return false;
 			}
@@ -411,7 +411,7 @@ public class StationActivity extends Activity {
 			}
 			Util.trackAction(StationActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
 			if (arrivals.size() == 1) {
-				final String id = ((List<String>) params[0].get("mapid")).get(0);
+				final String id = ((List<String>) params[0].get(getResources().getString(R.string.request_map_id))).get(0);
 				return arrivals.get(Integer.valueOf(id));
 			} else {
 				return null;

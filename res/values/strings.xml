@@ -162,4 +162,9 @@
 
 	<string name="analytics_action_refresh_fav">Refresh favorites</string>
 	<string name="analytics_action_refresh_bike">Refresh bike</string>
+
+	<!-- Requests -->
+	<string name="request_map_id">mapid</string>
+	<string name="request_rt">rt</string>
+	<string name="request_stop_id">stpid</string>
 </resources>
