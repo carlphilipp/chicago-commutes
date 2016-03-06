@@ -179,8 +179,8 @@ public class CtaConnect {
 			Log.v(TAG, "Address: " + address);
 			final URL url = new URL(address);
 			urlConnection = (HttpURLConnection) url.openConnection();
-			urlConnection.setConnectTimeout(10000);
-			urlConnection.setReadTimeout(10000);
+			urlConnection.setConnectTimeout(5000);
+			urlConnection.setReadTimeout(5000);
 			inputStream = new BufferedInputStream(urlConnection.getInputStream());
 			toReturn = IOUtils.toString(inputStream);
 		} catch (final IOException e) {
