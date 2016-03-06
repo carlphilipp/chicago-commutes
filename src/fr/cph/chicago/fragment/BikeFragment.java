@@ -258,7 +258,7 @@ public class BikeFragment extends Fragment {
 		protected List<BikeStation> doInBackground(Void... params) {
 			List<BikeStation> bikeStations = new ArrayList<>();
 			try {
-				final Json json = new Json();
+				final Json json = Json.getInstance();
 				final DivvyConnect divvyConnect = DivvyConnect.getInstance();
 				final String bikeContent = divvyConnect.connect();
 				bikeStations = json.parseStations(bikeContent);

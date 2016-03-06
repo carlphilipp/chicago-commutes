@@ -170,7 +170,7 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 		this.bikeStations = new ArrayList<>();
 
 		this.xml = new Xml();
-		this.json = new Json();
+		this.json = Json.getInstance();
 		this.loadTrains = loadTrains;
 		this.loadBuses = loadBuses;
 		this.loadBikes = loadBikes;

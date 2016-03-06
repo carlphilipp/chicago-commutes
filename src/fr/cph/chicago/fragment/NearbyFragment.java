@@ -296,7 +296,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 				// Bike
 				final DivvyConnect connect = DivvyConnect.getInstance();
 				try {
-					final Json json = new Json();
+					final Json json = Json.getInstance();
 					final String content = connect.connect();
 					final List<BikeStation> bikeStationUpdated = json.parseStations(content);
 					for (final BikeStation station : bikeStationUpdated) {

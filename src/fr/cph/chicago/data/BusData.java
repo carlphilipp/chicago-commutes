@@ -16,6 +16,7 @@
 
 package fr.cph.chicago.data;
 
+import android.util.Log;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.csv.BusStopCsvParser;
 import fr.cph.chicago.entity.BusRoute;
@@ -94,8 +95,14 @@ public class BusData {
 			final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
 			final CtaConnect connect = CtaConnect.getInstance();
 			final Xml xml = new Xml();
+			long startTime = System.currentTimeMillis();
 			final String xmlResult = connect.connect(BUS_ROUTES, params);
+			long stopTime = System.currentTimeMillis();
+			Log.e(TAG, "Load bus route online: " + (stopTime - startTime) + " ms");
+			startTime = System.currentTimeMillis();
 			busRoutes = xml.parseBusRoutes(xmlResult);
+			stopTime = System.currentTimeMillis();
+			Log.e(TAG, "Parse bus route: " + (stopTime - startTime) + " ms");
 		}
 		return busRoutes;
 	}

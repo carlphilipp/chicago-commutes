@@ -197,7 +197,7 @@ public class BaseActivity extends Activity {
 		final MultiValuedMap<String, String> paramsTrain = new ArrayListValuedHashMap<>();
 		final List<Integer> favorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
 		for (final Integer favorite : favorites) {
-			paramsTrain.put(getResources().getString(R.string.request_map_id), String.valueOf(favorite));
+			paramsTrain.put(getResources().getString(R.string.request_map_id), favorite.toString());
 		}
 		return paramsTrain;
 	}

@@ -235,7 +235,7 @@ public class BikeStationActivity extends Activity {
 		protected List<BikeStation> doInBackground(final Void... params) {
 			List<BikeStation> bikeStations = null;
 			try {
-				final Json json = new Json();
+				final Json json = Json.getInstance();
 				final DivvyConnect divvyConnect = DivvyConnect.getInstance();
 				final String bikeContent = divvyConnect.connect();
 				bikeStations = json.parseStations(bikeContent);

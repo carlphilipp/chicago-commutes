@@ -33,16 +33,31 @@ import java.util.List;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class Json {
+public final class Json {
+
+	private static ObjectMapper mapper;
+	private static Json instance;
+
+	public static Json getInstance() {
+		if (instance == null) {
+			instance = new Json();
+			mapper = new ObjectMapper();
+			;
+		}
+		return instance;
+	}
+
 	public List<BikeStation> parseStations(final String jsonString) throws ParserException {
 		try {
 			final JSONObject json = new JSONObject(jsonString);
 			final String stationList = json.getString("stationBeanList");
-			final ObjectMapper mapper = new ObjectMapper();
 			return mapper.readValue(stationList, new TypeReference<List<BikeStation>>() {
 			});
 		} catch (final JSONException | IOException e) {
 			throw new ParserException(TrackerException.ERROR, e);
 		}
+	}
+
+	private Json() {
 	}
 }
