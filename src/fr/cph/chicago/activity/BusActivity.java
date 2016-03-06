@@ -47,6 +47,7 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
+import fr.cph.chicago.listener.GoogleStreetOnClickListener;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
 import org.apache.commons.collections4.MultiValuedMap;
@@ -136,22 +137,7 @@ public class BusActivity extends Activity {
 					new LoadStationData().execute();
 				}
 			});
-			streetViewImage.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					String uri = String.format(Locale.ENGLISH, "google.streetview:cbll=%f,%f&cbp=1,180,,0,1&mz=1", latitude, longitude);
-					final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-					intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
-					try {
-						startActivity(intent);
-					} catch (final ActivityNotFoundException ex) {
-						// Redirect to browser if the user does not have google map installed
-						uri = String.format(Locale.ENGLISH, "http://maps.google.com/maps?q=&layer=c&cbll=%f,%f&cbp=11,0,0,0,0", latitude, longitude);
-						final Intent unrestrictedIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-						startActivity(unrestrictedIntent);
-					}
-				}
-			});
+			streetViewImage.setOnClickListener(new GoogleStreetOnClickListener(this, latitude, longitude));
 			mapContainer.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
