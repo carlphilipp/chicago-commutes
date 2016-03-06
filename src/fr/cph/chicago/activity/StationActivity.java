@@ -101,7 +101,7 @@ public class StationActivity extends Activity {
 
 	private boolean isFavorite;
 	private TrainData trainData;
-	private Integer stationId;
+	private int stationId;
 	private Station station;
 	private Map<String, Integer> ids;
 
@@ -121,65 +121,64 @@ public class StationActivity extends Activity {
 			ids = new HashMap<>();
 
 			// Get station id from bundle extra
-			if (stationId == null) {
-				stationId = getIntent().getExtras().getInt("stationId");
-			}
+			stationId = getIntent().getExtras().getInt("stationId", 0);
+			if (stationId != 0) {
+				// Get station from station id
+				station = trainData.getStation(stationId);
 
-			// Get station from station id
-			station = trainData.getStation(stationId);
+				final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
+				reqParams.put("mapid", String.valueOf(station.getId()));
 
-			final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-			reqParams.put("mapid", String.valueOf(station.getId()));
+				swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_station_swipe_refresh_layout);
+				swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+					@Override
+					public void onRefresh() {
+						new LoadData().execute(reqParams);
+					}
+				});
 
-			swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_station_swipe_refresh_layout);
-			swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-				@Override
-				public void onRefresh() {
-					new LoadData().execute(reqParams);
+				new LoadData().execute(reqParams);
+
+				// Call google street api to load image
+				final Position position = station.getStops().get(0).getPosition();
+				new DisplayGoogleStreetPicture().execute(position.getLatitude(), position.getLongitude());
+
+				isFavorite = isFavorite();
+
+				streetViewImage = (ImageView) findViewById(R.id.activity_train_station_streetview_image);
+				streetViewText = (TextView) findViewById(R.id.activity_train_station_steetview_text);
+				final ImageView mapImage = (ImageView) findViewById(R.id.activity_map_image);
+				mapImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
+				mapContainer = (LinearLayout) findViewById(R.id.map_container);
+				final ImageView directionImage = (ImageView) findViewById(R.id.activity_map_direction);
+				directionImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
+				walkContainer = (LinearLayout) findViewById(R.id.walk_container);
+				favoritesImage = (ImageView) findViewById(R.id.activity_favorite_star);
+				final LinearLayout favoritesImageContainer = (LinearLayout) findViewById(R.id.favorites_container);
+				if (isFavorite) {
+					favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
+				} else {
+					favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
 				}
-			});
+				favoritesImageContainer.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(final View v) {
+						StationActivity.this.switchFavorite();
+					}
+				});
 
-			new LoadData().execute(reqParams);
+				paramsStop = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
-			// Call google street api to load image
-			final Position position = station.getStops().get(0).getPosition();
-			new DisplayGoogleStreetPicture().execute(position.getLatitude(), position.getLongitude());
+				final Map<TrainLine, List<Stop>> stopByLines = station.getStopByLines();
+				final TrainLine randomTrainLine = getRandomLine(stopByLines);
+				swipeRefreshLayout.setColorSchemeColors(randomTrainLine.getColor());
 
-			isFavorite = isFavorite();
+				setUpStopLayouts(stopByLines);
 
-			streetViewImage = (ImageView) findViewById(R.id.activity_train_station_streetview_image);
-			streetViewText = (TextView) findViewById(R.id.activity_train_station_steetview_text);
-			final ImageView mapImage = (ImageView) findViewById(R.id.activity_map_image);
-			mapImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
-			mapContainer = (LinearLayout) findViewById(R.id.map_container);
-			final ImageView directionImage = (ImageView) findViewById(R.id.activity_map_direction);
-			directionImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
-			walkContainer = (LinearLayout) findViewById(R.id.walk_container);
-			favoritesImage = (ImageView) findViewById(R.id.activity_favorite_star);
-			final LinearLayout favoritesImageContainer = (LinearLayout) findViewById(R.id.favorites_container);
-			if (isFavorite) {
-				favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
-			} else {
-				favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
+				setToolBar(randomTrainLine);
+
+				Util.trackScreen(getResources().getString(R.string.analytics_train_details));
 			}
-			favoritesImageContainer.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(final View v) {
-					StationActivity.this.switchFavorite();
-				}
-			});
-
-			paramsStop = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-
-			final Map<TrainLine, List<Stop>> stopByLines = station.getStopByLines();
-			final TrainLine randomTrainLine = getRandomLine(stopByLines);
-			swipeRefreshLayout.setColorSchemeColors(randomTrainLine.getColor());
-
-			setUpStopLayouts(stopByLines);
-
-			setToolBar(randomTrainLine);
-
-			Util.trackScreen(getResources().getString(R.string.analytics_train_details));
 		}
 	}
 
@@ -312,7 +311,7 @@ public class StationActivity extends Activity {
 		boolean isFavorite = false;
 		final List<Integer> favorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
 		for (final Integer favorite : favorites) {
-			if (favorite.intValue() == stationId.intValue()) {
+			if (favorite.intValue() == stationId) {
 				isFavorite = true;
 				break;
 			}
