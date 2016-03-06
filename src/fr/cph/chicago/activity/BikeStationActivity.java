@@ -47,6 +47,7 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.json.Json;
+import fr.cph.chicago.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.listener.GoogleStreetOnClickListener;
 import fr.cph.chicago.util.Util;
 
@@ -122,15 +123,7 @@ public class BikeStationActivity extends Activity {
 				bikeStationValue.setText(bikeStation.getStAddress1());
 
 				streetViewImage.setOnClickListener(new GoogleStreetOnClickListener(this, latitude, longitude));
-				mapContainer.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						final String uri = "http://maps.google.com/maps?z=12&t=m&q=loc:" + latitude + "+" + longitude;
-						final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-						i.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
-						startActivity(i);
-					}
-				});
+				mapContainer.setOnClickListener(new GoogleMapOnClickListener(this, latitude, longitude));
 				walkContainer.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
