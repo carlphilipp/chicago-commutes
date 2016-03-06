@@ -60,6 +60,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
 import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
@@ -81,7 +83,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	private BusFragment busFragment;
 	private BikeFragment bikeFragment;
 	private NearbyFragment nearbyFragment;
-	//private SettingsFragment settingsFragment;
 
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
@@ -264,19 +265,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			mDrawerLayout.closeDrawer(GravityCompat.START);
 			showActionBarMenu();
 			break;
-		//		case R.id.navigation_settings:
-		//			title = getString(R.string.settings);
-		//			if (settingsFragment == null) {
-		//				settingsFragment = SettingsFragment.newInstance(position + 1);
-		//			}
-		//			if (!this.isFinishing()) {
-		//				fragmentManager.beginTransaction().replace(R.id.container, settingsFragment).commit();
-		//			}
-		//			mDrawerLayout.closeDrawer(GravityCompat.START);
-		//			hideActionBarMenu();
-		//			break;
 		}
-		toolbar.setTitle(title);
+		if (title != null) {
+			toolbar.setTitle(title);
+		}
 	}
 
 	@Override
@@ -317,17 +309,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	}
 
 	public final class LoadBusAndBikeData extends AsyncTask<Void, Void, Void> {
-		/**
-		 * Bus data
-		 **/
+
 		private BusData busData;
-		/**
-		 * Bike stations
-		 **/
 		private List<BikeStation> bikeStations;
-		/**
-		 * Load bikes
-		 **/
 		private boolean loadBike;
 
 		@Override
@@ -366,7 +350,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			}
 
 			// Load divvy
-			if (loadBike && (bikeStations == null || bikeStations.size() == 0)) {
+			if (loadBike) {
 				try {
 					final JsonParser json = JsonParser.getInstance();
 					final DivvyConnect divvyConnect = DivvyConnect.getInstance();
@@ -403,6 +387,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				onNewIntent(getIntent());
 				if (favoritesFragment != null) {
 					favoritesFragment.setBikeStations(bikeStations);
+				}
+				if (bikeFragment != null) {
+					bikeFragment.setBikeStations(bikeStations);
 				}
 			}
 			if (currentPosition == POSITION_BUS && busFragment != null) {

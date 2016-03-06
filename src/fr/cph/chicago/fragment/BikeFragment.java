@@ -18,16 +18,15 @@ package fr.cph.chicago.fragment;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.v4.app.Fragment;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -75,8 +74,7 @@ public class BikeFragment extends Fragment {
 	/**
 	 * Returns a new instance of this fragment for the given section number.
 	 *
-	 * @param sectionNumber
-	 *            the section number
+	 * @param sectionNumber the section number
 	 * @return the fragment
 	 */
 	public static BikeFragment newInstance(final int sectionNumber) {
@@ -97,13 +95,13 @@ public class BikeFragment extends Fragment {
 	public final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (savedInstanceState != null) {
-			this.bikeStations = savedInstanceState.getParcelableArrayList("bikeStations");
+			bikeStations = savedInstanceState.getParcelableArrayList("bikeStations");
 		} else {
-			Bundle bundle = mainActivity.getIntent().getExtras();
-			this.bikeStations = bundle.getParcelableArrayList("bikeStations");
+			final Bundle bundle = mainActivity.getIntent().getExtras();
+			bikeStations = bundle.getParcelableArrayList("bikeStations");
 		}
-		if (this.bikeStations == null) {
-			this.bikeStations = new ArrayList<>();
+		if (bikeStations == null) {
+			bikeStations = new ArrayList<>();
 		}
 		setHasOptionsMenu(true);
 
@@ -192,30 +190,30 @@ public class BikeFragment extends Fragment {
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
-	@Override
-	public final boolean onOptionsItemSelected(final MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.action_refresh:
-			final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mainActivity);
-			final boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
-			if (loadBike) {
-				item.setActionView(R.layout.progressbar);
-				item.expandActionView();
-
-				new DivvyAsyncTask().execute();
-
-				final Bundle bundle = mainActivity.getIntent().getExtras();
-				final List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
-
-				if (bikeStations == null) {
-					mainActivity.new LoadBusAndBikeData().execute();
-				}
-			}
-			Util.trackAction(mainActivity, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_bike, 0);
-			return false;
-		}
-		return super.onOptionsItemSelected(item);
-	}
+	//	@Override
+	//	public final boolean onOptionsItemSelected(final MenuItem item) {
+	//		switch (item.getItemId()) {
+	//		case R.id.action_refresh:
+	//			final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mainActivity);
+	//			final boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
+	//			if (loadBike) {
+	//				item.setActionView(R.layout.progressbar);
+	//				item.expandActionView();
+	//
+	//				new DivvyAsyncTask().execute();
+	//
+	//				final Bundle bundle = mainActivity.getIntent().getExtras();
+	//				final List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
+	//
+	//				if (bikeStations == null) {
+	//					mainActivity.new LoadBusAndBikeData().execute();
+	//				}
+	//			}
+	//			Util.trackAction(mainActivity, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_bike, 0);
+	//			return false;
+	//		}
+	//		return super.onOptionsItemSelected(item);
+	//	}
 
 	private class WaitForRefreshData extends AsyncTask<Void, Void, Boolean> {
 		@Override
@@ -254,6 +252,16 @@ public class BikeFragment extends Fragment {
 		errorLayout.setVisibility(RelativeLayout.VISIBLE);
 	}
 
+	public final void setBikeStations(final List<BikeStation> bikeStations) {
+		this.bikeStations = bikeStations;
+		if (bikeAdapter == null) {
+			loadList();
+		} else {
+			bikeAdapter.setBikeStations(bikeStations);
+			bikeAdapter.notifyDataSetChanged();
+		}
+	}
+
 	private class DivvyAsyncTask extends AsyncTask<Void, Void, List<BikeStation>> {
 		@Override
 		protected List<BikeStation> doInBackground(Void... params) {
@@ -264,22 +272,14 @@ public class BikeFragment extends Fragment {
 				final InputStream bikeContent = divvyConnect.connect();
 				bikeStations = json.parseStations(bikeContent);
 				Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
-				Util.trackAction(BikeFragment.this.mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_divvy,
-						R.string.analytics_action_get_divvy_all, 0);
-			} catch (ConnectException e) {
+				Util.trackAction(BikeFragment.this.mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
+			} catch (final ConnectException | ParserException e) {
 				BikeFragment.this.mainActivity.runOnUiThread(new Runnable() {
 					public void run() {
 						Toast.makeText(ChicagoTracker.getContext(), "Error, try again later!", Toast.LENGTH_SHORT).show();
 					}
 				});
-				Log.e(TAG, "Connect error", e);
-			} catch (ParserException e) {
-				BikeFragment.this.mainActivity.runOnUiThread(new Runnable() {
-					public void run() {
-						Toast.makeText(ChicagoTracker.getContext(), "Error, try again later!", Toast.LENGTH_SHORT).show();
-					}
-				});
-				Log.e(TAG, "Parser error", e);
+				Log.e(TAG, "Connect or parse error", e);
 			}
 			return bikeStations;
 		}
