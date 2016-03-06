@@ -43,10 +43,11 @@ import fr.cph.chicago.connection.DivvyConnect;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
-import fr.cph.chicago.json.Json;
+import fr.cph.chicago.json.JsonParser;
 import fr.cph.chicago.util.Util;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -258,9 +259,9 @@ public class BikeFragment extends Fragment {
 		protected List<BikeStation> doInBackground(Void... params) {
 			List<BikeStation> bikeStations = new ArrayList<>();
 			try {
-				final Json json = Json.getInstance();
+				final JsonParser json = JsonParser.getInstance();
 				final DivvyConnect divvyConnect = DivvyConnect.getInstance();
-				final String bikeContent = divvyConnect.connect();
+				final InputStream bikeContent = divvyConnect.connect();
 				bikeStations = json.parseStations(bikeContent);
 				Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
 				Util.trackAction(BikeFragment.this.mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_divvy,

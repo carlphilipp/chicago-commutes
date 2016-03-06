@@ -35,12 +35,13 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
-import fr.cph.chicago.json.Json;
+import fr.cph.chicago.json.JsonParser;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -83,7 +84,7 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 	/**
 	 * The Json parser
 	 **/
-	private Json json;
+	private JsonParser json;
 	/**
 	 * List of train arrivals
 	 **/
@@ -170,7 +171,7 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 		this.bikeStations = new ArrayList<>();
 
 		this.xml = new Xml();
-		this.json = Json.getInstance();
+		this.json = JsonParser.getInstance();
 		this.loadTrains = loadTrains;
 		this.loadBuses = loadBuses;
 		this.loadBikes = loadBikes;
@@ -288,7 +289,7 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 			}
 			if (loadBikes) {
 				try {
-					final String bikeContent = divvyConnect.connect();
+					final InputStream bikeContent = divvyConnect.connect();
 					bikeStations = json.parseStations(bikeContent);
 					Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
 				} catch (final ParserException | ConnectException e) {

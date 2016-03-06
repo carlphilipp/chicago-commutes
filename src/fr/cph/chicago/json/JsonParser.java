@@ -21,10 +21,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -33,31 +35,31 @@ import java.util.List;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public final class Json {
+public final class JsonParser {
 
 	private static ObjectMapper mapper;
-	private static Json instance;
+	private static JsonParser instance;
 
-	public static Json getInstance() {
+	public static JsonParser getInstance() {
 		if (instance == null) {
-			instance = new Json();
+			instance = new JsonParser();
 			mapper = new ObjectMapper();
-			;
 		}
 		return instance;
 	}
 
-	public List<BikeStation> parseStations(final String jsonString) throws ParserException {
+	public List<BikeStation> parseStations(final InputStream stream) throws ParserException {
 		try {
-			final JSONObject json = new JSONObject(jsonString);
-			final String stationList = json.getString("stationBeanList");
-			return mapper.readValue(stationList, new TypeReference<List<BikeStation>>() {
+			final DivvyJson divvyJson = mapper.readValue(stream, new TypeReference<DivvyJson>() {
 			});
-		} catch (final JSONException | IOException e) {
+			return divvyJson.getStations();
+		} catch (final IOException e) {
 			throw new ParserException(TrackerException.ERROR, e);
+		} finally {
+			IOUtils.closeQuietly(stream);
 		}
 	}
 
-	private Json() {
+	private JsonParser() {
 	}
 }

@@ -43,28 +43,44 @@ public class DivvyConnect {
 		return instance;
 	}
 
-	public final String connect() throws ConnectException {
-		String toReturn = null;
-		HttpURLConnection urlConnection = null;
-		InputStream inputStream = null;
+//	public final String connect() throws ConnectException {
+//		String toReturn = null;
+//		HttpURLConnection urlConnection = null;
+//		InputStream inputStream = null;
+//		try {
+//			Log.v(TAG, "Address: " + URL);
+//			final URL url = new URL(URL);
+//			urlConnection = (HttpURLConnection) url.openConnection();
+//			urlConnection.setConnectTimeout(10000);
+//			urlConnection.setReadTimeout(10000);
+//			inputStream = new BufferedInputStream(urlConnection.getInputStream());
+//			toReturn = IOUtils.toString(inputStream);
+//		} catch (final IOException e) {
+//			Log.e(TAG, e.getMessage(), e);
+//			throw new ConnectException(ConnectException.ERROR, e);
+//		} finally {
+//			if (urlConnection != null) {
+//				urlConnection.disconnect();
+//			}
+//			IOUtils.closeQuietly(inputStream);
+//		}
+//		Log.v(TAG, "Divvy: " + toReturn);
+//		return toReturn;
+//	}
+
+	public final InputStream connect() throws ConnectException {
+		InputStream inputStream;
 		try {
 			Log.v(TAG, "Address: " + URL);
 			final URL url = new URL(URL);
-			urlConnection = (HttpURLConnection) url.openConnection();
+			final HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 			urlConnection.setConnectTimeout(10000);
 			urlConnection.setReadTimeout(10000);
 			inputStream = new BufferedInputStream(urlConnection.getInputStream());
-			toReturn = IOUtils.toString(inputStream);
 		} catch (final IOException e) {
 			Log.e(TAG, e.getMessage(), e);
 			throw new ConnectException(ConnectException.ERROR, e);
-		} finally {
-			if (urlConnection != null) {
-				urlConnection.disconnect();
-			}
-			IOUtils.closeQuietly(inputStream);
 		}
-		Log.v(TAG, "Divvy: " + toReturn);
-		return toReturn;
+		return inputStream;
 	}
 }

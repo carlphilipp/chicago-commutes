@@ -50,12 +50,13 @@ import fr.cph.chicago.fragment.BusFragment;
 import fr.cph.chicago.fragment.FavoritesFragment;
 import fr.cph.chicago.fragment.NearbyFragment;
 import fr.cph.chicago.fragment.TrainFragment;
-import fr.cph.chicago.json.Json;
+import fr.cph.chicago.json.JsonParser;
 import fr.cph.chicago.task.GlobalConnectTask;
 import fr.cph.chicago.util.Util;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -365,12 +366,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			}
 
 			// Load divvy
-			if (loadBike) {
+			if (loadBike && (bikeStations == null || bikeStations.size() == 0)) {
 				try {
-					final Json json = Json.getInstance();
+					final JsonParser json = JsonParser.getInstance();
 					final DivvyConnect divvyConnect = DivvyConnect.getInstance();
 					long startTime = System.currentTimeMillis();
-					final String bikeContent = divvyConnect.connect();
+					final InputStream bikeContent = divvyConnect.connect();
 					long stopTime = System.currentTimeMillis();
 					Log.e(TAG, "Load divvy data online: " + (stopTime - startTime) + " ms");
 					startTime = System.currentTimeMillis();

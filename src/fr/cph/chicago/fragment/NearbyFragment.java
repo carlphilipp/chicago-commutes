@@ -78,12 +78,13 @@ import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
-import fr.cph.chicago.json.Json;
+import fr.cph.chicago.json.JsonParser;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.Xml;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -296,8 +297,8 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 				// Bike
 				final DivvyConnect connect = DivvyConnect.getInstance();
 				try {
-					final Json json = Json.getInstance();
-					final String content = connect.connect();
+					final JsonParser json = JsonParser.getInstance();
+					final InputStream content = connect.connect();
 					final List<BikeStation> bikeStationUpdated = json.parseStations(content);
 					for (final BikeStation station : bikeStationUpdated) {
 						if (bikeStationsTemp.contains(station)) {

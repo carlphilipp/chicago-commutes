@@ -43,13 +43,14 @@ import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
-import fr.cph.chicago.json.Json;
+import fr.cph.chicago.json.JsonParser;
 import fr.cph.chicago.listener.GoogleMapDirectionOnClickListener;
 import fr.cph.chicago.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.listener.GoogleStreetOnClickListener;
 import fr.cph.chicago.util.Util;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
@@ -235,9 +236,9 @@ public class BikeStationActivity extends Activity {
 		protected List<BikeStation> doInBackground(final Void... params) {
 			List<BikeStation> bikeStations = null;
 			try {
-				final Json json = Json.getInstance();
+				final JsonParser json = JsonParser.getInstance();
 				final DivvyConnect divvyConnect = DivvyConnect.getInstance();
-				final String bikeContent = divvyConnect.connect();
+				final InputStream bikeContent = divvyConnect.connect();
 				bikeStations = json.parseStations(bikeContent);
 				Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
 				Util.trackAction(BikeStationActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy,

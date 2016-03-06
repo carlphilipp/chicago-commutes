@@ -53,7 +53,6 @@ public class Favorites {
 	private List<String> bikeFavorites;
 	private List<String> fakeBusFavorites;
 
-
 	/**
 	 * Public constructor
 	 */
@@ -82,8 +81,7 @@ public class Favorites {
 	/**
 	 * Get the object depending on position
 	 *
-	 * @param position
-	 *            the position
+	 * @param position the position
 	 * @return an object, station or bus route
 	 */
 	public final Object getObject(final int position) {
@@ -130,8 +128,7 @@ public class Favorites {
 	/**
 	 * Get the train arrival
 	 *
-	 * @param stationId
-	 *            the station id
+	 * @param stationId the station id
 	 * @return a train arrival
 	 */
 	public final TrainArrival getTrainArrival(final Integer stationId) {
@@ -141,8 +138,7 @@ public class Favorites {
 	/**
 	 * A list of bus arrival
 	 *
-	 * @param routeId
-	 *            the route id
+	 * @param routeId the route id
 	 * @return a listof bus arrival
 	 */
 	public final List<BusArrival> getBusArrivals(final String routeId) {
@@ -158,8 +154,7 @@ public class Favorites {
 	/**
 	 * Get on bus arrival
 	 *
-	 * @param routeId
-	 *            the route id
+	 * @param routeId the route id
 	 * @return the bus arrival
 	 */
 	public final BusArrival getOneBusArrival(final String routeId) {
@@ -176,8 +171,7 @@ public class Favorites {
 	/**
 	 * Get bus arrival mapped
 	 *
-	 * @param routeId
-	 *            the route id
+	 * @param routeId the route id
 	 * @return a nice map
 	 */
 	public final Map<String, Map<String, List<BusArrival>>> getBusArrivalsMapped(final String routeId) {
@@ -299,29 +293,23 @@ public class Favorites {
 	/**
 	 * Is in favorites
 	 *
-	 * @param routeId
-	 *            the route id
-	 * @param stopId
-	 *            the stop id
-	 * @param bound
-	 *            the bound
+	 * @param routeId the route id
+	 * @param stopId  the stop id
+	 * @param bound   the bound
 	 * @return a boolean
 	 */
 	private boolean isInFavorites(final String routeId, final Integer stopId, final String bound) {
-		boolean res = false;
 		for (final String fav : busFavorites) {
 			final String decoded[] = Util.decodeBusFavorite(fav);
 			// TODO: Is that correct ? maybe remove stopId
 			if (routeId.equals(decoded[0]) && String.valueOf(stopId).equals(decoded[1]) && bound.equals(decoded[2])) {
-				res = true;
-				break;
+				return true;
 			}
 		}
-		return res;
+		return false;
 	}
 
 	/**
-	 *
 	 * @param trainArrival
 	 */
 	public final void setTrainArrival(final SparseArray<TrainArrival> trainArrival) {
@@ -329,7 +317,6 @@ public class Favorites {
 	}
 
 	/**
-	 *
 	 * @param busArrivals
 	 */
 	public final void setBusArrivals(final List<BusArrival> busArrivals) {
@@ -346,7 +333,7 @@ public class Favorites {
 		bikeFavorites.clear();
 		final List<String> bikeFavoritesTemp = Preferences.getBikeFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
 		final List<BikeStation> bikeStationsFavoritesTemp = new ArrayList<>();
-		if (this.bikeStations.size() != 0) {
+		if (bikeStations != null && bikeStations.size() != 0) {
 			for (final String bikeStationId : bikeFavoritesTemp) {
 				for (final BikeStation station : bikeStations) {
 					if (String.valueOf(station.getId()).equals(bikeStationId)) {
@@ -365,7 +352,6 @@ public class Favorites {
 	}
 
 	/**
-	 *
 	 * @param trainArrivals
 	 * @param busArrivals
 	 */
@@ -387,7 +373,6 @@ public class Favorites {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	private List<String> calculateActualRouteNumberBusFavorites() {
@@ -404,7 +389,6 @@ public class Favorites {
 	}
 
 	/**
-	 *
 	 * @param busArrivals
 	 */
 	// TODO Do that when populating the list
