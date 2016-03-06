@@ -16,17 +16,8 @@
   limitations under the License.
 -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:commutes="http://schemas.android.com/apk/res-auto" >
-
-    <!--<item-->
-        <!--android:id="@+id/action_search"-->
-        <!--android:actionViewClass="android.widget.SearchView"-->
-        <!--android:orderInCategory="100"-->
-        <!--android:icon="@drawable/ic_search_white_24dp"-->
-        <!--android:showAsAction="collapseActionView|ifRoom"-->
-        <!--android:title="@string/search_title"/>-->
-    <!--android:showAsAction="collapseActionView|ifRoom"-->
+<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:commutes="http://schemas.android.com/apk/res-auto" >
+    
     <item
         android:id="@+id/action_refresh"
         android:icon="@drawable/ic_refresh_white_24dp"
