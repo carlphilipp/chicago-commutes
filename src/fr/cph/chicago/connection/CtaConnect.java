@@ -158,9 +158,7 @@ public class CtaConnect {
 				address.append("&").append(key).append("=").append(value);
 			}
 		}
-		final InputStream xml = connectUrl(address.toString());
-		Log.v(TAG, "Result: " + xml);
-		return xml;
+		return connectUrl(address.toString());
 	}
 
 	/**
@@ -171,8 +169,8 @@ public class CtaConnect {
 	 * @throws ConnectException
 	 */
 	private InputStream connectUrl(final String address) throws ConnectException {
-		HttpURLConnection urlConnection;
-		InputStream inputStream;
+		final HttpURLConnection urlConnection;
+		final InputStream inputStream;
 		try {
 			Log.v(TAG, "Address: " + address);
 			final URL url = new URL(address);

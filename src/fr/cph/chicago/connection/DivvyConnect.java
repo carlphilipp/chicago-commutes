@@ -44,7 +44,7 @@ public class DivvyConnect {
 	}
 
 	public final InputStream connect() throws ConnectException {
-		InputStream inputStream;
+		final InputStream inputStream;
 		try {
 			Log.v(TAG, "Address: " + URL);
 			final URL url = new URL(URL);

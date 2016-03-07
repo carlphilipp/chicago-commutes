@@ -141,16 +141,16 @@ public class TrainArrival implements Parcelable {
 
 	@Override
 	public final void writeToParcel(final Parcel dest, final int flags) {
-		dest.writeLong(timeStamp.getTime());
-		dest.writeInt(errorCode);
-		dest.writeString(errorMessage);
+//		dest.writeLong(timeStamp.getTime());
+//		dest.writeInt(errorCode);
+//		dest.writeString(errorMessage);
 		dest.writeList(etas);
 	}
 
 	private void readFromParcel(final Parcel in) {
-		timeStamp = new Date(in.readLong());
-		errorCode = in.readInt();
-		errorMessage = in.readString();
+//		timeStamp = new Date(in.readLong());
+//		errorCode = in.readInt();
+//		errorMessage = in.readString();
 		etas = new ArrayList<>();
 		in.readList(etas, Eta.class.getClassLoader());
 	}

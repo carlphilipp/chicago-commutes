@@ -354,9 +354,9 @@ public final class BusArrival implements Parcelable {
 
 	@Override
 	public final void writeToParcel(final Parcel dest, final int flags) {
-		dest.writeLong(timeStamp.getTime());
-		dest.writeString(errorMessage);
-		dest.writeString(predictionType.toString());
+		//dest.writeLong(timeStamp.getTime());
+		//dest.writeString(errorMessage);
+		//dest.writeString(predictionType.toString());
 		dest.writeString(stopName);
 		dest.writeInt(stopId);
 		dest.writeInt(busId);
@@ -364,14 +364,14 @@ public final class BusArrival implements Parcelable {
 		dest.writeString(routeId);
 		dest.writeString(routeDirection);
 		dest.writeString(busDestination);
-		dest.writeLong(predictionTime.getTime());
+		//dest.writeLong(predictionTime.getTime());
 		dest.writeString(String.valueOf(isDly));
 	}
 
 	private void readFromParcel(final Parcel in) {
-		timeStamp = new Date(in.readLong());
-		errorMessage = in.readString();
-		predictionType = PredictionType.fromString(in.readString());
+		//timeStamp = new Date(in.readLong());
+		//errorMessage = in.readString();
+		//predictionType = PredictionType.fromString(in.readString());
 		stopName = in.readString();
 		stopId = in.readInt();
 		busId = in.readInt();
@@ -379,8 +379,8 @@ public final class BusArrival implements Parcelable {
 		routeId = in.readString();
 		routeDirection = in.readString();
 		busDestination = in.readString();
-		predictionTime = new Date(in.readLong());
-		isDly = Boolean.valueOf(in.readString());
+		//predictionTime = new Date(in.readLong());
+		isDly = Boolean.parseBoolean(in.readString());
 	}
 
 	public static final Parcelable.Creator<BusArrival> CREATOR = new Parcelable.Creator<BusArrival>() {
