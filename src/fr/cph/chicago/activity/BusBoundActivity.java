@@ -66,6 +66,7 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -285,7 +286,7 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
 			connectParam.put(getString(R.string.request_rt), busRouteId);
 			final String boundIgnoreCase = boundTitle.toLowerCase(Locale.US);
 			try {
-				final String content = connect.connect(BUS_PATTERN, connectParam);
+				final InputStream content = connect.connect(BUS_PATTERN, connectParam);
 				final XmlParser xml = XmlParser.getInstance();
 				final List<BusPattern> patterns = xml.parsePatterns(content);
 				for (final BusPattern pattern : patterns) {

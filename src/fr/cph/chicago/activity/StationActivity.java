@@ -68,6 +68,7 @@ import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -380,7 +381,7 @@ public class StationActivity extends Activity {
 			final CtaConnect connect = CtaConnect.getInstance();
 			try {
 				final XmlParser xml = XmlParser.getInstance();
-				final String xmlResult = connect.connect(TRAIN_ARRIVALS, params[0]);
+				final InputStream xmlResult = connect.connect(TRAIN_ARRIVALS, params[0]);
 				//String xmlResult = connectTest();
 				arrivals = xml.parseArrivals(xmlResult, StationActivity.this.trainData);
 				// Apply filters

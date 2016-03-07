@@ -63,6 +63,7 @@ import fr.cph.chicago.xml.XmlParser;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -349,7 +350,7 @@ public class TrainMapActivity extends Activity {
 				final CtaConnect connect = CtaConnect.getInstance();
 				final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
 				connectParam.put("runnumber", runNumber);
-				final String content = connect.connect(TRAIN_FOLLOW, connectParam);
+				final InputStream content = connect.connect(TRAIN_FOLLOW, connectParam);
 				final XmlParser xml = XmlParser.getInstance();
 				etas = xml.parseTrainsFollow(content, trainData);
 			} catch (final ConnectException | ParserException e) {
@@ -410,7 +411,7 @@ public class TrainMapActivity extends Activity {
 			final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
 			connectParam.put(getString(R.string.request_rt), line);
 			try {
-				final String content = connect.connect(TRAIN_LOCATION, connectParam);
+				final InputStream content = connect.connect(TRAIN_LOCATION, connectParam);
 				final XmlParser xml = XmlParser.getInstance();
 				trains = xml.parseTrainsLocation(content);
 			} catch (final ConnectException | ParserException e) {

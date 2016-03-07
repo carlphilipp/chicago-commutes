@@ -80,16 +80,14 @@ public final class XmlParser {
 	/**
 	 * Parse arrivals
 	 *
-	 * @param xml  the xml string
+	 * @param is  the xml string
 	 * @param data the train data
 	 * @return a list of train arrival
 	 * @throws ParserException the parser exception
 	 */
-	public final SparseArray<TrainArrival> parseArrivals(final String xml, final TrainData data) throws ParserException {
-		InputStream is = null;
+	public final SparseArray<TrainArrival> parseArrivals(final InputStream is, final TrainData data) throws ParserException {
 		SparseArray<TrainArrival> arrivals = null;
 		try {
-			is = new ByteArrayInputStream(xml.getBytes());
 			parser.setInput(is, "UTF-8");
 			int eventType = parser.getEventType();
 			XmlArrivalTrainTag tag = null;
@@ -332,11 +330,9 @@ public final class XmlParser {
 	 * @return a list of bus routes
 	 * @throws ParserException a parser exception
 	 */
-	public final List<BusRoute> parseBusRoutes(final String xml) throws ParserException {
-		List<BusRoute> routes = new ArrayList<>();
-		InputStream is = null;
+	public final List<BusRoute> parseBusRoutes(final InputStream is) throws ParserException {
+		final List<BusRoute> routes = new ArrayList<>();
 		try {
-			is = new ByteArrayInputStream(xml.getBytes());
 			parser.setInput(is, "UTF-8");
 			int eventType = parser.getEventType();
 			XmlArrivalBusTag tag = null;
@@ -406,12 +402,10 @@ public final class XmlParser {
 	 * @return a bus directions
 	 * @throws ParserException a parser exception
 	 */
-	public final BusDirections parseBusDirections(final String xml, final String id) throws ParserException {
+	public final BusDirections parseBusDirections(final InputStream is, final String id) throws ParserException {
 		BusDirections directions = new BusDirections();
 		directions.setId(id);
-		InputStream is = null;
 		try {
-			is = new ByteArrayInputStream(xml.getBytes());
 			parser.setInput(is, "UTF-8");
 			int eventType = parser.getEventType();
 			while (eventType != XmlPullParser.END_DOCUMENT) {
@@ -439,13 +433,11 @@ public final class XmlParser {
 	 * @return a list of bus stop
 	 * @throws ParserException a parser exception
 	 */
-	public final List<BusStop> parseBusBounds(final String xml) throws ParserException {
+	public final List<BusStop> parseBusBounds(final InputStream is) throws ParserException {
 		List<BusStop> busStops = new ArrayList<>();
 		String tagName = null;
 		BusStop busStop = null;
-		InputStream is = null;
 		try {
-			is = new ByteArrayInputStream(xml.getBytes());
 			parser.setInput(is, "UTF-8");
 			int eventType = parser.getEventType();
 			while (eventType != XmlPullParser.END_DOCUMENT) {
@@ -498,14 +490,14 @@ public final class XmlParser {
 	 * @return a list of bus arrivals
 	 * @throws ParserException a parser exception
 	 */
-	public final List<BusArrival> parseBusArrivals(String xml) throws ParserException {
-		xml = xml.replaceAll("&", "&amp;");
+	public final List<BusArrival> parseBusArrivals(final InputStream is) throws ParserException {
+//		xml = xml.replaceAll("&", "&amp;");
 		List<BusArrival> busArrivals = new ArrayList<>();
 		String tagName = null;
 		BusArrival busArrival = null;
-		InputStream is = null;
+		//InputStream is = null;
 		try {
-			is = new ByteArrayInputStream(xml.getBytes());
+			//is = new ByteArrayInputStream(xml.getBytes());
 			parser.setInput(is, "UTF-8");
 			int eventType = parser.getEventType();
 			while (eventType != XmlPullParser.END_DOCUMENT) {
@@ -586,15 +578,13 @@ public final class XmlParser {
 	 * @return a list of alert
 	 * @throws ParserException a parser exception
 	 */
-	public final List<BusPattern> parsePatterns(final String xml) throws ParserException {
+	public final List<BusPattern> parsePatterns(final InputStream is) throws ParserException {
 		List<BusPattern> patterns = new ArrayList<>();
 		String tagName = null;
 		BusPattern pattern = null;
 		PatternPoint patternPoint = null;
 		Position position = null;
-		InputStream is = null;
 		try {
-			is = new ByteArrayInputStream(xml.getBytes());
 			parser.setInput(is, "UTF-8");
 			int eventType = parser.getEventType();
 			while (eventType != XmlPullParser.END_DOCUMENT) {
@@ -671,14 +661,12 @@ public final class XmlParser {
 		return patterns;
 	}
 
-	public final List<Bus> parseVehicles(final String xml) throws ParserException {
-		List<Bus> buses = new ArrayList<>();
+	public final List<Bus> parseVehicles(final InputStream is) throws ParserException {
+		final List<Bus> buses = new ArrayList<>();
 		String tagName = null;
 		Bus bus = null;
 		Position position = null;
-		InputStream is = null;
 		try {
-			is = new ByteArrayInputStream(xml.getBytes());
 			parser.setInput(is, "UTF-8");
 			int eventType = parser.getEventType();
 			while (eventType != XmlPullParser.END_DOCUMENT) {
@@ -742,14 +730,12 @@ public final class XmlParser {
 		return buses;
 	}
 
-	public final List<Train> parseTrainsLocation(String xml) throws ParserException {
+	public final List<Train> parseTrainsLocation(final InputStream is) throws ParserException {
 		List<Train> trains = new ArrayList<>();
 		String tagName = null;
 		Train train = null;
 		Position position = null;
-		InputStream is = null;
 		try {
-			is = new ByteArrayInputStream(xml.getBytes());
 			parser.setInput(is, "UTF-8");
 			int eventType = parser.getEventType();
 			while (eventType != XmlPullParser.END_DOCUMENT) {
@@ -812,11 +798,9 @@ public final class XmlParser {
 		return trains;
 	}
 
-	public final List<Eta> parseTrainsFollow(final String xml, final TrainData data) throws ParserException {
-		InputStream is = null;
+	public final List<Eta> parseTrainsFollow(final InputStream is, final TrainData data) throws ParserException {
 		SparseArray<TrainArrival> arrivals = null;
 		try {
-			is = new ByteArrayInputStream(xml.getBytes());
 			parser.setInput(is, "UTF-8");
 			int eventType = parser.getEventType();
 			XmlArrivalTrainTag tag = null;

@@ -43,6 +43,7 @@ import fr.cph.chicago.xml.XmlParser;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,7 +78,7 @@ public class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 			convertView = (View) params[1];
 			reqParams.put(activity.getString(R.string.request_rt), busRoute.getId());
 			final XmlParser xml = XmlParser.getInstance();
-			final String xmlResult = connect.connect(BUS_DIRECTION, reqParams);
+			final InputStream xmlResult = connect.connect(BUS_DIRECTION, reqParams);
 			busDirections = xml.parseBusDirections(xmlResult, busRoute.getId());
 		} catch (ParserException | ConnectException e) {
 			this.trackerException = e;

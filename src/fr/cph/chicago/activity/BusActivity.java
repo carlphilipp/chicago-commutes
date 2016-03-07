@@ -52,6 +52,7 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -286,7 +287,7 @@ public class BusActivity extends Activity {
 			try {
 				final XmlParser xml = XmlParser.getInstance();
 				// Connect to CTA API bus to get XML result of inc buses
-				final String xmlResult = connect.connect(BUS_ARRIVALS, reqParams);
+				final InputStream xmlResult = connect.connect(BUS_ARRIVALS, reqParams);
 				// Parse and return arrival buses
 				return xml.parseBusArrivals(xmlResult);
 			} catch (ParserException | ConnectException e) {

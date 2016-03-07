@@ -28,6 +28,7 @@ import fr.cph.chicago.xml.XmlParser;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -96,7 +97,7 @@ public class BusData {
 			final CtaConnect connect = CtaConnect.getInstance();
 			final XmlParser xml = XmlParser.getInstance();
 			long startTime = System.currentTimeMillis();
-			final String xmlResult = connect.connect(BUS_ROUTES, params);
+			final InputStream xmlResult = connect.connect(BUS_ROUTES, params);
 			long stopTime = System.currentTimeMillis();
 			Log.e(TAG, "Load bus route online: " + (stopTime - startTime) + " ms");
 			startTime = System.currentTimeMillis();
@@ -156,7 +157,7 @@ public class BusData {
 		final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
 		params.put("rt", stopId);
 		params.put("dir", bound);
-		final String xmlResult = connect.connect(BUS_STOP_LIST, params);
+		final InputStream xmlResult = connect.connect(BUS_STOP_LIST, params);
 		final XmlParser xml = XmlParser.getInstance();
 		return xml.parseBusBounds(xmlResult);
 	}

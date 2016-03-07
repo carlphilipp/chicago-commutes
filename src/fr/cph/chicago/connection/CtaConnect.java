@@ -20,7 +20,6 @@ import android.util.Log;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.util.Util;
 import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.io.IOUtils;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -119,7 +118,7 @@ public class CtaConnect {
 	 * @return a string
 	 * @throws ConnectException
 	 */
-	public final String connect(final CtaRequestType requestType, final MultiValuedMap<String, String> params) throws ConnectException {
+	public final InputStream connect(final CtaRequestType requestType, final MultiValuedMap<String, String> params) throws ConnectException {
 		final StringBuilder address;
 		switch (requestType) {
 		case TRAIN_ARRIVALS:
@@ -159,7 +158,7 @@ public class CtaConnect {
 				address.append("&").append(key).append("=").append(value);
 			}
 		}
-		final String xml = connectUrl(address.toString());
+		final InputStream xml = connectUrl(address.toString());
 		Log.v(TAG, "Result: " + xml);
 		return xml;
 	}
@@ -171,10 +170,9 @@ public class CtaConnect {
 	 * @return the answer
 	 * @throws ConnectException
 	 */
-	private String connectUrl(final String address) throws ConnectException {
-		String toReturn = null;
-		HttpURLConnection urlConnection = null;
-		InputStream inputStream = null;
+	private InputStream connectUrl(final String address) throws ConnectException {
+		HttpURLConnection urlConnection;
+		InputStream inputStream;
 		try {
 			Log.v(TAG, "Address: " + address);
 			final URL url = new URL(address);
@@ -182,16 +180,10 @@ public class CtaConnect {
 			urlConnection.setConnectTimeout(5000);
 			urlConnection.setReadTimeout(5000);
 			inputStream = new BufferedInputStream(urlConnection.getInputStream());
-			toReturn = IOUtils.toString(inputStream);
 		} catch (final IOException e) {
 			Log.e(TAG, e.getMessage(), e);
 			throw new ConnectException(ConnectException.ERROR, e);
-		} finally {
-			if (urlConnection != null) {
-				urlConnection.disconnect();
-			}
-			IOUtils.closeQuietly(inputStream);
 		}
-		return toReturn;
+		return inputStream;
 	}
 }

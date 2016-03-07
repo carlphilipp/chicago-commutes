@@ -177,7 +177,7 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 					if ("mapid".equals(key)) {
 						final List<String> list = (List<String>) entry.getValue();
 						if (list.size() < 5) {
-							final String xmlResult = ctaConnect.connect(requestType, params);
+							final InputStream xmlResult = ctaConnect.connect(requestType, params);
 							trainArrivals = xml.parseArrivals(xmlResult, train);
 						} else {
 							final int size = list.size();
@@ -191,7 +191,7 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 									paramsTemp.put(key, sub);
 								}
 
-								final String xmlResult = ctaConnect.connect(requestType, paramsTemp);
+								final InputStream xmlResult = ctaConnect.connect(requestType, paramsTemp);
 								final SparseArray<TrainArrival> temp = xml.parseArrivals(xmlResult, train);
 								for (int j = 0; j < temp.size(); j++) {
 									tempArrivals.put(temp.keyAt(j), temp.valueAt(j));
@@ -263,7 +263,7 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 					final MultiValuedMap<String, String> para = new ArrayListValuedHashMap<>();
 					para.put("rt", rts.get(i));
 					para.put("stpid", stpids.get(i));
-					final String xmlResult = ctaConnect.connect(requestType2, para);
+					final InputStream xmlResult = ctaConnect.connect(requestType2, para);
 					busArrivals.addAll(xml.parseBusArrivals(xmlResult));
 				}
 			} catch (final ConnectException | ParserException e) {
