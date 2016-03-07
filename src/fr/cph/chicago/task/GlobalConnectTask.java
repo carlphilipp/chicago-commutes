@@ -141,8 +141,9 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 	 * @param params2      the params
 	 * @throws ParserException the parser exception
 	 */
+	// TODO remove some of the params as always the same are used
 	public GlobalConnectTask(final Object instance, final Class<?> classe, final CtaRequestType requestType, final MultiValuedMap<String, String> params, final CtaRequestType requestType2,
-			final MultiValuedMap<String, String> params2) throws ParserException {
+			final MultiValuedMap<String, String> params2) {
 		this.instance = instance;
 		this.clazz = classe;
 		this.requestType = requestType;

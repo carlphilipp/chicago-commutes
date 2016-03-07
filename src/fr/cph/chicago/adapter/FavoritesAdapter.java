@@ -421,7 +421,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 				availableBikes.addView(availableBike);
 
 				final TextView amountBike = new TextView(context);
-				if (bikeStation.getAvailableBikes() == 0) {
+				if (bikeStation.getAvailableBikes() == null) {
 					amountBike.setText("?");
 					amountBike.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.orange));
 				} else {
@@ -447,7 +447,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 				availableDocks.addView(availableDock);
 
 				final TextView amountDock = new TextView(context);
-				if (bikeStation.getAvailableDocks() == 0) {
+				if (bikeStation.getAvailableDocks() == null) {
 					amountDock.setText("?");
 					amountDock.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.orange));
 				} else {

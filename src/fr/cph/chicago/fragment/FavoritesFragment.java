@@ -40,16 +40,15 @@ import fr.cph.chicago.activity.SearchActivity;
 import fr.cph.chicago.adapter.FavoritesAdapter;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
+import fr.cph.chicago.data.Favorites;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.task.GlobalConnectTask;
 import fr.cph.chicago.util.Util;
 import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -146,25 +145,7 @@ public class FavoritesFragment extends Fragment {
 
 				@Override
 				public void onRefresh() {
-					final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
-					final List<Integer> trainFavorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
-					for (final Integer fav : trainFavorites) {
-						params.put(getResources().getString(R.string.request_map_id), String.valueOf(fav));
-					}
-					final MultiValuedMap<String, String> params2 = new ArrayListValuedHashMap<>();
-					final List<String> busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
-					for (final String str : busFavorites) {
-						final String[] fav = Util.decodeBusFavorite(str);
-						params2.put(getResources().getString(R.string.request_rt), fav[0]);
-						params2.put(getResources().getString(R.string.request_stop_id), fav[1]);
-					}
-					try {
-						final GlobalConnectTask task = new GlobalConnectTask(FavoritesFragment.this, FavoritesFragment.class, TRAIN_ARRIVALS, params, BUS_ARRIVALS, params2);
-						task.execute((Void) null);
-					} catch (ParserException e) {
-						ChicagoTracker.displayError(mainActivity, e);
-						return;
-					}
+					Util.loadFavorites(FavoritesFragment.this, FavoritesFragment.class, mainActivity);
 					// Google analytics
 					Util.trackAction(mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
 					Util.trackAction(mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);

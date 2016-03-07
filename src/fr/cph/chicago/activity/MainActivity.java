@@ -39,7 +39,6 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.connection.DivvyConnect;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
-import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
@@ -52,7 +51,6 @@ import fr.cph.chicago.json.JsonParser;
 import fr.cph.chicago.task.GlobalConnectTask;
 import fr.cph.chicago.util.Util;
 import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -130,28 +128,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 					if (toolbar.getTitle().equals(getString(R.string.nearby))) {
 						nearbyFragment.reloadData();
 					} else {
+						// Favorite fragment
 						if (favoritesFragment != null) {
 							favoritesFragment.startRefreshing();
 						}
-						final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
-						final List<Integer> trainFavorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
-						for (final Integer fav : trainFavorites) {
-							params.put(getResources().getString(R.string.request_map_id), String.valueOf(fav));
-						}
-						final MultiValuedMap<String, String> params2 = new ArrayListValuedHashMap<>();
-						final List<String> busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
-						for (final String str : busFavorites) {
-							final String[] fav = Util.decodeBusFavorite(str);
-							params2.put(getResources().getString(R.string.request_rt), fav[0]);
-							params2.put(getResources().getString(R.string.request_stop_id), fav[1]);
-						}
-						try {
-							final GlobalConnectTask task = new GlobalConnectTask(favoritesFragment, FavoritesFragment.class, TRAIN_ARRIVALS, params, BUS_ARRIVALS, params2);
-							task.execute((Void) null);
-						} catch (final ParserException e) {
-							ChicagoTracker.displayError(MainActivity.this, e);
-							return false;
-						}
+
+						Util.loadFavorites(favoritesFragment, FavoritesFragment.class, MainActivity.this);
+
 						// Google analytics
 						Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
 						Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);

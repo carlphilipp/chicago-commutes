@@ -44,12 +44,12 @@ public final class BikeStation implements Parcelable {
 	 * Available docks
 	 **/
 	@JsonProperty("availableDocks")
-	private int availableDocks;
+	private Integer availableDocks;
 	/**
 	 * Total docks
 	 **/
 	@JsonProperty("totalDocks")
-	private int totalDocks;
+	private Integer totalDocks;
 	/**
 	 * The latitude
 	 **/
@@ -74,7 +74,7 @@ public final class BikeStation implements Parcelable {
 	 * Available bikes
 	 **/
 	@JsonProperty("availableBikes")
-	private int availableBikes;
+	private Integer availableBikes;
 	/**
 	 * Street address 1
 	 **/
@@ -148,19 +148,19 @@ public final class BikeStation implements Parcelable {
 		this.name = name;
 	}
 
-	public final int getAvailableDocks() {
+	public final Integer getAvailableDocks() {
 		return availableDocks;
 	}
 
-	public final void setAvailableDocks(final int availableDocks) {
+	public final void setAvailableDocks(final Integer availableDocks) {
 		this.availableDocks = availableDocks;
 	}
 
-	public final int getTotalDocks() {
+	public final Integer getTotalDocks() {
 		return totalDocks;
 	}
 
-	public final void setTotalDocks(final int totalDocks) {
+	public final void setTotalDocks(final Integer totalDocks) {
 		this.totalDocks = totalDocks;
 	}
 
@@ -180,11 +180,11 @@ public final class BikeStation implements Parcelable {
 		this.statusKey = statusKey;
 	}
 
-	public final int getAvailableBikes() {
+	public final Integer getAvailableBikes() {
 		return availableBikes;
 	}
 
-	public final void setAvailableBikes(final int availableBikes) {
+	public final void setAvailableBikes(final Integer availableBikes) {
 		this.availableBikes = availableBikes;
 	}
 

@@ -164,36 +164,13 @@ public class BaseActivity extends Activity {
 	 * @throws ParserException the exception
 	 */
 	private void loadFavorites() throws ParserException {
-		final MultiValuedMap<String, String> paramsTrain = getParamsTrain();
-		final MultiValuedMap<String, String> paramsBus = getParamsBus();
-
-		final GlobalConnectTask task = new GlobalConnectTask(this, BaseActivity.class, TRAIN_ARRIVALS, paramsTrain, BUS_ARRIVALS, paramsBus);
-		task.execute((Void) null);
+		Util.loadFavorites(this, BaseActivity.class, this);
 		trackWithGoogleAnalytics();
-	}
-
-	private MultiValuedMap<String, String> getParamsTrain() {
-		final MultiValuedMap<String, String> paramsTrain = new ArrayListValuedHashMap<>();
-		final List<Integer> favorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
-		for (final Integer favorite : favorites) {
-			paramsTrain.put(getResources().getString(R.string.request_map_id), favorite.toString());
-		}
-		return paramsTrain;
-	}
-
-	private MultiValuedMap<String, String> getParamsBus() {
-		final MultiValuedMap<String, String> paramsBus = new ArrayListValuedHashMap<>();
-		final List<String> busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
-		for (final String busFavorite : busFavorites) {
-			final String[] fav = Util.decodeBusFavorite(busFavorite);
-			paramsBus.put(getResources().getString(R.string.request_rt), fav[0]);
-			paramsBus.put(getResources().getString(R.string.request_stop_id), fav[1]);
-		}
-		return paramsBus;
 	}
 
 	private void trackWithGoogleAnalytics() {
 		Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
 		Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
 	}
+
 }

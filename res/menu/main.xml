@@ -17,7 +17,7 @@
 -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:commutes="http://schemas.android.com/apk/res-auto" >
-    
+
     <item
         android:id="@+id/action_refresh"
         android:icon="@drawable/ic_refresh_white_24dp"
