@@ -316,6 +316,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 				publishProgress();
 			} catch (final ConnectException | ParserException e) {
 				Log.e(TAG, e.getMessage(), e);
+				bikeStations = new ArrayList<>();
 			}
 			return null;
 		}

@@ -112,7 +112,7 @@ public class TrainMapActivity extends Activity {
 			initData();
 			setToolbar();
 
-			Util.trackScreen(getResources().getString(R.string.analytics_train_map));
+			Util.trackScreen(getString(R.string.analytics_train_map));
 		}
 	}
 
@@ -408,7 +408,7 @@ public class TrainMapActivity extends Activity {
 			List<Train> trains = null;
 			final CtaConnect connect = CtaConnect.getInstance();
 			final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
-			connectParam.put(getResources().getString(R.string.request_rt), line);
+			connectParam.put(getString(R.string.request_rt), line);
 			try {
 				final String content = connect.connect(TRAIN_LOCATION, connectParam);
 				final XmlParser xml = XmlParser.getInstance();

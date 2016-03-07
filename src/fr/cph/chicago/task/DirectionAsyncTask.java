@@ -75,7 +75,7 @@ public class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 			final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
 			busRoute = (BusRoute) params[0];
 			convertView = (View) params[1];
-			reqParams.put(activity.getResources().getString(R.string.request_rt), busRoute.getId());
+			reqParams.put(activity.getString(R.string.request_rt), busRoute.getId());
 			final XmlParser xml = XmlParser.getInstance();
 			final String xmlResult = connect.connect(BUS_DIRECTION, reqParams);
 			busDirections = xml.parseBusDirections(xmlResult, busRoute.getId());

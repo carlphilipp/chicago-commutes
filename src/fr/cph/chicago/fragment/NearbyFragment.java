@@ -134,7 +134,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 		super.onCreate(savedInstanceState);
 		ChicagoTracker.checkTrainData(mainActivity);
 		ChicagoTracker.checkBusData(mainActivity);
-		Util.trackScreen(getResources().getString(R.string.analytics_nearby_fragment));
+		Util.trackScreen(getString(R.string.analytics_nearby_fragment));
 	}
 
 	@Override
@@ -246,7 +246,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 				// Buses
 				try {
 					final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-					reqParams.put(getResources().getString(R.string.request_stop_id), Integer.toString(busStop.getId()));
+					reqParams.put(getString(R.string.request_stop_id), Integer.toString(busStop.getId()));
 
 					final String xmlRes = cta.connect(BUS_ARRIVALS, reqParams);
 					final XmlParser xml = XmlParser.getInstance();
@@ -271,7 +271,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 			for (final Station station : stations) {
 				try {
 					final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-					reqParams.put(getResources().getString(R.string.request_map_id), String.valueOf(station.getId()));
+					reqParams.put(getString(R.string.request_map_id), String.valueOf(station.getId()));
 					final String xmlRes = cta.connect(TRAIN_ARRIVALS, reqParams);
 					final XmlParser xml = XmlParser.getInstance();;
 					final SparseArray<TrainArrival> temp = xml.parseArrivals(xmlRes, DataHolder.getInstance().getTrainData());

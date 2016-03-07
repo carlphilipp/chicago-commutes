@@ -40,21 +40,15 @@ import fr.cph.chicago.activity.SearchActivity;
 import fr.cph.chicago.adapter.FavoritesAdapter;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
-import fr.cph.chicago.data.Favorites;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.exception.TrackerException;
-import fr.cph.chicago.task.GlobalConnectTask;
 import fr.cph.chicago.util.Util;
-import org.apache.commons.collections4.MultiValuedMap;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
-import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
 
 /**
  * Favorites Fragment
@@ -112,7 +106,7 @@ public class FavoritesFragment extends Fragment {
 		if (bikeStations == null) {
 			bikeStations = new ArrayList<>();
 		}
-		Util.trackScreen(getResources().getString(R.string.analytics_favorites_fragment));
+		Util.trackScreen(getString(R.string.analytics_favorites_fragment));
 	}
 
 	@Override
@@ -229,9 +223,9 @@ public class FavoritesFragment extends Fragment {
 	@Override
 	public final void onSaveInstanceState(final Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putParcelableArrayList("busArrivals", (ArrayList<BusArrival>) busArrivals);
-		outState.putSparseParcelableArray("trainArrivals", trainArrivals);
-		outState.putParcelableArrayList("bikeStations", (ArrayList<BikeStation>) bikeStations);
+		outState.putParcelableArrayList(getString(R.string.bundle_bus_arrivals), (ArrayList<BusArrival>) busArrivals);
+		outState.putSparseParcelableArray(getString(R.string.bundle_train_arrivals), trainArrivals);
+		outState.putParcelableArrayList(getString(R.string.bundle_bike_stations), (ArrayList<BikeStation>) bikeStations);
 	}
 
 	/**

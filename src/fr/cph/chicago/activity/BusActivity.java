@@ -151,7 +151,7 @@ public class BusActivity extends Activity {
 			setToolBar();
 
 			// Google analytics
-			Util.trackScreen(getResources().getString(R.string.analytics_bus_details));
+			Util.trackScreen(getString(R.string.analytics_bus_details));
 		}
 	}
 
@@ -280,8 +280,8 @@ public class BusActivity extends Activity {
 		@Override
 		protected List<BusArrival> doInBackground(final Void... params) {
 			final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-			reqParams.put(getResources().getString(R.string.request_rt), busRouteId);
-			reqParams.put(getResources().getString(R.string.request_stop_id), String.valueOf(busStopId));
+			reqParams.put(getString(R.string.request_rt), busRouteId);
+			reqParams.put(getString(R.string.request_stop_id), String.valueOf(busStopId));
 			final CtaConnect connect = CtaConnect.getInstance();
 			try {
 				final XmlParser xml = XmlParser.getInstance();
@@ -348,7 +348,7 @@ public class BusActivity extends Activity {
 			params2.width = params.width;
 			BusActivity.this.streetViewImage.setLayoutParams(params2);
 			BusActivity.this.streetViewImage.setImageDrawable(result);
-			BusActivity.this.streetViewText.setText(ChicagoTracker.getContext().getResources().getString(R.string.station_activity_street_view));
+			BusActivity.this.streetViewText.setText(ChicagoTracker.getContext().getString(R.string.station_activity_street_view));
 		}
 	}
 

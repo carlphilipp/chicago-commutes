@@ -129,7 +129,7 @@ public class BusMapActivity extends Activity {
 
 			setToolbar();
 
-			Util.trackScreen(getResources().getString(R.string.analytics_bus_map));
+			Util.trackScreen(getString(R.string.analytics_bus_map));
 		}
 	}
 
@@ -386,7 +386,7 @@ public class BusMapActivity extends Activity {
 			if (busId != 0) {
 				connectParam.put("vid", String.valueOf(busId));
 			} else {
-				connectParam.put(getResources().getString(R.string.request_rt), busRouteId);
+				connectParam.put(getString(R.string.request_rt), busRouteId);
 			}
 			try {
 				final String content = connect.connect(BUS_VEHICLES, connectParam);
@@ -429,7 +429,7 @@ public class BusMapActivity extends Activity {
 			try {
 				if (busId == 0) {
 					final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-					reqParams.put(getResources().getString(R.string.request_rt), busRouteId);
+					reqParams.put(getString(R.string.request_rt), busRouteId);
 					final XmlParser xml = XmlParser.getInstance();
 					final String xmlResult = connect.connect(BUS_DIRECTION, reqParams);
 					final BusDirections busDirections = xml.parseBusDirections(xmlResult, busRouteId);

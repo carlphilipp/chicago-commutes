@@ -105,7 +105,7 @@ public class BikeFragment extends Fragment {
 		}
 		setHasOptionsMenu(true);
 
-		Util.trackScreen(getResources().getString(R.string.analytics_bike_fragment));
+		Util.trackScreen(getString(R.string.analytics_bike_fragment));
 	}
 
 	@Override

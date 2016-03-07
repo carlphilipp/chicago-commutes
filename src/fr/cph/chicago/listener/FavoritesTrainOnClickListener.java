@@ -93,13 +93,13 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 					if (position == 0) {
 						// Start station activity
 						final Intent intent = new Intent(ChicagoTracker.getContext(), StationActivity.class);
-						extras.putInt(activity.getResources().getString(R.string.bundle_train_stationId), stationId);
+						extras.putInt(activity.getString(R.string.bundle_train_stationId), stationId);
 						intent.putExtras(extras);
 						activity.startActivity(intent);
 					} else {
 						// Follow all trains from given line on google map view
 						final Intent intent = new Intent(ChicagoTracker.getContext(), TrainMapActivity.class);
-						extras.putString(activity.getResources().getString(R.string.bundle_train_line), lines.get(position - 1).toTextString());
+						extras.putString(activity.getString(R.string.bundle_train_line), lines.get(position - 1).toTextString());
 						intent.putExtras(extras);
 						activity.startActivity(intent);
 					}

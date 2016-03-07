@@ -337,7 +337,7 @@ public final class Util {
 		final MultiValuedMap<String, String> paramsTrain = new ArrayListValuedHashMap<>();
 		final List<Integer> favorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
 		for (final Integer favorite : favorites) {
-			paramsTrain.put(activity.getResources().getString(R.string.request_map_id), favorite.toString());
+			paramsTrain.put(activity.getString(R.string.request_map_id), favorite.toString());
 		}
 		return paramsTrain;
 	}
@@ -347,8 +347,8 @@ public final class Util {
 		final List<String> busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
 		for (final String busFavorite : busFavorites) {
 			final String[] fav = Util.decodeBusFavorite(busFavorite);
-			paramsBus.put(activity.getResources().getString(R.string.request_rt), fav[0]);
-			paramsBus.put(activity.getResources().getString(R.string.request_stop_id), fav[1]);
+			paramsBus.put(activity.getString(R.string.request_rt), fav[0]);
+			paramsBus.put(activity.getString(R.string.request_stop_id), fav[1]);
 		}
 		return paramsBus;
 	}

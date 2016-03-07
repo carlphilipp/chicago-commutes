@@ -306,7 +306,7 @@ public class BikeStationActivity extends Activity {
 
 			BikeStationActivity.this.streetViewImage.setLayoutParams(params);
 			BikeStationActivity.this.streetViewImage.setImageDrawable(result);
-			BikeStationActivity.this.streetViewText.setText(ChicagoTracker.getContext().getResources().getString(R.string.station_activity_street_view));
+			BikeStationActivity.this.streetViewText.setText(ChicagoTracker.getContext().getString(R.string.station_activity_street_view));
 		}
 	}
 
