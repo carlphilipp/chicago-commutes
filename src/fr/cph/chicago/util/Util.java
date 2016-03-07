@@ -45,7 +45,6 @@ import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.fragment.FavoritesFragment;
 import fr.cph.chicago.fragment.GoogleMapAbility;
 import fr.cph.chicago.task.GlobalConnectTask;
 import org.apache.commons.collections4.MultiValuedMap;
@@ -314,7 +313,7 @@ public final class Util {
 				googleMap.setMyLocationEnabled(true);
 				if (position != null) {
 					final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
-					googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
+					googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
 				} else {
 					googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CHICAGO, 10));
 				}
@@ -326,7 +325,7 @@ public final class Util {
 		return Boolean.parseBoolean(number);
 	}
 
-	public static void loadFavorites(final Object instance, final Class<?> classe, final Activity activity){
+	public static void loadFavorites(final Object instance, final Class<?> classe, final Activity activity) {
 		final MultiValuedMap<String, String> paramTrain = Util.getFavoritesTrainParams(activity);
 		final MultiValuedMap<String, String> paramBus = Util.getFavoritesBusParams(activity);
 		final GlobalConnectTask task = new GlobalConnectTask(instance, classe, TRAIN_ARRIVALS, paramTrain, BUS_ARRIVALS, paramBus);

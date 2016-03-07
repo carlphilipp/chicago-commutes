@@ -24,7 +24,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -32,7 +31,6 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
-import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -167,11 +165,6 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 	}
 
 	@Override
-	public final void onSaveInstanceState(final Bundle outState) {
-		super.onSaveInstanceState(outState);
-	}
-
-	@Override
 	public final void onStart() {
 		super.onStart();
 		final GoogleMapOptions options = new GoogleMapOptions();
@@ -208,7 +201,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 		ChicagoTracker.displayError(mainActivity, exceptionToBeThrown);
 	}
 
-	public void setGoogleMap(GoogleMap googleMap) {
+	public void setGoogleMap(final GoogleMap googleMap) {
 		this.googleMap = googleMap;
 	}
 
@@ -273,7 +266,8 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 					final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
 					reqParams.put(getString(R.string.request_map_id), String.valueOf(station.getId()));
 					final String xmlRes = cta.connect(TRAIN_ARRIVALS, reqParams);
-					final XmlParser xml = XmlParser.getInstance();;
+					final XmlParser xml = XmlParser.getInstance();
+					;
 					final SparseArray<TrainArrival> temp = xml.parseArrivals(xmlRes, DataHolder.getInstance().getTrainData());
 					for (int j = 0; j < temp.size(); j++) {
 						trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
@@ -307,6 +301,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 
 		@Override
 		protected final void onPostExecute(final Void result) {
+			// TODO recode that
 			if (hideStationsStops) {
 				final List<BusStop> busStopTmp = new ArrayList<>();
 				for (final BusStop busStop : busStops) {
@@ -391,7 +386,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 		protected final Void doInBackground(final Void... params) {
 			busStops = new ArrayList<>();
 			trainStations = new ArrayList<>();
-			bikeStations = NearbyFragment.this.mainActivity.getIntent().getExtras().getParcelableArrayList("bikeStations");
+			bikeStations = NearbyFragment.this.mainActivity.getIntent().getExtras().getParcelableArrayList(getString(R.string.bundle_bike_stations));
 
 			final DataHolder dataHolder = DataHolder.getInstance();
 			final BusData busData = dataHolder.getBusData();
@@ -454,19 +449,10 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 				position.setLatitude(latitude);
 				position.setLongitude(longitude);
 
-				final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mainActivity);
-				final boolean loadTrain = sharedPref.getBoolean("cta_train", true);
-				final boolean loadBus = sharedPref.getBoolean("cta_bus", true);
-				final boolean loadBike = sharedPref.getBoolean("divvy_bike", true);
-
-				if (loadBus) {
-					busStops = busData.readNearbyStops(position);
-				}
-				if (loadTrain) {
-					trainStations = trainData.readNearbyStation(position);
-				}
+				busStops = busData.readNearbyStops(position);
+				trainStations = trainData.readNearbyStation(position);
 				// TODO: wait bikeStations is loaded
-				if (loadBike && bikeStations != null) {
+				if (bikeStations != null) {
 					bikeStations = BikeStation.readNearbyStation(bikeStations, position);
 				}
 			}
