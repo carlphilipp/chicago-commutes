@@ -270,8 +270,8 @@ public final class BusArrival implements Parcelable {
 	 * @return
 	 */
 	public final String getTimeLeft() {
-		if (predictionTime != null && timeStamp != null) {
-			long time = predictionTime.getTime() - timeStamp.getTime();
+		if (getPredictionTime() != null && getTimeStamp() != null) {
+			long time = getPredictionTime().getTime() - getTimeStamp().getTime();
 			return String.format(Locale.ENGLISH, "%d min", TimeUnit.MILLISECONDS.toMinutes(time));
 		} else {
 			return NO_SERVICE;
@@ -286,7 +286,7 @@ public final class BusArrival implements Parcelable {
 		if (getIsDly()) {
 			result = "Delay";
 		} else {
-			if (getTimeLeft().equals("0 min")) {
+			if (getTimeLeft().trim().equals("0 min")) {
 				result = "Due";
 			} else {
 				result = getTimeLeft();
@@ -354,32 +354,32 @@ public final class BusArrival implements Parcelable {
 
 	@Override
 	public final void writeToParcel(final Parcel dest, final int flags) {
-		//dest.writeLong(timeStamp.getTime());
+		dest.writeLong(timeStamp.getTime());
 		//dest.writeString(errorMessage);
 		//dest.writeString(predictionType.toString());
 		dest.writeString(stopName);
 		dest.writeInt(stopId);
 		dest.writeInt(busId);
-		dest.writeInt(distanceToStop);
+		//dest.writeInt(distanceToStop);
 		dest.writeString(routeId);
 		dest.writeString(routeDirection);
 		dest.writeString(busDestination);
-		//dest.writeLong(predictionTime.getTime());
+		dest.writeLong(predictionTime.getTime());
 		dest.writeString(String.valueOf(isDly));
 	}
 
 	private void readFromParcel(final Parcel in) {
-		//timeStamp = new Date(in.readLong());
+		timeStamp = new Date(in.readLong());
 		//errorMessage = in.readString();
 		//predictionType = PredictionType.fromString(in.readString());
 		stopName = in.readString();
 		stopId = in.readInt();
 		busId = in.readInt();
-		distanceToStop = in.readInt();
+		//distanceToStop = in.readInt();
 		routeId = in.readString();
 		routeDirection = in.readString();
 		busDestination = in.readString();
-		//predictionTime = new Date(in.readLong());
+		predictionTime = new Date(in.readLong());
 		isDly = Boolean.parseBoolean(in.readString());
 	}
 

@@ -21,6 +21,7 @@ import android.util.SparseArray;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.*;
 import fr.cph.chicago.entity.enumeration.BusDirection;
+import fr.cph.chicago.entity.enumeration.PredictionType;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
@@ -498,7 +499,7 @@ public final class XmlParser {
 						switch (tagName) {
 						case "tmstmp":
 							busArrival = new BusArrival();
-							//busArrival.setTimeStamp(simpleDateFormatBus.parse(text));
+							busArrival.setTimeStamp(simpleDateFormatBus.parse(text));
 							busArrivals.add(busArrival);
 							break;
 						case "typ":
@@ -539,8 +540,8 @@ public final class XmlParser {
 							busArrival.setBusDestination(text);
 							break;
 						case "prdtm":
-							//assert busArrival != null;
-							//busArrival.setPredictionTime(simpleDateFormatBus.parse(text));
+							assert busArrival != null;
+							busArrival.setPredictionTime(simpleDateFormatBus.parse(text));
 							break;
 						case "dly":
 							assert busArrival != null;
@@ -552,7 +553,7 @@ public final class XmlParser {
 				}
 				eventType = parser.next();
 			}
-		} catch (final XmlPullParserException | IOException e) {
+		} catch (final XmlPullParserException | ParseException | IOException e) {
 			throw new ParserException(TrackerException.ERROR, e);
 		} finally {
 			IOUtils.closeQuietly(xml);
