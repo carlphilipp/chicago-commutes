@@ -16,23 +16,12 @@
 
 package fr.cph.chicago.fragment;
 
-import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Looper;
-import android.provider.Settings;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -63,10 +52,8 @@ import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.NearbyAdapter;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.DivvyConnect;
-import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
-import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusStop;
@@ -77,6 +64,7 @@ import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.json.JsonParser;
+import fr.cph.chicago.task.LoadNearbyTask;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.XmlParser;
 import org.apache.commons.collections4.MultiValuedMap;
@@ -184,7 +172,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 			public void onMapReady(final GoogleMap googleMap) {
 				NearbyFragment.this.googleMap = googleMap;
 				if (Util.isNetworkAvailable()) {
-					new LoadNearby(mainActivity).execute();
+					new LoadNearbyTask(NearbyFragment.this, mainActivity, mapFragment).execute();
 					nearbyContainer.setVisibility(View.GONE);
 					showProgress(true);
 				} else {
@@ -203,6 +191,10 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 
 	public void setGoogleMap(final GoogleMap googleMap) {
 		this.googleMap = googleMap;
+	}
+
+	public void loadArrivals(final List<BusStop> busStops, final List<Station> trainStations, final List<BikeStation> bikeStations) {
+		new LoadArrivals().execute(busStops, trainStations, bikeStations);
 	}
 
 	private class LoadArrivals extends AsyncTask<List<?>, Void, Void> {
@@ -267,7 +259,6 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 					reqParams.put(getString(R.string.request_map_id), String.valueOf(station.getId()));
 					final String xmlRes = cta.connect(TRAIN_ARRIVALS, reqParams);
 					final XmlParser xml = XmlParser.getInstance();
-					;
 					final SparseArray<TrainArrival> temp = xml.parseArrivals(xmlRes, DataHolder.getInstance().getTrainData());
 					for (int j = 0; j < temp.size(); j++) {
 						trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
@@ -333,196 +324,8 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 		}
 	}
 
-	private class LoadNearby extends AsyncTask<Void, Void, Void> implements LocationListener {
-
-		// The minimum distance to change Updates in meters
-		private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
-		// The minimum time between updates in milliseconds
-		private static final long MIN_TIME_BW_UPDATES = 1000 * 60; // 1 minute
-		// flag for GPS status
-		private boolean isGPSEnabled = false;
-		// flag for network status
-		private boolean isNetworkEnabled = false;
-		/**
-		 * The location
-		 **/
-		private Location location;
-		/**
-		 * The position
-		 **/
-		private Position position;
-		/**
-		 * The latitude
-		 **/
-		private double latitude;
-		/**
-		 * THe longitude
-		 **/
-		private double longitude;
-		/**
-		 * The list of bus stops
-		 **/
-		private List<BusStop> busStops;
-		/**
-		 * The list of train stations
-		 **/
-		private List<Station> trainStations;
-		/**
-		 * List of bike stations
-		 **/
-		private List<BikeStation> bikeStations;
-		/**
-		 * The location manager
-		 **/
-		private LocationManager locationManager;
-
-		private MainActivity activity;
-
-		public LoadNearby(MainActivity activity) {
-			this.activity = activity;
-		}
-
-		@Override
-		protected final Void doInBackground(final Void... params) {
-			busStops = new ArrayList<>();
-			trainStations = new ArrayList<>();
-			bikeStations = NearbyFragment.this.mainActivity.getIntent().getExtras().getParcelableArrayList(getString(R.string.bundle_bike_stations));
-
-			final DataHolder dataHolder = DataHolder.getInstance();
-			final BusData busData = dataHolder.getBusData();
-			final TrainData trainData = dataHolder.getTrainData();
-
-			locationManager = (LocationManager) mainActivity.getSystemService(Context.LOCATION_SERVICE);
-
-			// getting GPS status
-			isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-			// getting network status
-			isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-			if (!isGPSEnabled && !isNetworkEnabled) {
-				// no network provider is enabled
-				showSettingsAlert();
-			} else {
-				if (isNetworkEnabled) {
-					if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
-							!= PackageManager.PERMISSION_GRANTED
-							&& ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
-							!= PackageManager.PERMISSION_GRANTED) {
-						ActivityCompat.requestPermissions(activity,
-								new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
-						return null;
-					}
-					locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES,
-							this, Looper.getMainLooper());
-					if (locationManager != null) {
-						location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-						if (location != null) {
-							latitude = location.getLatitude();
-							longitude = location.getLongitude();
-						}
-					}
-				}
-				// if GPS Enabled get lat/long using GPS Services
-				if (isGPSEnabled) {
-					if (location == null) {
-						if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
-								!= PackageManager.PERMISSION_GRANTED
-								&& ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
-								!= PackageManager.PERMISSION_GRANTED) {
-							ActivityCompat.requestPermissions(activity,
-									new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
-							return null;
-						}
-						locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES,
-								this, Looper.getMainLooper());
-						if (locationManager != null) {
-							location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-							if (location != null) {
-								latitude = location.getLatitude();
-								longitude = location.getLongitude();
-							}
-						}
-					}
-				}
-				position = new Position();
-				position.setLatitude(latitude);
-				position.setLongitude(longitude);
-
-				busStops = busData.readNearbyStops(position);
-				trainStations = trainData.readNearbyStation(position);
-				// TODO: wait bikeStations is loaded
-				if (bikeStations != null) {
-					bikeStations = BikeStation.readNearbyStation(bikeStations, position);
-				}
-			}
-			return null;
-		}
-
-		@Override
-		protected final void onPostExecute(final Void result) {
-			new LoadArrivals().execute(busStops, trainStations, bikeStations);
-			Util.centerMap(NearbyFragment.this, mapFragment, mainActivity, position);
-
-			if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
-					!= PackageManager.PERMISSION_GRANTED
-					&& ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
-					!= PackageManager.PERMISSION_GRANTED) {
-				ActivityCompat.requestPermissions(activity,
-						new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
-				return;
-			}
-			locationManager.removeUpdates(LoadNearby.this);
-		}
-
-		@Override
-		public final void onLocationChanged(final Location location) {
-		}
-
-		@Override
-		public final void onProviderDisabled(final String provider) {
-		}
-
-		@Override
-		public final void onProviderEnabled(final String provider) {
-		}
-
-		@Override
-		public final void onStatusChanged(final String provider, final int status, final Bundle extras) {
-		}
-
-		/**
-		 * Function to show settings alert dialog
-		 */
-		private void showSettingsAlert() {
-			new Thread() {
-				public void run() {
-					NearbyFragment.this.mainActivity.runOnUiThread(new Runnable() {
-						public void run() {
-							final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(NearbyFragment.this.getActivity());
-							alertDialogBuilder.setTitle("GPS settings");
-							alertDialogBuilder.setMessage("GPS is not enabled. Do you want to go to settings menu?");
-							alertDialogBuilder.setCancelable(false).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog, int id) {
-									Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-									NearbyFragment.this.getActivity().startActivity(intent);
-								}
-							}).setNegativeButton("No", new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog, int id) {
-									dialog.cancel();
-								}
-							});
-							final AlertDialog alertDialog = alertDialogBuilder.create();
-							alertDialog.show();
-						}
-					});
-				}
-			}.start();
-		}
-	}
-
-	private void load(final List<BusStop> buses, final SparseArray<Map<String, List<BusArrival>>> busArrivals, final List<Station> stations,
-			final SparseArray<TrainArrival> trainArrivals, final List<BikeStation> bikeStations) {
+	private void load(final List<BusStop> buses, final SparseArray<Map<String, List<BusArrival>>> busArrivals, final List<Station> stations, final SparseArray<TrainArrival> trainArrivals,
+			final List<BikeStation> bikeStations) {
 		final List<Marker> markers = new ArrayList<>();
 		final BitmapDescriptor azure = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE);
 		final BitmapDescriptor violet = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
@@ -616,7 +419,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 			googleMap.clear();
 			showProgress(true);
 			nearbyContainer.setVisibility(View.GONE);
-			new LoadNearby(mainActivity).execute();
+			new LoadNearbyTask(this, mainActivity, mapFragment).execute();
 		} else {
 			Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
 			showProgress(false);
