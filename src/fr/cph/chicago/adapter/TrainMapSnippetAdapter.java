@@ -64,10 +64,9 @@ public class TrainMapSnippetAdapter extends BaseAdapter {
 	@Override
 	public final View getView(final int position, View convertView, final ViewGroup parent) {
 		final Eta eta = (Eta) getItem(position);
-		if (convertView == null) {
-			final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			convertView = vi.inflate(R.layout.list_map_train, parent, false);
-		}
+		final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		// TODO implement view holder
+		convertView = vi.inflate(R.layout.list_map_train, parent, false);
 		final TextView name = (TextView) convertView.findViewById(R.id.station_name);
 		name.setText(eta.getStation().getName());
 

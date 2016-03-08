@@ -58,6 +58,7 @@ import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.listener.TrainMapOnCameraChangeListener;
 import fr.cph.chicago.task.LoadCurrentPositionTask;
+import fr.cph.chicago.task.LoadTrainPositionTask;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.XmlParser;
 import org.apache.commons.collections4.MultiValuedMap;
@@ -133,7 +134,7 @@ public class TrainMapActivity extends Activity {
 			@Override
 			public boolean onMenuItemClick(final MenuItem item) {
 				new LoadCurrentPositionTask(TrainMapActivity.this, mapFragment).execute();
-				new LoadTrainPosition().execute(false, true);
+				new LoadTrainPositionTask(TrainMapActivity.this, line, trainData).execute(false, true);
 				return false;
 			}
 		}));
@@ -227,7 +228,7 @@ public class TrainMapActivity extends Activity {
 				});
 				if (Util.isNetworkAvailable()) {
 					new LoadCurrentPositionTask(TrainMapActivity.this, mapFragment).execute();
-					new LoadTrainPosition().execute(centerMap, true);
+					new LoadTrainPositionTask(TrainMapActivity.this, line, trainData).execute(centerMap, true);
 				} else {
 					Toast.makeText(TrainMapActivity.this, "No network connection detected!", Toast.LENGTH_SHORT).show();
 				}
@@ -256,7 +257,7 @@ public class TrainMapActivity extends Activity {
 		refreshingInfoWindow = false;
 	}
 
-	private void centerMapOnBus(final List<Train> result) {
+	public void centerMapOnBus(final List<Train> result) {
 		mapFragment.getMapAsync(new OnMapReadyCallback() {
 			@Override
 			public void onMapReady(final GoogleMap googleMap) {
@@ -276,7 +277,7 @@ public class TrainMapActivity extends Activity {
 		});
 	}
 
-	private void drawTrains(final List<Train> trains, final List<Position> positions) {
+	public void drawTrains(final List<Train> trains, final List<Position> positions) {
 		if (googleMap != null) {
 			if (views != null) {
 				views.clear();
@@ -321,6 +322,7 @@ public class TrainMapActivity extends Activity {
 		}
 	}
 
+	// TODO to put in task package
 	private class LoadTrainFollow extends AsyncTask<String, Void, List<Eta>> {
 		/**
 		 * Current view
@@ -360,8 +362,7 @@ public class TrainMapActivity extends Activity {
 			if (!loadAll && etas.size() > 7) {
 				etas = etas.subList(0, 6);
 
-				// Add a fake Eta cell to alert the user about the fact that only a part of the result is
-				// displayed
+				// Add a fake Eta cell to alert the user about the fact that only a part of the result is displayed
 				final Eta eta = new Eta();
 				eta.setIsDly(false);
 				eta.setIsApp(false);
@@ -390,57 +391,6 @@ public class TrainMapActivity extends Activity {
 				error.setVisibility(TextView.VISIBLE);
 			}
 			refreshInfoWindow();
-		}
-	}
-
-	private class LoadTrainPosition extends AsyncTask<Boolean, Void, List<Train>> {
-		/**
-		 * Center map
-		 **/
-		private boolean centerMap;
-		/**
-		 * Positions list
-		 **/
-		private List<Position> positions;
-
-		@Override
-		protected List<Train> doInBackground(Boolean... params) {
-			centerMap = params[0];
-			List<Train> trains = null;
-			final CtaConnect connect = CtaConnect.getInstance();
-			final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
-			connectParam.put(getString(R.string.request_rt), line);
-			try {
-				final InputStream content = connect.connect(TRAIN_LOCATION, connectParam);
-				final XmlParser xml = XmlParser.getInstance();
-				trains = xml.parseTrainsLocation(content);
-			} catch (final ConnectException | ParserException e) {
-				Log.e(TAG, e.getMessage(), e);
-			}
-			Util.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_location, 0);
-			TrainData data = TrainMapActivity.this.trainData;
-			if (data == null) {
-				final DataHolder dataHolder = DataHolder.getInstance();
-				data = dataHolder.getTrainData();
-			}
-			positions = data.readPattern(TrainLine.fromXmlString(TrainMapActivity.this.line));
-			return trains;
-		}
-
-		@Override
-		protected final void onPostExecute(final List<Train> result) {
-			if (result != null) {
-				drawTrains(result, positions);
-				if (result.size() != 0) {
-					if (centerMap) {
-						centerMapOnBus(result);
-					}
-				} else {
-					Toast.makeText(TrainMapActivity.this, "No trains found!", Toast.LENGTH_LONG).show();
-				}
-			} else {
-				Toast.makeText(TrainMapActivity.this, "Error while loading data!", Toast.LENGTH_SHORT).show();
-			}
 		}
 	}
 }
