@@ -286,7 +286,7 @@ public final class BusArrival implements Parcelable {
 		if (getIsDly()) {
 			result = "Delay";
 		} else {
-			if (getTimeLeft().trim().equals("0 min")) {
+			if ("0 min".equals(getTimeLeft().trim())) {
 				result = "Due";
 			} else {
 				result = getTimeLeft();

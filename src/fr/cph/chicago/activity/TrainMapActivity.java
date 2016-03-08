@@ -195,7 +195,7 @@ public class TrainMapActivity extends Activity {
 
 					@Override
 					public View getInfoContents(Marker marker) {
-						if (!marker.getSnippet().equals("")) {
+						if (!"".equals(marker.getSnippet())) {
 							final View view = views.get(marker);
 							if (!refreshingInfoWindow) {
 								selectedMarker = marker;
@@ -213,7 +213,7 @@ public class TrainMapActivity extends Activity {
 				googleMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
 					@Override
 					public void onInfoWindowClick(Marker marker) {
-						if (!marker.getSnippet().equals("")) {
+						if (!"".equals(marker.getSnippet())) {
 							final View view = views.get(marker);
 							if (!refreshingInfoWindow) {
 								selectedMarker = marker;

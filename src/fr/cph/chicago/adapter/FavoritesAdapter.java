@@ -279,7 +279,7 @@ public final class FavoritesAdapter extends BaseAdapter {
 						final LinearLayout layoutChildH = (LinearLayout) layoutChild.getChildAt(j);
 						final TextView timing = (TextView) layoutChildH.getChildAt(1);
 						if (timing != null) {
-							if (timing.getText().toString().equals("")) {
+							if ("".equals(timing.getText().toString())) {
 								layoutChildH.removeAllViews();
 								final List<String> toRemove = new ArrayList<>();
 								for (final Entry<String, Integer> e : this.ids.entrySet()) {

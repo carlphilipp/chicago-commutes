@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,7 +21,6 @@ import android.util.SparseArray;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.*;
 import fr.cph.chicago.entity.enumeration.BusDirection;
-import fr.cph.chicago.entity.enumeration.PredictionType;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
@@ -196,7 +195,9 @@ public final class XmlParser {
 							final TrainArrival arri = arrivals.get(staId, null);
 							if (arri != null) {
 								final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-								if (text.equalsIgnoreCase("See train") && currentEta.getStop().getDescription().contains("Loop")) {
+								if ("See train".equalsIgnoreCase(text) && "Loop".contains(currentEta.getStop().getDescription())) {
+									currentEta.setDestName("Loop");
+								} else if ("Loop, Midway".equalsIgnoreCase(text)) {
 									currentEta.setDestName("Loop");
 								} else {
 									currentEta.setDestName(text);
@@ -580,7 +581,7 @@ public final class XmlParser {
 			while (eventType != XmlPullParser.END_DOCUMENT) {
 				if (eventType == XmlPullParser.START_TAG) {
 					tagName = parser.getName();
-					if (tagName.equals("ptr")) {
+					if ("ptr".equals(tagName)) {
 						pattern = new BusPattern();
 					}
 				} else if (eventType == XmlPullParser.END_TAG) {
@@ -662,9 +663,9 @@ public final class XmlParser {
 			while (eventType != XmlPullParser.END_DOCUMENT) {
 				if (eventType == XmlPullParser.START_TAG) {
 					tagName = parser.getName();
-					if (tagName.equals("vehicle")) {
+					if ("vehicle".equals(tagName)) {
 						bus = new Bus();
-					} else if (tagName.equals("error")) {
+					} else if ("error".equals(tagName)) {
 						eventType = XmlPullParser.END_DOCUMENT;
 						break;
 					}
@@ -731,7 +732,7 @@ public final class XmlParser {
 			while (eventType != XmlPullParser.END_DOCUMENT) {
 				if (eventType == XmlPullParser.START_TAG) {
 					tagName = parser.getName();
-					if (tagName.equals("train")) {
+					if ("train".equals(tagName)) {
 						train = new Train();
 					}
 				} else if (eventType == XmlPullParser.END_TAG) {

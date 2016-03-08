@@ -71,7 +71,7 @@ public class TrainMapSnippetAdapter extends BaseAdapter {
 		final TextView name = (TextView) convertView.findViewById(R.id.station_name);
 		name.setText(eta.getStation().getName());
 
-		if (!(position == etas.size() - 1 && eta.getTimeLeftDueDelay().equals("0 min"))) {
+		if (!(position == etas.size() - 1 && "0 min".equals(eta.getTimeLeftDueDelay()))) {
 			final TextView time = (TextView) convertView.findViewById(R.id.time);
 			time.setText(eta.getTimeLeftDueDelay());
 		} else {

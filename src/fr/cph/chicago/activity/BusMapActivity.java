@@ -182,7 +182,7 @@ public class BusMapActivity extends Activity {
 
 					@Override
 					public View getInfoContents(final Marker marker) {
-						if (!marker.getSnippet().equals("")) {
+						if (!"".equals(marker.getSnippet())) {
 							final View view = views.get(marker);
 							if (!refreshingInfoWindow) {
 								selectedMarker = marker;
@@ -200,7 +200,7 @@ public class BusMapActivity extends Activity {
 				googleMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
 					@Override
 					public void onInfoWindowClick(Marker marker) {
-						if (!marker.getSnippet().equals("")) {
+						if (!"".equals(marker.getSnippet())) {
 							final View view = views.get(marker);
 							if (!refreshingInfoWindow) {
 								selectedMarker = marker;
