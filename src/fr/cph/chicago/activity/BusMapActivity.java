@@ -61,7 +61,7 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.listener.BusMapOnCameraChangeListener;
-import fr.cph.chicago.task.LoadCurrentPosition;
+import fr.cph.chicago.task.LoadCurrentPositionTask;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.XmlParser;
 import org.apache.commons.collections4.MultiValuedMap;
@@ -213,7 +213,7 @@ public class BusMapActivity extends Activity {
 					}
 				});
 				if (Util.isNetworkAvailable()) {
-					new LoadCurrentPosition(BusMapActivity.this, mapFragment).execute();
+					new LoadCurrentPositionTask(BusMapActivity.this, mapFragment).execute();
 					new LoadBusPosition().execute(centerMap, !loadPattern);
 					if (loadPattern) {
 						new LoadPattern().execute();
@@ -248,7 +248,7 @@ public class BusMapActivity extends Activity {
 		toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
-				new LoadCurrentPosition(BusMapActivity.this, mapFragment).execute();
+				new LoadCurrentPositionTask(BusMapActivity.this, mapFragment).execute();
 				new LoadBusPosition().execute(false, true);
 				return false;
 			}
@@ -350,17 +350,17 @@ public class BusMapActivity extends Activity {
 						final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
 						poly.add(point);
 						//if (patternPoint.getStopId() != null) {
-							options = new MarkerOptions();
-							options.position(point).title(patternPoint.getStopName() + " (" + pattern.getDirection() + ")").snippet("");
-							if (j == 0) {
-								options.icon(red);
-							} else {
-								options.icon(blue);
-							}
+						options = new MarkerOptions();
+						options.position(point).title(patternPoint.getStopName() + " (" + pattern.getDirection() + ")").snippet("");
+						if (j == 0) {
+							options.icon(red);
+						} else {
+							options.icon(blue);
+						}
 
-							final Marker marker = googleMap.addMarker(options);
-							busStationMarkers.add(marker);
-							marker.setVisible(false);
+						final Marker marker = googleMap.addMarker(options);
+						busStationMarkers.add(marker);
+						marker.setVisible(false);
 						//}
 					}
 					googleMap.addPolyline(poly);

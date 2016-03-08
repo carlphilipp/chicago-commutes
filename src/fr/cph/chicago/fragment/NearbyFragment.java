@@ -130,7 +130,6 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 			nearbyAdapter = new NearbyAdapter(mainActivity);
 			listView = (ListView) rootView.findViewById(R.id.fragment_nearby_list);
 			listView.setAdapter(nearbyAdapter);
-			setHasOptionsMenu(true);
 			loadLayout = rootView.findViewById(R.id.loading_layout);
 			nearbyContainer = (RelativeLayout) rootView.findViewById(R.id.nerby_list_container);
 
@@ -206,32 +205,38 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 		private List<BikeStation> bikeStationsRes;
 		private List<BikeStation> bikeStationsTemp;
 
+		private LoadArrivals(){
+			bikeStationsRes = new ArrayList<>();
+			busArrivalsMap = new SparseArray<>();
+			trainArrivals = new SparseArray<>();
+		}
+
 		@SuppressWarnings("unchecked")
 		@Override
 		protected final Void doInBackground(final List<?>... params) {
 			busStops = (List<BusStop>) params[0];
 			stations = (List<Station>) params[1];
-			bikeStationsRes = new ArrayList<>();
 			bikeStationsTemp = (List<BikeStation>) params[2];
 
-			busArrivalsMap = new SparseArray<>();
-			trainArrivals = new SparseArray<>();
+			loadAroundBusArrivals();
+			loadAroundTrainArrivals();
+			loadAroundBikeData();
+			return null;
+		}
 
+		private void loadAroundBusArrivals() {
 			final CtaConnect cta = CtaConnect.getInstance();
-
-			// Loop over bus stops around user
 			for (final BusStop busStop : busStops) {
+				int busId = busStop.getId();
 				// Create
-				Map<String, List<BusArrival>> tempMap = busArrivalsMap.get(busStop.getId(), null);
-				if (tempMap == null) {
-					tempMap = new HashMap<>();
-					busArrivalsMap.put(busStop.getId(), tempMap);
+				final Map<String, List<BusArrival>> tempMap = busArrivalsMap.get(busId, new HashMap<String, List<BusArrival>>());
+				if (!tempMap.containsKey(busId)) {
+					busArrivalsMap.put(busId, tempMap);
 				}
 
-				// Buses
 				try {
 					final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-					reqParams.put(getString(R.string.request_stop_id), Integer.toString(busStop.getId()));
+					reqParams.put(getString(R.string.request_stop_id), Integer.toString(busId));
 
 					final InputStream is = cta.connect(BUS_ARRIVALS, reqParams);
 					final XmlParser xml = XmlParser.getInstance();
@@ -252,7 +257,10 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 					Log.e(TAG, e.getMessage(), e);
 				}
 			}
-			// Train
+		}
+
+		private void loadAroundTrainArrivals() {
+			final CtaConnect cta = CtaConnect.getInstance();
 			for (final Station station : stations) {
 				try {
 					final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
@@ -268,6 +276,9 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 					Log.e(TAG, e.getMessage(), e);
 				}
 			}
+		}
+
+		private void loadAroundBikeData() {
 			// TODO: modify the check
 			if (bikeStationsTemp != null) {
 				// Bike
@@ -287,7 +298,6 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 					Log.e(TAG, e.getMessage(), e);
 				}
 			}
-			return null;
 		}
 
 		@Override

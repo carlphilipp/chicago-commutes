@@ -18,12 +18,16 @@ package fr.cph.chicago.util;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -350,5 +354,34 @@ public final class Util {
 			paramsBus.put(activity.getString(R.string.request_stop_id), fav[1]);
 		}
 		return paramsBus;
+	}
+
+	/**
+	 * Function to show settings alert dialog
+	 */
+	public static void showSettingsAlert(final Activity activity) {
+		new Thread() {
+			public void run() {
+				activity.runOnUiThread(new Runnable() {
+					public void run() {
+						final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
+						alertDialogBuilder.setTitle("GPS settings");
+						alertDialogBuilder.setMessage("GPS is not enabled. Do you want to go to settings menu?");
+						alertDialogBuilder.setCancelable(false).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								final Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+								activity.startActivity(intent);
+							}
+						}).setNegativeButton("No", new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								dialog.cancel();
+							}
+						});
+						final AlertDialog alertDialog = alertDialogBuilder.create();
+						alertDialog.show();
+					}
+				});
+			}
+		}.start();
 	}
 }

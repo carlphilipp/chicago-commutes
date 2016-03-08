@@ -57,7 +57,7 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.listener.TrainMapOnCameraChangeListener;
-import fr.cph.chicago.task.LoadCurrentPosition;
+import fr.cph.chicago.task.LoadCurrentPositionTask;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.XmlParser;
 import org.apache.commons.collections4.MultiValuedMap;
@@ -132,7 +132,7 @@ public class TrainMapActivity extends Activity {
 		toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
 			@Override
 			public boolean onMenuItemClick(final MenuItem item) {
-				new LoadCurrentPosition(TrainMapActivity.this, mapFragment).execute();
+				new LoadCurrentPositionTask(TrainMapActivity.this, mapFragment).execute();
 				new LoadTrainPosition().execute(false, true);
 				return false;
 			}
@@ -226,7 +226,7 @@ public class TrainMapActivity extends Activity {
 					}
 				});
 				if (Util.isNetworkAvailable()) {
-					new LoadCurrentPosition(TrainMapActivity.this, mapFragment).execute();
+					new LoadCurrentPositionTask(TrainMapActivity.this, mapFragment).execute();
 					new LoadTrainPosition().execute(centerMap, true);
 				} else {
 					Toast.makeText(TrainMapActivity.this, "No network connection detected!", Toast.LENGTH_SHORT).show();
