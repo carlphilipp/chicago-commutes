@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,15 +19,12 @@ package fr.cph.chicago.activity;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.graphics.Bitmap;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -45,43 +42,27 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
-import fr.cph.chicago.adapter.TrainMapSnippetAdapter;
-import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
-import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Position;
-import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.Train;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.exception.ConnectException;
-import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.listener.TrainMapOnCameraChangeListener;
 import fr.cph.chicago.task.LoadCurrentPositionTask;
+import fr.cph.chicago.task.LoadTrainFollowTask;
 import fr.cph.chicago.task.LoadTrainPositionTask;
 import fr.cph.chicago.util.Util;
-import fr.cph.chicago.xml.XmlParser;
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static fr.cph.chicago.connection.CtaRequestType.TRAIN_FOLLOW;
-import static fr.cph.chicago.connection.CtaRequestType.TRAIN_LOCATION;
 
 /**
  * @author Carl-Philipp Harmant
  * @version 1
  */
 public class TrainMapActivity extends Activity {
-
-	private static final String TAG = TrainMapActivity.class.getSimpleName();
 
 	private ViewGroup viewGroup;
 	private MapFragment mapFragment;
@@ -201,7 +182,7 @@ public class TrainMapActivity extends Activity {
 							if (!refreshingInfoWindow) {
 								selectedMarker = marker;
 								final String runNumber = marker.getSnippet();
-								new LoadTrainFollow(view, false).execute(runNumber);
+								new LoadTrainFollowTask(TrainMapActivity.this, view, false, trainData).execute(runNumber);
 								status.put(marker, false);
 							}
 							return view;
@@ -220,7 +201,7 @@ public class TrainMapActivity extends Activity {
 								selectedMarker = marker;
 								final String runNumber = marker.getSnippet();
 								final Boolean current = status.get(marker);
-								new LoadTrainFollow(view, !current).execute(runNumber);
+								new LoadTrainFollowTask(TrainMapActivity.this, view, !current, trainData).execute(runNumber);
 								status.put(marker, !current);
 							}
 						}
@@ -248,7 +229,7 @@ public class TrainMapActivity extends Activity {
 		super.onSaveInstanceState(savedInstanceState);
 	}
 
-	private void refreshInfoWindow() {
+	public void refreshInfoWindow() {
 		if (selectedMarker == null) {
 			return;
 		}
@@ -319,78 +300,6 @@ public class TrainMapActivity extends Activity {
 				poly.add(point);
 			}
 			googleMap.addPolyline(poly);
-		}
-	}
-
-	// TODO to put in task package
-	private class LoadTrainFollow extends AsyncTask<String, Void, List<Eta>> {
-		/**
-		 * Current view
-		 **/
-		private View view;
-		/**
-		 * Load all
-		 **/
-		private boolean loadAll;
-
-		/**
-		 * Constructor
-		 *
-		 * @param view    the view
-		 * @param loadAll a boolean to load everything
-		 */
-		public LoadTrainFollow(final View view, final boolean loadAll) {
-			this.view = view;
-			this.loadAll = loadAll;
-		}
-
-		@Override
-		protected final List<Eta> doInBackground(final String... params) {
-			final String runNumber = params[0];
-			List<Eta> etas = new ArrayList<>();
-			try {
-				final CtaConnect connect = CtaConnect.getInstance();
-				final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
-				connectParam.put("runnumber", runNumber);
-				final InputStream content = connect.connect(TRAIN_FOLLOW, connectParam);
-				final XmlParser xml = XmlParser.getInstance();
-				etas = xml.parseTrainsFollow(content, trainData);
-			} catch (final ConnectException | ParserException e) {
-				Log.e(TAG, e.getMessage(), e);
-			}
-			Util.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_follow, 0);
-			if (!loadAll && etas.size() > 7) {
-				etas = etas.subList(0, 6);
-
-				// Add a fake Eta cell to alert the user about the fact that only a part of the result is displayed
-				final Eta eta = new Eta();
-				eta.setIsDly(false);
-				eta.setIsApp(false);
-				final Date currentDate = Calendar.getInstance().getTime();
-				eta.setArrivalDepartureDate(currentDate);
-				eta.setPredictionDate(currentDate);
-				final Station fakeStation = new Station();
-				fakeStation.setName("Display all results");
-				eta.setStation(fakeStation);
-				etas.add(eta);
-			}
-			return etas;
-		}
-
-		@Override
-		protected final void onPostExecute(final List<Eta> result) {
-			final ListView arrivals = (ListView) view.findViewById(R.id.arrivals);
-			final TextView error = (TextView) view.findViewById(R.id.error);
-			if (result.size() != 0) {
-				final TrainMapSnippetAdapter ada = new TrainMapSnippetAdapter(result);
-				arrivals.setAdapter(ada);
-				arrivals.setVisibility(ListView.VISIBLE);
-				error.setVisibility(TextView.GONE);
-			} else {
-				arrivals.setVisibility(ListView.GONE);
-				error.setVisibility(TextView.VISIBLE);
-			}
-			refreshInfoWindow();
 		}
 	}
 }
