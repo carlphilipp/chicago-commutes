@@ -59,7 +59,7 @@ public class TrainMapOnCameraChangeListener implements OnCameraChangeListener {
 		this.bitmapDescriptor1 = BitmapDescriptorFactory.fromBitmap(bitmap1);
 		this.bitmapDescriptor2 = BitmapDescriptorFactory.fromBitmap(bitmap2);
 		this.bitmapDescriptor3 = BitmapDescriptorFactory.fromBitmap(bitmap3);
-		this.setCurrentBitmapDescriptor(bitmapDescriptor1);
+		this.setCurrentBitmapDescriptor(bitmapDescriptor2);
 	}
 
 	/**

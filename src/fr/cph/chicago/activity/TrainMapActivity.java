@@ -276,8 +276,7 @@ public class TrainMapActivity extends Activity {
 					final String title = "To " + train.getDestName();
 					final String snippet = Integer.toString(train.getRouteNumber());
 
-					final Marker marker = googleMap
-							.addMarker(new MarkerOptions().position(point).title(title).snippet(snippet).icon(bitmapDescr).anchor(0.5f, 0.5f).rotation(train.getHeading()).flat(true));
+					final Marker marker = googleMap.addMarker(new MarkerOptions().position(point).title(title).snippet(snippet).icon(bitmapDescr).anchor(0.5f, 0.5f).rotation(train.getHeading()).flat(true));
 					markers.add(marker);
 
 					final View view = TrainMapActivity.this.getLayoutInflater().inflate(R.layout.marker_train, viewGroup, false);
@@ -290,10 +289,11 @@ public class TrainMapActivity extends Activity {
 					views.put(marker, view);
 				}
 
-				// TODO Reactivate to see if when we zoom the bug of the info windows disappear
-				//trainListener.setTrainMarkers(markers);
 
-				googleMap.setOnCameraChangeListener(trainListener);
+				trainListener.setTrainMarkers(markers);
+
+				// TODO Reactivate to see if when we zoom the bug of the info windows disappear
+				//googleMap.setOnCameraChangeListener(trainListener);
 			}
 		});
 	}

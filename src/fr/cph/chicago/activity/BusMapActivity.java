@@ -86,9 +86,9 @@ import static fr.cph.chicago.connection.CtaRequestType.BUS_VEHICLES;
 public class BusMapActivity extends Activity {
 
 	private static final String TAG = BusMapActivity.class.getSimpleName();
+
 	private ViewGroup viewGroup;
 	private MapFragment mapFragment;
-	private GoogleMap googleMap;
 	private Marker selectedMarker;
 
 	private List<Marker> busMarkers;
@@ -159,7 +159,6 @@ public class BusMapActivity extends Activity {
 		super.onStop();
 		centerMap = false;
 		loadPattern = false;
-		googleMap = null;
 	}
 
 	@Override
@@ -173,7 +172,6 @@ public class BusMapActivity extends Activity {
 		mapFragment.getMapAsync(new OnMapReadyCallback() {
 			@Override
 			public void onMapReady(final GoogleMap googleMap) {
-				BusMapActivity.this.googleMap = googleMap;
 				googleMap.setInfoWindowAdapter(new InfoWindowAdapter() {
 					@Override
 					public View getInfoWindow(Marker marker) {
@@ -283,7 +281,6 @@ public class BusMapActivity extends Activity {
 		mapFragment.getMapAsync(new OnMapReadyCallback() {
 			@Override
 			public void onMapReady(final GoogleMap googleMap) {
-				BusMapActivity.this.googleMap = googleMap;
 				final Position position;
 				final int zoom;
 				if (result.size() == 1) {
@@ -300,38 +297,40 @@ public class BusMapActivity extends Activity {
 	}
 
 	private void drawBuses(final List<Bus> buses) {
-		if (googleMap != null) {
-			for (Marker marker : busMarkers) {
-				marker.remove();
+		mapFragment.getMapAsync(new OnMapReadyCallback() {
+			@Override
+			public void onMapReady(final GoogleMap googleMap) {
+				for (final Marker marker : busMarkers) {
+					marker.remove();
+				}
+				busMarkers.clear();
+				final Bitmap bitmap = busListener.getCurrentBitmap();
+				for (final Bus bus : buses) {
+					final LatLng point = new LatLng(bus.getPosition().getLatitude(), bus.getPosition().getLongitude());
+					final Marker marker = googleMap.addMarker(
+							new MarkerOptions().position(point).title("To " + bus.getDestination()).snippet(bus.getId() + "").icon(BitmapDescriptorFactory.fromBitmap(bitmap)).anchor(0.5f, 0.5f)
+									.rotation(bus.getHeading()).flat(true));
+					busMarkers.add(marker);
+
+					final LayoutInflater layoutInflater = (LayoutInflater) BusMapActivity.this.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+					final View view = layoutInflater.inflate(R.layout.marker_train, viewGroup, false);
+					final TextView title = (TextView) view.findViewById(R.id.title);
+					title.setText(marker.getTitle());
+
+					views.put(marker, view);
+				}
+
+				busListener.setBusMarkers(busMarkers);
+				// TODO Reactivate to see if when we zoom the bug of the info windows disappear
+				//googleMap.setOnCameraChangeListener(busListener);
 			}
-			busMarkers.clear();
-			final Bitmap bitmap = busListener.getCurrentBitmap();
-			for (final Bus bus : buses) {
-				final LatLng point = new LatLng(bus.getPosition().getLatitude(), bus.getPosition().getLongitude());
-				final Marker marker = googleMap.addMarker(
-						new MarkerOptions().position(point).title("To " + bus.getDestination()).snippet(bus.getId() + "").icon(BitmapDescriptorFactory.fromBitmap(bitmap)).anchor(0.5f, 0.5f)
-								.rotation(bus.getHeading()).flat(true));
-				busMarkers.add(marker);
-
-				final LayoutInflater layoutInflater = (LayoutInflater) BusMapActivity.this.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				final View view = layoutInflater.inflate(R.layout.marker_train, viewGroup, false);
-				final TextView title = (TextView) view.findViewById(R.id.title);
-				title.setText(marker.getTitle());
-
-				views.put(marker, view);
-			}
-
-			busListener.setBusMarkers(busMarkers);
-
-			googleMap.setOnCameraChangeListener(busListener);
-		}
+		});
 	}
 
 	private void drawPattern(final List<BusPattern> patterns) {
 		mapFragment.getMapAsync(new OnMapReadyCallback() {
 			@Override
 			public void onMapReady(final GoogleMap googleMap) {
-				BusMapActivity.this.googleMap = googleMap;
 				int j = 0;
 				final BitmapDescriptor red = BitmapDescriptorFactory.defaultMarker();
 				final BitmapDescriptor blue = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
@@ -367,6 +366,8 @@ public class BusMapActivity extends Activity {
 					j++;
 				}
 				busListener.setBusStationMarkers(busStationMarkers);
+
+				// TODO Reactivate to see if when we zoom the bug of the info windows disappear
 				googleMap.setOnCameraChangeListener(busListener);
 			}
 		});

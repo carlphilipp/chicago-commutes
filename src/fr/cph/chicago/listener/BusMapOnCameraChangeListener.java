@@ -48,7 +48,7 @@ public class BusMapOnCameraChangeListener implements OnCameraChangeListener {
 		this.bitmap1 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 9, icon.getHeight() / 9, false);
 		this.bitmap2 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 5, icon.getHeight() / 5, false);
 		this.bitmap3 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 3, icon.getHeight() / 3, false);
-		this.setCurrentBitmap(bitmap1);
+		this.setCurrentBitmap(bitmap2);
 		this.busMarkers = new ArrayList<>();
 		this.busStationMarkers = new ArrayList<>();
 	}
@@ -67,20 +67,21 @@ public class BusMapOnCameraChangeListener implements OnCameraChangeListener {
 		if (position.zoom != currentZoom) {
 			float oldZoom = currentZoom;
 			currentZoom = position.zoom;
+
 			if (isIn(currentZoom, 12.9f, 11f) && !isIn(oldZoom, 12.9f, 11f)) {
 				for (final Marker marker : busMarkers) {
 					setCurrentBitmap(bitmap1);
-					marker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap1));
+					//marker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap1));
 				}
 			} else if (isIn(currentZoom, 14.9f, 13f) && !isIn(oldZoom, 14.9f, 13f)) {
 				for (final Marker marker : busMarkers) {
 					setCurrentBitmap(bitmap2);
-					marker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap2));
+					//marker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap2));
 				}
 			} else if (isIn(currentZoom, 21f, 15f) && !isIn(oldZoom, 21f, 15f)) {
 				for (final Marker marker : busMarkers) {
 					setCurrentBitmap(bitmap3);
-					marker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap3));
+					//marker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap3));
 				}
 			}
 			if (isIn(currentZoom, 21f, 16f) && !isIn(oldZoom, 21f, 16f)) {
