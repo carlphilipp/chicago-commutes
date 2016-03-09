@@ -94,13 +94,13 @@ public class Train {
 	}
 
 	public static Position getBestPosition(final List<Train> trains) {
-		Position position = new Position();
+		final Position position = new Position();
 		double maxLatitude = 0.0;
 		double minLatitude = 0.0;
 		double maxLongitude = 0.0;
 		double minLongitude = 0.0;
 		int i = 0;
-		for (Train train : trains) {
+		for (final Train train : trains) {
 			Position temp = train.getPosition();
 			if (i == 0) {
 				maxLatitude = temp.getLatitude();

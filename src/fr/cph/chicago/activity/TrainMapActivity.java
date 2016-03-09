@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p>
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,7 +18,6 @@ package fr.cph.chicago.activity;
 
 import android.app.Activity;
 import android.app.FragmentManager;
-import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -29,12 +28,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
-import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -66,11 +64,9 @@ public class TrainMapActivity extends Activity {
 
 	private ViewGroup viewGroup;
 	private MapFragment mapFragment;
-	private GoogleMap googleMap;
 	private Marker selectedMarker;
-
-	private String line;
 	private Map<Marker, View> views;
+	private String line;
 	private Map<Marker, Boolean> status;
 	private List<Marker> markers;
 	private TrainData trainData;
@@ -78,12 +74,18 @@ public class TrainMapActivity extends Activity {
 
 	private boolean centerMap = true;
 	private boolean refreshingInfoWindow = false;
+	private boolean drawLine = true;
+
+	public TrainMapActivity() {
+		this.views = new HashMap<>();
+	}
 
 	@Override
 	public final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		ChicagoTracker.checkTrainData(this);
 		if (!this.isFinishing()) {
+			MapsInitializer.initialize(getApplicationContext());
 			setContentView(R.layout.activity_map);
 			viewGroup = (ViewGroup) findViewById(android.R.id.content);
 			if (savedInstanceState != null) {
@@ -92,9 +94,13 @@ public class TrainMapActivity extends Activity {
 				line = getIntent().getExtras().getString(getString(R.string.bundle_train_line));
 			}
 
+			// Init data
 			initData();
+
+			// Init toolbar
 			setToolbar();
 
+			// Google analytics
 			Util.trackScreen(getString(R.string.analytics_train_map));
 		}
 	}
@@ -105,7 +111,7 @@ public class TrainMapActivity extends Activity {
 		trainData = dataHolder.getTrainData();
 		markers = new ArrayList<>();
 		status = new HashMap<>();
-		trainListener = new TrainMapOnCameraChangeListener();
+		trainListener = TrainMapOnCameraChangeListener.getInstance();
 	}
 
 	private void setToolbar() {
@@ -136,11 +142,6 @@ public class TrainMapActivity extends Activity {
 	}
 
 	@Override
-	public final void onRestart() {
-		super.onRestart();
-	}
-
-	@Override
 	public final void onStart() {
 		super.onStart();
 		if (mapFragment == null) {
@@ -159,7 +160,6 @@ public class TrainMapActivity extends Activity {
 	public final void onStop() {
 		super.onStop();
 		centerMap = false;
-		googleMap = null;
 	}
 
 	@Override
@@ -168,15 +168,15 @@ public class TrainMapActivity extends Activity {
 		mapFragment.getMapAsync(new OnMapReadyCallback() {
 			@Override
 			public void onMapReady(final GoogleMap googleMap) {
-				TrainMapActivity.this.googleMap = googleMap;
-				googleMap.setInfoWindowAdapter(new InfoWindowAdapter() {
+
+				googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
 					@Override
-					public View getInfoWindow(Marker marker) {
+					public View getInfoWindow(final Marker marker) {
 						return null;
 					}
 
 					@Override
-					public View getInfoContents(Marker marker) {
+					public View getInfoContents(final Marker marker) {
 						if (!"".equals(marker.getSnippet())) {
 							final View view = views.get(marker);
 							if (!refreshingInfoWindow) {
@@ -192,9 +192,9 @@ public class TrainMapActivity extends Activity {
 					}
 				});
 
-				googleMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
+				googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
 					@Override
-					public void onInfoWindowClick(Marker marker) {
+					public void onInfoWindowClick(final Marker marker) {
 						if (!"".equals(marker.getSnippet())) {
 							final View view = views.get(marker);
 							if (!refreshingInfoWindow) {
@@ -238,11 +238,10 @@ public class TrainMapActivity extends Activity {
 		refreshingInfoWindow = false;
 	}
 
-	public void centerMapOnBus(final List<Train> result) {
+	public void centerMapOnTrain(final List<Train> result) {
 		mapFragment.getMapAsync(new OnMapReadyCallback() {
 			@Override
 			public void onMapReady(final GoogleMap googleMap) {
-				TrainMapActivity.this.googleMap = googleMap;
 				final Position position;
 				final int zoom;
 				if (result.size() == 1) {
@@ -258,48 +257,63 @@ public class TrainMapActivity extends Activity {
 		});
 	}
 
-	public void drawTrains(final List<Train> trains, final List<Position> positions) {
-		if (googleMap != null) {
-			if (views != null) {
-				views.clear();
+	public void drawTrains(final List<Train> trains) {
+		mapFragment.getMapAsync(new OnMapReadyCallback() {
+			@Override
+			public void onMapReady(final GoogleMap googleMap) {
+				if (views == null) {
+					views = new HashMap<>();
+				} else {
+					views.clear();
+				}
+				for (final Marker marker : markers) {
+					marker.remove();
+				}
+				markers.clear();
+				final BitmapDescriptor bitmapDescr = trainListener.getCurrentBitmapDescriptor();
+				for (final Train train : trains) {
+					final LatLng point = new LatLng(train.getPosition().getLatitude(), train.getPosition().getLongitude());
+					final String title = "To " + train.getDestName();
+					final String snippet = Integer.toString(train.getRouteNumber());
+
+					final Marker marker = googleMap
+							.addMarker(new MarkerOptions().position(point).title(title).snippet(snippet).icon(bitmapDescr).anchor(0.5f, 0.5f).rotation(train.getHeading()).flat(true));
+					markers.add(marker);
+
+					final View view = TrainMapActivity.this.getLayoutInflater().inflate(R.layout.marker_train, viewGroup, false);
+					final TextView title2 = (TextView) view.findViewById(R.id.title);
+					title2.setText(title);
+
+					final TextView color = (TextView) view.findViewById(R.id.route_color_value);
+					color.setBackgroundColor(TrainLine.fromXmlString(TrainMapActivity.this.line).getColor());
+
+					views.put(marker, view);
+				}
+
+				// TODO Reactivate to see if when we zoom the bug of the info windows disappear
+				//trainListener.setTrainMarkers(markers);
+
+				googleMap.setOnCameraChangeListener(trainListener);
 			}
-			views = new HashMap<>();
-			for (final Marker marker : markers) {
-				marker.remove();
-			}
-			markers.clear();
-			final Bitmap bitmap = trainListener.getCurrentBitmap();
-			for (final Train train : trains) {
-				final LatLng point = new LatLng(train.getPosition().getLatitude(), train.getPosition().getLongitude());
-				final String title = "To " + train.getDestName();
-				final String snippet = String.valueOf(train.getRouteNumber());
+		});
+	}
 
-				final Marker marker = googleMap.addMarker(
-						new MarkerOptions().position(point).title(title).snippet(snippet).icon(BitmapDescriptorFactory.fromBitmap(bitmap)).anchor(0.5f, 0.5f).rotation(train.getHeading()).flat(true));
-				markers.add(marker);
-
-				final View view = this.getLayoutInflater().inflate(R.layout.marker_train, viewGroup, false);
-				final TextView title2 = (TextView) view.findViewById(R.id.title);
-				title2.setText(title);
-
-				final TextView color = (TextView) view.findViewById(R.id.route_color_value);
-				color.setBackgroundColor(TrainLine.fromXmlString(TrainMapActivity.this.line).getColor());
-
-				views.put(marker, view);
-			}
-
-			trainListener.setTrainMarkers(markers);
-
-			googleMap.setOnCameraChangeListener(trainListener);
-
-			final PolylineOptions poly = new PolylineOptions();
-			poly.width(7f);
-			poly.geodesic(true).color(TrainLine.fromXmlString(this.line).getColor());
-			for (final Position position : positions) {
-				final LatLng point = new LatLng(position.getLatitude(), position.getLongitude());
-				poly.add(point);
-			}
-			googleMap.addPolyline(poly);
+	public void drawLine(final List<Position> positions) {
+		if (drawLine) {
+			mapFragment.getMapAsync(new OnMapReadyCallback() {
+				@Override
+				public void onMapReady(final GoogleMap googleMap) {
+					final PolylineOptions poly = new PolylineOptions();
+					poly.width(7f);
+					poly.geodesic(true).color(TrainLine.fromXmlString(TrainMapActivity.this.line).getColor());
+					for (final Position position : positions) {
+						final LatLng point = new LatLng(position.getLatitude(), position.getLongitude());
+						poly.add(point);
+					}
+					googleMap.addPolyline(poly);
+				}
+			});
+			drawLine = false;
 		}
 	}
 }

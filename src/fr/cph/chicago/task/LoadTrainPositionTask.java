@@ -69,10 +69,11 @@ public class LoadTrainPositionTask extends AsyncTask<Boolean, Void, List<Train>>
 	@Override
 	protected final void onPostExecute(final List<Train> trains) {
 		if (trains != null) {
-			activity.drawTrains(trains, positions);
+			activity.drawTrains(trains);
+			activity.drawLine(positions);
 			if (trains.size() != 0) {
 				if (centerMap) {
-					activity.centerMapOnBus(trains);
+					activity.centerMapOnTrain(trains);
 				}
 			} else {
 				Toast.makeText(activity, "No trains found!", Toast.LENGTH_LONG).show();
