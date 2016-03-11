@@ -103,6 +103,7 @@ public class StationActivity extends Activity {
 	private Station station;
 	private Map<String, Integer> ids;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected final void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -216,6 +217,7 @@ public class StationActivity extends Activity {
 					}
 				});
 				checkBox.setOnClickListener(new View.OnClickListener() {
+					@SuppressWarnings("unchecked")
 					@Override
 					public void onClick(final View v) {
 						// Update timing
@@ -258,6 +260,7 @@ public class StationActivity extends Activity {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void setToolBar(final TrainLine randomTrainLine) {
 		final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		toolbar.inflateMenu(R.menu.main);
@@ -314,7 +317,7 @@ public class StationActivity extends Activity {
 	private boolean isFavorite() {
 		final List<Integer> favorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
 		for (final Integer favorite : favorites) {
-			if (favorite.intValue() == stationId) {
+			if (favorite == stationId) {
 				return true;
 			}
 		}
