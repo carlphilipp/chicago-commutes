@@ -18,33 +18,24 @@ package fr.cph.chicago.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.SparseArray;
 import android.widget.Toast;
-import fr.cph.chicago.ChicagoTracker;
-import fr.cph.chicago.R;
-import fr.cph.chicago.data.BusData;
-import fr.cph.chicago.data.DataHolder;
-import fr.cph.chicago.data.Preferences;
-import fr.cph.chicago.data.TrainData;
-import fr.cph.chicago.entity.BikeStation;
-import fr.cph.chicago.entity.BusArrival;
-import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.exception.ParserException;
-import fr.cph.chicago.exception.TrackerException;
-import fr.cph.chicago.task.GlobalConnectTask;
-import fr.cph.chicago.util.Util;
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
-import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
+import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.R;
+import fr.cph.chicago.data.DataHolder;
+import fr.cph.chicago.entity.BikeStation;
+import fr.cph.chicago.entity.BusArrival;
+import fr.cph.chicago.entity.TrainArrival;
+import fr.cph.chicago.exception.ParserException;
+import fr.cph.chicago.exception.TrackerException;
+import fr.cph.chicago.task.LoadLocalDataTask;
+import fr.cph.chicago.util.Util;
 
 /**
  * This class represents the base activity of the application It will load the loading screen and/or the main
@@ -55,112 +46,75 @@ import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
  */
 public class BaseActivity extends Activity {
 
-	private static final String TAG = BaseActivity.class.getSimpleName();
+    private static final String TAG = BaseActivity.class.getSimpleName();
 
-	@Override
-	protected final void onCreate(final Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.loading);
-		new LoadLocalData().execute();
-	}
+    @Override
+    protected final void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.loading);
+        new LoadLocalDataTask(this).execute();
+    }
 
-	/**
-	 * Load Bus and train data into DataHolder. The data are load in a sequence mode. It means that if one of
-	 * the url contacted does not response, we will still process the other data, and won't throw any
-	 * exception
-	 *
-	 * @author Carl-Philipp Harmant
-	 */
-	private class LoadLocalData extends AsyncTask<Void, String, Void> {
 
-		private BusData busData;
-		private TrainData trainData;
+    /**
+     * Display error. Set train and bus data to null before running the error activity
+     *
+     * @param exceptionToBeThrown the exception that has been thrown
+     */
+    public void displayError(final TrackerException exceptionToBeThrown) {
+        DataHolder.getInstance().setTrainData(null);
+        DataHolder.getInstance().setBusData(null);
+        ChicagoTracker.displayError(this, exceptionToBeThrown);
+    }
 
-		@Override
-		protected final Void doInBackground(final Void... params) {
-			// Load local CSV
-			trainData = TrainData.getInstance();
-			trainData.read();
+    /**
+     * Connect to CTA API and get arrivals trains and buses from favorites
+     *
+     * @throws ParserException the exception
+     */
+    public void loadFavorites() throws ParserException {
+        Util.loadFavorites(this, BaseActivity.class, this);
+        trackWithGoogleAnalytics();
+    }
 
-			busData = BusData.getInstance();
-			busData.readBusStops();
-			return null;
-		}
+    /**
+     * Called via reflection from CtaConnectTask. It load arrivals data into ChicagoTracker object. Update
+     * last update time. Start main activity
+     *
+     * @param trainArrivals list of train arrivals
+     * @param busArrivals   list of bus arrivals
+     */
+    public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals, final List<BikeStation> bikeStations, final Boolean trainBoolean,
+                                 final Boolean busBoolean, final Boolean bikeBoolean, final Boolean networkAvailable) {
+        if (!networkAvailable) {
+            Toast.makeText(this, "No network connection detected!", Toast.LENGTH_SHORT).show();
+        }
+        ChicagoTracker.modifyLastUpdate(Calendar.getInstance().getTime());
+        startMainActivity(trainArrivals, busArrivals);
+    }
 
-		@Override
-		protected final void onPostExecute(final Void result) {
-			// Put data into data holder
-			final DataHolder dataHolder = DataHolder.getInstance();
-			dataHolder.setBusData(busData);
-			dataHolder.setTrainData(trainData);
-			try {
-				// Load favorites data
-				loadFavorites();
-			} catch (final ParserException e) {
-				displayError(e);
-			}
-		}
-	}
+    /**
+     * Finish current activity and start main activity with custom transition
+     *
+     * @param trainArrivals the train arrivals
+     * @param busArrivals   the bus arrivals
+     */
+    private void startMainActivity(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals) {
+        if (!isFinishing()) {
+            final Intent intent = new Intent(this, MainActivity.class);
+            final Bundle bundle = new Bundle();
+            bundle.putParcelableArrayList(getString(R.string.bundle_bus_arrivals), (ArrayList<BusArrival>) busArrivals);
+            bundle.putSparseParcelableArray(getString(R.string.bundle_train_arrivals), trainArrivals);
+            intent.putExtras(bundle);
 
-	/**
-	 * Called via reflection from CtaConnectTask. It load arrivals data into ChicagoTracker object. Update
-	 * last update time. Start main activity
-	 *
-	 * @param trainArrivals list of train arrivals
-	 * @param busArrivals   list of bus arrivals
-	 */
-	public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals, final List<BikeStation> bikeStations, final Boolean trainBoolean,
-			final Boolean busBoolean, final Boolean bikeBoolean, final Boolean networkAvailable) {
-		if (!networkAvailable) {
-			Toast.makeText(this, "No network connection detected!", Toast.LENGTH_SHORT).show();
-		}
-		ChicagoTracker.modifyLastUpdate(Calendar.getInstance().getTime());
-		startMainActivity(trainArrivals, busArrivals);
-	}
+            finish();
+            startActivity(intent);
+        }
+    }
 
-	/**
-	 * Finish current activity and start main activity with custom transition
-	 *
-	 * @param trainArrivals the train arrivals
-	 * @param busArrivals   the bus arrivals
-	 */
-	private void startMainActivity(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals) {
-		if (!isFinishing()) {
-			final Intent intent = new Intent(this, MainActivity.class);
-			final Bundle bundle = new Bundle();
-			bundle.putParcelableArrayList(getString(R.string.bundle_bus_arrivals), (ArrayList<BusArrival>) busArrivals);
-			bundle.putSparseParcelableArray(getString(R.string.bundle_train_arrivals), trainArrivals);
-			intent.putExtras(bundle);
-
-			finish();
-			startActivity(intent);
-		}
-	}
-
-	/**
-	 * Display error. Set train and bus data to null before running the error activity
-	 *
-	 * @param exceptionToBeThrown the exception that has been thrown
-	 */
-	private void displayError(final TrackerException exceptionToBeThrown) {
-		DataHolder.getInstance().setTrainData(null);
-		DataHolder.getInstance().setBusData(null);
-		ChicagoTracker.displayError(this, exceptionToBeThrown);
-	}
-
-	/**
-	 * Connect to CTA API and get arrivals trains and buses from favorites
-	 *
-	 * @throws ParserException the exception
-	 */
-	private void loadFavorites() throws ParserException {
-		Util.loadFavorites(this, BaseActivity.class, this);
-		trackWithGoogleAnalytics();
-	}
-
-	private void trackWithGoogleAnalytics() {
-		Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
-		Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
-	}
+    private void trackWithGoogleAnalytics() {
+        Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
+        Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
+    }
 
 }
