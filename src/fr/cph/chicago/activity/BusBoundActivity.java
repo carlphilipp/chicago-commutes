@@ -16,27 +16,19 @@
 
 package fr.cph.chicago.activity;
 
-import android.Manifest;
 import android.app.ListActivity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.location.Location;
-import android.location.LocationListener;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.GoogleMapOptions;
@@ -48,32 +40,22 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.adapter.BusBoundAdapter;
-import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.entity.BusPattern;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.PatternPoint;
-import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.exception.ConnectException;
-import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.fragment.GoogleMapAbility;
 import fr.cph.chicago.task.BusBoundAsyncTask;
+import fr.cph.chicago.task.LoadBusPatternTask;
 import fr.cph.chicago.util.Util;
-import fr.cph.chicago.xml.XmlParser;
-
-import static fr.cph.chicago.connection.CtaRequestType.BUS_PATTERN;
 
 /**
  * Activity that represents the bus bound activity
@@ -82,8 +64,6 @@ import static fr.cph.chicago.connection.CtaRequestType.BUS_PATTERN;
  * @version 1
  */
 public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
-
-    private static final String TAG = BusBoundActivity.class.getSimpleName();
 
     private MapFragment mapFragment;
     private GoogleMap googleMap;
@@ -208,7 +188,7 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
                     googleMap.getUiSettings().setMyLocationButtonEnabled(false);
                     googleMap.getUiSettings().setZoomControlsEnabled(false);
                     if (Util.isNetworkAvailable()) {
-                        new LoadPattern().execute();
+                        new LoadBusPatternTask(BusBoundActivity.this, mapFragment, busRouteId, boundTitle).execute();
                     } else {
                         Toast.makeText(BusBoundActivity.this, "No network connection detected!", Toast.LENGTH_SHORT).show();
                     }
@@ -244,84 +224,84 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
         this.googleMap = googleMap;
     }
 
-    private class LoadPattern extends AsyncTask<Void, Void, BusPattern> implements LocationListener {
+//    private class LoadPattern extends AsyncTask<Void, Void, BusPattern> implements LocationListener {
+//
+//        private BusPattern busPattern;
+//
+//        @Override
+//        protected final BusPattern doInBackground(final Void... params) {
+//            final CtaConnect connect = CtaConnect.getInstance();
+//            final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
+//            connectParam.put(getString(R.string.request_rt), busRouteId);
+//            final String boundIgnoreCase = boundTitle.toLowerCase(Locale.US);
+//            try {
+//                final InputStream content = connect.connect(BUS_PATTERN, connectParam);
+//                final XmlParser xml = XmlParser.getInstance();
+//                final List<BusPattern> patterns = xml.parsePatterns(content);
+//                for (final BusPattern pattern : patterns) {
+//                    final String directionIgnoreCase = pattern.getDirection().toLowerCase(Locale.US);
+//                    if (pattern.getDirection().equals(boundTitle) || boundIgnoreCase.contains(directionIgnoreCase)) {
+//                        this.busPattern = pattern;
+//                        break;
+//                    }
+//                }
+//            } catch (final ConnectException | ParserException e) {
+//                Log.e(TAG, e.getMessage(), e);
+//            }
+//            Util.trackAction(BusBoundActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_pattern, 0);
+//            return this.busPattern;
+//        }
+//
+//        @Override
+//        protected final void onPostExecute(final BusPattern result) {
+//            if (result != null) {
+//                final int center = result.getPoints().size() / 2;
+//                final Position position = result.getPoints().get(center).getPosition();
+//                mapFragment.getMapAsync(new OnMapReadyCallback() {
+//                    @Override
+//                    public void onMapReady(final GoogleMap googleMap) {
+//                        BusBoundActivity.this.googleMap = googleMap;
+//                        if (ActivityCompat.checkSelfPermission(BusBoundActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+//                                != PackageManager.PERMISSION_GRANTED
+//                                && ActivityCompat.checkSelfPermission(BusBoundActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
+//                                != PackageManager.PERMISSION_GRANTED) {
+//                            ActivityCompat.requestPermissions(BusBoundActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+//                            return;
+//                        }
+//                        googleMap.setMyLocationEnabled(true);
+//                        if (position != null) {
+//                            final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
+//                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
+//                            googleMap.animateCamera(CameraUpdateFactory.zoomTo(9), 500, null);
+//                        } else {
+//                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Util.CHICAGO, 10));
+//                        }
+//                    }
+//                });
+//                drawPattern(result);
+//            } else {
+//                Toast.makeText(BusBoundActivity.this, "Sorry, could not load the path!", Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//
+//        @Override
+//        public final void onLocationChanged(final Location location) {
+//        }
+//
+//        @Override
+//        public final void onProviderDisabled(final String provider) {
+//        }
+//
+//        @Override
+//        public final void onProviderEnabled(final String provider) {
+//        }
+//
+//        @Override
+//        public final void onStatusChanged(final String provider, final int status, final Bundle extras) {
+//        }
+//    }
 
-        private BusPattern busPattern;
-
-        @Override
-        protected final BusPattern doInBackground(final Void... params) {
-            final CtaConnect connect = CtaConnect.getInstance();
-            final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
-            connectParam.put(getString(R.string.request_rt), busRouteId);
-            final String boundIgnoreCase = boundTitle.toLowerCase(Locale.US);
-            try {
-                final InputStream content = connect.connect(BUS_PATTERN, connectParam);
-                final XmlParser xml = XmlParser.getInstance();
-                final List<BusPattern> patterns = xml.parsePatterns(content);
-                for (final BusPattern pattern : patterns) {
-                    final String directionIgnoreCase = pattern.getDirection().toLowerCase(Locale.US);
-                    if (pattern.getDirection().equals(boundTitle) || boundIgnoreCase.contains(directionIgnoreCase)) {
-                        this.busPattern = pattern;
-                        break;
-                    }
-                }
-            } catch (final ConnectException | ParserException e) {
-                Log.e(TAG, e.getMessage(), e);
-            }
-            Util.trackAction(BusBoundActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_pattern, 0);
-            return this.busPattern;
-        }
-
-        @Override
-        protected final void onPostExecute(final BusPattern result) {
-            if (result != null) {
-                final int center = result.getPoints().size() / 2;
-                final Position position = result.getPoints().get(center).getPosition();
-                mapFragment.getMapAsync(new OnMapReadyCallback() {
-                    @Override
-                    public void onMapReady(final GoogleMap googleMap) {
-                        BusBoundActivity.this.googleMap = googleMap;
-                        if (ActivityCompat.checkSelfPermission(BusBoundActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
-                                != PackageManager.PERMISSION_GRANTED
-                                && ActivityCompat.checkSelfPermission(BusBoundActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                                != PackageManager.PERMISSION_GRANTED) {
-                            ActivityCompat.requestPermissions(BusBoundActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-                            return;
-                        }
-                        googleMap.setMyLocationEnabled(true);
-                        if (position != null) {
-                            final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
-                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
-                            googleMap.animateCamera(CameraUpdateFactory.zoomTo(9), 500, null);
-                        } else {
-                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Util.CHICAGO, 10));
-                        }
-                    }
-                });
-                drawPattern(result);
-            } else {
-                Toast.makeText(BusBoundActivity.this, "Sorry, could not load the path!", Toast.LENGTH_SHORT).show();
-            }
-        }
-
-        @Override
-        public final void onLocationChanged(final Location location) {
-        }
-
-        @Override
-        public final void onProviderDisabled(final String provider) {
-        }
-
-        @Override
-        public final void onProviderEnabled(final String provider) {
-        }
-
-        @Override
-        public final void onStatusChanged(final String provider, final int status, final Bundle extras) {
-        }
-    }
-
-    private void drawPattern(final BusPattern pattern) {
+    public void drawPattern(final BusPattern pattern) {
         if (googleMap != null) {
             final List<Marker> markers = new ArrayList<>();
             final PolylineOptions poly = new PolylineOptions();
