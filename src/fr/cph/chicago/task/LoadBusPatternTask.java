@@ -2,10 +2,7 @@ package fr.cph.chicago.task;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -35,7 +32,7 @@ import fr.cph.chicago.xml.XmlParser;
 
 import static fr.cph.chicago.connection.CtaRequestType.BUS_PATTERN;
 
-public class LoadBusPatternTask extends AsyncTask<Void, Void, BusPattern> implements LocationListener {
+public class LoadBusPatternTask extends AsyncTask<Void, Void, BusPattern> {
 
     private static final String TAG = LoadBusPatternTask.class.getSimpleName();
 
@@ -43,13 +40,13 @@ public class LoadBusPatternTask extends AsyncTask<Void, Void, BusPattern> implem
     private MapFragment mapFragment;
     private BusPattern busPattern;
     private String busRouteId;
-    private String boundTitle;
+    private String bound;
 
-    public LoadBusPatternTask(final BusBoundActivity activity, final MapFragment mapFragment, final String busRouteId, final String boundTitle) {
+    public LoadBusPatternTask(final BusBoundActivity activity, final MapFragment mapFragment, final String busRouteId, final String bound) {
         this.activity = activity;
         this.mapFragment = mapFragment;
         this.busRouteId = busRouteId;
-        this.boundTitle =boundTitle;
+        this.bound = bound;
     }
 
     @Override
@@ -57,14 +54,14 @@ public class LoadBusPatternTask extends AsyncTask<Void, Void, BusPattern> implem
         final CtaConnect connect = CtaConnect.getInstance();
         final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
         connectParam.put(activity.getString(R.string.request_rt), busRouteId);
-        final String boundIgnoreCase = boundTitle.toLowerCase(Locale.US);
+        final String boundIgnoreCase = bound.toLowerCase(Locale.US);
         try {
             final InputStream content = connect.connect(BUS_PATTERN, connectParam);
             final XmlParser xml = XmlParser.getInstance();
             final List<BusPattern> patterns = xml.parsePatterns(content);
             for (final BusPattern pattern : patterns) {
                 final String directionIgnoreCase = pattern.getDirection().toLowerCase(Locale.US);
-                if (pattern.getDirection().equals(boundTitle) || boundIgnoreCase.contains(directionIgnoreCase)) {
+                if (pattern.getDirection().equals(bound) || boundIgnoreCase.contains(directionIgnoreCase)) {
                     this.busPattern = pattern;
                     break;
                 }
@@ -105,21 +102,5 @@ public class LoadBusPatternTask extends AsyncTask<Void, Void, BusPattern> implem
         } else {
             Toast.makeText(activity, "Sorry, could not load the path!", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    @Override
-    public final void onLocationChanged(final Location location) {
-    }
-
-    @Override
-    public final void onProviderDisabled(final String provider) {
-    }
-
-    @Override
-    public final void onProviderEnabled(final String provider) {
-    }
-
-    @Override
-    public final void onStatusChanged(final String provider, final int status, final Bundle extras) {
     }
 }
