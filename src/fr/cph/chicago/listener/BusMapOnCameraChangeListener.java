@@ -18,6 +18,8 @@ package fr.cph.chicago.listener;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
+
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -42,6 +44,7 @@ public class BusMapOnCameraChangeListener implements OnCameraChangeListener {
 	private Bitmap currentBitmap;
 	private List<Marker> busMarkers;
 	private List<Marker> busStationMarkers;
+    private float currentZoom = -1;
 
 	public BusMapOnCameraChangeListener() {
 		final Bitmap icon = BitmapFactory.decodeResource(ChicagoTracker.getContext().getResources(), R.drawable.bus);
@@ -63,7 +66,6 @@ public class BusMapOnCameraChangeListener implements OnCameraChangeListener {
 
 	@Override
 	public void onCameraChange(final CameraPosition position) {
-		float currentZoom = -1;
 		if (position.zoom != currentZoom) {
 			float oldZoom = currentZoom;
 			currentZoom = position.zoom;

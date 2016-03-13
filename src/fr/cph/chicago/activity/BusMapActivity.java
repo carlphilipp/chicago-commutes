@@ -337,7 +337,6 @@ public class BusMapActivity extends Activity {
                 int j = 0;
                 final BitmapDescriptor red = BitmapDescriptorFactory.defaultMarker();
                 final BitmapDescriptor blue = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
-                MarkerOptions options;
                 for (final BusPattern pattern : patterns) {
                     final PolylineOptions poly = new PolylineOptions();
                     if (j == 0) {
@@ -351,8 +350,7 @@ public class BusMapActivity extends Activity {
                     for (final PatternPoint patternPoint : pattern.getPoints()) {
                         final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
                         poly.add(point);
-                        //if (patternPoint.getStopId() != null) {
-                        options = new MarkerOptions();
+                        final MarkerOptions options = new MarkerOptions();
                         options.position(point).title(patternPoint.getStopName() + " (" + pattern.getDirection() + ")").snippet("");
                         if (j == 0) {
                             options.icon(red);
@@ -363,7 +361,6 @@ public class BusMapActivity extends Activity {
                         final Marker marker = googleMap.addMarker(options);
                         busStationMarkers.add(marker);
                         marker.setVisible(false);
-                        //}
                     }
                     googleMap.addPolyline(poly);
                     j++;
