@@ -30,7 +30,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,10 +60,8 @@ import java.util.Map;
 
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
-import fr.cph.chicago.adapter.BusMapSnippetAdapter;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.entity.Bus;
-import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusPattern;
 import fr.cph.chicago.entity.PatternPoint;
@@ -73,12 +70,12 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.listener.BusMapOnCameraChangeListener;
+import fr.cph.chicago.task.LoadBusFollowTask;
 import fr.cph.chicago.task.LoadBusPositionTask;
 import fr.cph.chicago.task.LoadCurrentPositionTask;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.XmlParser;
 
-import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
 import static fr.cph.chicago.connection.CtaRequestType.BUS_DIRECTION;
 import static fr.cph.chicago.connection.CtaRequestType.BUS_PATTERN;
 
@@ -188,7 +185,7 @@ public class BusMapActivity extends Activity {
                             if (!refreshingInfoWindow) {
                                 selectedMarker = marker;
                                 final String busId = marker.getSnippet();
-                                new LoadBusFollow(view, false).execute(busId);
+                                new LoadBusFollowTask(BusMapActivity.this, view, false).execute(busId);
                                 status.put(marker, false);
                             }
                             return view;
@@ -207,7 +204,7 @@ public class BusMapActivity extends Activity {
                                 selectedMarker = marker;
                                 final String runNumber = marker.getSnippet();
                                 final boolean current = status.get(marker);
-                                new LoadBusFollow(view, !current).execute(runNumber);
+                                new LoadBusFollowTask(BusMapActivity.this, view, !current).execute(runNumber);
                                 status.put(marker, !current);
                             }
                         }
@@ -271,7 +268,7 @@ public class BusMapActivity extends Activity {
         });
     }
 
-    private void refreshInfoWindow() {
+    public void refreshInfoWindow() {
         if (selectedMarker == null) {
             return;
         }
@@ -425,58 +422,6 @@ public class BusMapActivity extends Activity {
             } else {
                 Toast.makeText(BusMapActivity.this, "Sorry, could not load the path!", Toast.LENGTH_SHORT).show();
             }
-        }
-    }
-
-    private class LoadBusFollow extends AsyncTask<String, Void, List<BusArrival>> {
-
-        private View view;
-        private boolean loadAll;
-
-        public LoadBusFollow(final View view, final boolean loadAll) {
-            this.view = view;
-            this.loadAll = loadAll;
-        }
-
-        @Override
-        protected List<BusArrival> doInBackground(final String... params) {
-            final String busId = params[0];
-            List<BusArrival> arrivals = new ArrayList<>();
-            try {
-                CtaConnect connect = CtaConnect.getInstance();
-                MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
-                connectParam.put("vid", busId);
-                InputStream content = connect.connect(BUS_ARRIVALS, connectParam);
-                XmlParser xml = XmlParser.getInstance();
-                arrivals = xml.parseBusArrivals(content);
-            } catch (final ConnectException | ParserException e) {
-                Log.e(TAG, e.getMessage(), e);
-            }
-            Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
-            if (!loadAll && arrivals.size() > 7) {
-                arrivals = arrivals.subList(0, 6);
-                final BusArrival arrival = new BusArrival();
-                arrival.setStopName("Display all results");
-                arrival.setIsDly(false);
-                arrivals.add(arrival);
-            }
-            return arrivals;
-        }
-
-        @Override
-        protected final void onPostExecute(final List<BusArrival> result) {
-            final ListView arrivals = (ListView) view.findViewById(R.id.arrivals);
-            final TextView error = (TextView) view.findViewById(R.id.error);
-            if (result.size() != 0) {
-                final BusMapSnippetAdapter ada = new BusMapSnippetAdapter(BusMapActivity.this, result);
-                arrivals.setAdapter(ada);
-                arrivals.setVisibility(ListView.VISIBLE);
-                error.setVisibility(TextView.GONE);
-            } else {
-                arrivals.setVisibility(ListView.GONE);
-                error.setVisibility(TextView.VISIBLE);
-            }
-            refreshInfoWindow();
         }
     }
 }
