@@ -1,5 +1,6 @@
 package fr.cph.chicago.task;
 
+import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -22,17 +23,16 @@ import fr.cph.chicago.util.Util;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+// TODO do the update of image and text in the activity. This class should only do the call
 public final class DisplayGoogleStreetPictureTask extends AsyncTask<Double, Void, Drawable> {
 
     private static final String TAG = DisplayGoogleStreetPictureTask.class.getSimpleName();
 
-    private BikeStationActivity activity;
+    private Activity activity;
     private ImageView streetViewImage;
     private TextView streetViewText;
-    private double latitude;
-    private double longitude;
 
-    public DisplayGoogleStreetPictureTask(final BikeStationActivity activity, final ImageView streetViewImage, final TextView streetViewText) {
+    public DisplayGoogleStreetPictureTask(final Activity activity, final ImageView streetViewImage, final TextView streetViewText) {
         this.activity = activity;
         this.streetViewImage = streetViewImage;
         this.streetViewText = streetViewText;
@@ -42,8 +42,8 @@ public final class DisplayGoogleStreetPictureTask extends AsyncTask<Double, Void
     protected final Drawable doInBackground(final Double... params) {
         try {
             final GStreetViewConnect connect = GStreetViewConnect.getInstance();
-            latitude = params[0];
-            longitude = params[1];
+            double latitude = params[0];
+            double longitude = params[1];
             Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_google, R.string.analytics_action_get_google_map_street_view, 0);
             return connect.connect(latitude, longitude);
         } catch (IOException e) {
