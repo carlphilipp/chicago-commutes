@@ -61,6 +61,7 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.listener.BusMapOnCameraChangeListener;
+import fr.cph.chicago.task.LoadBusPositionTask;
 import fr.cph.chicago.task.LoadCurrentPositionTask;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.XmlParser;
@@ -212,7 +213,7 @@ public class BusMapActivity extends Activity {
 				});
 				if (Util.isNetworkAvailable()) {
 					new LoadCurrentPositionTask(BusMapActivity.this, mapFragment).execute();
-					new LoadBusPosition().execute(centerMap, !loadPattern);
+					new LoadBusPositionTask(BusMapActivity.this, busId, busRouteId).execute(centerMap, !loadPattern);
 					if (loadPattern) {
 						new LoadPattern().execute();
 					}
@@ -247,7 +248,7 @@ public class BusMapActivity extends Activity {
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
 				new LoadCurrentPositionTask(BusMapActivity.this, mapFragment).execute();
-				new LoadBusPosition().execute(false, true);
+				new LoadBusPositionTask(BusMapActivity.this, busId, busRouteId).execute(false, true);
 				return false;
 			}
 		}));
@@ -277,7 +278,7 @@ public class BusMapActivity extends Activity {
 		refreshingInfoWindow = false;
 	}
 
-	private void centerMapOnBus(final List<Bus> result) {
+    public void centerMapOnBus(final List<Bus> result) {
 		mapFragment.getMapAsync(new OnMapReadyCallback() {
 			@Override
 			public void onMapReady(final GoogleMap googleMap) {
@@ -296,7 +297,7 @@ public class BusMapActivity extends Activity {
 		});
 	}
 
-	private void drawBuses(final List<Bus> buses) {
+	public void drawBuses(final List<Bus> buses) {
 		mapFragment.getMapAsync(new OnMapReadyCallback() {
 			@Override
 			public void onMapReady(final GoogleMap googleMap) {
@@ -373,50 +374,50 @@ public class BusMapActivity extends Activity {
 		});
 	}
 
-	private class LoadBusPosition extends AsyncTask<Boolean, Void, List<Bus>> {
-		/**
-		 * Allow or not centering the map
-		 **/
-		private boolean centerMap;
-
-		@Override
-		protected List<Bus> doInBackground(final Boolean... params) {
-			centerMap = params[0];
-			List<Bus> buses = null;
-			final CtaConnect connect = CtaConnect.getInstance();
-			final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
-			if (busId != 0) {
-				connectParam.put("vid", String.valueOf(busId));
-			} else {
-				connectParam.put(getString(R.string.request_rt), busRouteId);
-			}
-			try {
-				final InputStream content = connect.connect(BUS_VEHICLES, connectParam);
-				final XmlParser xml = XmlParser.getInstance();
-				buses = xml.parseVehicles(content);
-			} catch (final ConnectException | ParserException e) {
-				Log.e(TAG, e.getMessage(), e);
-			}
-			Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_vehicles, 0);
-			return buses;
-		}
-
-		@Override
-		protected final void onPostExecute(final List<Bus> result) {
-			if (result != null) {
-				drawBuses(result);
-				if (result.size() != 0) {
-					if (centerMap) {
-						centerMapOnBus(result);
-					}
-				} else {
-					Toast.makeText(BusMapActivity.this, "No bus found!", Toast.LENGTH_LONG).show();
-				}
-			} else {
-				Toast.makeText(BusMapActivity.this, "Error while loading data!", Toast.LENGTH_SHORT).show();
-			}
-		}
-	}
+//	private class LoadBusPosition extends AsyncTask<Boolean, Void, List<Bus>> {
+//		/**
+//		 * Allow or not centering the map
+//		 **/
+//		private boolean centerMap;
+//
+//		@Override
+//		protected List<Bus> doInBackground(final Boolean... params) {
+//			centerMap = params[0];
+//			List<Bus> buses = null;
+//			final CtaConnect connect = CtaConnect.getInstance();
+//			final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
+//			if (busId != 0) {
+//				connectParam.put("vid", String.valueOf(busId));
+//			} else {
+//				connectParam.put(getString(R.string.request_rt), busRouteId);
+//			}
+//			try {
+//				final InputStream content = connect.connect(BUS_VEHICLES, connectParam);
+//				final XmlParser xml = XmlParser.getInstance();
+//				buses = xml.parseVehicles(content);
+//			} catch (final ConnectException | ParserException e) {
+//				Log.e(TAG, e.getMessage(), e);
+//			}
+//			Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_vehicles, 0);
+//			return buses;
+//		}
+//
+//		@Override
+//		protected final void onPostExecute(final List<Bus> result) {
+//			if (result != null) {
+//				drawBuses(result);
+//				if (result.size() != 0) {
+//					if (centerMap) {
+//						centerMapOnBus(result);
+//					}
+//				} else {
+//					Toast.makeText(BusMapActivity.this, "No bus found!", Toast.LENGTH_LONG).show();
+//				}
+//			} else {
+//				Toast.makeText(BusMapActivity.this, "Error while loading data!", Toast.LENGTH_SHORT).show();
+//			}
+//		}
+//	}
 
 	private class LoadPattern extends AsyncTask<Void, Void, List<BusPattern>> {
 		/**
