@@ -27,8 +27,8 @@ public class DivvyAsyncTask extends AsyncTask<Void, Void, List<BikeStation>> {
 
     private static final String TAG = DivvyAsyncTask.class.getSimpleName();
 
-    public BikeStationActivity activity;
-    public int bikeStationId;
+    private BikeStationActivity activity;
+    private int bikeStationId;
     private SwipeRefreshLayout swipeRefreshLayout;
 
     public DivvyAsyncTask(final BikeStationActivity activity, final int bikeStationId, final SwipeRefreshLayout swipeRefreshLayout) {
@@ -39,7 +39,7 @@ public class DivvyAsyncTask extends AsyncTask<Void, Void, List<BikeStation>> {
 
     @Override
     protected List<BikeStation> doInBackground(final Void... params) {
-        final List<BikeStation> bikeStations;
+        List<BikeStation> bikeStations = null;
         try {
             final JsonParser json = JsonParser.getInstance();
             final DivvyConnect divvyConnect = DivvyConnect.getInstance();
@@ -48,7 +48,6 @@ public class DivvyAsyncTask extends AsyncTask<Void, Void, List<BikeStation>> {
             Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
             Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
         } catch (final ConnectException | ParserException e) {
-            bikeStations = null;
             activity.runOnUiThread(new Runnable() {
                 public void run() {
                     Toast.makeText(ChicagoTracker.getContext(), "A surprising error has occurred. Try again!", Toast.LENGTH_SHORT).show();

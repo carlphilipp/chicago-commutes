@@ -18,34 +18,28 @@ package fr.cph.chicago.activity;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
-import java.io.IOException;
 import java.util.List;
 
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
-import fr.cph.chicago.connection.GStreetViewConnect;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.listener.GoogleMapDirectionOnClickListener;
 import fr.cph.chicago.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.listener.GoogleStreetOnClickListener;
+import fr.cph.chicago.task.DisplayGoogleStreetPictureTask;
 import fr.cph.chicago.task.DivvyAsyncTask;
 import fr.cph.chicago.util.Util;
 
@@ -77,9 +71,6 @@ public class BikeStationActivity extends Activity {
                 final double latitude = bikeStation.getLatitude();
                 final double longitude = bikeStation.getLongitude();
 
-                // Call google street api to load image
-                new DisplayGoogleStreetPicture().execute(latitude, longitude);
-
                 swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_station_swipe_refresh_layout);
                 swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
@@ -92,6 +83,10 @@ public class BikeStationActivity extends Activity {
 
                 streetViewImage = (ImageView) findViewById(R.id.activity_bike_station_streetview_image);
                 streetViewText = (TextView) findViewById(R.id.activity_bike_station_steetview_text);
+
+                // Call google street api to load image
+                new DisplayGoogleStreetPictureTask(this, streetViewImage, streetViewText).execute(latitude, longitude);
+
                 final ImageView mapImage = (ImageView) findViewById(R.id.activity_map_image);
                 mapImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
                 final ImageView directionImage = (ImageView) findViewById(R.id.activity_map_direction);
@@ -223,47 +218,6 @@ public class BikeStationActivity extends Activity {
     public void refreshStation(final BikeStation station) {
         this.bikeStation = station;
         drawData();
-    }
-
-
-    /**
-     * Display google street view image
-     *
-     * @author Carl-Philipp Harmant
-     * @version 1
-     */
-    private final class DisplayGoogleStreetPicture extends AsyncTask<Double, Void, Drawable> {
-
-        private Double latitude;
-        private Double longitude;
-
-        @Override
-        protected final Drawable doInBackground(final Double... params) {
-            try {
-                final GStreetViewConnect connect = GStreetViewConnect.getInstance();
-                latitude = params[0];
-                longitude = params[1];
-                Util.trackAction(BikeStationActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_google,
-                        R.string.analytics_action_get_google_map_street_view, 0);
-                return connect.connect(latitude, longitude);
-            } catch (IOException e) {
-                Log.e(TAG, "Error while connecting to google street view API", e);
-                return null;
-            }
-        }
-
-        @Override
-        protected final void onPostExecute(final Drawable result) {
-            final int height = (int) getResources().getDimension(R.dimen.activity_station_street_map_height);
-            final LayoutParams layoutParams = (LayoutParams) BikeStationActivity.this.streetViewImage.getLayoutParams();
-            final ViewGroup.LayoutParams params = BikeStationActivity.this.streetViewImage.getLayoutParams();
-            params.height = height;
-            params.width = layoutParams.width;
-
-            BikeStationActivity.this.streetViewImage.setLayoutParams(params);
-            BikeStationActivity.this.streetViewImage.setImageDrawable(result);
-            BikeStationActivity.this.streetViewText.setText(ChicagoTracker.getContext().getString(R.string.station_activity_street_view));
-        }
     }
 
     /**
