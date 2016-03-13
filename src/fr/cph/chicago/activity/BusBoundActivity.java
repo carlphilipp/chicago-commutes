@@ -35,6 +35,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
@@ -46,22 +47,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import fr.cph.chicago.ChicagoTracker;
-import fr.cph.chicago.R;
-import fr.cph.chicago.adapter.BusBoundAdapter;
-import fr.cph.chicago.connection.CtaConnect;
-import fr.cph.chicago.data.DataHolder;
-import fr.cph.chicago.entity.BusPattern;
-import fr.cph.chicago.entity.BusStop;
-import fr.cph.chicago.entity.PatternPoint;
-import fr.cph.chicago.entity.Position;
-import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.exception.ConnectException;
-import fr.cph.chicago.exception.ParserException;
-import fr.cph.chicago.exception.TrackerException;
-import fr.cph.chicago.fragment.GoogleMapAbility;
-import fr.cph.chicago.util.Util;
-import fr.cph.chicago.xml.XmlParser;
+
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.commons.lang3.StringUtils;
@@ -70,6 +56,22 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.R;
+import fr.cph.chicago.adapter.BusBoundAdapter;
+import fr.cph.chicago.connection.CtaConnect;
+import fr.cph.chicago.entity.BusPattern;
+import fr.cph.chicago.entity.BusStop;
+import fr.cph.chicago.entity.PatternPoint;
+import fr.cph.chicago.entity.Position;
+import fr.cph.chicago.entity.enumeration.TrainLine;
+import fr.cph.chicago.exception.ConnectException;
+import fr.cph.chicago.exception.ParserException;
+import fr.cph.chicago.fragment.GoogleMapAbility;
+import fr.cph.chicago.task.BusBoundAsyncTask;
+import fr.cph.chicago.util.Util;
+import fr.cph.chicago.xml.XmlParser;
 
 import static fr.cph.chicago.connection.CtaRequestType.BUS_PATTERN;
 
@@ -81,314 +83,281 @@ import static fr.cph.chicago.connection.CtaRequestType.BUS_PATTERN;
  */
 public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
 
-	private static final String TAG = BusBoundActivity.class.getSimpleName();
+    private static final String TAG = BusBoundActivity.class.getSimpleName();
 
-	private MapFragment mapFragment;
-	private GoogleMap googleMap;
-	private String busRouteId;
-	private String busRouteName;
-	private String bound;
-	private String boundTitle;
-	private BusBoundAdapter busBoundAdapter;
-	private List<BusStop> busStops;
+    private MapFragment mapFragment;
+    private GoogleMap googleMap;
+    private String busRouteId;
+    private String busRouteName;
+    private String bound;
+    private String boundTitle;
+    private BusBoundAdapter busBoundAdapter;
+    private List<BusStop> busStops;
 
-	@Override
-	public final void onCreate(final Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		ChicagoTracker.checkBusData(this);
-		if (!this.isFinishing()) {
-			setContentView(R.layout.activity_bus_bound);
+    @Override
+    public final void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ChicagoTracker.checkBusData(this);
+        if (!this.isFinishing()) {
+            setContentView(R.layout.activity_bus_bound);
 
-			if (busRouteId == null && busRouteName == null && bound == null && boundTitle == null) {
-				busRouteId = getIntent().getExtras().getString(getString(R.string.bundle_bus_route_id));
-				busRouteName = getIntent().getExtras().getString(getString(R.string.bundle_bus_route_name));
-				bound = getIntent().getExtras().getString(getString(R.string.bundle_bus_bound));
-				boundTitle = getIntent().getExtras().getString(getString(R.string.bundle_bus_bound_title));
-			}
-			busBoundAdapter = new BusBoundAdapter(busRouteId);
-			setListAdapter(busBoundAdapter);
-			getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-				@Override
-				public void onItemClick(final AdapterView<?> adapterView, final View view, final int position, final long id) {
-					final BusStop busStop = (BusStop) busBoundAdapter.getItem(position);
-					final Intent intent = new Intent(ChicagoTracker.getContext(), BusActivity.class);
+            if (busRouteId == null && busRouteName == null && bound == null && boundTitle == null) {
+                busRouteId = getIntent().getExtras().getString(getString(R.string.bundle_bus_route_id));
+                busRouteName = getIntent().getExtras().getString(getString(R.string.bundle_bus_route_name));
+                bound = getIntent().getExtras().getString(getString(R.string.bundle_bus_bound));
+                boundTitle = getIntent().getExtras().getString(getString(R.string.bundle_bus_bound_title));
+            }
+            busBoundAdapter = new BusBoundAdapter(busRouteId);
+            setListAdapter(busBoundAdapter);
+            getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(final AdapterView<?> adapterView, final View view, final int position, final long id) {
+                    final BusStop busStop = (BusStop) busBoundAdapter.getItem(position);
+                    final Intent intent = new Intent(ChicagoTracker.getContext(), BusActivity.class);
 
-					final Bundle extras = new Bundle();
-					extras.putInt(getString(R.string.bundle_bus_stop_id), busStop.getId());
-					extras.putString(getString(R.string.bundle_bus_stop_name), busStop.getName());
-					extras.putString(getString(R.string.bundle_bus_route_id), busRouteId);
-					extras.putString(getString(R.string.bundle_bus_route_name), busRouteName);
-					extras.putString(getString(R.string.bundle_bus_bound), bound);
-					extras.putString(getString(R.string.bundle_bus_bound_title), boundTitle);
-					extras.putDouble(getString(R.string.bundle_bus_latitude), busStop.getPosition().getLatitude());
-					extras.putDouble(getString(R.string.bundle_bus_longitude), busStop.getPosition().getLongitude());
+                    final Bundle extras = new Bundle();
+                    extras.putInt(getString(R.string.bundle_bus_stop_id), busStop.getId());
+                    extras.putString(getString(R.string.bundle_bus_stop_name), busStop.getName());
+                    extras.putString(getString(R.string.bundle_bus_route_id), busRouteId);
+                    extras.putString(getString(R.string.bundle_bus_route_name), busRouteName);
+                    extras.putString(getString(R.string.bundle_bus_bound), bound);
+                    extras.putString(getString(R.string.bundle_bus_bound_title), boundTitle);
+                    extras.putDouble(getString(R.string.bundle_bus_latitude), busStop.getPosition().getLatitude());
+                    extras.putDouble(getString(R.string.bundle_bus_longitude), busStop.getPosition().getLongitude());
 
-					intent.putExtras(extras);
-					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-					startActivity(intent);
-				}
-			});
+                    intent.putExtras(extras);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
+            });
 
-			final EditText filter = (EditText) findViewById(R.id.bus_filter);
-			filter.addTextChangedListener(new TextWatcher() {
-				private List<BusStop> busStopsFiltered;
+            final EditText filter = (EditText) findViewById(R.id.bus_filter);
+            filter.addTextChangedListener(new TextWatcher() {
+                private List<BusStop> busStopsFiltered;
 
-				@Override
-				public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
-					busStopsFiltered = new ArrayList<>();
-				}
+                @Override
+                public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
+                    busStopsFiltered = new ArrayList<>();
+                }
 
-				@Override
-				public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
-					if (busStops != null) {
-						for (final BusStop busStop : busStops) {
-							if (StringUtils.containsIgnoreCase(busStop.getName(), s)) {
-								busStopsFiltered.add(busStop);
-							}
-						}
-					}
-				}
+                @Override
+                public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
+                    if (busStops != null) {
+                        for (final BusStop busStop : busStops) {
+                            if (StringUtils.containsIgnoreCase(busStop.getName(), s)) {
+                                busStopsFiltered.add(busStop);
+                            }
+                        }
+                    }
+                }
 
-				@Override
-				public void afterTextChanged(final Editable s) {
-					busBoundAdapter.update(busStopsFiltered);
-					busBoundAdapter.notifyDataSetChanged();
-				}
-			});
+                @Override
+                public void afterTextChanged(final Editable s) {
+                    busBoundAdapter.update(busStopsFiltered);
+                    busBoundAdapter.notifyDataSetChanged();
+                }
+            });
 
-			final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-			Util.setToolbarColor(this, toolbar, TrainLine.NA);
-			toolbar.setTitle(busRouteName + " - " + boundTitle);
+            final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            Util.setToolbarColor(this, toolbar, TrainLine.NA);
+            toolbar.setTitle(busRouteName + " - " + boundTitle);
 
-			toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-			toolbar.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					finish();
-				}
-			});
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+            toolbar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finish();
+                }
+            });
 
-			new BusBoundAsyncTask().execute();
+            new BusBoundAsyncTask(this, busRouteId, bound, busBoundAdapter).execute();
 
-			// Preventing keyboard from moving background when showing up
-			getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-		}
-	}
+            // Preventing keyboard from moving background when showing up
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        }
+    }
 
-	@Override
-	public final void onStart() {
-		super.onStart();
-		if (mapFragment == null) {
-			final android.app.FragmentManager fm = getFragmentManager();
-			final GoogleMapOptions options = new GoogleMapOptions();
-			final CameraPosition camera = new CameraPosition(Util.CHICAGO, 7, 0, 0);
-			options.camera(camera);
-			mapFragment = MapFragment.newInstance(options);
-			mapFragment.setRetainInstance(true);
-			fm.beginTransaction().replace(R.id.map, mapFragment).commit();
-		}
-	}
+    @Override
+    public final void onStart() {
+        super.onStart();
+        if (mapFragment == null) {
+            final android.app.FragmentManager fm = getFragmentManager();
+            final GoogleMapOptions options = new GoogleMapOptions();
+            final CameraPosition camera = new CameraPosition(Util.CHICAGO, 7, 0, 0);
+            options.camera(camera);
+            mapFragment = MapFragment.newInstance(options);
+            mapFragment.setRetainInstance(true);
+            fm.beginTransaction().replace(R.id.map, mapFragment).commit();
+        }
+    }
 
-	@Override
-	public final void onStop() {
-		super.onStop();
-		googleMap = null;
-	}
+    @Override
+    public final void onStop() {
+        super.onStop();
+        googleMap = null;
+    }
 
-	@Override
-	public final void onResume() {
-		super.onResume();
-		if (googleMap == null) {
-			mapFragment.getMapAsync(new OnMapReadyCallback() {
-				@Override
-				public void onMapReady(final GoogleMap googleMap) {
-					BusBoundActivity.this.googleMap = googleMap;
-					googleMap.getUiSettings().setMyLocationButtonEnabled(false);
-					googleMap.getUiSettings().setZoomControlsEnabled(false);
-					if (Util.isNetworkAvailable()) {
-						new LoadPattern().execute();
-					} else {
-						Toast.makeText(BusBoundActivity.this, "No network connection detected!", Toast.LENGTH_SHORT).show();
-					}
-				}
-			});
-		}
-	}
+    @Override
+    public final void onResume() {
+        super.onResume();
+        if (googleMap == null) {
+            mapFragment.getMapAsync(new OnMapReadyCallback() {
+                @Override
+                public void onMapReady(final GoogleMap googleMap) {
+                    BusBoundActivity.this.googleMap = googleMap;
+                    googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+                    googleMap.getUiSettings().setZoomControlsEnabled(false);
+                    if (Util.isNetworkAvailable()) {
+                        new LoadPattern().execute();
+                    } else {
+                        Toast.makeText(BusBoundActivity.this, "No network connection detected!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+    }
 
-	@Override
-	public void onRestoreInstanceState(final Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
-		busRouteId = savedInstanceState.getString(getString(R.string.bundle_bus_route_id));
-		busRouteName = savedInstanceState.getString(getString(R.string.bundle_bus_route_name));
-		bound = savedInstanceState.getString(getString(R.string.bundle_bus_bound));
-		boundTitle = savedInstanceState.getString(getString(R.string.bundle_bus_bound_title));
-	}
+    @Override
+    public void onRestoreInstanceState(final Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        busRouteId = savedInstanceState.getString(getString(R.string.bundle_bus_route_id));
+        busRouteName = savedInstanceState.getString(getString(R.string.bundle_bus_route_name));
+        bound = savedInstanceState.getString(getString(R.string.bundle_bus_bound));
+        boundTitle = savedInstanceState.getString(getString(R.string.bundle_bus_bound_title));
+    }
 
-	@Override
-	public void onSaveInstanceState(final Bundle savedInstanceState) {
-		savedInstanceState.putString(getString(R.string.bundle_bus_route_id), busRouteId);
-		savedInstanceState.putString(getString(R.string.bundle_bus_route_name), busRouteName);
-		savedInstanceState.putString(getString(R.string.bundle_bus_bound), bound);
-		savedInstanceState.putString(getString(R.string.bundle_bus_bound_title), boundTitle);
-		super.onSaveInstanceState(savedInstanceState);
-	}
+    @Override
+    public void onSaveInstanceState(final Bundle savedInstanceState) {
+        savedInstanceState.putString(getString(R.string.bundle_bus_route_id), busRouteId);
+        savedInstanceState.putString(getString(R.string.bundle_bus_route_name), busRouteName);
+        savedInstanceState.putString(getString(R.string.bundle_bus_bound), bound);
+        savedInstanceState.putString(getString(R.string.bundle_bus_bound_title), boundTitle);
+        super.onSaveInstanceState(savedInstanceState);
+    }
 
-	@Override
-	public void setGoogleMap(final GoogleMap googleMap) {
-		this.googleMap = googleMap;
-	}
+    public void setBusStops(final List<BusStop> busStops) {
+        this.busStops = busStops;
+    }
 
-	/**
-	 * Task that connect to API to get the bound of the selected stop
-	 *
-	 * @author Carl-Philipp Harmant
-	 * @version 1
-	 */
-	private class BusBoundAsyncTask extends AsyncTask<Void, Void, List<BusStop>> {
+    @Override
+    public void setGoogleMap(final GoogleMap googleMap) {
+        this.googleMap = googleMap;
+    }
 
-		/**
-		 * The exception that could potentially been thrown during request
-		 **/
-		private TrackerException trackerException;
+    private class LoadPattern extends AsyncTask<Void, Void, BusPattern> implements LocationListener {
 
-		@Override
-		protected final List<BusStop> doInBackground(final Void... params) {
-			List<BusStop> lBuses = null;
-			try {
-				lBuses = DataHolder.getInstance().getBusData().loadBusStop(busRouteId, bound);
-			} catch (final ParserException | ConnectException e) {
-				this.trackerException = e;
-			}
-			Util.trackAction(BusBoundActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_stop, 0);
-			return lBuses;
-		}
+        private BusPattern busPattern;
 
-		@Override
-		protected final void onPostExecute(final List<BusStop> result) {
-			BusBoundActivity.this.busStops = result;
-			if (trackerException == null) {
-				busBoundAdapter.update(result);
-				busBoundAdapter.notifyDataSetChanged();
-			} else {
-				Toast.makeText(ChicagoTracker.getContext(), trackerException.getMessage(), Toast.LENGTH_SHORT).show();
-			}
-		}
-	}
+        @Override
+        protected final BusPattern doInBackground(final Void... params) {
+            final CtaConnect connect = CtaConnect.getInstance();
+            final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
+            connectParam.put(getString(R.string.request_rt), busRouteId);
+            final String boundIgnoreCase = boundTitle.toLowerCase(Locale.US);
+            try {
+                final InputStream content = connect.connect(BUS_PATTERN, connectParam);
+                final XmlParser xml = XmlParser.getInstance();
+                final List<BusPattern> patterns = xml.parsePatterns(content);
+                for (final BusPattern pattern : patterns) {
+                    final String directionIgnoreCase = pattern.getDirection().toLowerCase(Locale.US);
+                    if (pattern.getDirection().equals(boundTitle) || boundIgnoreCase.contains(directionIgnoreCase)) {
+                        this.busPattern = pattern;
+                        break;
+                    }
+                }
+            } catch (final ConnectException | ParserException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+            Util.trackAction(BusBoundActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_pattern, 0);
+            return this.busPattern;
+        }
 
-	private class LoadPattern extends AsyncTask<Void, Void, BusPattern> implements LocationListener {
+        @Override
+        protected final void onPostExecute(final BusPattern result) {
+            if (result != null) {
+                final int center = result.getPoints().size() / 2;
+                final Position position = result.getPoints().get(center).getPosition();
+                mapFragment.getMapAsync(new OnMapReadyCallback() {
+                    @Override
+                    public void onMapReady(final GoogleMap googleMap) {
+                        BusBoundActivity.this.googleMap = googleMap;
+                        if (ActivityCompat.checkSelfPermission(BusBoundActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                                != PackageManager.PERMISSION_GRANTED
+                                && ActivityCompat.checkSelfPermission(BusBoundActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                                != PackageManager.PERMISSION_GRANTED) {
+                            ActivityCompat.requestPermissions(BusBoundActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+                            return;
+                        }
+                        googleMap.setMyLocationEnabled(true);
+                        if (position != null) {
+                            final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
+                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
+                            googleMap.animateCamera(CameraUpdateFactory.zoomTo(9), 500, null);
+                        } else {
+                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Util.CHICAGO, 10));
+                        }
+                    }
+                });
+                drawPattern(result);
+            } else {
+                Toast.makeText(BusBoundActivity.this, "Sorry, could not load the path!", Toast.LENGTH_SHORT).show();
+            }
+        }
 
-		private BusPattern busPattern;
+        @Override
+        public final void onLocationChanged(final Location location) {
+        }
 
-		@Override
-		protected final BusPattern doInBackground(final Void... params) {
-			final CtaConnect connect = CtaConnect.getInstance();
-			final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
-			connectParam.put(getString(R.string.request_rt), busRouteId);
-			final String boundIgnoreCase = boundTitle.toLowerCase(Locale.US);
-			try {
-				final InputStream content = connect.connect(BUS_PATTERN, connectParam);
-				final XmlParser xml = XmlParser.getInstance();
-				final List<BusPattern> patterns = xml.parsePatterns(content);
-				for (final BusPattern pattern : patterns) {
-					final String directionIgnoreCase = pattern.getDirection().toLowerCase(Locale.US);
-					if (pattern.getDirection().equals(boundTitle) || boundIgnoreCase.contains(directionIgnoreCase)) {
-						this.busPattern = pattern;
-						break;
-					}
-				}
-			} catch (final ConnectException | ParserException e) {
-				Log.e(TAG, e.getMessage(), e);
-			}
-			Util.trackAction(BusBoundActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_pattern, 0);
-			return this.busPattern;
-		}
+        @Override
+        public final void onProviderDisabled(final String provider) {
+        }
 
-		@Override
-		protected final void onPostExecute(final BusPattern result) {
-			if (result != null) {
-				final int center = result.getPoints().size() / 2;
-				final Position position = result.getPoints().get(center).getPosition();
-				mapFragment.getMapAsync(new OnMapReadyCallback() {
-					@Override
-					public void onMapReady(final GoogleMap googleMap) {
-						BusBoundActivity.this.googleMap = googleMap;
-						if (ActivityCompat.checkSelfPermission(BusBoundActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
-								!= PackageManager.PERMISSION_GRANTED
-								&& ActivityCompat.checkSelfPermission(BusBoundActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
-								!= PackageManager.PERMISSION_GRANTED) {
-							ActivityCompat.requestPermissions(BusBoundActivity.this, new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
-							return;
-						}
-						googleMap.setMyLocationEnabled(true);
-						if (position != null) {
-							final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
-							googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
-							googleMap.animateCamera(CameraUpdateFactory.zoomTo(9), 500, null);
-						} else {
-							googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Util.CHICAGO, 10));
-						}
-					}
-				});
-				drawPattern(result);
-			} else {
-				Toast.makeText(BusBoundActivity.this, "Sorry, could not load the path!", Toast.LENGTH_SHORT).show();
-			}
-		}
+        @Override
+        public final void onProviderEnabled(final String provider) {
+        }
 
-		@Override
-		public final void onLocationChanged(final Location location) {
-		}
+        @Override
+        public final void onStatusChanged(final String provider, final int status, final Bundle extras) {
+        }
+    }
 
-		@Override
-		public final void onProviderDisabled(final String provider) {
-		}
+    private void drawPattern(final BusPattern pattern) {
+        if (googleMap != null) {
+            final List<Marker> markers = new ArrayList<>();
+            final PolylineOptions poly = new PolylineOptions();
+            poly.geodesic(true).color(Color.BLACK);
+            poly.width(7f);
+            Marker marker;
+            for (final PatternPoint patternPoint : pattern.getPoints()) {
+                final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
+                poly.add(point);
+                //if (patternPoint.getStopId() != null) {
+                marker = googleMap.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName()).snippet(String.valueOf(patternPoint.getSequence())));
+                markers.add(marker);
+                marker.setVisible(false);
+                //}
+            }
+            googleMap.addPolyline(poly);
 
-		@Override
-		public final void onProviderEnabled(final String provider) {
-		}
+            googleMap.setOnCameraChangeListener(new OnCameraChangeListener() {
+                private float currentZoom = -1;
 
-		@Override
-		public final void onStatusChanged(final String provider, final int status, final Bundle extras) {
-		}
-	}
-
-	private void drawPattern(final BusPattern pattern) {
-		if (googleMap != null) {
-			final List<Marker> markers = new ArrayList<>();
-			final PolylineOptions poly = new PolylineOptions();
-			poly.geodesic(true).color(Color.BLACK);
-			poly.width(7f);
-			Marker marker;
-			for (final PatternPoint patternPoint : pattern.getPoints()) {
-				final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
-				poly.add(point);
-				//if (patternPoint.getStopId() != null) {
-					marker = googleMap.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName()).snippet(String.valueOf(patternPoint.getSequence())));
-					markers.add(marker);
-					marker.setVisible(false);
-				//}
-			}
-			googleMap.addPolyline(poly);
-
-			googleMap.setOnCameraChangeListener(new OnCameraChangeListener() {
-				private float currentZoom = -1;
-
-				@Override
-				public void onCameraChange(final CameraPosition pos) {
-					if (pos.zoom != currentZoom) {
-						currentZoom = pos.zoom;
-						if (currentZoom >= 14) {
-							for (Marker marker : markers) {
-								marker.setVisible(true);
-							}
-						} else {
-							for (final Marker marker : markers) {
-								marker.setVisible(false);
-							}
-						}
-					}
-				}
-			});
-		}
-	}
+                @Override
+                public void onCameraChange(final CameraPosition pos) {
+                    if (pos.zoom != currentZoom) {
+                        currentZoom = pos.zoom;
+                        if (currentZoom >= 14) {
+                            for (Marker marker : markers) {
+                                marker.setVisible(true);
+                            }
+                        } else {
+                            for (final Marker marker : markers) {
+                                marker.setVisible(false);
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
 }
