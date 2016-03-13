@@ -79,18 +79,11 @@ public class BaseActivity extends Activity {
 		@Override
 		protected final Void doInBackground(final Void... params) {
 			// Load local CSV
-			// TODO remove all perf logging in the class
-			long startTime = System.currentTimeMillis();
 			trainData = TrainData.getInstance();
 			trainData.read();
-			long stopTime = System.currentTimeMillis();
-			Log.e(TAG, "Load local train data: " + (stopTime - startTime) + " ms");
 
-			startTime = System.currentTimeMillis();
 			busData = BusData.getInstance();
 			busData.readBusStops();
-			stopTime = System.currentTimeMillis();
-			Log.e(TAG, "Load local bus data: " + (stopTime - startTime) + " ms");
 			return null;
 		}
 
@@ -102,10 +95,7 @@ public class BaseActivity extends Activity {
 			dataHolder.setTrainData(trainData);
 			try {
 				// Load favorites data
-				long startTime = System.currentTimeMillis();
 				loadFavorites();
-				long stopTime = System.currentTimeMillis();
-				Log.e(TAG, "Load favorites: " + (stopTime - startTime) + " ms");
 			} catch (final ParserException e) {
 				displayError(e);
 			}

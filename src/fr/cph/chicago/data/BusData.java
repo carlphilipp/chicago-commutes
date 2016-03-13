@@ -96,14 +96,8 @@ public class BusData {
 			final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
 			final CtaConnect connect = CtaConnect.getInstance();
 			final XmlParser xml = XmlParser.getInstance();
-			long startTime = System.currentTimeMillis();
 			final InputStream xmlResult = connect.connect(BUS_ROUTES, params);
-			long stopTime = System.currentTimeMillis();
-			Log.e(TAG, "Load bus route online: " + (stopTime - startTime) + " ms");
-			startTime = System.currentTimeMillis();
 			busRoutes = xml.parseBusRoutes(xmlResult);
-			stopTime = System.currentTimeMillis();
-			Log.e(TAG, "Parse bus route: " + (stopTime - startTime) + " ms");
 		}
 		return busRoutes;
 	}

@@ -303,14 +303,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 			try {
 				final JsonParser json = JsonParser.getInstance();
 				final DivvyConnect divvyConnect = DivvyConnect.getInstance();
-				long startTime = System.currentTimeMillis();
 				final InputStream bikeContent = divvyConnect.connect();
-				long stopTime = System.currentTimeMillis();
-				Log.e(TAG, "Load divvy data online: " + (stopTime - startTime) + " ms");
-				startTime = System.currentTimeMillis();
 				bikeStations = json.parseStations(bikeContent);
-				stopTime = System.currentTimeMillis();
-				Log.e(TAG, "Parse divvy data: " + (stopTime - startTime) + " ms");
 				Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
 				Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
 				publishProgress();
