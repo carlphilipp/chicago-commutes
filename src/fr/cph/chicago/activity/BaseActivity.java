@@ -46,8 +46,6 @@ import fr.cph.chicago.util.Util;
  */
 public class BaseActivity extends Activity {
 
-    private static final String TAG = BaseActivity.class.getSimpleName();
-
     @Override
     protected final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,5 +114,4 @@ public class BaseActivity extends Activity {
         Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
         Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
     }
-
 }
