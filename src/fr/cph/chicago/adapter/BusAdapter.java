@@ -23,6 +23,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.util.List;
+
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
@@ -30,8 +33,6 @@ import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.task.DirectionAsyncTask;
-
-import java.util.List;
 
 /**
  * Adapter that will handle buses
@@ -41,99 +42,92 @@ import java.util.List;
  */
 public final class BusAdapter extends BaseAdapter {
 
-	private MainActivity mainActivity;
-	private List<BusRoute> busRoutes;
+    private MainActivity mainActivity;
+    private List<BusRoute> busRoutes;
 
-	/**
-	 * Constructor
-	 *
-	 * @param activity the main activity
-	 */
-	public BusAdapter(final MainActivity activity) {
-		this.mainActivity = activity;
-		final BusData busData = DataHolder.getInstance().getBusData();
-		this.busRoutes = busData.getRoutes();
-	}
+    /**
+     * Constructor
+     *
+     * @param activity the main activity
+     */
+    public BusAdapter(final MainActivity activity) {
+        this.mainActivity = activity;
+        final BusData busData = DataHolder.getInstance().getBusData();
+        this.busRoutes = busData.getRoutes();
+    }
 
-	@Override
-	public final int getCount() {
-		return busRoutes.size();
-	}
+    @Override
+    public final int getCount() {
+        return busRoutes.size();
+    }
 
-	@Override
-	public final Object getItem(final int position) {
-		return busRoutes.get(position);
-	}
+    @Override
+    public final Object getItem(final int position) {
+        return busRoutes.get(position);
+    }
 
-	@Override
-	public final long getItemId(final int position) {
-		return position;
-	}
+    @Override
+    public final long getItemId(final int position) {
+        return position;
+    }
 
-	@Override
-	public final View getView(final int position, View convertView, final ViewGroup parent) {
+    @Override
+    public final View getView(final int position, View convertView, final ViewGroup parent) {
 
-		final BusRoute route = (BusRoute) getItem(position);
+        final BusRoute route = (BusRoute) getItem(position);
 
-		TextView routeNameView;
-		TextView routeNumberView;
-		LinearLayout detailsLayout;
+        final TextView routeNameView;
+        final TextView routeNumberView;
+        final LinearLayout detailsLayout;
 
-		if (convertView == null) {
-			final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			convertView = vi.inflate(R.layout.list_bus, parent, false);
+        if (convertView == null) {
+            final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = vi.inflate(R.layout.list_bus, parent, false);
 
-			final ViewHolder holder = new ViewHolder();
-			routeNameView = (TextView) convertView.findViewById(R.id.route_name);
-			holder.routeNameView = routeNameView;
+            final ViewHolder holder = new ViewHolder();
+            routeNameView = (TextView) convertView.findViewById(R.id.route_name);
+            holder.routeNameView = routeNameView;
 
-			routeNumberView = (TextView) convertView.findViewById(R.id.route_number);
-			holder.routeNumberView = routeNumberView;
+            routeNumberView = (TextView) convertView.findViewById(R.id.route_number);
+            holder.routeNumberView = routeNumberView;
 
-			detailsLayout = (LinearLayout) convertView.findViewById(R.id.route_details);
-			holder.detailsLayout = detailsLayout;
+            detailsLayout = (LinearLayout) convertView.findViewById(R.id.route_details);
+            holder.detailsLayout = detailsLayout;
 
-			convertView.setTag(holder);
+            convertView.setTag(holder);
+        } else {
+            final ViewHolder holder = (ViewHolder) convertView.getTag();
+            routeNameView = holder.routeNameView;
+            routeNumberView = holder.routeNumberView;
+            detailsLayout = holder.detailsLayout;
+        }
+        routeNameView.setText(route.getName());
+        routeNumberView.setText(route.getId());
 
-			convertView.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					holder.detailsLayout.setVisibility(LinearLayout.VISIBLE);
-					new DirectionAsyncTask(mainActivity, parent).execute(route, holder.detailsLayout);
-				}
-			});
-		} else {
-			final ViewHolder holder = (ViewHolder) convertView.getTag();
-			routeNameView = holder.routeNameView;
-			routeNumberView = holder.routeNumberView;
-			detailsLayout = holder.detailsLayout;
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                detailsLayout.setVisibility(LinearLayout.VISIBLE);
+                new DirectionAsyncTask(mainActivity, parent).execute(route, detailsLayout);
+            }
+        });
 
-			convertView.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					holder.detailsLayout.setVisibility(LinearLayout.VISIBLE);
-					new DirectionAsyncTask(mainActivity, parent).execute(route, holder.detailsLayout);
-				}
-			});
-		}
-		routeNameView.setText(route.getName());
-		routeNumberView.setText(route.getId());
-		return convertView;
-	}
+        return convertView;
+    }
 
-	public void setRoutes(List<BusRoute> busRoutes) {
-		this.busRoutes = busRoutes;
-	}
+    public void setRoutes(final List<BusRoute> busRoutes) {
+        this.busRoutes = busRoutes;
+    }
 
-	/**
-	 * DP view holder
-	 *
-	 * @author Carl-Philipp Harmant
-	 * @version 1
-	 */
-	private static class ViewHolder {
-		TextView routeNameView;
-		TextView routeNumberView;
-		LinearLayout detailsLayout;
-	}
+    /**
+     * DP view holder
+     *
+     * @author Carl-Philipp Harmant
+     * @version 1
+     */
+    private static class ViewHolder {
+        TextView routeNameView;
+        TextView routeNumberView;
+        LinearLayout detailsLayout;
+    }
 }

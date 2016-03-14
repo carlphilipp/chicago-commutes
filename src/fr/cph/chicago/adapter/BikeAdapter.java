@@ -95,9 +95,9 @@ public final class BikeAdapter extends BaseAdapter {
 
 		convertView.setOnClickListener(new View.OnClickListener() {
 			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent(ChicagoTracker.getContext(), BikeStationActivity.class);
-				Bundle extras = new Bundle();
+			public void onClick(final View v) {
+				final Intent intent = new Intent(ChicagoTracker.getContext(), BikeStationActivity.class);
+                final Bundle extras = new Bundle();
 				extras.putParcelable(mainActivity.getString(R.string.bundle_bike_station), station);
 				intent.putExtras(extras);
 				mainActivity.startActivity(intent);
