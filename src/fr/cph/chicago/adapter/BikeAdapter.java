@@ -78,7 +78,7 @@ public final class BikeAdapter extends BaseAdapter {
 
 		final BikeStation station = (BikeStation) getItem(position);
 
-		ViewHolder holder;
+		final ViewHolder holder;
 
 		if (convertView == null) {
 			final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);

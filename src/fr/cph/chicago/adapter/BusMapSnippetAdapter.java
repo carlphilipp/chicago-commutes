@@ -24,11 +24,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import java.util.List;
+
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.entity.BusArrival;
-
-import java.util.List;
 
 /**
  * Adapter that will handle bus map
@@ -38,49 +39,49 @@ import java.util.List;
  */
 public class BusMapSnippetAdapter extends BaseAdapter {
 
-	private Activity activity;
-	private List<BusArrival> arrivals;
+    private Activity activity;
+    private List<BusArrival> arrivals;
 
-	/**
-	 * @param arrivals
-	 */
-	public BusMapSnippetAdapter(final Activity activity, final List<BusArrival> arrivals) {
-		this.activity = activity;
-		this.arrivals = arrivals;
-	}
+    /**
+     * @param arrivals
+     */
+    public BusMapSnippetAdapter(final Activity activity, final List<BusArrival> arrivals) {
+        this.activity = activity;
+        this.arrivals = arrivals;
+    }
 
-	@Override
-	public final int getCount() {
-		return arrivals.size();
-	}
+    @Override
+    public final int getCount() {
+        return arrivals.size();
+    }
 
-	@Override
-	public final Object getItem(final int position) {
-		return arrivals.get(position);
-	}
+    @Override
+    public final Object getItem(final int position) {
+        return arrivals.get(position);
+    }
 
-	@Override
-	public final long getItemId(final int position) {
-		return position;
-	}
+    @Override
+    public final long getItemId(final int position) {
+        return position;
+    }
 
-	@Override
-	public final View getView(final int position, View convertView, final ViewGroup parent) {
-		final BusArrival arrival = (BusArrival) getItem(position);
-		if (convertView == null) {
-			convertView = activity.getLayoutInflater().inflate(R.layout.list_map_train, parent, false);
-		}
-		final TextView stationNameTextView = (TextView) convertView.findViewById(R.id.station_name);
-		stationNameTextView.setText(arrival.getStopName());
+    @Override
+    public final View getView(final int position, View convertView, final ViewGroup parent) {
 
-		if (!(position == arrivals.size() - 1 && "No service scheduled".equals(arrival.getTimeLeftDueDelay()))) {
-			final TextView time = (TextView) convertView.findViewById(R.id.time);
-			time.setText(arrival.getTimeLeftDueDelay());
-		} else {
-			stationNameTextView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
-			stationNameTextView.setTypeface(null, Typeface.BOLD);
-			stationNameTextView.setGravity(Gravity.CENTER);
-		}
-		return convertView;
-	}
+        final BusArrival arrival = (BusArrival) getItem(position);
+        convertView = activity.getLayoutInflater().inflate(R.layout.list_map_train, parent, false);
+        TextView stationNameTextView = (TextView) convertView.findViewById(R.id.station_name);
+        stationNameTextView.setText(arrival.getStopName() + " " + position);
+
+        if (!(position == arrivals.size() - 1 && "No service scheduled".equals(arrival.getTimeLeftDueDelay()))) {
+            final TextView timeTextView = (TextView) convertView.findViewById(R.id.time);
+            timeTextView.setText(arrival.getTimeLeftDueDelay());
+        } else {
+            stationNameTextView.setTypeface(null, Typeface.BOLD);
+            stationNameTextView.setText(arrival.getStopName());
+            stationNameTextView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
+            stationNameTextView.setGravity(Gravity.CENTER);
+        }
+        return convertView;
+    }
 }
