@@ -48,7 +48,7 @@ public class PopupBusAdapter extends ArrayAdapter<String> {
 
 	@Override
 	public final View getView(final int position, final View convertView, final ViewGroup parent) {
-		View rowView;
+        final View rowView;
 		if (position != values.size() - 1) {
 			rowView = activity.getLayoutInflater().inflate(R.layout.popup_bus_cell_0, parent, false);
 		} else {

@@ -47,7 +47,7 @@ public class PopupTrainAdapter extends ArrayAdapter<String> {
 	@Override
 	public final View getView(final int position, final View convertView, final ViewGroup parent) {
 		final LayoutInflater inflater = activity.getLayoutInflater();
-		View rowView;
+		final View rowView;
 		if (position == 0) {
 			rowView = inflater.inflate(R.layout.popup_train_cell_0, parent, false);
 		} else {
