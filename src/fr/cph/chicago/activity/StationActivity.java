@@ -19,17 +19,13 @@ package fr.cph.chicago.activity;
 import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils.TruncateAt;
-import android.util.Log;
-import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,7 +40,6 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.commons.lang3.text.WordUtils;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -56,7 +51,6 @@ import java.util.Set;
 
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
-import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.data.TrainData;
@@ -64,20 +58,14 @@ import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.Stop;
-import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.TrainDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.exception.ConnectException;
-import fr.cph.chicago.exception.ParserException;
-import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.listener.GoogleMapDirectionOnClickListener;
 import fr.cph.chicago.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.listener.GoogleStreetOnClickListener;
 import fr.cph.chicago.task.DisplayGoogleStreetPictureTask;
+import fr.cph.chicago.task.LoadTrainArrivalDataTask;
 import fr.cph.chicago.util.Util;
-import fr.cph.chicago.xml.XmlParser;
-
-import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
 
 /**
  * Activity that represents the train station
@@ -86,8 +74,6 @@ import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
  * @version 1
  */
 public class StationActivity extends Activity {
-
-    private static final String TAG = StationActivity.class.getSimpleName();
 
     private ViewGroup viewGroup;
     private ImageView streetViewImage;
@@ -131,11 +117,11 @@ public class StationActivity extends Activity {
                 swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
                     public void onRefresh() {
-                        new LoadData().execute(reqParams);
+                        new LoadTrainArrivalDataTask(StationActivity.this, trainData, swipeRefreshLayout).execute(reqParams);
                     }
                 });
 
-                new LoadData().execute(reqParams);
+                new LoadTrainArrivalDataTask(StationActivity.this, trainData, swipeRefreshLayout).execute(reqParams);
 
                 // Call google street api to load image
                 final Position position = station.getStops().get(0).getPosition();
@@ -224,7 +210,7 @@ public class StationActivity extends Activity {
                         // Update timing
                         final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
                         reqParams.put(getString(R.string.request_map_id), String.valueOf(station.getId()));
-                        new LoadData().execute(reqParams);
+                        new LoadTrainArrivalDataTask(StationActivity.this, trainData, swipeRefreshLayout).execute(reqParams);
                     }
                 });
                 checkBox.setChecked(Preferences.getTrainFilter(stationId, line, stop.getDirection()));
@@ -271,7 +257,7 @@ public class StationActivity extends Activity {
                 swipeRefreshLayout.setRefreshing(true);
                 final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
                 reqParams.put(getString(R.string.request_map_id), String.valueOf(station.getId()));
-                new LoadData().execute(reqParams);
+                new LoadTrainArrivalDataTask(StationActivity.this, trainData, swipeRefreshLayout).execute(reqParams);
                 return false;
             }
         }));
@@ -326,98 +312,12 @@ public class StationActivity extends Activity {
     }
 
     /**
-     * Load train arrivals
-     *
-     * @author Carl-Philipp Harmant
-     * @version 1
-     */
-    private class LoadData extends AsyncTask<MultiValuedMap<String, String>, Void, TrainArrival> {
-
-        /**
-         * The exception that might be thrown
-         **/
-        private TrackerException trackerException;
-
-        @SafeVarargs
-        @Override
-        protected final TrainArrival doInBackground(final MultiValuedMap<String, String>... params) {
-            // Get menu item and put it to loading mod
-            publishProgress((Void[]) null);
-            SparseArray<TrainArrival> arrivals = new SparseArray<>();
-            final CtaConnect connect = CtaConnect.getInstance();
-            try {
-                final XmlParser xml = XmlParser.getInstance();
-                final InputStream xmlResult = connect.connect(TRAIN_ARRIVALS, params[0]);
-                //String xmlResult = connectTest();
-                arrivals = xml.parseArrivals(xmlResult, StationActivity.this.trainData);
-                // Apply filters
-                int index = 0;
-                while (index < arrivals.size()) {
-                    final TrainArrival arri = arrivals.valueAt(index++);
-                    final List<Eta> etas = arri.getEtas();
-                    // Sort Eta by arriving time
-                    Collections.sort(etas);
-                    // Copy data into new list to be able to avoid looping on a list that we want to modify
-                    final List<Eta> etasCopy = new ArrayList<>();
-                    etasCopy.addAll(etas);
-                    int j = 0;
-                    for (int i = 0; i < etasCopy.size(); i++) {
-                        final Eta eta = etasCopy.get(i);
-                        final Station station = eta.getStation();
-                        final TrainLine line = eta.getRouteName();
-                        final TrainDirection direction = eta.getStop().getDirection();
-                        final boolean toRemove = Preferences.getTrainFilter(station.getId(), line, direction);
-                        if (!toRemove) {
-                            etas.remove(i - j++);
-                        }
-                    }
-                }
-            } catch (final ParserException | ConnectException e) {
-                Log.e(TAG, e.getMessage(), e);
-                trackerException = e;
-            }
-            Util.trackAction(StationActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
-            if (arrivals.size() == 1) {
-                final String id = ((List<String>) params[0].get(getString(R.string.request_map_id))).get(0);
-                return arrivals.get(Integer.valueOf(id));
-            } else {
-                return null;
-            }
-        }
-
-        @Override
-        protected final void onProgressUpdate(final Void... values) {
-        }
-
-        @Override
-        protected final void onPostExecute(@Nullable final TrainArrival trainArrival) {
-            if (trackerException == null) {
-                List<Eta> etas;
-                if (trainArrival != null) {
-                    etas = trainArrival.getEtas();
-                } else {
-                    etas = Collections.emptyList();
-                }
-                hideAllArrivalViews(StationActivity.this.station);
-                for (final Eta eta : etas) {
-                    drawAllArrivalsTrain(eta);
-                }
-            } else {
-                ChicagoTracker.displayError(StationActivity.this, trackerException);
-            }
-            if (swipeRefreshLayout != null) {
-                swipeRefreshLayout.setRefreshing(false);
-            }
-        }
-    }
-
-    /**
      * Reset arrival layouts
      *
      * @param station the station
      */
     // FIXME: delete view instead of hiding it
-    private void hideAllArrivalViews(final Station station) {
+    public void hideAllArrivalViews() {
         final Set<TrainLine> trainLines = station.getLines();
         for (final TrainLine trainLine : trainLines) {
             for (final TrainDirection trainDirection : TrainDirection.values()) {
@@ -447,7 +347,7 @@ public class StationActivity extends Activity {
      *
      * @param eta the eta
      */
-    private void drawAllArrivalsTrain(final Eta eta) {
+    public void drawAllArrivalsTrain(final Eta eta) {
         final TrainLine line = eta.getRouteName();
         final Stop stop = eta.getStop();
         final int line3PaddingLeft = (int) getResources().getDimension(R.dimen.activity_station_stops_line3_padding_left);
