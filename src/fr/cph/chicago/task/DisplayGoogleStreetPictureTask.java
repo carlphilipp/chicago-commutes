@@ -13,7 +13,6 @@ import java.io.IOException;
 
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
-import fr.cph.chicago.activity.BikeStationActivity;
 import fr.cph.chicago.connection.GStreetViewConnect;
 import fr.cph.chicago.util.Util;
 
