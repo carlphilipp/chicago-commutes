@@ -36,11 +36,8 @@ import java.util.List;
  * @version 1
  */
 public class BusBoundAdapter extends BaseAdapter {
-	/**
-	 * List of bus stop
-	 **/
+
 	private List<BusStop> busStops;
-	/** **/
 	private String stopId;
 
 	/**
@@ -73,8 +70,8 @@ public class BusBoundAdapter extends BaseAdapter {
 
 		final BusStop busStop = busStops.get(position);
 
-		TextView routNumberView;
-		TextView routNameView;
+		final TextView routNumberView;
+        final TextView routNameView;
 
 		if (convertView == null) {
 			final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -116,8 +113,8 @@ public class BusBoundAdapter extends BaseAdapter {
 	 *
 	 * @param result the list of bus stops
 	 */
-	public final void update(final List<BusStop> result) {
+	public final void update(final List<BusStop> busStops) {
 		this.busStops = null;
-		this.busStops = result;
+		this.busStops = busStops;
 	}
 }
