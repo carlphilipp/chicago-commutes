@@ -33,7 +33,6 @@ import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.Eta;
-import fr.cph.chicago.entity.Stop;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.Util;
@@ -147,12 +146,13 @@ public class Favorites {
             //final Stop stop = eta.getStop();
             final String stopNameData = eta.getDestName();
             final String timingData = eta.getTimeLeftDueDelay();
-            if (!etas.contains(stopNameData)) {
-                List<String> list = new ArrayList<>();
+            if (!result.containsKey(stopNameData)) {
+                final List<String> list = new ArrayList<>();
                 list.add(timingData);
                 result.put(stopNameData, list);
             } else {
-                result.get(stopNameData).add(timingData);
+                final List<String> list = result.get(stopNameData);//.add(timingData);
+                list.add(timingData);
             }
         }
         return result;

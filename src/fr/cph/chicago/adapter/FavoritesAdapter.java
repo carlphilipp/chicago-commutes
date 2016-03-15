@@ -158,7 +158,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                     for (final TrainLine tl : setTL) {
                         final Map<String, List<String>> etas = favorites.getTrainArrivalByLine(stationId, tl);
                         if (!etas.isEmpty()) {
-                            TextView trainLine = new TextView(mainActivity);
+                            final TextView trainLine = new TextView(mainActivity);
                             trainLine.setText(tl.toTextString());
                             holder.mainLayout.addView(trainLine);
 
