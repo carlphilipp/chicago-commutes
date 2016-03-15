@@ -123,7 +123,7 @@ public class FavoritesFragment extends Fragment {
             }
             final RecyclerView listView = (RecyclerView) rootView.findViewById(R.id.favorites_list);
             listView.setAdapter(favoritesAdapter);
-            listView.setHasFixedSize(true);
+            //listView.setHasFixedSize(true);
 
             RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(mainActivity);
             listView.setLayoutManager(mLayoutManager);
