@@ -25,12 +25,13 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -120,8 +121,14 @@ public class FavoritesFragment extends Fragment {
                 favoritesAdapter = new FavoritesAdapter(mainActivity);
                 favoritesAdapter.setArrivalsAndBikeStations(trainArrivals, busArrivals, bikeStations);
             }
-            final ListView listView = (ListView) rootView.findViewById(R.id.favorites_list);
+            final RecyclerView listView = (RecyclerView) rootView.findViewById(R.id.favorites_list);
             listView.setAdapter(favoritesAdapter);
+            listView.setHasFixedSize(true);
+
+            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(mainActivity);
+            listView.setLayoutManager(mLayoutManager);
+
+
             startRefreshTask();
             final FloatingActionButton floatingButton = (FloatingActionButton) rootView.findViewById(R.id.floating_button);
             floatingButton.setOnClickListener(new View.OnClickListener() {

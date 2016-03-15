@@ -6,8 +6,7 @@
 /.idea
 /build
 /.gradle
-ChicagoTracker.iml
-Chicago-Tracker.iml
+chicago-commutes.iml
 local.properties
 app.properties
 keystore.properties

@@ -16,37 +16,27 @@
 
 package fr.cph.chicago.adapter;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.text.TextUtils.TruncateAt;
+import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
-import fr.cph.chicago.activity.BikeStationActivity;
 import fr.cph.chicago.activity.BusActivity;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.data.DataHolder;
@@ -55,16 +45,11 @@ import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
-import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Station;
-import fr.cph.chicago.entity.Stop;
 import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
-import fr.cph.chicago.listener.FavoritesBusOnClickListener;
-import fr.cph.chicago.listener.FavoritesTrainOnClickListener;
 import fr.cph.chicago.util.Util;
 
 /**
@@ -74,7 +59,7 @@ import fr.cph.chicago.util.Util;
  * @version 1
  */
 // TODO to analyze and refactor
-public final class FavoritesAdapter extends BaseAdapter {
+public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder> {
 
     private Context context;
     private LinearLayout.LayoutParams paramsLayout;
@@ -107,14 +92,43 @@ public final class FavoritesAdapter extends BaseAdapter {
         this.stopsPaddingTop = (int) context.getResources().getDimension(R.dimen.activity_station_stops_padding_top);
     }
 
-    @Override
-    public final int getCount() {
-        return favorites.size();
+
+    public static class FavoritesViewHolder extends RecyclerView.ViewHolder {
+        public TextView nameView;
+        public TextView timeView;
+
+        public FavoritesViewHolder(final View view) {
+            super(view);
+            this.nameView = (TextView) view.findViewById(R.id.station_name_value);
+            this.timeView = (TextView) view.findViewById(R.id.station_updated);
+        }
     }
 
     @Override
-    public final Object getItem(final int position) {
-        return favorites.getObject(position);
+    public FavoritesViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
+        // create a new view
+        final View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_favorites_train, parent, false);
+        final FavoritesViewHolder favoritesViewHolder = new FavoritesViewHolder(v);
+        return favoritesViewHolder;
+
+    }
+
+    @Override
+    public void onBindViewHolder(FavoritesViewHolder holder, int position) {
+        final Object object = favorites.getObject(position);
+        if (object != null) {
+            if (object instanceof Station) {
+                final Station station = (Station) object;
+                holder.nameView.setText(station.getName());
+            } else if (object instanceof BusRoute) {
+                final BusRoute busRoute = (BusRoute) object;
+                holder.nameView.setText(busRoute.getName());
+            } else {
+                final BikeStation bikeStation = (BikeStation) object;
+                holder.nameView.setText(bikeStation.getName());
+            }
+            holder.timeView.setText(this.lastUpdate);
+        }
     }
 
     @Override
@@ -122,15 +136,21 @@ public final class FavoritesAdapter extends BaseAdapter {
         return position;
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    @Override
+    public int getItemCount() {
+        return favorites.size();
+    }
+
+
+    /*@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public final View getView(final int position, View convertView, final ViewGroup parent) {
         final Date lastUpdate = ChicagoTracker.getLastUpdate();
         final Object object = favorites.getObject(position);
         if (object != null) {
-            /*********************************************************/
-            /********************** TRAINS ***************************/
-            /*********************************************************/
+            *//*********************************************************//*
+            *//********************** TRAINS ***************************//*
+            *//*********************************************************//*
             if (object instanceof Station) {
                 final Station station = (Station) object;
                 final Integer stationId = station.getId();
@@ -293,9 +313,9 @@ public final class FavoritesAdapter extends BaseAdapter {
                         }
                     }
                 }
-                /*********************************************************/
-                /*********************** BUSES ***************************/
-                /*********************************************************/
+                *//*********************************************************//*
+                *//*********************** BUSES ***************************//*
+                *//*********************************************************//*
             } else if (object instanceof BusRoute) {
                 final BusRoute busRoute = (BusRoute) object;
                 final LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -379,9 +399,9 @@ public final class FavoritesAdapter extends BaseAdapter {
                         favoritesLayout.addView(llh);
                     }
                 }
-                /*********************************************************/
-                /*********************** BIKES ***************************/
-                /*********************************************************/
+                *//*********************************************************//*
+                *//*********************** BIKES ***************************//*
+                *//*********************************************************//*
             } else {
                 final BikeStation bikeStation = (BikeStation) object;
                 final LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -499,7 +519,7 @@ public final class FavoritesAdapter extends BaseAdapter {
             }
         }
         return convertView;
-    }
+    }*/
 
     /**
      * DP view holder
