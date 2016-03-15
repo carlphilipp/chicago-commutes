@@ -33,6 +33,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.apache.commons.lang3.text.WordUtils;
 
@@ -45,6 +46,7 @@ import java.util.Set;
 
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
+import fr.cph.chicago.activity.BikeStationActivity;
 import fr.cph.chicago.activity.BusActivity;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.data.DataHolder;
@@ -53,15 +55,17 @@ import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
-import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Station;
-import fr.cph.chicago.entity.Stop;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
+import fr.cph.chicago.listener.FavoritesBusOnClickListener;
+import fr.cph.chicago.listener.FavoritesTrainOnClickListener;
 import fr.cph.chicago.util.Util;
+
+import static java.util.Map.Entry;
 
 /**
  * Adapter that will handle favorites
@@ -109,6 +113,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     public static class FavoritesViewHolder extends RecyclerView.ViewHolder {
         public TextView timeView;
         public RelativeLayout lineTitleLayout;
+        public RelativeLayout titleBottomLayout;
         public LinearLayout mainLayout;
         public TextView nameTitleBottomView;
 
@@ -118,6 +123,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
             this.lineTitleLayout = (RelativeLayout) view.findViewById(R.id.favorites_list_main);
             this.mainLayout = (LinearLayout) view.findViewById(R.id.favorites_arrival_layout);
             this.nameTitleBottomView = (TextView) view.findViewById(R.id.station_name_value);
+            this.titleBottomLayout = (RelativeLayout) view.findViewById(R.id.favorites_title_bottom);
         }
     }
 
@@ -125,87 +131,268 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     public FavoritesViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
         // create a new view
         final View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_favorites_train, parent, false);
-        final FavoritesViewHolder favoritesViewHolder = new FavoritesViewHolder(v);
-        return favoritesViewHolder;
-
+        return new FavoritesViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(final FavoritesViewHolder holder, final int position) {
+        removeViewWhereNeeded(holder);
         final Object object = favorites.getObject(position);
         if (object != null) {
             if (object instanceof Station) {
                 final Station station = (Station) object;
-                final int stationId = station.getId();
-
-                holder.nameTitleBottomView.setText(station.getName());
-
-                if (holder.lineTitleLayout.getChildCount() != 0) {
-                    holder.lineTitleLayout.removeAllViews();
-                }
-
-                addTitleToView(holder.lineTitleLayout, station.getLines());
-
-                if (holder.mainLayout.getChildCount() != 0) {
-                    holder.mainLayout.removeAllViews();
-                }
-
-                final LinearLayout.LayoutParams paramsArrival = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-
-                final Set<TrainLine> setTL = station.getLines();
-
-                if (favorites.getTrainArrival(stationId) != null) {
-                    for (final TrainLine tl : setTL) {
-                        final Map<String, List<String>> etas = favorites.getTrainArrivalByLine(stationId, tl);
-                        if (!etas.isEmpty()) {
-                            final TextView trainLine = new TextView(mainActivity);
-                            trainLine.setText(tl.toTextString());
-                            holder.mainLayout.addView(trainLine);
-
-                            for(final Map.Entry<String, List<String>> entry: etas.entrySet()){
-                                final LinearLayout insideLayout = new LinearLayout(context);
-                                insideLayout.setOrientation(LinearLayout.HORIZONTAL);
-                                insideLayout.setLayoutParams(paramsArrival);
-
-                                final String dest = entry.getKey();
-                                final TextView destinationTextView = new TextView(context);
-                                destinationTextView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
-                                final String stopNameData = dest + ": ";
-                                destinationTextView.setText(stopNameData);
-                                insideLayout.addView(destinationTextView);
-
-                                final TextView timing = new TextView(context);
-                                final StringBuilder timingData = new StringBuilder();
-                                final List<String> res = entry.getValue();
-                                for(final String eta : res){
-                                    timingData.append(eta + " ");
-                                }
-                                timing.setText(timingData.toString());
-                                timing.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
-                                timing.setLines(1);
-                                timing.setEllipsize(TextUtils.TruncateAt.END);
-                                insideLayout.addView(timing);
-                                holder.mainLayout.addView(insideLayout);
-                            }
-                        }
-                    }
-                }
-
-                //convertView.setOnClickListener(new FavoritesTrainOnClickListener(mainActivity, stationId, setTL));
-
-
+                handleStation(holder, station);
             } else if (object instanceof BusRoute) {
                 final BusRoute busRoute = (BusRoute) object;
-                holder.nameTitleBottomView.setText(busRoute.getName());
+                handleBusRoute(holder, busRoute);
             } else {
                 final BikeStation bikeStation = (BikeStation) object;
-                holder.nameTitleBottomView.setText(bikeStation.getName());
+                handleBikeStation(holder, bikeStation);
             }
             holder.timeView.setText(this.lastUpdate);
         }
     }
 
+    private void removeViewWhereNeeded(final FavoritesViewHolder holder) {
+        if (holder.lineTitleLayout.getChildCount() != 0) {
+            holder.lineTitleLayout.removeAllViews();
+        }
+        if (holder.mainLayout.getChildCount() != 0) {
+            holder.mainLayout.removeAllViews();
+        }
+    }
+
+
+    private void handleStation(final FavoritesViewHolder holder, final Station station) {
+
+        final int stationId = station.getId();
+
+        holder.nameTitleBottomView.setText(station.getName());
+
+        if (holder.lineTitleLayout.getChildCount() != 0) {
+            holder.lineTitleLayout.removeAllViews();
+        }
+
+        addTitleToView(holder.lineTitleLayout, station.getLines());
+
+        final LinearLayout.LayoutParams paramsArrival = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+
+        final Set<TrainLine> setTL = station.getLines();
+
+        if (favorites.getTrainArrival(stationId) != null) {
+            for (final TrainLine tl : setTL) {
+                final Map<String, List<String>> etas = favorites.getTrainArrivalByLine(stationId, tl);
+                if (!etas.isEmpty()) {
+                    final TextView trainLine = new TextView(mainActivity);
+                    trainLine.setText(tl.toTextString());
+                    holder.mainLayout.addView(trainLine);
+
+                    for (final Map.Entry<String, List<String>> entry : etas.entrySet()) {
+                        final LinearLayout insideLayout = new LinearLayout(context);
+                        insideLayout.setOrientation(LinearLayout.HORIZONTAL);
+                        insideLayout.setLayoutParams(paramsArrival);
+
+                        final String dest = entry.getKey();
+                        final TextView destinationTextView = new TextView(context);
+                        destinationTextView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
+                        final String stopNameData = dest + ": ";
+                        destinationTextView.setText(stopNameData);
+                        insideLayout.addView(destinationTextView);
+
+                        final TextView timing = new TextView(context);
+                        final StringBuilder timingData = new StringBuilder();
+                        final List<String> res = entry.getValue();
+                        for (final String eta : res) {
+                            timingData.append(eta + " ");
+                        }
+                        timing.setText(timingData.toString());
+                        timing.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
+                        timing.setLines(1);
+                        timing.setEllipsize(TextUtils.TruncateAt.END);
+                        insideLayout.addView(timing);
+                        holder.mainLayout.addView(insideLayout);
+                    }
+                }
+            }
+        }
+        holder.mainLayout.setOnClickListener(new FavoritesTrainOnClickListener(mainActivity, stationId, setTL));
+        holder.titleBottomLayout.setOnClickListener(new FavoritesTrainOnClickListener(mainActivity, stationId, setTL));
+    }
+
+    private void handleBusRoute(final FavoritesViewHolder holder, final BusRoute busRoute) {
+        holder.nameTitleBottomView.setText(busRoute.getId());
+
+        final Map<String, Map<String, List<BusArrival>>> busArrivals = favorites.getBusArrivalsMapped(busRoute.getId());
+        if (!busArrivals.isEmpty()) {
+            for (final Entry<String, Map<String, List<BusArrival>>> entry : busArrivals.entrySet()) {
+                final LinearLayout llh = new LinearLayout(context);
+                llh.setLayoutParams(paramsLayout);
+                llh.setOrientation(LinearLayout.HORIZONTAL);
+                llh.setPadding(line1Padding, stopsPaddingTop, 0, 0);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    llh.setBackground(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.any_selector));
+                }
+
+                final TextView tlView = new TextView(context);
+                tlView.setBackgroundColor(ContextCompat.getColor(context, R.color.black));
+                tlView.setText("   ");
+                tlView.setLayoutParams(paramsTextView);
+                llh.addView(tlView);
+
+                final String key = entry.getKey();
+                final Map<String, List<BusArrival>> value = entry.getValue();
+
+                llh.setOnClickListener(new FavoritesBusOnClickListener(mainActivity, null, busRoute, value));
+
+                final LinearLayout stopLayout = new LinearLayout(context);
+                stopLayout.setOrientation(LinearLayout.VERTICAL);
+                stopLayout.setPadding(line1Padding, 0, 0, 0);
+
+                final TextView stopName = new TextView(context);
+                stopName.setText(String.valueOf(key));
+                stopName.setTextColor(ContextCompat.getColor(context, R.color.grey_5));
+                stopName.setTypeface(Typeface.DEFAULT_BOLD);
+
+                stopLayout.addView(stopName);
+
+                for (final Entry<String, List<BusArrival>> entry2 : value.entrySet()) {
+                    final String key2 = entry2.getKey();
+                    final List<BusArrival> buses = entry2.getValue();
+
+                    final LinearLayout boundLayout = new LinearLayout(context);
+                    boundLayout.setOrientation(LinearLayout.HORIZONTAL);
+
+                    final TextView bound = new TextView(context);
+                    final String boundText = key2 + ": ";
+                    bound.setText(boundText);
+                    bound.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
+                    boundLayout.addView(bound);
+
+                    for (final BusArrival arri : buses) {
+                        final TextView timeView = new TextView(context);
+                        final String timeText = arri.getTimeLeftDueDelay() + " ";
+                        timeView.setText(timeText);
+                        timeView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
+                        timeView.setLines(1);
+                        timeView.setEllipsize(TextUtils.TruncateAt.END);
+                        boundLayout.addView(timeView);
+                    }
+                    stopLayout.addView(boundLayout);
+                }
+                llh.addView(stopLayout);
+                holder.mainLayout.addView(llh);
+            }
+        }
+    }
+
+    private void handleBikeStation(final FavoritesViewHolder holder, final BikeStation bikeStation){
+        holder.nameTitleBottomView.setText(bikeStation.getName());
+
+        final LinearLayout llh = new LinearLayout(context);
+        llh.setLayoutParams(paramsLayout);
+        llh.setOrientation(LinearLayout.HORIZONTAL);
+        llh.setPadding(line1Padding, stopsPaddingTop, 0, 0);
+
+        final TextView tlView = new TextView(context);
+        tlView.setBackgroundColor(ContextCompat.getColor(context, R.color.black));
+        tlView.setText("   ");
+        tlView.setLayoutParams(paramsTextView);
+        llh.addView(tlView);
+
+        final LinearLayout availableLayout = new LinearLayout(context);
+        availableLayout.setOrientation(LinearLayout.VERTICAL);
+
+        final LinearLayout availableBikes = new LinearLayout(context);
+        availableBikes.setOrientation(LinearLayout.HORIZONTAL);
+        availableBikes.setPadding(line1Padding, 0, 0, 0);
+
+        final TextView availableBike = new TextView(context);
+        availableBike.setText(mainActivity.getString(R.string.bike_available_bikes));
+        availableBike.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
+        availableBikes.addView(availableBike);
+
+        final TextView amountBike = new TextView(context);
+        if (bikeStation.getAvailableBikes() == null) {
+            amountBike.setText("?");
+            amountBike.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.orange));
+        } else {
+            final String availableBikesText = String.valueOf(bikeStation.getAvailableBikes());
+            amountBike.setText(availableBikesText);
+            if (bikeStation.getAvailableBikes() == 0) {
+                amountBike.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.red));
+            } else {
+                amountBike.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.green));
+            }
+        }
+        availableBikes.addView(amountBike);
+
+        availableLayout.addView(availableBikes);
+
+        final LinearLayout availableDocks = new LinearLayout(context);
+        availableDocks.setOrientation(LinearLayout.HORIZONTAL);
+        availableDocks.setPadding(line1Padding, 0, 0, 0);
+
+        final TextView availableDock = new TextView(context);
+        availableDock.setText(mainActivity.getString(R.string.bike_available_docks));
+        availableDock.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
+        availableDocks.addView(availableDock);
+
+        final TextView amountDock = new TextView(context);
+        if (bikeStation.getAvailableDocks() == null) {
+            amountDock.setText("?");
+            amountDock.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.orange));
+        } else {
+            final String availableDocksText = String.valueOf(bikeStation.getAvailableDocks());
+            amountDock.setText(availableDocksText);
+            if (bikeStation.getAvailableDocks() == 0) {
+                amountDock.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.red));
+            } else {
+                amountDock.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.green));
+            }
+        }
+        availableDocks.addView(amountDock);
+
+        availableLayout.addView(availableDocks);
+
+        llh.addView(availableLayout);
+
+        holder.mainLayout.addView(llh);
+
+        final boolean isNetworkAvailable = Util.isNetworkAvailable();
+
+        if (bikeStation.getLatitude() != 0 && bikeStation.getLongitude() != 0) {
+
+            holder.mainLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!isNetworkAvailable) {
+                        Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_LONG).show();
+                    } else {
+                        final Intent intent = new Intent(ChicagoTracker.getContext(), BikeStationActivity.class);
+                        final Bundle extras = new Bundle();
+                        extras.putParcelable("station", bikeStation);
+                        intent.putExtras(extras);
+                        mainActivity.startActivity(intent);
+                    }
+                }
+            });
+        } else {
+            holder.mainLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (!isNetworkAvailable) {
+                        Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(mainActivity, "Not ready yet. Please try again in few seconds!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+    }
+
     @Override
+
     public final long getItemId(final int position) {
         return position;
     }
