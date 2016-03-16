@@ -90,7 +90,7 @@ public class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 	@Override
 	protected final void onPostExecute(final BusDirections result) {
 		if (trackerException == null) {
-			final List<BusDirection> busDirections = result.getlBusDirection();
+			final List<BusDirection> busDirections = result.getLBusDirection();
 			final List<String> data = new ArrayList<>();
 			for (final BusDirection busDir : busDirections) {
 				data.add(busDir.getBusDirectionEnum().toString());

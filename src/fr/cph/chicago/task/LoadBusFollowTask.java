@@ -74,7 +74,7 @@ public class LoadBusFollowTask extends AsyncTask<String, Void, List<BusArrival>>
             arrivals = arrivals.subList(0, 6);
             final BusArrival arrival = new BusArrival();
             arrival.setStopName("Display all results");
-            arrival.setIsDly(false);
+            arrival.setDly(false);
             arrivals.add(arrival);
         }
         return arrivals;

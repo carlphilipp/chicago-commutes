@@ -210,7 +210,7 @@ public class BusActivity extends Activity {
                     if (mapRes.containsKey(destination)) {
                         final TextView arrivalView = mapRes.get(destination);
                         String arrivalText;
-                        if (arrival.getIsDly()) {
+                        if (arrival.isDly()) {
                             arrivalText = arrivalView.getText() + " Delay";
                         } else {
                             arrivalText = arrivalView.getText() + " " + arrival.getTimeLeft();
@@ -219,7 +219,7 @@ public class BusActivity extends Activity {
                     } else {
                         final TextView arrivalView = new TextView(ChicagoTracker.getContext());
                         String arrivalText;
-                        if (arrival.getIsDly()) {
+                        if (arrival.isDly()) {
                             arrivalText = arrival.getBusDestination() + ": Delay";
                         } else {
                             arrivalText = arrival.getBusDestination() + ": " + arrival.getTimeLeft();

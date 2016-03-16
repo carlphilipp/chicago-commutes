@@ -19,7 +19,6 @@ package fr.cph.chicago.entity;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import fr.cph.chicago.entity.enumeration.TrainLine;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,171 +28,132 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import fr.cph.chicago.entity.enumeration.TrainLine;
+import lombok.Data;
+
 /**
  * Station entity
  *
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@Data
 public class Station implements Comparable<Station>, Parcelable {
-	/**
-	 * The id
-	 **/
-	private int id;
-	/**
-	 * The name
-	 **/
-	private String name;
-	/**
-	 * The stops list
-	 **/
-	private List<Stop> stops;
+    /**
+     * The id
+     **/
+    private int id;
+    /**
+     * The name
+     **/
+    private String name;
+    /**
+     * The stops list
+     **/
+    private List<Stop> stops;
 
-	public Station() {
+    public Station() {
+    }
 
-	}
+    /**
+     * @param in
+     */
+    private Station(final Parcel in) {
+        readFromParcel(in);
+    }
 
-	/**
-	 * @param in
-	 */
-	private Station(Parcel in) {
-		readFromParcel(in);
-	}
+    @Override
+    public final String toString() {
+        StringBuilder stb = new StringBuilder();
+        stb.append("[Id=").append(id);
+        stb.append(";name=").append(name);
+        if (stops != null) {
+            stb.append(";stops=").append(stops);
+        }
+        if (getLines().size() > 0) {
+            stb.append(";lines=").append(getLines());
+        }
+        stb.append("]");
+        return stb.toString();
+    }
 
-	/**
-	 * @return
-	 */
-	public final int getId() {
-		return id;
-	}
+    /**
+     * @return
+     */
+    public final Set<TrainLine> getLines() {
+        if (stops != null) {
+            Set<TrainLine> lines = new TreeSet<>();
+            for (final Stop stop : stops) {
+                for (final TrainLine trainLine : stop.getLines()) {
+                    lines.add(trainLine);
+                }
+            }
+            return lines;
+        } else {
+            return Collections.emptySet();
+        }
+    }
 
-	/**
-	 * @param id
-	 */
-	public final void setId(final int id) {
-		this.id = id;
-	}
+    public final Map<TrainLine, List<Stop>> getStopByLines() {
+        Map<TrainLine, List<Stop>> result = new TreeMap<>();
+        List<Stop> stops = getStops();
+        for (final Stop stop : stops) {
+            List<TrainLine> lines = stop.getLines();
+            for (TrainLine tl : lines) {
+                List<Stop> stopss;
+                if (result.containsKey(tl)) {
+                    stopss = result.get(tl);
+                    stopss.add(stop);
+                } else {
+                    stopss = new ArrayList<>();
+                    stopss.add(stop);
+                    result.put(tl, stopss);
+                }
+            }
+        }
+        return result;
+    }
 
-	/**
-	 * @return
-	 */
-	public final String getName() {
-		return name;
-	}
+    @Override
+    public final int compareTo(@NonNull final Station another) {
+        return this.getName().compareTo(another.getName());
+    }
 
-	/**
-	 * @param name
-	 */
-	public final void setName(final String name) {
-		this.name = name;
-	}
+    public List<Position> getStopsPosition() {
+        List<Position> positions = new ArrayList<>();
+        for (Stop stop : stops) {
+            positions.add(stop.getPosition());
+        }
+        return positions;
+    }
 
-	/**
-	 * @return
-	 */
-	public final List<Stop> getStops() {
-		return stops;
-	}
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
-	/**
-	 * @param stops
-	 */
-	public final void setStops(final List<Stop> stops) {
-		this.stops = stops;
-	}
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(name);
+        dest.writeList(stops);
+    }
 
-	@Override
-	public final String toString() {
-		StringBuilder stb = new StringBuilder();
-		stb.append("[Id=").append(id);
-		stb.append(";name=").append(name);
-		if (stops != null) {
-			stb.append(";stops=").append(stops);
-		}
-		if (getLines().size() > 0) {
-			stb.append(";lines=").append(getLines());
-		}
-		stb.append("]");
-		return stb.toString();
-	}
+    private void readFromParcel(Parcel in) {
+        id = in.readInt();
+        name = in.readString();
+        stops = new ArrayList<>();
+        in.readList(stops, Stop.class.getClassLoader());
+    }
 
-	/**
-	 * @return
-	 */
-	public final Set<TrainLine> getLines() {
-		if (stops != null) {
-			Set<TrainLine> lines = new TreeSet<>();
-			for (final Stop stop : stops) {
-				for (final TrainLine trainLine : stop.getLines()) {
-					lines.add(trainLine);
-				}
-			}
-			return lines;
-		} else {
-			return Collections.emptySet();
-		}
-	}
+    public static final Parcelable.Creator<Station> CREATOR = new Parcelable.Creator<Station>() {
+        public Station createFromParcel(Parcel in) {
+            return new Station(in);
+        }
 
-	public final Map<TrainLine, List<Stop>> getStopByLines() {
-		Map<TrainLine, List<Stop>> result = new TreeMap<>();
-		List<Stop> stops = getStops();
-		for (final Stop stop : stops) {
-			List<TrainLine> lines = stop.getLines();
-			for (TrainLine tl : lines) {
-				List<Stop> stopss;
-				if (result.containsKey(tl)) {
-					stopss = result.get(tl);
-					stopss.add(stop);
-				} else {
-					stopss = new ArrayList<>();
-					stopss.add(stop);
-					result.put(tl, stopss);
-				}
-			}
-		}
-		return result;
-	}
-
-	@Override
-	public final int compareTo(@NonNull final Station another) {
-		return this.getName().compareTo(another.getName());
-	}
-
-	public List<Position> getStopsPosition() {
-		List<Position> positions = new ArrayList<>();
-		for (Stop stop : stops) {
-			positions.add(stop.getPosition());
-		}
-		return positions;
-	}
-
-	@Override
-	public int describeContents() {
-		return 0;
-	}
-
-	@Override
-	public void writeToParcel(Parcel dest, int flags) {
-		dest.writeInt(id);
-		dest.writeString(name);
-		dest.writeList(stops);
-	}
-
-	private void readFromParcel(Parcel in) {
-		id = in.readInt();
-		name = in.readString();
-		stops = new ArrayList<>();
-		in.readList(stops, Stop.class.getClassLoader());
-	}
-
-	public static final Parcelable.Creator<Station> CREATOR = new Parcelable.Creator<Station>() {
-		public Station createFromParcel(Parcel in) {
-			return new Station(in);
-		}
-
-		public Station[] newArray(int size) {
-			return new Station[size];
-		}
-	};
+        public Station[] newArray(int size) {
+            return new Station[size];
+        }
+    };
 
 }

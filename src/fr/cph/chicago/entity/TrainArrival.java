@@ -18,11 +18,13 @@ package fr.cph.chicago.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import fr.cph.chicago.entity.enumeration.TrainLine;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import fr.cph.chicago.entity.enumeration.TrainLine;
+import lombok.Data;
 
 /**
  * Train Arrival entity
@@ -30,138 +32,80 @@ import java.util.List;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@Data
 public class TrainArrival implements Parcelable {
-	/** The timestamp **/
-	private Date timeStamp;
-	/** The error code **/
-	private int errorCode;
-	/** The error message **/
-	private String errorMessage;
-	/** A list of Eta **/
-	private List<Eta> etas;
+    /**
+     * The timestamp
+     **/
+    private Date timeStamp;
+    /**
+     * The error code
+     **/
+    private int errorCode;
+    /**
+     * The error message
+     **/
+    private String errorMessage;
+    /**
+     * A list of Eta
+     **/
+    private List<Eta> etas;
 
-	/**
-	 *
-	 */
-	public TrainArrival() {
+    /**
+     *
+     */
+    public TrainArrival() {
+    }
 
-	}
+    /**
+     * @param in
+     */
+    private TrainArrival(final Parcel in) {
+        readFromParcel(in);
+    }
 
-	/**
-	 *
-	 * @param in
-	 */
-	private TrainArrival(Parcel in) {
-		readFromParcel(in);
-	}
+    /**
+     * @param line
+     * @return
+     */
+    public final List<Eta> getEtas(final TrainLine line) {
+        List<Eta> etas = new ArrayList<>();
+        for (Eta eta : getEtas()) {
+            if (eta.getRouteName() == line) {
+                etas.add(eta);
+            }
+        }
+        return etas;
+    }
 
-	/**
-	 *
-	 * @return
-	 */
-	public final Date getTimeStamp() {
-		return timeStamp;
-	}
+    @Override
+    public final int describeContents() {
+        return 0;
+    }
 
-	/**
-	 *
-	 * @param timeStamp
-	 */
-	public final void setTimeStamp(final Date timeStamp) {
-		this.timeStamp = timeStamp;
-	}
-
-	/**
-	 *
-	 * @return
-	 */
-	public final int getErrorCode() {
-		return errorCode;
-	}
-
-	/**
-	 *
-	 * @param errorCode
-	 */
-	public final void setErrorCode(final int errorCode) {
-		this.errorCode = errorCode;
-	}
-
-	/**
-	 *
-	 * @return
-	 */
-	public final String getErrorMessage() {
-		return errorMessage;
-	}
-
-	/**
-	 *
-	 * @param errorMessage
-	 */
-	public final void setErrorMessage(final String errorMessage) {
-		this.errorMessage = errorMessage;
-	}
-
-	/**
-	 *
-	 * @return
-	 */
-	public final List<Eta> getEtas() {
-		return etas;
-	}
-
-	/**
-	 *
-	 * @param etas
-	 */
-	public final void setEtas(final List<Eta> etas) {
-		this.etas = etas;
-	}
-
-	/**
-	 *
-	 * @param line
-	 * @return
-	 */
-	public final List<Eta> getEtas(final TrainLine line) {
-		List<Eta> etas = new ArrayList<>();
-		for (Eta eta : getEtas()) {
-			if (eta.getRouteName() == line) {
-				etas.add(eta);
-			}
-		}
-		return etas;
-	}
-
-	@Override
-	public final int describeContents() {
-		return 0;
-	}
-
-	@Override
-	public final void writeToParcel(final Parcel dest, final int flags) {
+    @Override
+    public final void writeToParcel(final Parcel dest, final int flags) {
 //		dest.writeLong(timeStamp.getTime());
 //		dest.writeInt(errorCode);
 //		dest.writeString(errorMessage);
-		dest.writeList(etas);
-	}
+        dest.writeList(etas);
+    }
 
-	private void readFromParcel(final Parcel in) {
+    private void readFromParcel(final Parcel in) {
 //		timeStamp = new Date(in.readLong());
 //		errorCode = in.readInt();
 //		errorMessage = in.readString();
-		etas = new ArrayList<>();
-		in.readList(etas, Eta.class.getClassLoader());
-	}
+        etas = new ArrayList<>();
+        in.readList(etas, Eta.class.getClassLoader());
+    }
 
-	public static final Parcelable.Creator<TrainArrival> CREATOR = new Parcelable.Creator<TrainArrival>() {
-		public TrainArrival createFromParcel(Parcel in) {
-			return new TrainArrival(in);
-		}
+    public static final Parcelable.Creator<TrainArrival> CREATOR = new Parcelable.Creator<TrainArrival>() {
+        public TrainArrival createFromParcel(Parcel in) {
+            return new TrainArrival(in);
+        }
 
-		public TrainArrival[] newArray(int size) {
-			return new TrainArrival[size];
-		}
-	};
+        public TrainArrival[] newArray(int size) {
+            return new TrainArrival[size];
+        }
+    };
 }

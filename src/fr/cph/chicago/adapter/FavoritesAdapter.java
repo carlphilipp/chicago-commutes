@@ -169,7 +169,6 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         addTitleToView(holder.lineTitleLayout, station.getLines());
 
         final LinearLayout.LayoutParams paramsArrival = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-       // final LinearLayout.LayoutParams textParamDerp = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
         final Set<TrainLine> setTL = station.getLines();
 
@@ -194,7 +193,6 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                     trainLineTextView.setWidth((int) pixels);
                     trainLineTextView.setBackgroundColor(tl.getColor());
                     trainLineTextView.setGravity(Gravity.CENTER);
-                    //trainLineTextView.setLayoutParams(textParamDerp);
 
                     containerTrainLine.addView(trainLineTextView);
                     holder.mainLayout.addView(containerTrainLine);
@@ -215,7 +213,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                         final StringBuilder timingData = new StringBuilder();
                         final List<String> res = entry.getValue();
                         for (final String eta : res) {
-                            timingData.append(eta + " ");
+                            timingData.append(eta).append(" ");
                         }
                         timing.setText(timingData.toString());
                         timing.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));

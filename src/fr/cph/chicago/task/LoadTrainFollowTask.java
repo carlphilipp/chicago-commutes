@@ -87,8 +87,8 @@ public class LoadTrainFollowTask extends AsyncTask<String, Void, List<Eta>> {
 
             // Add a fake Eta cell to alert the user about the fact that only a part of the result is displayed
             final Eta eta = new Eta();
-            eta.setIsDly(false);
-            eta.setIsApp(false);
+            eta.setDly(false);
+            eta.setApp(false);
             final Date currentDate = Calendar.getInstance().getTime();
             eta.setArrivalDepartureDate(currentDate);
             eta.setPredictionDate(currentDate);

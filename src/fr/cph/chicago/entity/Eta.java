@@ -20,6 +20,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import fr.cph.chicago.entity.enumeration.TrainLine;
+import lombok.Data;
 
 import java.util.Date;
 import java.util.Locale;
@@ -31,6 +32,7 @@ import java.util.concurrent.TimeUnit;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@Data
 public final class Eta implements Comparable<Eta>, Parcelable {
 	/**
 	 * The station
@@ -99,210 +101,13 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	 *
 	 */
 	public Eta() {
-
 	}
 
 	/**
 	 * @param in
 	 */
-	private Eta(Parcel in) {
+	private Eta(final Parcel in) {
 		readFromParcel(in);
-	}
-
-	/**
-	 * @return
-	 */
-	public final Station getStation() {
-		return station;
-	}
-
-	/**
-	 * @param station
-	 */
-	public final void setStation(final Station station) {
-		this.station = station;
-	}
-
-	/**
-	 * @return
-	 */
-	public final Stop getStop() {
-		return stop;
-	}
-
-	/**
-	 * @param stop
-	 */
-	public final void setStop(final Stop stop) {
-		this.stop = stop;
-	}
-
-	/**
-	 * @return
-	 */
-	public final int getRunNumber() {
-		return runNumber;
-	}
-
-	/**
-	 * @param runNumber
-	 */
-	public final void setRunNumber(final int runNumber) {
-		this.runNumber = runNumber;
-	}
-
-	/**
-	 * @return
-	 */
-	public final TrainLine getRouteName() {
-		return routeName;
-	}
-
-	/**
-	 * @param routeName
-	 */
-	public final void setRouteName(final TrainLine routeName) {
-		this.routeName = routeName;
-	}
-
-	/**
-	 * @return
-	 */
-	public final int getTrainRouteDirectionCode() {
-		return trainRouteDirectionCode;
-	}
-
-	/**
-	 * @param trainRouteDirectionCode
-	 */
-	public final void setTrainRouteDirectionCode(final int trainRouteDirectionCode) {
-		this.trainRouteDirectionCode = trainRouteDirectionCode;
-	}
-
-	/**
-	 * @return
-	 */
-	public final Date getPredictionDate() {
-		return predictionDate;
-	}
-
-	/**
-	 * @param predictionDate
-	 */
-	public final void setPredictionDate(final Date predictionDate) {
-		this.predictionDate = predictionDate;
-	}
-
-	/**
-	 * @return
-	 */
-	public final Date getArrivalDepartureDate() {
-		return arrivalDepartureDate;
-	}
-
-	/**
-	 * @param arrivalDepartureDate
-	 */
-	public final void setArrivalDepartureDate(final Date arrivalDepartureDate) {
-		this.arrivalDepartureDate = arrivalDepartureDate;
-	}
-
-	/**
-	 * @return
-	 */
-	public final boolean getIsApp() {
-		return isApp;
-	}
-
-	/**
-	 * @param isApp
-	 */
-	public final void setIsApp(final Boolean isApp) {
-		this.isApp = isApp;
-	}
-
-	/**
-	 * @return
-	 */
-	public final boolean getIsSch() {
-		return isSch;
-	}
-
-	/**
-	 * @param isSch
-	 */
-	public final void setIsSch(final boolean isSch) {
-		this.isSch = isSch;
-	}
-
-	/**
-	 * @return
-	 */
-	public final boolean getIsFlt() {
-		return isFlt;
-	}
-
-	/**
-	 * @param isFlt
-	 */
-	public final void setIsFlt(final boolean isFlt) {
-		this.isFlt = isFlt;
-	}
-
-	/**
-	 * @return
-	 */
-	public final boolean getIsDly() {
-		return isDly;
-	}
-
-	/**
-	 * @param isDly
-	 */
-	public final void setIsDly(final boolean isDly) {
-		this.isDly = isDly;
-	}
-
-	/**
-	 * @return
-	 */
-	public final String getFlags() {
-		return flags;
-	}
-
-	/**
-	 * @param flags
-	 */
-	public final void setFlags(final String flags) {
-		this.flags = flags;
-	}
-
-	/**
-	 * @return
-	 */
-	public final Position getPosition() {
-		return position;
-	}
-
-	/**
-	 * @param position
-	 */
-	public final void setPosition(final Position position) {
-		this.position = position;
-	}
-
-	/**
-	 * @return
-	 */
-	public final int getHeading() {
-		return heading;
-	}
-
-	/**
-	 * @param heading
-	 */
-	public final void setHeading(final int heading) {
-		this.heading = heading;
 	}
 
 	/**
@@ -318,10 +123,10 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	 */
 	public final String getTimeLeftDueDelay() {
 		String result;
-		if (getIsDly()) {
+		if (isDly()) {
 			result = "Delay";
 		} else {
-			if (getIsApp()) {
+			if (isApp()) {
 				result = "Due";
 			} else {
 				result = getTimeLeft();

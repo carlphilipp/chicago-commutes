@@ -21,12 +21,15 @@ import android.os.Parcelable;
 
 import java.io.Serializable;
 
+import lombok.Data;
+
 /**
  * The position
  *
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@Data
 public class Position implements Parcelable, Serializable {
 	/**
 	 * Serializable
@@ -58,36 +61,8 @@ public class Position implements Parcelable, Serializable {
 		this.longitude = longitude;
 	}
 
-	private Position(Parcel in) {
+	private Position(final Parcel in) {
 		readFromParcel(in);
-	}
-
-	/**
-	 * @return
-	 */
-	public final double getLatitude() {
-		return latitude;
-	}
-
-	/**
-	 * @param latitude
-	 */
-	public final void setLatitude(final double latitude) {
-		this.latitude = latitude;
-	}
-
-	/**
-	 * @return
-	 */
-	public final double getLongitude() {
-		return longitude;
-	}
-
-	/**
-	 * @param longitude
-	 */
-	public final void setLongitude(final double longitude) {
-		this.longitude = longitude;
 	}
 
 	@Override

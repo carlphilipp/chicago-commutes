@@ -16,10 +16,11 @@
 
 package fr.cph.chicago.entity;
 
-import fr.cph.chicago.entity.enumeration.BusDirection;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import fr.cph.chicago.entity.enumeration.BusDirection;
+import lombok.Data;
 
 /**
  * Bus directions entity
@@ -27,57 +28,25 @@ import java.util.List;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@Data
 public final class BusDirections {
-	private String id;
-	private List<BusDirection> lBusDirection;
+    private String id;
+    private List<BusDirection> lBusDirection;
 
-	/**
-	 * Constructor
-	 */
-	public BusDirections() {
-		lBusDirection = new ArrayList<>();
-	}
+    /**
+     * Constructor
+     */
+    public BusDirections() {
+        lBusDirection = new ArrayList<>();
+    }
 
-	/**
-	 *
-	 * @return
-	 */
-	public final String getId() {
-		return id;
-	}
-
-	/**
-	 *
-	 * @param id
-	 */
-	public final void setId(final String id) {
-		this.id = id;
-	}
-
-	/**
-	 *
-	 * @return
-	 */
-	public final List<BusDirection> getlBusDirection() {
-		return lBusDirection;
-	}
-
-	/**
-	 *
-	 * @param lBusDirection
-	 */
-	public final void setlBusDirection(final List<BusDirection> lBusDirection) {
-		this.lBusDirection = lBusDirection;
-	}
-
-	/**
-	 *
-	 * @param dir
-	 */
-	public final void addBusDirection(final BusDirection dir) {
-		if (!lBusDirection.contains(dir)) {
-			lBusDirection.add(dir);
-		}
-	}
+    /**
+     * @param dir
+     */
+    public final void addBusDirection(final BusDirection dir) {
+        if (!lBusDirection.contains(dir)) {
+            lBusDirection.add(dir);
+        }
+    }
 
 }

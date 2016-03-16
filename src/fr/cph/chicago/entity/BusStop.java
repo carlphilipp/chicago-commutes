@@ -22,123 +22,83 @@ import android.support.annotation.NonNull;
 
 import java.io.Serializable;
 
+import lombok.Data;
+
 /**
  * Bus stop entity
  *
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@Data
 public final class BusStop implements Comparable<BusStop>, Parcelable, Serializable {
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 0L;
-	/**
-	 * The id
-	 **/
-	private int id;
-	/**
-	 * The name
-	 **/
-	private String name;
-	/**
-	 * The position
-	 **/
-	private Position position;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 0L;
+    /**
+     * The id
+     **/
+    private int id;
+    /**
+     * The name
+     **/
+    private String name;
+    /**
+     * The position
+     **/
+    private Position position;
 
-	/**
-	 *
-	 */
-	public BusStop() {
+    /**
+     *
+     */
+    public BusStop() {
+    }
 
-	}
+    /**
+     * @param in
+     */
+    private BusStop(final Parcel in) {
+        readFromParcel(in);
+    }
 
-	/**
-	 * @param in
-	 */
-	private BusStop(final Parcel in) {
-		readFromParcel(in);
-	}
+    @Override
+    public final String toString() {
+        return "[id:" + getId() + ";name:" + getName() + ";position:" + getPosition() + "]";
+    }
 
-	/**
-	 * @return
-	 */
-	public final int getId() {
-		return id;
-	}
+    @Override
+    public int compareTo(@NonNull final BusStop another) {
+        Position position = another.getPosition();
+        int latitude = Double.compare(getPosition().getLatitude(), position.getLatitude());
+        return latitude == 0 ? Double.compare(getPosition().getLongitude(), position.getLongitude()) : latitude;
+    }
 
-	/**
-	 * @param id
-	 */
-	public final void setId(final int id) {
-		this.id = id;
-	}
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
-	/**
-	 * @return
-	 */
-	public final String getName() {
-		return name;
-	}
+    @Override
+    public final void writeToParcel(final Parcel dest, final int flags) {
+        dest.writeInt(id);
+        dest.writeString(name);
+        dest.writeParcelable(position, flags);
+    }
 
-	/**
-	 * @param name
-	 */
-	public final void setName(final String name) {
-		this.name = name;
-	}
+    private void readFromParcel(final Parcel in) {
+        id = in.readInt();
+        name = in.readString();
+        position = in.readParcelable(Position.class.getClassLoader());
+    }
 
-	/**
-	 * @return
-	 */
-	public final Position getPosition() {
-		return position;
-	}
+    public static final Parcelable.Creator<BusStop> CREATOR = new Parcelable.Creator<BusStop>() {
+        public BusStop createFromParcel(Parcel in) {
+            return new BusStop(in);
+        }
 
-	/**
-	 * @param position
-	 */
-	public final void setPosition(final Position position) {
-		this.position = position;
-	}
-
-	@Override
-	public final String toString() {
-		return "[id:" + getId() + ";name:" + getName() + ";position:" + getPosition() + "]";
-	}
-
-	@Override
-	public int compareTo(@NonNull final BusStop another) {
-		Position position = another.getPosition();
-		int latitude = Double.compare(getPosition().getLatitude(), position.getLatitude());
-		return latitude == 0 ? Double.compare(getPosition().getLongitude(), position.getLongitude()) : latitude;
-	}
-
-	@Override
-	public int describeContents() {
-		return 0;
-	}
-
-	@Override
-	public final void writeToParcel(final Parcel dest, final int flags) {
-		dest.writeInt(id);
-		dest.writeString(name);
-		dest.writeParcelable(position, flags);
-	}
-
-	private void readFromParcel(final Parcel in) {
-		id = in.readInt();
-		name = in.readString();
-		position = in.readParcelable(Position.class.getClassLoader());
-	}
-
-	public static final Parcelable.Creator<BusStop> CREATOR = new Parcelable.Creator<BusStop>() {
-		public BusStop createFromParcel(Parcel in) {
-			return new BusStop(in);
-		}
-
-		public BusStop[] newArray(int size) {
-			return new BusStop[size];
-		}
-	};
+        public BusStop[] newArray(int size) {
+            return new BusStop[size];
+        }
+    };
 }

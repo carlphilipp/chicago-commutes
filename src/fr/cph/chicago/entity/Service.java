@@ -16,138 +16,42 @@
 
 package fr.cph.chicago.entity;
 
+import lombok.Data;
+
 /**
  * Service entity
  *
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@Data
 public class Service {
-	/** The service type **/
-	private String type;
-	/** The description type **/
-	private String typeDescription;
-	/** The name **/
-	private String name;
-	/** The id **/
-	private String id;
-	/** The back color **/
-	private String backColor;
-	/** The text color **/
-	private String textColor;
-	/** The url **/
-	private String url;
-
-	/**
-	 *
-	 * @return
-	 */
-	public final String getType() {
-		return type;
-	}
-
-	/**
-	 *
-	 * @param type
-	 */
-	public final void setType(String type) {
-		this.type = type;
-	}
-
-	/**
-	 *
-	 * @return
-	 */
-	public final String getTypeDescription() {
-		return typeDescription;
-	}
-
-	/**
-	 *
-	 * @param typeDescription
-	 */
-	public final void setTypeDescription(String typeDescription) {
-		this.typeDescription = typeDescription;
-	}
-
-	/**
-	 *
-	 * @return
-	 */
-	public final String getName() {
-		return name;
-	}
-
-	/**
-	 *
-	 * @param name
-	 */
-	public final void setName(String name) {
-		this.name = name;
-	}
-
-	/**
-	 *
-	 * @return
-	 */
-	public final String getId() {
-		return id;
-	}
-
-	/**
-	 *
-	 * @param id
-	 */
-	public final void setId(String id) {
-		this.id = id;
-	}
-
-	/**
-	 *
-	 * @return
-	 */
-	public final String getBackColor() {
-		return backColor;
-	}
-
-	/**
-	 *
-	 * @param backColor
-	 */
-	public final void setBackColor(String backColor) {
-		this.backColor = backColor;
-	}
-
-	/**
-	 *
-	 * @return
-	 */
-	public final String getTextColor() {
-		return textColor;
-	}
-
-	/**
-	 *
-	 * @param textColor
-	 */
-	public final void setTextColor(String textColor) {
-		this.textColor = textColor;
-	}
-
-	/**
-	 *
-	 * @return
-	 */
-	public final String getUrl() {
-		return url;
-	}
-
-	/**
-	 *
-	 * @param url
-	 */
-	public final void setUrl(String url) {
-		this.url = url;
-	}
-
+    /**
+     * The service type
+     **/
+    private String type;
+    /**
+     * The description type
+     **/
+    private String typeDescription;
+    /**
+     * The name
+     **/
+    private String name;
+    /**
+     * The id
+     **/
+    private String id;
+    /**
+     * The back color
+     **/
+    private String backColor;
+    /**
+     * The text color
+     **/
+    private String textColor;
+    /**
+     * The url
+     **/
+    private String url;
 }
