@@ -28,7 +28,7 @@
         <item name="android:textColorPrimary">@color/colorTextPrimary</item>
         <item name="android:textColorSecondary">@color/colorTextSecondary</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <!--<item name="preferenceTheme">@style/PreferenceThemeOverlay</item>-->
     </style>
 
 
