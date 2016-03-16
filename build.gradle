@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.0-alpha1'
+        classpath group: 'com.android.tools.build', name: 'gradle', version: "$android_tools_build_version"
     }
 }
 
@@ -15,19 +15,17 @@ dependencies {
     }
     compile group: 'com.google.android.gms', name: 'play-services-maps', version: "$google_play_version"
     compile group: 'com.google.android.gms', name: 'play-services-analytics', version: "$google_play_version"
-    compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.1'
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
-    compile group: 'commons-io', name: 'commons-io', version: '2.4'
-    compile group: 'com.univocity', name: 'univocity-parsers', version: '2.0.0'
-    compile group: 'com.android.support', name: 'appcompat-v7', version: '24.0.0-alpha1'
-    compile group: 'com.android.support', name: 'design', version: '24.0.0-alpha1'
-    compile group: 'com.android.support', name: 'support-v4', version: '24.0.0-alpha1'
-    //compile group: 'com.android.support', name: 'preference-v7', version: '24.0.0-alpha1'
-    compile group: 'com.android.support', name: 'cardview-v7', version: '24.0.0-alpha1'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.7.1'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.7.1'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.7.1'
-
+    compile group: 'org.apache.commons', name: 'commons-collections4', version: "$commons_collections4_version"
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: "$commons_lang3_version"
+    compile group: 'commons-io', name: 'commons-io', version: "$commons_io_version"
+    compile group: 'com.univocity', name: 'univocity-parsers', version: "$univocity_parsers_version"
+    compile group: 'com.android.support', name: 'appcompat-v7', version: "$google_support_version"
+    compile group: 'com.android.support', name: 'design', version: "$google_support_version"
+    compile group: 'com.android.support', name: 'support-v4', version: "$google_support_version"
+    compile group: 'com.android.support', name: 'cardview-v7', version: "$google_support_version"
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: "$jackson_version_version"
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "$jackson_version_version"
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: "$jackson_version_version"
 }
 
 android {
@@ -103,5 +101,5 @@ android {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.11'
+    gradleVersion = '2.12'
 }
