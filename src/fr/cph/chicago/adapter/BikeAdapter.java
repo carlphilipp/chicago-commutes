@@ -19,6 +19,7 @@ package fr.cph.chicago.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +51,7 @@ public final class BikeAdapter extends BaseAdapter {
      *
      * @param activity the main activity
      */
-    public BikeAdapter(final MainActivity activity) {
+    public BikeAdapter(@NonNull final MainActivity activity) {
         this.mainActivity = activity;
         final Bundle bundle = activity.getIntent().getExtras();
         this.bikeStations = bundle.getParcelableArrayList(mainActivity.getString(R.string.bundle_bike_stations));
@@ -107,7 +108,7 @@ public final class BikeAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public void setBikeStations(final List<BikeStation> bikeStations) {
+    public void setBikeStations(@NonNull final List<BikeStation> bikeStations) {
         this.bikeStations = bikeStations;
     }
 

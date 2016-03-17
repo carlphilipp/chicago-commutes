@@ -19,6 +19,7 @@ package fr.cph.chicago.fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -165,7 +166,7 @@ public class BikeFragment extends Fragment {
         errorLayout.setVisibility(RelativeLayout.VISIBLE);
     }
 
-    public final void setBikeStations(final List<BikeStation> bikeStations) {
+    public final void setBikeStations(@NonNull final List<BikeStation> bikeStations) {
         this.bikeStations = bikeStations;
         if (bikeAdapter == null) {
             loadList();
