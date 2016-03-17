@@ -17,6 +17,7 @@
 package fr.cph.chicago.task;
 
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 
 import fr.cph.chicago.activity.BaseActivity;
 import fr.cph.chicago.data.BusData;
@@ -37,7 +38,7 @@ public class LoadLocalDataTask extends AsyncTask<Void, String, Void> {
     private BusData busData;
     private TrainData trainData;
 
-    public LoadLocalDataTask(final BaseActivity activity) {
+    public LoadLocalDataTask(@NonNull final BaseActivity activity) {
         this.activity = activity;
     }
 

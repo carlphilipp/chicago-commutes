@@ -16,6 +16,7 @@
 
 package fr.cph.chicago.connection;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.util.Util;
@@ -103,6 +104,7 @@ public class CtaConnect {
 	 *
 	 * @return a CtaConnect instance
 	 */
+    @NonNull
 	public static CtaConnect getInstance() {
 		if (instance == null) {
 			instance = new CtaConnect();
@@ -118,7 +120,8 @@ public class CtaConnect {
 	 * @return a string
 	 * @throws ConnectException
 	 */
-	public final InputStream connect(final CtaRequestType requestType, final MultiValuedMap<String, String> params) throws ConnectException {
+    @NonNull
+	public final InputStream connect(@NonNull final CtaRequestType requestType, @NonNull final MultiValuedMap<String, String> params) throws ConnectException {
 		final StringBuilder address;
 		switch (requestType) {
 		case TRAIN_ARRIVALS:
@@ -168,7 +171,8 @@ public class CtaConnect {
 	 * @return the answer
 	 * @throws ConnectException
 	 */
-	private InputStream connectUrl(final String address) throws ConnectException {
+    @NonNull
+	private InputStream connectUrl(@NonNull final String address) throws ConnectException {
 		final HttpURLConnection urlConnection;
 		final InputStream inputStream;
 		try {

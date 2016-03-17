@@ -18,6 +18,7 @@ package fr.cph.chicago.task;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.widget.Toast;
@@ -47,7 +48,7 @@ public class DivvyAsyncTask extends AsyncTask<Void, Void, List<BikeStation>> {
     private int bikeStationId;
     private SwipeRefreshLayout swipeRefreshLayout;
 
-    public DivvyAsyncTask(final BikeStationActivity activity, final int bikeStationId, final SwipeRefreshLayout swipeRefreshLayout) {
+    public DivvyAsyncTask(@NonNull final BikeStationActivity activity, final int bikeStationId, @NonNull final SwipeRefreshLayout swipeRefreshLayout) {
         this.activity = activity;
         this.bikeStationId = bikeStationId;
         this.swipeRefreshLayout = swipeRefreshLayout;

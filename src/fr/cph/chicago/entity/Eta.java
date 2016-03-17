@@ -106,13 +106,14 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	/**
 	 * @param in
 	 */
-	private Eta(final Parcel in) {
+	private Eta(@NonNull final Parcel in) {
 		readFromParcel(in);
 	}
 
 	/**
 	 * @return
 	 */
+    @NonNull
 	public final String getTimeLeft() {
 		long time = arrivalDepartureDate.getTime() - predictionDate.getTime();
 		return String.format(Locale.ENGLISH, "%d min", TimeUnit.MILLISECONDS.toMinutes(time));
@@ -121,6 +122,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	/**
 	 * @return
 	 */
+    @NonNull
 	public final String getTimeLeftDueDelay() {
 		String result;
 		if (isDly()) {
@@ -152,6 +154,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	/**
 	 * @return
 	 */
+    @NonNull
 	public final String getDestName() {
 		return destName;
 	}
@@ -159,7 +162,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	/**
 	 * @param destName
 	 */
-	public final void setDestName(final String destName) {
+	public final void setDestName(@NonNull final String destName) {
 		this.destName = destName;
 	}
 
@@ -198,7 +201,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	@Override
-	public void writeToParcel(Parcel dest, int flags) {
+	public void writeToParcel(final Parcel dest, final int flags) {
 		dest.writeParcelable(station, flags);
 		dest.writeParcelable(stop, flags);
 		dest.writeInt(runNumber);
@@ -217,7 +220,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 		dest.writeInt(heading);
 	}
 
-	private void readFromParcel(Parcel in) {
+	private void readFromParcel(@NonNull final Parcel in) {
 		station = in.readParcelable(Station.class.getClassLoader());
 		stop = in.readParcelable(Stop.class.getClassLoader());
 		runNumber = in.readInt();
@@ -237,11 +240,11 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	public static final Parcelable.Creator<Eta> CREATOR = new Parcelable.Creator<Eta>() {
-		public Eta createFromParcel(Parcel in) {
+		public Eta createFromParcel(final Parcel in) {
 			return new Eta(in);
 		}
 
-		public Eta[] newArray(int size) {
+		public Eta[] newArray(final int size) {
 			return new Eta[size];
 		}
 	};

@@ -18,6 +18,7 @@ package fr.cph.chicago.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import lombok.Data;
 
@@ -57,7 +58,7 @@ public class PatternPoint implements Parcelable {
     /**
      * @param in
      */
-    private PatternPoint(final Parcel in) {
+    private PatternPoint(@NonNull final Parcel in) {
         readFromParcel(in);
     }
 
@@ -67,7 +68,7 @@ public class PatternPoint implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeInt(sequence);
         dest.writeParcelable(position, flags);
         dest.writeString(type);
@@ -76,7 +77,7 @@ public class PatternPoint implements Parcelable {
         dest.writeDouble(distance);
     }
 
-    private void readFromParcel(Parcel in) {
+    private void readFromParcel(@NonNull final Parcel in) {
         sequence = in.readInt();
         position = in.readParcelable(Position.class.getClassLoader());
         type = in.readString();
@@ -86,11 +87,11 @@ public class PatternPoint implements Parcelable {
     }
 
     public static final Parcelable.Creator<PatternPoint> CREATOR = new Parcelable.Creator<PatternPoint>() {
-        public PatternPoint createFromParcel(Parcel in) {
+        public PatternPoint createFromParcel(final Parcel in) {
             return new PatternPoint(in);
         }
 
-        public PatternPoint[] newArray(int size) {
+        public PatternPoint[] newArray(final int size) {
             return new PatternPoint[size];
         }
     };

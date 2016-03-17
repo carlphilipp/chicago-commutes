@@ -69,7 +69,7 @@ public class Stop implements Comparable<Stop>, Parcelable {
     /**
      * @param in
      */
-    private Stop(final Parcel in) {
+    private Stop(@NonNull final Parcel in) {
         readFromParcel(in);
     }
 
@@ -105,7 +105,7 @@ public class Stop implements Comparable<Stop>, Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeInt(id);
         dest.writeString(description);
         dest.writeString(direction.toTextString());
@@ -118,7 +118,7 @@ public class Stop implements Comparable<Stop>, Parcelable {
         dest.writeStringList(linesString);
     }
 
-    private void readFromParcel(Parcel in) {
+    private void readFromParcel(@NonNull final Parcel in) {
         id = in.readInt();
         description = in.readString();
         direction = TrainDirection.fromString(in.readString());

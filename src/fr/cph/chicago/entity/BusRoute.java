@@ -18,6 +18,7 @@ package fr.cph.chicago.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import java.io.Serializable;
 
@@ -53,7 +54,7 @@ public final class BusRoute implements Parcelable, Serializable {
     /**
      * @param in
      */
-    private BusRoute(final Parcel in) {
+    private BusRoute(@NonNull final Parcel in) {
         readFromParcel(in);
     }
 
@@ -68,17 +69,17 @@ public final class BusRoute implements Parcelable, Serializable {
         dest.writeString(name);
     }
 
-    private void readFromParcel(final Parcel in) {
+    private void readFromParcel(@NonNull final Parcel in) {
         id = in.readString();
         name = in.readString();
     }
 
     public static final Parcelable.Creator<BusRoute> CREATOR = new Parcelable.Creator<BusRoute>() {
-        public BusRoute createFromParcel(Parcel in) {
+        public BusRoute createFromParcel(final Parcel in) {
             return new BusRoute(in);
         }
 
-        public BusRoute[] newArray(int size) {
+        public BusRoute[] newArray(final int size) {
             return new BusRoute[size];
         }
     };

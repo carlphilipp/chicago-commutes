@@ -16,6 +16,9 @@
 
 package fr.cph.chicago.entity.enumeration;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 /**
  * Enumeration, train direction
  *
@@ -24,54 +27,54 @@ package fr.cph.chicago.entity.enumeration;
  */
 public enum TrainDirection {
 
-	NORTH("N", "North"), SOUTH("S", "South"), EAST("E", "East"), WEST("W", "West");
+    NORTH("N", "North"), SOUTH("S", "South"), EAST("E", "East"), WEST("W", "West");
 
-	/** The text **/
-	private String text;
-	/** The formatted text **/
-	private String formattedText;
+    /**
+     * The text
+     **/
+    private String text;
+    /**
+     * The formatted text
+     **/
+    private String formattedText;
 
-	/**
-	 * Private constructor
-	 *
-	 * @param text
-	 *            the text
-	 * @param formattedText
-	 *            the formatted text
-	 */
-	TrainDirection(final String text, final String formattedText) {
-		this.text = text;
-		this.formattedText = formattedText;
-	}
+    /**
+     * Private constructor
+     *
+     * @param text          the text
+     * @param formattedText the formatted text
+     */
+    TrainDirection(final String text, final String formattedText) {
+        this.text = text;
+        this.formattedText = formattedText;
+    }
 
-	/**
-	 * Get train direction from string
-	 *
-	 * @param text
-	 *            the text
-	 * @return the train direction
-	 */
-	public static TrainDirection fromString(final String text) {
-		if (text != null) {
-			for (TrainDirection b : TrainDirection.values()) {
-				if (text.equalsIgnoreCase(b.text)) {
-					return b;
-				}
-			}
-		}
-		return null;
-	}
+    /**
+     * Get train direction from string
+     *
+     * @param text the text
+     * @return the train direction
+     */
+    @Nullable
+    public static TrainDirection fromString(@NonNull final String text) {
+        for (TrainDirection b : TrainDirection.values()) {
+            if (text.equalsIgnoreCase(b.text)) {
+                return b;
+            }
+        }
+        return null;
+    }
 
-	@Override
-	public final String toString() {
-		return this.formattedText;
-	}
+    @Override
+    public final String toString() {
+        return this.formattedText;
+    }
 
-	/**
-	 *
-	 * @return
-	 */
-	public final String toTextString() {
-		return this.text;
-	}
+    /**
+     * @return
+     */
+    @NonNull
+    public final String toTextString() {
+        return this.text;
+    }
 }

@@ -18,6 +18,7 @@ package fr.cph.chicago.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,14 +54,14 @@ public final class BusPattern implements Parcelable {
         this.points = new ArrayList<>();
     }
 
-    public final void addPoint(PatternPoint patternPoint) {
+    public final void addPoint(@NonNull PatternPoint patternPoint) {
         this.points.add(patternPoint);
     }
 
     /**
      * @param in
      */
-    private BusPattern(final Parcel in) {
+    private BusPattern(@NonNull final Parcel in) {
         readFromParcel(in);
     }
 
@@ -70,14 +71,14 @@ public final class BusPattern implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeInt(id);
         dest.writeDouble(length);
         dest.writeString(direction);
         dest.writeList(points);
     }
 
-    private void readFromParcel(Parcel in) {
+    private void readFromParcel(@NonNull final Parcel in) {
         id = in.readInt();
         length = in.readDouble();
         direction = in.readString();

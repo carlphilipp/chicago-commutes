@@ -16,6 +16,7 @@
 
 package fr.cph.chicago.connection;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 import fr.cph.chicago.exception.ConnectException;
 import org.apache.commons.io.IOUtils;
@@ -36,6 +37,7 @@ public class DivvyConnect {
 	private DivvyConnect() {
 	}
 
+    @NonNull
 	public static DivvyConnect getInstance() {
 		if (instance == null) {
 			instance = new DivvyConnect();
@@ -43,6 +45,7 @@ public class DivvyConnect {
 		return instance;
 	}
 
+    @NonNull
 	public final InputStream connect() throws ConnectException {
 		final InputStream inputStream;
 		try {

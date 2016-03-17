@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -68,6 +69,7 @@ public class BikeFragment extends Fragment {
      * @param sectionNumber the section number
      * @return the fragment
      */
+    @NonNull
     public static BikeFragment newInstance(final int sectionNumber) {
         final BikeFragment fragment = new BikeFragment();
         final Bundle args = new Bundle();
@@ -93,7 +95,8 @@ public class BikeFragment extends Fragment {
         Util.trackScreen(getString(R.string.analytics_bike_fragment));
     }
 
-    private List<BikeStation> getBikeStations(final Bundle savedInstanceState) {
+    @NonNull
+    private List<BikeStation> getBikeStations(@Nullable final Bundle savedInstanceState) {
         List<BikeStation> bikeStations;
         if (savedInstanceState != null) {
             bikeStations = savedInstanceState.getParcelableArrayList(getString(R.string.bundle_bike_stations));

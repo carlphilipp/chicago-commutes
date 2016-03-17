@@ -16,6 +16,7 @@
 
 package fr.cph.chicago.xml;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -96,7 +97,8 @@ public final class XmlParser {
      * @return a list of train arrival
      * @throws ParserException the parser exception
      */
-    public final SparseArray<TrainArrival> parseArrivals(final InputStream is, final TrainData trainData) throws ParserException {
+    @NonNull
+    public final SparseArray<TrainArrival> parseArrivals(@NonNull final InputStream is, @NonNull final TrainData trainData) throws ParserException {
         final SparseArray<TrainArrival> arrivals = new SparseArray<>();
         try {
             parser.setInput(is, "UTF-8");
@@ -336,7 +338,8 @@ public final class XmlParser {
      * @return a list of bus routes
      * @throws ParserException a parser exception
      */
-    public final List<BusRoute> parseBusRoutes(final InputStream xml) throws ParserException {
+    @NonNull
+    public final List<BusRoute> parseBusRoutes(@NonNull final InputStream xml) throws ParserException {
         final List<BusRoute> routes = new ArrayList<>();
         try {
             parser.setInput(xml, "UTF-8");
@@ -408,7 +411,8 @@ public final class XmlParser {
      * @return a bus directions
      * @throws ParserException a parser exception
      */
-    public final BusDirections parseBusDirections(final InputStream xml, final String id) throws ParserException {
+    @NonNull
+    public final BusDirections parseBusDirections(@NonNull final InputStream xml, @NonNull final String id) throws ParserException {
         final BusDirections directions = new BusDirections();
         directions.setId(id);
         try {
@@ -439,7 +443,8 @@ public final class XmlParser {
      * @return a list of bus stop
      * @throws ParserException a parser exception
      */
-    public final List<BusStop> parseBusBounds(final InputStream xml) throws ParserException {
+    @NonNull
+    public final List<BusStop> parseBusBounds(@NonNull final InputStream xml) throws ParserException {
         final List<BusStop> busStops = new ArrayList<>();
         String tagName = null;
         BusStop busStop = null;
@@ -496,7 +501,8 @@ public final class XmlParser {
      * @return a list of bus arrivals
      * @throws ParserException a parser exception
      */
-    public final List<BusArrival> parseBusArrivals(final InputStream xml) throws ParserException {
+    @NonNull
+    public final List<BusArrival> parseBusArrivals(@NonNull final InputStream xml) throws ParserException {
         final List<BusArrival> busArrivals = new ArrayList<>();
         String tagName = null;
         BusArrival busArrival = null;
@@ -583,7 +589,8 @@ public final class XmlParser {
      * @return a list of alert
      * @throws ParserException a parser exception
      */
-    public final List<BusPattern> parsePatterns(final InputStream xml) throws ParserException {
+    @NonNull
+    public final List<BusPattern> parsePatterns(@NonNull final InputStream xml) throws ParserException {
         final List<BusPattern> patterns = new ArrayList<>();
         String tagName = null;
         BusPattern pattern = null;
@@ -666,7 +673,8 @@ public final class XmlParser {
         return patterns;
     }
 
-    public final List<Bus> parseVehicles(final InputStream is) throws ParserException {
+    @NonNull
+    public final List<Bus> parseVehicles(@NonNull final InputStream is) throws ParserException {
         final List<Bus> buses = new ArrayList<>();
         String tagName = null;
         Bus bus = null;
@@ -735,7 +743,8 @@ public final class XmlParser {
         return buses;
     }
 
-    public final List<Train> parseTrainsLocation(final InputStream is) throws ParserException {
+    @NonNull
+    public final List<Train> parseTrainsLocation(@NonNull final InputStream is) throws ParserException {
         final List<Train> trains = new ArrayList<>();
         String tagName = null;
         Train train = null;
@@ -803,7 +812,8 @@ public final class XmlParser {
         return trains;
     }
 
-    public final List<Eta> parseTrainsFollow(final InputStream is, final TrainData data) throws ParserException {
+    @NonNull
+    public final List<Eta> parseTrainsFollow(@NonNull final InputStream is, @NonNull final TrainData data) throws ParserException {
         SparseArray<TrainArrival> arrivals = new SparseArray<>();
         try {
             parser.setInput(is, "UTF-8");

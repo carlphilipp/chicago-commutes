@@ -16,6 +16,8 @@
 
 package fr.cph.chicago.entity;
 
+import android.support.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,10 +45,9 @@ public final class BusDirections {
     /**
      * @param dir
      */
-    public final void addBusDirection(final BusDirection dir) {
+    public final void addBusDirection(@NonNull final BusDirection dir) {
         if (!lBusDirection.contains(dir)) {
             lBusDirection.add(dir);
         }
     }
-
 }

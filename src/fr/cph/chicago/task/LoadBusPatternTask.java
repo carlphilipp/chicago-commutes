@@ -19,6 +19,7 @@ package fr.cph.chicago.task;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -58,7 +59,7 @@ public class LoadBusPatternTask extends AsyncTask<Void, Void, BusPattern> {
     private String busRouteId;
     private String bound;
 
-    public LoadBusPatternTask(final BusBoundActivity activity, final MapFragment mapFragment, final String busRouteId, final String bound) {
+    public LoadBusPatternTask(@NonNull final BusBoundActivity activity, @NonNull final MapFragment mapFragment, @NonNull final String busRouteId, @NonNull final String bound) {
         this.activity = activity;
         this.mapFragment = mapFragment;
         this.busRouteId = busRouteId;

@@ -16,9 +16,9 @@
 
 package fr.cph.chicago.adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils.TruncateAt;
 import android.util.SparseArray;
@@ -83,7 +83,7 @@ public final class NearbyAdapter extends BaseAdapter {
     private Map<Integer, LinearLayout> layouts;
     private Map<Integer, View> views;
 
-    public NearbyAdapter(final MainActivity activity) {
+    public NearbyAdapter(@NonNull final MainActivity activity) {
         this.activity = activity;
         this.context = ChicagoTracker.getContext();
         this.busStops = new ArrayList<>();
@@ -302,7 +302,7 @@ public final class NearbyAdapter extends BaseAdapter {
     }
 
     // TODO play with view holder pattern here
-    private void handleBuses(final int position, View convertView, final LinearLayout.LayoutParams paramsLayout, final LinearLayout.LayoutParams paramsTextView, final int line1PaddingColor, final int stopsPaddingTop) {
+    private void handleBuses(final int position, @NonNull final View convertView, @NonNull final LinearLayout.LayoutParams paramsLayout, @NonNull final LinearLayout.LayoutParams paramsTextView, final int line1PaddingColor, final int stopsPaddingTop) {
         // Bus
         final int index = position - stations.size();
         final BusStop busStop = busStops.get(index);
@@ -382,7 +382,7 @@ public final class NearbyAdapter extends BaseAdapter {
     }
 
     // TODO play with view holder pattern here
-    private void handleBikes(final int position, View convertView, final LinearLayout.LayoutParams paramsLayout, final LinearLayout.LayoutParams paramsTextView, final int line1PaddingColor, final int stopsPaddingTop) {
+    private void handleBikes(final int position, @NonNull final View convertView, @NonNull final LinearLayout.LayoutParams paramsLayout, @NonNull final LinearLayout.LayoutParams paramsTextView, final int line1PaddingColor, final int stopsPaddingTop) {
         final int index = position - (stations.size() + busStops.size());
         final BikeStation bikeStation = bikeStations.get(index);
 
@@ -471,9 +471,13 @@ public final class NearbyAdapter extends BaseAdapter {
         });
     }
 
-    public final void updateData(final List<BusStop> busStops, final SparseArray<Map<String, List<BusArrival>>> busArrivals,
-                                 final List<Station> stations, final SparseArray<TrainArrival> trainArrivals, final List<BikeStation> bikeStations, final GoogleMap map,
-                                 final List<Marker> markers) {
+    public final void updateData(@NonNull final List<BusStop> busStops,
+                                 @NonNull final SparseArray<Map<String, List<BusArrival>>> busArrivals,
+                                 @NonNull final List<Station> stations,
+                                 @NonNull final SparseArray<TrainArrival> trainArrivals,
+                                 @NonNull final List<BikeStation> bikeStations,
+                                 @NonNull final GoogleMap map,
+                                 @NonNull final List<Marker> markers) {
         this.busStops = busStops;
         this.busArrivals = busArrivals;
         this.stations = stations;

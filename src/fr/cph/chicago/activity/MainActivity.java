@@ -20,6 +20,7 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private int currentPosition;
 
     private Toolbar toolbar;
-    private DrawerLayout mDrawerLayout;
+    private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
 
     private FavoritesFragment favoritesFragment;
@@ -80,8 +81,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             initView();
             setToolbar();
 
-            drawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-            mDrawerLayout.addDrawerListener(drawerToggle);
+            drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+            drawerLayout.addDrawerListener(drawerToggle);
             drawerToggle.syncState();
 
             currentPosition = savedInstanceState == null ? R.id.navigation_favorites : savedInstanceState.getInt(SELECTED_ID);
@@ -101,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void initView() {
         final NavigationView mDrawer = (NavigationView) findViewById(R.id.main_drawer);
         mDrawer.setNavigationItemSelectedListener(this);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
     }
 
     private void setToolbar() {
@@ -156,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    public void refresh(final BusData busData, final List<BikeStation> bikeStations) {
+    public void refresh(@NonNull final BusData busData, @NonNull final List<BikeStation> bikeStations) {
         // Put data into data holder
         final DataHolder dataHolder = DataHolder.getInstance();
         dataHolder.setBusData(busData);
@@ -187,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (!this.isFinishing()) {
                     fragmentManager.beginTransaction().replace(R.id.container, favoritesFragment).commit();
                 }
-                mDrawerLayout.closeDrawer(GravityCompat.START);
+                drawerLayout.closeDrawer(GravityCompat.START);
                 showActionBarMenu();
                 break;
             case R.id.navigation_train:
@@ -198,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (!this.isFinishing()) {
                     fragmentManager.beginTransaction().replace(R.id.container, trainFragment).commit();
                 }
-                mDrawerLayout.closeDrawer(GravityCompat.START);
+                drawerLayout.closeDrawer(GravityCompat.START);
                 hideActionBarMenu();
                 break;
             case R.id.navigation_bus:
@@ -209,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (!this.isFinishing()) {
                     fragmentManager.beginTransaction().replace(R.id.container, busFragment).commit();
                 }
-                mDrawerLayout.closeDrawer(GravityCompat.START);
+                drawerLayout.closeDrawer(GravityCompat.START);
                 hideActionBarMenu();
                 break;
             case R.id.navigation_bike:
@@ -220,7 +221,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (!this.isFinishing()) {
                     fragmentManager.beginTransaction().replace(R.id.container, bikeFragment).commit();
                 }
-                mDrawerLayout.closeDrawer(GravityCompat.START);
+                drawerLayout.closeDrawer(GravityCompat.START);
                 hideActionBarMenu();
                 break;
             case R.id.navigation_nearby:
@@ -231,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (!this.isFinishing()) {
                     fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
                 }
-                mDrawerLayout.closeDrawer(GravityCompat.START);
+                drawerLayout.closeDrawer(GravityCompat.START);
                 showActionBarMenu();
                 break;
         }

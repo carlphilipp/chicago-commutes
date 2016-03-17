@@ -17,6 +17,7 @@
 package fr.cph.chicago.task;
 
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
@@ -60,7 +61,7 @@ public class LoadTrainFollowTask extends AsyncTask<String, Void, List<Eta>> {
      * @param view    the view
      * @param loadAll a boolean to load everything
      */
-    public LoadTrainFollowTask(final TrainMapActivity activity, final View view, final boolean loadAll, final TrainData trainData) {
+    public LoadTrainFollowTask(@NonNull final TrainMapActivity activity, @NonNull final View view, final boolean loadAll, @NonNull final TrainData trainData) {
         this.activity = activity;
         this.trainData = trainData;
         this.view = view;

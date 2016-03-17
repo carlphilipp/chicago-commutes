@@ -22,6 +22,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -63,7 +64,7 @@ public class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 	private ViewGroup viewGroup;
 	private TrackerException trackerException;
 
-	public DirectionAsyncTask(final Activity activity, final ViewGroup viewGroup) {
+	public DirectionAsyncTask(@NonNull final Activity activity, @NonNull final ViewGroup viewGroup) {
 		this.activity = activity;
 		this.viewGroup = viewGroup;
 	}

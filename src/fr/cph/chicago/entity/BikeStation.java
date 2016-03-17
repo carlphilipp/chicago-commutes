@@ -18,6 +18,7 @@ package fr.cph.chicago.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -132,7 +133,7 @@ public final class BikeStation implements Parcelable {
     /**
      * @param in
      */
-    private BikeStation(Parcel in) {
+    private BikeStation(@NonNull final Parcel in) {
         readFromParcel(in);
     }
 
@@ -168,7 +169,7 @@ public final class BikeStation implements Parcelable {
         dest.writeInt(landMark);
     }
 
-    private void readFromParcel(final Parcel in) {
+    private void readFromParcel(@NonNull final Parcel in) {
         id = in.readInt();
         name = in.readString();
         availableDocks = in.readInt();
@@ -190,7 +191,7 @@ public final class BikeStation implements Parcelable {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj)
             return true;
         if (obj == null)
@@ -229,16 +230,16 @@ public final class BikeStation implements Parcelable {
     }
 
     public static final Parcelable.Creator<BikeStation> CREATOR = new Parcelable.Creator<BikeStation>() {
-        public BikeStation createFromParcel(Parcel in) {
+        public BikeStation createFromParcel(final Parcel in) {
             return new BikeStation(in);
         }
 
-        public BikeStation[] newArray(int size) {
+        public BikeStation[] newArray(final int size) {
             return new BikeStation[size];
         }
     };
 
-    public static List<BikeStation> readNearbyStation(final List<BikeStation> bikeStations, final Position position) {
+    public static List<BikeStation> readNearbyStation(@NonNull final List<BikeStation> bikeStations, @NonNull final Position position) {
         final double dist = 0.004472;
         final double latitude = position.getLatitude();
         final double longitude = position.getLongitude();

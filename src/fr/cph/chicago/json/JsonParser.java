@@ -16,18 +16,20 @@
 
 package fr.cph.chicago.json;
 
+import android.support.annotation.NonNull;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.cph.chicago.entity.BikeStation;
-import fr.cph.chicago.exception.ParserException;
-import fr.cph.chicago.exception.TrackerException;
+
 import org.apache.commons.io.IOUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+
+import fr.cph.chicago.entity.BikeStation;
+import fr.cph.chicago.exception.ParserException;
+import fr.cph.chicago.exception.TrackerException;
 
 /**
  * Json
@@ -37,29 +39,31 @@ import java.util.List;
  */
 public final class JsonParser {
 
-	private static ObjectMapper mapper;
-	private static JsonParser instance;
+    private static ObjectMapper MAPPER;
+    private static JsonParser INSTANCE;
 
-	public static JsonParser getInstance() {
-		if (instance == null) {
-			instance = new JsonParser();
-			mapper = new ObjectMapper();
-		}
-		return instance;
-	}
+    @NonNull
+    public static JsonParser getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new JsonParser();
+            MAPPER = new ObjectMapper();
+        }
+        return INSTANCE;
+    }
 
-	public List<BikeStation> parseStations(final InputStream stream) throws ParserException {
-		try {
-			final DivvyJson divvyJson = mapper.readValue(stream, new TypeReference<DivvyJson>() {
-			});
-			return divvyJson.getStations();
-		} catch (final IOException e) {
-			throw new ParserException(TrackerException.ERROR, e);
-		} finally {
-			IOUtils.closeQuietly(stream);
-		}
-	}
+    @NonNull
+    public List<BikeStation> parseStations(@NonNull final InputStream stream) throws ParserException {
+        try {
+            final DivvyJson divvyJson = MAPPER.readValue(stream, new TypeReference<DivvyJson>() {
+            });
+            return divvyJson.getStations();
+        } catch (final IOException e) {
+            throw new ParserException(TrackerException.ERROR, e);
+        } finally {
+            IOUtils.closeQuietly(stream);
+        }
+    }
 
-	private JsonParser() {
-	}
+    private JsonParser() {
+    }
 }

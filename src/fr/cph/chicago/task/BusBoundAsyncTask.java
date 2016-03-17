@@ -17,6 +17,7 @@
 package fr.cph.chicago.task;
 
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.widget.Toast;
 
 import java.util.List;
@@ -46,7 +47,8 @@ public class BusBoundAsyncTask extends AsyncTask<Void, Void, List<BusStop>> {
     private BusBoundAdapter busBoundAdapter;
     private TrackerException trackerException;
 
-    public BusBoundAsyncTask(final BusBoundActivity activity, final String busRouteId, final String bound, final BusBoundAdapter busBoundAdapter) {
+    public BusBoundAsyncTask(@NonNull final BusBoundActivity activity, @NonNull final String busRouteId,
+                             @NonNull final String bound, @NonNull final BusBoundAdapter busBoundAdapter) {
         this.activity = activity;
         this.busRouteId = busRouteId;
         this.bound = bound;

@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -222,12 +223,12 @@ public class TrainMapActivity extends Activity {
     @Override
     public void onRestoreInstanceState(final Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        line = savedInstanceState.getString("line");
+        line = savedInstanceState.getString(getString(R.string.bundle_train_line));
     }
 
     @Override
     public void onSaveInstanceState(final Bundle savedInstanceState) {
-        savedInstanceState.putString("line", line);
+        savedInstanceState.putString(getString(R.string.bundle_train_line), line);
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -240,7 +241,7 @@ public class TrainMapActivity extends Activity {
         refreshingInfoWindow = false;
     }
 
-    public void centerMapOnTrain(final List<Train> result) {
+    public void centerMapOnTrain(@NonNull final List<Train> result) {
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(final GoogleMap googleMap) {
@@ -259,7 +260,7 @@ public class TrainMapActivity extends Activity {
         });
     }
 
-    public void drawTrains(final List<Train> trains) {
+    public void drawTrains(@NonNull final List<Train> trains) {
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(final GoogleMap googleMap) {
@@ -300,7 +301,7 @@ public class TrainMapActivity extends Activity {
         });
     }
 
-    public void drawLine(final List<Position> positions) {
+    public void drawLine(@NonNull final List<Position> positions) {
         if (drawLine) {
             mapFragment.getMapAsync(new OnMapReadyCallback() {
                 @Override

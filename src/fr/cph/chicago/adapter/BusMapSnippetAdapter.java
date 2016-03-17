@@ -18,6 +18,7 @@ package fr.cph.chicago.adapter;
 
 import android.app.Activity;
 import android.graphics.Typeface;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 import android.view.View;
@@ -45,7 +46,7 @@ public class BusMapSnippetAdapter extends BaseAdapter {
     /**
      * @param arrivals
      */
-    public BusMapSnippetAdapter(final Activity activity, final List<BusArrival> arrivals) {
+    public BusMapSnippetAdapter(@NonNull final Activity activity, @NonNull final List<BusArrival> arrivals) {
         this.activity = activity;
         this.arrivals = arrivals;
     }

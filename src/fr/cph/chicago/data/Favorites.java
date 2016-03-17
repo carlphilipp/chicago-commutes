@@ -16,6 +16,7 @@
 
 package fr.cph.chicago.data;
 
+import android.support.annotation.NonNull;
 import android.util.SparseArray;
 
 import java.util.ArrayList;
@@ -88,6 +89,7 @@ public class Favorites {
      * @param position the position
      * @return an object, station or bus route
      */
+    @NonNull
     public final Object getObject(final int position) {
         Object result = null;
         if (position < trainFavorites.size()) {
@@ -135,11 +137,13 @@ public class Favorites {
      * @param stationId the station id
      * @return a train arrival
      */
-    public final TrainArrival getTrainArrival(final Integer stationId) {
+    @NonNull
+    public final TrainArrival getTrainArrival(@NonNull final Integer stationId) {
         return trainArrivals.get(stationId);
     }
 
-    public final Map<String, List<String>> getTrainArrivalByLine(final Integer stationId, final TrainLine trainLine) {
+    @NonNull
+    public final Map<String, List<String>> getTrainArrivalByLine(@NonNull final Integer stationId, @NonNull final TrainLine trainLine) {
         final List<Eta> etas = getTrainArrival(stationId).getEtas(trainLine);
         final Map<String, List<String>> result = new HashMap<>();
         for (final Eta eta : etas) {
@@ -164,7 +168,8 @@ public class Favorites {
      * @param routeId the route id
      * @return a listof bus arrival
      */
-    public final List<BusArrival> getBusArrivals(final String routeId) {
+    @NonNull
+    public final List<BusArrival> getBusArrivals(@NonNull final String routeId) {
         final List<BusArrival> res = new ArrayList<>();
         for (final BusArrival busArrival : busArrivals) {
             if (busArrival.getRouteId().equals(routeId)) {
@@ -180,7 +185,8 @@ public class Favorites {
      * @param routeId the route id
      * @return the bus arrival
      */
-    public final BusArrival getOneBusArrival(final String routeId) {
+    @NonNull
+    public final BusArrival getOneBusArrival(@NonNull final String routeId) {
         BusArrival bus = null;
         for (final BusArrival busArrival : busArrivals) {
             if (busArrival.getRouteId().equals(routeId)) {
@@ -197,7 +203,8 @@ public class Favorites {
      * @param routeId the route id
      * @return a nice map
      */
-    public final Map<String, Map<String, List<BusArrival>>> getBusArrivalsMapped(final String routeId) {
+    @NonNull
+    public final Map<String, Map<String, List<BusArrival>>> getBusArrivalsMapped(@NonNull final String routeId) {
         final Map<String, Map<String, List<BusArrival>>> res = new TreeMap<>(new Comparator<String>() {
             @Override
             public int compare(String lhs, String rhs) {
@@ -321,7 +328,7 @@ public class Favorites {
      * @param bound   the bound
      * @return a boolean
      */
-    private boolean isInFavorites(final String routeId, final Integer stopId, final String bound) {
+    private boolean isInFavorites(@NonNull final String routeId, @NonNull final Integer stopId, @NonNull final String bound) {
         for (final String fav : busFavorites) {
             final String decoded[] = Util.decodeBusFavorite(fav);
             // TODO: Is that correct ? maybe remove stopId
@@ -335,14 +342,14 @@ public class Favorites {
     /**
      * @param trainArrival
      */
-    public final void setTrainArrival(final SparseArray<TrainArrival> trainArrival) {
+    public final void setTrainArrival(@NonNull final SparseArray<TrainArrival> trainArrival) {
         this.trainArrivals = trainArrival;
     }
 
     /**
      * @param busArrivals
      */
-    public final void setBusArrivals(final List<BusArrival> busArrivals) {
+    public final void setBusArrivals(@NonNull final List<BusArrival> busArrivals) {
         this.busArrivals = busArrivals;
     }
 
@@ -378,8 +385,7 @@ public class Favorites {
      * @param trainArrivals
      * @param busArrivals
      */
-    public final void setArrivalsAndBikeStations(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals,
-                                                 final List<BikeStation> bikeStations) {
+    public final void setArrivalsAndBikeStations(@NonNull final SparseArray<TrainArrival> trainArrivals, @NonNull final List<BusArrival> busArrivals, @NonNull final List<BikeStation> bikeStations) {
         this.trainArrivals.clear();
         this.trainArrivals = trainArrivals;
         removeDuplicates(busArrivals);
@@ -389,7 +395,7 @@ public class Favorites {
         this.bikeStations = bikeStations;
     }
 
-    public final void setBikeStations(List<BikeStation> bikeStations) {
+    public final void setBikeStations(@NonNull List<BikeStation> bikeStations) {
         this.bikeStations.clear();
         this.bikeStations = bikeStations;
         setFavorites();
@@ -398,6 +404,7 @@ public class Favorites {
     /**
      * @return
      */
+    @NonNull
     private List<String> calculateActualRouteNumberBusFavorites() {
         final List<String> found = new ArrayList<>();
         final List<String> favs = new ArrayList<>();
@@ -415,7 +422,7 @@ public class Favorites {
      * @param busArrivals
      */
     // TODO Do that when populating the list
-    private void removeDuplicates(final List<BusArrival> busArrivals) {
+    private void removeDuplicates(@NonNull final List<BusArrival> busArrivals) {
         final Set<BusArrival> stBusArrivals = new LinkedHashSet<>(busArrivals);
         busArrivals.clear();
         busArrivals.addAll(stBusArrivals);

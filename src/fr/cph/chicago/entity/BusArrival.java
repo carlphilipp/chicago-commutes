@@ -18,6 +18,7 @@ package fr.cph.chicago.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -104,6 +105,7 @@ public final class BusArrival implements Parcelable {
     /**
      * @return
      */
+    @NonNull
     public final String getTimeLeft() {
         if (getPredictionTime() != null && getTimeStamp() != null) {
             long time = getPredictionTime().getTime() - getTimeStamp().getTime();
@@ -116,6 +118,7 @@ public final class BusArrival implements Parcelable {
     /**
      * @return
      */
+    @NonNull
     public final String getTimeLeftDueDelay() {
         String result;
         if (isDly()) {
@@ -148,7 +151,7 @@ public final class BusArrival implements Parcelable {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o)
             return true;
         if (o == null || getClass() != o.getClass())
@@ -203,7 +206,7 @@ public final class BusArrival implements Parcelable {
         dest.writeString(String.valueOf(isDly));
     }
 
-    private void readFromParcel(final Parcel in) {
+    private void readFromParcel(@NonNull final Parcel in) {
         timeStamp = new Date(in.readLong());
         //errorMessage = in.readString();
         //predictionType = PredictionType.fromString(in.readString());

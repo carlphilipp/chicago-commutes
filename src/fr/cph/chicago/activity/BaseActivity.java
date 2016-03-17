@@ -19,6 +19,7 @@ package fr.cph.chicago.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.SparseArray;
 import android.widget.Toast;
 
@@ -59,7 +60,7 @@ public class BaseActivity extends Activity {
      *
      * @param exceptionToBeThrown the exception that has been thrown
      */
-    public void displayError(final TrackerException exceptionToBeThrown) {
+    public void displayError(@NonNull final TrackerException exceptionToBeThrown) {
         DataHolder.getInstance().setTrainData(null);
         DataHolder.getInstance().setBusData(null);
         ChicagoTracker.displayError(this, exceptionToBeThrown);
@@ -97,7 +98,7 @@ public class BaseActivity extends Activity {
      * @param trainArrivals the train arrivals
      * @param busArrivals   the bus arrivals
      */
-    private void startMainActivity(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals) {
+    private void startMainActivity(@NonNull final SparseArray<TrainArrival> trainArrivals, @NonNull final List<BusArrival> busArrivals) {
         if (!isFinishing()) {
             final Intent intent = new Intent(this, MainActivity.class);
             final Bundle bundle = new Bundle();

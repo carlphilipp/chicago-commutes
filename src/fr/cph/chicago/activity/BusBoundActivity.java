@@ -20,6 +20,7 @@ import android.app.ListActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -215,16 +216,16 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
         super.onSaveInstanceState(savedInstanceState);
     }
 
-    public void setBusStops(final List<BusStop> busStops) {
+    public void setBusStops(@NonNull final List<BusStop> busStops) {
         this.busStops = busStops;
     }
 
     @Override
-    public void setGoogleMap(final GoogleMap googleMap) {
+    public void setGoogleMap(@NonNull final GoogleMap googleMap) {
         this.googleMap = googleMap;
     }
 
-    public void drawPattern(final BusPattern pattern) {
+    public void drawPattern(@NonNull final BusPattern pattern) {
         if (googleMap != null) {
             final List<Marker> markers = new ArrayList<>();
             final PolylineOptions poly = new PolylineOptions();
@@ -234,11 +235,9 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
             for (final PatternPoint patternPoint : pattern.getPoints()) {
                 final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
                 poly.add(point);
-                //if (patternPoint.getStopId() != null) {
                 marker = googleMap.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName()).snippet(String.valueOf(patternPoint.getSequence())));
                 markers.add(marker);
                 marker.setVisible(false);
-                //}
             }
             googleMap.addPolyline(poly);
 
@@ -250,7 +249,7 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
                     if (pos.zoom != currentZoom) {
                         currentZoom = pos.zoom;
                         if (currentZoom >= 14) {
-                            for (Marker marker : markers) {
+                            for (final Marker marker : markers) {
                                 marker.setVisible(true);
                             }
                         } else {

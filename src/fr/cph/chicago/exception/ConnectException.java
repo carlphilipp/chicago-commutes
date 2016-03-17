@@ -16,6 +16,8 @@
 
 package fr.cph.chicago.exception;
 
+import android.support.annotation.NonNull;
+
 /**
  * Connect exception
  *
@@ -24,32 +26,33 @@ package fr.cph.chicago.exception;
  */
 public class ConnectException extends TrackerException {
 
-	/** Serializable **/
-	private static final long serialVersionUID = 1L;
+    /**
+     * Serializable
+     **/
+    private static final long serialVersionUID = 1L;
 
-	/** The error string **/
-	public static final String ERROR = "Can't connect, please check your connection";
+    /**
+     * The error string
+     **/
+    public static final String ERROR = "Can't connect, please check your connection";
 
-	/**
-	 * The constructor
-	 *
-	 * @param message
-	 *            the message
-	 */
-	public ConnectException(final String message) {
-		super(message);
-	}
+    /**
+     * The constructor
+     *
+     * @param message the message
+     */
+    public ConnectException(@NonNull final String message) {
+        super(message);
+    }
 
-	/**
-	 * The constructor
-	 *
-	 * @param message
-	 *            the message
-	 * @param e
-	 *            the exception
-	 */
-	public ConnectException(final String message, final Exception e) {
-		super(message, e);
-	}
+    /**
+     * The constructor
+     *
+     * @param message the message
+     * @param e       the exception
+     */
+    public ConnectException(@NonNull final String message, @NonNull final Exception e) {
+        super(message, e);
+    }
 
 }

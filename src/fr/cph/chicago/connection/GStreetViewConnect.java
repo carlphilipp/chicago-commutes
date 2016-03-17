@@ -17,6 +17,7 @@
 package fr.cph.chicago.connection;
 
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import fr.cph.chicago.util.Util;
 import org.apache.commons.io.IOUtils;
@@ -54,6 +55,7 @@ public class GStreetViewConnect {
 	 *
 	 * @return
 	 */
+    @NonNull
 	public static GStreetViewConnect getInstance() {
 		if (instance == null) {
 			instance = new GStreetViewConnect();
@@ -61,6 +63,7 @@ public class GStreetViewConnect {
 		return instance;
 	}
 
+    @NonNull
 	public final Drawable connect(final double latitude, final double longitude) throws IOException {
 		final StringBuilder address = new StringBuilder(BASE_URL);
 		address.append("?key=");
@@ -81,7 +84,8 @@ public class GStreetViewConnect {
 	 * @return a drawable map
 	 * @throws IOException
 	 */
-	private Drawable connectUrl(final String address) {
+    @NonNull
+	private Drawable connectUrl(@NonNull final String address) {
 		Log.v(TAG, "Address: " + address);
 		InputStream is = null;
 		try {
@@ -89,6 +93,7 @@ public class GStreetViewConnect {
 			return Drawable.createFromStream(is, "src name");
 		} catch (final Exception e) {
 			Log.e(TAG, e.getMessage(), e);
+            // TODO add a temporary image here
 			return null;
 		} finally {
 			IOUtils.closeQuietly(is);

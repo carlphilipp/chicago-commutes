@@ -16,6 +16,8 @@
 
 package fr.cph.chicago.exception;
 
+import android.support.annotation.NonNull;
+
 /**
  * Tracker exception
  *
@@ -24,32 +26,33 @@ package fr.cph.chicago.exception;
  */
 public class TrackerException extends Exception {
 
-	/** Serializable **/
-	private static final long serialVersionUID = 1L;
+    /**
+     * Serializable
+     **/
+    private static final long serialVersionUID = 1L;
 
-	/** The error string **/
-	public static final String ERROR = "Error, please try again later";
+    /**
+     * The error string
+     **/
+    public static final String ERROR = "Error, please try again later";
 
-	/**
-	 * The constructor
-	 *
-	 * @param message
-	 *            the message
-	 */
-	public TrackerException(final String message) {
-		super(message);
-	}
+    /**
+     * The constructor
+     *
+     * @param message the message
+     */
+    public TrackerException(@NonNull final String message) {
+        super(message);
+    }
 
-	/**
-	 * The constructor
-	 *
-	 * @param message
-	 *            the message
-	 * @param e
-	 *            the exception
-	 */
-	public TrackerException(final String message, final Exception e) {
-		super(message, e);
-	}
+    /**
+     * The constructor
+     *
+     * @param message the message
+     * @param e       the exception
+     */
+    public TrackerException(@NonNull final String message, @NonNull final Exception e) {
+        super(message, e);
+    }
 
 }

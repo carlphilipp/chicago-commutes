@@ -4,6 +4,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -132,6 +133,7 @@ public class SearchActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
+    @NonNull
     private ActionBar getSupportActionBarNotNull() {
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar == null) {
@@ -140,7 +142,7 @@ public class SearchActivity extends AppCompatActivity {
         return actionBar;
     }
 
-    private void handleIntent(final Intent intent) {
+    private void handleIntent(@NonNull final Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             final BusData busData = DataHolder.getInstance().getBusData();
             final TrainData trainData = DataHolder.getInstance().getTrainData();

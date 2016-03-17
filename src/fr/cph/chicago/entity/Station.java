@@ -58,7 +58,7 @@ public class Station implements Comparable<Station>, Parcelable {
     /**
      * @param in
      */
-    private Station(final Parcel in) {
+    private Station(@NonNull final Parcel in) {
         readFromParcel(in);
     }
 
@@ -80,6 +80,7 @@ public class Station implements Comparable<Station>, Parcelable {
     /**
      * @return
      */
+    @NonNull
     public final Set<TrainLine> getLines() {
         if (stops != null) {
             Set<TrainLine> lines = new TreeSet<>();
@@ -94,6 +95,7 @@ public class Station implements Comparable<Station>, Parcelable {
         }
     }
 
+    @NonNull
     public final Map<TrainLine, List<Stop>> getStopByLines() {
         Map<TrainLine, List<Stop>> result = new TreeMap<>();
         List<Stop> stops = getStops();
@@ -119,8 +121,9 @@ public class Station implements Comparable<Station>, Parcelable {
         return this.getName().compareTo(another.getName());
     }
 
+    @NonNull
     public List<Position> getStopsPosition() {
-        List<Position> positions = new ArrayList<>();
+        final List<Position> positions = new ArrayList<>();
         for (Stop stop : stops) {
             positions.add(stop.getPosition());
         }
@@ -133,13 +136,13 @@ public class Station implements Comparable<Station>, Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeInt(id);
         dest.writeString(name);
         dest.writeList(stops);
     }
 
-    private void readFromParcel(Parcel in) {
+    private void readFromParcel(@NonNull final Parcel in) {
         id = in.readInt();
         name = in.readString();
         stops = new ArrayList<>();
@@ -147,11 +150,11 @@ public class Station implements Comparable<Station>, Parcelable {
     }
 
     public static final Parcelable.Creator<Station> CREATOR = new Parcelable.Creator<Station>() {
-        public Station createFromParcel(Parcel in) {
+        public Station createFromParcel(final Parcel in) {
             return new Station(in);
         }
 
-        public Station[] newArray(int size) {
+        public Station[] newArray(final int size) {
             return new Station[size];
         }
     };

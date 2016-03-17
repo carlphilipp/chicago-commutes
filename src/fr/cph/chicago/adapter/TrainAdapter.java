@@ -18,6 +18,7 @@ package fr.cph.chicago.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,7 +53,7 @@ public final class TrainAdapter extends BaseAdapter {
 	 *
 	 * @param line the train line
 	 */
-	public TrainAdapter(final TrainLine line, final Activity activity) {
+	public TrainAdapter(@NonNull final TrainLine line, @NonNull final Activity activity) {
 		// Load data
 		final DataHolder dataHolder = DataHolder.getInstance();
 		final TrainData data = dataHolder.getTrainData();

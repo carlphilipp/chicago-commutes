@@ -22,6 +22,7 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -89,7 +90,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     private int line1Padding;
     private int stopsPaddingTop;
 
-    public FavoritesAdapter(final MainActivity activity) {
+    public FavoritesAdapter(@NonNull final MainActivity activity) {
         this.context = ChicagoTracker.getContext();
 
         this.mainActivity = activity;
@@ -145,7 +146,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         }
     }
 
-    private void resetData(final FavoritesViewHolder holder) {
+    private void resetData(@NonNull final FavoritesViewHolder holder) {
         holder.mainLayout.setOnClickListener(null);
         holder.titleBottomLayout.setOnClickListener(null);
         if (holder.lineTitleLayout.getChildCount() != 0) {
@@ -156,7 +157,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         }
     }
 
-    private void handleStation(final FavoritesViewHolder holder, final Station station) {
+    private void handleStation(@NonNull final FavoritesViewHolder holder, @NonNull final Station station) {
 
         final int stationId = station.getId();
 
@@ -229,7 +230,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         holder.titleBottomLayout.setOnClickListener(new FavoritesTrainOnClickListener(mainActivity, stationId, setTL));
     }
 
-    private void handleBusRoute(final FavoritesViewHolder holder, final BusRoute busRoute) {
+    private void handleBusRoute(@NonNull final FavoritesViewHolder holder, @NonNull final BusRoute busRoute) {
         holder.nameTitleBottomView.setText(busRoute.getId());
 
         final Map<String, Map<String, List<BusArrival>>> busArrivals = favorites.getBusArrivalsMapped(busRoute.getId());
@@ -296,7 +297,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         }
     }
 
-    private void handleBikeStation(final FavoritesViewHolder holder, final BikeStation bikeStation) {
+    private void handleBikeStation(@NonNull final FavoritesViewHolder holder, @NonNull final BikeStation bikeStation) {
         holder.nameTitleBottomView.setText(bikeStation.getName());
 
         final LinearLayout llh = new LinearLayout(context);
@@ -400,7 +401,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         return favorites.size();
     }
 
-    private void addTitleToView(final RelativeLayout lineTitleLayout, final Set<TrainLine> lines) {
+    private void addTitleToView(@NonNull final RelativeLayout lineTitleLayout, @NonNull final Set<TrainLine> lines) {
         final LinearLayout layout = new LinearLayout(mainActivity);
         final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
@@ -417,7 +418,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         lineTitleLayout.addView(layout);
     }
 
-    private RelativeLayout createLineView(final TrainLine line) {
+    private RelativeLayout createLineView(@NonNull final TrainLine line) {
         final RelativeLayout layout = new RelativeLayout(mainActivity);
         final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         params.setMargins(15, 3, 15, 3);
@@ -440,11 +441,11 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
      * @param arrivals    the trains arrivals
      * @param busArrivals the buses arrivals
      */
-    public final void setArrivalsAndBikeStations(final SparseArray<TrainArrival> arrivals, final List<BusArrival> busArrivals, final List<BikeStation> bikeStations) {
+    public final void setArrivalsAndBikeStations(@NonNull final SparseArray<TrainArrival> arrivals, @NonNull final List<BusArrival> busArrivals, @NonNull final List<BikeStation> bikeStations) {
         favorites.setArrivalsAndBikeStations(arrivals, busArrivals, bikeStations);
     }
 
-    public final void setBikeStations(final List<BikeStation> bikeStations) {
+    public final void setBikeStations(@NonNull final List<BikeStation> bikeStations) {
         favorites.setBikeStations(bikeStations);
     }
 
@@ -490,7 +491,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         private TrackerException trackerException;
         private MainActivity activity;
 
-        public BusBoundAsyncTask(final MainActivity activity) {
+        public BusBoundAsyncTask(@NonNull final MainActivity activity) {
             this.activity = activity;
         }
 
@@ -550,7 +551,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
      * @param date2 the date two
      * @return a tab containing in 0 the hour and in 1 the minutes
      */
-    private long[] getTimeDifference(final Date date1, final Date date2) {
+    private long[] getTimeDifference(@NonNull final Date date1, @NonNull final Date date2) {
         final long[] result = new long[2];
         final Calendar cal = Calendar.getInstance();
         cal.setTime(date1);
@@ -576,22 +577,18 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
      * @param lastUpdate the last update
      * @return a string
      */
-    private String getLastUpdateInMinutes(final Date lastUpdate) {
+    private String getLastUpdateInMinutes(@NonNull final Date lastUpdate) {
         final String res;
-        if (lastUpdate != null) {
-            final Date currentCDate = Calendar.getInstance().getTime();
-            final long[] diff = getTimeDifference(lastUpdate, currentCDate);
-            if (diff[0] == 0 && diff[1] == 0) {
-                res = "now";
-            } else {
-                if (diff[0] == 0) {
-                    res = String.valueOf(diff[1]) + " min";
-                } else {
-                    res = String.valueOf(diff[0]) + " h " + String.valueOf(diff[1]) + " min";
-                }
-            }
+        final Date currentCDate = Calendar.getInstance().getTime();
+        final long[] diff = getTimeDifference(lastUpdate, currentCDate);
+        if (diff[0] == 0 && diff[1] == 0) {
+            res = "now";
         } else {
-            res = "";
+            if (diff[0] == 0) {
+                res = String.valueOf(diff[1]) + " min";
+            } else {
+                res = String.valueOf(diff[0]) + " h " + String.valueOf(diff[1]) + " min";
+            }
         }
         return res;
     }

@@ -17,6 +17,7 @@
 package fr.cph.chicago.task;
 
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -46,7 +47,7 @@ public class LoadBusPositionTask extends AsyncTask<Boolean, Void, List<Bus>> {
     private int busId;
     private String busRouteId;
 
-    public LoadBusPositionTask(final BusMapActivity activity, final int busId, final String busRouteId) {
+    public LoadBusPositionTask(@NonNull final BusMapActivity activity, @NonNull final int busId, @NonNull final String busRouteId) {
         this.activity = activity;
         this.busId = busId;
         this.busRouteId = busRouteId;

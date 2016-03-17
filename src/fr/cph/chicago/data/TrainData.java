@@ -16,6 +16,8 @@
 
 package fr.cph.chicago.data;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.SparseArray;
 import com.univocity.parsers.csv.CsvParser;
@@ -65,6 +67,7 @@ public class TrainData {
 		this.parser = new CsvParser(settings);
 	}
 
+    @NonNull
 	public static TrainData getInstance() {
 		if (trainData == null) {
 			trainData = new TrainData();
@@ -166,6 +169,7 @@ public class TrainData {
 	 *
 	 * @return a map containing all the stations ordered line
 	 */
+    @NonNull
 	public final Map<TrainLine, List<Station>> getAllStations() {
 		return stationsOrderByLineMap;
 	}
@@ -176,6 +180,7 @@ public class TrainData {
 	 * @param line the train line
 	 * @return a list of station
 	 */
+    @NonNull
 	public final List<Station> getStationsForLine(final TrainLine line) {
 		return stationsOrderByLineMap.get(line);
 	}
@@ -186,6 +191,7 @@ public class TrainData {
 	 * @param id the id of the station
 	 * @return the station
 	 */
+    @Nullable
 	public final Station getStation(final Integer id) {
 		if (stations.size() != 0) {
 			return stations.get(id);
@@ -208,6 +214,7 @@ public class TrainData {
 	 * @param id the id of the stop
 	 * @return a stop
 	 */
+    @Nullable
 	public final Stop getStop(final Integer id) {
 		if (stops.size() != 0) {
 			return stops.get(id);
@@ -222,6 +229,7 @@ public class TrainData {
 	 * @param position the position
 	 * @return a list of station
 	 */
+    @NonNull
 	public final List<Station> readNearbyStation(final Position position) {
 
 		final double dist = 0.004472;
@@ -249,6 +257,7 @@ public class TrainData {
 		return nearByStations;
 	}
 
+    @NonNull
 	public final List<Position> readPattern(final TrainLine line) {
 		final List<Position> positions = new ArrayList<>();
 		try {
@@ -289,6 +298,7 @@ public class TrainData {
 		}
 	}
 
+    @NonNull
 	public final SparseArray<Station> getStations() {
 		return stations;
 	}

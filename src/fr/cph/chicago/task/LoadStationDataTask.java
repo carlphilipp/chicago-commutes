@@ -1,6 +1,7 @@
 package fr.cph.chicago.task;
 
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 
 import org.apache.commons.collections4.MultiValuedMap;
@@ -39,7 +40,7 @@ public class LoadStationDataTask extends AsyncTask<Void, Void, List<BusArrival>>
     private int busStopId;
     private TrackerException trackerException;
 
-    public LoadStationDataTask(final BusActivity activity, final SwipeRefreshLayout swipeRefreshLayout, final String busRouteId, final int busStopId) {
+    public LoadStationDataTask(@NonNull final BusActivity activity, @NonNull final SwipeRefreshLayout swipeRefreshLayout, @NonNull final String busRouteId, final int busStopId) {
         this.activity = activity;
         this.swipeRefreshLayout = swipeRefreshLayout;
         this.busRouteId = busRouteId;

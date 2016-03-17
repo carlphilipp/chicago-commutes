@@ -58,7 +58,7 @@ public final class BusStop implements Comparable<BusStop>, Parcelable, Serializa
     /**
      * @param in
      */
-    private BusStop(final Parcel in) {
+    private BusStop(@NonNull final Parcel in) {
         readFromParcel(in);
     }
 
@@ -86,14 +86,14 @@ public final class BusStop implements Comparable<BusStop>, Parcelable, Serializa
         dest.writeParcelable(position, flags);
     }
 
-    private void readFromParcel(final Parcel in) {
+    private void readFromParcel(@NonNull final Parcel in) {
         id = in.readInt();
         name = in.readString();
         position = in.readParcelable(Position.class.getClassLoader());
     }
 
     public static final Parcelable.Creator<BusStop> CREATOR = new Parcelable.Creator<BusStop>() {
-        public BusStop createFromParcel(Parcel in) {
+        public BusStop createFromParcel(final Parcel in) {
             return new BusStop(in);
         }
 

@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
@@ -215,7 +216,7 @@ public class BikeStationActivity extends Activity {
         return false;
     }
 
-    public void refreshStation(final BikeStation station) {
+    public void refreshStation(@NonNull final BikeStation station) {
         this.bikeStation = station;
         drawData();
     }

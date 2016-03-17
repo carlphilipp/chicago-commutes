@@ -17,6 +17,7 @@
 package fr.cph.chicago.task;
 
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -55,7 +56,7 @@ public class LoadTrainPositionTask extends AsyncTask<Boolean, Void, List<Train>>
     private boolean centerMap;
     private List<Position> positions;
 
-    public LoadTrainPositionTask(final TrainMapActivity activity, final String line, final TrainData trainData) {
+    public LoadTrainPositionTask(@NonNull final TrainMapActivity activity, @NonNull final String line, @NonNull final TrainData trainData) {
         this.activity = activity;
         this.line = line;
         this.trainData = trainData;

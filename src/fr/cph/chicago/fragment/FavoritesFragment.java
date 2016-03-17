@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -81,6 +82,7 @@ public class FavoritesFragment extends Fragment {
      * @param sectionNumber the section number
      * @return a favorite fragment
      */
+    @NonNull
     public static FavoritesFragment newInstance(final int sectionNumber) {
         final FavoritesFragment fragment = new FavoritesFragment();
         final Bundle args = new Bundle();

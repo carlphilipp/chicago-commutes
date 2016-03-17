@@ -17,6 +17,7 @@
 package fr.cph.chicago.task;
 
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -58,7 +59,7 @@ public class LoadTrainArrivalDataTask extends AsyncTask<MultiValuedMap<String, S
     private TrackerException trackerException;
     private SwipeRefreshLayout swipeRefreshLayout;
 
-    public LoadTrainArrivalDataTask(final StationActivity activity, final TrainData trainData, final SwipeRefreshLayout swipeRefreshLayout) {
+    public LoadTrainArrivalDataTask(@NonNull final StationActivity activity, @NonNull final TrainData trainData, @NonNull final SwipeRefreshLayout swipeRefreshLayout) {
         this.activity = activity;
         this.trainData = trainData;
         this.swipeRefreshLayout = swipeRefreshLayout;

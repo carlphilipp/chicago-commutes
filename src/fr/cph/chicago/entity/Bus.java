@@ -16,6 +16,8 @@
 
 package fr.cph.chicago.entity;
 
+import android.support.annotation.NonNull;
+
 import java.security.Timestamp;
 import java.util.List;
 
@@ -33,7 +35,8 @@ public class Bus {
     private String destination;
     private Boolean delay;
 
-    public static Position getBestPosition(List<Bus> buses) {
+    @NonNull
+    public static Position getBestPosition(@NonNull List<Bus> buses) {
         final Position position = new Position();
         double maxLatitude = 0.0;
         double minLatitude = 0.0;
@@ -67,5 +70,4 @@ public class Bus {
         position.setLongitude((maxLongitude + minLongitude) / 2);
         return position;
     }
-
 }

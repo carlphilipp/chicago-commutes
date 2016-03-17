@@ -1,5 +1,6 @@
 package fr.cph.chicago.csv;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
@@ -28,6 +29,7 @@ public class BusStopCsvParser {
 		this.parser = new CsvParser(settings);
 	}
 
+    @NonNull
 	public List<BusStop> parse() {
 		try {
 			parser.parse(new InputStreamReader(ChicagoTracker.getContext().getAssets().open(STOP_FILE_PATH)));

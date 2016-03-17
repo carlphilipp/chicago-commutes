@@ -17,6 +17,7 @@
 package fr.cph.chicago.adapter;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +47,7 @@ public class BusBoundAdapter extends BaseAdapter {
      *
      * @param stopId the stop id of the bu
      */
-    public BusBoundAdapter(final String stopId) {
+    public BusBoundAdapter(@NonNull final String stopId) {
         this.busStops = new ArrayList<>();
         this.stopId = stopId;
     }
@@ -114,7 +115,7 @@ public class BusBoundAdapter extends BaseAdapter {
      *
      * @param result the list of bus stops
      */
-    public final void update(final List<BusStop> busStops) {
+    public final void update(@NonNull final List<BusStop> busStops) {
         this.busStops = null;
         this.busStops = busStops;
     }

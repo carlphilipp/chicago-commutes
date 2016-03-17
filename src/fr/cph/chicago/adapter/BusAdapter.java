@@ -17,6 +17,7 @@
 package fr.cph.chicago.adapter;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +51,7 @@ public final class BusAdapter extends BaseAdapter {
      *
      * @param activity the main activity
      */
-    public BusAdapter(final MainActivity activity) {
+    public BusAdapter(@NonNull final MainActivity activity) {
         this.mainActivity = activity;
         final BusData busData = DataHolder.getInstance().getBusData();
         this.busRoutes = busData.getRoutes();
@@ -115,7 +116,7 @@ public final class BusAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public void setRoutes(final List<BusRoute> busRoutes) {
+    public void setRoutes(@NonNull final List<BusRoute> busRoutes) {
         this.busRoutes = busRoutes;
     }
 

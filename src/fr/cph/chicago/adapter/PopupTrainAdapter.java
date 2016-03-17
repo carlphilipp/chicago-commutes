@@ -17,6 +17,7 @@
 package fr.cph.chicago.adapter;
 
 import android.app.Activity;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +39,7 @@ public class PopupTrainAdapter extends ArrayAdapter<String> {
     private final List<String> values;
     private final List<Integer> colors;
 
-    public PopupTrainAdapter(final Activity activity, final List<String> values, final List<Integer> colors) {
+    public PopupTrainAdapter(@NonNull final Activity activity, @NonNull final List<String> values, @NonNull final List<Integer> colors) {
         super(activity, R.layout.popup_train_cell, values);
         this.activity = activity;
         this.values = values;

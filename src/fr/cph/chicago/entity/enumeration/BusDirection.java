@@ -16,6 +16,9 @@
 
 package fr.cph.chicago.entity.enumeration;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import java.util.Locale;
 
 /**
@@ -30,7 +33,7 @@ public class BusDirection {
 	private String textReceived;
 	private BusDirectionEnum busDirectionEnum;
 
-	public BusDirection(final String textReceived) {
+	public BusDirection(@NonNull final String textReceived) {
 		this.textReceived = textReceived;
 	}
 
@@ -43,10 +46,12 @@ public class BusDirection {
 		return false;
 	}
 
+    @NonNull
 	public String getBusTextReceived() {
 		return textReceived;
 	}
 
+    @NonNull
 	public BusDirectionEnum getBusDirectionEnum() {
 		return busDirectionEnum;
 	}
@@ -63,6 +68,7 @@ public class BusDirection {
 			this.shortUpperCase = shortUpperCase;
 		}
 
+        @Nullable
 		public static BusDirectionEnum fromString(final String text) {
 			if (text != null) {
 				for (final BusDirectionEnum b : BusDirectionEnum.values()) {
@@ -83,6 +89,7 @@ public class BusDirection {
 			return text;
 		}
 
+        @NonNull
 		public final String getShortUpperCase() {
 			return shortUpperCase;
 		}

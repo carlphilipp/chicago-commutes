@@ -1,5 +1,7 @@
 package fr.cph.chicago.csv;
 
+import android.support.annotation.NonNull;
+
 import com.univocity.parsers.common.CommonSettings;
 import com.univocity.parsers.common.Format;
 import com.univocity.parsers.common.ParsingContext;
@@ -56,6 +58,7 @@ public class BusStopCsvProcessor implements RowProcessor {
 	public void processEnded(final ParsingContext context) {
 	}
 
+    @NonNull
 	public List<BusStop> getRows() {
 		return rows == null ? Collections.<BusStop>emptyList() : rows;
 	}

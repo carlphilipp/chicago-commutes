@@ -18,6 +18,7 @@ package fr.cph.chicago.adapter;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -42,7 +43,7 @@ public class TrainMapSnippetAdapter extends BaseAdapter {
 	/**
 	 * @param etas
 	 */
-	public TrainMapSnippetAdapter(final List<Eta> etas) {
+	public TrainMapSnippetAdapter(@NonNull final List<Eta> etas) {
 		this.etas = etas;
 	}
 

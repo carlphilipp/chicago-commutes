@@ -18,6 +18,7 @@ package fr.cph.chicago.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -60,7 +61,7 @@ public class TrainArrival implements Parcelable {
     /**
      * @param in
      */
-    private TrainArrival(final Parcel in) {
+    private TrainArrival(@NonNull final Parcel in) {
         readFromParcel(in);
     }
 
@@ -68,7 +69,8 @@ public class TrainArrival implements Parcelable {
      * @param line
      * @return
      */
-    public final List<Eta> getEtas(final TrainLine line) {
+    @NonNull
+    public final List<Eta> getEtas(@NonNull final TrainLine line) {
         List<Eta> etas = new ArrayList<>();
         for (Eta eta : getEtas()) {
             if (eta.getRouteName() == line) {
@@ -100,11 +102,11 @@ public class TrainArrival implements Parcelable {
     }
 
     public static final Parcelable.Creator<TrainArrival> CREATOR = new Parcelable.Creator<TrainArrival>() {
-        public TrainArrival createFromParcel(Parcel in) {
+        public TrainArrival createFromParcel(final Parcel in) {
             return new TrainArrival(in);
         }
 
-        public TrainArrival[] newArray(int size) {
+        public TrainArrival[] newArray(final int size) {
             return new TrainArrival[size];
         }
     };

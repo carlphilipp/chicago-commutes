@@ -24,6 +24,7 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -277,7 +278,7 @@ public class BusMapActivity extends Activity {
         refreshingInfoWindow = false;
     }
 
-    public void centerMapOnBus(final List<Bus> result) {
+    public void centerMapOnBus(@NonNull final List<Bus> result) {
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(final GoogleMap googleMap) {
@@ -296,7 +297,7 @@ public class BusMapActivity extends Activity {
         });
     }
 
-    public void drawBuses(final List<Bus> buses) {
+    public void drawBuses(@NonNull final List<Bus> buses) {
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(final GoogleMap googleMap) {
@@ -327,7 +328,7 @@ public class BusMapActivity extends Activity {
         });
     }
 
-    private void drawPattern(final List<BusPattern> patterns) {
+    private void drawPattern(@NonNull final List<BusPattern> patterns) {
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(final GoogleMap googleMap) {

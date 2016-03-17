@@ -21,6 +21,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.AppCompatCheckBox;
@@ -174,7 +175,7 @@ public class StationActivity extends Activity {
         }
     }
 
-    private void setUpStopLayouts(final Map<TrainLine, List<Stop>> stopByLines) {
+    private void setUpStopLayouts(@NonNull final Map<TrainLine, List<Stop>> stopByLines) {
         final LinearLayout stopsView = (LinearLayout) findViewById(R.id.activity_train_station_details);
         for (final Entry<TrainLine, List<Stop>> entry : stopByLines.entrySet()) {
             final TrainLine line = entry.getKey();
@@ -248,7 +249,7 @@ public class StationActivity extends Activity {
     }
 
     @SuppressWarnings("unchecked")
-    private void setToolBar(final TrainLine randomTrainLine) {
+    private void setToolBar(@NonNull final TrainLine randomTrainLine) {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
@@ -347,7 +348,7 @@ public class StationActivity extends Activity {
      *
      * @param eta the eta
      */
-    public void drawAllArrivalsTrain(final Eta eta) {
+    public void drawAllArrivalsTrain(@NonNull final Eta eta) {
         final TrainLine line = eta.getRouteName();
         final Stop stop = eta.getStop();
         final int line3PaddingLeft = (int) getResources().getDimension(R.dimen.activity_station_stops_line3_padding_left);
@@ -407,7 +408,7 @@ public class StationActivity extends Activity {
         }
     }
 
-    private TrainLine getRandomLine(final Map<TrainLine, List<Stop>> stops) {
+    private TrainLine getRandomLine(@NonNull final Map<TrainLine, List<Stop>> stops) {
         final Random random = new Random();
         final List<TrainLine> keys = new ArrayList<>(stops.keySet());
         return keys.get(random.nextInt(keys.size()));

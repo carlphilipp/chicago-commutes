@@ -18,6 +18,7 @@ package fr.cph.chicago.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import java.io.Serializable;
 
@@ -61,7 +62,7 @@ public class Position implements Parcelable, Serializable {
 		this.longitude = longitude;
 	}
 
-	private Position(final Parcel in) {
+	private Position(@NonNull final Parcel in) {
 		readFromParcel(in);
 	}
 
@@ -81,17 +82,17 @@ public class Position implements Parcelable, Serializable {
 		dest.writeDouble(longitude);
 	}
 
-	private void readFromParcel(final Parcel in) {
+	private void readFromParcel(@NonNull final Parcel in) {
 		latitude = in.readDouble();
 		longitude = in.readDouble();
 	}
 
 	public static final Parcelable.Creator<Position> CREATOR = new Parcelable.Creator<Position>() {
-		public Position createFromParcel(Parcel in) {
+		public Position createFromParcel(final Parcel in) {
 			return new Position(in);
 		}
 
-		public Position[] newArray(int size) {
+		public Position[] newArray(final int size) {
 			return new Position[size];
 		}
 	};

@@ -19,6 +19,7 @@ package fr.cph.chicago.activity;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
@@ -194,7 +195,7 @@ public class BusActivity extends Activity {
         super.onSaveInstanceState(savedInstanceState);
     }
 
-    public void setBusArrivals(final List<BusArrival> busArrivals) {
+    public void setBusArrivals(@NonNull final List<BusArrival> busArrivals) {
         this.busArrivals = busArrivals;
     }
 

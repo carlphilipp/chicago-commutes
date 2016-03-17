@@ -16,6 +16,8 @@
 
 package fr.cph.chicago.entity;
 
+import android.support.annotation.NonNull;
+
 import java.util.List;
 
 import lombok.Data;
@@ -32,7 +34,8 @@ public class Train {
     private Position position;
     private int heading;
 
-    public static Position getBestPosition(final List<Train> trains) {
+    @NonNull
+    public static Position getBestPosition(@NonNull final List<Train> trains) {
         final Position position = new Position();
         double maxLatitude = 0.0;
         double minLatitude = 0.0;

@@ -18,6 +18,7 @@ package fr.cph.chicago.listener;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.annotation.NonNull;
 
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -55,11 +56,11 @@ public class BusMapOnCameraChangeListener implements OnCameraChangeListener {
         this.busStationMarkers = new ArrayList<>();
     }
 
-    public void setBusMarkers(final List<Marker> busMarkers) {
+    public void setBusMarkers(@NonNull final List<Marker> busMarkers) {
         this.busMarkers = busMarkers;
     }
 
-    public void setBusStationMarkers(final List<Marker> busStationMarkers) {
+    public void setBusStationMarkers(@NonNull final List<Marker> busStationMarkers) {
         this.busStationMarkers = busStationMarkers;
     }
 
@@ -101,11 +102,12 @@ public class BusMapOnCameraChangeListener implements OnCameraChangeListener {
         return num >= inf && num <= sup;
     }
 
+    @NonNull
     public final Bitmap getCurrentBitmap() {
         return currentBitmap;
     }
 
-    private void setCurrentBitmap(final Bitmap currentBitmap) {
+    private void setCurrentBitmap(@NonNull final Bitmap currentBitmap) {
         this.currentBitmap = currentBitmap;
     }
 }

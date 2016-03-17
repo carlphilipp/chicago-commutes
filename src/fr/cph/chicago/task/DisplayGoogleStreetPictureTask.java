@@ -19,6 +19,7 @@ package fr.cph.chicago.task;
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -47,7 +48,7 @@ public final class DisplayGoogleStreetPictureTask extends AsyncTask<Double, Void
     private ImageView streetViewImage;
     private TextView streetViewText;
 
-    public DisplayGoogleStreetPictureTask(final Activity activity, final ImageView streetViewImage, final TextView streetViewText) {
+    public DisplayGoogleStreetPictureTask(@NonNull final Activity activity, @NonNull final ImageView streetViewImage, @NonNull final TextView streetViewText) {
         this.activity = activity;
         this.streetViewImage = streetViewImage;
         this.streetViewText = streetViewText;

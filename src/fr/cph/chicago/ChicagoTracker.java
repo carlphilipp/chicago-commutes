@@ -21,6 +21,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.widget.FrameLayout;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
@@ -106,7 +107,7 @@ public class ChicagoTracker extends Application {
 	 *
 	 * @param date the last update of favorites
 	 */
-	public static void modifyLastUpdate(final Date date) {
+	public static void modifyLastUpdate(@NonNull final Date date) {
 		lastUpdate = date;
 	}
 
@@ -115,6 +116,7 @@ public class ChicagoTracker extends Application {
 	 *
 	 * @return the last update
 	 */
+    @NonNull
 	public static Date getLastUpdate() {
 		return lastUpdate;
 	}
@@ -125,7 +127,7 @@ public class ChicagoTracker extends Application {
 	 * @param activity that is needed to lunch a new one
 	 * @param ex       the kind of exception. Used to display the error message
 	 */
-	public static void displayError(final Activity activity, final TrackerException ex) {
+	public static void displayError(@NonNull final Activity activity, @NonNull final TrackerException ex) {
 		final Intent intent = new Intent(activity, ErrorActivity.class);
 		Bundle extras = new Bundle();
 		extras.putString("error", ex.getMessage());
@@ -134,13 +136,13 @@ public class ChicagoTracker extends Application {
 		activity.startActivity(intent);
 	}
 
-	public static void checkData(final Activity mActivity) {
+	public static void checkData(@NonNull final Activity mActivity) {
 		if (DataHolder.getInstance().getBusData() == null || DataHolder.getInstance().getTrainData() == null) {
 			startErrorActivity(mActivity);
 		}
 	}
 
-	public static boolean checkTrainData(final Activity activity) {
+	public static boolean checkTrainData(@NonNull final Activity activity) {
 		if (DataHolder.getInstance().getTrainData() == null) {
 			startErrorActivity(activity);
 			return false;
@@ -148,7 +150,7 @@ public class ChicagoTracker extends Application {
 		return true;
 	}
 
-	public static boolean checkBusData(final Activity mActivity) {
+	public static boolean checkBusData(@NonNull final Activity mActivity) {
 		if (DataHolder.getInstance().getBusData() == null) {
 			startErrorActivity(mActivity);
 			return false;
@@ -170,7 +172,7 @@ public class ChicagoTracker extends Application {
 		}
 	}
 
-	private static void startErrorActivity(Activity mActivity) {
+	private static void startErrorActivity(@NonNull final Activity mActivity) {
 		Intent intent = new Intent(mActivity, BaseActivity.class);
 		intent.putExtra("error", true);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -178,6 +180,7 @@ public class ChicagoTracker extends Application {
 		mActivity.finish();
 	}
 
+    @NonNull
 	public static Tracker getTracker() {
 		final GoogleAnalytics analytics = GoogleAnalytics.getInstance(ChicagoTracker.getContext());
 		if (tracker == null) {
