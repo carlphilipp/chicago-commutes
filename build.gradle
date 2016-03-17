@@ -32,11 +32,15 @@ dependencies {
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '23.0.2'
+    buildToolsVersion '24.0.0 rc1'
 
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 23
+        // For futur integration with Java 8. To try with the next build tool version
+        //jackOptions {
+        //    enabled true
+        //}
     }
 
     compileOptions {
@@ -77,7 +81,7 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            shrinkResources true
+            shrinkResources true // Must be set to false for now with Java 8
             proguardFile 'proguard-android-optimize.txt'
             signingConfig signingConfigs.release
         }
