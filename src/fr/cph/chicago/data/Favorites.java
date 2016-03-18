@@ -17,6 +17,7 @@
 package fr.cph.chicago.data;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.SparseArray;
 
 import java.util.ArrayList;
@@ -89,37 +90,33 @@ public class Favorites {
      * @param position the position
      * @return an object, station or bus route
      */
-    @NonNull
+    @Nullable
     public final Object getObject(final int position) {
-        Object result = null;
         if (position < trainFavorites.size()) {
             final Integer stationId = trainFavorites.get(position);
-            result = trainData.getStation(stationId);
-        } else if (position < trainFavorites.size() + fakeBusFavorites.size()) {
+            return trainData.getStation(stationId);
+        } else if (position < trainFavorites.size() + fakeBusFavorites.size() && (position - trainFavorites.size() < fakeBusFavorites.size())) {
             final int index = position - trainFavorites.size();
-            if (index < fakeBusFavorites.size()) {
-                final String res[] = Util.decodeBusFavorite(fakeBusFavorites.get(index));
-                if (busData.containsRoute(res[0])) {
-                    return busData.getRoute(res[0]);
+            final String res[] = Util.decodeBusFavorite(fakeBusFavorites.get(index));
+            if (busData.containsRoute(res[0])) {
+                return busData.getRoute(res[0]);
+            } else {
+                // Get name in the preferences if null
+                final String routeName = Preferences.getBusRouteNameMapping(res[1]);
+                final BusRoute busRoute = new BusRoute();
+                busRoute.setId(res[0]);
+                if (routeName == null) {
+                    busRoute.setName("");
                 } else {
-                    // Get name in the preferences if null
-                    final String routeName = Preferences.getBusRouteNameMapping(res[1]);
-                    final BusRoute busRoute = new BusRoute();
-                    busRoute.setId(res[0]);
-                    if (routeName == null) {
-                        busRoute.setName("");
-                    } else {
-                        busRoute.setName(routeName);
-                    }
-                    return busRoute;
+                    busRoute.setName(routeName);
                 }
-
+                return busRoute;
             }
         } else {
             final int index = position - (trainFavorites.size() + fakeBusFavorites.size());
             Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
             for (final BikeStation bikeStation : bikeStations) {
-                if (String.valueOf(bikeStation.getId()).equals(bikeFavorites.get(index))) {
+                if (Integer.toString(bikeStation.getId()).equals(bikeFavorites.get(index))) {
                     return bikeStation;
                 }
             }
@@ -128,7 +125,6 @@ public class Favorites {
             bikeStation.setName(stationName);
             return bikeStation;
         }
-        return result;
     }
 
     /**

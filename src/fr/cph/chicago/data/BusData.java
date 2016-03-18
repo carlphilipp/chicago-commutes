@@ -126,9 +126,9 @@ public class BusData {
      */
     @Nullable
     public final BusRoute getRoute(@NonNull final String routeId) {
-        for (final BusRoute br : busRoutes) {
-            if (br.getId().equals(routeId)) {
-                return br;
+        for (final BusRoute busRoute : busRoutes) {
+            if (busRoute.getId().equals(routeId)) {
+                return busRoute;
             }
         }
         return null;
