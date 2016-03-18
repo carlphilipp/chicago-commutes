@@ -27,7 +27,7 @@ dependencies {
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "$jackson_version_version"
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: "$jackson_version_version"
 
-    provided group: 'org.projectlombok', name: 'lombok', version: "1.16.8"
+    provided group: 'org.projectlombok', name: 'lombok', version: "$lombok_version"
 }
 
 android {
