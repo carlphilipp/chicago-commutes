@@ -6,7 +6,7 @@
 /.idea
 /build
 /.gradle
-chicago-commutes.iml
 local.properties
 app.properties
 keystore.properties
+chicago-commutes.iml

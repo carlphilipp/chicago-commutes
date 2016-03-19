@@ -26,11 +26,14 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseArray;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -107,6 +110,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         //public RelativeLayout titleBottomLayout;
         public LinearLayout mainLayout;
         public TextView stationNameTextView;
+        public ImageView favoriteImage;
 
         public FavoritesViewHolder(final View view) {
             super(view);
@@ -115,6 +119,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
             this.mainLayout = (LinearLayout) view.findViewById(R.id.favorites_arrival_layout);
 
             this.stationNameTextView = (TextView) view.findViewById(R.id.favorites_station_name);
+            this.favoriteImage = (ImageView) view.findViewById(R.id.favorites_icon);
             //this.titleBottomLayout = (RelativeLayout) view.findViewById(R.id.favorites_title_bottom);
         }
     }
@@ -165,40 +170,46 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         holder.stationNameTextView.setLines(1);
         holder.stationNameTextView.setEllipsize(TextUtils.TruncateAt.END);
 
-//        if (holder.lineTitleLayout.getChildCount() != 0) {
-//            holder.lineTitleLayout.removeAllViews();
-//        }
 
-//        addTitleToView(holder.lineTitleLayout, station.getLines());
-
-
-        final Set<TrainLine> setTL = station.getLines();
+        final Set<TrainLine> trainLines = station.getLines();
         // TODO create a method to check if empty
         if (favorites.getTrainArrival(stationId) != null) {
 
-            for (final TrainLine tl : setTL) {
-                final Map<String, List<String>> etas = favorites.getTrainArrivalByLine(stationId, tl);
+            for (final TrainLine trainLine : trainLines) {
+                boolean newLine = true;
+                final Map<String, List<String>> etas = favorites.getTrainArrivalByLine(stationId, trainLine);
                 if (!etas.isEmpty()) {
+                    int i = 0;
                     for (final Entry<String, List<String>> entry : etas.entrySet()) {
-                        final LinearLayout.LayoutParams paramsArrival = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-                        int pixels = Util.convertDpToPixel(mainActivity, 16);
-                        paramsArrival.setMargins(pixels, pixels / 2, pixels, pixels / 2);
-
-                        final RelativeLayout.LayoutParams paramsArrivalTime = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                            paramsArrivalTime.addRule(RelativeLayout.ALIGN_PARENT_END);
-                        }
-                        paramsArrivalTime.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-
+                        Log.i(TAG, entry.getKey() + " " + trainLine + " " + Boolean.toString(newLine));
+                        final LinearLayout.LayoutParams insideParam = getInsideParams(newLine, i == etas.size() - 1);
+                        final RelativeLayout.LayoutParams paramsRight = getRightParams();
 
                         final RelativeLayout insideLayout = new RelativeLayout(context);
-                        insideLayout.setLayoutParams(paramsArrival);
+                        insideLayout.setLayoutParams(insideParam);
+                        // insideLayout.setBackgroundColor(Color.CYAN);
 
-                        final String destination = entry.getKey();
+                        final LinearLayout leftLayout = new LinearLayout(context);
+                        leftLayout.setOrientation(LinearLayout.HORIZONTAL);
+                        leftLayout.setGravity(Gravity.CENTER);
+
+                        final LinearLayout lineIndication = new LinearLayout(context);
+                        final LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                        params.height = 30;
+                        params.width = 30;
+                        lineIndication.setBackgroundColor(trainLine.getColor());
+                        lineIndication.setLayoutParams(params);
+
+                        leftLayout.addView(lineIndication);
+
+
+                        final String destination = "  " + entry.getKey();
                         final TextView destinationTextView = new TextView(context);
                         destinationTextView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
                         destinationTextView.setText(destination);
-                        insideLayout.addView(destinationTextView);
+                        leftLayout.addView(destinationTextView);
+
+                        insideLayout.addView(leftLayout);
 
                         final TextView listTiming = new TextView(context);
                         final StringBuilder timingData = new StringBuilder();
@@ -211,19 +222,49 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                         listTiming.setLines(1);
                         listTiming.setEllipsize(TextUtils.TruncateAt.END);
 
-                        listTiming.setLayoutParams(paramsArrivalTime);
+                        listTiming.setLayoutParams(paramsRight);
                         insideLayout.addView(listTiming);
                         holder.mainLayout.addView(insideLayout);
+
+                        newLine = false;
+                        i++;
                     }
                 }
             }
         }
-        holder.mainLayout.setOnClickListener(new FavoritesTrainOnClickListener(mainActivity, stationId, setTL));
+        holder.mainLayout.setOnClickListener(new FavoritesTrainOnClickListener(mainActivity, stationId, trainLines));
+
         //holder.titleBottomLayout.setOnClickListener(new FavoritesTrainOnClickListener(mainActivity, stationId, setTL));
     }
 
+    private LinearLayout.LayoutParams getInsideParams(boolean newLine, boolean lastLine) {
+        final LinearLayout.LayoutParams paramsLeft = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        int pixels = Util.convertDpToPixel(mainActivity, 16);
+        if (newLine && lastLine) {
+            paramsLeft.setMargins(pixels, pixels / 3, pixels, pixels / 3);
+        } else if (newLine) {
+            paramsLeft.setMargins(pixels, pixels / 3, pixels, 0);
+        } else if (lastLine) {
+            paramsLeft.setMargins(pixels, 0, pixels, pixels / 3);
+        } else {
+            paramsLeft.setMargins(pixels, 0, pixels, 0);
+        }
+        return paramsLeft;
+    }
+
+    private RelativeLayout.LayoutParams getRightParams() {
+        final RelativeLayout.LayoutParams paramsRight = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            paramsRight.addRule(RelativeLayout.ALIGN_PARENT_END);
+        }
+        paramsRight.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        return paramsRight;
+    }
+
+
     private void handleBusRoute(@NonNull final FavoritesViewHolder holder, @NonNull final BusRoute busRoute) {
         holder.stationNameTextView.setText(busRoute.getId());
+        holder.favoriteImage.setImageDrawable(ContextCompat.getDrawable(mainActivity, R.drawable.ic_directions_bus_white_24dp));
 
         final Map<String, Map<String, List<BusArrival>>> busArrivals = favorites.getBusArrivalsMapped(busRoute.getId());
         if (!busArrivals.isEmpty()) {
@@ -291,6 +332,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
     private void handleBikeStation(@NonNull final FavoritesViewHolder holder, @NonNull final BikeStation bikeStation) {
         holder.stationNameTextView.setText(bikeStation.getName());
+        holder.favoriteImage.setImageDrawable(ContextCompat.getDrawable(mainActivity, R.drawable.ic_directions_bike_white_24dp));
 
         final LinearLayout llh = new LinearLayout(context);
         llh.setLayoutParams(paramsLayout);
