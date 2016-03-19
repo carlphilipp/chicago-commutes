@@ -381,7 +381,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 } else if (bikeStation.getLatitude() != 0 && bikeStation.getLongitude() != 0) {
                     final Intent intent = new Intent(ChicagoTracker.getContext(), BikeStationActivity.class);
                     final Bundle extras = new Bundle();
-                    extras.putParcelable("station", bikeStation);
+                    extras.putParcelable(mainActivity.getString(R.string.bundle_bike_station), bikeStation);
                     intent.putExtras(extras);
                     mainActivity.startActivity(intent);
                 } else {
@@ -505,7 +505,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 stopId = params[3];
                 busRouteName = params[4];
                 // FIXME If the CTA change again what they send back, just need to change from boundTitle to bound
-                // It would change the param from Sounthbound to SOUTH.
+                // It would change the param from Southbound to SOUTH.
                 final List<BusStop> busStops = DataHolder.getInstance().getBusData().loadBusStop(busRouteId, boundTitle);
 
                 for (final BusStop bus : busStops) {
@@ -526,14 +526,14 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
             if (trackerException == null) {
                 final Intent intent = new Intent(ChicagoTracker.getContext(), BusActivity.class);
                 final Bundle extras = new Bundle();
-                extras.putInt("busStopId", busStop.getId());
-                extras.putString("busStopName", busStop.getName());
-                extras.putString("busRouteId", busRouteId);
-                extras.putString("busRouteName", busRouteName);
-                extras.putString("bound", bound);
-                extras.putString("boundTitle", boundTitle);
-                extras.putDouble("latitude", busStop.getPosition().getLatitude());
-                extras.putDouble("longitude", busStop.getPosition().getLongitude());
+                extras.putInt(activity.getString(R.string.bundle_bus_stop_id), busStop.getId());
+                extras.putString(activity.getString(R.string.bundle_bus_stop_name), busStop.getName());
+                extras.putString(activity.getString(R.string.bundle_bus_route_id), busRouteId);
+                extras.putString(activity.getString(R.string.bundle_bus_route_name), busRouteName);
+                extras.putString(activity.getString(R.string.bundle_bus_bound), bound);
+                extras.putString(activity.getString(R.string.bundle_bus_bound_title), boundTitle);
+                extras.putDouble(activity.getString(R.string.bundle_bus_latitude), busStop.getPosition().getLatitude());
+                extras.putDouble(activity.getString(R.string.bundle_bus_longitude), busStop.getPosition().getLongitude());
 
                 intent.putExtras(extras);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

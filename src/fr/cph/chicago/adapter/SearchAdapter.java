@@ -150,7 +150,7 @@ public final class SearchAdapter extends BaseAdapter {
                 public void onClick(View v) {
                     final Intent intent = new Intent(ChicagoTracker.getContext(), BikeStationActivity.class);
                     final Bundle extras = new Bundle();
-                    extras.putParcelable("station", bikeStation);
+                    extras.putParcelable(searchActivity.getString(R.string.bundle_bike_station), bikeStation);
                     intent.putExtras(extras);
                     searchActivity.startActivity(intent);
                 }

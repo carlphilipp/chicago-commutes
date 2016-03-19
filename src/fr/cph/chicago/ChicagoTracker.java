@@ -130,7 +130,7 @@ public class ChicagoTracker extends Application {
 	public static void displayError(@NonNull final Activity activity, @NonNull final TrackerException ex) {
 		final Intent intent = new Intent(activity, ErrorActivity.class);
 		Bundle extras = new Bundle();
-		extras.putString("error", ex.getMessage());
+		extras.putString(activity.getString(R.string.bundle_error), ex.getMessage());
 		intent.putExtras(extras);
 		activity.finish();
 		activity.startActivity(intent);
@@ -172,12 +172,12 @@ public class ChicagoTracker extends Application {
 		}
 	}
 
-	private static void startErrorActivity(@NonNull final Activity mActivity) {
-		Intent intent = new Intent(mActivity, BaseActivity.class);
-		intent.putExtra("error", true);
+	private static void startErrorActivity(@NonNull final Activity activity) {
+		final Intent intent = new Intent(activity, BaseActivity.class);
+		intent.putExtra(activity.getString(R.string.bundle_error), true);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-		mActivity.startActivity(intent);
-		mActivity.finish();
+        activity.startActivity(intent);
+        activity.finish();
 	}
 
     @NonNull

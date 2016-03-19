@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         final BusData busData = dataHolder.getBusData();
 
                         final Bundle bundle = MainActivity.this.getIntent().getExtras();
-                        final List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
+                        final List<BikeStation> bikeStations = bundle.getParcelableArrayList(getString(R.string.bundle_bike_stations));
 
                         if (busData.getRoutes() != null && busData.getRoutes().size() == 0) {
                             loadData = true;
@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         final DataHolder dataHolder = DataHolder.getInstance();
         dataHolder.setBusData(busData);
 
-        getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
+        getIntent().putParcelableArrayListExtra(getString(R.string.bundle_bike_stations), (ArrayList<BikeStation>) bikeStations);
         onNewIntent(getIntent());
         if (favoritesFragment != null) {
             favoritesFragment.setBikeStations(bikeStations);

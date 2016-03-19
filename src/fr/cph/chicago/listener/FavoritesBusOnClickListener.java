@@ -104,9 +104,9 @@ public class FavoritesBusOnClickListener implements OnClickListener {
                                 // Follow a bus in google map view
                                 final Intent intent = new Intent(ChicagoTracker.getContext(), BusMapActivity.class);
                                 final Bundle extras = new Bundle();
-                                extras.putInt("busId", arrival.getBusId());
-                                extras.putString("busRouteId", arrival.getRouteId());
-                                extras.putStringArray("bounds", new String[]{entry.getKey()});
+                                extras.putInt(mainActivity.getString(R.string.bundle_bus_id), arrival.getBusId());
+                                extras.putString(mainActivity.getString(R.string.bundle_bus_route_id), arrival.getRouteId());
+                                extras.putStringArray(mainActivity.getString(R.string.bundle_bus_bounds), new String[]{entry.getKey()});
                                 intent.putExtras(extras);
                                 mainActivity.startActivity(intent);
                             }
@@ -121,8 +121,8 @@ public class FavoritesBusOnClickListener implements OnClickListener {
                         }
                         final Intent intent = new Intent(ChicagoTracker.getContext(), BusMapActivity.class);
                         final Bundle extras = new Bundle();
-                        extras.putString("busRouteId", busRoute.getId());
-                        extras.putStringArray("bounds", bounds.toArray(new String[bounds.size()]));
+                        extras.putString(mainActivity.getString(R.string.bundle_bus_route_id), busRoute.getId());
+                        extras.putStringArray(mainActivity.getString(R.string.bundle_bus_bounds), bounds.toArray(new String[bounds.size()]));
                         intent.putExtras(extras);
                         mainActivity.startActivity(intent);
                     }

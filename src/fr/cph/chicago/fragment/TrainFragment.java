@@ -84,7 +84,7 @@ public final class TrainFragment extends Fragment {
 					final Intent intent = new Intent(mainActivity, TrainStationActivity.class);
 					final Bundle extras = new Bundle();
 					final String line = TrainLine.values()[position].toString();
-					extras.putString("line", line);
+					extras.putString(mainActivity.getString(R.string.bundle_train_line), line);
 					intent.putExtras(extras);
 					startActivity(intent);
 				} else {

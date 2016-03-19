@@ -57,7 +57,7 @@ public class SearchActivity extends AppCompatActivity {
 
                 searchAdapter = new SearchAdapter(this);
                 searchAdapter.updateData(new ArrayList<Station>(), new ArrayList<BusRoute>(), new ArrayList<BikeStation>());
-                bikeStations = getIntent().getExtras().getParcelableArrayList("bikeStations");
+                bikeStations = getIntent().getExtras().getParcelableArrayList(getString(R.string.bundle_bike_stations));
                 handleIntent(getIntent());
 
                 final ListView listView = (ListView) findViewById(R.id.search_list);
@@ -103,8 +103,8 @@ public class SearchActivity extends AppCompatActivity {
     public void startActivity(final Intent intent) {
         // check if search intent
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            final ArrayList<BikeStation> bikeStations = getIntent().getExtras().getParcelableArrayList("bikeStations");
-            intent.putParcelableArrayListExtra("bikeStations", bikeStations);
+            final ArrayList<BikeStation> bikeStations = getIntent().getExtras().getParcelableArrayList(getString(R.string.bundle_bike_stations));
+            intent.putParcelableArrayListExtra(getString(R.string.bundle_bike_stations), bikeStations);
         }
         super.startActivity(intent);
     }

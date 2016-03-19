@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -96,13 +96,13 @@ public class FavoritesFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null) {
             final Bundle bundle = mainActivity.getIntent().getExtras();
-            busArrivals = bundle.getParcelableArrayList("busArrivals");
-            trainArrivals = bundle.getSparseParcelableArray("trainArrivals");
-            bikeStations = bundle.getParcelableArrayList("bikeStations");
+            busArrivals = bundle.getParcelableArrayList(getString(R.string.bundle_bus_arrivals));
+            trainArrivals = bundle.getSparseParcelableArray(getString(R.string.bundle_train_arrivals));
+            bikeStations = bundle.getParcelableArrayList(getString(R.string.bundle_bike_stations));
         } else {
-            busArrivals = savedInstanceState.getParcelableArrayList("busArrivals");
-            trainArrivals = savedInstanceState.getSparseParcelableArray("trainArrivals");
-            bikeStations = savedInstanceState.getParcelableArrayList("bikeStations");
+            busArrivals = savedInstanceState.getParcelableArrayList(getString(R.string.bundle_bus_arrivals));
+            trainArrivals = savedInstanceState.getSparseParcelableArray(getString(R.string.bundle_train_arrivals));
+            bikeStations = savedInstanceState.getParcelableArrayList(getString(R.string.bundle_bike_stations));
             boolean boolTrain = ChicagoTracker.checkTrainData(mainActivity);
             if (boolTrain) {
                 ChicagoTracker.checkBusData(mainActivity);
@@ -140,7 +140,7 @@ public class FavoritesFragment extends Fragment {
                         Toast.makeText(mainActivity, "You are a bit fast! Try again in a second!", Toast.LENGTH_SHORT).show();
                     } else {
                         final Intent intent = new Intent(mainActivity, SearchActivity.class);
-                        intent.putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
+                        intent.putParcelableArrayListExtra(getString(R.string.bundle_bike_stations), (ArrayList<BikeStation>) bikeStations);
                         mainActivity.startActivity(intent);
                     }
                 }
@@ -163,7 +163,7 @@ public class FavoritesFragment extends Fragment {
                     final BusData busData = dataHolder.getBusData();
 
                     final Bundle bundle = mainActivity.getIntent().getExtras();
-                    final List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
+                    final List<BikeStation> bikeStations = bundle.getParcelableArrayList(getString(R.string.bundle_bike_stations));
 
                     if (busData.getRoutes() != null && busData.getRoutes().size() == 0) {
                         loadData = true;
@@ -252,7 +252,7 @@ public class FavoritesFragment extends Fragment {
             Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
         } else {
             // Put into intent new bike stations data
-            mainActivity.getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
+            mainActivity.getIntent().putParcelableArrayListExtra(getString(R.string.bundle_bike_stations), (ArrayList<BikeStation>) bikeStations);
 
             favoritesAdapter.setArrivalsAndBikeStations(trainArrivals, busArrivals, bikeStations);
             favoritesAdapter.refreshUpdated();

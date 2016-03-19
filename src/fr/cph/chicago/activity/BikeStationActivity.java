@@ -67,7 +67,7 @@ public class BikeStationActivity extends Activity {
         super.onCreate(savedInstanceState);
         if (!this.isFinishing()) {
             setContentView(R.layout.activity_bike_station);
-            bikeStation = getIntent().getExtras().getParcelable("station");
+            bikeStation = getIntent().getExtras().getParcelable(getString(R.string.bundle_bike_station));
             if (bikeStation != null) {
                 final double latitude = bikeStation.getLatitude();
                 final double longitude = bikeStation.getLongitude();

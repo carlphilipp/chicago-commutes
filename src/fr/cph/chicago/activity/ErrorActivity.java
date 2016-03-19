@@ -55,7 +55,7 @@ public class ErrorActivity extends Activity {
             @Override
             public void onClick(View v) {
                 final Intent intent = new Intent(ErrorActivity.this, BaseActivity.class);
-                intent.putExtra("error", true);
+                intent.putExtra(ErrorActivity.this.getString(R.string.bundle_error), true);
                 finish();
                 startActivity(intent);
             }

@@ -47,8 +47,10 @@ public class BusBoundAsyncTask extends AsyncTask<Void, Void, List<BusStop>> {
     private BusBoundAdapter busBoundAdapter;
     private TrackerException trackerException;
 
-    public BusBoundAsyncTask(@NonNull final BusBoundActivity activity, @NonNull final String busRouteId,
-                             @NonNull final String bound, @NonNull final BusBoundAdapter busBoundAdapter) {
+    public BusBoundAsyncTask(@NonNull final BusBoundActivity activity,
+                             @NonNull final String busRouteId,
+                             @NonNull final String bound,
+                             @NonNull final BusBoundAdapter busBoundAdapter) {
         this.activity = activity;
         this.busRouteId = busRouteId;
         this.bound = bound;
@@ -57,20 +59,20 @@ public class BusBoundAsyncTask extends AsyncTask<Void, Void, List<BusStop>> {
 
     @Override
     protected final List<BusStop> doInBackground(final Void... params) {
-        List<BusStop> lBuses = null;
+        List<BusStop> busStops = null;
         try {
-            lBuses = DataHolder.getInstance().getBusData().loadBusStop(busRouteId, bound);
+            busStops = DataHolder.getInstance().getBusData().loadBusStop(busRouteId, bound);
         } catch (final ParserException | ConnectException e) {
             this.trackerException = e;
         }
         Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_stop, 0);
-        return lBuses;
+        return busStops;
     }
 
     @Override
     protected final void onPostExecute(final List<BusStop> result) {
-        activity.setBusStops(result);
         if (trackerException == null) {
+            activity.setBusStops(result);
             busBoundAdapter.update(result);
             busBoundAdapter.notifyDataSetChanged();
         } else {
