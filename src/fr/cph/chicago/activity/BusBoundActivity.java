@@ -189,7 +189,7 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
                     googleMap.getUiSettings().setMyLocationButtonEnabled(false);
                     googleMap.getUiSettings().setZoomControlsEnabled(false);
                     if (Util.isNetworkAvailable()) {
-                        new LoadBusPatternTask(BusBoundActivity.this, mapFragment, busRouteId, boundTitle).execute();
+                        new LoadBusPatternTask(BusBoundActivity.this, mapFragment, busRouteId, boundTitle, false).execute();
                     } else {
                         Toast.makeText(BusBoundActivity.this, "No network connection detected!", Toast.LENGTH_SHORT).show();
                     }

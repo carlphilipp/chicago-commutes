@@ -26,7 +26,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -153,6 +152,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
     private void resetData(@NonNull final FavoritesViewHolder holder) {
         holder.mainLayout.setOnClickListener(null);
+        holder.favoriteImage.setImageDrawable(null);
 //        holder.titleBottomLayout.setOnClickListener(null);
 //        if (holder.lineTitleLayout.getChildCount() != 0) {
 //            holder.lineTitleLayout.removeAllViews();
@@ -163,6 +163,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     }
 
     private void handleStation(@NonNull final FavoritesViewHolder holder, @NonNull final Station station) {
+        holder.favoriteImage.setImageDrawable(ContextCompat.getDrawable(mainActivity, R.drawable.ic_train_white_24dp));
 
         final int stationId = station.getId();
 
@@ -181,7 +182,6 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 if (!etas.isEmpty()) {
                     int i = 0;
                     for (final Entry<String, List<String>> entry : etas.entrySet()) {
-                        Log.i(TAG, entry.getKey() + " " + trainLine + " " + Boolean.toString(newLine));
                         final LinearLayout.LayoutParams insideParam = getInsideParams(newLine, i == etas.size() - 1);
                         final RelativeLayout.LayoutParams paramsRight = getRightParams();
 
@@ -241,11 +241,11 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         final LinearLayout.LayoutParams paramsLeft = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         int pixels = Util.convertDpToPixel(mainActivity, 16);
         if (newLine && lastLine) {
-            paramsLeft.setMargins(pixels, pixels / 3, pixels, pixels / 3);
+            paramsLeft.setMargins(pixels, pixels / 2, pixels, pixels / 2);
         } else if (newLine) {
-            paramsLeft.setMargins(pixels, pixels / 3, pixels, 0);
+            paramsLeft.setMargins(pixels, pixels / 2, pixels, 0);
         } else if (lastLine) {
-            paramsLeft.setMargins(pixels, 0, pixels, pixels / 3);
+            paramsLeft.setMargins(pixels, 0, pixels, pixels / 2);
         } else {
             paramsLeft.setMargins(pixels, 0, pixels, 0);
         }
@@ -452,6 +452,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         lineTitleLayout.addView(layout);
     }
 
+    @NonNull
     private RelativeLayout createLineView(@NonNull final TrainLine line) {
         final RelativeLayout layout = new RelativeLayout(mainActivity);
         final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
