@@ -34,6 +34,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -391,5 +392,10 @@ public final class Util {
                 });
             }
         }.start();
+    }
+
+    public static int convertDpToPixel(final Activity activity, final int dp){
+        float pixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, activity.getResources().getDisplayMetrics());
+        return (int) pixels;
     }
 }

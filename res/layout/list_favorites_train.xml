@@ -2,13 +2,13 @@
 
 <!--
   Copyright 2016 Carl-Philipp Harmant
- 
+
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
- 
+
       http://www.apache.org/licenses/LICENSE-2.0
- 
+
   Unless required by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,82 +17,72 @@
 -->
 
 <RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:card_view="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:background="@drawable/any_selector">
+
+  <android.support.v7.widget.CardView
+    android:id="@+id/card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/any_selector">
+    android:layout_gravity="center"
+    card_view:cardCornerRadius="2dp"
+    card_view:cardElevation="2dp"
+    card_view:cardMaxElevation="8dp"
+    card_view:cardUseCompatPadding="true">
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/card_view"
+    <LinearLayout
+      android:id="@+id/favorites_main_layout"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical">
+
+      <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        card_view:cardCornerRadius="2dp"
-        card_view:cardElevation="2dp"
-        card_view:cardMaxElevation="8dp"
-        card_view:cardUseCompatPadding="true">
+        android:orientation="horizontal">
+        <!-- android:background="@android:drawable/screen_background_dark_transparent"-->
 
-        <LinearLayout
-            android:id="@+id/favorites_main_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+        <ImageView
+          android:id="@+id/favorites_icon"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:src="@drawable/ic_train_white_24dp"
+          android:tint="@color/grey_5"
+          android:paddingBottom="16dp"
+          android:paddingLeft="16dp"
+          android:paddingRight="16dp"
+          android:paddingTop="16dp"
+          android:contentDescription="icon"/>
 
-            <LinearLayout
-                android:id="@+id/favorites_arrival_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-            </LinearLayout>
+        <TextView
+          android:id="@+id/favorites_station_name"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:paddingBottom="16dp"
+          android:paddingTop="16dp"
+          android:text="Station Name"
+          android:textAppearance="?android:attr/textAppearanceMedium"
+          android:textColor="@color/black"
+          android:textStyle="bold"/>
 
-            <RelativeLayout
-                android:id="@+id/favorites_title_bottom"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#8c000000">
 
-                <TextView
-                    android:id="@+id/station_updated"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:textColor="@color/white"
-                    android:textIsSelectable="false"/>
+      </LinearLayout>
 
-                <RelativeLayout
-                    android:id="@+id/favorites_title_bottom_line1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+      <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider" />
 
-                    <TextView
-                        android:id="@+id/station_name_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true"
-                        android:ellipsize="end"
-                        android:lines="1"
-                        android:textColor="@color/white"
-                        android:textIsSelectable="false"
-                        android:textSize="@dimen/activity_train_station_name"
-                        android:textStyle="bold"/>
-                </RelativeLayout>
+      <LinearLayout
+        android:id="@+id/favorites_arrival_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-                <RelativeLayout
-                    android:id="@+id/favorites_list_main"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_below="@id/favorites_title_bottom_line1"
-                    android:ellipsize="end"
-                    android:orientation="horizontal"
-                    android:textStyle="bold">
-                </RelativeLayout>
-            </RelativeLayout>
-        </LinearLayout>
-    </android.support.v7.widget.CardView>
+      </LinearLayout>
+    </LinearLayout>
+  </android.support.v7.widget.CardView>
 </RelativeLayout>

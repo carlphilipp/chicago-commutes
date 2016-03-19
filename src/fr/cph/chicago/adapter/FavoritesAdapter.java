@@ -27,8 +27,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.SparseArray;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,7 +84,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
     private MainActivity mainActivity;
     private Favorites favorites;
-    private String lastUpdate;
+    //private String lastUpdate;
     private int line1Padding;
     private int stopsPaddingTop;
 
@@ -104,19 +102,20 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
 
     static class FavoritesViewHolder extends RecyclerView.ViewHolder {
-        public TextView timeView;
-        public RelativeLayout lineTitleLayout;
-        public RelativeLayout titleBottomLayout;
+        //public TextView timeView;
+        //public RelativeLayout lineTitleLayout;
+        //public RelativeLayout titleBottomLayout;
         public LinearLayout mainLayout;
-        public TextView nameTitleBottomView;
+        public TextView stationNameTextView;
 
         public FavoritesViewHolder(final View view) {
             super(view);
-            this.timeView = (TextView) view.findViewById(R.id.station_updated);
-            this.lineTitleLayout = (RelativeLayout) view.findViewById(R.id.favorites_list_main);
+            //this.timeView = (TextView) view.findViewById(R.id.station_updated);
+            //this.lineTitleLayout = (RelativeLayout) view.findViewById(R.id.favorites_list_main);
             this.mainLayout = (LinearLayout) view.findViewById(R.id.favorites_arrival_layout);
-            this.nameTitleBottomView = (TextView) view.findViewById(R.id.station_name_value);
-            this.titleBottomLayout = (RelativeLayout) view.findViewById(R.id.favorites_title_bottom);
+
+            this.stationNameTextView = (TextView) view.findViewById(R.id.favorites_station_name);
+            //this.titleBottomLayout = (RelativeLayout) view.findViewById(R.id.favorites_title_bottom);
         }
     }
 
@@ -142,16 +141,17 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 final BikeStation bikeStation = (BikeStation) object;
                 handleBikeStation(holder, bikeStation);
             }
-            holder.timeView.setText(this.lastUpdate);
+            //holder.timeView.setText(this.lastUpdate);
+
         }
     }
 
     private void resetData(@NonNull final FavoritesViewHolder holder) {
         holder.mainLayout.setOnClickListener(null);
-        holder.titleBottomLayout.setOnClickListener(null);
-        if (holder.lineTitleLayout.getChildCount() != 0) {
-            holder.lineTitleLayout.removeAllViews();
-        }
+//        holder.titleBottomLayout.setOnClickListener(null);
+//        if (holder.lineTitleLayout.getChildCount() != 0) {
+//            holder.lineTitleLayout.removeAllViews();
+//        }
         if (holder.mainLayout.getChildCount() != 0) {
             holder.mainLayout.removeAllViews();
         }
@@ -161,77 +161,69 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
         final int stationId = station.getId();
 
-        holder.nameTitleBottomView.setText(station.getName());
+        holder.stationNameTextView.setText(station.getName());
+        holder.stationNameTextView.setLines(1);
+        holder.stationNameTextView.setEllipsize(TextUtils.TruncateAt.END);
 
-        if (holder.lineTitleLayout.getChildCount() != 0) {
-            holder.lineTitleLayout.removeAllViews();
-        }
+//        if (holder.lineTitleLayout.getChildCount() != 0) {
+//            holder.lineTitleLayout.removeAllViews();
+//        }
 
-        addTitleToView(holder.lineTitleLayout, station.getLines());
+//        addTitleToView(holder.lineTitleLayout, station.getLines());
 
-        final LinearLayout.LayoutParams paramsArrival = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
         final Set<TrainLine> setTL = station.getLines();
-
         // TODO create a method to check if empty
         if (favorites.getTrainArrival(stationId) != null) {
+
             for (final TrainLine tl : setTL) {
                 final Map<String, List<String>> etas = favorites.getTrainArrivalByLine(stationId, tl);
                 if (!etas.isEmpty()) {
-                    final RelativeLayout containerTrainLine = new RelativeLayout(mainActivity);
-                    final RelativeLayout.LayoutParams containerLayout = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+                    for (final Entry<String, List<String>> entry : etas.entrySet()) {
+                        final LinearLayout.LayoutParams paramsArrival = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+                        int pixels = Util.convertDpToPixel(mainActivity, 16);
+                        paramsArrival.setMargins(pixels, pixels / 2, pixels, pixels / 2);
 
-                    containerTrainLine.setLayoutParams(containerLayout);
+                        final RelativeLayout.LayoutParams paramsArrivalTime = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                            paramsArrivalTime.addRule(RelativeLayout.ALIGN_PARENT_END);
+                        }
+                        paramsArrivalTime.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
 
 
-                    final TextView trainLineTextView = new TextView(mainActivity);
-                    trainLineTextView.setText(tl.toStringWithLine());
-                    trainLineTextView.setLines(1);
-                    trainLineTextView.setEllipsize(TextUtils.TruncateAt.END);
-                    trainLineTextView.setTextColor(ContextCompat.getColor(mainActivity, R.color.white));
-                    trainLineTextView.setTypeface(null, Typeface.BOLD);
-                    float pixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 120, mainActivity.getResources().getDisplayMetrics());
-                    trainLineTextView.setWidth((int) pixels);
-                    trainLineTextView.setBackgroundColor(tl.getColor());
-                    trainLineTextView.setGravity(Gravity.CENTER);
-
-                    containerTrainLine.addView(trainLineTextView);
-                    holder.mainLayout.addView(containerTrainLine);
-
-                    for (final Map.Entry<String, List<String>> entry : etas.entrySet()) {
-                        final LinearLayout insideLayout = new LinearLayout(context);
-                        insideLayout.setOrientation(LinearLayout.HORIZONTAL);
+                        final RelativeLayout insideLayout = new RelativeLayout(context);
                         insideLayout.setLayoutParams(paramsArrival);
 
-                        final String dest = entry.getKey();
+                        final String destination = entry.getKey();
                         final TextView destinationTextView = new TextView(context);
                         destinationTextView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
-                        final String stopNameData = dest + ": ";
-                        destinationTextView.setText(stopNameData);
+                        destinationTextView.setText(destination);
                         insideLayout.addView(destinationTextView);
 
-                        final TextView timing = new TextView(context);
+                        final TextView listTiming = new TextView(context);
                         final StringBuilder timingData = new StringBuilder();
-                        final List<String> res = entry.getValue();
-                        for (final String eta : res) {
+                        final List<String> currentEtas = entry.getValue();
+                        for (final String eta : currentEtas) {
                             timingData.append(eta).append(" ");
                         }
-                        timing.setText(timingData.toString());
-                        timing.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
-                        timing.setLines(1);
-                        timing.setEllipsize(TextUtils.TruncateAt.END);
-                        insideLayout.addView(timing);
+                        listTiming.setText(timingData.toString().trim());
+                        listTiming.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
+                        listTiming.setLines(1);
+                        listTiming.setEllipsize(TextUtils.TruncateAt.END);
+
+                        listTiming.setLayoutParams(paramsArrivalTime);
+                        insideLayout.addView(listTiming);
                         holder.mainLayout.addView(insideLayout);
                     }
                 }
             }
         }
         holder.mainLayout.setOnClickListener(new FavoritesTrainOnClickListener(mainActivity, stationId, setTL));
-        holder.titleBottomLayout.setOnClickListener(new FavoritesTrainOnClickListener(mainActivity, stationId, setTL));
+        //holder.titleBottomLayout.setOnClickListener(new FavoritesTrainOnClickListener(mainActivity, stationId, setTL));
     }
 
     private void handleBusRoute(@NonNull final FavoritesViewHolder holder, @NonNull final BusRoute busRoute) {
-        holder.nameTitleBottomView.setText(busRoute.getId());
+        holder.stationNameTextView.setText(busRoute.getId());
 
         final Map<String, Map<String, List<BusArrival>>> busArrivals = favorites.getBusArrivalsMapped(busRoute.getId());
         if (!busArrivals.isEmpty()) {
@@ -298,7 +290,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     }
 
     private void handleBikeStation(@NonNull final FavoritesViewHolder holder, @NonNull final BikeStation bikeStation) {
-        holder.nameTitleBottomView.setText(bikeStation.getName());
+        holder.stationNameTextView.setText(bikeStation.getName());
 
         final LinearLayout llh = new LinearLayout(context);
         llh.setLayoutParams(paramsLayout);
@@ -470,7 +462,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         final Date lastUpdate = ChicagoTracker.getLastUpdate();
         // FIXME What the hell? Did it ever worked?
         if (!String.valueOf(getLastUpdateInMinutes(lastUpdate)).equals(lastUpdate)) {
-            this.lastUpdate = String.valueOf(getLastUpdateInMinutes(lastUpdate));
+            // this.lastUpdate = String.valueOf(getLastUpdateInMinutes(lastUpdate));
             this.notifyDataSetChanged();
         }
     }
