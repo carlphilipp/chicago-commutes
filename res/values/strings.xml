@@ -39,7 +39,7 @@
 
 	<!-- Preferences -->
 	<string name="preferences_cta_train">cta_train</string>
-	<string name="preferences_cta_bus">cta_bus</string>cta_train
+	<string name="preferences_cta_bus">cta_bus</string>
 
 	<string name="empty_string">&#160;</string>
 	<string name="app_name">Chicago Commutes</string>
