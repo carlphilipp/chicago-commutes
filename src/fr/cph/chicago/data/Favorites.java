@@ -139,20 +139,19 @@ public class Favorites {
     }
 
     @NonNull
-    public final Map<String, List<String>> getTrainArrivalByLine(@NonNull final Integer stationId, @NonNull final TrainLine trainLine) {
+    public final Map<String, StringBuilder> getTrainArrivalByLine(@NonNull final Integer stationId, @NonNull final TrainLine trainLine) {
         final List<Eta> etas = getTrainArrival(stationId).getEtas(trainLine);
-        final Map<String, List<String>> result = new HashMap<>();
+        final Map<String, StringBuilder> result = new HashMap<>();
         for (final Eta eta : etas) {
-            //final Stop stop = eta.getStop();
             final String stopNameData = eta.getDestName();
             final String timingData = eta.getTimeLeftDueDelay();
             if (!result.containsKey(stopNameData)) {
-                final List<String> list = new ArrayList<>();
-                list.add(timingData);
+                final StringBuilder list = new StringBuilder();
+                list.append(timingData);
                 result.put(stopNameData, list);
             } else {
-                final List<String> list = result.get(stopNameData);//.add(timingData);
-                list.add(timingData);
+                final StringBuilder list = result.get(stopNameData);//.add(timingData);
+                list.append(" "+timingData);
             }
         }
         return result;
