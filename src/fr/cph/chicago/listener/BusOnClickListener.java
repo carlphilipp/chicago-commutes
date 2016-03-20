@@ -51,17 +51,17 @@ import fr.cph.chicago.util.Util;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class FavoritesBusOnClickListener implements OnClickListener {
+public class BusOnClickListener implements OnClickListener {
 
     private ViewGroup group;
     private MainActivity mainActivity;
     private BusRoute busRoute;
     private Map<String, List<BusArrival>> mapBusArrivals;
 
-    public FavoritesBusOnClickListener(@NonNull final MainActivity activity,
-                                       @NonNull final ViewGroup group,
-                                       @NonNull final BusRoute busRoute,
-                                       @NonNull final Map<String, List<BusArrival>> mapBusArrivals) {
+    public BusOnClickListener(@NonNull final MainActivity activity,
+                              @NonNull final ViewGroup group,
+                              @NonNull final BusRoute busRoute,
+                              @NonNull final Map<String, List<BusArrival>> mapBusArrivals) {
         this.mainActivity = activity;
         this.group = group;
         this.busRoute = busRoute;
@@ -92,7 +92,8 @@ public class FavoritesBusOnClickListener implements OnClickListener {
                             // Open details
                             final String boundTitle = busArrival.getRouteDirection();
                             final BusDirection.BusDirectionEnum busDirectionEnum = BusDirection.BusDirectionEnum.fromString(boundTitle);
-                            new FavoritesAdapter.BusBoundAsyncTask(mainActivity).execute(busArrival.getRouteId(), busDirectionEnum.getShortUpperCase(), boundTitle, Integer.toString(busArrival.getStopId()), busRoute.getName());
+                            new FavoritesAdapter.BusBoundAsyncTask(mainActivity).execute(busArrival.getRouteId(), busDirectionEnum.getShortUpperCase(), boundTitle,
+                                    String.valueOf(busArrival.getStopId()), busRoute.getName());
                         }
                         i++;
                     }

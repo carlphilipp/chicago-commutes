@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,7 +16,9 @@
 
 package fr.cph.chicago.adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -35,12 +37,14 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.commons.lang3.text.WordUtils;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -61,14 +65,15 @@ import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.TrainArrival;
+import fr.cph.chicago.entity.enumeration.BusDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.listener.FavoritesBusOnClickListener;
 import fr.cph.chicago.listener.FavoritesTrainOnClickListener;
-import fr.cph.chicago.listener.TrainOnClickListener;
 import fr.cph.chicago.util.Util;
+import lombok.Data;
 
 import static java.util.Map.Entry;
 
@@ -236,12 +241,9 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 }
             }
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            holder.mainLayout.setBackground(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.any_selector));
-        }
-        //holder.mainLayout.setOnClickListener(new TrainOnClickListener(mainActivity, stationId, trainLines));
-
-        //holder.titleBottomLayout.setOnClickListener(new TrainOnClickListener(mainActivity, stationId, setTL));
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+//            holder.mainLayout.setBackground(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.any_selector));
+//        }
     }
 
     private LinearLayout.LayoutParams getInsideParams(boolean newLine, boolean lastLine) {
@@ -268,10 +270,21 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         return paramsRight;
     }
 
+    @Data
+    public class BusDetails {
+        private String busRouteId;
+        private String bound;
+        private String boundTitle;
+        private String stopId;
+        private String routeName;
+        private String stopName;
+    }
 
     private void handleBusRoute(@NonNull final FavoritesViewHolder holder, @NonNull final BusRoute busRoute) {
         holder.stationNameTextView.setText(busRoute.getId());
         holder.favoriteImage.setImageResource(R.drawable.ic_directions_bus_white_24dp);
+
+        final List<BusDetails> busDetailses = new ArrayList<>();
 
         final Map<String, Map<String, List<BusArrival>>> busArrivals = favorites.getBusArrivalsMapped(busRoute.getId());
         for (final Entry<String, Map<String, List<BusArrival>>> entry : busArrivals.entrySet()) {
@@ -292,6 +305,20 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
             final String key = entry.getKey();
             final Map<String, List<BusArrival>> value = entry.getValue();
+            for (final String key2 : value.keySet()) {
+                final BusArrival busArrival = value.get(key2).get(0);
+
+                final String boundTitle = busArrival.getRouteDirection();
+                final BusDirection.BusDirectionEnum busDirectionEnum = BusDirection.BusDirectionEnum.fromString(boundTitle);
+                final BusDetails busDetails = new BusDetails();
+                busDetails.setBusRouteId(busArrival.getRouteId());
+                busDetails.setBound(busDirectionEnum.getShortUpperCase());
+                busDetails.setBoundTitle(boundTitle);
+                busDetails.setStopId(Integer.toString(busArrival.getStopId()));
+                busDetails.setRouteName(busRoute.getName());
+                busDetails.setStopName(key);
+                busDetailses.add(busDetails);
+            }
 
             llh.setOnClickListener(new FavoritesBusOnClickListener(mainActivity, null, busRoute, value));
 
@@ -333,6 +360,35 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
             llh.addView(stopLayout);
             holder.mainLayout.addView(llh);
         }
+
+
+        holder.detailsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                if (busDetailses.size() == 1) {
+                    final BusDetails busDetails = busDetailses.get(0);
+                    new FavoritesAdapter.BusBoundAsyncTask(mainActivity).execute(busDetails.getBusRouteId(), busDetails.getBound(), busDetails.getBoundTitle(), busDetails.getStopId(), busDetails.getRouteName());
+                } else {
+                    final PopupBusDetailsFavoritesAdapter ada = new PopupBusDetailsFavoritesAdapter(mainActivity, busDetailses);
+                    final View popupView = mainActivity.getLayoutInflater().inflate(R.layout.popup_bus, null);
+                    final ListView listView = (ListView) popupView.findViewById(R.id.details);
+                    listView.setAdapter(ada);
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);
+                    builder.setAdapter(ada, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(final DialogInterface dialog, final int position) {
+                            final BusDetails busDetails = busDetailses.get(position);
+                            new FavoritesAdapter.BusBoundAsyncTask(mainActivity).execute(busDetails.getBusRouteId(), busDetails.getBound(), busDetails.getBoundTitle(), busDetails.getStopId(), busDetails.getRouteName());
+                        }
+                    });
+                    final int[] screenSize = Util.getScreenSize();
+                    final AlertDialog dialog = builder.create();
+                    dialog.show();
+                    dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), ViewGroup.LayoutParams.WRAP_CONTENT);
+                }
+            }
+        });
+        //holder.mapButton.setOnClickListener();
     }
 
     private void handleBikeStation(@NonNull final FavoritesViewHolder holder, @NonNull final BikeStation bikeStation) {
@@ -445,7 +501,6 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         llh.addView(availableLayout);
 
         holder.mainLayout.addView(llh);
-
 
 
 //        holder.mainLayout.setOnClickListener(new View.OnClickListener() {
