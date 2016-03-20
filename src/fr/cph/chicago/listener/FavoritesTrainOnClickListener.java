@@ -20,12 +20,9 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.CardView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
@@ -37,8 +34,8 @@ import java.util.Set;
 
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
-import fr.cph.chicago.activity.StationActivity;
 import fr.cph.chicago.activity.TrainMapActivity;
+import fr.cph.chicago.adapter.PopupFavoritesTrainAdapter;
 import fr.cph.chicago.adapter.PopupTrainAdapter;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.Util;
@@ -50,71 +47,62 @@ import fr.cph.chicago.util.Util;
  * @version 1
  */
 public class FavoritesTrainOnClickListener implements OnClickListener {
-	/**
-	 * The main activity
-	 **/
-	private Activity activity;
-	/**
-	 * The station id
-	 **/
-	private int stationId;
-	/**
-	 * Train lines
-	 **/
-	private Set<TrainLine> trainLines;
+    /**
+     * The main activity
+     **/
+    private Activity activity;
+    /**
+     * The station id
+     **/
+    private int stationId;
+    /**
+     * Train lines
+     **/
+    private Set<TrainLine> trainLines;
 
-	public FavoritesTrainOnClickListener(@NonNull final Activity activity, final int stationId, final Set<TrainLine> trainLines) {
-		this.activity = activity;
-		this.stationId = stationId;
-		this.trainLines = trainLines;
-	}
+    public FavoritesTrainOnClickListener(@NonNull final Activity activity, final int stationId, final Set<TrainLine> trainLines) {
+        this.activity = activity;
+        this.stationId = stationId;
+        this.trainLines = trainLines;
+    }
 
-	@Override
-	public void onClick(final View view) {
+    @Override
+    public void onClick(final View view) {
         if (!Util.isNetworkAvailable()) {
-			Toast.makeText(activity, "No network connection detected!", Toast.LENGTH_LONG).show();
-		} else {
-			final List<String> values = new ArrayList<>();
-			final List<Integer> colors = new ArrayList<>();
-			values.add("Open details");
-			for (final TrainLine line : trainLines) {
-				values.add(line.toString() + " line - See trains");
-				if (line != TrainLine.YELLOW) {
-					colors.add(line.getColor());
-				} else {
-					colors.add(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.yellowLine));
-				}
-			}
-			final PopupTrainAdapter ada = new PopupTrainAdapter(activity, values, colors);
+            Toast.makeText(activity, "No network connection detected!", Toast.LENGTH_LONG).show();
+        } else {
+            final List<String> values = new ArrayList<>();
+            final List<Integer> colors = new ArrayList<>();
+            for (final TrainLine line : trainLines) {
+                values.add(line.toStringWithLine());
+                if (line != TrainLine.YELLOW) {
+                    colors.add(line.getColor());
+                } else {
+                    colors.add(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.yellowLine));
+                }
+            }
+            final PopupFavoritesTrainAdapter ada = new PopupFavoritesTrainAdapter(activity, values, colors);
 
-			final List<TrainLine> lines = new ArrayList<>();
-			lines.addAll(trainLines);
+            final List<TrainLine> lines = new ArrayList<>();
+            lines.addAll(trainLines);
 
-			final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-			builder.setAdapter(ada, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(final DialogInterface dialog, final int position) {
-					final Bundle extras = new Bundle();
-					if (position == 0) {
-						// Start station activity
-						final Intent intent = new Intent(ChicagoTracker.getContext(), StationActivity.class);
-						extras.putInt(activity.getString(R.string.bundle_train_stationId), stationId);
-						intent.putExtras(extras);
-						activity.startActivity(intent);
-					} else {
-						// Follow all trains from given line on google map view
-						final Intent intent = new Intent(ChicagoTracker.getContext(), TrainMapActivity.class);
-						extras.putString(activity.getString(R.string.bundle_train_line), lines.get(position - 1).toTextString());
-						intent.putExtras(extras);
-						activity.startActivity(intent);
-					}
-				}
-			});
+            final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setAdapter(ada, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(final DialogInterface dialog, final int position) {
+                    final Bundle extras = new Bundle();
+                    // Follow all trains from given line on google map view
+                    final Intent intent = new Intent(ChicagoTracker.getContext(), TrainMapActivity.class);
+                    extras.putString(activity.getString(R.string.bundle_train_line), lines.get(position).toTextString());
+                    intent.putExtras(extras);
+                    activity.startActivity(intent);
+                }
+            });
 
-			final int[] screenSize = Util.getScreenSize();
-			final AlertDialog dialog = builder.create();
-			dialog.show();
-			dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
-		}
-	}
+            final int[] screenSize = Util.getScreenSize();
+            final AlertDialog dialog = builder.create();
+            dialog.show();
+            dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
+        }
+    }
 }

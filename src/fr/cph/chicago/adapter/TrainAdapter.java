@@ -31,7 +31,7 @@ import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.listener.FavoritesTrainOnClickListener;
+import fr.cph.chicago.listener.TrainOnClickListener;
 
 import java.util.List;
 import java.util.Set;
@@ -115,7 +115,7 @@ public final class TrainAdapter extends BaseAdapter {
 			}
 			index++;
 		}
-		convertView.setOnClickListener(new FavoritesTrainOnClickListener(activity, station.getId(), lines));
+		convertView.setOnClickListener(new TrainOnClickListener(activity, station.getId(), lines));
 		return convertView;
 	}
 

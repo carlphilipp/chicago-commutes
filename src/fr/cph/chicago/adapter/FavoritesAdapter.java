@@ -24,7 +24,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.SparseArray;
@@ -33,6 +32,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -52,6 +52,7 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BikeStationActivity;
 import fr.cph.chicago.activity.BusActivity;
 import fr.cph.chicago.activity.MainActivity;
+import fr.cph.chicago.activity.StationActivity;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Favorites;
 import fr.cph.chicago.entity.BikeStation;
@@ -66,6 +67,7 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.listener.FavoritesBusOnClickListener;
 import fr.cph.chicago.listener.FavoritesTrainOnClickListener;
+import fr.cph.chicago.listener.TrainOnClickListener;
 import fr.cph.chicago.util.Util;
 
 import static java.util.Map.Entry;
@@ -110,9 +112,11 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
     static class FavoritesViewHolder extends RecyclerView.ViewHolder {
         public LinearLayout mainLayout;
+        public LinearLayout buttonsLayout;
         public TextView stationNameTextView;
         public ImageView favoriteImage;
-        public CardView cardView;
+        public Button detailsButton;
+        public Button mapButton;
 
         public FavoritesViewHolder(final View view) {
             super(view);
@@ -120,12 +124,15 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 this.mainLayout.setBackground(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.any_selector));
             }
-            this.cardView = (CardView) view.findViewById(R.id.card_view);
+            this.buttonsLayout = (LinearLayout) view.findViewById(R.id.favorites_buttons);
             this.favoriteImage = (ImageView) view.findViewById(R.id.favorites_icon);
 
             this.stationNameTextView = (TextView) view.findViewById(R.id.favorites_station_name);
             this.stationNameTextView.setLines(1);
             this.stationNameTextView.setEllipsize(TextUtils.TruncateAt.END);
+
+            this.detailsButton = (Button) view.findViewById(R.id.details_button);
+            this.mapButton = (Button) view.findViewById(R.id.view_map_button);
         }
     }
 
@@ -160,11 +167,23 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
     private void handleStation(@NonNull final FavoritesViewHolder holder, @NonNull final Station station) {
         final int stationId = station.getId();
+        final Set<TrainLine> trainLines = station.getLines();
 
         holder.favoriteImage.setImageResource(R.drawable.ic_train_white_24dp);
         holder.stationNameTextView.setText(station.getName());
+        holder.detailsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                // Start station activity
+                final Bundle extras = new Bundle();
+                final Intent intent = new Intent(ChicagoTracker.getContext(), StationActivity.class);
+                extras.putInt(mainActivity.getString(R.string.bundle_train_stationId), stationId);
+                intent.putExtras(extras);
+                mainActivity.startActivity(intent);
+            }
+        });
+        holder.mapButton.setOnClickListener(new FavoritesTrainOnClickListener(mainActivity, stationId, trainLines));
 
-        final Set<TrainLine> trainLines = station.getLines();
         // TODO create a method to check if empty
         if (favorites.getTrainArrival(stationId) != null) {
 
@@ -220,9 +239,9 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             holder.mainLayout.setBackground(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.any_selector));
         }
-        holder.mainLayout.setOnClickListener(new FavoritesTrainOnClickListener(mainActivity, stationId, trainLines));
+        //holder.mainLayout.setOnClickListener(new TrainOnClickListener(mainActivity, stationId, trainLines));
 
-        //holder.titleBottomLayout.setOnClickListener(new FavoritesTrainOnClickListener(mainActivity, stationId, setTL));
+        //holder.titleBottomLayout.setOnClickListener(new TrainOnClickListener(mainActivity, stationId, setTL));
     }
 
     private LinearLayout.LayoutParams getInsideParams(boolean newLine, boolean lastLine) {
@@ -320,6 +339,43 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         holder.stationNameTextView.setText(bikeStation.getName());
         holder.favoriteImage.setImageResource(R.drawable.ic_directions_bike_white_24dp);
 
+        // TODO extract those identical listener
+        holder.detailsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                final boolean isNetworkAvailable = Util.isNetworkAvailable();
+                if (!isNetworkAvailable) {
+                    Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_LONG).show();
+                } else if (bikeStation.getLatitude() != 0 && bikeStation.getLongitude() != 0) {
+                    final Intent intent = new Intent(ChicagoTracker.getContext(), BikeStationActivity.class);
+                    final Bundle extras = new Bundle();
+                    extras.putParcelable(mainActivity.getString(R.string.bundle_bike_station), bikeStation);
+                    intent.putExtras(extras);
+                    mainActivity.startActivity(intent);
+                } else {
+                    Toast.makeText(mainActivity, "Not ready yet. Please try again in few seconds!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        // TODO create a listener that open Google map with the position of the Station
+        holder.mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                final boolean isNetworkAvailable = Util.isNetworkAvailable();
+                if (!isNetworkAvailable) {
+                    Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_LONG).show();
+                } else if (bikeStation.getLatitude() != 0 && bikeStation.getLongitude() != 0) {
+                    final Intent intent = new Intent(ChicagoTracker.getContext(), BikeStationActivity.class);
+                    final Bundle extras = new Bundle();
+                    extras.putParcelable(mainActivity.getString(R.string.bundle_bike_station), bikeStation);
+                    intent.putExtras(extras);
+                    mainActivity.startActivity(intent);
+                } else {
+                    Toast.makeText(mainActivity, "Not ready yet. Please try again in few seconds!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
         final LinearLayout llh = new LinearLayout(context);
         llh.setLayoutParams(paramsLayout);
         llh.setOrientation(LinearLayout.HORIZONTAL);
@@ -390,24 +446,24 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
         holder.mainLayout.addView(llh);
 
-        final boolean isNetworkAvailable = Util.isNetworkAvailable();
 
-        holder.mainLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isNetworkAvailable) {
-                    Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_LONG).show();
-                } else if (bikeStation.getLatitude() != 0 && bikeStation.getLongitude() != 0) {
-                    final Intent intent = new Intent(ChicagoTracker.getContext(), BikeStationActivity.class);
-                    final Bundle extras = new Bundle();
-                    extras.putParcelable(mainActivity.getString(R.string.bundle_bike_station), bikeStation);
-                    intent.putExtras(extras);
-                    mainActivity.startActivity(intent);
-                } else {
-                    Toast.makeText(mainActivity, "Not ready yet. Please try again in few seconds!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+
+//        holder.mainLayout.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (!isNetworkAvailable) {
+//                    Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_LONG).show();
+//                } else if (bikeStation.getLatitude() != 0 && bikeStation.getLongitude() != 0) {
+//                    final Intent intent = new Intent(ChicagoTracker.getContext(), BikeStationActivity.class);
+//                    final Bundle extras = new Bundle();
+//                    extras.putParcelable(mainActivity.getString(R.string.bundle_bike_station), bikeStation);
+//                    intent.putExtras(extras);
+//                    mainActivity.startActivity(intent);
+//                } else {
+//                    Toast.makeText(mainActivity, "Not ready yet. Please try again in few seconds!", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
     }
 
     @Override

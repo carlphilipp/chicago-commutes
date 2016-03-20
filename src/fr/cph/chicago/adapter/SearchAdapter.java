@@ -38,7 +38,7 @@ import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.listener.FavoritesTrainOnClickListener;
+import fr.cph.chicago.listener.TrainOnClickListener;
 import fr.cph.chicago.task.DirectionAsyncTask;
 
 /**
@@ -119,7 +119,7 @@ public final class SearchAdapter extends BaseAdapter {
                 }
                 index++;
             }
-            convertView.setOnClickListener(new FavoritesTrainOnClickListener(searchActivity, station.getId(), lines));
+            convertView.setOnClickListener(new TrainOnClickListener(searchActivity, station.getId(), lines));
         } else if (position < trains.size() + busRoutes.size()) {
             final BusRoute busRoute = (BusRoute) getItem(position);
 
