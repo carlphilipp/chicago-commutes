@@ -192,7 +192,6 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
         // TODO create a method to check if empty
         if (favorites.getTrainArrival(stationId) != null) {
-
             for (final TrainLine trainLine : trainLines) {
                 boolean newLine = true;
                 final Map<String, StringBuilder> etas = favorites.getTrainArrivalByLine(stationId, trainLine);
