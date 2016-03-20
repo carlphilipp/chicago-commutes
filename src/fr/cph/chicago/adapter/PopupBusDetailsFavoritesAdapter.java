@@ -28,17 +28,18 @@ import android.widget.TextView;
 import java.util.List;
 
 import fr.cph.chicago.R;
+import fr.cph.chicago.entity.BusDetailsDTO;
 
 /**
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class PopupBusDetailsFavoritesAdapter extends ArrayAdapter<FavoritesAdapter.BusDetails> {
+public class PopupBusDetailsFavoritesAdapter extends ArrayAdapter<BusDetailsDTO> {
 
     private final Activity activity;
-    private final List<FavoritesAdapter.BusDetails> values;
+    private final List<BusDetailsDTO> values;
 
-    public PopupBusDetailsFavoritesAdapter(@NonNull final Activity activity, @NonNull final List<FavoritesAdapter.BusDetails> values) {
+    public PopupBusDetailsFavoritesAdapter(@NonNull final Activity activity, @NonNull final List<BusDetailsDTO> values) {
         super(activity, R.layout.popup_bus_cell, values);
         this.activity = activity;
         this.values = values;

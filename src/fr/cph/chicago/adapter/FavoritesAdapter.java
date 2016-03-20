@@ -61,6 +61,7 @@ import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Favorites;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
+import fr.cph.chicago.entity.BusDetailsDTO;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Station;
@@ -270,21 +271,11 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         return paramsRight;
     }
 
-    @Data
-    public class BusDetails {
-        private String busRouteId;
-        private String bound;
-        private String boundTitle;
-        private String stopId;
-        private String routeName;
-        private String stopName;
-    }
-
     private void handleBusRoute(@NonNull final FavoritesViewHolder holder, @NonNull final BusRoute busRoute) {
         holder.stationNameTextView.setText(busRoute.getId());
         holder.favoriteImage.setImageResource(R.drawable.ic_directions_bus_white_24dp);
 
-        final List<BusDetails> busDetailses = new ArrayList<>();
+        final List<BusDetailsDTO> busDetailses = new ArrayList<>();
 
         final Map<String, Map<String, List<BusArrival>>> busArrivals = favorites.getBusArrivalsMapped(busRoute.getId());
         for (final Entry<String, Map<String, List<BusArrival>>> entry : busArrivals.entrySet()) {
@@ -310,7 +301,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
                 final String boundTitle = busArrival.getRouteDirection();
                 final BusDirection.BusDirectionEnum busDirectionEnum = BusDirection.BusDirectionEnum.fromString(boundTitle);
-                final BusDetails busDetails = new BusDetails();
+                final BusDetailsDTO busDetails = new BusDetailsDTO();
                 busDetails.setBusRouteId(busArrival.getRouteId());
                 busDetails.setBound(busDirectionEnum.getShortUpperCase());
                 busDetails.setBoundTitle(boundTitle);
@@ -366,7 +357,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
             @Override
             public void onClick(final View v) {
                 if (busDetailses.size() == 1) {
-                    final BusDetails busDetails = busDetailses.get(0);
+                    final BusDetailsDTO busDetails = busDetailses.get(0);
                     new FavoritesAdapter.BusBoundAsyncTask(mainActivity).execute(busDetails.getBusRouteId(), busDetails.getBound(), busDetails.getBoundTitle(), busDetails.getStopId(), busDetails.getRouteName());
                 } else {
                     final PopupBusDetailsFavoritesAdapter ada = new PopupBusDetailsFavoritesAdapter(mainActivity, busDetailses);
@@ -377,7 +368,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                     builder.setAdapter(ada, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(final DialogInterface dialog, final int position) {
-                            final BusDetails busDetails = busDetailses.get(position);
+                            final BusDetailsDTO busDetails = busDetailses.get(position);
                             new FavoritesAdapter.BusBoundAsyncTask(mainActivity).execute(busDetails.getBusRouteId(), busDetails.getBound(), busDetails.getBoundTitle(), busDetails.getStopId(), busDetails.getRouteName());
                         }
                     });
