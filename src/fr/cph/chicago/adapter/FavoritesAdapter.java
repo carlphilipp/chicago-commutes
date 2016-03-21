@@ -20,8 +20,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -42,8 +40,6 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -75,7 +71,6 @@ import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.listener.FavoritesBusOnClickListener;
 import fr.cph.chicago.listener.FavoritesTrainOnClickListener;
 import fr.cph.chicago.util.Util;
-import lombok.Data;
 
 import static java.util.Map.Entry;
 
@@ -241,9 +236,6 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 }
             }
         }
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-//            holder.mainLayout.setBackground(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.any_selector));
-//        }
     }
 
     private LinearLayout.LayoutParams getInsideParams(boolean newLine, boolean lastLine) {
@@ -287,12 +279,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 llh.setBackground(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.any_selector));
             }
 
-//            final TextView colorView = new TextView(context);
-//            colorView.setBackgroundColor(ContextCompat.getColor(context, R.color.black));
-//            colorView.setText("   ");
-//            colorView.setLayoutParams(paramsTextView);
-//            llh.addView(colorView);
-
+            // Build data for button outside of the loop
             final String stopName = entry.getKey();
             final Map<String, List<BusArrival>> value = entry.getValue();
             for (final String key2 : value.keySet()) {
@@ -312,16 +299,6 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
             llh.setOnClickListener(new FavoritesBusOnClickListener(mainActivity, null, busRoute, value));
 
-//            final LinearLayout stopLayout = new LinearLayout(context);
-//            stopLayout.setOrientation(LinearLayout.VERTICAL);
-//            stopLayout.setPadding(line1Padding, 0, 0, 0);
-
-/*            final TextView stopNameView = new TextView(context);
-            stopNameView.setText(stopName);
-            stopNameView.setTextColor(ContextCompat.getColor(context, R.color.grey_5));
-            stopNameView.setTypeface(Typeface.DEFAULT_BOLD);
-
-            stopLayout.addView(stopNameView);*/
             boolean newLine = true;
             int i = 0;
 
@@ -395,7 +372,6 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 i++;
             }
         }
-
 
         holder.detailsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -536,24 +512,6 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         llh.addView(availableLayout);
 
         holder.mainLayout.addView(llh);
-
-
-//        holder.mainLayout.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (!isNetworkAvailable) {
-//                    Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_LONG).show();
-//                } else if (bikeStation.getLatitude() != 0 && bikeStation.getLongitude() != 0) {
-//                    final Intent intent = new Intent(ChicagoTracker.getContext(), BikeStationActivity.class);
-//                    final Bundle extras = new Bundle();
-//                    extras.putParcelable(mainActivity.getString(R.string.bundle_bike_station), bikeStation);
-//                    intent.putExtras(extras);
-//                    mainActivity.startActivity(intent);
-//                } else {
-//                    Toast.makeText(mainActivity, "Not ready yet. Please try again in few seconds!", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
     }
 
     @Override
@@ -564,41 +522,6 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     @Override
     public int getItemCount() {
         return favorites.size();
-    }
-
-    private void addTitleToView(@NonNull final RelativeLayout lineTitleLayout, @NonNull final Set<TrainLine> lines) {
-        final LinearLayout layout = new LinearLayout(mainActivity);
-        final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            params.addRule(RelativeLayout.ALIGN_PARENT_END);
-        }
-        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        layout.setLayoutParams(params);
-        layout.setOrientation(LinearLayout.HORIZONTAL);
-
-        for (final TrainLine line : lines) {
-            final RelativeLayout testView = createLineView(line);
-            layout.addView(testView);
-        }
-        lineTitleLayout.addView(layout);
-    }
-
-    @NonNull
-    private RelativeLayout createLineView(@NonNull final TrainLine line) {
-        final RelativeLayout layout = new RelativeLayout(mainActivity);
-        final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        params.setMargins(15, 3, 15, 3);
-        layout.setLayoutParams(params);
-        layout.setBackgroundColor(line.getColor());
-
-        final TextView trainLineTextView = new TextView(mainActivity);
-        trainLineTextView.setTextColor(ContextCompat.getColor(mainActivity, R.color.white));
-        trainLineTextView.setText(WordUtils.capitalize(line.toString()));
-        trainLineTextView.setTypeface(null, Typeface.BOLD);
-        trainLineTextView.setLayoutParams(params);
-        trainLineTextView.setTextSize(8);
-        layout.addView(trainLineTextView);
-        return layout;
     }
 
     /**

@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p>
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -64,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private BikeFragment bikeFragment;
     private NearbyFragment nearbyFragment;
 
+    private String title;
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,6 +99,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             itemSelection(R.id.navigation_favorites);
         }
+    }
+
+    @Override
+    public void onRestoreInstanceState(final Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        title = savedInstanceState.getString("title");
+    }
+
+    @Override
+    public void onSaveInstanceState(final Bundle savedInstanceState) {
+        savedInstanceState.putString("title", title);
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setBarTitle(this.title);
     }
 
     private void initView() {
@@ -175,13 +195,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    private void setBarTitle(@NonNull final String title) {
+        this.title = title;
+        toolbar.setTitle(title);
+    }
+
     private void itemSelection(final int position) {
         final FragmentManager fragmentManager = getSupportFragmentManager();
         currentPosition = position;
-        CharSequence title = null;
         switch (position) {
             case R.id.navigation_favorites:
-                title = getString(R.string.favorites);
+                setBarTitle(getString(R.string.favorites));
                 if (favoritesFragment == null) {
                     favoritesFragment = FavoritesFragment.newInstance(position + 1);
                 }
@@ -192,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 showActionBarMenu();
                 break;
             case R.id.navigation_train:
-                title = getString(R.string.train);
+                setBarTitle(getString(R.string.train));
                 if (trainFragment == null) {
                     trainFragment = TrainFragment.newInstance(position + 1);
                 }
@@ -203,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 hideActionBarMenu();
                 break;
             case R.id.navigation_bus:
-                title = getString(R.string.bus);
+                setBarTitle(getString(R.string.bus));
                 if (busFragment == null) {
                     busFragment = BusFragment.newInstance(position + 1);
                 }
@@ -214,7 +238,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 hideActionBarMenu();
                 break;
             case R.id.navigation_bike:
-                title = getString(R.string.divvy);
+                setBarTitle(getString(R.string.divvy));
                 if (bikeFragment == null) {
                     bikeFragment = BikeFragment.newInstance(position + 1);
                 }
@@ -225,7 +249,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 hideActionBarMenu();
                 break;
             case R.id.navigation_nearby:
-                title = getString(R.string.nearby);
+                setBarTitle(getString(R.string.nearby));
                 if (nearbyFragment == null) {
                     nearbyFragment = NearbyFragment.newInstance(position + 1);
                 }
@@ -235,9 +259,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 drawerLayout.closeDrawer(GravityCompat.START);
                 showActionBarMenu();
                 break;
-        }
-        if (title != null) {
-            toolbar.setTitle(title);
         }
     }
 
