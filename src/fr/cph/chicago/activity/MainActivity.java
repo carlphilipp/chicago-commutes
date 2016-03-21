@@ -102,18 +102,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void onRestoreInstanceState(final Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        title = savedInstanceState.getString("title");
-    }
-
-    @Override
-    public void onSaveInstanceState(final Bundle savedInstanceState) {
-        savedInstanceState.putString("title", title);
-        super.onSaveInstanceState(savedInstanceState);
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
         setBarTitle(this.title);
@@ -127,54 +115,52 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void setToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(final MenuItem item) {
-                    if (toolbar.getTitle().equals(getString(R.string.nearby))) {
-                        nearbyFragment.reloadData();
-                    } else {
-                        // Favorite fragment
-                        if (favoritesFragment != null) {
-                            favoritesFragment.startRefreshing();
-                        }
-
-                        Util.loadFavorites(favoritesFragment, FavoritesFragment.class, MainActivity.this);
-
-                        // Google analytics
-                        Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
-                        Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
-                        Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
-                        // Check if bus/bike or alert data are not loaded. If not, load them.
-                        // Can happen when the app has been loaded without any data connection
-                        boolean loadData = false;
-                        final DataHolder dataHolder = DataHolder.getInstance();
-
-                        final BusData busData = dataHolder.getBusData();
-
-                        final Bundle bundle = MainActivity.this.getIntent().getExtras();
-                        final List<BikeStation> bikeStations = bundle.getParcelableArrayList(getString(R.string.bundle_bike_stations));
-
-                        if (busData.getRoutes() != null && busData.getRoutes().size() == 0) {
-                            loadData = true;
-                        }
-                        if (!loadData && bikeStations == null) {
-                            loadData = true;
-                        }
-                        if (loadData) {
-                            favoritesFragment.startRefreshing();
-                            new LoadBusAndBikeDataTask(MainActivity.this).execute();
-                        }
-                        Util.trackAction(MainActivity.this, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(final MenuItem item) {
+                if (getString(R.string.nearby).equals(toolbar.getTitle())) {
+                    nearbyFragment.reloadData();
+                } else {
+                    // Favorite fragment
+                    if (favoritesFragment != null) {
+                        favoritesFragment.startRefreshing();
                     }
-                    return true;
+
+                    Util.loadFavorites(favoritesFragment, FavoritesFragment.class, MainActivity.this);
+
+                    // Google analytics
+                    Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
+                    Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
+                    Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
+                    // Check if bus/bike or alert data are not loaded. If not, load them.
+                    // Can happen when the app has been loaded without any data connection
+                    boolean loadData = false;
+                    final DataHolder dataHolder = DataHolder.getInstance();
+
+                    final BusData busData = dataHolder.getBusData();
+
+                    final Bundle bundle = MainActivity.this.getIntent().getExtras();
+                    final List<BikeStation> bikeStations = bundle.getParcelableArrayList(getString(R.string.bundle_bike_stations));
+
+                    if (busData.getRoutes() != null && busData.getRoutes().size() == 0) {
+                        loadData = true;
+                    }
+                    if (!loadData && bikeStations == null) {
+                        loadData = true;
+                    }
+                    if (loadData) {
+                        favoritesFragment.startRefreshing();
+                        new LoadBusAndBikeDataTask(MainActivity.this).execute();
+                    }
+                    Util.trackAction(MainActivity.this, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
                 }
-            });
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                toolbar.setElevation(4);
+                return true;
             }
-            toolbar.inflateMenu(R.menu.main);
+        });
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            toolbar.setElevation(4);
         }
+        toolbar.inflateMenu(R.menu.main);
     }
 
     public void refresh(@NonNull final BusData busData, @NonNull final List<BikeStation> bikeStations) {
@@ -197,7 +183,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void setBarTitle(@NonNull final String title) {
         this.title = title;
-        toolbar.setTitle(title);
+        if (toolbar != null) {
+            toolbar.setTitle(title);
+        }
     }
 
     private void itemSelection(final int position) {
@@ -277,10 +265,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void onSaveInstanceState(final Bundle outState, final PersistableBundle outPersistentState) {
-        super.onSaveInstanceState(outState, outPersistentState);
-        //save selected item so it will remains same even after orientation change
-        outState.putInt(SELECTED_ID, currentPosition);
+    public void onSaveInstanceState(final Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putInt(SELECTED_ID, currentPosition);
+        savedInstanceState.putString("title", title);
+    }
+
+    @Override
+    public void onRestoreInstanceState(final Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        title = savedInstanceState.getString("title");
+        currentPosition = savedInstanceState.getInt(SELECTED_ID);
     }
 
     private void hideActionBarMenu() {
