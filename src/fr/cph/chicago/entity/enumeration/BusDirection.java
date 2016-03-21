@@ -73,7 +73,7 @@ public class BusDirection {
             this.shortLowerCase = shortLowerCase;
         }
 
-        @NonNull
+        @Nullable
         public static BusDirectionEnum fromString(@NonNull final String text) {
             for (final BusDirectionEnum b : BusDirectionEnum.values()) {
                 if (text.equalsIgnoreCase(b.text)) {
@@ -84,7 +84,7 @@ public class BusDirection {
                     return b;
                 }
             }
-            throw new IllegalArgumentException();
+            return null;
         }
 
         @Override
