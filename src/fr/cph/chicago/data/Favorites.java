@@ -151,7 +151,7 @@ public class Favorites {
                 result.put(stopNameData, list);
             } else {
                 final StringBuilder list = result.get(stopNameData);//.add(timingData);
-                list.append(" "+timingData);
+                list.append(" ").append(timingData);
             }
         }
         return result;

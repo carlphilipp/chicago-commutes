@@ -19,6 +19,9 @@ package fr.cph.chicago.entity.enumeration;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
+
 import java.util.Locale;
 
 /**
@@ -30,69 +33,74 @@ import java.util.Locale;
 
 public class BusDirection {
 
-	private String textReceived;
-	private BusDirectionEnum busDirectionEnum;
+    private String textReceived;
+    private BusDirectionEnum busDirectionEnum;
 
-	public BusDirection(@NonNull final String textReceived) {
-		this.textReceived = textReceived;
-	}
+    public BusDirection(@NonNull final String textReceived) {
+        this.textReceived = textReceived;
+    }
 
-	public boolean isOk() {
-		final BusDirectionEnum en = BusDirectionEnum.fromString(textReceived);
-		if (en != null) {
-			busDirectionEnum = en;
-			return true;
-		}
-		return false;
-	}
-
-    @NonNull
-	public String getBusTextReceived() {
-		return textReceived;
-	}
+    public boolean isOk() {
+        final BusDirectionEnum en = BusDirectionEnum.fromString(textReceived);
+        if (en != null) {
+            busDirectionEnum = en;
+            return true;
+        }
+        return false;
+    }
 
     @NonNull
-	public BusDirectionEnum getBusDirectionEnum() {
-		return busDirectionEnum;
-	}
+    public String getBusTextReceived() {
+        return textReceived;
+    }
 
-	public enum BusDirectionEnum {
+    @NonNull
+    public BusDirectionEnum getBusDirectionEnum() {
+        return busDirectionEnum;
+    }
 
-		NORTHBOUND("Northbound", "NORTH"), WESTBOUND("Westbound", "WEST"), SOUTHBOUND("Southbound", "SOUTH"), EASTBOUND("Eastbound", "EAST");
+    public enum BusDirectionEnum {
 
-		private String text;
-		private String shortUpperCase;
+        NORTHBOUND("Northbound", "NORTH", "North"), WESTBOUND("Westbound", "WEST", "West"), SOUTHBOUND("Southbound", "SOUTH", "South"), EASTBOUND("Eastbound", "EAST", "East");
 
-		BusDirectionEnum(final String text, final String shortUpperCase) {
-			this.text = text;
-			this.shortUpperCase = shortUpperCase;
-		}
+        private String text;
+        private String shortUpperCase;
+        private String shortLowerCase;
 
-        @Nullable
-		public static BusDirectionEnum fromString(final String text) {
-			if (text != null) {
-				for (final BusDirectionEnum b : BusDirectionEnum.values()) {
-					if (text.equalsIgnoreCase(b.text)) {
-						return b;
-					} else if (text.equalsIgnoreCase(b.shortUpperCase)) {
-						return b;
-					} else if (b.text.toLowerCase(Locale.US).contains(text.toLowerCase(Locale.US))) {
-						return b;
-					}
-				}
-			}
-			return null;
-		}
-
-		@Override
-		public final String toString() {
-			return text;
-		}
+        BusDirectionEnum(final String text, final String shortUpperCase, final String shortLowerCase) {
+            this.text = text;
+            this.shortUpperCase = shortUpperCase;
+            this.shortLowerCase = shortLowerCase;
+        }
 
         @NonNull
-		public final String getShortUpperCase() {
-			return shortUpperCase;
-		}
-	}
+        public static BusDirectionEnum fromString(@NonNull final String text) {
+            for (final BusDirectionEnum b : BusDirectionEnum.values()) {
+                if (text.equalsIgnoreCase(b.text)) {
+                    return b;
+                } else if (text.equalsIgnoreCase(b.shortUpperCase)) {
+                    return b;
+                } else if (b.text.toLowerCase(Locale.US).contains(text.toLowerCase(Locale.US))) {
+                    return b;
+                }
+            }
+            throw new IllegalArgumentException();
+        }
+
+        @Override
+        public final String toString() {
+            return text;
+        }
+
+        @NonNull
+        public final String getShortUpperCase() {
+            return shortUpperCase;
+        }
+
+        @NonNull
+        public final String getShortLowerCase() {
+            return shortLowerCase;
+        }
+    }
 }
 

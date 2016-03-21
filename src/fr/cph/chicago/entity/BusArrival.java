@@ -38,7 +38,7 @@ import lombok.Data;
 @Data
 public final class BusArrival implements Parcelable {
     /** **/
-    private static String NO_SERVICE = "No service scheduled";
+    private static String NO_SERVICE = "No service";
     /**
      * Timestamp
      **/

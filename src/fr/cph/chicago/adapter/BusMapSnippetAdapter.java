@@ -74,7 +74,7 @@ public class BusMapSnippetAdapter extends BaseAdapter {
         TextView stationNameTextView = (TextView) convertView.findViewById(R.id.station_name);
         stationNameTextView.setText(arrival.getStopName() + " " + position);
 
-        if (!(position == arrivals.size() - 1 && "No service scheduled".equals(arrival.getTimeLeftDueDelay()))) {
+        if (!(position == arrivals.size() - 1 && "No service".equals(arrival.getTimeLeftDueDelay()))) {
             final TextView timeTextView = (TextView) convertView.findViewById(R.id.time);
             timeTextView.setText(arrival.getTimeLeftDueDelay());
         } else {

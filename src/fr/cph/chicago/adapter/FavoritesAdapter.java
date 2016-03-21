@@ -20,6 +20,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -216,7 +217,6 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
                     leftLayout.addView(lineIndication);
 
-
                     final String destination = "  " + entry.getKey();
                     final TextView destinationTextView = new TextView(context);
                     destinationTextView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
@@ -287,13 +287,13 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 llh.setBackground(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.any_selector));
             }
 
-            final TextView tlView = new TextView(context);
-            tlView.setBackgroundColor(ContextCompat.getColor(context, R.color.black));
-            tlView.setText("   ");
-            tlView.setLayoutParams(paramsTextView);
-            llh.addView(tlView);
+//            final TextView colorView = new TextView(context);
+//            colorView.setBackgroundColor(ContextCompat.getColor(context, R.color.black));
+//            colorView.setText("   ");
+//            colorView.setLayoutParams(paramsTextView);
+//            llh.addView(colorView);
 
-            final String key = entry.getKey();
+            final String stopName = entry.getKey();
             final Map<String, List<BusArrival>> value = entry.getValue();
             for (final String key2 : value.keySet()) {
                 final BusArrival busArrival = value.get(key2).get(0);
@@ -306,49 +306,94 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 busDetails.setBoundTitle(boundTitle);
                 busDetails.setStopId(Integer.toString(busArrival.getStopId()));
                 busDetails.setRouteName(busRoute.getName());
-                busDetails.setStopName(key);
+                busDetails.setStopName(stopName);
                 busDetailses.add(busDetails);
             }
 
             llh.setOnClickListener(new FavoritesBusOnClickListener(mainActivity, null, busRoute, value));
 
-            final LinearLayout stopLayout = new LinearLayout(context);
-            stopLayout.setOrientation(LinearLayout.VERTICAL);
-            stopLayout.setPadding(line1Padding, 0, 0, 0);
+//            final LinearLayout stopLayout = new LinearLayout(context);
+//            stopLayout.setOrientation(LinearLayout.VERTICAL);
+//            stopLayout.setPadding(line1Padding, 0, 0, 0);
 
-            final TextView stopName = new TextView(context);
-            stopName.setText(String.valueOf(key));
-            stopName.setTextColor(ContextCompat.getColor(context, R.color.grey_5));
-            stopName.setTypeface(Typeface.DEFAULT_BOLD);
+/*            final TextView stopNameView = new TextView(context);
+            stopNameView.setText(stopName);
+            stopNameView.setTextColor(ContextCompat.getColor(context, R.color.grey_5));
+            stopNameView.setTypeface(Typeface.DEFAULT_BOLD);
 
-            stopLayout.addView(stopName);
+            stopLayout.addView(stopNameView);*/
+            boolean newLine = true;
+            int i = 0;
 
             for (final Entry<String, List<BusArrival>> entry2 : value.entrySet()) {
-                final String key2 = entry2.getKey();
+                final LinearLayout.LayoutParams insideParam = getInsideParams(newLine, i == value.size() - 1);
+                final RelativeLayout.LayoutParams paramsRight = getRightParams();
+
+                final RelativeLayout insideLayout = new RelativeLayout(context);
+                insideLayout.setLayoutParams(insideParam);
+
+                final LinearLayout leftLayout = new LinearLayout(context);
+                leftLayout.setOrientation(LinearLayout.HORIZONTAL);
+                leftLayout.setGravity(Gravity.CENTER);
+
+                final LinearLayout lineIndication = new LinearLayout(context);
+                final LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                params.height = 30;
+                params.width = 30;
+                lineIndication.setBackgroundColor(TrainLine.NA.getColor());
+                lineIndication.setLayoutParams(params);
+
+                leftLayout.addView(lineIndication);
+
+                final String bound = BusDirection.BusDirectionEnum.fromString(entry2.getKey()).getShortLowerCase();
                 final List<BusArrival> buses = entry2.getValue();
 
-                final LinearLayout boundLayout = new LinearLayout(context);
-                boundLayout.setOrientation(LinearLayout.HORIZONTAL);
+                final RelativeLayout.LayoutParams wrapParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                final RelativeLayout stopLayout = new RelativeLayout(context);
+                stopLayout.setLayoutParams(wrapParam);
 
-                final TextView bound = new TextView(context);
-                final String boundText = key2 + ": ";
-                bound.setText(boundText);
-                bound.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
-                boundLayout.addView(bound);
+                final String stopNameCusto = "  " + stopName;
+                final TextView destinationTextView = new TextView(context);
+                destinationTextView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
+                destinationTextView.setText(stopNameCusto);
+                int id = Util.generateViewId();
+                destinationTextView.setId(id);
+                final String boundCusto = " " + bound;
+                final TextView boundCustomTextView = new TextView(context);
+                boundCustomTextView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
+                boundCustomTextView.setText(boundCusto);
+                boundCustomTextView.setTextSize(10);
 
+                // Param to put bound textview at the right of stop name
+                final RelativeLayout.LayoutParams p = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                p.addRule(RelativeLayout.RIGHT_OF, id);
+                p.addRule(RelativeLayout.ALIGN_BASELINE, id);
+                boundCustomTextView.setLayoutParams(p);
+
+                stopLayout.addView(destinationTextView);
+                stopLayout.addView(boundCustomTextView);
+                leftLayout.addView(stopLayout);
+
+                insideLayout.addView(leftLayout);
+
+                // Eta of arrival trains
+                final TextView listTiming = new TextView(context);
+                final StringBuilder currentEtas = new StringBuilder();
                 for (final BusArrival arri : buses) {
-                    final TextView timeView = new TextView(context);
-                    final String timeText = arri.getTimeLeftDueDelay() + " ";
-                    timeView.setText(timeText);
-                    timeView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
-                    timeView.setLines(1);
-                    timeView.setEllipsize(TextUtils.TruncateAt.END);
-                    boundLayout.addView(timeView);
+                    currentEtas.append(" ").append(arri.getTimeLeftDueDelay());
                 }
-                stopLayout.addView(boundLayout);
+                listTiming.setText(currentEtas.toString());
+                listTiming.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
+                listTiming.setLines(1);
+                listTiming.setEllipsize(TextUtils.TruncateAt.END);
+
+                listTiming.setLayoutParams(paramsRight);
+                insideLayout.addView(listTiming);
+                holder.mainLayout.addView(insideLayout);
+
+                newLine = false;
+                i++;
             }
-            llh.addView(stopLayout);
-            holder.mainLayout.addView(llh);
         }
 
 
