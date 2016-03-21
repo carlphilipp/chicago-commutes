@@ -673,10 +673,11 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         if (diff[0] == 0 && diff[1] == 0) {
             res = "now";
         } else {
+            final String min = Long.toString(diff[1]);
             if (diff[0] == 0) {
-                res = String.valueOf(diff[1]) + " min";
+                res = min + " min";
             } else {
-                res = String.valueOf(diff[0]) + " h " + String.valueOf(diff[1]) + " min";
+                res = Long.toString(diff[0]) + " h " + min + " min";
             }
         }
         return res;
