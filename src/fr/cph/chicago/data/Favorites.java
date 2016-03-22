@@ -23,6 +23,7 @@ import android.util.SparseArray;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -202,7 +203,7 @@ public class Favorites {
     public final Map<String, Map<String, List<BusArrival>>> getBusArrivalsMapped(@NonNull final String routeId) {
         final Map<String, Map<String, List<BusArrival>>> res = new TreeMap<>(new Comparator<String>() {
             @Override
-            public int compare(String lhs, String rhs) {
+            public int compare(final String lhs, final String rhs) {
                 return lhs.compareTo(rhs);
             }
         });
@@ -248,6 +249,34 @@ public class Favorites {
                     }
                 }
             } else {
+                final BusArrival busArrival1 = new BusArrival();
+                busArrival1.setBusDestination("Waveland/Broadway");
+                busArrival1.setBusId(1568);
+                busArrival1.setRouteDirection("Northbound");
+                busArrival1.setRouteId("8");
+                busArrival1.setStopName("Halsted & Wrightwood");
+                busArrival1.setTimeStamp(new Date());
+                busArrival1.setStopId(5960);
+                final BusArrival busArrival2 = new BusArrival();
+                busArrival2.setBusDestination("Waveland/Broadway");
+                busArrival2.setBusId(1568);
+                busArrival2.setRouteDirection("Northbound");
+                busArrival2.setRouteId("8");
+                busArrival2.setStopName("Halsted & Wrightwood");
+                busArrival2.setTimeStamp(new Date());
+                busArrival2.setStopId(5960);
+                final BusArrival busArrival3 = new BusArrival();
+                busArrival3.setBusDestination("Waveland/Broadway");
+                busArrival3.setBusId(1568);
+                busArrival3.setRouteDirection("Northbound");
+                busArrival3.setRouteId("8");
+                busArrival3.setStopName("Halsted & Wrightwood");
+                busArrival3.setTimeStamp(new Date());
+                busArrival3.setStopId(5960);
+                busArrivals = new ArrayList<>();
+                busArrivals.add(busArrival1);
+                busArrivals.add(busArrival2);
+                busArrivals.add(busArrival3);
                 for (final BusArrival busArrival : busArrivals) {
                     final Integer stopId = busArrival.getStopId();
                     final String bound = busArrival.getRouteDirection();
