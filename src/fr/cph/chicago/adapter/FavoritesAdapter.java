@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,14 +43,6 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BikeStationActivity;
@@ -71,9 +63,15 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
-import fr.cph.chicago.listener.FavoritesBusOnClickListener;
 import fr.cph.chicago.listener.FavoritesTrainOnClickListener;
 import fr.cph.chicago.util.Util;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static java.util.Map.Entry;
 
@@ -92,14 +90,9 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     private static int GREY_5 = ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5);
 
     private Context context;
-    private LinearLayout.LayoutParams paramsLayout;
-    private LinearLayout.LayoutParams paramsTextView;
-
     private MainActivity mainActivity;
     private Favorites favorites;
     //private String lastUpdate;
-    private int line1Padding;
-    private int stopsPaddingTop;
     private int pixels;
     private int pixelsHalf;
 
@@ -109,14 +102,9 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         this.mainActivity = activity;
         this.favorites = new Favorites();
 
-        this.paramsLayout = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-        this.paramsTextView = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
-        this.line1Padding = (int) context.getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
-        this.stopsPaddingTop = (int) context.getResources().getDimension(R.dimen.activity_station_stops_padding_top);
         this.pixels = Util.convertDpToPixel(mainActivity, 16);
         this.pixelsHalf = pixels / 2;
     }
-
 
     static class FavoritesViewHolder extends RecyclerView.ViewHolder {
         public LinearLayout mainLayout;
@@ -238,6 +226,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         }
     }
 
+    @NonNull
     private LinearLayout.LayoutParams getInsideParams(boolean newLine, boolean lastLine) {
         final LinearLayout.LayoutParams paramsLeft = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         if (newLine && lastLine) {
@@ -252,6 +241,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         return paramsLeft;
     }
 
+    @NonNull
     private RelativeLayout.LayoutParams getRightParams() {
         final RelativeLayout.LayoutParams paramsRight = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
@@ -305,7 +295,8 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 int lineId = Util.generateViewId();
                 lineIndication.setId(lineId);
 
-                final RelativeLayout.LayoutParams destiParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                final RelativeLayout.LayoutParams destiParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
                 destiParam.addRule(RelativeLayout.RIGHT_OF, lineId);
                 destiParam.setMargins(pixelsHalf, 0, 0, 0);
 
@@ -359,7 +350,9 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
             public void onClick(final View v) {
                 if (busDetailses.size() == 1) {
                     final BusDetailsDTO busDetails = busDetailses.get(0);
-                    new FavoritesAdapter.BusBoundAsyncTask(mainActivity).execute(busDetails.getBusRouteId(), busDetails.getBound(), busDetails.getBoundTitle(), busDetails.getStopId(), busDetails.getRouteName());
+                    new FavoritesAdapter.BusBoundAsyncTask(mainActivity)
+                        .execute(busDetails.getBusRouteId(), busDetails.getBound(), busDetails.getBoundTitle(), busDetails.getStopId(),
+                            busDetails.getRouteName());
                 } else {
                     final PopupBusDetailsFavoritesAdapter ada = new PopupBusDetailsFavoritesAdapter(mainActivity, busDetailses);
                     final View popupView = mainActivity.getLayoutInflater().inflate(R.layout.popup_bus, null);
@@ -370,7 +363,9 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                         @Override
                         public void onClick(final DialogInterface dialog, final int position) {
                             final BusDetailsDTO busDetails = busDetailses.get(position);
-                            new FavoritesAdapter.BusBoundAsyncTask(mainActivity).execute(busDetails.getBusRouteId(), busDetails.getBound(), busDetails.getBoundTitle(), busDetails.getStopId(), busDetails.getRouteName());
+                            new FavoritesAdapter.BusBoundAsyncTask(mainActivity)
+                                .execute(busDetails.getBusRouteId(), busDetails.getBound(), busDetails.getBoundTitle(), busDetails.getStopId(),
+                                    busDetails.getRouteName());
                         }
                     });
                     final int[] screenSize = Util.getScreenSize();
@@ -464,7 +459,8 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         int lineId = Util.generateViewId();
         lineIndication.setId(lineId);
 
-        final RelativeLayout.LayoutParams availableParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        final RelativeLayout.LayoutParams availableParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT);
         availableParam.addRule(RelativeLayout.RIGHT_OF, lineId);
         availableParam.setMargins(pixelsHalf, 0, 0, 0);
 
@@ -476,7 +472,8 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         int availableId = Util.generateViewId();
         boundCustomTextView.setId(availableId);
 
-        final RelativeLayout.LayoutParams availableValueParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        final RelativeLayout.LayoutParams availableValueParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT);
         availableValueParam.addRule(RelativeLayout.RIGHT_OF, availableId);
         availableValueParam.setMargins(pixelsHalf, 0, 0, 0);
 
@@ -537,7 +534,8 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
      * @param arrivals    the trains arrivals
      * @param busArrivals the buses arrivals
      */
-    public final void setArrivalsAndBikeStations(@NonNull final SparseArray<TrainArrival> arrivals, @NonNull final List<BusArrival> busArrivals, @NonNull final List<BikeStation> bikeStations) {
+    public final void setArrivalsAndBikeStations(@NonNull final SparseArray<TrainArrival> arrivals, @NonNull final List<BusArrival> busArrivals,
+        @NonNull final List<BikeStation> bikeStations) {
         favorites.setArrivalsAndBikeStations(arrivals, busArrivals, bikeStations);
     }
 
