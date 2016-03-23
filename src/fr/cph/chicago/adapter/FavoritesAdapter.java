@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p>
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -87,6 +87,9 @@ import static java.util.Map.Entry;
 public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder> {
 
     private static final String TAG = FavoritesAdapter.class.getSimpleName();
+
+    private static int GREY = ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey);
+    private static int GREY_5 = ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5);
 
     private Context context;
     private LinearLayout.LayoutParams paramsLayout;
@@ -206,18 +209,12 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                     leftLayout.setOrientation(LinearLayout.HORIZONTAL);
                     leftLayout.setGravity(Gravity.CENTER);
 
-                    final LinearLayout lineIndication = new LinearLayout(context);
-                    final LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                    params.height = 30;
-                    params.width = 30;
-                    lineIndication.setBackgroundColor(trainLine.getColor());
-                    lineIndication.setLayoutParams(params);
-
+                    final LinearLayout lineIndication = createColoredRound(trainLine);
                     leftLayout.addView(lineIndication);
 
                     final String destination = "  " + entry.getKey();
                     final TextView destinationTextView = new TextView(context);
-                    destinationTextView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
+                    destinationTextView.setTextColor(GREY_5);
                     destinationTextView.setText(destination);
                     leftLayout.addView(destinationTextView);
 
@@ -226,7 +223,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                     final TextView listTiming = new TextView(context);
                     final StringBuilder currentEtas = entry.getValue();
                     listTiming.setText(currentEtas.toString());
-                    listTiming.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
+                    listTiming.setTextColor(GREY);
                     listTiming.setLines(1);
                     listTiming.setEllipsize(TextUtils.TruncateAt.END);
 
@@ -243,7 +240,6 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
     private LinearLayout.LayoutParams getInsideParams(boolean newLine, boolean lastLine) {
         final LinearLayout.LayoutParams paramsLeft = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-
         if (newLine && lastLine) {
             paramsLeft.setMargins(pixels, pixelsHalf, pixels, pixelsHalf);
         } else if (newLine) {
@@ -273,15 +269,6 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
         final Map<String, Map<String, List<BusArrival>>> busArrivals = favorites.getBusArrivalsMapped(busRoute.getId());
         for (final Entry<String, Map<String, List<BusArrival>>> entry : busArrivals.entrySet()) {
-            final LinearLayout llh = new LinearLayout(context);
-            llh.setLayoutParams(paramsLayout);
-            llh.setOrientation(LinearLayout.HORIZONTAL);
-            llh.setPadding(line1Padding, stopsPaddingTop, 0, 0);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                llh.setBackground(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.any_selector));
-            }
-
             // Build data for button outside of the loop
             final String stopName = entry.getKey();
             final Map<String, List<BusArrival>> value = entry.getValue();
@@ -300,8 +287,6 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 busDetailses.add(busDetails);
             }
 
-            llh.setOnClickListener(new FavoritesBusOnClickListener(mainActivity, null, busRoute, value));
-
             boolean newLine = true;
             int i = 0;
 
@@ -316,13 +301,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 final RelativeLayout left = new RelativeLayout(context);
                 left.setLayoutParams(leftParam);
 
-                final LinearLayout lineIndication = new LinearLayout(context);
-                final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                params.height = 30;
-                params.width = 30;
-                params.addRule(RelativeLayout.CENTER_VERTICAL);
-                lineIndication.setBackgroundColor(TrainLine.NA.getColor());
-                lineIndication.setLayoutParams(params);
+                final LinearLayout lineIndication = createColoredRound(TrainLine.NA);
                 int lineId = Util.generateViewId();
                 lineIndication.setId(lineId);
 
@@ -334,7 +313,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 final String leftString = stopName + " " + bound;
                 final SpannableString destinationSpannable = new SpannableString(leftString);
                 destinationSpannable.setSpan(new RelativeSizeSpan(0.65f), stopName.length(), leftString.length(), 0); // set size
-                destinationSpannable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5)), 0, leftString.length(), 0); // set color
+                destinationSpannable.setSpan(new ForegroundColorSpan(GREY_5), 0, leftString.length(), 0); // set color
 
                 final TextView boundCustomTextView = new TextView(context);
                 boundCustomTextView.setText(destinationSpannable);
@@ -360,7 +339,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 arrivalText.setGravity(Gravity.RIGHT);
                 arrivalText.setGravity(Gravity.END);
                 arrivalText.setLines(1);
-                arrivalText.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
+                arrivalText.setTextColor(GREY_5);
                 arrivalText.setEllipsize(TextUtils.TruncateAt.END);
 
                 right.addView(arrivalText);
@@ -450,23 +429,38 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         container.setOrientation(LinearLayout.VERTICAL);
         container.setLayoutParams(containerParams);
 
-        final LinearLayout.LayoutParams firstLineParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        final LinearLayout firstLine = new LinearLayout(context);
-        firstLine.setOrientation(LinearLayout.HORIZONTAL);
-        firstLine.setLayoutParams(firstLineParams);
+        final LinearLayout firstLine = createBikeFirstLine(bikeStation);
+        container.addView(firstLine);
+
+        final LinearLayout secondLine = createBikeSecondLine(bikeStation);
+        container.addView(secondLine);
+
+        holder.mainLayout.addView(container);
+    }
+
+    @NonNull
+    private LinearLayout createBikeFirstLine(@NonNull final BikeStation bikeStation) {
+        return createBikeLine(bikeStation, true);
+    }
+
+    @NonNull
+    private LinearLayout createBikeSecondLine(@NonNull final BikeStation bikeStation) {
+        return createBikeLine(bikeStation, false);
+    }
+
+    @NonNull
+    private LinearLayout createBikeLine(@NonNull final BikeStation bikeStation, boolean firstLine) {
+        final LinearLayout.LayoutParams lineParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        final LinearLayout line = new LinearLayout(context);
+        line.setOrientation(LinearLayout.HORIZONTAL);
+        line.setLayoutParams(lineParams);
 
         // Left
         final LinearLayout.LayoutParams leftParam = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         final RelativeLayout left = new RelativeLayout(context);
         left.setLayoutParams(leftParam);
 
-        final LinearLayout lineIndication = new LinearLayout(context);
-        final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.height = 30;
-        params.width = 30;
-        params.addRule(RelativeLayout.CENTER_VERTICAL);
-        lineIndication.setBackgroundColor(TrainLine.NA.getColor());
-        lineIndication.setLayoutParams(params);
+        final LinearLayout lineIndication = createColoredRound(TrainLine.NA);
         int lineId = Util.generateViewId();
         lineIndication.setId(lineId);
 
@@ -478,7 +472,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         boundCustomTextView.setText(mainActivity.getString(R.string.bike_available_bikes));
         boundCustomTextView.setLines(1);
         boundCustomTextView.setLayoutParams(availableParam);
-        boundCustomTextView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
+        boundCustomTextView.setTextColor(GREY_5);
         int availableId = Util.generateViewId();
         boundCustomTextView.setId(availableId);
 
@@ -487,13 +481,20 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         availableValueParam.setMargins(pixelsHalf, 0, 0, 0);
 
         final TextView amountBike = new TextView(context);
-        if (bikeStation.getAvailableBikes() == null) {
+
+        final Integer data;
+        if (firstLine) {
+            data = bikeStation.getAvailableBikes();
+        } else {
+            data = bikeStation.getAvailableDocks();
+        }
+        if (data == null) {
             amountBike.setText("?");
             amountBike.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.orange));
         } else {
-            final String availableBikesText = String.valueOf(bikeStation.getAvailableBikes());
+            final String availableBikesText = String.valueOf(data);
             amountBike.setText(availableBikesText);
-            if (bikeStation.getAvailableBikes() == 0) {
+            if (data == 0) {
                 amountBike.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.red));
             } else {
                 amountBike.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.green));
@@ -501,76 +502,23 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         }
         amountBike.setLayoutParams(availableValueParam);
 
-
         left.addView(lineIndication);
         left.addView(boundCustomTextView);
         left.addView(amountBike);
-        firstLine.addView(left);
+        line.addView(left);
+        return line;
+    }
 
-        container.addView(firstLine);
-
-        /////////////////////////////////////
-
-        final LinearLayout.LayoutParams secontLineParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        final LinearLayout secondLine = new LinearLayout(context);
-        secondLine.setOrientation(LinearLayout.HORIZONTAL);
-        secondLine.setLayoutParams(secontLineParams);
-
-        // Left
-        final LinearLayout.LayoutParams leftParam2 = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        final RelativeLayout left2 = new RelativeLayout(context);
-        left2.setLayoutParams(leftParam2);
-
-        final LinearLayout lineIndication2 = new LinearLayout(context);
-        final RelativeLayout.LayoutParams params2 = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params2.height = 30;
-        params2.width = 30;
-        params2.addRule(RelativeLayout.CENTER_VERTICAL);
-        lineIndication2.setBackgroundColor(TrainLine.NA.getColor());
-        lineIndication2.setLayoutParams(params2);
-        int lineId2 = Util.generateViewId();
-        lineIndication2.setId(lineId2);
-
-        final RelativeLayout.LayoutParams availableParam2 = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        availableParam2.addRule(RelativeLayout.RIGHT_OF, lineId2);
-        availableParam2.setMargins(pixelsHalf, 0, 0, 0);
-
-        final TextView boundCustomTextView2 = new TextView(context);
-        boundCustomTextView2.setText(mainActivity.getString(R.string.bike_available_docks));
-        boundCustomTextView2.setLines(1);
-        boundCustomTextView2.setLayoutParams(availableParam2);
-        boundCustomTextView2.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
-        int availableId2 = Util.generateViewId();
-        boundCustomTextView2.setId(availableId2);
-
-        final RelativeLayout.LayoutParams availableValueParam2 = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        availableValueParam2.addRule(RelativeLayout.RIGHT_OF, availableId2);
-        availableValueParam2.setMargins(pixelsHalf, 0, 0, 0);
-
-        final TextView amountBike2 = new TextView(context);
-        if (bikeStation.getAvailableDocks() == null) {
-            amountBike2.setText("?");
-            amountBike2.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.orange));
-        } else {
-            final String availableBikesText = String.valueOf(bikeStation.getAvailableDocks());
-            amountBike2.setText(availableBikesText);
-            if (bikeStation.getAvailableDocks() == 0) {
-                amountBike2.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.red));
-            } else {
-                amountBike2.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.green));
-            }
-        }
-        amountBike2.setLayoutParams(availableValueParam2);
-
-        left2.addView(lineIndication2);
-        left2.addView(boundCustomTextView2);
-        left2.addView(amountBike2);
-        secondLine.addView(left2);
-
-        container.addView(secondLine);
-
-        holder.mainLayout.addView(container);
-
+    @NonNull
+    private LinearLayout createColoredRound(@NonNull final TrainLine trainLine) {
+        final LinearLayout lineIndication = new LinearLayout(context);
+        final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.height = 30;
+        params.width = 30;
+        params.addRule(RelativeLayout.CENTER_VERTICAL);
+        lineIndication.setBackgroundColor(trainLine.getColor());
+        lineIndication.setLayoutParams(params);
+        return lineIndication;
     }
 
     @Override
@@ -713,7 +661,6 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         long h = diff / hour;
         diff %= hour;
         long m = diff / minute;
-        diff %= minute;
         result[0] = h;
         result[1] = m;
         return result;
@@ -726,19 +673,19 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
      * @return a string
      */
     private String getLastUpdateInMinutes(@NonNull final Date lastUpdate) {
-        final String res;
+        final StringBuilder res = new StringBuilder();
         final Date currentCDate = Calendar.getInstance().getTime();
         final long[] diff = getTimeDifference(lastUpdate, currentCDate);
         if (diff[0] == 0 && diff[1] == 0) {
-            res = "now";
+            res.append("now");
         } else {
             final String min = Long.toString(diff[1]);
             if (diff[0] == 0) {
-                res = min + " min";
+                res.append(min).append(" min");
             } else {
-                res = Long.toString(diff[0]) + " h " + min + " min";
+                res.append(Long.toString(diff[0])).append(" h ").append(min).append(" min");
             }
         }
-        return res;
+        return res.toString();
     }
 }
