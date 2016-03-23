@@ -75,13 +75,13 @@ public class BusDirection {
 
         @Nullable
         public static BusDirectionEnum fromString(@NonNull final String text) {
-            for (final BusDirectionEnum b : BusDirectionEnum.values()) {
-                if (text.equalsIgnoreCase(b.text)) {
-                    return b;
-                } else if (text.equalsIgnoreCase(b.shortUpperCase)) {
-                    return b;
-                } else if (b.text.toLowerCase(Locale.US).contains(text.toLowerCase(Locale.US))) {
-                    return b;
+            for (final BusDirectionEnum busDirectionEnum : BusDirectionEnum.values()) {
+                if (text.equalsIgnoreCase(busDirectionEnum.text)) {
+                    return busDirectionEnum;
+                } else if (text.equalsIgnoreCase(busDirectionEnum.shortUpperCase)) {
+                    return busDirectionEnum;
+                } else if (busDirectionEnum.text.toLowerCase(Locale.US).contains(text.toLowerCase(Locale.US))) {
+                    return busDirectionEnum;
                 }
             }
             return null;

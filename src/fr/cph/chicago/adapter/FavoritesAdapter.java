@@ -445,28 +445,46 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
             }
         });
 
-        final LinearLayout llh = new LinearLayout(context);
-        llh.setLayoutParams(paramsLayout);
-        llh.setOrientation(LinearLayout.HORIZONTAL);
-        llh.setPadding(line1Padding, stopsPaddingTop, 0, 0);
+        final LinearLayout.LayoutParams containerParams = getInsideParams(true, true);
+        final LinearLayout container = new LinearLayout(context);
+        container.setOrientation(LinearLayout.VERTICAL);
+        container.setLayoutParams(containerParams);
 
-        final TextView tlView = new TextView(context);
-        tlView.setBackgroundColor(ContextCompat.getColor(context, R.color.black));
-        tlView.setText("   ");
-        tlView.setLayoutParams(paramsTextView);
-        llh.addView(tlView);
+        final LinearLayout.LayoutParams firstLineParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        final LinearLayout firstLine = new LinearLayout(context);
+        firstLine.setOrientation(LinearLayout.HORIZONTAL);
+        firstLine.setLayoutParams(firstLineParams);
 
-        final LinearLayout availableLayout = new LinearLayout(context);
-        availableLayout.setOrientation(LinearLayout.VERTICAL);
+        // Left
+        final LinearLayout.LayoutParams leftParam = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        final RelativeLayout left = new RelativeLayout(context);
+        left.setLayoutParams(leftParam);
 
-        final LinearLayout availableBikes = new LinearLayout(context);
-        availableBikes.setOrientation(LinearLayout.HORIZONTAL);
-        availableBikes.setPadding(line1Padding, 0, 0, 0);
+        final LinearLayout lineIndication = new LinearLayout(context);
+        final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.height = 30;
+        params.width = 30;
+        params.addRule(RelativeLayout.CENTER_VERTICAL);
+        lineIndication.setBackgroundColor(TrainLine.NA.getColor());
+        lineIndication.setLayoutParams(params);
+        int lineId = Util.generateViewId();
+        lineIndication.setId(lineId);
 
-        final TextView availableBike = new TextView(context);
-        availableBike.setText(mainActivity.getString(R.string.bike_available_bikes));
-        availableBike.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
-        availableBikes.addView(availableBike);
+        final RelativeLayout.LayoutParams availableParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        availableParam.addRule(RelativeLayout.RIGHT_OF, lineId);
+        availableParam.setMargins(pixelsHalf, 0, 0, 0);
+
+        final TextView boundCustomTextView = new TextView(context);
+        boundCustomTextView.setText(mainActivity.getString(R.string.bike_available_bikes));
+        boundCustomTextView.setLines(1);
+        boundCustomTextView.setLayoutParams(availableParam);
+        boundCustomTextView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
+        int availableId = Util.generateViewId();
+        boundCustomTextView.setId(availableId);
+
+        final RelativeLayout.LayoutParams availableValueParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        availableValueParam.addRule(RelativeLayout.RIGHT_OF, availableId);
+        availableValueParam.setMargins(pixelsHalf, 0, 0, 0);
 
         final TextView amountBike = new TextView(context);
         if (bikeStation.getAvailableBikes() == null) {
@@ -481,39 +499,78 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 amountBike.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.green));
             }
         }
-        availableBikes.addView(amountBike);
+        amountBike.setLayoutParams(availableValueParam);
 
-        availableLayout.addView(availableBikes);
 
-        final LinearLayout availableDocks = new LinearLayout(context);
-        availableDocks.setOrientation(LinearLayout.HORIZONTAL);
-        availableDocks.setPadding(line1Padding, 0, 0, 0);
+        left.addView(lineIndication);
+        left.addView(boundCustomTextView);
+        left.addView(amountBike);
+        firstLine.addView(left);
 
-        final TextView availableDock = new TextView(context);
-        availableDock.setText(mainActivity.getString(R.string.bike_available_docks));
-        availableDock.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
-        availableDocks.addView(availableDock);
+        container.addView(firstLine);
 
-        final TextView amountDock = new TextView(context);
+        /////////////////////////////////////
+
+        final LinearLayout.LayoutParams secontLineParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        final LinearLayout secondLine = new LinearLayout(context);
+        secondLine.setOrientation(LinearLayout.HORIZONTAL);
+        secondLine.setLayoutParams(secontLineParams);
+
+        // Left
+        final LinearLayout.LayoutParams leftParam2 = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        final RelativeLayout left2 = new RelativeLayout(context);
+        left2.setLayoutParams(leftParam2);
+
+        final LinearLayout lineIndication2 = new LinearLayout(context);
+        final RelativeLayout.LayoutParams params2 = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params2.height = 30;
+        params2.width = 30;
+        params2.addRule(RelativeLayout.CENTER_VERTICAL);
+        lineIndication2.setBackgroundColor(TrainLine.NA.getColor());
+        lineIndication2.setLayoutParams(params2);
+        int lineId2 = Util.generateViewId();
+        lineIndication2.setId(lineId2);
+
+        final RelativeLayout.LayoutParams availableParam2 = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        availableParam2.addRule(RelativeLayout.RIGHT_OF, lineId2);
+        availableParam2.setMargins(pixelsHalf, 0, 0, 0);
+
+        final TextView boundCustomTextView2 = new TextView(context);
+        boundCustomTextView2.setText(mainActivity.getString(R.string.bike_available_docks));
+        boundCustomTextView2.setLines(1);
+        boundCustomTextView2.setLayoutParams(availableParam2);
+        boundCustomTextView2.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
+        int availableId2 = Util.generateViewId();
+        boundCustomTextView2.setId(availableId2);
+
+        final RelativeLayout.LayoutParams availableValueParam2 = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        availableValueParam2.addRule(RelativeLayout.RIGHT_OF, availableId2);
+        availableValueParam2.setMargins(pixelsHalf, 0, 0, 0);
+
+        final TextView amountBike2 = new TextView(context);
         if (bikeStation.getAvailableDocks() == null) {
-            amountDock.setText("?");
-            amountDock.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.orange));
+            amountBike2.setText("?");
+            amountBike2.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.orange));
         } else {
-            final String availableDocksText = String.valueOf(bikeStation.getAvailableDocks());
-            amountDock.setText(availableDocksText);
+            final String availableBikesText = String.valueOf(bikeStation.getAvailableDocks());
+            amountBike2.setText(availableBikesText);
             if (bikeStation.getAvailableDocks() == 0) {
-                amountDock.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.red));
+                amountBike2.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.red));
             } else {
-                amountDock.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.green));
+                amountBike2.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.green));
             }
         }
-        availableDocks.addView(amountDock);
+        amountBike2.setLayoutParams(availableValueParam2);
 
-        availableLayout.addView(availableDocks);
+        left2.addView(lineIndication2);
+        left2.addView(boundCustomTextView2);
+        left2.addView(amountBike2);
+        secondLine.addView(left2);
 
-        llh.addView(availableLayout);
+        container.addView(secondLine);
 
-        holder.mainLayout.addView(llh);
+        holder.mainLayout.addView(container);
+
     }
 
     @Override

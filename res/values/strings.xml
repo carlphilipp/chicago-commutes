@@ -107,8 +107,8 @@
 	<string name="bike_activity">Divvy</string>
 	<string name="bike_fragment_notloaded">Divvy data deactivated</string>
 	<string name="bike_fragment_filter">Filter</string>
-	<string name="bike_available_bikes">Available bikes:&#160;</string>
-	<string name="bike_available_docks">Available docks:&#160;</string>
+	<string name="bike_available_bikes">Available bikes&#160;</string>
+	<string name="bike_available_docks">Available docks&#160;</string>
 
 	<!-- Preferences -->
 	<string name="pref_trains_title">CTA trains</string>
