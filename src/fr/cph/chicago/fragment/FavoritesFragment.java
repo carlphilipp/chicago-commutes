@@ -130,7 +130,6 @@ public class FavoritesFragment extends Fragment {
             RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(mainActivity);
             listView.setLayoutManager(mLayoutManager);
 
-
             startRefreshTask();
             final FloatingActionButton floatingButton = (FloatingActionButton) rootView.findViewById(R.id.floating_button);
             floatingButton.setOnClickListener(new View.OnClickListener() {
@@ -145,6 +144,17 @@ public class FavoritesFragment extends Fragment {
                     }
                 }
             });
+
+            listView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(final RecyclerView recyclerView, final int dx, final int dy){
+                    if (dy > 0 && floatingButton.isShown())
+                        floatingButton.hide();
+                    else if (dy < 0 && !floatingButton.isShown())
+                        floatingButton.show();
+                }
+            });
+
             swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.activity_main_swipe_refresh_layout);
             swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 
