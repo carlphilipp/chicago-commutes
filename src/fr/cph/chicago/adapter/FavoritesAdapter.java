@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p>
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,6 +43,14 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BikeStationActivity;
@@ -66,13 +74,6 @@ import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.listener.FavoritesTrainOnClickListener;
 import fr.cph.chicago.util.Util;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import static java.util.Map.Entry;
 
 /**
@@ -86,11 +87,10 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
     private static final String TAG = FavoritesAdapter.class.getSimpleName();
 
-    private static int GREY = ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey);
-    private static int GREY_5 = ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5);
+    private static final int GREY_5 = ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5);
 
     private Context context;
-    private MainActivity mainActivity;
+    private MainActivity activity;
     private Favorites favorites;
     //private String lastUpdate;
     private int pixels;
@@ -99,10 +99,10 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     public FavoritesAdapter(@NonNull final MainActivity activity) {
         this.context = ChicagoTracker.getContext();
 
-        this.mainActivity = activity;
+        this.activity = activity;
         this.favorites = new Favorites();
 
-        this.pixels = Util.convertDpToPixel(mainActivity, 16);
+        this.pixels = Util.convertDpToPixel(this.activity, 16);
         this.pixelsHalf = pixels / 2;
     }
 
@@ -173,51 +173,69 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 // Start station activity
                 final Bundle extras = new Bundle();
                 final Intent intent = new Intent(ChicagoTracker.getContext(), StationActivity.class);
-                extras.putInt(mainActivity.getString(R.string.bundle_train_stationId), stationId);
+                extras.putInt(activity.getString(R.string.bundle_train_stationId), stationId);
                 intent.putExtras(extras);
-                mainActivity.startActivity(intent);
+                activity.startActivity(intent);
             }
         });
-        holder.mapButton.setOnClickListener(new FavoritesTrainOnClickListener(mainActivity, stationId, trainLines));
+        holder.mapButton.setOnClickListener(new FavoritesTrainOnClickListener(activity, stationId, trainLines));
 
         // TODO create a method to check if empty
         if (favorites.getTrainArrival(stationId) != null) {
             for (final TrainLine trainLine : trainLines) {
                 boolean newLine = true;
-                final Map<String, StringBuilder> etas = favorites.getTrainArrivalByLine(stationId, trainLine);
                 int i = 0;
+                final Map<String, StringBuilder> etas = favorites.getTrainArrivalByLine(stationId, trainLine);
                 for (final Entry<String, StringBuilder> entry : etas.entrySet()) {
-                    final LinearLayout.LayoutParams insideParam = getInsideParams(newLine, i == etas.size() - 1);
-                    final RelativeLayout.LayoutParams paramsRight = getRightParams();
+                    final LinearLayout.LayoutParams containParam = getInsideParams(newLine, i == etas.size() - 1);
+                    final LinearLayout container = new LinearLayout(context);
+                    container.setOrientation(LinearLayout.HORIZONTAL);
+                    container.setLayoutParams(containParam);
 
-                    final RelativeLayout insideLayout = new RelativeLayout(context);
-                    insideLayout.setLayoutParams(insideParam);
-
-                    final LinearLayout leftLayout = new LinearLayout(context);
-                    leftLayout.setOrientation(LinearLayout.HORIZONTAL);
-                    leftLayout.setGravity(Gravity.CENTER);
+                    // Left
+                    final LinearLayout.LayoutParams leftParam = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                    final RelativeLayout left = new RelativeLayout(context);
+                    left.setLayoutParams(leftParam);
 
                     final LinearLayout lineIndication = createColoredRound(trainLine);
-                    leftLayout.addView(lineIndication);
+                    int lineId = Util.generateViewId();
+                    lineIndication.setId(lineId);
+
+                    final RelativeLayout.LayoutParams destinationParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    destinationParams.addRule(RelativeLayout.RIGHT_OF, lineId);
+                    destinationParams.setMargins(pixelsHalf, 0, 0, 0);
 
                     final String destination = "  " + entry.getKey();
                     final TextView destinationTextView = new TextView(context);
                     destinationTextView.setTextColor(GREY_5);
                     destinationTextView.setText(destination);
-                    leftLayout.addView(destinationTextView);
+                    destinationTextView.setLines(1);
+                    destinationTextView.setLayoutParams(destinationParams);
 
-                    insideLayout.addView(leftLayout);
+                    left.addView(lineIndication);
+                    left.addView(destinationTextView);
 
-                    final TextView listTiming = new TextView(context);
+                    // Right
+                    final LinearLayout.LayoutParams rightParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+                    final LinearLayout right = new LinearLayout(context);
+                    right.setOrientation(LinearLayout.VERTICAL);
+                    right.setLayoutParams(rightParams);
+
                     final StringBuilder currentEtas = entry.getValue();
-                    listTiming.setText(currentEtas.toString());
-                    listTiming.setTextColor(GREY);
-                    listTiming.setLines(1);
-                    listTiming.setEllipsize(TextUtils.TruncateAt.END);
+                    final TextView arrivalText = new TextView(context);
+                    arrivalText.setText(currentEtas);
+                    arrivalText.setGravity(Gravity.RIGHT);
+                    arrivalText.setGravity(Gravity.END);
+                    arrivalText.setLines(1);
+                    arrivalText.setTextColor(GREY_5);
+                    arrivalText.setEllipsize(TextUtils.TruncateAt.END);
 
-                    listTiming.setLayoutParams(paramsRight);
-                    insideLayout.addView(listTiming);
-                    holder.mainLayout.addView(insideLayout);
+                    right.addView(arrivalText);
+
+                    container.addView(left);
+                    container.addView(right);
+
+                    holder.mainLayout.addView(container);
 
                     newLine = false;
                     i++;
@@ -227,7 +245,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     }
 
     @NonNull
-    private LinearLayout.LayoutParams getInsideParams(boolean newLine, boolean lastLine) {
+    private LinearLayout.LayoutParams getInsideParams(final boolean newLine, final boolean lastLine) {
         final LinearLayout.LayoutParams paramsLeft = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         if (newLine && lastLine) {
             paramsLeft.setMargins(pixels, pixelsHalf, pixels, pixelsHalf);
@@ -241,21 +259,11 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         return paramsLeft;
     }
 
-    @NonNull
-    private RelativeLayout.LayoutParams getRightParams() {
-        final RelativeLayout.LayoutParams paramsRight = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            paramsRight.addRule(RelativeLayout.ALIGN_PARENT_END);
-        }
-        paramsRight.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        return paramsRight;
-    }
-
     private void handleBusRoute(@NonNull final FavoritesViewHolder holder, @NonNull final BusRoute busRoute) {
         holder.stationNameTextView.setText(busRoute.getId());
         holder.favoriteImage.setImageResource(R.drawable.ic_directions_bus_white_24dp);
 
-        final List<BusDetailsDTO> busDetailses = new ArrayList<>();
+        final List<BusDetailsDTO> busDetailsDTOs = new ArrayList<>();
 
         final Map<String, Map<String, List<BusArrival>>> busArrivals = favorites.getBusArrivalsMapped(busRoute.getId());
         for (final Entry<String, Map<String, List<BusArrival>>> entry : busArrivals.entrySet()) {
@@ -274,31 +282,30 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 busDetails.setStopId(Integer.toString(busArrival.getStopId()));
                 busDetails.setRouteName(busRoute.getName());
                 busDetails.setStopName(stopName);
-                busDetailses.add(busDetails);
+                busDetailsDTOs.add(busDetails);
             }
 
             boolean newLine = true;
             int i = 0;
 
             for (final Entry<String, List<BusArrival>> entry2 : value.entrySet()) {
-                final LinearLayout.LayoutParams containParam = getInsideParams(newLine, i == value.size() - 1);
+                final LinearLayout.LayoutParams containParams = getInsideParams(newLine, i == value.size() - 1);
                 final LinearLayout container = new LinearLayout(context);
                 container.setOrientation(LinearLayout.HORIZONTAL);
-                container.setLayoutParams(containParam);
+                container.setLayoutParams(containParams);
 
                 // Left
-                final LinearLayout.LayoutParams leftParam = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                final LinearLayout.LayoutParams leftParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                 final RelativeLayout left = new RelativeLayout(context);
-                left.setLayoutParams(leftParam);
+                left.setLayoutParams(leftParams);
 
                 final LinearLayout lineIndication = createColoredRound(TrainLine.NA);
                 int lineId = Util.generateViewId();
                 lineIndication.setId(lineId);
 
-                final RelativeLayout.LayoutParams destiParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT);
-                destiParam.addRule(RelativeLayout.RIGHT_OF, lineId);
-                destiParam.setMargins(pixelsHalf, 0, 0, 0);
+                final RelativeLayout.LayoutParams destinationParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                destinationParams.addRule(RelativeLayout.RIGHT_OF, lineId);
+                destinationParams.setMargins(pixelsHalf, 0, 0, 0);
 
                 final String bound = BusDirection.BusDirectionEnum.fromString(entry2.getKey()).getShortLowerCase();
                 final String leftString = stopName + " " + bound;
@@ -309,16 +316,16 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 final TextView boundCustomTextView = new TextView(context);
                 boundCustomTextView.setText(destinationSpannable);
                 boundCustomTextView.setLines(1);
-                boundCustomTextView.setLayoutParams(destiParam);
+                boundCustomTextView.setLayoutParams(destinationParams);
 
                 left.addView(lineIndication);
                 left.addView(boundCustomTextView);
 
                 // Right
-                final LinearLayout.LayoutParams rightParam = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+                final LinearLayout.LayoutParams rightParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
                 final LinearLayout right = new LinearLayout(context);
                 right.setOrientation(LinearLayout.VERTICAL);
-                right.setLayoutParams(rightParam);
+                right.setLayoutParams(rightParams);
 
                 final List<BusArrival> buses = entry2.getValue();
                 final StringBuilder currentEtas = new StringBuilder();
@@ -348,24 +355,21 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         holder.detailsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                if (busDetailses.size() == 1) {
-                    final BusDetailsDTO busDetails = busDetailses.get(0);
-                    new FavoritesAdapter.BusBoundAsyncTask(mainActivity)
-                        .execute(busDetails.getBusRouteId(), busDetails.getBound(), busDetails.getBoundTitle(), busDetails.getStopId(),
-                            busDetails.getRouteName());
+                if (busDetailsDTOs.size() == 1) {
+                    final BusDetailsDTO busDetails = busDetailsDTOs.get(0);
+                    new FavoritesAdapter.BusBoundAsyncTask(activity)
+                        .execute(busDetails.getBusRouteId(), busDetails.getBound(), busDetails.getBoundTitle(), busDetails.getStopId(), busDetails.getRouteName());
                 } else {
-                    final PopupBusDetailsFavoritesAdapter ada = new PopupBusDetailsFavoritesAdapter(mainActivity, busDetailses);
-                    final View popupView = mainActivity.getLayoutInflater().inflate(R.layout.popup_bus, null);
+                    final PopupBusDetailsFavoritesAdapter ada = new PopupBusDetailsFavoritesAdapter(activity, busDetailsDTOs);
+                    final View popupView = activity.getLayoutInflater().inflate(R.layout.popup_bus, null);
                     final ListView listView = (ListView) popupView.findViewById(R.id.details);
                     listView.setAdapter(ada);
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                     builder.setAdapter(ada, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(final DialogInterface dialog, final int position) {
-                            final BusDetailsDTO busDetails = busDetailses.get(position);
-                            new FavoritesAdapter.BusBoundAsyncTask(mainActivity)
-                                .execute(busDetails.getBusRouteId(), busDetails.getBound(), busDetails.getBoundTitle(), busDetails.getStopId(),
-                                    busDetails.getRouteName());
+                            final BusDetailsDTO busDetails = busDetailsDTOs.get(position);
+                            new FavoritesAdapter.BusBoundAsyncTask(activity).execute(busDetails.getBusRouteId(), busDetails.getBound(), busDetails.getBoundTitle(), busDetails.getStopId(), busDetails.getRouteName());
                         }
                     });
                     final int[] screenSize = Util.getScreenSize();
@@ -375,7 +379,6 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 }
             }
         });
-        //holder.mapButton.setOnClickListener();
     }
 
     private void handleBikeStation(@NonNull final FavoritesViewHolder holder, @NonNull final BikeStation bikeStation) {
@@ -388,15 +391,15 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
             public void onClick(final View v) {
                 final boolean isNetworkAvailable = Util.isNetworkAvailable();
                 if (!isNetworkAvailable) {
-                    Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(activity, "No network connection detected!", Toast.LENGTH_LONG).show();
                 } else if (bikeStation.getLatitude() != 0 && bikeStation.getLongitude() != 0) {
                     final Intent intent = new Intent(ChicagoTracker.getContext(), BikeStationActivity.class);
                     final Bundle extras = new Bundle();
-                    extras.putParcelable(mainActivity.getString(R.string.bundle_bike_station), bikeStation);
+                    extras.putParcelable(activity.getString(R.string.bundle_bike_station), bikeStation);
                     intent.putExtras(extras);
-                    mainActivity.startActivity(intent);
+                    activity.startActivity(intent);
                 } else {
-                    Toast.makeText(mainActivity, "Not ready yet. Please try again in few seconds!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "Not ready yet. Please try again in few seconds!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -406,15 +409,15 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
             public void onClick(final View v) {
                 final boolean isNetworkAvailable = Util.isNetworkAvailable();
                 if (!isNetworkAvailable) {
-                    Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(activity, "No network connection detected!", Toast.LENGTH_LONG).show();
                 } else if (bikeStation.getLatitude() != 0 && bikeStation.getLongitude() != 0) {
                     final Intent intent = new Intent(ChicagoTracker.getContext(), BikeStationActivity.class);
                     final Bundle extras = new Bundle();
-                    extras.putParcelable(mainActivity.getString(R.string.bundle_bike_station), bikeStation);
+                    extras.putParcelable(activity.getString(R.string.bundle_bike_station), bikeStation);
                     intent.putExtras(extras);
-                    mainActivity.startActivity(intent);
+                    activity.startActivity(intent);
                 } else {
-                    Toast.makeText(mainActivity, "Not ready yet. Please try again in few seconds!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "Not ready yet. Please try again in few seconds!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -444,7 +447,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     }
 
     @NonNull
-    private LinearLayout createBikeLine(@NonNull final BikeStation bikeStation, boolean firstLine) {
+    private LinearLayout createBikeLine(@NonNull final BikeStation bikeStation, final boolean firstLine) {
         final LinearLayout.LayoutParams lineParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         final LinearLayout line = new LinearLayout(context);
         line.setOrientation(LinearLayout.HORIZONTAL);
@@ -459,21 +462,19 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         int lineId = Util.generateViewId();
         lineIndication.setId(lineId);
 
-        final RelativeLayout.LayoutParams availableParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT);
+        final RelativeLayout.LayoutParams availableParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         availableParam.addRule(RelativeLayout.RIGHT_OF, lineId);
         availableParam.setMargins(pixelsHalf, 0, 0, 0);
 
         final TextView boundCustomTextView = new TextView(context);
-        boundCustomTextView.setText(mainActivity.getString(R.string.bike_available_bikes));
+        boundCustomTextView.setText(activity.getString(R.string.bike_available_bikes));
         boundCustomTextView.setLines(1);
         boundCustomTextView.setLayoutParams(availableParam);
         boundCustomTextView.setTextColor(GREY_5);
         int availableId = Util.generateViewId();
         boundCustomTextView.setId(availableId);
 
-        final RelativeLayout.LayoutParams availableValueParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT);
+        final RelativeLayout.LayoutParams availableValueParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         availableValueParam.addRule(RelativeLayout.RIGHT_OF, availableId);
         availableValueParam.setMargins(pixelsHalf, 0, 0, 0);
 
@@ -524,7 +525,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     }
 
     @Override
-    public int getItemCount() {
+    public final int getItemCount() {
         return favorites.size();
     }
 
@@ -535,7 +536,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
      * @param busArrivals the buses arrivals
      */
     public final void setArrivalsAndBikeStations(@NonNull final SparseArray<TrainArrival> arrivals, @NonNull final List<BusArrival> busArrivals,
-        @NonNull final List<BikeStation> bikeStations) {
+                                                 @NonNull final List<BikeStation> bikeStations) {
         favorites.setArrivalsAndBikeStations(arrivals, busArrivals, bikeStations);
     }
 
