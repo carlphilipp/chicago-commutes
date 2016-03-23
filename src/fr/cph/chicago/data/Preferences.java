@@ -28,6 +28,8 @@ import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.entity.Station;
@@ -48,6 +50,8 @@ public final class Preferences {
      * Tag
      **/
     private static final String TAG = Preferences.class.getSimpleName();
+
+    private static final Pattern pattern = Pattern.compile("(\\d{1,3})");
 
     /**
      * Check if the user has favorites already
@@ -111,7 +115,7 @@ public final class Preferences {
     public static String getBikeRouteNameMapping(@NonNull final String bikeId) {
         final Context context = ChicagoTracker.getContext();
         final SharedPreferences sharedPref = context
-                .getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BIKE_NAME_MAPPING, Context.MODE_PRIVATE);
+            .getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BIKE_NAME_MAPPING, Context.MODE_PRIVATE);
         final String bikeName = sharedPref.getString(bikeId, null);
         Log.v(TAG, "Get bike name mapping : " + bikeId + " => " + bikeName);
         return bikeName;
@@ -155,23 +159,19 @@ public final class Preferences {
         }
         Collections.sort(favorites, new Comparator<String>() {
             @Override
-            public int compare(String str1, String str2) {
+            public int compare(final String str1, final String str2) {
                 final String str1Decoded = Util.decodeBusFavorite(str1)[0];
                 final String str2Decoded = Util.decodeBusFavorite(str2)[0];
-                Integer int1;
-                Integer int2;
-                // TODO Refactor that ugly exception
-                try {
-                    int1 = Integer.valueOf(str1Decoded);
-                } catch (NumberFormatException e) {
-                    int1 = Integer.valueOf(str1Decoded.substring(0, str1Decoded.length() - 1));
+
+                final Matcher matcher1 = pattern.matcher(str1Decoded);
+                final Matcher matcher2 = pattern.matcher(str2Decoded);
+                if (matcher1.find() && matcher2.find()) {
+                    final Integer one = Integer.valueOf(matcher1.group(1));
+                    final Integer two = Integer.valueOf(matcher2.group(1));
+                    return one.compareTo(two);
+                } else {
+                    return str1Decoded.compareTo(str2Decoded);
                 }
-                try {
-                    int2 = Integer.valueOf(str2Decoded);
-                } catch (NumberFormatException e) {
-                    int2 = Integer.valueOf(str2Decoded.substring(0, str2Decoded.length() - 1));
-                }
-                return int1.compareTo(int2);
             }
         });
         Log.v(TAG, "Read bus favorites : " + favorites.toString());
@@ -209,7 +209,7 @@ public final class Preferences {
     public static String getBusStopNameMapping(@NonNull final String busStopId) {
         final Context context = ChicagoTracker.getContext();
         final SharedPreferences sharedPref = context
-                .getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING, Context.MODE_PRIVATE);
+            .getSharedPreferences(ChicagoTracker.PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING, Context.MODE_PRIVATE);
         final String stopName = sharedPref.getString(busStopId, null);
         Log.v(TAG, "Get bus stop name mapping : " + busStopId + " => " + stopName);
         return stopName;
