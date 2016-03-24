@@ -23,6 +23,8 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import fr.cph.chicago.entity.Stop;
+import fr.cph.chicago.entity.factory.StationFactory;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
@@ -93,8 +95,7 @@ public class LoadTrainFollowTask extends AsyncTask<String, Void, List<Eta>> {
             final Date currentDate = Calendar.getInstance().getTime();
             eta.setArrivalDepartureDate(currentDate);
             eta.setPredictionDate(currentDate);
-            final Station fakeStation = new Station();
-            fakeStation.setName("Display all results");
+            final Station fakeStation = StationFactory.buildStation(null, "Display all results", null);
             eta.setStation(fakeStation);
             etas.add(eta);
         }

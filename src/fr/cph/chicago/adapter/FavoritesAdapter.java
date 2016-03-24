@@ -100,7 +100,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         this.context = ChicagoTracker.getContext();
 
         this.activity = activity;
-        this.favorites = new Favorites();
+        this.favorites = Favorites.getInstance();
 
         this.pixels = Util.convertDpToPixel(this.activity, 16);
         this.pixelsHalf = pixels / 2;

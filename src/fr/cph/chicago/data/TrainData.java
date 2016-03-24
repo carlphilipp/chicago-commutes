@@ -195,10 +195,7 @@ public class TrainData {
      */
     @Nullable
     public final Station getStation(final Integer id) {
-        if (stations.size() != 0) {
-            return stations.get(id);
-        }
-        return null;
+        return stations.get(id);
     }
 
     public final boolean isStationNull() {

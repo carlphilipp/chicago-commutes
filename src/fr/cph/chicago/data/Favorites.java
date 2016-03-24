@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,18 +19,6 @@ package fr.cph.chicago.data;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-
 import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
@@ -40,6 +28,16 @@ import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.Util;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+
 /**
  * Vehicle Arrival. Hold data for favorites adapter.
  *
@@ -48,6 +46,8 @@ import fr.cph.chicago.util.Util;
  */
 // TODO to analyze and refactor
 public class Favorites {
+
+    private static Favorites INSTANCE;
 
     private TrainData trainData;
     private BusData busData;
@@ -63,7 +63,7 @@ public class Favorites {
     /**
      * Public constructor
      */
-    public Favorites() {
+    private Favorites() {
         this.trainArrivals = new SparseArray<>();
         this.busArrivals = new ArrayList<>();
         this.bikeStations = new ArrayList<>();
@@ -74,6 +74,13 @@ public class Favorites {
 
         this.trainData = DataHolder.getInstance().getTrainData();
         this.busData = DataHolder.getInstance().getBusData();
+    }
+
+    public static Favorites getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new Favorites();
+        }
+        return INSTANCE;
     }
 
     /**
@@ -381,7 +388,8 @@ public class Favorites {
      * @param trainArrivals
      * @param busArrivals
      */
-    public final void setArrivalsAndBikeStations(@NonNull final SparseArray<TrainArrival> trainArrivals, @NonNull final List<BusArrival> busArrivals, @NonNull final List<BikeStation> bikeStations) {
+    public final void setArrivalsAndBikeStations(@NonNull final SparseArray<TrainArrival> trainArrivals, @NonNull final List<BusArrival> busArrivals,
+        @NonNull final List<BikeStation> bikeStations) {
         this.trainArrivals.clear();
         this.trainArrivals = trainArrivals;
         removeDuplicates(busArrivals);
