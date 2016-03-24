@@ -19,7 +19,6 @@ package fr.cph.chicago.task;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
@@ -95,10 +94,10 @@ public class LoadTrainPositionTask extends AsyncTask<Boolean, Void, List<Train>>
                     activity.centerMapOnTrain(trains);
                 }
             } else {
-                Toast.makeText(activity, "No trains found!", Toast.LENGTH_LONG).show();
+                Util.showMessage(activity, "No trains found!");
             }
         } else {
-            Toast.makeText(activity, "Error while loading data!", Toast.LENGTH_SHORT).show();
+            Util.showMessage(activity, "Error while loading data!");
         }
     }
 }

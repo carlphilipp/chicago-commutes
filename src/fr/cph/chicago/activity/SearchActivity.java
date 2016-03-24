@@ -1,5 +1,6 @@
 package fr.cph.chicago.activity;
 
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +16,6 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,11 +37,14 @@ import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 
 public class SearchActivity extends AppCompatActivity {
 
+    private Activity activity;
     private SearchView searchView;
-
     private SearchAdapter searchAdapter;
-
     private List<BikeStation> bikeStations;
+
+    public SearchActivity(final Activity activity) {
+        this.activity = activity;
+    }
 
     @Override
     protected void onCreate(final Bundle state) {
@@ -63,7 +66,7 @@ public class SearchActivity extends AppCompatActivity {
                 final ListView listView = (ListView) findViewById(R.id.search_list);
                 listView.setAdapter(searchAdapter);
             } else {
-                Toast.makeText(ChicagoTracker.getContext(), "No network connection detected!", Toast.LENGTH_SHORT).show();
+                Util.showSettingsAlert(activity);
             }
 
             // Associate searchable configuration with the SearchView

@@ -30,6 +30,7 @@ import android.os.Build;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
@@ -85,6 +86,12 @@ public final class Util {
 
     private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
 
+    private static final String NETWORK_ERROR = "No network connection detected!";
+
+    private static final String ADDING_TO_FAVORITES = "Adding to favorites";
+
+    private static final String REMOVING_FROM_FAVORITES = "Removing from favorites";
+
     public static int generateViewId() {
         for (; ; ) {
             final int result = sNextGeneratedId.get();
@@ -128,7 +135,6 @@ public final class Util {
             favorites.add(stationId);
             Preferences.saveTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN, favorites);
         }
-        Toast.makeText(ChicagoTracker.getContext(), "Adding to favorites", Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -141,7 +147,6 @@ public final class Util {
         final List<Integer> favorites = Preferences.getTrainFavorites(preference);
         favorites.remove(stationId);
         Preferences.saveTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN, favorites);
-        Toast.makeText(ChicagoTracker.getContext(), "Removing from favorites", Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -157,7 +162,6 @@ public final class Util {
         final List<String> favorites = Preferences.getBusFavorites(preference);
         favorites.remove(id);
         Preferences.saveBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS, favorites);
-        Toast.makeText(ChicagoTracker.getContext(), "Removing from favorites", Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -175,7 +179,6 @@ public final class Util {
             favorites.add(id);
             Preferences.saveBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS, favorites);
         }
-        Toast.makeText(ChicagoTracker.getContext(), "Adding to favorites", Toast.LENGTH_SHORT).show();
     }
 
     public static void addToBikeFavorites(final int stationId, @NonNull final String preference) {
@@ -184,14 +187,12 @@ public final class Util {
             favorites.add(Integer.toString(stationId));
             Preferences.saveBikeFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BIKE, favorites);
         }
-        Toast.makeText(ChicagoTracker.getContext(), "Adding to favorites", Toast.LENGTH_SHORT).show();
     }
 
     public static void removeFromBikeFavorites(final int stationId, @NonNull final String preference) {
         final List<String> favorites = Preferences.getBikeFavorites(preference);
         favorites.remove(Integer.toString(stationId));
         Preferences.saveBikeFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BIKE, favorites);
-        Toast.makeText(ChicagoTracker.getContext(), "Removing from favorites", Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -247,10 +248,10 @@ public final class Util {
     public static void trackAction(@NonNull final Activity activity, final int category, final int action, final int label, final int value) {
         final Tracker tracker = ChicagoTracker.getTracker();
         tracker.send(new HitBuilders.EventBuilder()
-                .setCategory(activity.getString(category))
-                .setAction(activity.getString(action))
-                .setLabel(activity.getString(label))
-                .setValue(value).build());
+            .setCategory(activity.getString(category))
+            .setAction(activity.getString(action))
+            .setLabel(activity.getString(label))
+            .setValue(value).build());
     }
 
     public static void setToolbarColor(@NonNull final Activity activity, @NonNull final Toolbar toolbar, @NonNull final TrainLine trainLine) {
@@ -314,11 +315,11 @@ public final class Util {
             public void onMapReady(final GoogleMap googleMap) {
                 googleFragment.setGoogleMap(googleMap);
                 if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED
-                        && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
+                    != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(activity,
-                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
                     return;
                 }
                 googleMap.setMyLocationEnabled(true);
@@ -394,8 +395,24 @@ public final class Util {
         }.start();
     }
 
-    public static int convertDpToPixel(final Activity activity, final int dp){
+    public static int convertDpToPixel(final Activity activity, final int dp) {
         float pixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, activity.getResources().getDisplayMetrics());
         return (int) pixels;
+    }
+
+    public static void showNetworkErrorMessage(final Activity activity) {
+        showSnackBar(activity, NETWORK_ERROR);
+    }
+
+    public static void showMessage(final Activity activity, final String message) {
+        showSnackBar(activity, message);
+    }
+
+    private static void showSnackBar(@NonNull final Activity activity, @NonNull final String message) {
+        if (activity.getCurrentFocus() != null) {
+            Snackbar.make(activity.getCurrentFocus(), message, Snackbar.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
+        }
     }
 }

@@ -35,7 +35,6 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
@@ -100,7 +99,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
     private RelativeLayout nearbyContainer;
     private ListView listView;
 
-    private MainActivity mainActivity;
+    private MainActivity activity;
     private GoogleMap googleMap;
     private NearbyAdapter nearbyAdapter;
     private boolean hideStationsStops;
@@ -117,22 +116,22 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
     @Override
     public final void onAttach(final Context context) {
         super.onAttach(context);
-        mainActivity = context instanceof Activity ? (MainActivity) context : null;
+        activity = context instanceof Activity ? (MainActivity) context : null;
     }
 
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ChicagoTracker.checkTrainData(mainActivity);
-        ChicagoTracker.checkBusData(mainActivity);
+        ChicagoTracker.checkTrainData(activity);
+        ChicagoTracker.checkBusData(activity);
         Util.trackScreen(getString(R.string.analytics_nearby_fragment));
     }
 
     @Override
     public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_nearby, container, false);
-        if (!mainActivity.isFinishing()) {
-            nearbyAdapter = new NearbyAdapter(mainActivity);
+        if (!activity.isFinishing()) {
+            nearbyAdapter = new NearbyAdapter(activity);
             listView = (ListView) rootView.findViewById(R.id.fragment_nearby_list);
             listView.setAdapter(nearbyAdapter);
             loadLayout = rootView.findViewById(R.id.loading_layout);
@@ -161,7 +160,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
         super.onStart();
         final GoogleMapOptions options = new GoogleMapOptions();
         final CameraPosition camera = new CameraPosition(Util.CHICAGO, 7, 0, 0);
-        final FragmentManager fm = mainActivity.getSupportFragmentManager();
+        final FragmentManager fm = activity.getSupportFragmentManager();
         options.camera(camera);
         mapFragment = SupportMapFragment.newInstance(options);
         mapFragment.setRetainInstance(true);
@@ -176,11 +175,11 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
             public void onMapReady(final GoogleMap googleMap) {
                 NearbyFragment.this.googleMap = googleMap;
                 if (Util.isNetworkAvailable()) {
-                    new LoadNearbyTask(NearbyFragment.this, mainActivity, mapFragment).execute();
+                    new LoadNearbyTask(NearbyFragment.this, activity, mapFragment).execute();
                     nearbyContainer.setVisibility(View.GONE);
                     showProgress(true);
                 } else {
-                    Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
+                    Util.showNetworkErrorMessage(activity);
                     showProgress(false);
                 }
             }
@@ -190,7 +189,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
     public final void displayError(@NonNull final TrackerException exceptionToBeThrown) {
         DataHolder.getInstance().setTrainData(null);
         DataHolder.getInstance().setBusData(null);
-        ChicagoTracker.displayError(mainActivity, exceptionToBeThrown);
+        ChicagoTracker.displayError(activity, exceptionToBeThrown);
     }
 
     @Override
@@ -258,7 +257,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
                             tempMap.put(direction, temp);
                         }
                     }
-                    Util.trackAction(NearbyFragment.this.mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
+                    Util.trackAction(NearbyFragment.this.activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
                 } catch (final ConnectException | ParserException e) {
                     Log.e(TAG, e.getMessage(), e);
                 }
@@ -277,7 +276,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
                     for (int j = 0; j < temp.size(); j++) {
                         trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
                     }
-                    Util.trackAction(NearbyFragment.this.mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
+                    Util.trackAction(NearbyFragment.this.activity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
                 } catch (final ConnectException | ParserException e) {
                     Log.e(TAG, e.getMessage(), e);
                 }
@@ -299,7 +298,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
                         }
                     }
                     Collections.sort(bikeStationsRes, Util.BIKE_COMPARATOR_NAME);
-                    Util.trackAction(NearbyFragment.this.mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
+                    Util.trackAction(NearbyFragment.this.activity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
                 } catch (final ConnectException | ParserException e) {
                     Log.e(TAG, e.getMessage(), e);
                 }
@@ -332,7 +331,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
                 stations.clear();
                 stations = trainStationTmp;
             }
-            mainActivity.runOnUiThread(new Runnable() {
+            activity.runOnUiThread(new Runnable() {
                 public void run() {
                     load(busStops, busArrivalsMap, stations, trainArrivals, bikeStationsRes);
                 }
@@ -438,9 +437,9 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
             googleMap.clear();
             showProgress(true);
             nearbyContainer.setVisibility(View.GONE);
-            new LoadNearbyTask(this, mainActivity, mapFragment).execute();
+            new LoadNearbyTask(this, activity, mapFragment).execute();
         } else {
-            Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
+            Util.showNetworkErrorMessage(activity);
             showProgress(false);
         }
     }

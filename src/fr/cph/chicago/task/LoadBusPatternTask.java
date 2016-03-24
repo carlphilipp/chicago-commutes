@@ -118,7 +118,7 @@ public class LoadBusPatternTask extends AsyncTask<Void, Void, BusPattern> {
             });
             activity.drawPattern(result);
         } else {
-            Toast.makeText(activity, "Sorry, could not load the path!", Toast.LENGTH_SHORT).show();
+            Util.showMessage(activity, "Sorry, could not load the path!");
         }
     }
 }

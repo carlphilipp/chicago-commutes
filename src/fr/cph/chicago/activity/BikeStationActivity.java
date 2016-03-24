@@ -226,10 +226,10 @@ public class BikeStationActivity extends Activity {
      */
     private void switchFavorite() {
         if (isFavorite) {
-            Util.removeFromBikeFavorites(bikeStation.getId(), ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
+            Util.removeFromBikeFavorites(this, bikeStation.getId(), ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
             isFavorite = false;
         } else {
-            Util.addToBikeFavorites(bikeStation.getId(), ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
+            Util.addToBikeFavorites(this, bikeStation.getId(), ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
             Preferences.addBikeRouteNameMapping(String.valueOf(bikeStation.getId()), bikeStation.getName());
             isFavorite = true;
         }

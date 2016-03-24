@@ -21,7 +21,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.SparseArray;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -86,7 +85,7 @@ public class BaseActivity extends Activity {
     public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals, final List<BikeStation> bikeStations, final Boolean trainBoolean,
                                  final Boolean busBoolean, final Boolean bikeBoolean, final Boolean networkAvailable) {
         if (!networkAvailable) {
-            Toast.makeText(this, "No network connection detected!", Toast.LENGTH_SHORT).show();
+            Util.showNetworkErrorMessage(this);
         }
         ChicagoTracker.modifyLastUpdate(Calendar.getInstance().getTime());
         startMainActivity(trainArrivals, busArrivals);

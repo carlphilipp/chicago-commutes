@@ -398,11 +398,11 @@ public class StationActivity extends Activity {
      */
     private void switchFavorite() {
         if (isFavorite) {
-            Util.removeFromTrainFavorites(stationId, ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
+            Util.removeFromTrainFavorites(this, stationId, ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
             isFavorite = false;
             favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
         } else {
-            Util.addToTrainFavorites(stationId, ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
+            Util.addToTrainFavorites(this, stationId, ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
             isFavorite = true;
             favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
         }

@@ -20,16 +20,12 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.CardView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +35,6 @@ import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.StationActivity;
 import fr.cph.chicago.activity.TrainMapActivity;
-import fr.cph.chicago.adapter.PopupFavoritesTrainAdapter;
 import fr.cph.chicago.adapter.PopupTrainAdapter;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.Util;
@@ -73,7 +68,7 @@ public class TrainOnClickListener implements OnClickListener {
 	@Override
 	public void onClick(final View view) {
         if (!Util.isNetworkAvailable()) {
-			Toast.makeText(activity, "No network connection detected!", Toast.LENGTH_LONG).show();
+            Util.showNetworkErrorMessage(activity);
 		} else {
 			final List<String> values = new ArrayList<>();
 			final List<Integer> colors = new ArrayList<>();

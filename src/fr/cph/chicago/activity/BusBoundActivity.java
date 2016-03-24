@@ -28,7 +28,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
@@ -191,7 +190,7 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
                     if (Util.isNetworkAvailable()) {
                         new LoadBusPatternTask(BusBoundActivity.this, mapFragment, busRouteId, boundTitle, false).execute();
                     } else {
-                        Toast.makeText(BusBoundActivity.this, "No network connection detected!", Toast.LENGTH_SHORT).show();
+                        Util.showNetworkErrorMessage(BusBoundActivity.this);
                     }
                 }
             });

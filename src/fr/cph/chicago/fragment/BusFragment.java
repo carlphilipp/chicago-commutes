@@ -60,7 +60,7 @@ public class BusFragment extends Fragment {
     private EditText textFilter;
     private ListView listView;
 
-    private MainActivity mainActivity;
+    private MainActivity activity;
     private BusAdapter busAdapter;
 
     /**
@@ -81,26 +81,26 @@ public class BusFragment extends Fragment {
     @Override
     public final void onAttach(final Context context) {
         super.onAttach(context);
-        mainActivity = context instanceof Activity ? (MainActivity) context : null;
+        activity = context instanceof Activity ? (MainActivity) context : null;
     }
 
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ChicagoTracker.checkBusData(mainActivity);
+        ChicagoTracker.checkBusData(activity);
         Util.trackScreen(getString(R.string.analytics_bus_fragment));
     }
 
     @Override
     public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_bus, container, false);
-        if (!mainActivity.isFinishing()) {
+        if (!activity.isFinishing()) {
             textFilter = (EditText) rootView.findViewById(R.id.bus_filter);
             listView = (ListView) rootView.findViewById(R.id.bus_list);
             if (Util.isNetworkAvailable()) {
                 addView();
             } else {
-                Toast.makeText(ChicagoTracker.getContext(), "No network connection detected!", Toast.LENGTH_SHORT).show();
+                Util.showSettingsAlert(activity);
             }
         }
         return rootView;
@@ -111,7 +111,7 @@ public class BusFragment extends Fragment {
     }
 
     private void addView() {
-        busAdapter = new BusAdapter(mainActivity);
+        busAdapter = new BusAdapter(activity);
         listView.setAdapter(busAdapter);
         textFilter.setVisibility(TextView.VISIBLE);
         textFilter.addTextChangedListener(new TextWatcher() {

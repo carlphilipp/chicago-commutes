@@ -76,7 +76,7 @@ public class BusBoundAsyncTask extends AsyncTask<Void, Void, List<BusStop>> {
             busBoundAdapter.update(result);
             busBoundAdapter.notifyDataSetChanged();
         } else {
-            Toast.makeText(ChicagoTracker.getContext(), trackerException.getMessage(), Toast.LENGTH_SHORT).show();
+            Util.showSettingsAlert(activity);
         }
     }
 }

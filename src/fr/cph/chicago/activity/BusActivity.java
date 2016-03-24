@@ -260,11 +260,11 @@ public class BusActivity extends Activity {
      */
     private void switchFavorite() {
         if (isFavorite) {
-            Util.removeFromBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+            Util.removeFromBusFavorites(this, busRouteId, String.valueOf(busStopId), boundTitle, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
             favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
             isFavorite = false;
         } else {
-            Util.addToBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+            Util.addToBusFavorites(this, busRouteId, String.valueOf(busStopId), boundTitle, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
             Log.i(TAG, "busRouteName: " + busRouteName);
             Preferences.addBusRouteNameMapping(String.valueOf(busStopId), busRouteName);
             Preferences.addBusStopNameMapping(String.valueOf(busStopId), busStopName);

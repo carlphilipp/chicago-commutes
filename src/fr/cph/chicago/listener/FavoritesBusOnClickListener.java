@@ -25,7 +25,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -54,7 +53,7 @@ import fr.cph.chicago.util.Util;
 public class FavoritesBusOnClickListener implements OnClickListener {
 
     private ViewGroup group;
-    private MainActivity mainActivity;
+    private MainActivity activity;
     private BusRoute busRoute;
     private Map<String, List<BusArrival>> mapBusArrivals;
 
@@ -62,7 +61,7 @@ public class FavoritesBusOnClickListener implements OnClickListener {
                                        @NonNull final ViewGroup group,
                                        @NonNull final BusRoute busRoute,
                                        @NonNull final Map<String, List<BusArrival>> mapBusArrivals) {
-        this.mainActivity = activity;
+        this.activity = activity;
         this.group = group;
         this.busRoute = busRoute;
         this.mapBusArrivals = mapBusArrivals;
@@ -71,17 +70,17 @@ public class FavoritesBusOnClickListener implements OnClickListener {
     @Override
     public void onClick(final View v) {
         if (!Util.isNetworkAvailable()) {
-            Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_LONG).show();
+            Util.showNetworkErrorMessage(activity);
         } else {
-            final View popupView = mainActivity.getLayoutInflater().inflate(R.layout.popup_bus, group, false);
+            final View popupView = activity.getLayoutInflater().inflate(R.layout.popup_bus, group, false);
 
             final ListView listView = (ListView) popupView.findViewById(R.id.details);
             final List<String> values = extractValues();
 
-            final PopupBusFavoritesAdapter ada = new PopupBusFavoritesAdapter(mainActivity, values);
+            final PopupBusFavoritesAdapter ada = new PopupBusFavoritesAdapter(activity, values);
             listView.setAdapter(ada);
 
-            final AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);
+            final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setAdapter(ada, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(final DialogInterface dialog, final int position) {
@@ -92,7 +91,7 @@ public class FavoritesBusOnClickListener implements OnClickListener {
                             // Open details
                             final String boundTitle = busArrival.getRouteDirection();
                             final BusDirection.BusDirectionEnum busDirectionEnum = BusDirection.BusDirectionEnum.fromString(boundTitle);
-                            new FavoritesAdapter.BusBoundAsyncTask(mainActivity).execute(busArrival.getRouteId(), busDirectionEnum.getShortUpperCase(), boundTitle, Integer.toString(busArrival.getStopId()), busRoute.getName());
+                            new FavoritesAdapter.BusBoundAsyncTask(activity).execute(busArrival.getRouteId(), busDirectionEnum.getShortUpperCase(), boundTitle, Integer.toString(busArrival.getStopId()), busRoute.getName());
                         }
                         i++;
                     }
@@ -103,11 +102,11 @@ public class FavoritesBusOnClickListener implements OnClickListener {
                                 // Follow a bus in google map view
                                 final Intent intent = new Intent(ChicagoTracker.getContext(), BusMapActivity.class);
                                 final Bundle extras = new Bundle();
-                                extras.putInt(mainActivity.getString(R.string.bundle_bus_id), arrival.getBusId());
-                                extras.putString(mainActivity.getString(R.string.bundle_bus_route_id), arrival.getRouteId());
-                                extras.putStringArray(mainActivity.getString(R.string.bundle_bus_bounds), new String[]{entry.getKey()});
+                                extras.putInt(activity.getString(R.string.bundle_bus_id), arrival.getBusId());
+                                extras.putString(activity.getString(R.string.bundle_bus_route_id), arrival.getRouteId());
+                                extras.putStringArray(activity.getString(R.string.bundle_bus_bounds), new String[]{entry.getKey()});
                                 intent.putExtras(extras);
-                                mainActivity.startActivity(intent);
+                                activity.startActivity(intent);
                             }
                             i++;
                         }
@@ -120,10 +119,10 @@ public class FavoritesBusOnClickListener implements OnClickListener {
                         }
                         final Intent intent = new Intent(ChicagoTracker.getContext(), BusMapActivity.class);
                         final Bundle extras = new Bundle();
-                        extras.putString(mainActivity.getString(R.string.bundle_bus_route_id), busRoute.getId());
-                        extras.putStringArray(mainActivity.getString(R.string.bundle_bus_bounds), bounds.toArray(new String[bounds.size()]));
+                        extras.putString(activity.getString(R.string.bundle_bus_route_id), busRoute.getId());
+                        extras.putStringArray(activity.getString(R.string.bundle_bus_bounds), bounds.toArray(new String[bounds.size()]));
                         intent.putExtras(extras);
-                        mainActivity.startActivity(intent);
+                        activity.startActivity(intent);
                     }
                 }
             });

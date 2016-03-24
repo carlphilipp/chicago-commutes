@@ -84,10 +84,10 @@ public class LoadBusPositionTask extends AsyncTask<Boolean, Void, List<Bus>> {
                     activity.centerMapOnBus(result);
                 }
             } else {
-                Toast.makeText(activity, "No bus found!", Toast.LENGTH_LONG).show();
+                Util.showMessage(activity, "No bus found!");
             }
         } else {
-            Toast.makeText(activity, "Error while loading data!", Toast.LENGTH_SHORT).show();
+            Util.showMessage(activity, "Error while loading data!");
         }
     }
 }

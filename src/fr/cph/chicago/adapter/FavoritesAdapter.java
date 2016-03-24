@@ -391,7 +391,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
             public void onClick(final View v) {
                 final boolean isNetworkAvailable = Util.isNetworkAvailable();
                 if (!isNetworkAvailable) {
-                    Toast.makeText(activity, "No network connection detected!", Toast.LENGTH_LONG).show();
+                    Util.showNetworkErrorMessage(activity);
                 } else if (bikeStation.getLatitude() != 0 && bikeStation.getLongitude() != 0) {
                     final Intent intent = new Intent(ChicagoTracker.getContext(), BikeStationActivity.class);
                     final Bundle extras = new Bundle();
@@ -399,7 +399,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                     intent.putExtras(extras);
                     activity.startActivity(intent);
                 } else {
-                    Toast.makeText(activity, "Not ready yet. Please try again in few seconds!", Toast.LENGTH_SHORT).show();
+                    Util.showMessage(activity, "Not ready yet. Please try again in few seconds!");
                 }
             }
         });
@@ -409,7 +409,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
             public void onClick(final View v) {
                 final boolean isNetworkAvailable = Util.isNetworkAvailable();
                 if (!isNetworkAvailable) {
-                    Toast.makeText(activity, "No network connection detected!", Toast.LENGTH_LONG).show();
+                    Util.showNetworkErrorMessage(activity);
                 } else if (bikeStation.getLatitude() != 0 && bikeStation.getLongitude() != 0) {
                     final Intent intent = new Intent(ChicagoTracker.getContext(), BikeStationActivity.class);
                     final Bundle extras = new Bundle();
@@ -417,7 +417,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                     intent.putExtras(extras);
                     activity.startActivity(intent);
                 } else {
-                    Toast.makeText(activity, "Not ready yet. Please try again in few seconds!", Toast.LENGTH_SHORT).show();
+                    Util.showMessage(activity, "Not ready yet. Please try again in few seconds!");
                 }
             }
         });

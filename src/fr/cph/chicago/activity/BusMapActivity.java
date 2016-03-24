@@ -32,7 +32,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -218,7 +217,7 @@ public class BusMapActivity extends Activity {
                         new LoadPattern().execute();
                     }
                 } else {
-                    Toast.makeText(BusMapActivity.this, "No network connection detected!", Toast.LENGTH_SHORT).show();
+                    Util.showNetworkErrorMessage(BusMapActivity.this);
                 }
             }
         });
@@ -421,7 +420,7 @@ public class BusMapActivity extends Activity {
             if (result != null) {
                 drawPattern(result);
             } else {
-                Toast.makeText(BusMapActivity.this, "Sorry, could not load the path!", Toast.LENGTH_SHORT).show();
+                Util.showNetworkErrorMessage(BusMapActivity.this);
             }
         }
     }

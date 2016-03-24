@@ -26,7 +26,6 @@ import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +58,7 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
      **/
     private Set<TrainLine> trainLines;
 
-    public FavoritesTrainOnClickListener(@NonNull final Activity activity, final int stationId, final Set<TrainLine> trainLines) {
+    public FavoritesTrainOnClickListener(@NonNull final Activity activity, final int stationId, @NonNull final Set<TrainLine> trainLines) {
         this.activity = activity;
         this.stationId = stationId;
         this.trainLines = trainLines;
@@ -68,14 +67,10 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
     @Override
     public void onClick(final View view) {
         if (!Util.isNetworkAvailable()) {
-            Toast.makeText(activity, "No network connection detected!", Toast.LENGTH_LONG).show();
+            Util.showNetworkErrorMessage(activity);
         } else {
             if (trainLines.size() == 1) {
-                final Bundle extras = new Bundle();
-                final Intent intent = new Intent(ChicagoTracker.getContext(), TrainMapActivity.class);
-                extras.putString(activity.getString(R.string.bundle_train_line), trainLines.iterator().next().toTextString());
-                intent.putExtras(extras);
-                activity.startActivity(intent);
+                startActivity(trainLines.iterator().next());
             } else {
                 final List<String> values = new ArrayList<>();
                 final List<Integer> colors = new ArrayList<>();
@@ -96,12 +91,7 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
                 builder.setAdapter(ada, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(final DialogInterface dialog, final int position) {
-                        final Bundle extras = new Bundle();
-                        // Follow all trains from given line on google map view
-                        final Intent intent = new Intent(ChicagoTracker.getContext(), TrainMapActivity.class);
-                        extras.putString(activity.getString(R.string.bundle_train_line), lines.get(position).toTextString());
-                        intent.putExtras(extras);
-                        activity.startActivity(intent);
+                        startActivity(lines.get(position));
                     }
                 });
 
@@ -111,5 +101,13 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
                 dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
             }
         }
+    }
+
+    private void startActivity(final TrainLine trainLine) {
+        final Bundle extras = new Bundle();
+        final Intent intent = new Intent(ChicagoTracker.getContext(), TrainMapActivity.class);
+        extras.putString(activity.getString(R.string.bundle_train_line), trainLine.toTextString());
+        intent.putExtras(extras);
+        activity.startActivity(intent);
     }
 }

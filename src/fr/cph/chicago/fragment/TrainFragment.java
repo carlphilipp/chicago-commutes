@@ -43,7 +43,7 @@ import fr.cph.chicago.util.Util;
  */
 public final class TrainFragment extends Fragment {
 	private static final String ARG_SECTION_NUMBER = "section_number";
-	private MainActivity mainActivity;
+	private MainActivity activity;
 
 	/**
 	 * Returns a new instance of this fragment for the given section number.
@@ -68,7 +68,7 @@ public final class TrainFragment extends Fragment {
 	@Override
 	public final void onAttach(final Context context) {
 		super.onAttach(context);
-		mainActivity = context instanceof Activity ? (MainActivity) context : null;
+		activity = context instanceof Activity ? (MainActivity) context : null;
 	}
 
 	@Override
@@ -81,14 +81,14 @@ public final class TrainFragment extends Fragment {
 			@Override
 			public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
 				if (Util.isNetworkAvailable()) {
-					final Intent intent = new Intent(mainActivity, TrainStationActivity.class);
+					final Intent intent = new Intent(activity, TrainStationActivity.class);
 					final Bundle extras = new Bundle();
 					final String line = TrainLine.values()[position].toString();
-					extras.putString(mainActivity.getString(R.string.bundle_train_line), line);
+					extras.putString(activity.getString(R.string.bundle_train_line), line);
 					intent.putExtras(extras);
 					startActivity(intent);
 				} else {
-					Toast.makeText(ChicagoTracker.getContext(), "No network connection detected!", Toast.LENGTH_SHORT).show();
+                    Util.showSettingsAlert(activity);
 				}
 			}
 		});

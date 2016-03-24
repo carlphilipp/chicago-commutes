@@ -26,7 +26,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -214,7 +213,7 @@ public class TrainMapActivity extends Activity {
                     new LoadCurrentPositionTask(TrainMapActivity.this, mapFragment).execute();
                     new LoadTrainPositionTask(TrainMapActivity.this, line, trainData).execute(centerMap, true);
                 } else {
-                    Toast.makeText(TrainMapActivity.this, "No network connection detected!", Toast.LENGTH_SHORT).show();
+                    Util.showNetworkErrorMessage(TrainMapActivity.this);
                 }
             }
         });
