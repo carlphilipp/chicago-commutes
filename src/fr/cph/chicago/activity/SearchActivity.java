@@ -1,6 +1,5 @@
 package fr.cph.chicago.activity;
 
-import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -37,14 +36,9 @@ import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 
 public class SearchActivity extends AppCompatActivity {
 
-    private Activity activity;
     private SearchView searchView;
     private SearchAdapter searchAdapter;
     private List<BikeStation> bikeStations;
-
-    public SearchActivity(final Activity activity) {
-        this.activity = activity;
-    }
 
     @Override
     protected void onCreate(final Bundle state) {
@@ -66,7 +60,7 @@ public class SearchActivity extends AppCompatActivity {
                 final ListView listView = (ListView) findViewById(R.id.search_list);
                 listView.setAdapter(searchAdapter);
             } else {
-                Util.showSettingsAlert(activity);
+                Util.showSettingsAlert(this);
             }
 
             // Associate searchable configuration with the SearchView

@@ -95,7 +95,7 @@ public class LoadTrainFollowTask extends AsyncTask<String, Void, List<Eta>> {
             final Date currentDate = Calendar.getInstance().getTime();
             eta.setArrivalDepartureDate(currentDate);
             eta.setPredictionDate(currentDate);
-            final Station fakeStation = StationFactory.buildStation(null, "Display all results", null);
+            final Station fakeStation = StationFactory.buildStation(0, "Display all results", null);
             eta.setStation(fakeStation);
             etas.add(eta);
         }
