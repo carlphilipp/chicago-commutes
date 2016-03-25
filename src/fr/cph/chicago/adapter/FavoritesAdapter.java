@@ -94,6 +94,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     //private String lastUpdate;
     private int pixels;
     private int pixelsHalf;
+    private int pixelsQuarter;
 
     public FavoritesAdapter(@NonNull final MainActivity activity) {
         this.context = ChicagoTracker.getContext();
@@ -103,6 +104,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
         this.pixels = Util.convertDpToPixel(this.activity, 16);
         this.pixelsHalf = pixels / 2;
+        this.pixelsQuarter = pixels / 4;
     }
 
     static class FavoritesViewHolder extends RecyclerView.ViewHolder {
@@ -247,11 +249,11 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     private LinearLayout.LayoutParams getInsideParams(final boolean newLine, final boolean lastLine) {
         final LinearLayout.LayoutParams paramsLeft = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         if (newLine && lastLine) {
-            paramsLeft.setMargins(pixels, pixelsHalf, pixels, pixelsHalf);
+            paramsLeft.setMargins(pixels, pixelsQuarter, pixels, pixelsQuarter);
         } else if (newLine) {
-            paramsLeft.setMargins(pixels, pixelsHalf, pixels, 0);
+            paramsLeft.setMargins(pixels, pixelsQuarter, pixels, 0);
         } else if (lastLine) {
-            paramsLeft.setMargins(pixels, 0, pixels, pixelsHalf);
+            paramsLeft.setMargins(pixels, 0, pixels, pixelsQuarter);
         } else {
             paramsLeft.setMargins(pixels, 0, pixels, 0);
         }
