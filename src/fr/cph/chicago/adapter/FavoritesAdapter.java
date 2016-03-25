@@ -71,6 +71,7 @@ import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.listener.FavoritesTrainOnClickListener;
+import fr.cph.chicago.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.util.Util;
 
 import static java.util.Map.Entry;
@@ -403,24 +404,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 }
             }
         });
-        // TODO create a listener that open Google map with the position of the Station
-        holder.mapButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                final boolean isNetworkAvailable = Util.isNetworkAvailable();
-                if (!isNetworkAvailable) {
-                    Util.showNetworkErrorMessage(activity);
-                } else if (bikeStation.getLatitude() != 0 && bikeStation.getLongitude() != 0) {
-                    final Intent intent = new Intent(ChicagoTracker.getContext(), BikeStationActivity.class);
-                    final Bundle extras = new Bundle();
-                    extras.putParcelable(activity.getString(R.string.bundle_bike_station), bikeStation);
-                    intent.putExtras(extras);
-                    activity.startActivity(intent);
-                } else {
-                    Util.showMessage(activity, "Not ready yet. Please try again in few seconds!");
-                }
-            }
-        });
+        holder.mapButton.setOnClickListener(new GoogleMapOnClickListener(activity, bikeStation.getLatitude(), bikeStation.getLongitude()));
 
         final LinearLayout.LayoutParams containerParams = getInsideParams(true, true);
         final LinearLayout container = new LinearLayout(context);
