@@ -107,7 +107,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
     static class FavoritesViewHolder extends RecyclerView.ViewHolder {
         public LinearLayout mainLayout;
-        public LinearLayout buttonsLayout;
+        public RelativeLayout buttonsLayout;
         public TextView stationNameTextView;
         public ImageView favoriteImage;
         public Button detailsButton;
@@ -119,7 +119,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 this.mainLayout.setBackground(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.any_selector));
             }
-            this.buttonsLayout = (LinearLayout) view.findViewById(R.id.favorites_buttons);
+            this.buttonsLayout = (RelativeLayout) view.findViewById(R.id.favorites_buttons);
             this.favoriteImage = (ImageView) view.findViewById(R.id.favorites_icon);
 
             this.stationNameTextView = (TextView) view.findViewById(R.id.favorites_station_name);
