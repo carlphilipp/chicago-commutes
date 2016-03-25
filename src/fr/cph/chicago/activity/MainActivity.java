@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -160,6 +161,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             toolbar.setElevation(4);
         }
         toolbar.inflateMenu(R.menu.main);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.primaryColorDark));
+        }
     }
 
     public void refresh(@NonNull final BusData busData, @NonNull final List<BikeStation> bikeStations) {

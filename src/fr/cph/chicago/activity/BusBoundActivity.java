@@ -139,7 +139,7 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
             });
 
             final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-            Util.setToolbarColor(this, toolbar, TrainLine.NA);
+            Util.setWindowsColor(this, toolbar, TrainLine.NA);
             toolbar.setTitle(busRouteName + " - " + boundTitle);
 
             toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);

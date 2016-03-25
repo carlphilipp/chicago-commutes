@@ -128,7 +128,7 @@ public class TrainMapActivity extends Activity {
             }
         }));
         final TrainLine trainLine = TrainLine.fromXmlString(line);
-        Util.setToolbarColor(this, toolbar, trainLine);
+        Util.setWindowsColor(this, toolbar, trainLine);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.setElevation(4);
         }

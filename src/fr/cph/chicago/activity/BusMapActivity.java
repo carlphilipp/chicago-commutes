@@ -252,7 +252,7 @@ public class BusMapActivity extends Activity {
             }
         }));
 
-        Util.setToolbarColor(this, toolbar, TrainLine.NA);
+        Util.setWindowsColor(this, toolbar, TrainLine.NA);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.setElevation(4);

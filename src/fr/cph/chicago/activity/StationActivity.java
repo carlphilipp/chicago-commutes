@@ -267,7 +267,7 @@ public class StationActivity extends Activity {
             toolbar.setElevation(4);
         }
 
-        Util.setToolbarColor(this, toolbar, randomTrainLine);
+        Util.setWindowsColor(this, toolbar, randomTrainLine);
 
         toolbar.setTitle(station.getName());
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);

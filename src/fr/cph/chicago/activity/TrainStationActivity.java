@@ -57,7 +57,7 @@ public class TrainStationActivity extends ListActivity {
 			container.getForeground().setAlpha(0);
 
 			final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-			Util.setToolbarColor(this, toolbar, trainLine);
+			Util.setWindowsColor(this, toolbar, trainLine);
 			toolbar.setTitle(trainLine.toString() + " Line");
 
 			toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);

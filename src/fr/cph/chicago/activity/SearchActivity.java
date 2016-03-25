@@ -123,7 +123,7 @@ public class SearchActivity extends AppCompatActivity {
 
     private void setupToolbar() {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        Util.setToolbarColor(this, toolbar, TrainLine.NA);
+        Util.setWindowsColor(this, toolbar, TrainLine.NA);
         setSupportActionBar(toolbar);
         final ActionBar actionBar = getSupportActionBarNotNull();
         actionBar.setDisplayShowHomeEnabled(true);

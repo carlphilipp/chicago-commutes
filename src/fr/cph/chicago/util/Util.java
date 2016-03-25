@@ -254,7 +254,7 @@ public final class Util {
             .setValue(value).build());
     }
 
-    public static void setToolbarColor(@NonNull final Activity activity, @NonNull final Toolbar toolbar, @NonNull final TrainLine trainLine) {
+    public static void setWindowsColor(@NonNull final Activity activity, @NonNull final Toolbar toolbar, @NonNull final TrainLine trainLine) {
         int backgroundColor = 0;
         int statusBarColor = 0;
         int textTitleColor = R.color.white;
@@ -300,6 +300,7 @@ public final class Util {
         toolbar.setTitleTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), textTitleColor));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             activity.getWindow().setStatusBarColor(ContextCompat.getColor(activity, statusBarColor));
+            activity.getWindow().setNavigationBarColor(ContextCompat.getColor(activity, statusBarColor));
         }
     }
 
