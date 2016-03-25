@@ -25,6 +25,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.apache.commons.lang3.text.WordUtils;
+
 import java.util.List;
 
 import fr.cph.chicago.R;
@@ -49,7 +51,7 @@ public class PopupBusDetailsFavoritesAdapter extends ArrayAdapter<BusDetailsDTO>
     public final View getView(final int position, final View convertView, final ViewGroup parent) {
         final View rowView = activity.getLayoutInflater().inflate(R.layout.popup_bus_cell_0, parent, false);
         final TextView textView = (TextView) rowView.findViewById(R.id.label);
-        final String toDisplay = values.get(position).getStopName() + " (" + values.get(position).getBoundTitle() + ")";
+        final String toDisplay = values.get(position).getStopName() + " (" + WordUtils.capitalize(values.get(position).getBound().toLowerCase()) + ")";
         textView.setText(toDisplay);
         return rowView;
     }

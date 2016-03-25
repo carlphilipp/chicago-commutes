@@ -356,8 +356,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
             public void onClick(final View v) {
                 if (busDetailsDTOs.size() == 1) {
                     final BusDetailsDTO busDetails = busDetailsDTOs.get(0);
-                    new FavoritesAdapter.BusBoundAsyncTask(activity)
-                        .execute(busDetails.getBusRouteId(), busDetails.getBound(), busDetails.getBoundTitle(), busDetails.getStopId(), busDetails.getRouteName());
+                    new FavoritesAdapter.BusBoundAsyncTask(activity).execute(busDetails.getBusRouteId(), busDetails.getBound(), busDetails.getBoundTitle(), busDetails.getStopId(), busDetails.getRouteName());
                 } else {
                     final PopupBusDetailsFavoritesAdapter ada = new PopupBusDetailsFavoritesAdapter(activity, busDetailsDTOs);
                     final View popupView = activity.getLayoutInflater().inflate(R.layout.popup_bus, null);
