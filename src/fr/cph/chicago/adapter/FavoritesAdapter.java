@@ -273,6 +273,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         for (final Entry<String, Map<String, List<BusArrival>>> entry : busArrivals.entrySet()) {
             // Build data for button outside of the loop
             final String stopName = entry.getKey();
+            final String stopNameTrimmed = Util.trimBusStopNameIfNeeded(stopName);
             final Map<String, List<BusArrival>> value = entry.getValue();
             for (final String key2 : value.keySet()) {
                 final BusArrival busArrival = value.get(key2).get(0);
@@ -312,9 +313,9 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 destinationParams.setMargins(pixelsHalf, 0, 0, 0);
 
                 final String bound = BusDirection.BusDirectionEnum.fromString(entry2.getKey()).getShortLowerCase();
-                final String leftString = stopName + " " + bound;
+                final String leftString = stopNameTrimmed + " " + bound;
                 final SpannableString destinationSpannable = new SpannableString(leftString);
-                destinationSpannable.setSpan(new RelativeSizeSpan(0.65f), stopName.length(), leftString.length(), 0); // set size
+                destinationSpannable.setSpan(new RelativeSizeSpan(0.65f), stopNameTrimmed.length(), leftString.length(), 0); // set size
                 destinationSpannable.setSpan(new ForegroundColorSpan(GREY_5), 0, leftString.length(), 0); // set color
 
                 final TextView boundCustomTextView = new TextView(context);
@@ -357,6 +358,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         }
 
         holder.detailsButton.setOnClickListener(new View.OnClickListener() {
+            // TODO find a solution when stop name are too long (54A stop nam for example)
             @Override
             public void onClick(final View v) {
                 if (busDetailsDTOs.size() == 1) {

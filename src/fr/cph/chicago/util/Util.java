@@ -416,4 +416,13 @@ public final class Util {
             Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
         }
     }
+
+    @NonNull
+    public static String trimBusStopNameIfNeeded(@NonNull final String name) {
+        if (name.length() > 25) {
+            return name.substring(0, 24).trim() + "...";
+        } else {
+            return name;
+        }
+    }
 }
