@@ -46,6 +46,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,6 +55,7 @@ import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BikeStationActivity;
 import fr.cph.chicago.activity.BusActivity;
+import fr.cph.chicago.activity.BusMapActivity;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.activity.StationActivity;
 import fr.cph.chicago.data.DataHolder;
@@ -378,6 +380,21 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                     dialog.show();
                     dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), ViewGroup.LayoutParams.WRAP_CONTENT);
                 }
+            }
+        });
+        holder.mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                final Set<String> bounds = new HashSet<>();
+                for (final BusDetailsDTO busDetail :busDetailsDTOs) {
+                    bounds.add(busDetail.getBound());
+                }
+                final Intent intent = new Intent(ChicagoTracker.getContext(), BusMapActivity.class);
+                final Bundle extras = new Bundle();
+                extras.putString(activity.getString(R.string.bundle_bus_route_id), busRoute.getId());
+                extras.putStringArray(activity.getString(R.string.bundle_bus_bounds), bounds.toArray(new String[bounds.size()]));
+                intent.putExtras(extras);
+                activity.startActivity(intent);
             }
         });
     }
