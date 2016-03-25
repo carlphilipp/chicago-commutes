@@ -43,7 +43,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
-                <!-- android:background="@android:drawable/screen_background_dark_transparent"-->
 
                 <ImageView
                     android:id="@+id/favorites_icon"
@@ -67,13 +66,13 @@
                     android:textColor="@color/black"
                     android:textStyle="bold"/>
 
-
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="?android:attr/listDivider"/>
+                android:background="?android:attr/listDivider"
+                android:layout_marginBottom="8dp"/>
 
             <LinearLayout
                 android:id="@+id/favorites_arrival_layout"
@@ -84,7 +83,8 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="?android:attr/listDivider"/>
+                android:background="?android:attr/listDivider"
+                android:layout_marginTop="8dp"/>
 
             <RelativeLayout
                 android:id="@+id/favorites_buttons"
