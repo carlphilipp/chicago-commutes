@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         toolbar.inflateMenu(R.menu.main);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.primaryColorDark));
+            getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.primaryColorDarker));
         }
     }
 

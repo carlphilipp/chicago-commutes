@@ -25,6 +25,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -68,6 +69,7 @@ public class TrainMapActivity extends Activity {
     private MapFragment mapFragment;
     private Marker selectedMarker;
     private Map<Marker, View> views;
+    private RelativeLayout layout;
     private String line;
     private Map<Marker, Boolean> status;
     private List<Marker> markers;
@@ -89,6 +91,7 @@ public class TrainMapActivity extends Activity {
         if (!this.isFinishing()) {
             MapsInitializer.initialize(getApplicationContext());
             setContentView(R.layout.activity_map);
+            layout = (RelativeLayout) findViewById(R.id.map);
             viewGroup = (ViewGroup) findViewById(android.R.id.content);
             if (savedInstanceState != null) {
                 line = savedInstanceState.getString(getString(R.string.bundle_train_line));
@@ -213,7 +216,7 @@ public class TrainMapActivity extends Activity {
                     new LoadCurrentPositionTask(TrainMapActivity.this, mapFragment).execute();
                     new LoadTrainPositionTask(TrainMapActivity.this, line, trainData).execute(centerMap, true);
                 } else {
-                    Util.showNetworkErrorMessage(TrainMapActivity.this);
+                    Util.showNetworkErrorMessage(layout);
                 }
             }
         });

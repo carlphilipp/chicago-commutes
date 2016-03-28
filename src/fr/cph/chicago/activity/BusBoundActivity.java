@@ -28,6 +28,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
@@ -67,6 +68,7 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
 
     private MapFragment mapFragment;
     private GoogleMap googleMap;
+    private LinearLayout layout;
     private String busRouteId;
     private String busRouteName;
     private String bound;
@@ -80,6 +82,8 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
         ChicagoTracker.checkBusData(this);
         if (!this.isFinishing()) {
             setContentView(R.layout.activity_bus_bound);
+
+            layout = (LinearLayout) findViewById(R.id.bellow);
 
             if (busRouteId == null && busRouteName == null && bound == null && boundTitle == null) {
                 busRouteId = getIntent().getExtras().getString(getString(R.string.bundle_bus_route_id));
@@ -190,7 +194,7 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
                     if (Util.isNetworkAvailable()) {
                         new LoadBusPatternTask(BusBoundActivity.this, mapFragment, busRouteId, boundTitle, false).execute();
                     } else {
-                        Util.showNetworkErrorMessage(BusBoundActivity.this);
+                        Util.showNetworkErrorMessage(layout);
                     }
                 }
             });

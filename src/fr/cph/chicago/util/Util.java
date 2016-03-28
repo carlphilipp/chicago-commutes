@@ -37,6 +37,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -401,8 +402,12 @@ public final class Util {
         return (int) pixels;
     }
 
-    public static void showNetworkErrorMessage(final Activity activity) {
+    public static void showNetworkErrorMessage(@NonNull final Activity activity) {
         showSnackBar(activity, NETWORK_ERROR);
+    }
+
+    public static void showNetworkErrorMessage(@NonNull final View view) {
+        showSnackBar(view, NETWORK_ERROR);
     }
 
     public static void showMessage(final Activity activity, final String message) {
@@ -415,6 +420,10 @@ public final class Util {
         } else {
             Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
         }
+    }
+
+    private static void showSnackBar(@NonNull final View view, @NonNull final String message) {
+        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
     }
 
     @NonNull

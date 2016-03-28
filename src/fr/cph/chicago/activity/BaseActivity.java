@@ -84,9 +84,6 @@ public class BaseActivity extends Activity {
      */
     public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals, final List<BikeStation> bikeStations, final Boolean trainBoolean,
                                  final Boolean busBoolean, final Boolean bikeBoolean, final Boolean networkAvailable) {
-        if (!networkAvailable) {
-            Util.showNetworkErrorMessage(this);
-        }
         ChicagoTracker.modifyLastUpdate(Calendar.getInstance().getTime());
         startMainActivity(trainArrivals, busArrivals);
     }

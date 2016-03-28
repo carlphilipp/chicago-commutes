@@ -269,14 +269,14 @@ public class FavoritesFragment extends Fragment {
             favoritesAdapter.refreshUpdatedView();
             favoritesAdapter.notifyDataSetChanged();
             this.bikeStations = bikeStations;
+            // Highlight background
+            rootView.setBackgroundResource(R.drawable.highlight_selector);
+            rootView.postDelayed(new Runnable() {
+                public void run() {
+                    rootView.setBackgroundResource(R.drawable.bg_selector);
+                }
+            }, 100);
         }
-        // Highlight background
-        rootView.setBackgroundResource(R.drawable.highlight_selector);
-        rootView.postDelayed(new Runnable() {
-            public void run() {
-                rootView.setBackgroundResource(R.drawable.bg_selector);
-            }
-        }, 100);
         stopRefreshing();
     }
 

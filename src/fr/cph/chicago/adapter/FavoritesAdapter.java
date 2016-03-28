@@ -409,8 +409,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         holder.detailsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                final boolean isNetworkAvailable = Util.isNetworkAvailable();
-                if (!isNetworkAvailable) {
+                if (!Util.isNetworkAvailable()) {
                     Util.showNetworkErrorMessage(activity);
                 } else if (bikeStation.getLatitude() != 0 && bikeStation.getLongitude() != 0) {
                     final Intent intent = new Intent(ChicagoTracker.getContext(), BikeStationActivity.class);

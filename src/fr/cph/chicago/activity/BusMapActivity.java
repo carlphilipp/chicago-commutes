@@ -31,6 +31,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -90,6 +91,7 @@ public class BusMapActivity extends Activity {
     private ViewGroup viewGroup;
     private MapFragment mapFragment;
     private Marker selectedMarker;
+    private RelativeLayout layout;
 
     private List<Marker> busMarkers;
     private List<Marker> busStationMarkers;
@@ -111,6 +113,7 @@ public class BusMapActivity extends Activity {
         ChicagoTracker.checkBusData(this);
         if (!this.isFinishing()) {
             setContentView(R.layout.activity_map);
+            layout = (RelativeLayout) findViewById(R.id.map);
             viewGroup = (ViewGroup) findViewById(android.R.id.content);
             if (savedInstanceState != null) {
                 busId = savedInstanceState.getInt(getString(R.string.bundle_bus_id));
@@ -217,7 +220,7 @@ public class BusMapActivity extends Activity {
                         new LoadPattern().execute();
                     }
                 } else {
-                    Util.showNetworkErrorMessage(BusMapActivity.this);
+                    Util.showNetworkErrorMessage(layout);
                 }
             }
         });
@@ -420,7 +423,7 @@ public class BusMapActivity extends Activity {
             if (result != null) {
                 drawPattern(result);
             } else {
-                Util.showNetworkErrorMessage(BusMapActivity.this);
+                Util.showNetworkErrorMessage(layout);
             }
         }
     }
