@@ -222,7 +222,6 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
             busStops = (List<BusStop>) params[0];
             stations = (List<Station>) params[1];
             bikeStationsTemp = (List<BikeStation>) params[2];
-
             loadAroundBusArrivals();
             loadAroundTrainArrivals();
             loadAroundBikeData();
@@ -241,23 +240,24 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
 
                 try {
                     final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-                    reqParams.put(getString(R.string.request_stop_id), Integer.toString(busId));
-
-                    final InputStream is = cta.connect(BUS_ARRIVALS, reqParams);
-                    final XmlParser xml = XmlParser.getInstance();
-                    final List<BusArrival> busArrivals = xml.parseBusArrivals(is);
-                    for (final BusArrival busArrival : busArrivals) {
-                        final String direction = busArrival.getRouteDirection();
-                        if (tempMap.containsKey(direction)) {
-                            final List<BusArrival> temp = tempMap.get(direction);
-                            temp.add(busArrival);
-                        } else {
-                            final List<BusArrival> temp = new ArrayList<>();
-                            temp.add(busArrival);
-                            tempMap.put(direction, temp);
+                    if (NearbyFragment.this.isAdded()) {
+                        reqParams.put(getString(R.string.request_stop_id), Integer.toString(busId));
+                        final InputStream is = cta.connect(BUS_ARRIVALS, reqParams);
+                        final XmlParser xml = XmlParser.getInstance();
+                        final List<BusArrival> busArrivals = xml.parseBusArrivals(is);
+                        for (final BusArrival busArrival : busArrivals) {
+                            final String direction = busArrival.getRouteDirection();
+                            if (tempMap.containsKey(direction)) {
+                                final List<BusArrival> temp = tempMap.get(direction);
+                                temp.add(busArrival);
+                            } else {
+                                final List<BusArrival> temp = new ArrayList<>();
+                                temp.add(busArrival);
+                                tempMap.put(direction, temp);
+                            }
                         }
+                        Util.trackAction(NearbyFragment.this.activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
                     }
-                    Util.trackAction(NearbyFragment.this.activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
                 } catch (final ConnectException | ParserException e) {
                     Log.e(TAG, e.getMessage(), e);
                 }
@@ -269,14 +269,16 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
             for (final Station station : stations) {
                 try {
                     final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-                    reqParams.put(getString(R.string.request_map_id), String.valueOf(station.getId()));
-                    final InputStream xmlRes = cta.connect(TRAIN_ARRIVALS, reqParams);
-                    final XmlParser xml = XmlParser.getInstance();
-                    final SparseArray<TrainArrival> temp = xml.parseArrivals(xmlRes, DataHolder.getInstance().getTrainData());
-                    for (int j = 0; j < temp.size(); j++) {
-                        trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
+                    if (NearbyFragment.this.isAdded()) {
+                        reqParams.put(getString(R.string.request_map_id), String.valueOf(station.getId()));
+                        final InputStream xmlRes = cta.connect(TRAIN_ARRIVALS, reqParams);
+                        final XmlParser xml = XmlParser.getInstance();
+                        final SparseArray<TrainArrival> temp = xml.parseArrivals(xmlRes, DataHolder.getInstance().getTrainData());
+                        for (int j = 0; j < temp.size(); j++) {
+                            trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
+                        }
+                        Util.trackAction(NearbyFragment.this.activity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
                     }
-                    Util.trackAction(NearbyFragment.this.activity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
                 } catch (final ConnectException | ParserException e) {
                     Log.e(TAG, e.getMessage(), e);
                 }
