@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.adapter.SearchAdapter;
 import fr.cph.chicago.data.BusData;
@@ -43,8 +43,8 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(final Bundle state) {
         super.onCreate(state);
-        ChicagoTracker.checkTrainData(this);
-        ChicagoTracker.checkBusData(this);
+        App.checkTrainData(this);
+        App.checkBusData(this);
         if (!this.isFinishing()) {
             setContentView(R.layout.activity_search);
             setupToolbar();

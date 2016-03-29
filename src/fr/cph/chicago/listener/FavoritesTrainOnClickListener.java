@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.TrainMapActivity;
 import fr.cph.chicago.adapter.PopupFavoritesTrainAdapter;
@@ -79,7 +79,7 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
                     if (line != TrainLine.YELLOW) {
                         colors.add(line.getColor());
                     } else {
-                        colors.add(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.yellowLine));
+                        colors.add(ContextCompat.getColor(App.getContext(), R.color.yellowLine));
                     }
                 }
                 final PopupFavoritesTrainAdapter ada = new PopupFavoritesTrainAdapter(activity, values, colors);
@@ -105,7 +105,7 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
 
     private void startActivity(final TrainLine trainLine) {
         final Bundle extras = new Bundle();
-        final Intent intent = new Intent(ChicagoTracker.getContext(), TrainMapActivity.class);
+        final Intent intent = new Intent(App.getContext(), TrainMapActivity.class);
         extras.putString(activity.getString(R.string.bundle_train_line), trainLine.toTextString());
         intent.putExtras(extras);
         activity.startActivity(intent);

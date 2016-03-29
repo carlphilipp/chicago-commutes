@@ -46,7 +46,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.adapter.BusBoundAdapter;
 import fr.cph.chicago.entity.BusPattern;
@@ -77,7 +77,7 @@ public class BusBoundActivity extends ListActivity {
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ChicagoTracker.checkBusData(this);
+        App.checkBusData(this);
         if (!this.isFinishing()) {
             setContentView(R.layout.activity_bus_bound);
 
@@ -95,7 +95,7 @@ public class BusBoundActivity extends ListActivity {
                 @Override
                 public void onItemClick(final AdapterView<?> adapterView, final View view, final int position, final long id) {
                     final BusStop busStop = (BusStop) busBoundAdapter.getItem(position);
-                    final Intent intent = new Intent(ChicagoTracker.getContext(), BusActivity.class);
+                    final Intent intent = new Intent(App.getContext(), BusActivity.class);
 
                     final Bundle extras = new Bundle();
                     extras.putInt(getString(R.string.bundle_bus_stop_id), busStop.getId());

@@ -34,7 +34,7 @@ import android.widget.FrameLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
@@ -71,14 +71,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         if (!isFinishing()) {
             if (savedInstanceState != null) {
-                ChicagoTracker.reloadData();
+                App.reloadData();
             }
             setContentView(R.layout.activity_main);
 
             new LoadBusAndBikeDataTask(this).execute();
 
-            ChicagoTracker.container = (FrameLayout) findViewById(R.id.container);
-            ChicagoTracker.container.getForeground().setAlpha(0);
+            App.container = (FrameLayout) findViewById(R.id.container);
+            App.container.getForeground().setAlpha(0);
 
             initView();
             setToolbar();
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         favoritesFragment.startRefreshing();
                     }
 
-                    Util.loadFavorites(favoritesFragment, FavoritesFragment.class, MainActivity.this);
+                    Util.loadFavorites(favoritesFragment, FavoritesFragment.class);
 
                     // Google analytics
                     Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);

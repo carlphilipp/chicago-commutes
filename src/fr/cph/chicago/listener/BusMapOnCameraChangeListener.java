@@ -27,7 +27,7 @@ import com.google.android.gms.maps.model.Marker;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 
 /**
@@ -47,7 +47,7 @@ public class BusMapOnCameraChangeListener implements OnCameraChangeListener {
     private float currentZoom = -1;
 
     public BusMapOnCameraChangeListener() {
-        final Bitmap icon = BitmapFactory.decodeResource(ChicagoTracker.getContext().getResources(), R.drawable.bus);
+        final Bitmap icon = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.bus);
         this.bitmap1 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 9, icon.getHeight() / 9, false);
         this.bitmap2 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 5, icon.getHeight() / 5, false);
         this.bitmap3 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 3, icon.getHeight() / 3, false);

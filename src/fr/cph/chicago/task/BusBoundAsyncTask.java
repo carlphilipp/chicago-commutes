@@ -18,11 +18,9 @@ package fr.cph.chicago.task;
 
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import android.widget.Toast;
 
 import java.util.List;
 
-import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BusBoundActivity;
 import fr.cph.chicago.adapter.BusBoundAdapter;

@@ -28,7 +28,7 @@ import android.widget.TextView;
 
 import java.io.IOException;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.GStreetViewConnect;
 import fr.cph.chicago.util.Util;
@@ -78,6 +78,6 @@ public final class DisplayGoogleStreetPictureTask extends AsyncTask<Double, Void
 
         streetViewImage.setLayoutParams(params);
         streetViewImage.setImageDrawable(result);
-        streetViewText.setText(ChicagoTracker.getContext().getString(R.string.station_activity_street_view));
+        streetViewText.setText(App.getContext().getString(R.string.station_activity_street_view));
     }
 }

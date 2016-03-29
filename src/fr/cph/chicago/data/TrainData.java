@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.Stop;
@@ -83,7 +83,7 @@ public class TrainData {
     public final void read() {
         if (stations.size() == 0 && stops.size() == 0) {
             try {
-                final List<String[]> allRows = parser.parseAll((new InputStreamReader(ChicagoTracker.getContext().getAssets().open(TRAIN_FILE_PATH))));
+                final List<String[]> allRows = parser.parseAll((new InputStreamReader(App.getContext().getAssets().open(TRAIN_FILE_PATH))));
                 for (int i = 1; i < allRows.size(); i++) {
                     final String[] row = allRows.get(i);
                     final int stopId = Integer.parseInt(row[0]); // STOP_ID
@@ -259,7 +259,7 @@ public class TrainData {
     public final List<Position> readPattern(final TrainLine line) {
         final List<Position> positions = new ArrayList<>();
         try {
-            final List<String[]> allRows = parser.parseAll(new InputStreamReader(ChicagoTracker.getContext().getAssets().open("train_pattern/" + line.toTextString() + "_pattern.csv")));
+            final List<String[]> allRows = parser.parseAll(new InputStreamReader(App.getContext().getAssets().open("train_pattern/" + line.toTextString() + "_pattern.csv")));
             for (final String[] row : allRows) {
                 final double longitude = Double.parseDouble(row[0]);
                 final double latitude = Double.parseDouble(row[1]);

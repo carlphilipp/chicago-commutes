@@ -29,7 +29,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BikeStationActivity;
 import fr.cph.chicago.activity.MainActivity;
@@ -83,7 +83,7 @@ public final class BikeAdapter extends BaseAdapter {
         final ViewHolder holder;
 
         if (convertView == null) {
-            final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final LayoutInflater vi = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = vi.inflate(R.layout.list_bike, parent, false);
 
             holder = new ViewHolder();
@@ -98,7 +98,7 @@ public final class BikeAdapter extends BaseAdapter {
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                final Intent intent = new Intent(ChicagoTracker.getContext(), BikeStationActivity.class);
+                final Intent intent = new Intent(App.getContext(), BikeStationActivity.class);
                 final Bundle extras = new Bundle();
                 extras.putParcelable(mainActivity.getString(R.string.bundle_bike_station), station);
                 intent.putExtras(extras);

@@ -22,7 +22,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-import fr.cph.chicago.ChicagoTracker;
+
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
@@ -52,7 +53,7 @@ public final class TrainStationAdapter extends BaseAdapter {
 	@Override
 	public final View getView(final int position, View convertView, final ViewGroup parent) {
 		if (convertView == null) {
-			final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			final LayoutInflater vi = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = vi.inflate(R.layout.list_train_line, parent, false);
 		}
 

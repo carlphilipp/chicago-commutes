@@ -4,7 +4,8 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
-import fr.cph.chicago.ChicagoTracker;
+
+import fr.cph.chicago.App;
 import fr.cph.chicago.entity.BusStop;
 
 import java.io.IOException;
@@ -32,7 +33,7 @@ public class BusStopCsvParser {
     @NonNull
 	public List<BusStop> parse() {
 		try {
-			parser.parse(new InputStreamReader(ChicagoTracker.getContext().getAssets().open(STOP_FILE_PATH)));
+			parser.parse(new InputStreamReader(App.getContext().getAssets().open(STOP_FILE_PATH)));
 		} catch (final IOException e) {
 			Log.e(TAG, e.getMessage(), e);
 		}

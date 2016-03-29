@@ -19,7 +19,8 @@ package fr.cph.chicago.data;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
-import fr.cph.chicago.ChicagoTracker;
+
+import fr.cph.chicago.App;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusRoute;
@@ -360,11 +361,11 @@ public class Favorites {
      *
      */
     public final void setFavorites() {
-        trainFavorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
-        busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+        trainFavorites = Preferences.getTrainFavorites(App.PREFERENCE_FAVORITES_TRAIN);
+        busFavorites = Preferences.getBusFavorites(App.PREFERENCE_FAVORITES_BUS);
         fakeBusFavorites = calculateActualRouteNumberBusFavorites();
         bikeFavorites.clear();
-        final List<String> bikeFavoritesTemp = Preferences.getBikeFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
+        final List<String> bikeFavoritesTemp = Preferences.getBikeFavorites(App.PREFERENCE_FAVORITES_BIKE);
         final List<BikeStation> bikeStationsFavoritesTemp = new ArrayList<>();
         if (bikeStations != null && bikeStations.size() != 0) {
             for (final String bikeStationId : bikeFavoritesTemp) {

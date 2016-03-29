@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import fr.cph.chicago.connection.CtaConnect;
-import fr.cph.chicago.connection.CtaRequestType;
 import fr.cph.chicago.connection.DivvyConnect;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
@@ -51,6 +50,10 @@ import fr.cph.chicago.json.JsonParser;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.XmlParser;
 
+import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
+import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
+
+
 /**
  * CTA connect task
  *
@@ -64,240 +67,173 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
      * Tag
      **/
     private static final String TAG = GlobalConnectTask.class.getSimpleName();
-    /**
-     * Instance of the class where the we will callback
-     **/
+
     private Object instance;
-    /**
-     * The class
-     **/
     private Class<?> clazz;
-    /**
-     * Request type
-     **/
-    private CtaRequestType requestType, requestType2;
-    /**
-     * The params of the requests
-     **/
-    private MultiValuedMap<String, String> params, params2;
-    /**
-     * The XML parser
-     **/
-    private XmlParser xml;
-    /**
-     * The Json parser
-     **/
-    private JsonParser json;
-    /**
-     * List of train arrivals
-     **/
+    private MultiValuedMap<String, String> trainParams, busParams;
+    private XmlParser xmlParser;
+    private JsonParser jsonParser;
+
     private SparseArray<TrainArrival> trainArrivals;
-    /**
-     * Train data
-     **/
-    private TrainData train;
-    /**
-     * Train exception
-     **/
-    private TrackerException trackerException;
-    /**
-     * Bus exception
-     **/
-    private TrackerException trackerBusException;
-    /**
-     * Bike exception
-     **/
-    private TrackerException trackerBikeException;
-    /**
-     * Bus arrivals
-     **/
     private List<BusArrival> busArrivals;
-    /**
-     * Bike stations
-     **/
     private List<BikeStation> bikeStations;
-    /**
-     * Error train
-     */
-    private boolean trainBoolean;
-    /**
-     * Error bus
-     **/
-    private boolean busBoolean;
-    /**
-     * Error bike
-     **/
-    private boolean bikeBoolean;
-    /**
-     * Network available
-     **/
+
+    private TrainData train;
+    private TrackerException trackerException, trackerBusException, trackerBikeException;
+
     private boolean networkAvailable;
 
     /**
      * Constructor
      *
-     * @param instance     Instance of the object
-     * @param classe       The class
-     * @param requestType  the request type
-     * @param params       the params
-     * @param requestType2 the request type
-     * @param params2      the params
+     * @param instance    Instance of the object
+     * @param clazz       The class
+     * @param trainParams the trainParams
+     * @param busParams   the trainParams
      * @throws ParserException the parser exception
      */
-    // TODO remove some of the params as always the same are used
+    // TODO remove some of the trainParams as always the same are used
     public GlobalConnectTask(@NonNull final Object instance,
-                             @NonNull final Class<?> classe,
-                             @NonNull final CtaRequestType requestType,
-                             @NonNull final MultiValuedMap<String, String> params,
-                             @NonNull final CtaRequestType requestType2,
-                             @NonNull final MultiValuedMap<String, String> params2) {
+                             @NonNull final Class<?> clazz,
+                             @NonNull final MultiValuedMap<String, String> trainParams,
+                             @NonNull final MultiValuedMap<String, String> busParams) {
         this.instance = instance;
-        this.clazz = classe;
-        this.requestType = requestType;
-        this.params = params;
-        this.train = DataHolder.getInstance().getTrainData();
+        this.clazz = clazz;
+        this.trainParams = trainParams;
+        this.busParams = busParams;
 
-        this.requestType2 = requestType2;
-        this.params2 = params2;
+        this.train = DataHolder.getInstance().getTrainData();
 
         this.trainArrivals = new SparseArray<>();
         this.busArrivals = new ArrayList<>();
         this.bikeStations = new ArrayList<>();
 
-        this.xml = XmlParser.getInstance();
-        this.json = JsonParser.getInstance();
+        this.xmlParser = XmlParser.getInstance();
+        this.jsonParser = JsonParser.getInstance();
     }
 
     @Override
     protected final Boolean doInBackground(final Void... connects) {
-        trainBoolean = true;
-        busBoolean = true;
-        bikeBoolean = true;
         networkAvailable = Util.isNetworkAvailable();
         if (networkAvailable) {
-            final CtaConnect ctaConnect = CtaConnect.getInstance();
-            final DivvyConnect divvyConnect = DivvyConnect.getInstance();
-            // Load Trains
-            try {
-                for (final Entry<String, Collection<String>> entry : params.asMap().entrySet()) {
-                    final String key = entry.getKey();
-                    if ("mapid".equals(key)) {
-                        final List<String> list = (List<String>) entry.getValue();
-                        if (list.size() < 5) {
-                            final InputStream xmlResult = ctaConnect.connect(requestType, params);
-                            trainArrivals = xml.parseArrivals(xmlResult, train);
-                        } else {
-                            final int size = list.size();
-                            final SparseArray<TrainArrival> tempArrivals = new SparseArray<>();
-                            int start = 0;
-                            int end = 4;
-                            while (end < size + 1) {
-                                final List<String> subList = list.subList(start, end);
-                                final MultiValuedMap<String, String> paramsTemp = new ArrayListValuedHashMap<>();
-                                for (final String sub : subList) {
-                                    paramsTemp.put(key, sub);
-                                }
-
-                                final InputStream xmlResult = ctaConnect.connect(requestType, paramsTemp);
-                                final SparseArray<TrainArrival> temp = xml.parseArrivals(xmlResult, train);
-                                for (int j = 0; j < temp.size(); j++) {
-                                    tempArrivals.put(temp.keyAt(j), temp.valueAt(j));
-                                }
-                                start = end;
-                                if (end + 3 >= size - 1 && end != size) {
-                                    end = size;
-                                } else {
-                                    end = end + 3;
-                                }
-                            }
-                            trainArrivals = tempArrivals;
-                        }
-                    }
-                }
-
-                // Apply filters
-                int index = 0;
-                while (index < trainArrivals.size()) {
-                    final TrainArrival arri = trainArrivals.valueAt(index++);
-                    final List<Eta> etas = arri.getEtas();
-                    // Sort Eta by arriving time
-                    Collections.sort(etas);
-                    // Copy data into new list to be able to avoid looping on a list that we want to modify
-                    final List<Eta> etas2 = new ArrayList<>();
-                    etas2.addAll(etas);
-                    int j = 0;
-                    for (int i = 0; i < etas2.size(); i++) {
-                        final Eta eta = etas2.get(i);
-                        final Station station = eta.getStation();
-                        final TrainLine line = eta.getRouteName();
-                        final TrainDirection direction = eta.getStop().getDirection();
-                        final boolean toRemove = Preferences.getTrainFilter(station.getId(), line, direction);
-                        if (!toRemove) {
-                            etas.remove(i - j++);
-                        }
-                    }
-                }
-
-            } catch (final ConnectException | ParserException e) {
-                trainBoolean = false;
-                this.trackerException = e;
-            }
-
-            // Load bus
-            try {
-                final List<String> rts = new ArrayList<>();
-                final List<String> stpids = new ArrayList<>();
-                for (final Entry<String, Collection<String>> entry : params2.asMap().entrySet()) {
-                    final String key = entry.getKey();
-                    StringBuilder str = new StringBuilder();
-                    int i = 0;
-                    final List<String> values = (List<String>) entry.getValue();
-                    for (final String v : values) {
-                        str.append(v).append(",");
-                        if (i == 9 || i == values.size() - 1) {
-                            if ("rt".equals(key)) {
-                                rts.add(str.toString());
-                            } else if ("stpid".equals(key)) {
-                                stpids.add(str.toString());
-                            }
-                            str = new StringBuilder();
-                            i = -1;
-                        }
-                        i++;
-                    }
-                }
-                for (int i = 0; i < rts.size(); i++) {
-                    final MultiValuedMap<String, String> para = new ArrayListValuedHashMap<>();
-                    para.put("rt", rts.get(i));
-                    para.put("stpid", stpids.get(i));
-                    final InputStream xmlResult = ctaConnect.connect(requestType2, para);
-                    busArrivals.addAll(xml.parseBusArrivals(xmlResult));
-                }
-            } catch (final ConnectException | ParserException e) {
-                busBoolean = false;
-                trackerBusException = e;
-            }
-            // Load bikes
-            try {
-                final InputStream bikeContent = divvyConnect.connect();
-                bikeStations = json.parseStations(bikeContent);
-                Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
-            } catch (final ParserException | ConnectException e) {
-                bikeBoolean = false;
-                trackerBikeException = e;
-            } finally {
-                if (!(busBoolean && trainBoolean)) {
-                    if (params2.size() == 0 && busBoolean) {
-                        busBoolean = false;
-                    }
-                    if (params.size() == 0 && trainBoolean) {
-                        trainBoolean = false;
-                    }
-                }
-            }
-            return trainBoolean || busBoolean || bikeBoolean;
+            loadTrains();
+            loadBuses();
+            loadBikes();
+            return true;
         } else {
-            return Boolean.FALSE;
+            return false;
+        }
+    }
+
+    private void loadTrains() {
+        try {
+            final CtaConnect ctaConnect = CtaConnect.getInstance();
+            for (final Entry<String, Collection<String>> entry : trainParams.asMap().entrySet()) {
+                final String key = entry.getKey();
+                if ("mapid".equals(key)) {
+                    final List<String> list = (List<String>) entry.getValue();
+                    if (list.size() < 5) {
+                        final InputStream xmlResult = ctaConnect.connect(TRAIN_ARRIVALS, trainParams);
+                        trainArrivals = xmlParser.parseArrivals(xmlResult, train);
+                    } else {
+                        final int size = list.size();
+                        int start = 0;
+                        int end = 4;
+                        while (end < size + 1) {
+                            final List<String> subList = list.subList(start, end);
+                            final MultiValuedMap<String, String> paramsTemp = new ArrayListValuedHashMap<>();
+                            for (final String sub : subList) {
+                                paramsTemp.put(key, sub);
+                            }
+                            final InputStream xmlResult = ctaConnect.connect(TRAIN_ARRIVALS, paramsTemp);
+                            final SparseArray<TrainArrival> temp = xmlParser.parseArrivals(xmlResult, train);
+                            for (int j = 0; j < temp.size(); j++) {
+                                trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
+                            }
+                            start = end;
+                            if (end + 3 >= size - 1 && end != size) {
+                                end = size;
+                            } else {
+                                end = end + 3;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Apply filters
+            int index = 0;
+            while (index < trainArrivals.size()) {
+                final TrainArrival arri = trainArrivals.valueAt(index++);
+                final List<Eta> etas = arri.getEtas();
+                // Sort Eta by arriving time
+                Collections.sort(etas);
+                // Copy data into new list to be able to avoid looping on a list that we want to modify
+                final List<Eta> etas2 = new ArrayList<>();
+                etas2.addAll(etas);
+                int j = 0;
+                for (int i = 0; i < etas2.size(); i++) {
+                    final Eta eta = etas2.get(i);
+                    final Station station = eta.getStation();
+                    final TrainLine line = eta.getRouteName();
+                    final TrainDirection direction = eta.getStop().getDirection();
+                    final boolean toRemove = Preferences.getTrainFilter(station.getId(), line, direction);
+                    if (!toRemove) {
+                        etas.remove(i - j++);
+                    }
+                }
+            }
+
+        } catch (final ConnectException | ParserException e) {
+            this.trackerException = e;
+        }
+    }
+
+    private void loadBuses() {
+        // Load bus
+        try {
+            final CtaConnect ctaConnect = CtaConnect.getInstance();
+            final List<String> rts = new ArrayList<>();
+            final List<String> stpids = new ArrayList<>();
+            for (final Entry<String, Collection<String>> entry : busParams.asMap().entrySet()) {
+                final String key = entry.getKey();
+                StringBuilder str = new StringBuilder();
+                int i = 0;
+                final List<String> values = (List<String>) entry.getValue();
+                for (final String v : values) {
+                    str.append(v).append(",");
+                    if (i == 9 || i == values.size() - 1) {
+                        if ("rt".equals(key)) {
+                            rts.add(str.toString());
+                        } else if ("stpid".equals(key)) {
+                            stpids.add(str.toString());
+                        }
+                        str = new StringBuilder();
+                        i = -1;
+                    }
+                    i++;
+                }
+            }
+            for (int i = 0; i < rts.size(); i++) {
+                final MultiValuedMap<String, String> para = new ArrayListValuedHashMap<>();
+                para.put("rt", rts.get(i));
+                para.put("stpid", stpids.get(i));
+                final InputStream xmlResult = ctaConnect.connect(BUS_ARRIVALS, para);
+                busArrivals.addAll(xmlParser.parseBusArrivals(xmlResult));
+            }
+        } catch (final ConnectException | ParserException e) {
+            trackerBusException = e;
+        }
+    }
+
+    private void loadBikes() {
+        try {
+            final DivvyConnect divvyConnect = DivvyConnect.getInstance();
+            final InputStream bikeContent = divvyConnect.connect();
+            bikeStations = jsonParser.parseStations(bikeContent);
+            Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
+        } catch (final ParserException | ConnectException e) {
+            trackerBikeException = e;
         }
     }
 
@@ -309,15 +245,10 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
     @Override
     protected final void onPostExecute(final Boolean success) {
         try {
-            if (success) {
-                clazz.getMethod("reloadData", SparseArray.class, List.class, List.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class)
-                        .invoke(instance, trainArrivals, busArrivals, bikeStations, trainBoolean, busBoolean, bikeBoolean, networkAvailable);
-            } else if (!networkAvailable) {
-                clazz.getMethod("reloadData", SparseArray.class, List.class, List.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class)
-                        .invoke(instance, trainArrivals, busArrivals, bikeStations, false, false, false, networkAvailable);
+            if (success || !networkAvailable) {
+                clazz.getMethod("reloadData", SparseArray.class, List.class, List.class, Boolean.class).invoke(instance, trainArrivals, busArrivals, bikeStations, networkAvailable);
             } else {
-                final TrackerException ex = trackerBusException == null ? (trackerBikeException == null ? trackerException : trackerBikeException)
-                        : trackerBusException;
+                final TrackerException ex = trackerBusException == null ? (trackerBikeException == null ? trackerException : trackerBikeException) : trackerBusException;
                 if (ex != null) {
                     // because both can be null
                     Log.e(TAG, ex.getMessage(), ex);

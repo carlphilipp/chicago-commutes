@@ -28,7 +28,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.entity.BusArrival;
 
@@ -80,7 +80,7 @@ public class BusMapSnippetAdapter extends BaseAdapter {
         } else {
             stationNameTextView.setTypeface(null, Typeface.BOLD);
             stationNameTextView.setText(arrival.getStopName());
-            stationNameTextView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
+            stationNameTextView.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey));
             stationNameTextView.setGravity(Gravity.CENTER);
         }
         return convertView;

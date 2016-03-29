@@ -30,7 +30,7 @@ import android.widget.TextView;
 import java.util.List;
 import java.util.Set;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BikeStationActivity;
 import fr.cph.chicago.activity.SearchActivity;
@@ -62,7 +62,7 @@ public final class SearchAdapter extends BaseAdapter {
      * @param activity the search activity
      */
     public SearchAdapter(@NonNull final SearchActivity activity) {
-        this.context = ChicagoTracker.getContext();
+        this.context = App.getContext();
         this.searchActivity = activity;
     }
 
@@ -148,7 +148,7 @@ public final class SearchAdapter extends BaseAdapter {
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final Intent intent = new Intent(ChicagoTracker.getContext(), BikeStationActivity.class);
+                    final Intent intent = new Intent(App.getContext(), BikeStationActivity.class);
                     final Bundle extras = new Bundle();
                     extras.putParcelable(searchActivity.getString(R.string.bundle_bike_station), bikeStation);
                     intent.putExtras(extras);

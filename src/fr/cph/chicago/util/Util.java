@@ -61,7 +61,7 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
@@ -69,9 +69,6 @@ import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.fragment.GoogleMapAbility;
 import fr.cph.chicago.task.GlobalConnectTask;
-
-import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
-import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
 
 /**
  * Util class
@@ -116,7 +113,7 @@ public final class Util {
     public static String getProperty(@NonNull final String property) {
         final Properties prop = new Properties();
         try {
-            prop.load(ChicagoTracker.getContext().getAssets().open("app.properties"));
+            prop.load(App.getContext().getAssets().open("app.properties"));
         } catch (IOException e) {
             Log.e(TAG, e.getMessage(), e);
             return null;
@@ -134,7 +131,7 @@ public final class Util {
         final List<Integer> favorites = Preferences.getTrainFavorites(preference);
         if (!favorites.contains(stationId)) {
             favorites.add(stationId);
-            Preferences.saveTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN, favorites);
+            Preferences.saveTrainFavorites(App.PREFERENCE_FAVORITES_TRAIN, favorites);
         }
     }
 
@@ -147,7 +144,7 @@ public final class Util {
     public static void removeFromTrainFavorites(@NonNull final Integer stationId, @NonNull final String preference) {
         final List<Integer> favorites = Preferences.getTrainFavorites(preference);
         favorites.remove(stationId);
-        Preferences.saveTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN, favorites);
+        Preferences.saveTrainFavorites(App.PREFERENCE_FAVORITES_TRAIN, favorites);
     }
 
     /**
@@ -162,7 +159,7 @@ public final class Util {
         final String id = busRouteId + "_" + busStopId + "_" + bound;
         final List<String> favorites = Preferences.getBusFavorites(preference);
         favorites.remove(id);
-        Preferences.saveBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS, favorites);
+        Preferences.saveBusFavorites(App.PREFERENCE_FAVORITES_BUS, favorites);
     }
 
     /**
@@ -178,7 +175,7 @@ public final class Util {
         final List<String> favorites = Preferences.getBusFavorites(preference);
         if (!favorites.contains(id)) {
             favorites.add(id);
-            Preferences.saveBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS, favorites);
+            Preferences.saveBusFavorites(App.PREFERENCE_FAVORITES_BUS, favorites);
         }
     }
 
@@ -186,14 +183,14 @@ public final class Util {
         final List<String> favorites = Preferences.getBikeFavorites(preference);
         if (!favorites.contains(Integer.toString(stationId))) {
             favorites.add(Integer.toString(stationId));
-            Preferences.saveBikeFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BIKE, favorites);
+            Preferences.saveBikeFavorites(App.PREFERENCE_FAVORITES_BIKE, favorites);
         }
     }
 
     public static void removeFromBikeFavorites(final int stationId, @NonNull final String preference) {
         final List<String> favorites = Preferences.getBikeFavorites(preference);
         favorites.remove(Integer.toString(stationId));
-        Preferences.saveBikeFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BIKE, favorites);
+        Preferences.saveBikeFavorites(App.PREFERENCE_FAVORITES_BIKE, favorites);
     }
 
     /**
@@ -222,13 +219,13 @@ public final class Util {
     }
 
     public static boolean isNetworkAvailable() {
-        final ConnectivityManager connectivityManager = (ConnectivityManager) ChicagoTracker.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        final ConnectivityManager connectivityManager = (ConnectivityManager) App.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         final NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     public static int[] getScreenSize() {
-        final WindowManager wm = (WindowManager) ChicagoTracker.getContext().getSystemService(Context.WINDOW_SERVICE);
+        final WindowManager wm = (WindowManager) App.getContext().getSystemService(Context.WINDOW_SERVICE);
         final Display display = wm.getDefaultDisplay();
         final Point size = new Point();
         display.getSize(size);
@@ -241,13 +238,13 @@ public final class Util {
      * @param screen the screen name
      */
     public static void trackScreen(final String screen) {
-        final Tracker t = ChicagoTracker.getTracker();
+        final Tracker t = App.getTracker();
         t.setScreenName(screen);
         t.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     public static void trackAction(@NonNull final Activity activity, final int category, final int action, final int label, final int value) {
-        final Tracker tracker = ChicagoTracker.getTracker();
+        final Tracker tracker = App.getTracker();
         tracker.send(new HitBuilders.EventBuilder()
             .setCategory(activity.getString(category))
             .setAction(activity.getString(action))
@@ -297,8 +294,8 @@ public final class Util {
                 statusBarColor = R.color.primaryColorDark;
                 break;
         }
-        toolbar.setBackgroundColor(ContextCompat.getColor(ChicagoTracker.getContext(), backgroundColor));
-        toolbar.setTitleTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), textTitleColor));
+        toolbar.setBackgroundColor(ContextCompat.getColor(App.getContext(), backgroundColor));
+        toolbar.setTitleTextColor(ContextCompat.getColor(App.getContext(), textTitleColor));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             activity.getWindow().setStatusBarColor(ContextCompat.getColor(activity, statusBarColor));
             activity.getWindow().setNavigationBarColor(ContextCompat.getColor(activity, statusBarColor));
@@ -339,31 +336,30 @@ public final class Util {
         return Boolean.parseBoolean(number);
     }
 
-    public static void loadFavorites(@NonNull final Object instance, @NonNull final Class<?> classe, @NonNull final Activity activity) {
-        final MultiValuedMap<String, String> paramTrain = Util.getFavoritesTrainParams(activity);
-        final MultiValuedMap<String, String> paramBus = Util.getFavoritesBusParams(activity);
-        final GlobalConnectTask task = new GlobalConnectTask(instance, classe, TRAIN_ARRIVALS, paramTrain, BUS_ARRIVALS, paramBus);
-        task.execute((Void) null);
+    public static void loadFavorites(@NonNull final Object instance, @NonNull final Class<?> clazz) {
+        final MultiValuedMap<String, String> paramTrain = Util.getFavoritesTrainParams();
+        final MultiValuedMap<String, String> paramBus = Util.getFavoritesBusParams();
+        new GlobalConnectTask(instance, clazz, paramTrain, paramBus).execute();
     }
 
     @NonNull
-    private static MultiValuedMap<String, String> getFavoritesTrainParams(@NonNull final Activity activity) {
+    private static MultiValuedMap<String, String> getFavoritesTrainParams() {
         final MultiValuedMap<String, String> paramsTrain = new ArrayListValuedHashMap<>();
-        final List<Integer> favorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
+        final List<Integer> favorites = Preferences.getTrainFavorites(App.PREFERENCE_FAVORITES_TRAIN);
         for (final Integer favorite : favorites) {
-            paramsTrain.put(activity.getString(R.string.request_map_id), favorite.toString());
+            paramsTrain.put(App.getContext().getString(R.string.request_map_id), favorite.toString());
         }
         return paramsTrain;
     }
 
     @NonNull
-    private static MultiValuedMap<String, String> getFavoritesBusParams(@NonNull final Activity activity) {
+    private static MultiValuedMap<String, String> getFavoritesBusParams() {
         final MultiValuedMap<String, String> paramsBus = new ArrayListValuedHashMap<>();
-        final List<String> busFavorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+        final List<String> busFavorites = Preferences.getBusFavorites(App.PREFERENCE_FAVORITES_BUS);
         for (final String busFavorite : busFavorites) {
             final String[] fav = Util.decodeBusFavorite(busFavorite);
-            paramsBus.put(activity.getString(R.string.request_rt), fav[0]);
-            paramsBus.put(activity.getString(R.string.request_stop_id), fav[1]);
+            paramsBus.put(App.getContext().getString(R.string.request_rt), fav[0]);
+            paramsBus.put(App.getContext().getString(R.string.request_stop_id), fav[1]);
         }
         return paramsBus;
     }

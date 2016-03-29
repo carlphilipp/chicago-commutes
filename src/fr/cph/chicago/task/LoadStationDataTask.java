@@ -10,7 +10,7 @@ import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import java.io.InputStream;
 import java.util.List;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BusActivity;
 import fr.cph.chicago.connection.CtaConnect;
@@ -76,7 +76,7 @@ public class LoadStationDataTask extends AsyncTask<Void, Void, List<BusArrival>>
             activity.setBusArrivals(result);
             activity.drawArrivals();
         } else {
-            ChicagoTracker.displayError(activity, trackerException);
+            App.displayError(activity, trackerException);
         }
         if (swipeRefreshLayout != null) {
             swipeRefreshLayout.setRefreshing(false);

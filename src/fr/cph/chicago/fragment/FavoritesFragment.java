@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p>
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,12 +34,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.activity.SearchActivity;
@@ -103,9 +102,9 @@ public class FavoritesFragment extends Fragment {
             busArrivals = savedInstanceState.getParcelableArrayList(getString(R.string.bundle_bus_arrivals));
             trainArrivals = savedInstanceState.getSparseParcelableArray(getString(R.string.bundle_train_arrivals));
             bikeStations = savedInstanceState.getParcelableArrayList(getString(R.string.bundle_bike_stations));
-            boolean boolTrain = ChicagoTracker.checkTrainData(activity);
+            boolean boolTrain = App.checkTrainData(activity);
             if (boolTrain) {
-                ChicagoTracker.checkBusData(activity);
+                App.checkBusData(activity);
             }
         }
         if (bikeStations == null) {
@@ -147,7 +146,7 @@ public class FavoritesFragment extends Fragment {
 
             listView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
-                public void onScrolled(final RecyclerView recyclerView, final int dx, final int dy){
+                public void onScrolled(final RecyclerView recyclerView, final int dx, final int dy) {
                     if (dy > 0 && floatingButton.isShown())
                         floatingButton.hide();
                     else if (dy < 0 && !floatingButton.isShown())
@@ -160,7 +159,7 @@ public class FavoritesFragment extends Fragment {
 
                 @Override
                 public void onRefresh() {
-                    Util.loadFavorites(FavoritesFragment.this, FavoritesFragment.class, activity);
+                    Util.loadFavorites(FavoritesFragment.this, FavoritesFragment.class);
                     // Google analytics
                     Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
                     Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
@@ -226,7 +225,7 @@ public class FavoritesFragment extends Fragment {
             startRefreshTask();
         }
         if (welcomeLayout != null) {
-            boolean hasFav = Preferences.hasFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN, ChicagoTracker.PREFERENCE_FAVORITES_BUS, ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
+            boolean hasFav = Preferences.hasFavorites(App.PREFERENCE_FAVORITES_TRAIN, App.PREFERENCE_FAVORITES_BUS, App.PREFERENCE_FAVORITES_BIKE);
             if (!hasFav) {
                 welcomeLayout.setVisibility(View.VISIBLE);
             } else {
@@ -255,9 +254,7 @@ public class FavoritesFragment extends Fragment {
      * @param trainArrivals the train arrivals list
      * @param busArrivals   the bus arrivals list
      */
-    // TODO handle result 3 booleans that indicate if the update failed or not
-    public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals, final List<BikeStation> bikeStations, final Boolean trainBoolean,
-                                 final Boolean busBoolean, final Boolean bikeBoolean, final Boolean networkAvailable) {
+    public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals, final List<BikeStation> bikeStations, final Boolean networkAvailable) {
         if (!networkAvailable) {
             Util.showNetworkErrorMessage(activity);
         } else {
@@ -285,8 +282,9 @@ public class FavoritesFragment extends Fragment {
      *
      * @param trackerException the exception
      */
+    // TODO remove the exception if not used
     public final void displayError(final TrackerException trackerException) {
-        ChicagoTracker.displayError(activity, trackerException);
+        Util.showNetworkErrorMessage(activity);
     }
 
     public final void setBikeStations(final List<BikeStation> bikeStations) {

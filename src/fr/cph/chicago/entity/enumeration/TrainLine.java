@@ -21,7 +21,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 
 /**
@@ -39,7 +39,7 @@ public enum TrainLine {
     PINK("Pink", "Pink", "Pink line", Color.rgb(204, 0, 102)),
     PURPLE("P", "Purple", "Purple line", Color.rgb(102, 0, 102)),
     RED("Red", "Red", "Red line", Color.rgb(240, 0, 0)),
-    YELLOW("Y", "Yellow", "Yellow line", ContextCompat.getColor(ChicagoTracker.getContext(), R.color.yellowLine)),
+    YELLOW("Y", "Yellow", "Yellow line", ContextCompat.getColor(App.getContext(), R.color.yellowLine)),
     NA("N/A", "N/A", "N/A line", Color.BLACK);
 
     /**

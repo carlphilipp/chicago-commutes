@@ -59,7 +59,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.entity.Bus;
@@ -110,7 +110,7 @@ public class BusMapActivity extends Activity {
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ChicagoTracker.checkBusData(this);
+        App.checkBusData(this);
         if (!this.isFinishing()) {
             setContentView(R.layout.activity_map);
             layout = (RelativeLayout) findViewById(R.id.map);

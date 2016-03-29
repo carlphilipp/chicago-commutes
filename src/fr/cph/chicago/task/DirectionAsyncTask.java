@@ -27,7 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BusBoundActivity;
 import fr.cph.chicago.activity.BusMapActivity;
@@ -142,7 +142,7 @@ public class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 			dialog.show();
 			dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), ViewGroup.LayoutParams.WRAP_CONTENT);
 		} else {
-			ChicagoTracker.displayError(activity, trackerException);
+			App.displayError(activity, trackerException);
 		}
 	}
 }

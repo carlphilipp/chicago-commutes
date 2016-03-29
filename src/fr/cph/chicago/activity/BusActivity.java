@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BusArrival;
@@ -75,7 +75,7 @@ public class BusActivity extends Activity {
     @Override
     protected final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ChicagoTracker.checkBusData(this);
+        App.checkBusData(this);
         if (!this.isFinishing()) {
             setContentView(R.layout.activity_bus);
 
@@ -218,7 +218,7 @@ public class BusActivity extends Activity {
                         }
                         arrivalView.setText(arrivalText);
                     } else {
-                        final TextView arrivalView = new TextView(ChicagoTracker.getContext());
+                        final TextView arrivalView = new TextView(App.getContext());
                         String arrivalText;
                         if (arrival.isDly()) {
                             arrivalText = arrival.getBusDestination() + ": Delay";
@@ -226,14 +226,14 @@ public class BusActivity extends Activity {
                             arrivalText = arrival.getBusDestination() + ": " + arrival.getTimeLeft();
                         }
                         arrivalView.setText(arrivalText);
-                        arrivalView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
+                        arrivalView.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey));
                         mapRes.put(destination, arrivalView);
                     }
                 }
             }
         } else {
-            final TextView arrivalView = new TextView(ChicagoTracker.getContext());
-            arrivalView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
+            final TextView arrivalView = new TextView(App.getContext());
+            arrivalView.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey));
             arrivalView.setText(getString(R.string.bus_activity_no_service));
             mapRes.put("", arrivalView);
         }
@@ -245,7 +245,7 @@ public class BusActivity extends Activity {
 
     private boolean isFavorite() {
         boolean isFavorite = false;
-        final List<String> favorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+        final List<String> favorites = Preferences.getBusFavorites(App.PREFERENCE_FAVORITES_BUS);
         for (final String favorite : favorites) {
             if (favorite.equals(busRouteId + "_" + busStopId + "_" + boundTitle)) {
                 isFavorite = true;
@@ -260,11 +260,11 @@ public class BusActivity extends Activity {
      */
     private void switchFavorite() {
         if (isFavorite) {
-            Util.removeFromBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+            Util.removeFromBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, App.PREFERENCE_FAVORITES_BUS);
             favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
             isFavorite = false;
         } else {
-            Util.addToBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+            Util.addToBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, App.PREFERENCE_FAVORITES_BUS);
             Log.i(TAG, "busRouteName: " + busRouteName);
             Preferences.addBusRouteNameMapping(String.valueOf(busStopId), busRouteName);
             Preferences.addBusStopNameMapping(String.valueOf(busStopId), busStopName);

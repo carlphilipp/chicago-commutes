@@ -25,7 +25,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
@@ -58,7 +58,7 @@ public final class TrainAdapter extends BaseAdapter {
 		final DataHolder dataHolder = DataHolder.getInstance();
 		final TrainData data = dataHolder.getTrainData();
 		this.stations = data.getStationsForLine(line);
-		this.context = ChicagoTracker.getContext();
+		this.context = App.getContext();
 		this.activity = activity;
 	}
 
@@ -82,7 +82,7 @@ public final class TrainAdapter extends BaseAdapter {
 		ViewHolder holder;
 		if (convertView == null) {
 			holder = new ViewHolder();
-			final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			final LayoutInflater vi = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = vi.inflate(R.layout.list_train, parent, false);
 
 			final TextView stationNameView = (TextView) convertView.findViewById(R.id.station_name_value);

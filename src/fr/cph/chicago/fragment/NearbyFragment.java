@@ -58,7 +58,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.NearbyAdapter;
@@ -122,8 +122,8 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ChicagoTracker.checkTrainData(activity);
-        ChicagoTracker.checkBusData(activity);
+        App.checkTrainData(activity);
+        App.checkBusData(activity);
         Util.trackScreen(getString(R.string.analytics_nearby_fragment));
     }
 
@@ -189,7 +189,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
     public final void displayError(@NonNull final TrackerException exceptionToBeThrown) {
         DataHolder.getInstance().setTrainData(null);
         DataHolder.getInstance().setBusData(null);
-        ChicagoTracker.displayError(activity, exceptionToBeThrown);
+        App.displayError(activity, exceptionToBeThrown);
     }
 
     @Override

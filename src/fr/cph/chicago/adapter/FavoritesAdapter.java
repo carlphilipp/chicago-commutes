@@ -51,7 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BikeStationActivity;
 import fr.cph.chicago.activity.BusActivity;
@@ -89,7 +89,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
     private static final String TAG = FavoritesAdapter.class.getSimpleName();
 
-    private static final int GREY_5 = ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5);
+    private static final int GREY_5 = ContextCompat.getColor(App.getContext(), R.color.grey_5);
 
     private Context context;
     private MainActivity activity;
@@ -100,7 +100,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     private int pixelsQuarter;
 
     public FavoritesAdapter(@NonNull final MainActivity activity) {
-        this.context = ChicagoTracker.getContext();
+        this.context = App.getContext();
 
         this.activity = activity;
         this.favorites = Favorites.getInstance();
@@ -122,7 +122,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
             super(view);
             this.mainLayout = (LinearLayout) view.findViewById(R.id.favorites_arrival_layout);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                this.mainLayout.setBackground(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.any_selector));
+                this.mainLayout.setBackground(ContextCompat.getDrawable(App.getContext(), R.drawable.any_selector));
             }
             this.buttonsLayout = (RelativeLayout) view.findViewById(R.id.favorites_buttons);
             this.favoriteImage = (ImageView) view.findViewById(R.id.favorites_icon);
@@ -176,7 +176,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
             public void onClick(final View v) {
                 // Start station activity
                 final Bundle extras = new Bundle();
-                final Intent intent = new Intent(ChicagoTracker.getContext(), StationActivity.class);
+                final Intent intent = new Intent(App.getContext(), StationActivity.class);
                 extras.putInt(activity.getString(R.string.bundle_train_stationId), stationId);
                 intent.putExtras(extras);
                 activity.startActivity(intent);
@@ -391,7 +391,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 for (final BusDetailsDTO busDetail : busDetailsDTOs) {
                     bounds.add(busDetail.getBound());
                 }
-                final Intent intent = new Intent(ChicagoTracker.getContext(), BusMapActivity.class);
+                final Intent intent = new Intent(App.getContext(), BusMapActivity.class);
                 final Bundle extras = new Bundle();
                 extras.putString(activity.getString(R.string.bundle_bus_route_id), busRoute.getId());
                 extras.putStringArray(activity.getString(R.string.bundle_bus_bounds), bounds.toArray(new String[bounds.size()]));
@@ -412,7 +412,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 if (!Util.isNetworkAvailable()) {
                     Util.showNetworkErrorMessage(activity);
                 } else if (bikeStation.getLatitude() != 0 && bikeStation.getLongitude() != 0) {
-                    final Intent intent = new Intent(ChicagoTracker.getContext(), BikeStationActivity.class);
+                    final Intent intent = new Intent(App.getContext(), BikeStationActivity.class);
                     final Bundle extras = new Bundle();
                     extras.putParcelable(activity.getString(R.string.bundle_bike_station), bikeStation);
                     intent.putExtras(extras);
@@ -492,14 +492,14 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         }
         if (data == null) {
             amountBike.setText("?");
-            amountBike.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.orange));
+            amountBike.setTextColor(ContextCompat.getColor(App.getContext(), R.color.orange));
         } else {
             final String availableBikesText = String.valueOf(data);
             amountBike.setText(availableBikesText);
             if (data == 0) {
-                amountBike.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.red));
+                amountBike.setTextColor(ContextCompat.getColor(App.getContext(), R.color.red));
             } else {
-                amountBike.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.green));
+                amountBike.setTextColor(ContextCompat.getColor(App.getContext(), R.color.green));
             }
         }
         amountBike.setLayoutParams(availableValueParam);
@@ -559,14 +559,14 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
      * Refresh date update
      */
     public final void refreshUpdated() {
-        ChicagoTracker.modifyLastUpdate(Calendar.getInstance().getTime());
+        App.modifyLastUpdate(Calendar.getInstance().getTime());
     }
 
     /**
      * Refresh udpdated view
      */
     public final void refreshUpdatedView() {
-        final Date lastUpdate = ChicagoTracker.getLastUpdate();
+        final Date lastUpdate = App.getLastUpdate();
         // FIXME What the hell? Did it ever worked?
         if (!String.valueOf(getLastUpdateInMinutes(lastUpdate)).equals(lastUpdate)) {
             // this.lastUpdate = String.valueOf(getLastUpdateInMinutes(lastUpdate));
@@ -623,7 +623,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         @Override
         protected final void onPostExecute(final BusStop busStop) {
             if (trackerException == null) {
-                final Intent intent = new Intent(ChicagoTracker.getContext(), BusActivity.class);
+                final Intent intent = new Intent(App.getContext(), BusActivity.class);
                 final Bundle extras = new Bundle();
                 extras.putInt(activity.getString(R.string.bundle_bus_stop_id), busStop.getId());
                 extras.putString(activity.getString(R.string.bundle_bus_stop_name), busStop.getName());
@@ -638,7 +638,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 activity.startActivity(intent);
             } else {
-                ChicagoTracker.displayError(activity, trackerException);
+                App.displayError(activity, trackerException);
             }
         }
     }

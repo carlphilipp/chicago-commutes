@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BikeStation;
@@ -62,7 +62,7 @@ public class BaseActivity extends Activity {
     public void displayError(@NonNull final TrackerException exceptionToBeThrown) {
         DataHolder.getInstance().setTrainData(null);
         DataHolder.getInstance().setBusData(null);
-        ChicagoTracker.displayError(this, exceptionToBeThrown);
+        App.displayError(this, exceptionToBeThrown);
     }
 
     /**
@@ -71,20 +71,19 @@ public class BaseActivity extends Activity {
      * @throws ParserException the exception
      */
     public void loadFavorites() throws ParserException {
-        Util.loadFavorites(this, BaseActivity.class, this);
+        Util.loadFavorites(this, BaseActivity.class);
         trackWithGoogleAnalytics();
     }
 
     /**
-     * Called via reflection from CtaConnectTask. It load arrivals data into ChicagoTracker object. Update
+     * Called via reflection from CtaConnectTask. It load arrivals data into App object. Update
      * last update time. Start main activity
      *
      * @param trainArrivals list of train arrivals
      * @param busArrivals   list of bus arrivals
      */
-    public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals, final List<BikeStation> bikeStations, final Boolean trainBoolean,
-                                 final Boolean busBoolean, final Boolean bikeBoolean, final Boolean networkAvailable) {
-        ChicagoTracker.modifyLastUpdate(Calendar.getInstance().getTime());
+    public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals, final List<BikeStation> bikeStations, final Boolean networkAvailable) {
+        App.modifyLastUpdate(Calendar.getInstance().getTime());
         startMainActivity(trainArrivals, busArrivals);
     }
 

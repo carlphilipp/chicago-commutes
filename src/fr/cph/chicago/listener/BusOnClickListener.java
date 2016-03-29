@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BusMapActivity;
 import fr.cph.chicago.activity.MainActivity;
@@ -101,7 +101,7 @@ public class BusOnClickListener implements OnClickListener {
                         for (final BusArrival arrival : arrivals) {
                             if (position == i) {
                                 // Follow a bus in google map view
-                                final Intent intent = new Intent(ChicagoTracker.getContext(), BusMapActivity.class);
+                                final Intent intent = new Intent(App.getContext(), BusMapActivity.class);
                                 final Bundle extras = new Bundle();
                                 extras.putInt(activity.getString(R.string.bundle_bus_id), arrival.getBusId());
                                 extras.putString(activity.getString(R.string.bundle_bus_route_id), arrival.getRouteId());
@@ -118,7 +118,7 @@ public class BusOnClickListener implements OnClickListener {
                         for (final Entry<String, List<BusArrival>> stringListEntry : mapBusArrivals.entrySet()) {
                             bounds.add(stringListEntry.getKey());
                         }
-                        final Intent intent = new Intent(ChicagoTracker.getContext(), BusMapActivity.class);
+                        final Intent intent = new Intent(App.getContext(), BusMapActivity.class);
                         final Bundle extras = new Bundle();
                         extras.putString(activity.getString(R.string.bundle_bus_route_id), busRoute.getId());
                         extras.putStringArray(activity.getString(R.string.bundle_bus_bounds), bounds.toArray(new String[bounds.size()]));

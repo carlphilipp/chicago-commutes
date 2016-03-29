@@ -32,7 +32,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
@@ -145,7 +145,7 @@ public class BikeStationActivity extends Activity {
     }
 
     private void drawData() {
-        final Context context = ChicagoTracker.getContext();
+        final Context context = App.getContext();
 
         final LinearLayout container = (LinearLayout) findViewById(R.id.favorites_bikes_list);
         final LinearLayout availableLayout = new LinearLayout(context);
@@ -205,7 +205,7 @@ public class BikeStationActivity extends Activity {
      * @return if the station is favorite
      */
     private boolean isFavorite() {
-        final List<String> favorites = Preferences.getBikeFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
+        final List<String> favorites = Preferences.getBikeFavorites(App.PREFERENCE_FAVORITES_BIKE);
         for (final String favorite : favorites) {
             if (Integer.valueOf(favorite) == bikeStation.getId()) {
                 return true;
@@ -224,10 +224,10 @@ public class BikeStationActivity extends Activity {
      */
     private void switchFavorite() {
         if (isFavorite) {
-            Util.removeFromBikeFavorites(bikeStation.getId(), ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
+            Util.removeFromBikeFavorites(bikeStation.getId(), App.PREFERENCE_FAVORITES_BIKE);
             isFavorite = false;
         } else {
-            Util.addToBikeFavorites(bikeStation.getId(), ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
+            Util.addToBikeFavorites(bikeStation.getId(), App.PREFERENCE_FAVORITES_BIKE);
             Preferences.addBikeRouteNameMapping(String.valueOf(bikeStation.getId()), bikeStation.getName());
             isFavorite = true;
         }
