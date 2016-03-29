@@ -291,8 +291,7 @@ public final class Preferences {
      * @return if a train is filtered
      */
     public static boolean getTrainFilter(@NonNull final Integer stationId, @NonNull final TrainLine line, @NonNull final TrainDirection direction) {
-        final Context context = App.getContext();
-        final SharedPreferences sharedPref = context.getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+        final SharedPreferences sharedPref = App.getContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
         return sharedPref.getBoolean(String.valueOf(stationId) + "_" + line + "_" + direction, true);
     }
 
