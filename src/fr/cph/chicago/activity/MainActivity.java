@@ -157,11 +157,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return true;
             }
         });
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            toolbar.setElevation(4);
-        }
         toolbar.inflateMenu(R.menu.main);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            toolbar.setElevation(4);
             getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.primaryColorDarker));
         }
     }
@@ -271,13 +269,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onSaveInstanceState(final Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putInt(SELECTED_ID, currentPosition);
-        savedInstanceState.putString("title", title);
+        savedInstanceState.putString(getString(R.string.bundle_title), title);
     }
 
     @Override
     public void onRestoreInstanceState(final Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        title = savedInstanceState.getString("title");
+        title = savedInstanceState.getString(getString(R.string.bundle_title));
         currentPosition = savedInstanceState.getInt(SELECTED_ID);
     }
 

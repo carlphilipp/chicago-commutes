@@ -54,8 +54,6 @@ public class BikeStationActivity extends Activity {
 
     private static final String TAG = BikeStationActivity.class.getSimpleName();
 
-    private ImageView streetViewImage;
-    private TextView streetViewText;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ImageView favoritesImage;
 
@@ -82,8 +80,8 @@ public class BikeStationActivity extends Activity {
 
                 isFavorite = isFavorite();
 
-                streetViewImage = (ImageView) findViewById(R.id.activity_bike_station_streetview_image);
-                streetViewText = (TextView) findViewById(R.id.activity_bike_station_steetview_text);
+                final ImageView streetViewImage = (ImageView) findViewById(R.id.activity_bike_station_streetview_image);
+                final TextView streetViewText = (TextView) findViewById(R.id.activity_bike_station_steetview_text);
 
                 // Call google street api to load image
                 new DisplayGoogleStreetPictureTask(this, streetViewImage, streetViewText).execute(latitude, longitude);

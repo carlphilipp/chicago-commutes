@@ -70,7 +70,7 @@ public class TrainMapActivity extends Activity {
     private Marker selectedMarker;
     private Map<Marker, View> views;
     private RelativeLayout layout;
-    private String line;
+    String line;
     private Map<Marker, Boolean> status;
     private List<Marker> markers;
     private TrainData trainData;
@@ -289,7 +289,7 @@ public class TrainMapActivity extends Activity {
                     title2.setText(title);
 
                     final TextView color = (TextView) view.findViewById(R.id.route_color_value);
-                    color.setBackgroundColor(TrainLine.fromXmlString(TrainMapActivity.this.line).getColor());
+                    color.setBackgroundColor(TrainLine.fromXmlString(line).getColor());
 
                     views.put(marker, view);
                 }
@@ -310,7 +310,7 @@ public class TrainMapActivity extends Activity {
                 public void onMapReady(final GoogleMap googleMap) {
                     final PolylineOptions poly = new PolylineOptions();
                     poly.width(7f);
-                    poly.geodesic(true).color(TrainLine.fromXmlString(TrainMapActivity.this.line).getColor());
+                    poly.geodesic(true).color(TrainLine.fromXmlString(line).getColor());
                     for (final Position position : positions) {
                         final LatLng point = new LatLng(position.getLatitude(), position.getLongitude());
                         poly.add(point);

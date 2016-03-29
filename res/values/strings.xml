@@ -36,6 +36,7 @@
 	<string name="bundle_train_line">line</string>
 	<string name="bundle_bike_stations">bikeStations</string>
 	<string name="bundle_train_stationId">stationId</string>
+    <string name="bundle_title">title</string>
 
 	<!-- Preferences -->
 	<string name="preferences_cta_train">cta_train</string>

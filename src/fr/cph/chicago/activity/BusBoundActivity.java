@@ -53,7 +53,6 @@ import fr.cph.chicago.entity.BusPattern;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.PatternPoint;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.fragment.GoogleMapAbility;
 import fr.cph.chicago.task.BusBoundAsyncTask;
 import fr.cph.chicago.task.LoadBusPatternTask;
 import fr.cph.chicago.util.Util;
@@ -64,10 +63,9 @@ import fr.cph.chicago.util.Util;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
+public class BusBoundActivity extends ListActivity {
 
     private MapFragment mapFragment;
-    private GoogleMap googleMap;
     private LinearLayout layout;
     private String busRouteId;
     private String busRouteName;
@@ -178,27 +176,23 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
     @Override
     public final void onStop() {
         super.onStop();
-        googleMap = null;
     }
 
     @Override
     public final void onResume() {
         super.onResume();
-        if (googleMap == null) {
-            mapFragment.getMapAsync(new OnMapReadyCallback() {
-                @Override
-                public void onMapReady(final GoogleMap googleMap) {
-                    BusBoundActivity.this.googleMap = googleMap;
-                    googleMap.getUiSettings().setMyLocationButtonEnabled(false);
-                    googleMap.getUiSettings().setZoomControlsEnabled(false);
-                    if (Util.isNetworkAvailable()) {
-                        new LoadBusPatternTask(BusBoundActivity.this, mapFragment, busRouteId, boundTitle, false).execute();
-                    } else {
-                        Util.showNetworkErrorMessage(layout);
-                    }
+        mapFragment.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(final GoogleMap googleMap) {
+                googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+                googleMap.getUiSettings().setZoomControlsEnabled(false);
+                if (Util.isNetworkAvailable()) {
+                    new LoadBusPatternTask(BusBoundActivity.this, mapFragment, busRouteId, boundTitle, false).execute();
+                } else {
+                    Util.showNetworkErrorMessage(layout);
                 }
-            });
-        }
+            }
+        });
     }
 
     @Override
@@ -223,46 +217,44 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
         this.busStops = busStops;
     }
 
-    @Override
-    public void setGoogleMap(@NonNull final GoogleMap googleMap) {
-        this.googleMap = googleMap;
-    }
-
     public void drawPattern(@NonNull final BusPattern pattern) {
-        if (googleMap != null) {
-            final List<Marker> markers = new ArrayList<>();
-            final PolylineOptions poly = new PolylineOptions();
-            poly.geodesic(true).color(Color.BLACK);
-            poly.width(7f);
-            Marker marker;
-            for (final PatternPoint patternPoint : pattern.getPoints()) {
-                final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
-                poly.add(point);
-                marker = googleMap.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName()).snippet(String.valueOf(patternPoint.getSequence())));
-                markers.add(marker);
-                marker.setVisible(false);
-            }
-            googleMap.addPolyline(poly);
+        mapFragment.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(final GoogleMap googleMap) {
+                final List<Marker> markers = new ArrayList<>();
+                final PolylineOptions poly = new PolylineOptions();
+                poly.geodesic(true).color(Color.BLACK);
+                poly.width(7f);
+                Marker marker;
+                for (final PatternPoint patternPoint : pattern.getPoints()) {
+                    final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
+                    poly.add(point);
+                    marker = googleMap.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName()).snippet(String.valueOf(patternPoint.getSequence())));
+                    markers.add(marker);
+                    marker.setVisible(false);
+                }
+                googleMap.addPolyline(poly);
 
-            googleMap.setOnCameraChangeListener(new OnCameraChangeListener() {
-                private float currentZoom = -1;
+                googleMap.setOnCameraChangeListener(new OnCameraChangeListener() {
+                    private float currentZoom = -1;
 
-                @Override
-                public void onCameraChange(final CameraPosition pos) {
-                    if (pos.zoom != currentZoom) {
-                        currentZoom = pos.zoom;
-                        if (currentZoom >= 14) {
-                            for (final Marker marker : markers) {
-                                marker.setVisible(true);
-                            }
-                        } else {
-                            for (final Marker marker : markers) {
-                                marker.setVisible(false);
+                    @Override
+                    public void onCameraChange(final CameraPosition pos) {
+                        if (pos.zoom != currentZoom) {
+                            currentZoom = pos.zoom;
+                            if (currentZoom >= 14) {
+                                for (final Marker marker : markers) {
+                                    marker.setVisible(true);
+                                }
+                            } else {
+                                for (final Marker marker : markers) {
+                                    marker.setVisible(false);
+                                }
                             }
                         }
                     }
-                }
-            });
-        }
+                });
+            }
+        });
     }
 }
