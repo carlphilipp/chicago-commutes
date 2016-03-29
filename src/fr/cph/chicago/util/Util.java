@@ -336,10 +336,16 @@ public final class Util {
         return Boolean.parseBoolean(number);
     }
 
-    public static void loadFavorites(@NonNull final Object instance, @NonNull final Class<?> clazz) {
+    public static void loadTrainBusFavorites(@NonNull final Object instance, @NonNull final Class<?> clazz) {
         final MultiValuedMap<String, String> paramTrain = Util.getFavoritesTrainParams();
         final MultiValuedMap<String, String> paramBus = Util.getFavoritesBusParams();
-        new GlobalConnectTask(instance, clazz, paramTrain, paramBus).execute();
+        new GlobalConnectTask(instance, clazz, paramTrain, paramBus, false).execute();
+    }
+
+    public static void loadAllFavorites(@NonNull final Object instance, @NonNull final Class<?> clazz) {
+        final MultiValuedMap<String, String> paramTrain = Util.getFavoritesTrainParams();
+        final MultiValuedMap<String, String> paramBus = Util.getFavoritesBusParams();
+        new GlobalConnectTask(instance, clazz, paramTrain, paramBus, true).execute();
     }
 
     @NonNull

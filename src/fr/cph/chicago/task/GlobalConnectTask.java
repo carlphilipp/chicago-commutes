@@ -20,17 +20,6 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.SparseArray;
-
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map.Entry;
-
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.DivvyConnect;
 import fr.cph.chicago.data.DataHolder;
@@ -49,10 +38,18 @@ import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.json.JsonParser;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.XmlParser;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map.Entry;
 
 import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
 import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
-
 
 /**
  * CTA connect task
@@ -81,6 +78,7 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
     private TrainData train;
     private TrackerException trackerException, trackerBusException, trackerBikeException;
 
+    private boolean loadBike;
     private boolean networkAvailable;
 
     /**
@@ -93,14 +91,13 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
      * @throws ParserException the parser exception
      */
     // TODO remove some of the trainParams as always the same are used
-    public GlobalConnectTask(@NonNull final Object instance,
-                             @NonNull final Class<?> clazz,
-                             @NonNull final MultiValuedMap<String, String> trainParams,
-                             @NonNull final MultiValuedMap<String, String> busParams) {
+    public GlobalConnectTask(@NonNull final Object instance, @NonNull final Class<?> clazz, @NonNull final MultiValuedMap<String, String> trainParams,
+        @NonNull final MultiValuedMap<String, String> busParams, final boolean loadBike) {
         this.instance = instance;
         this.clazz = clazz;
         this.trainParams = trainParams;
         this.busParams = busParams;
+        this.loadBike = loadBike;
 
         this.train = DataHolder.getInstance().getTrainData();
 
@@ -118,7 +115,9 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
         if (networkAvailable) {
             loadTrains();
             loadBuses();
-            loadBikes();
+            if (loadBike) {
+                loadBikes();
+            }
             return true;
         } else {
             return false;
@@ -245,12 +244,13 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
     @Override
     protected final void onPostExecute(final Boolean success) {
         try {
-            if (success || !networkAvailable) {
-                clazz.getMethod("reloadData", SparseArray.class, List.class, List.class, Boolean.class).invoke(instance, trainArrivals, busArrivals, bikeStations, networkAvailable);
+            if (success) {
+                clazz.getMethod("reloadData", SparseArray.class, List.class, List.class, Boolean.class)
+                    .invoke(instance, trainArrivals, busArrivals, bikeStations, networkAvailable);
             } else {
-                final TrackerException ex = trackerBusException == null ? (trackerBikeException == null ? trackerException : trackerBikeException) : trackerBusException;
+                final TrackerException ex =
+                    trackerBusException == null ? (trackerBikeException == null ? trackerException : trackerBikeException) : trackerBusException;
                 if (ex != null) {
-                    // because both can be null
                     Log.e(TAG, ex.getMessage(), ex);
                 }
                 clazz.getMethod("displayError", TrackerException.class).invoke(instance, ex);

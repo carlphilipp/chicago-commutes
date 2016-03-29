@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         favoritesFragment.startRefreshing();
                     }
 
-                    Util.loadFavorites(favoritesFragment, FavoritesFragment.class);
+                    Util.loadAllFavorites(favoritesFragment, FavoritesFragment.class);
 
                     // Google analytics
                     Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);

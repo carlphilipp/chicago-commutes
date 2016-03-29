@@ -21,21 +21,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.SparseArray;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.task.LoadLocalDataTask;
-import fr.cph.chicago.util.Util;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 /**
  * This class represents the base activity of the application It will load the loading screen and/or the main
@@ -53,7 +50,6 @@ public class BaseActivity extends Activity {
         new LoadLocalDataTask(this).execute();
     }
 
-
     /**
      * Display error. Set train and bus data to null before running the error activity
      *
@@ -63,16 +59,6 @@ public class BaseActivity extends Activity {
         DataHolder.getInstance().setTrainData(null);
         DataHolder.getInstance().setBusData(null);
         App.displayError(this, exceptionToBeThrown);
-    }
-
-    /**
-     * Connect to CTA API and get arrivals trains and buses from favorites
-     *
-     * @throws ParserException the exception
-     */
-    public void loadFavorites() throws ParserException {
-        Util.loadFavorites(this, BaseActivity.class);
-        trackWithGoogleAnalytics();
     }
 
     /**
@@ -104,10 +90,5 @@ public class BaseActivity extends Activity {
             finish();
             startActivity(intent);
         }
-    }
-
-    private void trackWithGoogleAnalytics() {
-        Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
-        Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
     }
 }

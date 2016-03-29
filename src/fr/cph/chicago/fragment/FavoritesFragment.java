@@ -159,7 +159,7 @@ public class FavoritesFragment extends Fragment {
 
                 @Override
                 public void onRefresh() {
-                    Util.loadFavorites(FavoritesFragment.this, FavoritesFragment.class);
+                    Util.loadAllFavorites(FavoritesFragment.this, FavoritesFragment.class);
                     // Google analytics
                     Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
                     Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);

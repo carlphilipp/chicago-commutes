@@ -17,6 +17,7 @@
 package fr.cph.chicago.data;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 /**
  * Class that hold bus and train data. Singleton
@@ -73,7 +74,7 @@ public class DataHolder {
      *
      * @param data train data
      */
-    public final void setTrainData(@NonNull final TrainData data) {
+    public final void setTrainData(@Nullable final TrainData data) {
         this.trainData = data;
     }
 
@@ -92,7 +93,7 @@ public class DataHolder {
      *
      * @param busData bus data
      */
-    public final void setBusData(@NonNull final BusData busData) {
+    public final void setBusData(@Nullable final BusData busData) {
         this.busData = busData;
     }
 }

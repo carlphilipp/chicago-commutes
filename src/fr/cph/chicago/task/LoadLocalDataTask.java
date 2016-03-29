@@ -18,12 +18,12 @@ package fr.cph.chicago.task;
 
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-
+import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BaseActivity;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
-import fr.cph.chicago.exception.ParserException;
+import fr.cph.chicago.util.Util;
 
 /**
  * Load Bus and train data into DataHolder. The data are load in a sequence mode. It means that if one of
@@ -59,11 +59,13 @@ public class LoadLocalDataTask extends AsyncTask<Void, String, Void> {
         final DataHolder dataHolder = DataHolder.getInstance();
         dataHolder.setBusData(busData);
         dataHolder.setTrainData(trainData);
-        try {
-            // Load favorites data
-            activity.loadFavorites();
-        } catch (final ParserException e) {
-            activity.displayError(e);
-        }
+        // Load favorites data
+        Util.loadTrainBusFavorites(activity, BaseActivity.class);
+        trackWithGoogleAnalytics();
+    }
+
+    private void trackWithGoogleAnalytics() {
+        Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
+        Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
     }
 }
