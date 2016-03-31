@@ -60,7 +60,7 @@ public class LoadLocalDataTask extends AsyncTask<Void, String, Void> {
         dataHolder.setBusData(busData);
         dataHolder.setTrainData(trainData);
         // Load favorites data
-        Util.loadTrainBusFavorites(activity, BaseActivity.class);
+        Util.loadTrainFavorites(activity, BaseActivity.class);
         trackWithGoogleAnalytics();
     }
 

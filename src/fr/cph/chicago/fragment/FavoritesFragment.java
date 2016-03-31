@@ -253,27 +253,26 @@ public class FavoritesFragment extends Fragment {
      * @param trainArrivals the train arrivals list
      * @param busArrivals   the bus arrivals list
      */
-    public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals, final List<BikeStation> bikeStations, final Boolean networkAvailable) {
-        if (!networkAvailable) {
-            Util.showNetworkErrorMessage(activity);
-        } else {
-            // Put into intent new bike stations data
-            activity.getIntent().putParcelableArrayListExtra(getString(R.string.bundle_bike_stations), (ArrayList<BikeStation>) bikeStations);
+    public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals, final List<BikeStation> bikeStations, final Boolean error) {
+        // Put into intent new bike stations data
+        activity.getIntent().putParcelableArrayListExtra(getString(R.string.bundle_bike_stations), (ArrayList<BikeStation>) bikeStations);
 
-            favoritesAdapter.setArrivalsAndBikeStations(trainArrivals, busArrivals, bikeStations);
-            favoritesAdapter.refreshUpdated();
-            favoritesAdapter.refreshUpdatedView();
-            favoritesAdapter.notifyDataSetChanged();
-            this.bikeStations = bikeStations;
-            // Highlight background
-            rootView.setBackgroundResource(R.drawable.highlight_selector);
-            rootView.postDelayed(new Runnable() {
-                public void run() {
-                    rootView.setBackgroundResource(R.drawable.bg_selector);
-                }
-            }, 100);
-        }
+        favoritesAdapter.setArrivalsAndBikeStations(trainArrivals, busArrivals, bikeStations);
+        favoritesAdapter.refreshUpdated();
+        favoritesAdapter.refreshUpdatedView();
+        favoritesAdapter.notifyDataSetChanged();
+        this.bikeStations = bikeStations;
+        // Highlight background
+        rootView.setBackgroundResource(R.drawable.highlight_selector);
+        rootView.postDelayed(new Runnable() {
+            public void run() {
+                rootView.setBackgroundResource(R.drawable.bg_selector);
+            }
+        }, 100);
         stopRefreshing();
+        if (error) {
+            Util.showMessage(activity, "Oops something went wrong!");
+        }
     }
 
     /**
@@ -281,9 +280,10 @@ public class FavoritesFragment extends Fragment {
      *
      * @param message the message
      */
-    // TODO remove the exception if not used
+    // TODO remove the message if not used
     public final void displayError(final String message) {
-        Util.showNetworkErrorMessage(activity);
+        Util.showMessage(activity, message);
+        stopRefreshing();
     }
 
     public final void setBikeStations(final List<BikeStation> bikeStations) {

@@ -78,7 +78,7 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
     private List<BikeStation> bikeStations;
 
     private TrainData train;
-    private TrackerException trackerException, trackerBusException, trackerBikeException;
+    private TrackerException trackerTrainException, trackerBusException, trackerBikeException;
 
     private boolean loadBike;
     private boolean networkAvailable;
@@ -123,10 +123,8 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
             if (loadBike) {
                 loadBikes();
             }
-            return true;
-        } else {
-            return false;
         }
+        return networkAvailable;
     }
 
     private void loadTrains() {
@@ -189,7 +187,8 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
             }
 
         } catch (final ConnectException | ParserException e) {
-            this.trackerException = e;
+            Log.e(TAG, e.getMessage());
+            this.trackerTrainException = e;
         }
     }
 
@@ -226,6 +225,7 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
                 busArrivals.addAll(xmlParser.parseBusArrivals(xmlResult));
             }
         } catch (final ConnectException | ParserException e) {
+            Log.e(TAG, e.getMessage());
             trackerBusException = e;
         }
     }
@@ -237,6 +237,7 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
             bikeStations = jsonParser.parseStations(bikeContent);
             Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
         } catch (final ParserException | ConnectException e) {
+            Log.e(TAG, e.getMessage());
             trackerBikeException = e;
         }
     }
@@ -247,21 +248,20 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
     }
 
     @Override
-    protected final void onPostExecute(final Boolean success) {
+    protected final void onPostExecute(final Boolean networkAvailable) {
         try {
-            if (success) {
-                clazz.getMethod("reloadData", SparseArray.class, List.class, List.class, Boolean.class).invoke(instance, trainArrivals, busArrivals, bikeStations, networkAvailable);
+            boolean error = false;
+            if (trackerBikeException != null || trackerBusException != null || trackerTrainException != null) {
+                error = true;
+            }
+            if (networkAvailable) {
+                clazz.getMethod("reloadData", SparseArray.class, List.class, List.class, Boolean.class).invoke(instance, trainArrivals, busArrivals, bikeStations, error);
             } else {
-                // TODO modify that
-                final TrackerException ex = trackerBusException == null ? (trackerBikeException == null ? trackerException : trackerBikeException) : trackerBusException;
-                if (ex != null) {
-                    Log.e(TAG, ex.getMessage(), ex);
-                }
                 clazz.getMethod("displayError", String.class).invoke(instance, Util.NETWORK_ERROR);
             }
         } catch (final Exception e) {
             Log.e(TAG, e.getMessage(), e);
         }
-        super.onPostExecute(success);
+        super.onPostExecute(networkAvailable);
     }
 }

@@ -68,7 +68,7 @@ public class BaseActivity extends Activity {
      * @param trainArrivals list of train arrivals
      * @param busArrivals   list of bus arrivals
      */
-    public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals, final List<BikeStation> bikeStations, final Boolean networkAvailable) {
+    public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals, final List<BikeStation> bikeStations, final Boolean error) {
         App.modifyLastUpdate(Calendar.getInstance().getTime());
         startMainActivity(trainArrivals, busArrivals);
     }
