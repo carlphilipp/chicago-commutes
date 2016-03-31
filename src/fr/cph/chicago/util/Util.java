@@ -85,9 +85,9 @@ public final class Util {
 
     public static final String NETWORK_ERROR = "No network connection detected!";
 
-    private static final String ADDING_TO_FAVORITES = "Adding to favorites";
+    private static final String ADDED_TO_FAVORITES = "Added to favorites!";
 
-    private static final String REMOVING_FROM_FAVORITES = "Removing from favorites";
+    private static final String REMOVED_FROM_FAVORITES = "Removed from favorites!";
 
     public static int generateViewId() {
         for (; ; ) {
@@ -126,11 +126,12 @@ public final class Util {
      * @param stationId  the station id
      * @param preference the preference
      */
-    public static void addToTrainFavorites(@NonNull final Integer stationId, @NonNull final String preference) {
+    public static void addToTrainFavorites(@NonNull final Integer stationId, @NonNull final String preference, @NonNull final View view) {
         final List<Integer> favorites = Preferences.getTrainFavorites(preference);
         if (!favorites.contains(stationId)) {
             favorites.add(stationId);
             Preferences.saveTrainFavorites(App.PREFERENCE_FAVORITES_TRAIN, favorites);
+            showSnackBar(view, ADDED_TO_FAVORITES);
         }
     }
 
@@ -140,10 +141,11 @@ public final class Util {
      * @param stationId  the station id
      * @param preference the preference
      */
-    public static void removeFromTrainFavorites(@NonNull final Integer stationId, @NonNull final String preference) {
+    public static void removeFromTrainFavorites(@NonNull final Integer stationId, @NonNull final String preference, @NonNull final View view) {
         final List<Integer> favorites = Preferences.getTrainFavorites(preference);
         favorites.remove(stationId);
         Preferences.saveTrainFavorites(App.PREFERENCE_FAVORITES_TRAIN, favorites);
+        showSnackBar(view, REMOVED_FROM_FAVORITES);
     }
 
     /**
@@ -154,11 +156,12 @@ public final class Util {
      * @param bound      the bus bound
      * @param preference the preference
      */
-    public static void removeFromBusFavorites(@NonNull final String busRouteId, @NonNull final String busStopId, @NonNull final String bound, @NonNull final String preference) {
+    public static void removeFromBusFavorites(@NonNull final String busRouteId, @NonNull final String busStopId, @NonNull final String bound, @NonNull final String preference, @NonNull final View view) {
         final String id = busRouteId + "_" + busStopId + "_" + bound;
         final List<String> favorites = Preferences.getBusFavorites(preference);
         favorites.remove(id);
         Preferences.saveBusFavorites(App.PREFERENCE_FAVORITES_BUS, favorites);
+        showSnackBar(view, REMOVED_FROM_FAVORITES);
     }
 
     /**
@@ -169,27 +172,30 @@ public final class Util {
      * @param bound      the bus bound
      * @param preference the preference
      */
-    public static void addToBusFavorites(@NonNull final String busRouteId, @NonNull final String busStopId, @NonNull final String bound, @NonNull final String preference) {
+    public static void addToBusFavorites(@NonNull final String busRouteId, @NonNull final String busStopId, @NonNull final String bound, @NonNull final String preference, @NonNull final View view) {
         final String id = busRouteId + "_" + busStopId + "_" + bound;
         final List<String> favorites = Preferences.getBusFavorites(preference);
         if (!favorites.contains(id)) {
             favorites.add(id);
             Preferences.saveBusFavorites(App.PREFERENCE_FAVORITES_BUS, favorites);
+            showSnackBar(view, ADDED_TO_FAVORITES);
         }
     }
 
-    public static void addToBikeFavorites(final int stationId, @NonNull final String preference) {
+    public static void addToBikeFavorites(final int stationId, @NonNull final String preference, @NonNull final View view) {
         final List<String> favorites = Preferences.getBikeFavorites(preference);
         if (!favorites.contains(Integer.toString(stationId))) {
             favorites.add(Integer.toString(stationId));
             Preferences.saveBikeFavorites(App.PREFERENCE_FAVORITES_BIKE, favorites);
+            showSnackBar(view, ADDED_TO_FAVORITES);
         }
     }
 
-    public static void removeFromBikeFavorites(final int stationId, @NonNull final String preference) {
+    public static void removeFromBikeFavorites(final int stationId, @NonNull final String preference, @NonNull final View view) {
         final List<String> favorites = Preferences.getBikeFavorites(preference);
         favorites.remove(Integer.toString(stationId));
         Preferences.saveBikeFavorites(App.PREFERENCE_FAVORITES_BIKE, favorites);
+        showSnackBar(view, REMOVED_FROM_FAVORITES);
     }
 
     /**
@@ -311,7 +317,6 @@ public final class Util {
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(final GoogleMap googleMap) {
-                //googleFragment.setGoogleMap(googleMap);
                 if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)

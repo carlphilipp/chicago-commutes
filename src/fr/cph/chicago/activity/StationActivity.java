@@ -35,6 +35,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.apache.commons.collections4.MultiValuedMap;
@@ -77,6 +78,7 @@ import fr.cph.chicago.util.Util;
 public class StationActivity extends Activity {
 
     private ViewGroup viewGroup;
+    private ScrollView scrollView;
     private ImageView streetViewImage;
     private ImageView favoritesImage;
     private LinearLayout.LayoutParams paramsStop;
@@ -97,6 +99,8 @@ public class StationActivity extends Activity {
         if (!this.isFinishing()) {
 
             setContentView(R.layout.activity_station);
+
+            scrollView = (ScrollView) findViewById(R.id.scrollViewTrainStation);
 
             viewGroup = (ViewGroup) findViewById(android.R.id.content);
             // Load data
@@ -398,11 +402,11 @@ public class StationActivity extends Activity {
      */
     private void switchFavorite() {
         if (isFavorite) {
-            Util.removeFromTrainFavorites(stationId, App.PREFERENCE_FAVORITES_TRAIN);
+            Util.removeFromTrainFavorites(stationId, App.PREFERENCE_FAVORITES_TRAIN, scrollView);
             isFavorite = false;
             favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
         } else {
-            Util.addToTrainFavorites(stationId, App.PREFERENCE_FAVORITES_TRAIN);
+            Util.addToTrainFavorites(stationId, App.PREFERENCE_FAVORITES_TRAIN, scrollView);
             isFavorite = true;
             favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
         }

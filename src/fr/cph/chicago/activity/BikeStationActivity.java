@@ -224,10 +224,10 @@ public class BikeStationActivity extends Activity {
      */
     private void switchFavorite() {
         if (isFavorite) {
-            Util.removeFromBikeFavorites(bikeStation.getId(), App.PREFERENCE_FAVORITES_BIKE);
+            Util.removeFromBikeFavorites(bikeStation.getId(), App.PREFERENCE_FAVORITES_BIKE, swipeRefreshLayout);
             isFavorite = false;
         } else {
-            Util.addToBikeFavorites(bikeStation.getId(), App.PREFERENCE_FAVORITES_BIKE);
+            Util.addToBikeFavorites(bikeStation.getId(), App.PREFERENCE_FAVORITES_BIKE, swipeRefreshLayout);
             Preferences.addBikeRouteNameMapping(String.valueOf(bikeStation.getId()), bikeStation.getName());
             isFavorite = true;
         }

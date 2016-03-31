@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p>
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -67,6 +67,7 @@ public class BusActivity extends Activity {
     private double latitude, longitude;
     private boolean isFavorite;
 
+    private SwipeRefreshLayout scrollView;
     private ImageView streetViewImage, favoritesImage;
     private LinearLayout stopsView;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -78,6 +79,9 @@ public class BusActivity extends Activity {
         App.checkBusData(this);
         if (!this.isFinishing()) {
             setContentView(R.layout.activity_bus);
+
+            scrollView = (SwipeRefreshLayout) findViewById(R.id.activity_bus_stop_swipe_refresh_layout);
+
 
             if (busStopId == null || busRouteId == null || bound == null || busStopName == null || busRouteName == null || boundTitle == null) {
                 busStopId = getIntent().getExtras().getInt(getString(R.string.bundle_bus_stop_id));
@@ -260,11 +264,11 @@ public class BusActivity extends Activity {
      */
     private void switchFavorite() {
         if (isFavorite) {
-            Util.removeFromBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, App.PREFERENCE_FAVORITES_BUS);
+            Util.removeFromBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, App.PREFERENCE_FAVORITES_BUS, scrollView);
             favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
             isFavorite = false;
         } else {
-            Util.addToBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, App.PREFERENCE_FAVORITES_BUS);
+            Util.addToBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, App.PREFERENCE_FAVORITES_BUS, scrollView);
             Log.i(TAG, "busRouteName: " + busRouteName);
             Preferences.addBusRouteNameMapping(String.valueOf(busStopId), busRouteName);
             Preferences.addBusStopNameMapping(String.valueOf(busStopId), busStopName);
