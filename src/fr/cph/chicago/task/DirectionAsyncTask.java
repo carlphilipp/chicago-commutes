@@ -27,6 +27,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BusBoundActivity;
@@ -41,12 +49,6 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.XmlParser;
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import static fr.cph.chicago.connection.CtaRequestType.BUS_DIRECTION;
 
@@ -142,7 +144,7 @@ public class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 			dialog.show();
 			dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), ViewGroup.LayoutParams.WRAP_CONTENT);
 		} else {
-			App.startErrorActivity(activity, trackerException);
+			App.startErrorActivity(activity, trackerException.getMessage());
 		}
 	}
 }

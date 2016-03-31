@@ -34,7 +34,6 @@ import fr.cph.chicago.activity.ErrorActivity;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
-import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.util.Util;
 
 /**
@@ -127,12 +126,12 @@ public class App extends Application {
 	 * Function that is used all over the application. Display error message and provide a way to retry
 	 *
 	 * @param activity that is needed to lunch a new one
-	 * @param ex       the kind of exception. Used to display the error message
+	 * @param message  the message to display
 	 */
-	public static void startErrorActivity(@NonNull final Activity activity, @NonNull final TrackerException ex) {
+	public static void startErrorActivity(@NonNull final Activity activity, @NonNull final String message) {
 		final Intent intent = new Intent(activity, ErrorActivity.class);
 		final Bundle extras = new Bundle();
-		extras.putString(activity.getString(R.string.bundle_error), ex.getMessage());
+		extras.putString(activity.getString(R.string.bundle_error), message);
 		intent.putExtras(extras);
 		activity.finish();
 		activity.startActivity(intent);

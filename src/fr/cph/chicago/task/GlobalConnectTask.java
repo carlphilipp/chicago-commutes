@@ -252,11 +252,12 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
             if (success) {
                 clazz.getMethod("reloadData", SparseArray.class, List.class, List.class, Boolean.class).invoke(instance, trainArrivals, busArrivals, bikeStations, networkAvailable);
             } else {
+                // TODO modify that
                 final TrackerException ex = trackerBusException == null ? (trackerBikeException == null ? trackerException : trackerBikeException) : trackerBusException;
                 if (ex != null) {
                     Log.e(TAG, ex.getMessage(), ex);
                 }
-                clazz.getMethod("displayError", TrackerException.class).invoke(instance, ex);
+                clazz.getMethod("displayError", String.class).invoke(instance, Util.NETWORK_ERROR);
             }
         } catch (final Exception e) {
             Log.e(TAG, e.getMessage(), e);

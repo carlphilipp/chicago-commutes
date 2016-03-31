@@ -84,7 +84,7 @@ public final class Util {
 
     private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
 
-    private static final String NETWORK_ERROR = "No network connection detected!";
+    public static final String NETWORK_ERROR = "No network connection detected!";
 
     private static final String ADDING_TO_FAVORITES = "Adding to favorites";
 

@@ -49,7 +49,6 @@ import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.task.LoadBusAndBikeDataTask;
 import fr.cph.chicago.util.Util;
 
@@ -280,10 +279,10 @@ public class FavoritesFragment extends Fragment {
     /**
      * Display error
      *
-     * @param trackerException the exception
+     * @param message the message
      */
     // TODO remove the exception if not used
-    public final void displayError(final TrackerException trackerException) {
+    public final void displayError(final String message) {
         Util.showNetworkErrorMessage(activity);
     }
 

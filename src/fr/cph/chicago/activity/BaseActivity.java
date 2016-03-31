@@ -21,18 +21,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.SparseArray;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.task.LoadLocalDataTask;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
 
 /**
  * This class represents the base activity of the application It will load the loading screen and/or the main
@@ -55,10 +55,10 @@ public class BaseActivity extends Activity {
      *
      * @param exceptionToBeThrown the exception that has been thrown
      */
-    public void displayError(@NonNull final TrackerException exceptionToBeThrown) {
+    public void displayError(@NonNull final String message) {
         DataHolder.getInstance().setTrainData(null);
         DataHolder.getInstance().setBusData(null);
-        App.startErrorActivity(this, exceptionToBeThrown);
+        App.startErrorActivity(this, message);
     }
 
     /**
