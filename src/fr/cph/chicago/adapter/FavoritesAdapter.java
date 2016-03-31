@@ -638,7 +638,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 activity.startActivity(intent);
             } else {
-                App.displayError(activity, trackerException);
+                App.startErrorActivity(activity, trackerException);
             }
         }
     }

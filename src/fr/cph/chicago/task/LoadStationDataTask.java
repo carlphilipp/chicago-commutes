@@ -76,7 +76,7 @@ public class LoadStationDataTask extends AsyncTask<Void, Void, List<BusArrival>>
             activity.setBusArrivals(result);
             activity.drawArrivals();
         } else {
-            App.displayError(activity, trackerException);
+            App.startErrorActivity(activity, trackerException);
         }
         if (swipeRefreshLayout != null) {
             swipeRefreshLayout.setRefreshing(false);

@@ -142,7 +142,7 @@ public class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 			dialog.show();
 			dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), ViewGroup.LayoutParams.WRAP_CONTENT);
 		} else {
-			App.displayError(activity, trackerException);
+			App.startErrorActivity(activity, trackerException);
 		}
 	}
 }

@@ -129,9 +129,9 @@ public class App extends Application {
 	 * @param activity that is needed to lunch a new one
 	 * @param ex       the kind of exception. Used to display the error message
 	 */
-	public static void displayError(@NonNull final Activity activity, @NonNull final TrackerException ex) {
+	public static void startErrorActivity(@NonNull final Activity activity, @NonNull final TrackerException ex) {
 		final Intent intent = new Intent(activity, ErrorActivity.class);
-		Bundle extras = new Bundle();
+		final Bundle extras = new Bundle();
 		extras.putString(activity.getString(R.string.bundle_error), ex.getMessage());
 		intent.putExtras(extras);
 		activity.finish();

@@ -130,7 +130,7 @@ public class LoadTrainArrivalDataTask extends AsyncTask<MultiValuedMap<String, S
                 activity.drawAllArrivalsTrain(eta);
             }
         } else {
-            App.displayError(activity, trackerException);
+            App.startErrorActivity(activity, trackerException);
         }
         if (swipeRefreshLayout != null) {
             swipeRefreshLayout.setRefreshing(false);

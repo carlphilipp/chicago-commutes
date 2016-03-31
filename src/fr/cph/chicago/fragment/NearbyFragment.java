@@ -189,7 +189,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
     public final void displayError(@NonNull final TrackerException exceptionToBeThrown) {
         DataHolder.getInstance().setTrainData(null);
         DataHolder.getInstance().setBusData(null);
-        App.displayError(activity, exceptionToBeThrown);
+        App.startErrorActivity(activity, exceptionToBeThrown);
     }
 
     @Override

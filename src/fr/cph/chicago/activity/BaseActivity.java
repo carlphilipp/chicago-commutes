@@ -58,7 +58,7 @@ public class BaseActivity extends Activity {
     public void displayError(@NonNull final TrackerException exceptionToBeThrown) {
         DataHolder.getInstance().setTrainData(null);
         DataHolder.getInstance().setBusData(null);
-        App.displayError(this, exceptionToBeThrown);
+        App.startErrorActivity(this, exceptionToBeThrown);
     }
 
     /**
