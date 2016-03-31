@@ -57,6 +57,7 @@ public final class BikeAdapter extends BaseAdapter {
         if (this.bikeStations == null) {
             this.bikeStations = new ArrayList<>();
         }
+
     }
 
     @Override
