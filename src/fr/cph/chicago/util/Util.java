@@ -67,7 +67,6 @@ import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.fragment.GoogleMapAbility;
 import fr.cph.chicago.task.GlobalConnectTask;
 
 /**
@@ -308,11 +307,11 @@ public final class Util {
         return keys.get(random.nextInt(keys.size())).getColor();
     }
 
-    public static void centerMap(@NonNull final GoogleMapAbility googleFragment, @NonNull final SupportMapFragment mapFragment, @NonNull final Activity activity, @Nullable final Position position) {
+    public static void centerMap(@NonNull final SupportMapFragment mapFragment, @NonNull final Activity activity, @Nullable final Position position) {
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(final GoogleMap googleMap) {
-                googleFragment.setGoogleMap(googleMap);
+                //googleFragment.setGoogleMap(googleMap);
                 if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)

@@ -112,7 +112,7 @@ public class LoadNearbyTask extends AsyncTask<Void, Void, Void> implements Locat
     protected final void onPostExecute(final Void result) {
         fragment.loadArrivals(busStops, trainStations, bikeStations);
 
-        Util.centerMap(fragment, mapFragment, activity, position);
+        Util.centerMap(mapFragment, activity, position);
 
         if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
