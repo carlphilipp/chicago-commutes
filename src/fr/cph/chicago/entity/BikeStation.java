@@ -20,6 +20,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import lombok.Data;
  * @version 1
  */
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public final class BikeStation implements Parcelable {
     /**
      * Station id
