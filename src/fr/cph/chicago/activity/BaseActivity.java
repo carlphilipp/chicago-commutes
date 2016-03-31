@@ -53,7 +53,7 @@ public class BaseActivity extends Activity {
     /**
      * Display error. Set train and bus data to null before running the error activity
      *
-     * @param exceptionToBeThrown the exception that has been thrown
+     * @param message the message to pass to the error activity
      */
     public void displayError(@NonNull final String message) {
         DataHolder.getInstance().setTrainData(null);
