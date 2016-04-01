@@ -18,8 +18,7 @@ package fr.cph.chicago.connection;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
-import fr.cph.chicago.exception.ConnectException;
-import fr.cph.chicago.util.Util;
+
 import org.apache.commons.collections4.MultiValuedMap;
 
 import java.io.BufferedInputStream;
@@ -29,6 +28,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Map.Entry;
+
+import fr.cph.chicago.App;
+import fr.cph.chicago.R;
+import fr.cph.chicago.exception.ConnectException;
 
 /**
  * Class that build url and connect to CTA API
@@ -95,8 +98,8 @@ public class CtaConnect {
 	 * Private constructor
 	 */
 	private CtaConnect() {
-		CTA_TRAIN_KEY = Util.getProperty("cta.train.key");
-		CTA_BUS_KEY = Util.getProperty("cta.bus.key");
+        CTA_TRAIN_KEY = App.getContext().getString(R.string.cta_train_key);
+        CTA_BUS_KEY = App.getContext().getString(R.string.cta_bus_key);
 	}
 
 	/**

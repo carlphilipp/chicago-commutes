@@ -37,6 +37,16 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 23
+
+        def appProperties = rootProject.file('app.properties')
+        def props = new Properties()
+        props.load(new FileInputStream(appProperties))
+
+        resValue "string", "google_maps_api_key", props['google.streetmap.key']
+        resValue "string", "google_analytics_key", props['google.analytics']
+        resValue "string", "cta_train_key", props['cta.train.key']
+        resValue "string", "cta_bus_key", props['cta.bus.key']
+
         // For futur integration with Java 8. To try with the next build tool version
         //jackOptions {
         //    enabled true
