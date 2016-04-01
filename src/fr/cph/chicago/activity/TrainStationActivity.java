@@ -19,7 +19,6 @@ package fr.cph.chicago.activity;
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import fr.cph.chicago.R;
@@ -35,64 +34,54 @@ import fr.cph.chicago.util.Util;
  */
 public class TrainStationActivity extends ListActivity {
 
-	private TrainLine trainLine;
-	private String lineParam;
+    private TrainLine trainLine;
+    private String lineParam;
 
-	@Override
-	public final void onCreate(final Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		if (!this.isFinishing()) {
-			// Load data
-			if (trainLine == null && lineParam == null) {
-				lineParam = getIntent().getExtras().getString(getString(R.string.bundle_train_line));
-				trainLine = TrainLine.fromString(lineParam);
-			}
-			if (trainLine != null) {
-				setTitle(trainLine.toStringWithLine());
-			}
+    @Override
+    public final void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (!this.isFinishing()) {
+            // Load data
+            if (savedInstanceState != null) {
+                lineParam = savedInstanceState.getString(getString(R.string.bundle_train_line));
+            } else {
+                lineParam = getIntent().getExtras().getString(getString(R.string.bundle_train_line));
+            }
+            trainLine = TrainLine.fromString(lineParam);
+            setTitle(trainLine.toStringWithLine());
 
-			setContentView(R.layout.activity_train_station);
+            setContentView(R.layout.activity_train_station);
 
-			final FrameLayout container = (FrameLayout) findViewById(R.id.container);
-			container.getForeground().setAlpha(0);
+            final FrameLayout container = (FrameLayout) findViewById(R.id.container);
+            container.getForeground().setAlpha(0);
 
-			final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-			Util.setWindowsColor(this, toolbar, trainLine);
-			toolbar.setTitle(trainLine.toString() + " Line");
+            final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            Util.setWindowsColor(this, toolbar, trainLine);
+            toolbar.setTitle(trainLine.toString() + " Line");
 
-			toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-			toolbar.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					finish();
-				}
-			});
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+            toolbar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+                    finish();
+                }
+            });
 
-			final TrainAdapter ada = new TrainAdapter(trainLine, this);
-			setListAdapter(ada);
-		}
-	}
+            final TrainAdapter ada = new TrainAdapter(trainLine, this);
+            setListAdapter(ada);
+        }
+    }
 
-	@Override
-	public void onRestoreInstanceState(final Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
-		lineParam = savedInstanceState.getString(getString(R.string.bundle_train_line));
-		trainLine = TrainLine.fromString(lineParam);
-	}
+    @Override
+    public void onRestoreInstanceState(final Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        lineParam = savedInstanceState.getString(getString(R.string.bundle_train_line));
+        trainLine = TrainLine.fromString(lineParam);
+    }
 
-	@Override
-	public void onSaveInstanceState(final Bundle savedInstanceState) {
-		savedInstanceState.putString(getString(R.string.bundle_train_line), lineParam);
-		super.onSaveInstanceState(savedInstanceState);
-	}
-
-	@Override
-	public final boolean onOptionsItemSelected(final MenuItem item) {
-		switch (item.getItemId()) {
-		case android.R.id.home:
-			finish();
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
+    @Override
+    public void onSaveInstanceState(final Bundle savedInstanceState) {
+        savedInstanceState.putString(getString(R.string.bundle_train_line), lineParam);
+        super.onSaveInstanceState(savedInstanceState);
+    }
 }

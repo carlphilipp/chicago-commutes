@@ -96,14 +96,14 @@ public enum TrainLine {
      * @param text the text
      * @return a train line
      */
-    @Nullable
-    public static TrainLine fromString(@NonNull final String text) {
-        for (TrainLine b : TrainLine.values()) {
-            if (text.equalsIgnoreCase(b.name)) {
+    @NonNull
+    public static TrainLine fromString(@Nullable final String text) {
+        for (final TrainLine b : TrainLine.values()) {
+            if (b.name.equalsIgnoreCase(text)) {
                 return b;
             }
         }
-        return null;
+        return NA;
     }
 
     /**

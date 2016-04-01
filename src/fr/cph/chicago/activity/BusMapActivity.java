@@ -174,7 +174,7 @@ public class BusMapActivity extends Activity {
             public void onMapReady(final GoogleMap googleMap) {
                 googleMap.setInfoWindowAdapter(new InfoWindowAdapter() {
                     @Override
-                    public View getInfoWindow(Marker marker) {
+                    public View getInfoWindow(final Marker marker) {
                         return null;
                     }
 
