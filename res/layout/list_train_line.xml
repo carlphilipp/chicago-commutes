@@ -20,8 +20,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingBottom="14dp"
-                android:paddingLeft="@dimen/activity_train_line_padding_left"
-                android:paddingStart="@dimen/activity_train_line_padding_left"
+                android:paddingLeft="16dp"
+                android:paddingStart="16dp"
                 android:paddingRight="@dimen/activity_train_line_padding_right"
                 android:paddingEnd="@dimen/activity_train_line_padding_right"
                 android:paddingTop="14dp">
@@ -41,12 +41,12 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/station_color_value"
         android:layout_toEndOf="@+id/station_color_value"
-        android:paddingLeft="@dimen/activity_train_line_padding_left"
-        android:paddingStart="@dimen/activity_train_line_padding_left"
-        android:textColor="@color/grey_M_B"
+        android:paddingLeft="16dp"
+        android:paddingStart="16dp"
+        android:textColor="@color/black"
         android:textIsSelectable="false"
         android:textSize="16sp"
-        android:textStyle="bold"
+        android:textStyle="normal"
         android:layout_centerVertical="true"/>
 
 </RelativeLayout>
