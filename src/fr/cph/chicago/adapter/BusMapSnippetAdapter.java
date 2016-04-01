@@ -25,12 +25,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-
-import java.util.List;
-
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.entity.BusArrival;
+
+import java.util.List;
 
 /**
  * Adapter that will handle bus map
@@ -68,11 +67,10 @@ public class BusMapSnippetAdapter extends BaseAdapter {
 
     @Override
     public final View getView(final int position, View convertView, final ViewGroup parent) {
-
         final BusArrival arrival = (BusArrival) getItem(position);
         convertView = activity.getLayoutInflater().inflate(R.layout.list_map_train, parent, false);
-        TextView stationNameTextView = (TextView) convertView.findViewById(R.id.station_name);
-        stationNameTextView.setText(arrival.getStopName() + " " + position);
+        final TextView stationNameTextView = (TextView) convertView.findViewById(R.id.station_name);
+        stationNameTextView.setText(arrival.getStopName());
 
         if (!(position == arrivals.size() - 1 && "No service".equals(arrival.getTimeLeftDueDelay()))) {
             final TextView timeTextView = (TextView) convertView.findViewById(R.id.time);
