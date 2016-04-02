@@ -36,7 +36,7 @@ import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.listener.TrainOnClickListener;
-import fr.cph.chicago.util.Util;
+import fr.cph.chicago.util.LayoutUtil;
 
 /**
  * Adapter that will handle trains
@@ -100,7 +100,7 @@ public final class TrainAdapter extends BaseAdapter {
 
         holder.stationColorView.removeAllViews();
         for (final TrainLine tl : lines) {
-            final LinearLayout layout = Util.createColoredRoundForMultiple(tl);
+            final LinearLayout layout = LayoutUtil.createColoredRoundForMultiple(tl);
             holder.stationColorView.addView(layout);
         }
         convertView.setOnClickListener(new TrainOnClickListener(activity, station.getId(), lines));

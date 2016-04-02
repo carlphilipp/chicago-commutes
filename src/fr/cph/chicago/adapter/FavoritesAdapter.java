@@ -74,6 +74,7 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.listener.FavoritesTrainOnClickListener;
 import fr.cph.chicago.listener.GoogleMapOnClickListener;
+import fr.cph.chicago.util.LayoutUtil;
 import fr.cph.chicago.util.Util;
 
 import static java.util.Map.Entry;
@@ -205,7 +206,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                     final RelativeLayout left = new RelativeLayout(context);
                     left.setLayoutParams(leftParam);
 
-                    final LinearLayout lineIndication = Util.createColoredRoundForFavorites(trainLine);
+                    final LinearLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(trainLine);
                     int lineId = Util.generateViewId();
                     lineIndication.setId(lineId);
 
@@ -308,7 +309,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 final RelativeLayout left = new RelativeLayout(context);
                 left.setLayoutParams(leftParams);
 
-                final LinearLayout lineIndication = Util.createColoredRoundForFavorites(TrainLine.NA);
+                final LinearLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(TrainLine.NA);
                 int lineId = Util.generateViewId();
                 lineIndication.setId(lineId);
 
@@ -466,7 +467,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         final RelativeLayout left = new RelativeLayout(context);
         left.setLayoutParams(leftParam);
 
-        final LinearLayout lineIndication = Util.createColoredRoundForFavorites(TrainLine.NA);
+        final LinearLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(TrainLine.NA);
         int lineId = Util.generateViewId();
         lineIndication.setId(lineId);
 
