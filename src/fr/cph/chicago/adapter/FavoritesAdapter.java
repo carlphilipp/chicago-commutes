@@ -42,6 +42,15 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BikeStationActivity;
@@ -67,14 +76,6 @@ import fr.cph.chicago.listener.FavoritesTrainOnClickListener;
 import fr.cph.chicago.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.util.Util;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import static java.util.Map.Entry;
 
 /**
@@ -93,7 +94,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     private Context context;
     private MainActivity activity;
     private Favorites favorites;
-    //private String lastUpdate;
+    private String lastUpdate;
     private int pixels;
     private int pixelsHalf;
     private int pixelsQuarter;
@@ -112,6 +113,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     static class FavoritesViewHolder extends RecyclerView.ViewHolder {
         public LinearLayout mainLayout;
         public RelativeLayout buttonsLayout;
+        public TextView lastUpdateTextView;
         public TextView stationNameTextView;
         public ImageView favoriteImage;
         public Button detailsButton;
@@ -130,6 +132,8 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
             this.stationNameTextView.setLines(1);
             this.stationNameTextView.setEllipsize(TextUtils.TruncateAt.END);
 
+            this.lastUpdateTextView = (TextView) view.findViewById(R.id.last_update);
+
             this.detailsButton = (Button) view.findViewById(R.id.details_button);
             this.mapButton = (Button) view.findViewById(R.id.view_map_button);
         }
@@ -146,6 +150,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     public void onBindViewHolder(final FavoritesViewHolder holder, final int position) {
         resetData(holder);
         final Object object = favorites.getObject(position);
+        holder.lastUpdateTextView.setText(lastUpdate);
         if (object != null) {
             if (object instanceof Station) {
                 final Station station = (Station) object;
@@ -570,7 +575,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         final Date lastUpdate = App.getLastUpdate();
         // FIXME What the hell? Did it ever worked?
         if (!String.valueOf(getLastUpdateInMinutes(lastUpdate)).equals(lastUpdate)) {
-            // this.lastUpdate = String.valueOf(getLastUpdateInMinutes(lastUpdate));
+            this.lastUpdate = String.valueOf(getLastUpdateInMinutes(lastUpdate));
             this.notifyDataSetChanged();
         }
     }
