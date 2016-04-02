@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.activity.TrainStationActivity;
@@ -77,17 +78,13 @@ public final class TrainFragment extends Fragment {
         listView.setAdapter(ada);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
-                if (Util.isNetworkAvailable()) {
-                    final Intent intent = new Intent(activity, TrainStationActivity.class);
-                    final Bundle extras = new Bundle();
-                    final String line = TrainLine.values()[position].toString();
-                    extras.putString(activity.getString(R.string.bundle_train_line), line);
-                    intent.putExtras(extras);
-                    startActivity(intent);
-                } else {
-                    Util.showSettingsAlert(activity);
-                }
+            public void onItemClick(final AdapterView<?> parentView, final View childView, final int position, final long id) {
+                final Intent intent = new Intent(activity, TrainStationActivity.class);
+                final Bundle extras = new Bundle();
+                final String line = TrainLine.values()[position].toString();
+                extras.putString(activity.getString(R.string.bundle_train_line), line);
+                intent.putExtras(extras);
+                startActivity(intent);
             }
         });
         return rootView;

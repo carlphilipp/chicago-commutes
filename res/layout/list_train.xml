@@ -19,12 +19,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingBottom="@dimen/activity_train_line_padding_bottom"
-                android:paddingLeft="@dimen/activity_train_line_padding_left"
-                android:paddingStart="@dimen/activity_train_line_padding_left"
-                android:paddingRight="@dimen/activity_train_line_padding_right"
-                android:paddingEnd="@dimen/activity_train_line_padding_right"
-                android:paddingTop="@dimen/activity_train_line_padding_top">
+                android:paddingBottom="14dp"
+                android:paddingEnd="16dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingStart="16dp"
+                android:paddingTop="14dp">
 
     <TextView
         android:id="@+id/station_name_value"
@@ -35,14 +35,19 @@
         android:layout_centerVertical="true"
         android:textColor="@color/grey_M_B"
         android:textIsSelectable="false"
-        android:textStyle="bold"/>
+        android:layout_toLeftOf="@+id/station_color"
+        android:layout_toStartOf="@+id/station_color"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textSize="16sp"/>
 
     <LinearLayout
         android:id="@+id/station_color"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
         android:orientation="horizontal">
     </LinearLayout>
 

@@ -37,7 +37,7 @@ public final class TrainStationAdapter extends BaseAdapter {
 
     @Override
     public final int getCount() {
-        return TrainLine.values().length - 1;
+        return TrainLine.size() - 1;
     }
 
     @Override
@@ -55,10 +55,10 @@ public final class TrainStationAdapter extends BaseAdapter {
         final LayoutInflater vi = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         convertView = vi.inflate(R.layout.list_train_line, parent, false);
 
-        LinearLayout color = (LinearLayout) convertView.findViewById(R.id.station_color_value);
+        final LinearLayout color = (LinearLayout) convertView.findViewById(R.id.station_color_value);
         color.setBackgroundColor(TrainLine.values()[position].getColor());
 
-        TextView stationName = (TextView) convertView.findViewById(R.id.station_name_value);
+        final TextView stationName = (TextView) convertView.findViewById(R.id.station_name_value);
         stationName.setText(TrainLine.values()[position].toString());
         return convertView;
     }

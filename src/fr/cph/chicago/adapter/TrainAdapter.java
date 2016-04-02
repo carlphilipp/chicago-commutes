@@ -25,6 +25,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.util.List;
+import java.util.Set;
+
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.DataHolder;
@@ -32,9 +36,7 @@ import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.listener.TrainOnClickListener;
-
-import java.util.List;
-import java.util.Set;
+import fr.cph.chicago.util.Util;
 
 /**
  * Adapter that will handle trains
@@ -44,83 +46,71 @@ import java.util.Set;
  */
 public final class TrainAdapter extends BaseAdapter {
 
-	private Context context;
-	private Activity activity;
-	private List<Station> stations;
+    private Activity activity;
+    private List<Station> stations;
 
-	/**
-	 * Constructor
-	 *
-	 * @param line the train line
-	 */
-	public TrainAdapter(@NonNull final TrainLine line, @NonNull final Activity activity) {
-		// Load data
-		final DataHolder dataHolder = DataHolder.getInstance();
-		final TrainData data = dataHolder.getTrainData();
-		this.stations = data.getStationsForLine(line);
-		this.context = App.getContext();
-		this.activity = activity;
-	}
+    /**
+     * Constructor
+     *
+     * @param line the train line
+     */
+    public TrainAdapter(@NonNull final TrainLine line, @NonNull final Activity activity) {
+        // Load data
+        final DataHolder dataHolder = DataHolder.getInstance();
+        final TrainData data = dataHolder.getTrainData();
+        this.stations = data.getStationsForLine(line);
+        this.activity = activity;
+        ;
+    }
 
-	@Override
-	public final int getCount() {
-		return stations.size();
-	}
+    @Override
+    public final int getCount() {
+        return stations.size();
+    }
 
-	@Override
-	public final Object getItem(final int position) {
-		return stations.get(position);
-	}
+    @Override
+    public final Object getItem(final int position) {
+        return stations.get(position);
+    }
 
-	@Override
-	public final long getItemId(final int position) {
-		return position;
-	}
+    @Override
+    public final long getItemId(final int position) {
+        return position;
+    }
 
-	@Override
-	public final View getView(final int position, View convertView, final ViewGroup parent) {
-		ViewHolder holder;
-		if (convertView == null) {
-			holder = new ViewHolder();
-			final LayoutInflater vi = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			convertView = vi.inflate(R.layout.list_train, parent, false);
+    @Override
+    public final View getView(final int position, View convertView, final ViewGroup parent) {
+        ViewHolder holder;
+        if (convertView == null) {
+            holder = new ViewHolder();
+            final LayoutInflater vi = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = vi.inflate(R.layout.list_train, parent, false);
 
-			final TextView stationNameView = (TextView) convertView.findViewById(R.id.station_name_value);
-			final LinearLayout stationColorView = (LinearLayout) convertView.findViewById(R.id.station_color);
-			holder.stationNameView = stationNameView;
-			holder.stationColorView = stationColorView;
-			convertView.setTag(holder);
-		} else {
-			holder = (ViewHolder) convertView.getTag();
-		}
-		final Station station = (Station) getItem(position);
-		final Set<TrainLine> lines = station.getLines();
+            final TextView stationNameView = (TextView) convertView.findViewById(R.id.station_name_value);
+            final LinearLayout stationColorView = (LinearLayout) convertView.findViewById(R.id.station_color);
+            holder.stationNameView = stationNameView;
+            holder.stationColorView = stationColorView;
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
+        final Station station = (Station) getItem(position);
+        final Set<TrainLine> lines = station.getLines();
 
-		holder.stationNameView.setText(station.getName());
+        holder.stationNameView.setText(station.getName());
 
-		holder.stationColorView.removeAllViews();
-		int index = 0;
-		for (final TrainLine tl : lines) {
-			final TextView blankTextView = new TextView(context);
-			blankTextView.setBackgroundColor(tl.getColor());
-			blankTextView.setText(" ");
-			blankTextView.setTextSize(context.getResources().getDimension(R.dimen.activity_list_station_colors));
-			holder.stationColorView.addView(blankTextView);
-			if (index != lines.size()) {
-				final TextView spaceTextView = new TextView(context);
-				spaceTextView.setText("");
-				spaceTextView.setPadding(0, 0, (int) context.getResources().getDimension(R.dimen.activity_list_station_colors_space), 0);
-				spaceTextView.setTextSize(context.getResources().getDimension(R.dimen.activity_list_station_colors));
-				holder.stationColorView.addView(spaceTextView);
-			}
-			index++;
-		}
-		convertView.setOnClickListener(new TrainOnClickListener(activity, station.getId(), lines));
-		return convertView;
-	}
+        holder.stationColorView.removeAllViews();
+        int index = 0;
+        for (final TrainLine tl : lines) {
+            final LinearLayout layout = Util.createColoredRoundForMultiple(tl);
+            holder.stationColorView.addView(layout);
+        }
+        convertView.setOnClickListener(new TrainOnClickListener(activity, station.getId(), lines));
+        return convertView;
+    }
 
-	private static class ViewHolder {
-		TextView stationNameView;
-		LinearLayout stationColorView;
-	}
+    private static class ViewHolder {
+        TextView stationNameView;
+        LinearLayout stationColorView;
+    }
 }

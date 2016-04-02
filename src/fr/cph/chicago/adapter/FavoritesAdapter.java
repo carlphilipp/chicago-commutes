@@ -205,7 +205,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                     final RelativeLayout left = new RelativeLayout(context);
                     left.setLayoutParams(leftParam);
 
-                    final LinearLayout lineIndication = createColoredRound(trainLine);
+                    final LinearLayout lineIndication = Util.createColoredRound(trainLine);
                     int lineId = Util.generateViewId();
                     lineIndication.setId(lineId);
 
@@ -308,7 +308,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 final RelativeLayout left = new RelativeLayout(context);
                 left.setLayoutParams(leftParams);
 
-                final LinearLayout lineIndication = createColoredRound(TrainLine.NA);
+                final LinearLayout lineIndication = Util.createColoredRound(TrainLine.NA);
                 int lineId = Util.generateViewId();
                 lineIndication.setId(lineId);
 
@@ -466,7 +466,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         final RelativeLayout left = new RelativeLayout(context);
         left.setLayoutParams(leftParam);
 
-        final LinearLayout lineIndication = createColoredRound(TrainLine.NA);
+        final LinearLayout lineIndication = Util.createColoredRound(TrainLine.NA);
         int lineId = Util.generateViewId();
         lineIndication.setId(lineId);
 
@@ -517,18 +517,6 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         return line;
     }
 
-    @NonNull
-    private LinearLayout createColoredRound(@NonNull final TrainLine trainLine) {
-        final LinearLayout lineIndication = new LinearLayout(context);
-        final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.height = 30;
-        params.width = 30;
-        params.addRule(RelativeLayout.CENTER_VERTICAL);
-        lineIndication.setBackgroundColor(trainLine.getColor());
-        lineIndication.setLayoutParams(params);
-        return lineIndication;
-    }
-
     @Override
     public final long getItemId(final int position) {
         return position;
@@ -545,8 +533,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
      * @param arrivals    the trains arrivals
      * @param busArrivals the buses arrivals
      */
-    public final void setArrivalsAndBikeStations(@NonNull final SparseArray<TrainArrival> arrivals, @NonNull final List<BusArrival> busArrivals,
-        @NonNull final List<BikeStation> bikeStations) {
+    public final void setArrivalsAndBikeStations(@NonNull final SparseArray<TrainArrival> arrivals, @NonNull final List<BusArrival> busArrivals, @NonNull final List<BikeStation> bikeStations) {
         favorites.setArrivalsAndBikeStations(arrivals, busArrivals, bikeStations);
     }
 

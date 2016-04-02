@@ -38,7 +38,10 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
@@ -449,5 +452,29 @@ public final class Util {
         } else {
             return name;
         }
+    }
+
+    @NonNull
+    public static LinearLayout createColoredRound(@NonNull final TrainLine trainLine) {
+        final LinearLayout lineIndication = new LinearLayout(App.getContext());
+        final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.height = 30;
+        params.width = 30;
+        params.addRule(RelativeLayout.CENTER_VERTICAL);
+        lineIndication.setBackgroundColor(trainLine.getColor());
+        lineIndication.setLayoutParams(params);
+        return lineIndication;
+    }
+
+    @NonNull
+    public static LinearLayout createColoredRoundForMultiple(@NonNull final TrainLine trainLine) {
+        final LinearLayout lineIndication = new LinearLayout(App.getContext());
+        final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.height = 30;
+        params.width = 30;
+        params.setMargins(10, 0, 0, 0);
+        lineIndication.setBackgroundColor(trainLine.getColor());
+        lineIndication.setLayoutParams(params);
+        return lineIndication;
     }
 }

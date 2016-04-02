@@ -137,4 +137,8 @@ public enum TrainLine {
     public final String toTextString() {
         return text;
     }
+
+    public static final int size() {
+        return TrainLine.values().length;
+    }
 }
