@@ -22,11 +22,20 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import fr.cph.chicago.ChicagoTracker;
+
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BusBoundActivity;
 import fr.cph.chicago.activity.BusMapActivity;
@@ -40,12 +49,6 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.XmlParser;
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import static fr.cph.chicago.connection.CtaRequestType.BUS_DIRECTION;
 
@@ -63,7 +66,7 @@ public class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 	private ViewGroup viewGroup;
 	private TrackerException trackerException;
 
-	public DirectionAsyncTask(final Activity activity, final ViewGroup viewGroup) {
+	public DirectionAsyncTask(@NonNull final Activity activity, @NonNull final ViewGroup viewGroup) {
 		this.activity = activity;
 		this.viewGroup = viewGroup;
 	}
@@ -90,7 +93,7 @@ public class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 	@Override
 	protected final void onPostExecute(final BusDirections result) {
 		if (trackerException == null) {
-			final List<BusDirection> busDirections = result.getlBusDirection();
+			final List<BusDirection> busDirections = result.getLBusDirection();
 			final List<String> data = new ArrayList<>();
 			for (final BusDirection busDir : busDirections) {
 				data.add(busDir.getBusDirectionEnum().toString());
@@ -141,7 +144,7 @@ public class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 			dialog.show();
 			dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), ViewGroup.LayoutParams.WRAP_CONTENT);
 		} else {
-			ChicagoTracker.displayError(activity, trackerException);
+			App.startErrorActivity(activity, trackerException.getMessage());
 		}
 	}
 }

@@ -18,8 +18,11 @@ package fr.cph.chicago.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import java.io.Serializable;
+
+import lombok.Data;
 
 /**
  * The position
@@ -27,6 +30,7 @@ import java.io.Serializable;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@Data
 public class Position implements Parcelable, Serializable {
 	/**
 	 * Serializable
@@ -58,36 +62,8 @@ public class Position implements Parcelable, Serializable {
 		this.longitude = longitude;
 	}
 
-	private Position(Parcel in) {
+	private Position(@NonNull final Parcel in) {
 		readFromParcel(in);
-	}
-
-	/**
-	 * @return
-	 */
-	public final double getLatitude() {
-		return latitude;
-	}
-
-	/**
-	 * @param latitude
-	 */
-	public final void setLatitude(final double latitude) {
-		this.latitude = latitude;
-	}
-
-	/**
-	 * @return
-	 */
-	public final double getLongitude() {
-		return longitude;
-	}
-
-	/**
-	 * @param longitude
-	 */
-	public final void setLongitude(final double longitude) {
-		this.longitude = longitude;
 	}
 
 	@Override
@@ -106,17 +82,17 @@ public class Position implements Parcelable, Serializable {
 		dest.writeDouble(longitude);
 	}
 
-	private void readFromParcel(final Parcel in) {
+	private void readFromParcel(@NonNull final Parcel in) {
 		latitude = in.readDouble();
 		longitude = in.readDouble();
 	}
 
 	public static final Parcelable.Creator<Position> CREATOR = new Parcelable.Creator<Position>() {
-		public Position createFromParcel(Parcel in) {
+		public Position createFromParcel(final Parcel in) {
 			return new Position(in);
 		}
 
-		public Position[] newArray(int size) {
+		public Position[] newArray(final int size) {
 			return new Position[size];
 		}
 	};

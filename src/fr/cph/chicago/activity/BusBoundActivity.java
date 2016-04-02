@@ -20,6 +20,7 @@ import android.app.ListActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -27,7 +28,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.LinearLayout;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
@@ -45,14 +46,13 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.adapter.BusBoundAdapter;
 import fr.cph.chicago.entity.BusPattern;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.PatternPoint;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.fragment.GoogleMapAbility;
 import fr.cph.chicago.task.BusBoundAsyncTask;
 import fr.cph.chicago.task.LoadBusPatternTask;
 import fr.cph.chicago.util.Util;
@@ -63,10 +63,10 @@ import fr.cph.chicago.util.Util;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
+public class BusBoundActivity extends ListActivity {
 
     private MapFragment mapFragment;
-    private GoogleMap googleMap;
+    private LinearLayout layout;
     private String busRouteId;
     private String busRouteName;
     private String bound;
@@ -77,9 +77,11 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ChicagoTracker.checkBusData(this);
+        App.checkBusData(this);
         if (!this.isFinishing()) {
             setContentView(R.layout.activity_bus_bound);
+
+            layout = (LinearLayout) findViewById(R.id.bellow);
 
             if (busRouteId == null && busRouteName == null && bound == null && boundTitle == null) {
                 busRouteId = getIntent().getExtras().getString(getString(R.string.bundle_bus_route_id));
@@ -93,7 +95,7 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
                 @Override
                 public void onItemClick(final AdapterView<?> adapterView, final View view, final int position, final long id) {
                     final BusStop busStop = (BusStop) busBoundAdapter.getItem(position);
-                    final Intent intent = new Intent(ChicagoTracker.getContext(), BusActivity.class);
+                    final Intent intent = new Intent(App.getContext(), BusActivity.class);
 
                     final Bundle extras = new Bundle();
                     extras.putInt(getString(R.string.bundle_bus_stop_id), busStop.getId());
@@ -139,7 +141,7 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
             });
 
             final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-            Util.setToolbarColor(this, toolbar, TrainLine.NA);
+            Util.setWindowsColor(this, toolbar, TrainLine.NA);
             toolbar.setTitle(busRouteName + " - " + boundTitle);
 
             toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
@@ -174,27 +176,23 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
     @Override
     public final void onStop() {
         super.onStop();
-        googleMap = null;
     }
 
     @Override
     public final void onResume() {
         super.onResume();
-        if (googleMap == null) {
-            mapFragment.getMapAsync(new OnMapReadyCallback() {
-                @Override
-                public void onMapReady(final GoogleMap googleMap) {
-                    BusBoundActivity.this.googleMap = googleMap;
-                    googleMap.getUiSettings().setMyLocationButtonEnabled(false);
-                    googleMap.getUiSettings().setZoomControlsEnabled(false);
-                    if (Util.isNetworkAvailable()) {
-                        new LoadBusPatternTask(BusBoundActivity.this, mapFragment, busRouteId, boundTitle).execute();
-                    } else {
-                        Toast.makeText(BusBoundActivity.this, "No network connection detected!", Toast.LENGTH_SHORT).show();
-                    }
+        mapFragment.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(final GoogleMap googleMap) {
+                googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+                googleMap.getUiSettings().setZoomControlsEnabled(false);
+                if (Util.isNetworkAvailable()) {
+                    new LoadBusPatternTask(BusBoundActivity.this, mapFragment, busRouteId, boundTitle, false).execute();
+                } else {
+                    Util.showNetworkErrorMessage(layout);
                 }
-            });
-        }
+            }
+        });
     }
 
     @Override
@@ -215,52 +213,48 @@ public class BusBoundActivity extends ListActivity implements GoogleMapAbility {
         super.onSaveInstanceState(savedInstanceState);
     }
 
-    public void setBusStops(final List<BusStop> busStops) {
+    public void setBusStops(@NonNull final List<BusStop> busStops) {
         this.busStops = busStops;
     }
 
-    @Override
-    public void setGoogleMap(final GoogleMap googleMap) {
-        this.googleMap = googleMap;
-    }
+    public void drawPattern(@NonNull final BusPattern pattern) {
+        mapFragment.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(final GoogleMap googleMap) {
+                final List<Marker> markers = new ArrayList<>();
+                final PolylineOptions poly = new PolylineOptions();
+                poly.geodesic(true).color(Color.BLACK);
+                poly.width(7f);
+                Marker marker;
+                for (final PatternPoint patternPoint : pattern.getPoints()) {
+                    final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
+                    poly.add(point);
+                    marker = googleMap.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName()).snippet(String.valueOf(patternPoint.getSequence())));
+                    markers.add(marker);
+                    marker.setVisible(false);
+                }
+                googleMap.addPolyline(poly);
 
-    public void drawPattern(final BusPattern pattern) {
-        if (googleMap != null) {
-            final List<Marker> markers = new ArrayList<>();
-            final PolylineOptions poly = new PolylineOptions();
-            poly.geodesic(true).color(Color.BLACK);
-            poly.width(7f);
-            Marker marker;
-            for (final PatternPoint patternPoint : pattern.getPoints()) {
-                final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
-                poly.add(point);
-                //if (patternPoint.getStopId() != null) {
-                marker = googleMap.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName()).snippet(String.valueOf(patternPoint.getSequence())));
-                markers.add(marker);
-                marker.setVisible(false);
-                //}
-            }
-            googleMap.addPolyline(poly);
+                googleMap.setOnCameraChangeListener(new OnCameraChangeListener() {
+                    private float currentZoom = -1;
 
-            googleMap.setOnCameraChangeListener(new OnCameraChangeListener() {
-                private float currentZoom = -1;
-
-                @Override
-                public void onCameraChange(final CameraPosition pos) {
-                    if (pos.zoom != currentZoom) {
-                        currentZoom = pos.zoom;
-                        if (currentZoom >= 14) {
-                            for (Marker marker : markers) {
-                                marker.setVisible(true);
-                            }
-                        } else {
-                            for (final Marker marker : markers) {
-                                marker.setVisible(false);
+                    @Override
+                    public void onCameraChange(final CameraPosition pos) {
+                        if (pos.zoom != currentZoom) {
+                            currentZoom = pos.zoom;
+                            if (currentZoom >= 14) {
+                                for (final Marker marker : markers) {
+                                    marker.setVisible(true);
+                                }
+                            } else {
+                                for (final Marker marker : markers) {
+                                    marker.setVisible(false);
+                                }
                             }
                         }
                     }
-                }
-            });
-        }
+                });
+            }
+        });
     }
 }

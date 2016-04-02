@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p>
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,6 +15,9 @@
  */
 
 package fr.cph.chicago.data;
+
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
@@ -65,6 +68,7 @@ public class BusData {
      *
      * @return a bus data instance
      */
+    @NonNull
     public static BusData getInstance() {
         if (busData == null) {
             busData = new BusData();
@@ -77,6 +81,7 @@ public class BusData {
      *
      * @return a list of bus stops
      */
+    @NonNull
     public final List<BusStop> readBusStops() {
         if (busStops.size() == 0) {
             busStops = parser.parse();
@@ -91,6 +96,7 @@ public class BusData {
      * @throws ParserException  a parser exception
      * @throws ConnectException a connect exception
      */
+    @NonNull
     public final List<BusRoute> loadBusRoutes() throws ParserException, ConnectException {
         if (busRoutes.size() == 0) {
             final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
@@ -107,6 +113,7 @@ public class BusData {
      *
      * @return a list of bus route
      */
+    @NonNull
     public final List<BusRoute> getRoutes() {
         return busRoutes;
     }
@@ -117,18 +124,17 @@ public class BusData {
      * @param routeId the id of the bus route
      * @return a bus route
      */
-    public final BusRoute getRoute(final String routeId) {
-        BusRoute result = null;
-        for (final BusRoute br : busRoutes) {
-            if (br.getId().equals(routeId)) {
-                result = br;
-                break;
+    @Nullable
+    public final BusRoute getRoute(@NonNull final String routeId) {
+        for (final BusRoute busRoute : busRoutes) {
+            if (busRoute.getId().equals(routeId)) {
+                return busRoute;
             }
         }
-        return result;
+        return null;
     }
 
-    public final boolean containsRoute(final String routeId) {
+    public final boolean containsRoute(@NonNull final String routeId) {
         for (final BusRoute br : busRoutes) {
             if (br.getId().equals(routeId)) {
                 return true;
@@ -146,7 +152,8 @@ public class BusData {
      * @throws ConnectException a connect exception
      * @throws ParserException  a parser exception
      */
-    public final List<BusStop> loadBusStop(final String stopId, final String bound) throws ConnectException, ParserException {
+    @NonNull
+    public final List<BusStop> loadBusStop(@NonNull final String stopId, @NonNull final String bound) throws ConnectException, ParserException {
         final CtaConnect connect = CtaConnect.getInstance();
         final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
         params.put("rt", stopId);
@@ -161,6 +168,7 @@ public class BusData {
      *
      * @return a list of bus stops
      */
+    @NonNull
     public final List<BusStop> readAllBusStops() {
         return this.busStops;
     }
@@ -171,7 +179,8 @@ public class BusData {
      * @param position the position
      * @return a list of bus stop
      */
-    public final List<BusStop> readNearbyStops(final Position position) {
+    @NonNull
+    public final List<BusStop> readNearbyStops(@NonNull final Position position) {
 
         final double dist = 0.004472;
 

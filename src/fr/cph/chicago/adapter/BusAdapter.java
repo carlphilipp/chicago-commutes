@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p>
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,22 +17,22 @@
 package fr.cph.chicago.adapter;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import java.util.List;
-
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.task.DirectionAsyncTask;
+
+import java.util.List;
 
 /**
  * Adapter that will handle buses
@@ -50,7 +50,7 @@ public final class BusAdapter extends BaseAdapter {
      *
      * @param activity the main activity
      */
-    public BusAdapter(final MainActivity activity) {
+    public BusAdapter(@NonNull final MainActivity activity) {
         this.mainActivity = activity;
         final BusData busData = DataHolder.getInstance().getBusData();
         this.busRoutes = busData.getRoutes();
@@ -73,7 +73,6 @@ public final class BusAdapter extends BaseAdapter {
 
     @Override
     public final View getView(final int position, View convertView, final ViewGroup parent) {
-
         final BusRoute route = (BusRoute) getItem(position);
 
         final TextView routeNameView;
@@ -81,7 +80,7 @@ public final class BusAdapter extends BaseAdapter {
         final LinearLayout detailsLayout;
 
         if (convertView == null) {
-            final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final LayoutInflater vi = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = vi.inflate(R.layout.list_bus, parent, false);
 
             final ViewHolder holder = new ViewHolder();
@@ -115,7 +114,7 @@ public final class BusAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public void setRoutes(final List<BusRoute> busRoutes) {
+    public void setRoutes(@NonNull final List<BusRoute> busRoutes) {
         this.busRoutes = busRoutes;
     }
 

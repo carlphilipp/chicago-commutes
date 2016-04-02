@@ -16,6 +16,8 @@
 
 package fr.cph.chicago.exception;
 
+import android.support.annotation.NonNull;
+
 /**
  * Parser exception
  *
@@ -24,22 +26,22 @@ package fr.cph.chicago.exception;
  */
 public class ParserException extends TrackerException {
 
-	/** Serializable **/
-	private static final long serialVersionUID = 1L;
+    /**
+     * Serializable
+     **/
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * The constructor
-	 *
-	 * @param message
-	 *            the message
-	 * @param e
-	 *            the exception
-	 */
-	public ParserException(final String message, final Exception e) {
-		super(message, e);
-	}
+    /**
+     * The constructor
+     *
+     * @param message the message
+     * @param e       the exception
+     */
+    public ParserException(@NonNull final String message, @NonNull final Exception e) {
+        super(message, e);
+    }
 
-	public ParserException(final String text) {
-		super(text);
-	}
+    public ParserException(@NonNull final String text) {
+        super(text);
+    }
 }

@@ -21,8 +21,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
@@ -34,33 +35,31 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
  */
 public final class TrainStationAdapter extends BaseAdapter {
 
-	@Override
-	public final int getCount() {
-		return TrainLine.values().length - 1;
-	}
+    @Override
+    public final int getCount() {
+        return TrainLine.values().length - 1;
+    }
 
-	@Override
-	public final Object getItem(final int position) {
-		return TrainLine.values()[position];
-	}
+    @Override
+    public final Object getItem(final int position) {
+        return TrainLine.values()[position];
+    }
 
-	@Override
-	public final long getItemId(final int position) {
-		return position;
-	}
+    @Override
+    public final long getItemId(final int position) {
+        return position;
+    }
 
-	@Override
-	public final View getView(final int position, View convertView, final ViewGroup parent) {
-		if (convertView == null) {
-			final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			convertView = vi.inflate(R.layout.list_train_line, parent, false);
-		}
+    @Override
+    public final View getView(final int position, View convertView, final ViewGroup parent) {
+        final LayoutInflater vi = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        convertView = vi.inflate(R.layout.list_train_line, parent, false);
 
-		TextView textView = (TextView) convertView.findViewById(R.id.station_color_value);
-		textView.setBackgroundColor(TrainLine.values()[position].getColor());
+        LinearLayout color = (LinearLayout) convertView.findViewById(R.id.station_color_value);
+        color.setBackgroundColor(TrainLine.values()[position].getColor());
 
-		textView = (TextView) convertView.findViewById(R.id.station_name_value);
-		textView.setText(TrainLine.values()[position].toString());
-		return convertView;
-	}
+        TextView stationName = (TextView) convertView.findViewById(R.id.station_name_value);
+        stationName.setText(TrainLine.values()[position].toString());
+        return convertView;
+    }
 }

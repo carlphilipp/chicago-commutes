@@ -17,6 +17,7 @@
 package fr.cph.chicago.adapter;
 
 import android.app.Activity;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +42,7 @@ public class PopupBusAdapter extends ArrayAdapter<String> {
      * @param context
      * @param values
      */
-    public PopupBusAdapter(final Activity activity, final List<String> values) {
+    public PopupBusAdapter(@NonNull final Activity activity, @NonNull final List<String> values) {
         super(activity, R.layout.popup_bus_cell, values);
         this.activity = activity;
         this.values = values;

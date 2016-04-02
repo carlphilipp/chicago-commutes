@@ -17,6 +17,7 @@
 package fr.cph.chicago.adapter;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +27,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.entity.BusStop;
 
@@ -46,7 +47,7 @@ public class BusBoundAdapter extends BaseAdapter {
      *
      * @param stopId the stop id of the bu
      */
-    public BusBoundAdapter(final String stopId) {
+    public BusBoundAdapter(@NonNull final String stopId) {
         this.busStops = new ArrayList<>();
         this.stopId = stopId;
     }
@@ -75,7 +76,7 @@ public class BusBoundAdapter extends BaseAdapter {
         final TextView routNameView;
 
         if (convertView == null) {
-            final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final LayoutInflater vi = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = vi.inflate(R.layout.list_bus_bounds, parent, false);
 
             final ViewHolder holder = new ViewHolder();
@@ -114,7 +115,7 @@ public class BusBoundAdapter extends BaseAdapter {
      *
      * @param result the list of bus stops
      */
-    public final void update(final List<BusStop> busStops) {
+    public final void update(@NonNull final List<BusStop> busStops) {
         this.busStops = null;
         this.busStops = busStops;
     }

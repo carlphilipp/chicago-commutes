@@ -16,9 +16,9 @@
 
 package fr.cph.chicago.adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils.TruncateAt;
 import android.util.SparseArray;
@@ -44,7 +44,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.data.BusData;
@@ -83,9 +83,9 @@ public final class NearbyAdapter extends BaseAdapter {
     private Map<Integer, LinearLayout> layouts;
     private Map<Integer, View> views;
 
-    public NearbyAdapter(final MainActivity activity) {
+    public NearbyAdapter(@NonNull final MainActivity activity) {
         this.activity = activity;
-        this.context = ChicagoTracker.getContext();
+        this.context = App.getContext();
         this.busStops = new ArrayList<>();
         this.busArrivals = new SparseArray<>();
         this.stations = new ArrayList<>();
@@ -140,7 +140,7 @@ public final class NearbyAdapter extends BaseAdapter {
         final int line1PaddingColor = (int) context.getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
         final int stopsPaddingTop = (int) context.getResources().getDimension(R.dimen.activity_station_stops_padding_top);
 
-        final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final LayoutInflater vi = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         convertView = vi.inflate(R.layout.list_nearby, parent, false);
 
         if (position < stations.size()) {
@@ -262,13 +262,13 @@ public final class NearbyAdapter extends BaseAdapter {
                                 final TextView stopName = new TextView(context);
                                 final String destName = eta.getDestName() + ": ";
                                 stopName.setText(destName);
-                                stopName.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey_5));
+                                stopName.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey_5));
                                 insideLayout.addView(stopName);
 
                                 final TextView timing = new TextView(context);
                                 final String timeLeftDueDelay = eta.getTimeLeftDueDelay() + " ";
                                 timing.setText(timeLeftDueDelay);
-                                timing.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
+                                timing.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey));
                                 timing.setLines(1);
                                 timing.setEllipsize(TruncateAt.END);
                                 insideLayout.addView(timing);
@@ -302,7 +302,7 @@ public final class NearbyAdapter extends BaseAdapter {
     }
 
     // TODO play with view holder pattern here
-    private void handleBuses(final int position, View convertView, final LinearLayout.LayoutParams paramsLayout, final LinearLayout.LayoutParams paramsTextView, final int line1PaddingColor, final int stopsPaddingTop) {
+    private void handleBuses(final int position, @NonNull final View convertView, @NonNull final LinearLayout.LayoutParams paramsLayout, @NonNull final LinearLayout.LayoutParams paramsTextView, final int line1PaddingColor, final int stopsPaddingTop) {
         // Bus
         final int index = position - stations.size();
         final BusStop busStop = busStops.get(index);
@@ -339,7 +339,7 @@ public final class NearbyAdapter extends BaseAdapter {
                 llh.setPadding(line1PaddingColor, stopsPaddingTop, 0, 0);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    llh.setBackground(ContextCompat.getDrawable(ChicagoTracker.getContext(), R.drawable.any_selector));
+                    llh.setBackground(ContextCompat.getDrawable(App.getContext(), R.drawable.any_selector));
                 }
 
                 final TextView tlView = new TextView(context);
@@ -382,7 +382,7 @@ public final class NearbyAdapter extends BaseAdapter {
     }
 
     // TODO play with view holder pattern here
-    private void handleBikes(final int position, View convertView, final LinearLayout.LayoutParams paramsLayout, final LinearLayout.LayoutParams paramsTextView, final int line1PaddingColor, final int stopsPaddingTop) {
+    private void handleBikes(final int position, @NonNull final View convertView, @NonNull final LinearLayout.LayoutParams paramsLayout, @NonNull final LinearLayout.LayoutParams paramsTextView, final int line1PaddingColor, final int stopsPaddingTop) {
         final int index = position - (stations.size() + busStops.size());
         final BikeStation bikeStation = bikeStations.get(index);
 
@@ -471,9 +471,13 @@ public final class NearbyAdapter extends BaseAdapter {
         });
     }
 
-    public final void updateData(final List<BusStop> busStops, final SparseArray<Map<String, List<BusArrival>>> busArrivals,
-                                 final List<Station> stations, final SparseArray<TrainArrival> trainArrivals, final List<BikeStation> bikeStations, final GoogleMap map,
-                                 final List<Marker> markers) {
+    public final void updateData(@NonNull final List<BusStop> busStops,
+                                 @NonNull final SparseArray<Map<String, List<BusArrival>>> busArrivals,
+                                 @NonNull final List<Station> stations,
+                                 @NonNull final SparseArray<TrainArrival> trainArrivals,
+                                 @NonNull final List<BikeStation> bikeStations,
+                                 @NonNull final GoogleMap map,
+                                 @NonNull final List<Marker> markers) {
         this.busStops = busStops;
         this.busArrivals = busArrivals;
         this.stations = stations;

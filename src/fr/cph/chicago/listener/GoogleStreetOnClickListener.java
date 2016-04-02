@@ -20,13 +20,14 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.view.View;
 
 import java.util.Locale;
 
 public class GoogleStreetOnClickListener extends GoogleMapListener {
 
-	public GoogleStreetOnClickListener(final Activity activity, final double latitude, final double longitude) {
+	public GoogleStreetOnClickListener(@NonNull final Activity activity, final double latitude, final double longitude) {
 		super(activity, latitude, longitude);
 	}
 

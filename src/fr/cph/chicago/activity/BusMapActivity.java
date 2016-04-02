@@ -24,15 +24,15 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
@@ -47,18 +47,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.entity.Bus;
@@ -75,6 +64,15 @@ import fr.cph.chicago.task.LoadBusPositionTask;
 import fr.cph.chicago.task.LoadCurrentPositionTask;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.XmlParser;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import static fr.cph.chicago.connection.CtaRequestType.BUS_DIRECTION;
 import static fr.cph.chicago.connection.CtaRequestType.BUS_PATTERN;
@@ -90,6 +88,7 @@ public class BusMapActivity extends Activity {
     private ViewGroup viewGroup;
     private MapFragment mapFragment;
     private Marker selectedMarker;
+    private RelativeLayout layout;
 
     private List<Marker> busMarkers;
     private List<Marker> busStationMarkers;
@@ -108,9 +107,10 @@ public class BusMapActivity extends Activity {
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ChicagoTracker.checkBusData(this);
+        App.checkBusData(this);
         if (!this.isFinishing()) {
             setContentView(R.layout.activity_map);
+            layout = (RelativeLayout) findViewById(R.id.map);
             viewGroup = (ViewGroup) findViewById(android.R.id.content);
             if (savedInstanceState != null) {
                 busId = savedInstanceState.getInt(getString(R.string.bundle_bus_id));
@@ -174,7 +174,7 @@ public class BusMapActivity extends Activity {
             public void onMapReady(final GoogleMap googleMap) {
                 googleMap.setInfoWindowAdapter(new InfoWindowAdapter() {
                     @Override
-                    public View getInfoWindow(Marker marker) {
+                    public View getInfoWindow(final Marker marker) {
                         return null;
                     }
 
@@ -217,7 +217,7 @@ public class BusMapActivity extends Activity {
                         new LoadPattern().execute();
                     }
                 } else {
-                    Toast.makeText(BusMapActivity.this, "No network connection detected!", Toast.LENGTH_SHORT).show();
+                    Util.showNetworkErrorMessage(layout);
                 }
             }
         });
@@ -252,7 +252,7 @@ public class BusMapActivity extends Activity {
             }
         }));
 
-        Util.setToolbarColor(this, toolbar, TrainLine.NA);
+        Util.setWindowsColor(this, toolbar, TrainLine.NA);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.setElevation(4);
@@ -277,7 +277,7 @@ public class BusMapActivity extends Activity {
         refreshingInfoWindow = false;
     }
 
-    public void centerMapOnBus(final List<Bus> result) {
+    public void centerMapOnBus(@NonNull final List<Bus> result) {
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(final GoogleMap googleMap) {
@@ -296,7 +296,7 @@ public class BusMapActivity extends Activity {
         });
     }
 
-    public void drawBuses(final List<Bus> buses) {
+    public void drawBuses(@NonNull final List<Bus> buses) {
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(final GoogleMap googleMap) {
@@ -327,7 +327,7 @@ public class BusMapActivity extends Activity {
         });
     }
 
-    private void drawPattern(final List<BusPattern> patterns) {
+    private void drawPattern(@NonNull final List<BusPattern> patterns) {
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(final GoogleMap googleMap) {
@@ -388,9 +388,9 @@ public class BusMapActivity extends Activity {
                     final XmlParser xml = XmlParser.getInstance();
                     final InputStream xmlResult = connect.connect(BUS_DIRECTION, directionParams);
                     final BusDirections busDirections = xml.parseBusDirections(xmlResult, busRouteId);
-                    bounds = new String[busDirections.getlBusDirection().size()];
-                    for (int i = 0; i < busDirections.getlBusDirection().size(); i++) {
-                        bounds[i] = busDirections.getlBusDirection().get(i).getBusDirectionEnum().toString();
+                    bounds = new String[busDirections.getLBusDirection().size()];
+                    for (int i = 0; i < busDirections.getLBusDirection().size(); i++) {
+                        bounds[i] = busDirections.getLBusDirection().get(i).getBusDirectionEnum().toString();
                     }
                     Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_direction, 0);
                 }
@@ -420,7 +420,7 @@ public class BusMapActivity extends Activity {
             if (result != null) {
                 drawPattern(result);
             } else {
-                Toast.makeText(BusMapActivity.this, "Sorry, could not load the path!", Toast.LENGTH_SHORT).show();
+                Util.showNetworkErrorMessage(layout);
             }
         }
     }

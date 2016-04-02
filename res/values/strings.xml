@@ -2,13 +2,13 @@
 
 <!--
   Copyright 2016 Carl-Philipp Harmant
- 
+
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
- 
+
       http://www.apache.org/licenses/LICENSE-2.0
- 
+
   Unless required by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,10 +36,11 @@
 	<string name="bundle_train_line">line</string>
 	<string name="bundle_bike_stations">bikeStations</string>
 	<string name="bundle_train_stationId">stationId</string>
+    <string name="bundle_title">title</string>
 
 	<!-- Preferences -->
 	<string name="preferences_cta_train">cta_train</string>
-	<string name="preferences_cta_bus">cta_bus</string>cta_train
+	<string name="preferences_cta_bus">cta_bus</string>
 
 	<string name="empty_string">&#160;</string>
 	<string name="app_name">Chicago Commutes</string>
@@ -78,7 +79,7 @@
 	<!-- Bus -->
 	<string name="bus_activity_google_map_link_desc">Link to google map</string>
 	<string name="bus_activity_street_view">Street view</string>
-	<string name="bus_activity_no_service">No service scheduled</string>
+	<string name="bus_activity_no_service">No service</string>
 	<string name="bus_activity_street_view_text">Street view</string>
 	<string name="bus_fragment_filter">Filter</string>
 	<string name="bus_fragment_notloaded">Divvy data deactivated</string>
@@ -107,8 +108,8 @@
 	<string name="bike_activity">Divvy</string>
 	<string name="bike_fragment_notloaded">Divvy data deactivated</string>
 	<string name="bike_fragment_filter">Filter</string>
-	<string name="bike_available_bikes">Available bikes:&#160;</string>
-	<string name="bike_available_docks">Available docks:&#160;</string>
+	<string name="bike_available_bikes">Available bikes&#160;</string>
+	<string name="bike_available_docks">Available docks&#160;</string>
 
 	<!-- Preferences -->
 	<string name="pref_trains_title">CTA trains</string>

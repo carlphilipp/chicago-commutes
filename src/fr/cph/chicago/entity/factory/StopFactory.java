@@ -16,6 +16,8 @@
 
 package fr.cph.chicago.entity.factory;
 
+import android.support.annotation.NonNull;
+
 import fr.cph.chicago.entity.Stop;
 import fr.cph.chicago.entity.enumeration.TrainDirection;
 
@@ -27,25 +29,23 @@ import fr.cph.chicago.entity.enumeration.TrainDirection;
  */
 public final class StopFactory {
 
-	private StopFactory() {
-	}
+    private StopFactory() {
+    }
 
-	/**
-	 * Build a stop
-	 *
-	 * @param id
-	 *            the id
-	 * @param description
-	 *            the description
-	 * @param direction
-	 *            the direction
-	 * @return a stop
-	 */
-	public static Stop buildStop(final Integer id, final String description, final TrainDirection direction) {
-		final Stop stop = new Stop();
-		stop.setId(id);
-		stop.setDescription(description);
-		stop.setDirection(direction);
-		return stop;
-	}
+    /**
+     * Build a stop
+     *
+     * @param id          the id
+     * @param description the description
+     * @param direction   the direction
+     * @return a stop
+     */
+    @NonNull
+    public static Stop buildStop(@NonNull final Integer id, @NonNull final String description, @NonNull final TrainDirection direction) {
+        final Stop stop = new Stop();
+        stop.setId(id);
+        stop.setDescription(description);
+        stop.setDirection(direction);
+        return stop;
+    }
 }

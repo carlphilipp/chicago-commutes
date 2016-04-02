@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p>
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,9 +19,10 @@ package fr.cph.chicago.activity;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.PersistableBundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -33,7 +34,7 @@ import android.widget.FrameLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private int currentPosition;
 
     private Toolbar toolbar;
-    private DrawerLayout mDrawerLayout;
+    private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
 
     private FavoritesFragment favoritesFragment;
@@ -63,25 +64,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private BikeFragment bikeFragment;
     private NearbyFragment nearbyFragment;
 
+    private String title;
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (!isFinishing()) {
             if (savedInstanceState != null) {
-                ChicagoTracker.reloadData();
+                App.reloadData();
             }
             setContentView(R.layout.activity_main);
 
             new LoadBusAndBikeDataTask(this).execute();
 
-            ChicagoTracker.container = (FrameLayout) findViewById(R.id.container);
-            ChicagoTracker.container.getForeground().setAlpha(0);
+            App.container = (FrameLayout) findViewById(R.id.container);
+            App.container.getForeground().setAlpha(0);
 
             initView();
             setToolbar();
 
-            drawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-            mDrawerLayout.addDrawerListener(drawerToggle);
+            drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+            drawerLayout.addDrawerListener(drawerToggle);
             drawerToggle.syncState();
 
             currentPosition = savedInstanceState == null ? R.id.navigation_favorites : savedInstanceState.getInt(SELECTED_ID);
@@ -98,70 +101,75 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setBarTitle(this.title);
+    }
+
     private void initView() {
         final NavigationView mDrawer = (NavigationView) findViewById(R.id.main_drawer);
         mDrawer.setNavigationItemSelectedListener(this);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
     }
 
     private void setToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(final MenuItem item) {
-                    if (toolbar.getTitle().equals(getString(R.string.nearby))) {
-                        nearbyFragment.reloadData();
-                    } else {
-                        // Favorite fragment
-                        if (favoritesFragment != null) {
-                            favoritesFragment.startRefreshing();
-                        }
-
-                        Util.loadFavorites(favoritesFragment, FavoritesFragment.class, MainActivity.this);
-
-                        // Google analytics
-                        Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
-                        Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
-                        Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
-                        // Check if bus/bike or alert data are not loaded. If not, load them.
-                        // Can happen when the app has been loaded without any data connection
-                        boolean loadData = false;
-                        final DataHolder dataHolder = DataHolder.getInstance();
-
-                        final BusData busData = dataHolder.getBusData();
-
-                        final Bundle bundle = MainActivity.this.getIntent().getExtras();
-                        final List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
-
-                        if (busData.getRoutes() != null && busData.getRoutes().size() == 0) {
-                            loadData = true;
-                        }
-                        if (!loadData && bikeStations == null) {
-                            loadData = true;
-                        }
-                        if (loadData) {
-                            favoritesFragment.startRefreshing();
-                            new LoadBusAndBikeDataTask(MainActivity.this).execute();
-                        }
-                        Util.trackAction(MainActivity.this, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(final MenuItem item) {
+                if (getString(R.string.nearby).equals(toolbar.getTitle())) {
+                    nearbyFragment.reloadData();
+                } else {
+                    // Favorite fragment
+                    if (favoritesFragment != null) {
+                        favoritesFragment.startRefreshing();
                     }
-                    return true;
+
+                    Util.loadAllFavorites(favoritesFragment, FavoritesFragment.class);
+
+                    // Google analytics
+                    Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
+                    Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
+                    Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
+                    // Check if bus/bike or alert data are not loaded. If not, load them.
+                    // Can happen when the app has been loaded without any data connection
+                    boolean loadData = false;
+                    final DataHolder dataHolder = DataHolder.getInstance();
+
+                    final BusData busData = dataHolder.getBusData();
+
+                    final Bundle bundle = MainActivity.this.getIntent().getExtras();
+                    final List<BikeStation> bikeStations = bundle.getParcelableArrayList(getString(R.string.bundle_bike_stations));
+
+                    if (busData.getRoutes() != null && busData.getRoutes().size() == 0) {
+                        loadData = true;
+                    }
+                    if (!loadData && bikeStations == null) {
+                        loadData = true;
+                    }
+                    if (loadData) {
+                        favoritesFragment.startRefreshing();
+                        new LoadBusAndBikeDataTask(MainActivity.this).execute();
+                    }
+                    Util.trackAction(MainActivity.this, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
                 }
-            });
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                toolbar.setElevation(4);
+                return true;
             }
-            toolbar.inflateMenu(R.menu.main);
+        });
+        toolbar.inflateMenu(R.menu.main);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            toolbar.setElevation(4);
+            getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.primaryColorDarker));
         }
     }
 
-    public void refresh(final BusData busData, final List<BikeStation> bikeStations) {
+    public void refresh(@NonNull final BusData busData, @NonNull final List<BikeStation> bikeStations) {
         // Put data into data holder
         final DataHolder dataHolder = DataHolder.getInstance();
         dataHolder.setBusData(busData);
 
-        getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
+        getIntent().putParcelableArrayListExtra(getString(R.string.bundle_bike_stations), (ArrayList<BikeStation>) bikeStations);
         onNewIntent(getIntent());
         if (favoritesFragment != null) {
             favoritesFragment.setBikeStations(bikeStations);
@@ -174,69 +182,72 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    private void setBarTitle(@NonNull final String title) {
+        this.title = title;
+        if (toolbar != null) {
+            toolbar.setTitle(title);
+        }
+    }
+
     private void itemSelection(final int position) {
         final FragmentManager fragmentManager = getSupportFragmentManager();
         currentPosition = position;
-        CharSequence title = null;
         switch (position) {
             case R.id.navigation_favorites:
-                title = getString(R.string.favorites);
+                setBarTitle(getString(R.string.favorites));
                 if (favoritesFragment == null) {
                     favoritesFragment = FavoritesFragment.newInstance(position + 1);
                 }
                 if (!this.isFinishing()) {
                     fragmentManager.beginTransaction().replace(R.id.container, favoritesFragment).commit();
                 }
-                mDrawerLayout.closeDrawer(GravityCompat.START);
+                drawerLayout.closeDrawer(GravityCompat.START);
                 showActionBarMenu();
                 break;
             case R.id.navigation_train:
-                title = getString(R.string.train);
+                setBarTitle(getString(R.string.train));
                 if (trainFragment == null) {
                     trainFragment = TrainFragment.newInstance(position + 1);
                 }
                 if (!this.isFinishing()) {
                     fragmentManager.beginTransaction().replace(R.id.container, trainFragment).commit();
                 }
-                mDrawerLayout.closeDrawer(GravityCompat.START);
+                drawerLayout.closeDrawer(GravityCompat.START);
                 hideActionBarMenu();
                 break;
             case R.id.navigation_bus:
-                title = getString(R.string.bus);
+                setBarTitle(getString(R.string.bus));
                 if (busFragment == null) {
                     busFragment = BusFragment.newInstance(position + 1);
                 }
                 if (!this.isFinishing()) {
                     fragmentManager.beginTransaction().replace(R.id.container, busFragment).commit();
                 }
-                mDrawerLayout.closeDrawer(GravityCompat.START);
+                drawerLayout.closeDrawer(GravityCompat.START);
                 hideActionBarMenu();
                 break;
             case R.id.navigation_bike:
-                title = getString(R.string.divvy);
+                setBarTitle(getString(R.string.divvy));
                 if (bikeFragment == null) {
                     bikeFragment = BikeFragment.newInstance(position + 1);
                 }
                 if (!this.isFinishing()) {
                     fragmentManager.beginTransaction().replace(R.id.container, bikeFragment).commit();
                 }
-                mDrawerLayout.closeDrawer(GravityCompat.START);
+                drawerLayout.closeDrawer(GravityCompat.START);
                 hideActionBarMenu();
                 break;
             case R.id.navigation_nearby:
-                title = getString(R.string.nearby);
+                setBarTitle(getString(R.string.nearby));
                 if (nearbyFragment == null) {
                     nearbyFragment = NearbyFragment.newInstance(position + 1);
                 }
                 if (!this.isFinishing()) {
                     fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
                 }
-                mDrawerLayout.closeDrawer(GravityCompat.START);
+                drawerLayout.closeDrawer(GravityCompat.START);
                 showActionBarMenu();
                 break;
-        }
-        if (title != null) {
-            toolbar.setTitle(title);
         }
     }
 
@@ -255,10 +266,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void onSaveInstanceState(final Bundle outState, final PersistableBundle outPersistentState) {
-        super.onSaveInstanceState(outState, outPersistentState);
-        //save selected item so it will remains same even after orientation change
-        outState.putInt(SELECTED_ID, currentPosition);
+    public void onSaveInstanceState(final Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putInt(SELECTED_ID, currentPosition);
+        savedInstanceState.putString(getString(R.string.bundle_title), title);
+    }
+
+    @Override
+    public void onRestoreInstanceState(final Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        title = savedInstanceState.getString(getString(R.string.bundle_title));
+        currentPosition = savedInstanceState.getInt(SELECTED_ID);
     }
 
     private void hideActionBarMenu() {

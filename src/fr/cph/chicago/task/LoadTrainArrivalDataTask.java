@@ -17,6 +17,7 @@
 package fr.cph.chicago.task;
 
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -29,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.StationActivity;
 import fr.cph.chicago.connection.CtaConnect;
@@ -58,7 +59,7 @@ public class LoadTrainArrivalDataTask extends AsyncTask<MultiValuedMap<String, S
     private TrackerException trackerException;
     private SwipeRefreshLayout swipeRefreshLayout;
 
-    public LoadTrainArrivalDataTask(final StationActivity activity, final TrainData trainData, final SwipeRefreshLayout swipeRefreshLayout) {
+    public LoadTrainArrivalDataTask(@NonNull final StationActivity activity, @NonNull final TrainData trainData, @NonNull final SwipeRefreshLayout swipeRefreshLayout) {
         this.activity = activity;
         this.trainData = trainData;
         this.swipeRefreshLayout = swipeRefreshLayout;
@@ -129,7 +130,7 @@ public class LoadTrainArrivalDataTask extends AsyncTask<MultiValuedMap<String, S
                 activity.drawAllArrivalsTrain(eta);
             }
         } else {
-            ChicagoTracker.displayError(activity, trackerException);
+            App.startErrorActivity(activity, trackerException.getMessage());
         }
         if (swipeRefreshLayout != null) {
             swipeRefreshLayout.setRefreshing(false);

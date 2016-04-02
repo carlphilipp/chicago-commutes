@@ -22,22 +22,23 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.activity.SearchActivity;
@@ -48,7 +49,6 @@ import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.task.LoadBusAndBikeDataTask;
 import fr.cph.chicago.util.Util;
 
@@ -69,7 +69,7 @@ public class FavoritesFragment extends Fragment {
     private List<BikeStation> bikeStations;
     private RefreshTimingTask refreshTimingTask;
 
-    private MainActivity mainActivity;
+    private MainActivity activity;
     private RelativeLayout welcomeLayout;
     private View rootView;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -80,6 +80,7 @@ public class FavoritesFragment extends Fragment {
      * @param sectionNumber the section number
      * @return a favorite fragment
      */
+    @NonNull
     public static FavoritesFragment newInstance(final int sectionNumber) {
         final FavoritesFragment fragment = new FavoritesFragment();
         final Bundle args = new Bundle();
@@ -92,17 +93,17 @@ public class FavoritesFragment extends Fragment {
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null) {
-            final Bundle bundle = mainActivity.getIntent().getExtras();
-            busArrivals = bundle.getParcelableArrayList("busArrivals");
-            trainArrivals = bundle.getSparseParcelableArray("trainArrivals");
-            bikeStations = bundle.getParcelableArrayList("bikeStations");
+            final Bundle bundle = activity.getIntent().getExtras();
+            busArrivals = bundle.getParcelableArrayList(getString(R.string.bundle_bus_arrivals));
+            trainArrivals = bundle.getSparseParcelableArray(getString(R.string.bundle_train_arrivals));
+            bikeStations = bundle.getParcelableArrayList(getString(R.string.bundle_bike_stations));
         } else {
-            busArrivals = savedInstanceState.getParcelableArrayList("busArrivals");
-            trainArrivals = savedInstanceState.getSparseParcelableArray("trainArrivals");
-            bikeStations = savedInstanceState.getParcelableArrayList("bikeStations");
-            boolean boolTrain = ChicagoTracker.checkTrainData(mainActivity);
+            busArrivals = savedInstanceState.getParcelableArrayList(getString(R.string.bundle_bus_arrivals));
+            trainArrivals = savedInstanceState.getSparseParcelableArray(getString(R.string.bundle_train_arrivals));
+            bikeStations = savedInstanceState.getParcelableArrayList(getString(R.string.bundle_bike_stations));
+            boolean boolTrain = App.checkTrainData(activity);
             if (boolTrain) {
-                ChicagoTracker.checkBusData(mainActivity);
+                App.checkBusData(activity);
             }
         }
         if (bikeStations == null) {
@@ -114,38 +115,54 @@ public class FavoritesFragment extends Fragment {
     @Override
     public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        if (!mainActivity.isFinishing()) {
+        if (!activity.isFinishing()) {
             welcomeLayout = (RelativeLayout) rootView.findViewById(R.id.welcome);
             if (favoritesAdapter == null) {
-                favoritesAdapter = new FavoritesAdapter(mainActivity);
+                favoritesAdapter = new FavoritesAdapter(activity);
                 favoritesAdapter.setArrivalsAndBikeStations(trainArrivals, busArrivals, bikeStations);
             }
-            final ListView listView = (ListView) rootView.findViewById(R.id.favorites_list);
+            final RecyclerView listView = (RecyclerView) rootView.findViewById(R.id.favorites_list);
             listView.setAdapter(favoritesAdapter);
+            //listView.setHasFixedSize(true);
+
+            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(activity);
+            listView.setLayoutManager(mLayoutManager);
+
             startRefreshTask();
             final FloatingActionButton floatingButton = (FloatingActionButton) rootView.findViewById(R.id.floating_button);
             floatingButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View v) {
                     if (bikeStations.isEmpty()) {
-                        Toast.makeText(mainActivity, "You are a bit fast! Try again in a second!", Toast.LENGTH_SHORT).show();
+                        Util.showMessage(activity, "You are a bit fast! Try again in a second!");
                     } else {
-                        final Intent intent = new Intent(mainActivity, SearchActivity.class);
-                        intent.putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
-                        mainActivity.startActivity(intent);
+                        final Intent intent = new Intent(activity, SearchActivity.class);
+                        intent.putParcelableArrayListExtra(getString(R.string.bundle_bike_stations), (ArrayList<BikeStation>) bikeStations);
+                        activity.startActivity(intent);
                     }
                 }
             });
+
+            listView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(final RecyclerView recyclerView, final int dx, final int dy) {
+                    if (dy > 0 && floatingButton.isShown())
+                        floatingButton.hide();
+                    else if (dy < 0 && !floatingButton.isShown())
+                        floatingButton.show();
+                }
+            });
+
             swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.activity_main_swipe_refresh_layout);
             swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 
                 @Override
                 public void onRefresh() {
-                    Util.loadFavorites(FavoritesFragment.this, FavoritesFragment.class, mainActivity);
+                    Util.loadAllFavorites(FavoritesFragment.this, FavoritesFragment.class);
                     // Google analytics
-                    Util.trackAction(mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
-                    Util.trackAction(mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
-                    Util.trackAction(mainActivity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
+                    Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
+                    Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
+                    Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
 
                     // Check if bus or bike data are not loaded. If not, load them.
                     // Can happen when the app has been loaded without any data connection
@@ -153,8 +170,8 @@ public class FavoritesFragment extends Fragment {
                     final DataHolder dataHolder = DataHolder.getInstance();
                     final BusData busData = dataHolder.getBusData();
 
-                    final Bundle bundle = mainActivity.getIntent().getExtras();
-                    final List<BikeStation> bikeStations = bundle.getParcelableArrayList("bikeStations");
+                    final Bundle bundle = activity.getIntent().getExtras();
+                    final List<BikeStation> bikeStations = bundle.getParcelableArrayList(getString(R.string.bundle_bike_stations));
 
                     if (busData.getRoutes() != null && busData.getRoutes().size() == 0) {
                         loadData = true;
@@ -163,10 +180,10 @@ public class FavoritesFragment extends Fragment {
                         loadData = true;
                     }
                     if (loadData) {
-                        LoadBusAndBikeDataTask reload = new LoadBusAndBikeDataTask(mainActivity);
+                        LoadBusAndBikeDataTask reload = new LoadBusAndBikeDataTask(activity);
                         reload.execute();
                     }
-                    Util.trackAction(mainActivity, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
+                    Util.trackAction(activity, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
                     swipeRefreshLayout.setColorSchemeColors(Util.getRandomColor());
                 }
             });
@@ -207,7 +224,7 @@ public class FavoritesFragment extends Fragment {
             startRefreshTask();
         }
         if (welcomeLayout != null) {
-            boolean hasFav = Preferences.hasFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN, ChicagoTracker.PREFERENCE_FAVORITES_BUS, ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
+            boolean hasFav = Preferences.hasFavorites(App.PREFERENCE_FAVORITES_TRAIN, App.PREFERENCE_FAVORITES_BUS, App.PREFERENCE_FAVORITES_BIKE);
             if (!hasFav) {
                 welcomeLayout.setVisibility(View.VISIBLE);
             } else {
@@ -219,7 +236,7 @@ public class FavoritesFragment extends Fragment {
     @Override
     public final void onAttach(final Context context) {
         super.onAttach(context);
-        mainActivity = context instanceof Activity ? (MainActivity) context : null;
+        activity = context instanceof Activity ? (MainActivity) context : null;
     }
 
     @Override
@@ -236,21 +253,15 @@ public class FavoritesFragment extends Fragment {
      * @param trainArrivals the train arrivals list
      * @param busArrivals   the bus arrivals list
      */
-    // TODO handle result 3 booleans that indicate if the update failed or not
-    public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals, final List<BikeStation> bikeStations, final Boolean trainBoolean,
-                                 final Boolean busBoolean, final Boolean bikeBoolean, final Boolean networkAvailable) {
-        if (!networkAvailable) {
-            Toast.makeText(mainActivity, "No network connection detected!", Toast.LENGTH_SHORT).show();
-        } else {
-            // Put into intent new bike stations data
-            mainActivity.getIntent().putParcelableArrayListExtra("bikeStations", (ArrayList<BikeStation>) bikeStations);
+    public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals, final List<BikeStation> bikeStations, final Boolean error) {
+        // Put into intent new bike stations data
+        activity.getIntent().putParcelableArrayListExtra(getString(R.string.bundle_bike_stations), (ArrayList<BikeStation>) bikeStations);
 
-            favoritesAdapter.setArrivalsAndBikeStations(trainArrivals, busArrivals, bikeStations);
-            favoritesAdapter.refreshUpdated();
-            favoritesAdapter.refreshUpdatedView();
-            favoritesAdapter.notifyDataSetChanged();
-            this.bikeStations = bikeStations;
-        }
+        favoritesAdapter.setArrivalsAndBikeStations(trainArrivals, busArrivals, bikeStations);
+        favoritesAdapter.refreshUpdated();
+        favoritesAdapter.refreshUpdatedView();
+        favoritesAdapter.notifyDataSetChanged();
+        this.bikeStations = bikeStations;
         // Highlight background
         rootView.setBackgroundResource(R.drawable.highlight_selector);
         rootView.postDelayed(new Runnable() {
@@ -259,15 +270,20 @@ public class FavoritesFragment extends Fragment {
             }
         }, 100);
         stopRefreshing();
+        if (error) {
+            Util.showMessage(activity, "Oops something went wrong!");
+        }
     }
 
     /**
      * Display error
      *
-     * @param trackerException the exception
+     * @param message the message
      */
-    public final void displayError(final TrackerException trackerException) {
-        ChicagoTracker.displayError(mainActivity, trackerException);
+    // TODO remove the message if not used
+    public final void displayError(final String message) {
+        Util.showMessage(activity, message);
+        stopRefreshing();
     }
 
     public final void setBikeStations(final List<BikeStation> bikeStations) {

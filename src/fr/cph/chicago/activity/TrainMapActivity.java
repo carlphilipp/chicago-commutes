@@ -20,12 +20,13 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -45,7 +46,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
@@ -68,7 +69,8 @@ public class TrainMapActivity extends Activity {
     private MapFragment mapFragment;
     private Marker selectedMarker;
     private Map<Marker, View> views;
-    private String line;
+    private RelativeLayout layout;
+    String line;
     private Map<Marker, Boolean> status;
     private List<Marker> markers;
     private TrainData trainData;
@@ -85,10 +87,11 @@ public class TrainMapActivity extends Activity {
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ChicagoTracker.checkTrainData(this);
+        App.checkTrainData(this);
         if (!this.isFinishing()) {
             MapsInitializer.initialize(getApplicationContext());
             setContentView(R.layout.activity_map);
+            layout = (RelativeLayout) findViewById(R.id.map);
             viewGroup = (ViewGroup) findViewById(android.R.id.content);
             if (savedInstanceState != null) {
                 line = savedInstanceState.getString(getString(R.string.bundle_train_line));
@@ -128,7 +131,7 @@ public class TrainMapActivity extends Activity {
             }
         }));
         final TrainLine trainLine = TrainLine.fromXmlString(line);
-        Util.setToolbarColor(this, toolbar, trainLine);
+        Util.setWindowsColor(this, toolbar, trainLine);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.setElevation(4);
         }
@@ -213,7 +216,7 @@ public class TrainMapActivity extends Activity {
                     new LoadCurrentPositionTask(TrainMapActivity.this, mapFragment).execute();
                     new LoadTrainPositionTask(TrainMapActivity.this, line, trainData).execute(centerMap, true);
                 } else {
-                    Toast.makeText(TrainMapActivity.this, "No network connection detected!", Toast.LENGTH_SHORT).show();
+                    Util.showNetworkErrorMessage(layout);
                 }
             }
         });
@@ -222,12 +225,12 @@ public class TrainMapActivity extends Activity {
     @Override
     public void onRestoreInstanceState(final Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        line = savedInstanceState.getString("line");
+        line = savedInstanceState.getString(getString(R.string.bundle_train_line));
     }
 
     @Override
     public void onSaveInstanceState(final Bundle savedInstanceState) {
-        savedInstanceState.putString("line", line);
+        savedInstanceState.putString(getString(R.string.bundle_train_line), line);
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -240,7 +243,7 @@ public class TrainMapActivity extends Activity {
         refreshingInfoWindow = false;
     }
 
-    public void centerMapOnTrain(final List<Train> result) {
+    public void centerMapOnTrain(@NonNull final List<Train> result) {
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(final GoogleMap googleMap) {
@@ -259,7 +262,7 @@ public class TrainMapActivity extends Activity {
         });
     }
 
-    public void drawTrains(final List<Train> trains) {
+    public void drawTrains(@NonNull final List<Train> trains) {
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(final GoogleMap googleMap) {
@@ -286,7 +289,7 @@ public class TrainMapActivity extends Activity {
                     title2.setText(title);
 
                     final TextView color = (TextView) view.findViewById(R.id.route_color_value);
-                    color.setBackgroundColor(TrainLine.fromXmlString(TrainMapActivity.this.line).getColor());
+                    color.setBackgroundColor(TrainLine.fromXmlString(line).getColor());
 
                     views.put(marker, view);
                 }
@@ -300,14 +303,14 @@ public class TrainMapActivity extends Activity {
         });
     }
 
-    public void drawLine(final List<Position> positions) {
+    public void drawLine(@NonNull final List<Position> positions) {
         if (drawLine) {
             mapFragment.getMapAsync(new OnMapReadyCallback() {
                 @Override
                 public void onMapReady(final GoogleMap googleMap) {
                     final PolylineOptions poly = new PolylineOptions();
                     poly.width(7f);
-                    poly.geodesic(true).color(TrainLine.fromXmlString(TrainMapActivity.this.line).getColor());
+                    poly.geodesic(true).color(TrainLine.fromXmlString(line).getColor());
                     for (final Position position : positions) {
                         final LatLng point = new LatLng(position.getLatitude(), position.getLongitude());
                         poly.add(point);

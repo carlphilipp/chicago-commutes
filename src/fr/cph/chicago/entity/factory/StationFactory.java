@@ -16,10 +16,12 @@
 
 package fr.cph.chicago.entity.factory;
 
-import fr.cph.chicago.entity.Station;
-import fr.cph.chicago.entity.Stop;
+import android.support.annotation.NonNull;
 
 import java.util.List;
+
+import fr.cph.chicago.entity.Station;
+import fr.cph.chicago.entity.Stop;
 
 /**
  * Factory that build a station
@@ -29,28 +31,26 @@ import java.util.List;
  */
 public class StationFactory {
 
-	/**
-	 *
-	 */
-	private StationFactory() {
-	}
+    /**
+     *
+     */
+    private StationFactory() {
+    }
 
-	/**
-	 * Build a station
-	 *
-	 * @param id
-	 *            the id
-	 * @param name
-	 *            the name
-	 * @param stops
-	 *            the stops
-	 * @return a station
-	 */
-	public static Station buildStation(final Integer id, final String name, final List<Stop> stops) {
-		final Station station = new Station();
-		station.setId(id);
-		station.setName(name);
-		station.setStops(stops);
-		return station;
-	}
+    /**
+     * Build a station
+     *
+     * @param id    the id
+     * @param name  the name
+     * @param stops the stops
+     * @return a station
+     */
+    @NonNull
+    public static Station buildStation(@NonNull final Integer id, @NonNull final String name, @NonNull final List<Stop> stops) {
+        final Station station = new Station();
+        station.setId(id);
+        station.setName(name);
+        station.setStops(stops);
+        return station;
+    }
 }

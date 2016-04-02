@@ -21,6 +21,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.AppCompatCheckBox;
@@ -34,6 +35,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.apache.commons.collections4.MultiValuedMap;
@@ -49,7 +51,7 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
@@ -76,6 +78,7 @@ import fr.cph.chicago.util.Util;
 public class StationActivity extends Activity {
 
     private ViewGroup viewGroup;
+    private ScrollView scrollView;
     private ImageView streetViewImage;
     private ImageView favoritesImage;
     private LinearLayout.LayoutParams paramsStop;
@@ -92,10 +95,12 @@ public class StationActivity extends Activity {
     @Override
     protected final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ChicagoTracker.checkTrainData(this);
+        App.checkTrainData(this);
         if (!this.isFinishing()) {
 
             setContentView(R.layout.activity_station);
+
+            scrollView = (ScrollView) findViewById(R.id.scrollViewTrainStation);
 
             viewGroup = (ViewGroup) findViewById(android.R.id.content);
             // Load data
@@ -174,7 +179,7 @@ public class StationActivity extends Activity {
         }
     }
 
-    private void setUpStopLayouts(final Map<TrainLine, List<Stop>> stopByLines) {
+    private void setUpStopLayouts(@NonNull final Map<TrainLine, List<Stop>> stopByLines) {
         final LinearLayout stopsView = (LinearLayout) findViewById(R.id.activity_train_station_details);
         for (final Entry<TrainLine, List<Stop>> entry : stopByLines.entrySet()) {
             final TrainLine line = entry.getKey();
@@ -186,7 +191,7 @@ public class StationActivity extends Activity {
             testView.setText(WordUtils.capitalize(line.toStringWithLine()));
             testView.setBackgroundColor(line.getColor());
             if (line == TrainLine.YELLOW) {
-                testView.setBackgroundColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.yellowLine));
+                testView.setBackgroundColor(ContextCompat.getColor(App.getContext(), R.color.yellowLine));
             }
 
             stopsView.addView(lineTitleView);
@@ -216,19 +221,19 @@ public class StationActivity extends Activity {
                 checkBox.setChecked(Preferences.getTrainFilter(stationId, line, stop.getDirection()));
                 checkBox.setTypeface(checkBox.getTypeface(), Typeface.BOLD);
                 checkBox.setText(stop.getDirection().toString());
-                checkBox.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
+                checkBox.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey));
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     checkBox.setBackgroundTintList(ColorStateList.valueOf(line.getColor()));
                     checkBox.setButtonTintList(ColorStateList.valueOf(line.getColor()));
                     if (line == TrainLine.YELLOW) {
-                        checkBox.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.yellowLine)));
-                        checkBox.setButtonTintList(ColorStateList.valueOf(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.yellowLine)));
+                        checkBox.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(App.getContext(), R.color.yellowLine)));
+                        checkBox.setButtonTintList(ColorStateList.valueOf(ContextCompat.getColor(App.getContext(), R.color.yellowLine)));
                     }
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     checkBox.setForegroundTintList(ColorStateList.valueOf(line.getColor()));
                     if (line == TrainLine.YELLOW) {
-                        checkBox.setForegroundTintList(ColorStateList.valueOf(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.yellowLine)));
+                        checkBox.setForegroundTintList(ColorStateList.valueOf(ContextCompat.getColor(App.getContext(), R.color.yellowLine)));
                     }
                 }
 
@@ -248,7 +253,7 @@ public class StationActivity extends Activity {
     }
 
     @SuppressWarnings("unchecked")
-    private void setToolBar(final TrainLine randomTrainLine) {
+    private void setToolBar(@NonNull final TrainLine randomTrainLine) {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
@@ -266,7 +271,7 @@ public class StationActivity extends Activity {
             toolbar.setElevation(4);
         }
 
-        Util.setToolbarColor(this, toolbar, randomTrainLine);
+        Util.setWindowsColor(this, toolbar, randomTrainLine);
 
         toolbar.setTitle(station.getName());
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
@@ -302,7 +307,7 @@ public class StationActivity extends Activity {
      * @return if the station is favorite
      */
     private boolean isFavorite() {
-        final List<Integer> favorites = Preferences.getTrainFavorites(ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
+        final List<Integer> favorites = Preferences.getTrainFavorites(App.PREFERENCE_FAVORITES_TRAIN);
         for (final Integer favorite : favorites) {
             if (favorite == stationId) {
                 return true;
@@ -347,7 +352,7 @@ public class StationActivity extends Activity {
      *
      * @param eta the eta
      */
-    public void drawAllArrivalsTrain(final Eta eta) {
+    public void drawAllArrivalsTrain(@NonNull final Eta eta) {
         final TrainLine line = eta.getRouteName();
         final Stop stop = eta.getStop();
         final int line3PaddingLeft = (int) getResources().getDimension(R.dimen.activity_station_stops_line3_padding_left);
@@ -369,14 +374,14 @@ public class StationActivity extends Activity {
                 final TextView stopName = new TextView(this);
                 final String stopNameData = eta.getDestName() + ": ";
                 stopName.setText(stopNameData);
-                stopName.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
+                stopName.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey));
                 stopName.setPadding(line3PaddingLeft, line3PaddingTop, 0, 0);
                 insideLayout.addView(stopName);
 
                 final TextView timing = new TextView(this);
                 final String timingData = eta.getTimeLeftDueDelay() + " ";
                 timing.setText(timingData);
-                timing.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
+                timing.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey));
                 timing.setLines(1);
                 timing.setEllipsize(TruncateAt.END);
                 insideLayout.addView(timing);
@@ -397,17 +402,17 @@ public class StationActivity extends Activity {
      */
     private void switchFavorite() {
         if (isFavorite) {
-            Util.removeFromTrainFavorites(stationId, ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
+            Util.removeFromTrainFavorites(stationId, App.PREFERENCE_FAVORITES_TRAIN, scrollView);
             isFavorite = false;
             favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
         } else {
-            Util.addToTrainFavorites(stationId, ChicagoTracker.PREFERENCE_FAVORITES_TRAIN);
+            Util.addToTrainFavorites(stationId, App.PREFERENCE_FAVORITES_TRAIN, scrollView);
             isFavorite = true;
             favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
         }
     }
 
-    private TrainLine getRandomLine(final Map<TrainLine, List<Stop>> stops) {
+    private TrainLine getRandomLine(@NonNull final Map<TrainLine, List<Stop>> stops) {
         final Random random = new Random();
         final List<TrainLine> keys = new ArrayList<>(stops.keySet());
         return keys.get(random.nextInt(keys.size()));

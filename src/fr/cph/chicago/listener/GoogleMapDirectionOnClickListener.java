@@ -19,11 +19,12 @@ package fr.cph.chicago.listener;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.view.View;
 
 public class GoogleMapDirectionOnClickListener extends GoogleMapListener {
 
-	public GoogleMapDirectionOnClickListener(final Activity activity, final double latitude, final double longitude) {
+	public GoogleMapDirectionOnClickListener(@NonNull final Activity activity, final double latitude, final double longitude) {
 		super(activity, latitude, longitude);
 	}
 

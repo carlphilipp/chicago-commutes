@@ -16,6 +16,9 @@
 
 package fr.cph.chicago.entity.enumeration;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 /**
  * Enumeration, prediction type
  *
@@ -23,40 +26,40 @@ package fr.cph.chicago.entity.enumeration;
  * @version 1
  */
 public enum PredictionType {
-	ARRIVAL("A"), DEPARTURE("D");
+    ARRIVAL("A"), DEPARTURE("D");
 
-	/** The message **/
-	private String message;
+    /**
+     * The message
+     **/
+    private String message;
 
-	/**
-	 * Private constructor
-	 *
-	 * @param message
-	 */
-	PredictionType(String message) {
-		this.message = message;
-	}
+    /**
+     * Private constructor
+     *
+     * @param message
+     */
+    PredictionType(final String message) {
+        this.message = message;
+    }
 
-	/**
-	 * Get Prediction type from string
-	 *
-	 * @param text
-	 *            the text
-	 * @return a prediction type
-	 */
-	public static PredictionType fromString(final String text) {
-		if (text != null) {
-			for (final PredictionType b : PredictionType.values()) {
-				if (text.equalsIgnoreCase(b.message)) {
-					return b;
-				}
-			}
-		}
-		return null;
-	}
+    /**
+     * Get Prediction type from string
+     *
+     * @param text the text
+     * @return a prediction type
+     */
+    @Nullable
+    public static PredictionType fromString(@NonNull final String text) {
+        for (final PredictionType b : PredictionType.values()) {
+            if (text.equalsIgnoreCase(b.message)) {
+                return b;
+            }
+        }
+        return null;
+    }
 
-	@Override
-	public final String toString() {
-		return this.message;
-	}
+    @Override
+    public final String toString() {
+        return this.message;
+    }
 }

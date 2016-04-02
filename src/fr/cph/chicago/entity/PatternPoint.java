@@ -18,161 +18,81 @@ package fr.cph.chicago.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
+import lombok.Data;
+
+@Data
 public class PatternPoint implements Parcelable {
-	/** Sequence number **/
-	private int sequence;
-	/** The position **/
-	private Position position;
-	/** The type **/
-	private String type;
-	/** The stop id **/
-	private int stopId;
-	/** The stop name **/
-	private String stopName;
-	/** The distance **/
-	private double distance;
+    /**
+     * Sequence number
+     **/
+    private int sequence;
+    /**
+     * The position
+     **/
+    private Position position;
+    /**
+     * The type
+     **/
+    private String type;
+    /**
+     * The stop id
+     **/
+    private int stopId;
+    /**
+     * The stop name
+     **/
+    private String stopName;
+    /**
+     * The distance
+     **/
+    private double distance;
 
-	/**
-	 *
-	 */
-	public PatternPoint() {
+    /**
+     *
+     */
+    public PatternPoint() {
+    }
 
-	}
+    /**
+     * @param in
+     */
+    private PatternPoint(@NonNull final Parcel in) {
+        readFromParcel(in);
+    }
 
-	/**
-	 * @param in
-	 */
-	private PatternPoint(Parcel in) {
-		readFromParcel(in);
-	}
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
-	/**
-	 * @return
-	 */
-	public final int getSequence() {
-		return sequence;
-	}
+    @Override
+    public void writeToParcel(final Parcel dest, final int flags) {
+        dest.writeInt(sequence);
+        dest.writeParcelable(position, flags);
+        dest.writeString(type);
+        dest.writeInt(stopId);
+        dest.writeString(stopName);
+        dest.writeDouble(distance);
+    }
 
-	/**
-	 * @param sequence
-	 */
-	public final void setSequence(int sequence) {
-		this.sequence = sequence;
-	}
+    private void readFromParcel(@NonNull final Parcel in) {
+        sequence = in.readInt();
+        position = in.readParcelable(Position.class.getClassLoader());
+        type = in.readString();
+        stopId = in.readInt();
+        stopName = in.readString();
+        distance = in.readDouble();
+    }
 
-	/**
-	 * @return
-	 */
-	public final Position getPosition() {
-		return position;
-	}
+    public static final Parcelable.Creator<PatternPoint> CREATOR = new Parcelable.Creator<PatternPoint>() {
+        public PatternPoint createFromParcel(final Parcel in) {
+            return new PatternPoint(in);
+        }
 
-	/**
-	 * @param position
-	 */
-	public final void setPosition(Position position) {
-		this.position = position;
-	}
-
-	/**
-	 * @return
-	 */
-	public final String getType() {
-		return type;
-	}
-
-	/**
-	 * @param type
-	 */
-	public final void setType(String type) {
-		this.type = type;
-	}
-
-	/**
-	 * @return
-	 */
-	public final int getStopId() {
-		return stopId;
-	}
-
-	/**
-	 * @param stopId
-	 */
-	public final void setStopId(int stopId) {
-		this.stopId = stopId;
-	}
-
-	/**
-	 * @return
-	 */
-	public final String getStopName() {
-		return stopName;
-	}
-
-	/**
-	 * @param stopName
-	 */
-	public final void setStopName(String stopName) {
-		this.stopName = stopName;
-	}
-
-	/**
-	 * @return
-	 */
-	public final double getDistance() {
-		return distance;
-	}
-
-	/**
-	 * @param distance
-	 */
-	public final void setDistance(double distance) {
-		this.distance = distance;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.os.Parcelable#describeContents()
-	 */
-	@Override
-	public int describeContents() {
-		return 0;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.os.Parcelable#writeToParcel(android.os.Parcel, int)
-	 */
-	@Override
-	public void writeToParcel(Parcel dest, int flags) {
-		dest.writeInt(sequence);
-		dest.writeParcelable(position, flags);
-		dest.writeString(type);
-		dest.writeInt(stopId);
-		dest.writeString(stopName);
-		dest.writeDouble(distance);
-	}
-
-	private void readFromParcel(Parcel in) {
-		sequence = in.readInt();
-		position = in.readParcelable(Position.class.getClassLoader());
-		type = in.readString();
-		stopId = in.readInt();
-		stopName = in.readString();
-		distance = in.readDouble();
-	}
-
-	public static final Parcelable.Creator<PatternPoint> CREATOR = new Parcelable.Creator<PatternPoint>() {
-		public PatternPoint createFromParcel(Parcel in) {
-			return new PatternPoint(in);
-		}
-
-		public PatternPoint[] newArray(int size) {
-			return new PatternPoint[size];
-		}
-	};
-
+        public PatternPoint[] newArray(final int size) {
+            return new PatternPoint[size];
+        }
+    };
 }

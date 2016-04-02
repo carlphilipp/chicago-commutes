@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p>
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,6 +19,7 @@ package fr.cph.chicago.activity;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
@@ -34,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BusArrival;
@@ -66,6 +67,7 @@ public class BusActivity extends Activity {
     private double latitude, longitude;
     private boolean isFavorite;
 
+    private SwipeRefreshLayout scrollView;
     private ImageView streetViewImage, favoritesImage;
     private LinearLayout stopsView;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -74,9 +76,12 @@ public class BusActivity extends Activity {
     @Override
     protected final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ChicagoTracker.checkBusData(this);
+        App.checkBusData(this);
         if (!this.isFinishing()) {
             setContentView(R.layout.activity_bus);
+
+            scrollView = (SwipeRefreshLayout) findViewById(R.id.activity_bus_stop_swipe_refresh_layout);
+
 
             if (busStopId == null || busRouteId == null || bound == null || busStopName == null || busRouteName == null || boundTitle == null) {
                 busStopId = getIntent().getExtras().getInt(getString(R.string.bundle_bus_stop_id));
@@ -154,7 +159,7 @@ public class BusActivity extends Activity {
                 return false;
             }
         }));
-        Util.setToolbarColor(this, toolbar, TrainLine.NA);
+        Util.setWindowsColor(this, toolbar, TrainLine.NA);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.setElevation(4);
         }
@@ -194,7 +199,7 @@ public class BusActivity extends Activity {
         super.onSaveInstanceState(savedInstanceState);
     }
 
-    public void setBusArrivals(final List<BusArrival> busArrivals) {
+    public void setBusArrivals(@NonNull final List<BusArrival> busArrivals) {
         this.busArrivals = busArrivals;
     }
 
@@ -210,29 +215,29 @@ public class BusActivity extends Activity {
                     if (mapRes.containsKey(destination)) {
                         final TextView arrivalView = mapRes.get(destination);
                         String arrivalText;
-                        if (arrival.getIsDly()) {
+                        if (arrival.isDly()) {
                             arrivalText = arrivalView.getText() + " Delay";
                         } else {
                             arrivalText = arrivalView.getText() + " " + arrival.getTimeLeft();
                         }
                         arrivalView.setText(arrivalText);
                     } else {
-                        final TextView arrivalView = new TextView(ChicagoTracker.getContext());
+                        final TextView arrivalView = new TextView(App.getContext());
                         String arrivalText;
-                        if (arrival.getIsDly()) {
+                        if (arrival.isDly()) {
                             arrivalText = arrival.getBusDestination() + ": Delay";
                         } else {
                             arrivalText = arrival.getBusDestination() + ": " + arrival.getTimeLeft();
                         }
                         arrivalView.setText(arrivalText);
-                        arrivalView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
+                        arrivalView.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey));
                         mapRes.put(destination, arrivalView);
                     }
                 }
             }
         } else {
-            final TextView arrivalView = new TextView(ChicagoTracker.getContext());
-            arrivalView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
+            final TextView arrivalView = new TextView(App.getContext());
+            arrivalView.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey));
             arrivalView.setText(getString(R.string.bus_activity_no_service));
             mapRes.put("", arrivalView);
         }
@@ -244,7 +249,7 @@ public class BusActivity extends Activity {
 
     private boolean isFavorite() {
         boolean isFavorite = false;
-        final List<String> favorites = Preferences.getBusFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+        final List<String> favorites = Preferences.getBusFavorites(App.PREFERENCE_FAVORITES_BUS);
         for (final String favorite : favorites) {
             if (favorite.equals(busRouteId + "_" + busStopId + "_" + boundTitle)) {
                 isFavorite = true;
@@ -259,11 +264,11 @@ public class BusActivity extends Activity {
      */
     private void switchFavorite() {
         if (isFavorite) {
-            Util.removeFromBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+            Util.removeFromBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, App.PREFERENCE_FAVORITES_BUS, scrollView);
             favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
             isFavorite = false;
         } else {
-            Util.addToBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, ChicagoTracker.PREFERENCE_FAVORITES_BUS);
+            Util.addToBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, App.PREFERENCE_FAVORITES_BUS, scrollView);
             Log.i(TAG, "busRouteName: " + busRouteName);
             Preferences.addBusRouteNameMapping(String.valueOf(busStopId), busRouteName);
             Preferences.addBusStopNameMapping(String.valueOf(busStopId), busStopName);

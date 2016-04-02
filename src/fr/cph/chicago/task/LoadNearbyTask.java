@@ -24,6 +24,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 
 import com.google.android.gms.maps.SupportMapFragment;
@@ -76,7 +77,7 @@ public class LoadNearbyTask extends AsyncTask<Void, Void, Void> implements Locat
 
     private SupportMapFragment mapFragment;
 
-    public LoadNearbyTask(final NearbyFragment fragment, final MainActivity activity, final SupportMapFragment mapFragment) {
+    public LoadNearbyTask(@NonNull final NearbyFragment fragment, @NonNull final MainActivity activity, @NonNull final SupportMapFragment mapFragment) {
         this.fragment = fragment;
         this.activity = activity;
         this.mapFragment = mapFragment;
@@ -111,7 +112,7 @@ public class LoadNearbyTask extends AsyncTask<Void, Void, Void> implements Locat
     protected final void onPostExecute(final Void result) {
         fragment.loadArrivals(busStops, trainStations, bikeStations);
 
-        Util.centerMap(fragment, mapFragment, activity, position);
+        Util.centerMap(mapFragment, activity, position);
 
         if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)

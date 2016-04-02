@@ -18,18 +18,18 @@ package fr.cph.chicago.adapter;
 
 import android.app.Activity;
 import android.graphics.Typeface;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-
-import java.util.List;
-
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.entity.BusArrival;
+
+import java.util.List;
 
 /**
  * Adapter that will handle bus map
@@ -45,7 +45,7 @@ public class BusMapSnippetAdapter extends BaseAdapter {
     /**
      * @param arrivals
      */
-    public BusMapSnippetAdapter(final Activity activity, final List<BusArrival> arrivals) {
+    public BusMapSnippetAdapter(@NonNull final Activity activity, @NonNull final List<BusArrival> arrivals) {
         this.activity = activity;
         this.arrivals = arrivals;
     }
@@ -67,19 +67,18 @@ public class BusMapSnippetAdapter extends BaseAdapter {
 
     @Override
     public final View getView(final int position, View convertView, final ViewGroup parent) {
-
         final BusArrival arrival = (BusArrival) getItem(position);
         convertView = activity.getLayoutInflater().inflate(R.layout.list_map_train, parent, false);
-        TextView stationNameTextView = (TextView) convertView.findViewById(R.id.station_name);
-        stationNameTextView.setText(arrival.getStopName() + " " + position);
+        final TextView stationNameTextView = (TextView) convertView.findViewById(R.id.station_name);
+        stationNameTextView.setText(arrival.getStopName());
 
-        if (!(position == arrivals.size() - 1 && "No service scheduled".equals(arrival.getTimeLeftDueDelay()))) {
+        if (!(position == arrivals.size() - 1 && "No service".equals(arrival.getTimeLeftDueDelay()))) {
             final TextView timeTextView = (TextView) convertView.findViewById(R.id.time);
             timeTextView.setText(arrival.getTimeLeftDueDelay());
         } else {
             stationNameTextView.setTypeface(null, Typeface.BOLD);
             stationNameTextView.setText(arrival.getStopName());
-            stationNameTextView.setTextColor(ContextCompat.getColor(ChicagoTracker.getContext(), R.color.grey));
+            stationNameTextView.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey));
             stationNameTextView.setGravity(Gravity.CENTER);
         }
         return convertView;

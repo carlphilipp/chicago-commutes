@@ -18,15 +18,14 @@ package fr.cph.chicago.task;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
-import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BikeStationActivity;
 import fr.cph.chicago.connection.DivvyConnect;
@@ -47,7 +46,7 @@ public class DivvyAsyncTask extends AsyncTask<Void, Void, List<BikeStation>> {
     private int bikeStationId;
     private SwipeRefreshLayout swipeRefreshLayout;
 
-    public DivvyAsyncTask(final BikeStationActivity activity, final int bikeStationId, final SwipeRefreshLayout swipeRefreshLayout) {
+    public DivvyAsyncTask(@NonNull final BikeStationActivity activity, final int bikeStationId, @NonNull final SwipeRefreshLayout swipeRefreshLayout) {
         this.activity = activity;
         this.bikeStationId = bikeStationId;
         this.swipeRefreshLayout = swipeRefreshLayout;
@@ -66,7 +65,7 @@ public class DivvyAsyncTask extends AsyncTask<Void, Void, List<BikeStation>> {
         } catch (final ConnectException | ParserException e) {
             activity.runOnUiThread(new Runnable() {
                 public void run() {
-                    Toast.makeText(ChicagoTracker.getContext(), "A surprising error has occurred. Try again!", Toast.LENGTH_SHORT).show();
+                    Util.showMessage(activity, "A surprising error has occurred. Try again!");
                 }
             });
             Log.e(TAG, "Error while connecting or parsing divvy data", e);

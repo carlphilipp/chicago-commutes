@@ -17,8 +17,11 @@
 package fr.cph.chicago.entity.enumeration;
 
 import android.graphics.Color;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import fr.cph.chicago.ChicagoTracker;
+
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 
 /**
@@ -28,109 +31,110 @@ import fr.cph.chicago.R;
  * @version 1
  */
 public enum TrainLine {
-	
-	BLUE("Blue", "Blue", "Blue line", Color.rgb(0, 158, 218)),
-	BROWN("Brn", "Brown", "Brown line", Color.rgb(102, 51, 0)),
-	GREEN("G", "Green", "Green line", Color.rgb(0, 153, 0)),
-	ORANGE("Org", "Orange", "Orange line", Color.rgb(255, 128, 0)),
-	PINK("Pink", "Pink", "Pink line", Color.rgb(204, 0, 102)),
-	PURPLE("P", "Purple", "Purple line", Color.rgb(102, 0, 102)),
-	RED("Red", "Red", "Red line", Color.rgb(240, 0, 0)),
-	YELLOW("Y", "Yellow", "Yellow line", ContextCompat.getColor(ChicagoTracker.getContext(), R.color.yellowLine)),
-	NA("N/A", "N/A", "N/A line", Color.BLACK);
 
-	/** The text **/
-	private String text;
-	/** The name **/
-	private String name;
-	/** The name with line **/
-	private String withLine;
-	/** THe color **/
-	private int color;
+    BLUE("Blue", "Blue", "Blue line", Color.rgb(0, 158, 218)),
+    BROWN("Brn", "Brown", "Brown line", Color.rgb(102, 51, 0)),
+    GREEN("G", "Green", "Green line", Color.rgb(0, 153, 0)),
+    ORANGE("Org", "Orange", "Orange line", Color.rgb(255, 128, 0)),
+    PINK("Pink", "Pink", "Pink line", Color.rgb(204, 0, 102)),
+    PURPLE("P", "Purple", "Purple line", Color.rgb(102, 0, 102)),
+    RED("Red", "Red", "Red line", Color.rgb(240, 0, 0)),
+    YELLOW("Y", "Yellow", "Yellow line", ContextCompat.getColor(App.getContext(), R.color.yellowLine)),
+    NA("N/A", "N/A", "N/A line", Color.BLACK);
 
-	/**
-	 * Private constructor
-	 *
-	 * @param text
-	 *            the text
-	 * @param name
-	 *            the name
-	 * @param withLine
-	 *            the name with 'line'
-	 * @param color
-	 *            the color
-	 */
-	TrainLine(final String text, final String name, final String withLine, final int color) {
-		this.text = text;
-		this.name = name;
-		this.withLine = withLine;
-		this.color = color;
-	}
+    /**
+     * The text
+     **/
+    private String text;
+    /**
+     * The name
+     **/
+    private String name;
+    /**
+     * The name with line
+     **/
+    private String withLine;
+    /**
+     * THe color
+     **/
+    private int color;
 
-	/**
-	 * The train line from xml string
-	 *
-	 * @param text
-	 *            the text
-	 * @return the text
-	 */
-	public static TrainLine fromXmlString(final String text) {
-		if (text != null) {
-			for (TrainLine b : TrainLine.values()) {
-				if (text.equalsIgnoreCase(b.text)) {
-					return b;
-				}
-			}
-		}
-		return null;
-	}
+    /**
+     * Private constructor
+     *
+     * @param text     the text
+     * @param name     the name
+     * @param withLine the name with 'line'
+     * @param color    the color
+     */
+    TrainLine(final String text, final String name, final String withLine, final int color) {
+        this.text = text;
+        this.name = name;
+        this.withLine = withLine;
+        this.color = color;
+    }
 
-	/**
-	 * The train line from string
-	 *
-	 * @param text
-	 *            the text
-	 * @return a train line
-	 */
-	public static TrainLine fromString(final String text) {
-		if (text != null) {
-			for (TrainLine b : TrainLine.values()) {
-				if (text.equalsIgnoreCase(b.name)) {
-					return b;
-				}
-			}
-		}
-		return null;
-	}
+    /**
+     * The train line from xml string
+     *
+     * @param text the text
+     * @return the text
+     */
+    @Nullable
+    public static TrainLine fromXmlString(@NonNull final String text) {
+        for (TrainLine b : TrainLine.values()) {
+            if (text.equalsIgnoreCase(b.text)) {
+                return b;
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * Get to string with line
-	 *
-	 * @return
-	 */
-	public final String toStringWithLine() {
-		return withLine;
-	}
+    /**
+     * The train line from string
+     *
+     * @param text the text
+     * @return a train line
+     */
+    @NonNull
+    public static TrainLine fromString(@Nullable final String text) {
+        for (final TrainLine b : TrainLine.values()) {
+            if (b.name.equalsIgnoreCase(text)) {
+                return b;
+            }
+        }
+        return NA;
+    }
 
-	/**
-	 * Get color
-	 *
-	 * @return the color
-	 */
-	public final int getColor() {
-		return color;
-	}
+    /**
+     * Get to string with line
+     *
+     * @return
+     */
+    @NonNull
+    public final String toStringWithLine() {
+        return withLine;
+    }
 
-	@Override
-	public final String toString() {
-		return name;
-	}
+    /**
+     * Get color
+     *
+     * @return the color
+     */
+    public final int getColor() {
+        return color;
+    }
 
-	/**
-	 *
-	 * @return
-	 */
-	public final String toTextString() {
-		return text;
-	}
+    @Override
+    public final String toString() {
+        return name;
+    }
+
+    /**
+     * @return
+     */
+    @NonNull
+    public final String toTextString() {
+        return text;
+    }
 }

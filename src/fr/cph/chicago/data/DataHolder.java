@@ -16,6 +16,9 @@
 
 package fr.cph.chicago.data;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 /**
  * Class that hold bus and train data. Singleton
  *
@@ -24,66 +27,73 @@ package fr.cph.chicago.data;
  */
 public class DataHolder {
 
-	/** Singleton **/
-	private static DataHolder dataHolder;
-	/** Train data **/
-	private TrainData trainData;
-	/** Bus data **/
-	private BusData busData;
+    /**
+     * Singleton
+     **/
+    private static DataHolder dataHolder;
+    /**
+     * Train data
+     **/
+    private TrainData trainData;
+    /**
+     * Bus data
+     **/
+    private BusData busData;
 
-	/**
-	 * Private constructor
-	 */
-	private DataHolder() {
-	}
+    /**
+     * Private constructor
+     */
+    private DataHolder() {
+    }
 
-	/**
-	 * Get instance of the class. Singleton
-	 *
-	 * @return
-	 */
-	public static DataHolder getInstance() {
-		if (dataHolder == null) {
-			dataHolder = new DataHolder();
-		}
-		return dataHolder;
-	}
+    /**
+     * Get instance of the class. Singleton
+     *
+     * @return
+     */
+    @NonNull
+    public static DataHolder getInstance() {
+        if (dataHolder == null) {
+            dataHolder = new DataHolder();
+        }
+        return dataHolder;
+    }
 
-	/**
-	 * Get Train data
-	 *
-	 * @return train data
-	 */
-	public final TrainData getTrainData() {
-		return trainData;
-	}
+    /**
+     * Get Train data
+     *
+     * @return train data
+     */
+    @NonNull
+    public final TrainData getTrainData() {
+        return trainData;
+    }
 
-	/**
-	 * Set train data
-	 *
-	 * @param data
-	 *            train data
-	 */
-	public final void setTrainData(final TrainData data) {
-		this.trainData = data;
-	}
+    /**
+     * Set train data
+     *
+     * @param data train data
+     */
+    public final void setTrainData(@Nullable final TrainData data) {
+        this.trainData = data;
+    }
 
-	/**
-	 * Get bus data
-	 *
-	 * @return bus data
-	 */
-	public final BusData getBusData() {
-		return busData;
-	}
+    /**
+     * Get bus data
+     *
+     * @return bus data
+     */
+    @NonNull
+    public final BusData getBusData() {
+        return busData;
+    }
 
-	/**
-	 * Set bus data
-	 *
-	 * @param busData
-	 *            bus data
-	 */
-	public final void setBusData(final BusData busData) {
-		this.busData = busData;
-	}
+    /**
+     * Set bus data
+     *
+     * @param busData bus data
+     */
+    public final void setBusData(@Nullable final BusData busData) {
+        this.busData = busData;
+    }
 }

@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p>
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
@@ -31,7 +32,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
@@ -53,8 +54,6 @@ public class BikeStationActivity extends Activity {
 
     private static final String TAG = BikeStationActivity.class.getSimpleName();
 
-    private ImageView streetViewImage;
-    private TextView streetViewText;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ImageView favoritesImage;
 
@@ -66,7 +65,7 @@ public class BikeStationActivity extends Activity {
         super.onCreate(savedInstanceState);
         if (!this.isFinishing()) {
             setContentView(R.layout.activity_bike_station);
-            bikeStation = getIntent().getExtras().getParcelable("station");
+            bikeStation = getIntent().getExtras().getParcelable(getString(R.string.bundle_bike_station));
             if (bikeStation != null) {
                 final double latitude = bikeStation.getLatitude();
                 final double longitude = bikeStation.getLongitude();
@@ -81,8 +80,8 @@ public class BikeStationActivity extends Activity {
 
                 isFavorite = isFavorite();
 
-                streetViewImage = (ImageView) findViewById(R.id.activity_bike_station_streetview_image);
-                streetViewText = (TextView) findViewById(R.id.activity_bike_station_steetview_text);
+                final ImageView streetViewImage = (ImageView) findViewById(R.id.activity_bike_station_streetview_image);
+                final TextView streetViewText = (TextView) findViewById(R.id.activity_bike_station_steetview_text);
 
                 // Call google street api to load image
                 new DisplayGoogleStreetPictureTask(this, streetViewImage, streetViewText).execute(latitude, longitude);
@@ -131,7 +130,7 @@ public class BikeStationActivity extends Activity {
                 return false;
             }
         }));
-        Util.setToolbarColor(this, toolbar, TrainLine.NA);
+        Util.setWindowsColor(this, toolbar, TrainLine.NA);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.setElevation(4);
         }
@@ -146,7 +145,7 @@ public class BikeStationActivity extends Activity {
     }
 
     private void drawData() {
-        final Context context = ChicagoTracker.getContext();
+        final Context context = App.getContext();
 
         final LinearLayout container = (LinearLayout) findViewById(R.id.favorites_bikes_list);
         final LinearLayout availableLayout = new LinearLayout(context);
@@ -206,7 +205,7 @@ public class BikeStationActivity extends Activity {
      * @return if the station is favorite
      */
     private boolean isFavorite() {
-        final List<String> favorites = Preferences.getBikeFavorites(ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
+        final List<String> favorites = Preferences.getBikeFavorites(App.PREFERENCE_FAVORITES_BIKE);
         for (final String favorite : favorites) {
             if (Integer.valueOf(favorite) == bikeStation.getId()) {
                 return true;
@@ -215,7 +214,7 @@ public class BikeStationActivity extends Activity {
         return false;
     }
 
-    public void refreshStation(final BikeStation station) {
+    public void refreshStation(@NonNull final BikeStation station) {
         this.bikeStation = station;
         drawData();
     }
@@ -225,10 +224,10 @@ public class BikeStationActivity extends Activity {
      */
     private void switchFavorite() {
         if (isFavorite) {
-            Util.removeFromBikeFavorites(bikeStation.getId(), ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
+            Util.removeFromBikeFavorites(bikeStation.getId(), App.PREFERENCE_FAVORITES_BIKE, swipeRefreshLayout);
             isFavorite = false;
         } else {
-            Util.addToBikeFavorites(bikeStation.getId(), ChicagoTracker.PREFERENCE_FAVORITES_BIKE);
+            Util.addToBikeFavorites(bikeStation.getId(), App.PREFERENCE_FAVORITES_BIKE, swipeRefreshLayout);
             Preferences.addBikeRouteNameMapping(String.valueOf(bikeStation.getId()), bikeStation.getName());
             isFavorite = true;
         }

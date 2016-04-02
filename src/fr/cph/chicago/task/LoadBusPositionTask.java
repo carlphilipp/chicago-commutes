@@ -17,15 +17,8 @@
 package fr.cph.chicago.task;
 
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.util.Log;
-import android.widget.Toast;
-
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-
-import java.io.InputStream;
-import java.util.List;
-
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BusMapActivity;
 import fr.cph.chicago.connection.CtaConnect;
@@ -34,6 +27,11 @@ import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.XmlParser;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+
+import java.io.InputStream;
+import java.util.List;
 
 import static fr.cph.chicago.connection.CtaRequestType.BUS_VEHICLES;
 
@@ -46,7 +44,7 @@ public class LoadBusPositionTask extends AsyncTask<Boolean, Void, List<Bus>> {
     private int busId;
     private String busRouteId;
 
-    public LoadBusPositionTask(final BusMapActivity activity, final int busId, final String busRouteId) {
+    public LoadBusPositionTask(@NonNull final BusMapActivity activity, final int busId, @NonNull final String busRouteId) {
         this.activity = activity;
         this.busId = busId;
         this.busRouteId = busRouteId;
@@ -83,10 +81,10 @@ public class LoadBusPositionTask extends AsyncTask<Boolean, Void, List<Bus>> {
                     activity.centerMapOnBus(result);
                 }
             } else {
-                Toast.makeText(activity, "No bus found!", Toast.LENGTH_LONG).show();
+                Util.showMessage(activity, "No bus found!");
             }
         } else {
-            Toast.makeText(activity, "Error while loading data!", Toast.LENGTH_SHORT).show();
+            Util.showMessage(activity, "Error while loading data!");
         }
     }
 }

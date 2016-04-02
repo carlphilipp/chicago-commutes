@@ -18,19 +18,20 @@ package fr.cph.chicago.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.listener.FavoritesTrainOnClickListener;
+import fr.cph.chicago.listener.TrainOnClickListener;
 
 import java.util.List;
 import java.util.Set;
@@ -52,12 +53,12 @@ public final class TrainAdapter extends BaseAdapter {
 	 *
 	 * @param line the train line
 	 */
-	public TrainAdapter(final TrainLine line, final Activity activity) {
+	public TrainAdapter(@NonNull final TrainLine line, @NonNull final Activity activity) {
 		// Load data
 		final DataHolder dataHolder = DataHolder.getInstance();
 		final TrainData data = dataHolder.getTrainData();
 		this.stations = data.getStationsForLine(line);
-		this.context = ChicagoTracker.getContext();
+		this.context = App.getContext();
 		this.activity = activity;
 	}
 
@@ -81,7 +82,7 @@ public final class TrainAdapter extends BaseAdapter {
 		ViewHolder holder;
 		if (convertView == null) {
 			holder = new ViewHolder();
-			final LayoutInflater vi = (LayoutInflater) ChicagoTracker.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			final LayoutInflater vi = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = vi.inflate(R.layout.list_train, parent, false);
 
 			final TextView stationNameView = (TextView) convertView.findViewById(R.id.station_name_value);
@@ -114,7 +115,7 @@ public final class TrainAdapter extends BaseAdapter {
 			}
 			index++;
 		}
-		convertView.setOnClickListener(new FavoritesTrainOnClickListener(activity, station.getId(), lines));
+		convertView.setOnClickListener(new TrainOnClickListener(activity, station.getId(), lines));
 		return convertView;
 	}
 

@@ -17,13 +17,17 @@
 package fr.cph.chicago.connection;
 
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.util.Log;
-import fr.cph.chicago.util.Util;
+
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+
+import fr.cph.chicago.App;
+import fr.cph.chicago.R;
 
 /**
  * Class that access google street api. Singleton
@@ -33,65 +37,69 @@ import java.net.URL;
  */
 public class GStreetViewConnect {
 
-	private static final String TAG = GStreetViewConnect.class.getSimpleName();
-	private static final String BASE_URL = "http://maps.googleapis.com/maps/api/streetview";
-	private static final int WIDTH = 1000;
-	private static final int HEIGHT = 300;
+    private static final String TAG = GStreetViewConnect.class.getSimpleName();
+    private static final String BASE_URL = "http://maps.googleapis.com/maps/api/streetview";
+    private static final int WIDTH = 1000;
+    private static final int HEIGHT = 300;
 
-	private String googleKey;
+    private String googleKey;
 
-	private static GStreetViewConnect instance = null;
+    private static GStreetViewConnect instance = null;
 
-	/**
-	 * Private constructor, that get the API key from property file
-	 */
-	private GStreetViewConnect() {
-		googleKey = Util.getProperty("google.streetmap.key");
-	}
+    /**
+     * Private constructor, that get the API key from property file
+     */
+    private GStreetViewConnect() {
+        googleKey = App.getContext().getString(R.string.google_maps_api_key);
+    }
 
-	/**
-	 * Get instance of this class
-	 *
-	 * @return
-	 */
-	public static GStreetViewConnect getInstance() {
-		if (instance == null) {
-			instance = new GStreetViewConnect();
-		}
-		return instance;
-	}
+    /**
+     * Get instance of this class
+     *
+     * @return
+     */
+    @NonNull
+    public static GStreetViewConnect getInstance() {
+        if (instance == null) {
+            instance = new GStreetViewConnect();
+        }
+        return instance;
+    }
 
-	public final Drawable connect(final double latitude, final double longitude) throws IOException {
-		final StringBuilder address = new StringBuilder(BASE_URL);
-		address.append("?key=");
-		address.append(googleKey);
-		address.append("&sensor=false");
-		address.append("&size=" + WIDTH + "x" + HEIGHT);
-		address.append("&fov=120");
-		address.append("&location=");
-		address.append(latitude);
-		address.append(",").append(longitude);
-		return connectUrl(address.toString());
-	}
+    @NonNull
+    public final Drawable connect(final double latitude, final double longitude) throws IOException {
+        final StringBuilder address = new StringBuilder(BASE_URL);
+        address.append("?key=");
+        address.append(googleKey);
+        address.append("&sensor=false");
+        address.append("&size=" + WIDTH + "x" + HEIGHT);
+        address.append("&fov=120");
+        address.append("&location=");
+        address.append(latitude);
+        address.append(",").append(longitude);
+        return connectUrl(address.toString());
+    }
 
-	/**
-	 * Connect to the API and get the MAP
-	 *
-	 * @param address the address to connect to
-	 * @return a drawable map
-	 * @throws IOException
-	 */
-	private Drawable connectUrl(final String address) {
-		Log.v(TAG, "Address: " + address);
-		InputStream is = null;
-		try {
-			is = (InputStream) new URL(address).getContent();
-			return Drawable.createFromStream(is, "src name");
-		} catch (final Exception e) {
-			Log.e(TAG, e.getMessage(), e);
-			return null;
-		} finally {
-			IOUtils.closeQuietly(is);
-		}
-	}
+    /**
+     * Connect to the API and get the MAP
+     *
+     * @param address the address to connect to
+     * @return a drawable map
+     * @throws IOException
+     */
+    @NonNull
+    private Drawable connectUrl(@NonNull final String address) {
+        Log.v(TAG, "Address: " + address);
+        InputStream is = null;
+        try {
+            is = (InputStream) new URL(address).getContent();
+            return Drawable.createFromStream(is, "src name");
+        } catch (final Exception e) {
+            Log.e(TAG, e.getMessage(), e);
+            // TODO add a temporary image here
+            return null;
+        } finally {
+            IOUtils.closeQuietly(is);
+        }
+    }
 }

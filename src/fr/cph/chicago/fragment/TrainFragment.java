@@ -26,8 +26,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
-import fr.cph.chicago.ChicagoTracker;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.activity.TrainStationActivity;
@@ -42,61 +40,61 @@ import fr.cph.chicago.util.Util;
  * @version 1
  */
 public final class TrainFragment extends Fragment {
-	private static final String ARG_SECTION_NUMBER = "section_number";
-	private MainActivity mainActivity;
+    private static final String ARG_SECTION_NUMBER = "section_number";
+    private MainActivity activity;
 
-	/**
-	 * Returns a new instance of this fragment for the given section number.
-	 *
-	 * @param sectionNumber
-	 * @return
-	 */
-	public static TrainFragment newInstance(final int sectionNumber) {
-		final TrainFragment fragment = new TrainFragment();
-		final Bundle args = new Bundle();
-		args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-		fragment.setArguments(args);
-		return fragment;
-	}
+    /**
+     * Returns a new instance of this fragment for the given section number.
+     *
+     * @param sectionNumber
+     * @return
+     */
+    public static TrainFragment newInstance(final int sectionNumber) {
+        final TrainFragment fragment = new TrainFragment();
+        final Bundle args = new Bundle();
+        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
-	@Override
-	public final void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		Util.trackScreen(getString(R.string.analytics_train_fragment));
-	}
+    @Override
+    public final void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Util.trackScreen(getString(R.string.analytics_train_fragment));
+    }
 
-	@Override
-	public final void onAttach(final Context context) {
-		super.onAttach(context);
-		mainActivity = context instanceof Activity ? (MainActivity) context : null;
-	}
+    @Override
+    public final void onAttach(final Context context) {
+        super.onAttach(context);
+        activity = context instanceof Activity ? (MainActivity) context : null;
+    }
 
-	@Override
-	public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-		final View rootView = inflater.inflate(R.layout.fragment_train, container, false);
-		final TrainStationAdapter ada = new TrainStationAdapter();
-		final ListView listView = (ListView) rootView.findViewById(R.id.train_list);
-		listView.setAdapter(ada);
-		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
-				if (Util.isNetworkAvailable()) {
-					final Intent intent = new Intent(mainActivity, TrainStationActivity.class);
-					final Bundle extras = new Bundle();
-					final String line = TrainLine.values()[position].toString();
-					extras.putString("line", line);
-					intent.putExtras(extras);
-					startActivity(intent);
-				} else {
-					Toast.makeText(ChicagoTracker.getContext(), "No network connection detected!", Toast.LENGTH_SHORT).show();
-				}
-			}
-		});
-		return rootView;
-	}
+    @Override
+    public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+        final View rootView = inflater.inflate(R.layout.fragment_train, container, false);
+        final TrainStationAdapter ada = new TrainStationAdapter();
+        final ListView listView = (ListView) rootView.findViewById(R.id.train_list);
+        listView.setAdapter(ada);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
+                if (Util.isNetworkAvailable()) {
+                    final Intent intent = new Intent(activity, TrainStationActivity.class);
+                    final Bundle extras = new Bundle();
+                    final String line = TrainLine.values()[position].toString();
+                    extras.putString(activity.getString(R.string.bundle_train_line), line);
+                    intent.putExtras(extras);
+                    startActivity(intent);
+                } else {
+                    Util.showSettingsAlert(activity);
+                }
+            }
+        });
+        return rootView;
+    }
 
-	@Override
-	public final void onSaveInstanceState(final Bundle outState) {
-		super.onSaveInstanceState(outState);
-	}
+    @Override
+    public final void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
 }

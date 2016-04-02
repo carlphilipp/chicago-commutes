@@ -4,6 +4,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -14,13 +15,12 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.adapter.SearchAdapter;
 import fr.cph.chicago.data.BusData;
@@ -37,16 +37,14 @@ import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 public class SearchActivity extends AppCompatActivity {
 
     private SearchView searchView;
-
     private SearchAdapter searchAdapter;
-
     private List<BikeStation> bikeStations;
 
     @Override
     protected void onCreate(final Bundle state) {
         super.onCreate(state);
-        ChicagoTracker.checkTrainData(this);
-        ChicagoTracker.checkBusData(this);
+        App.checkTrainData(this);
+        App.checkBusData(this);
         if (!this.isFinishing()) {
             setContentView(R.layout.activity_search);
             setupToolbar();
@@ -56,13 +54,13 @@ public class SearchActivity extends AppCompatActivity {
 
                 searchAdapter = new SearchAdapter(this);
                 searchAdapter.updateData(new ArrayList<Station>(), new ArrayList<BusRoute>(), new ArrayList<BikeStation>());
-                bikeStations = getIntent().getExtras().getParcelableArrayList("bikeStations");
+                bikeStations = getIntent().getExtras().getParcelableArrayList(getString(R.string.bundle_bike_stations));
                 handleIntent(getIntent());
 
                 final ListView listView = (ListView) findViewById(R.id.search_list);
                 listView.setAdapter(searchAdapter);
             } else {
-                Toast.makeText(ChicagoTracker.getContext(), "No network connection detected!", Toast.LENGTH_SHORT).show();
+                Util.showSettingsAlert(this);
             }
 
             // Associate searchable configuration with the SearchView
@@ -102,8 +100,8 @@ public class SearchActivity extends AppCompatActivity {
     public void startActivity(final Intent intent) {
         // check if search intent
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            final ArrayList<BikeStation> bikeStations = getIntent().getExtras().getParcelableArrayList("bikeStations");
-            intent.putParcelableArrayListExtra("bikeStations", bikeStations);
+            final ArrayList<BikeStation> bikeStations = getIntent().getExtras().getParcelableArrayList(getString(R.string.bundle_bike_stations));
+            intent.putParcelableArrayListExtra(getString(R.string.bundle_bike_stations), bikeStations);
         }
         super.startActivity(intent);
     }
@@ -125,13 +123,14 @@ public class SearchActivity extends AppCompatActivity {
 
     private void setupToolbar() {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        Util.setToolbarColor(this, toolbar, TrainLine.NA);
+        Util.setWindowsColor(this, toolbar, TrainLine.NA);
         setSupportActionBar(toolbar);
         final ActionBar actionBar = getSupportActionBarNotNull();
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
+    @NonNull
     private ActionBar getSupportActionBarNotNull() {
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar == null) {
@@ -140,7 +139,7 @@ public class SearchActivity extends AppCompatActivity {
         return actionBar;
     }
 
-    private void handleIntent(final Intent intent) {
+    private void handleIntent(@NonNull final Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             final BusData busData = DataHolder.getInstance().getBusData();
             final TrainData trainData = DataHolder.getInstance().getTrainData();

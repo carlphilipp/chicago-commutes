@@ -100,6 +100,6 @@
 -keep class org.apache.http.** { *; }
 -keep class android.net.http.** { *; }
 -keepclassmembers class * {
-	public void reloadData(android.util.SparseArray, java.util.List, java.util.List, java.lang.Boolean, java.lang.Boolean, java.lang.Boolean, java.lang.Boolean);
+	public void reloadData(android.util.SparseArray, java.util.List, java.util.List, java.lang.Boolean);
 	public void displayError(android.app.Activity, fr.cph.chicago.exception.TrackerException);
 }

@@ -17,18 +17,11 @@
 package fr.cph.chicago.task;
 
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BusMapActivity;
 import fr.cph.chicago.adapter.BusMapSnippetAdapter;
@@ -38,6 +31,12 @@ import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.XmlParser;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
 
@@ -49,7 +48,7 @@ public class LoadBusFollowTask extends AsyncTask<String, Void, List<BusArrival>>
     private View view;
     private boolean loadAll;
 
-    public LoadBusFollowTask(final BusMapActivity activity, final View view, final boolean loadAll) {
+    public LoadBusFollowTask(@NonNull final BusMapActivity activity, @NonNull final View view, final boolean loadAll) {
         this.activity = activity;
         this.view = view;
         this.loadAll = loadAll;
@@ -74,7 +73,7 @@ public class LoadBusFollowTask extends AsyncTask<String, Void, List<BusArrival>>
             arrivals = arrivals.subList(0, 6);
             final BusArrival arrival = new BusArrival();
             arrival.setStopName("Display all results");
-            arrival.setIsDly(false);
+            arrival.setDly(false);
             arrivals.add(arrival);
         }
         return arrivals;

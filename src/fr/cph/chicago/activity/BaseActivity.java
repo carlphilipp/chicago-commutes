@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p>
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,23 +19,20 @@ package fr.cph.chicago.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.SparseArray;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.exception.ParserException;
-import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.task.LoadLocalDataTask;
-import fr.cph.chicago.util.Util;
 
 /**
  * This class represents the base activity of the application It will load the loading screen and/or the main
@@ -53,41 +50,26 @@ public class BaseActivity extends Activity {
         new LoadLocalDataTask(this).execute();
     }
 
-
     /**
      * Display error. Set train and bus data to null before running the error activity
      *
-     * @param exceptionToBeThrown the exception that has been thrown
+     * @param message the message to pass to the error activity
      */
-    public void displayError(final TrackerException exceptionToBeThrown) {
+    public void displayError(@NonNull final String message) {
         DataHolder.getInstance().setTrainData(null);
         DataHolder.getInstance().setBusData(null);
-        ChicagoTracker.displayError(this, exceptionToBeThrown);
+        App.startErrorActivity(this, message);
     }
 
     /**
-     * Connect to CTA API and get arrivals trains and buses from favorites
-     *
-     * @throws ParserException the exception
-     */
-    public void loadFavorites() throws ParserException {
-        Util.loadFavorites(this, BaseActivity.class, this);
-        trackWithGoogleAnalytics();
-    }
-
-    /**
-     * Called via reflection from CtaConnectTask. It load arrivals data into ChicagoTracker object. Update
+     * Called via reflection from CtaConnectTask. It load arrivals data into App object. Update
      * last update time. Start main activity
      *
      * @param trainArrivals list of train arrivals
      * @param busArrivals   list of bus arrivals
      */
-    public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals, final List<BikeStation> bikeStations, final Boolean trainBoolean,
-                                 final Boolean busBoolean, final Boolean bikeBoolean, final Boolean networkAvailable) {
-        if (!networkAvailable) {
-            Toast.makeText(this, "No network connection detected!", Toast.LENGTH_SHORT).show();
-        }
-        ChicagoTracker.modifyLastUpdate(Calendar.getInstance().getTime());
+    public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals, final List<BikeStation> bikeStations, final Boolean error) {
+        App.modifyLastUpdate(Calendar.getInstance().getTime());
         startMainActivity(trainArrivals, busArrivals);
     }
 
@@ -97,7 +79,7 @@ public class BaseActivity extends Activity {
      * @param trainArrivals the train arrivals
      * @param busArrivals   the bus arrivals
      */
-    private void startMainActivity(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals) {
+    private void startMainActivity(@NonNull final SparseArray<TrainArrival> trainArrivals, @NonNull final List<BusArrival> busArrivals) {
         if (!isFinishing()) {
             final Intent intent = new Intent(this, MainActivity.class);
             final Bundle bundle = new Bundle();
@@ -108,10 +90,5 @@ public class BaseActivity extends Activity {
             finish();
             startActivity(intent);
         }
-    }
-
-    private void trackWithGoogleAnalytics() {
-        Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
-        Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
     }
 }

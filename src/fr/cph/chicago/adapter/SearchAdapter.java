@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p>
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,6 +19,7 @@ package fr.cph.chicago.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +30,7 @@ import android.widget.TextView;
 import java.util.List;
 import java.util.Set;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BikeStationActivity;
 import fr.cph.chicago.activity.SearchActivity;
@@ -37,7 +38,7 @@ import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.listener.FavoritesTrainOnClickListener;
+import fr.cph.chicago.listener.TrainOnClickListener;
 import fr.cph.chicago.task.DirectionAsyncTask;
 
 /**
@@ -60,8 +61,8 @@ public final class SearchAdapter extends BaseAdapter {
      *
      * @param activity the search activity
      */
-    public SearchAdapter(final SearchActivity activity) {
-        this.context = ChicagoTracker.getContext();
+    public SearchAdapter(@NonNull final SearchActivity activity) {
+        this.context = App.getContext();
         this.searchActivity = activity;
     }
 
@@ -118,7 +119,7 @@ public final class SearchAdapter extends BaseAdapter {
                 }
                 index++;
             }
-            convertView.setOnClickListener(new FavoritesTrainOnClickListener(searchActivity, station.getId(), lines));
+            convertView.setOnClickListener(new TrainOnClickListener(searchActivity, station.getId(), lines));
         } else if (position < trains.size() + busRoutes.size()) {
             final BusRoute busRoute = (BusRoute) getItem(position);
 
@@ -147,9 +148,9 @@ public final class SearchAdapter extends BaseAdapter {
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final Intent intent = new Intent(ChicagoTracker.getContext(), BikeStationActivity.class);
+                    final Intent intent = new Intent(App.getContext(), BikeStationActivity.class);
                     final Bundle extras = new Bundle();
-                    extras.putParcelable("station", bikeStation);
+                    extras.putParcelable(searchActivity.getString(R.string.bundle_bike_station), bikeStation);
                     intent.putExtras(extras);
                     searchActivity.startActivity(intent);
                 }
@@ -165,7 +166,7 @@ public final class SearchAdapter extends BaseAdapter {
      * @param buses  the list of bus routes
      * @param bikes  the list of bikes
      */
-    public void updateData(final List<Station> trains, final List<BusRoute> buses, final List<BikeStation> bikes) {
+    public void updateData(@NonNull final List<Station> trains, @NonNull final List<BusRoute> buses, @NonNull final List<BikeStation> bikes) {
         this.trains = trains;
         this.busRoutes = buses;
         this.bikeStations = bikes;

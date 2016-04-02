@@ -19,6 +19,7 @@ package fr.cph.chicago.task;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -57,12 +58,14 @@ public class LoadBusPatternTask extends AsyncTask<Void, Void, BusPattern> {
     private BusPattern busPattern;
     private String busRouteId;
     private String bound;
+    private boolean loadUserPosition;
 
-    public LoadBusPatternTask(final BusBoundActivity activity, final MapFragment mapFragment, final String busRouteId, final String bound) {
+    public LoadBusPatternTask(@NonNull final BusBoundActivity activity, @NonNull final MapFragment mapFragment, @NonNull final String busRouteId, @NonNull final String bound, final boolean loadUserPosition) {
         this.activity = activity;
         this.mapFragment = mapFragment;
         this.busRouteId = busRouteId;
         this.bound = bound;
+        this.loadUserPosition = loadUserPosition;
     }
 
     @Override
@@ -97,14 +100,13 @@ public class LoadBusPatternTask extends AsyncTask<Void, Void, BusPattern> {
             mapFragment.getMapAsync(new OnMapReadyCallback() {
                 @Override
                 public void onMapReady(final GoogleMap googleMap) {
-                    if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
-                            != PackageManager.PERMISSION_GRANTED
-                            && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
-                            != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-                        return;
+                    if(loadUserPosition) {
+                        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+                            return;
+                        }
+                        googleMap.setMyLocationEnabled(true);
                     }
-                    googleMap.setMyLocationEnabled(true);
                     if (position != null) {
                         final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
                         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
@@ -116,7 +118,7 @@ public class LoadBusPatternTask extends AsyncTask<Void, Void, BusPattern> {
             });
             activity.drawPattern(result);
         } else {
-            Toast.makeText(activity, "Sorry, could not load the path!", Toast.LENGTH_SHORT).show();
+            Util.showMessage(activity, "Sorry, could not load the path!");
         }
     }
 }

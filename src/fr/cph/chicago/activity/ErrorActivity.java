@@ -55,7 +55,7 @@ public class ErrorActivity extends Activity {
             @Override
             public void onClick(View v) {
                 final Intent intent = new Intent(ErrorActivity.this, BaseActivity.class);
-                intent.putExtra("error", true);
+                intent.putExtra(ErrorActivity.this.getString(R.string.bundle_error), true);
                 finish();
                 startActivity(intent);
             }
@@ -63,14 +63,14 @@ public class ErrorActivity extends Activity {
     }
 
     @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
+    public void onRestoreInstanceState(final Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        error = savedInstanceState.getString("error");
+        error = savedInstanceState.getString(getString(R.string.bundle_error));
     }
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putString("error", error);
+    public void onSaveInstanceState(final Bundle savedInstanceState) {
+        savedInstanceState.putString(getString(R.string.bundle_error), error);
         super.onSaveInstanceState(savedInstanceState);
     }
 }

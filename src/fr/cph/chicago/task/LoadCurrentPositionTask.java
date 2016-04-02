@@ -25,6 +25,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -38,7 +39,7 @@ public class LoadCurrentPositionTask extends AsyncTask<Boolean, Void, Void> impl
     private Activity activity;
     private MapFragment mapFragment;
 
-    public LoadCurrentPositionTask(final Activity currentActivity, final MapFragment mapFragment) {
+    public LoadCurrentPositionTask(@NonNull final Activity currentActivity, @NonNull final MapFragment mapFragment) {
         this.activity = currentActivity;
         this.mapFragment = mapFragment;
     }

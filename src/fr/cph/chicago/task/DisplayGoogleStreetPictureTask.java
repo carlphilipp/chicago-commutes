@@ -19,6 +19,7 @@ package fr.cph.chicago.task;
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -27,7 +28,7 @@ import android.widget.TextView;
 
 import java.io.IOException;
 
-import fr.cph.chicago.ChicagoTracker;
+import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.GStreetViewConnect;
 import fr.cph.chicago.util.Util;
@@ -47,7 +48,7 @@ public final class DisplayGoogleStreetPictureTask extends AsyncTask<Double, Void
     private ImageView streetViewImage;
     private TextView streetViewText;
 
-    public DisplayGoogleStreetPictureTask(final Activity activity, final ImageView streetViewImage, final TextView streetViewText) {
+    public DisplayGoogleStreetPictureTask(@NonNull final Activity activity, @NonNull final ImageView streetViewImage, @NonNull final TextView streetViewText) {
         this.activity = activity;
         this.streetViewImage = streetViewImage;
         this.streetViewText = streetViewText;
@@ -77,6 +78,6 @@ public final class DisplayGoogleStreetPictureTask extends AsyncTask<Double, Void
 
         streetViewImage.setLayoutParams(params);
         streetViewImage.setImageDrawable(result);
-        streetViewText.setText(ChicagoTracker.getContext().getString(R.string.station_activity_street_view));
+        streetViewText.setText(App.getContext().getString(R.string.station_activity_street_view));
     }
 }

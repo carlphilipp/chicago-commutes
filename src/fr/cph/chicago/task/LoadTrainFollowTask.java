@@ -17,11 +17,14 @@
 package fr.cph.chicago.task;
 
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import fr.cph.chicago.entity.Stop;
+import fr.cph.chicago.entity.factory.StationFactory;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
@@ -60,7 +63,7 @@ public class LoadTrainFollowTask extends AsyncTask<String, Void, List<Eta>> {
      * @param view    the view
      * @param loadAll a boolean to load everything
      */
-    public LoadTrainFollowTask(final TrainMapActivity activity, final View view, final boolean loadAll, final TrainData trainData) {
+    public LoadTrainFollowTask(@NonNull final TrainMapActivity activity, @NonNull final View view, final boolean loadAll, @NonNull final TrainData trainData) {
         this.activity = activity;
         this.trainData = trainData;
         this.view = view;
@@ -87,13 +90,12 @@ public class LoadTrainFollowTask extends AsyncTask<String, Void, List<Eta>> {
 
             // Add a fake Eta cell to alert the user about the fact that only a part of the result is displayed
             final Eta eta = new Eta();
-            eta.setIsDly(false);
-            eta.setIsApp(false);
+            eta.setDly(false);
+            eta.setApp(false);
             final Date currentDate = Calendar.getInstance().getTime();
             eta.setArrivalDepartureDate(currentDate);
             eta.setPredictionDate(currentDate);
-            final Station fakeStation = new Station();
-            fakeStation.setName("Display all results");
+            final Station fakeStation = StationFactory.buildStation(0, "Display all results", null);
             eta.setStation(fakeStation);
             etas.add(eta);
         }

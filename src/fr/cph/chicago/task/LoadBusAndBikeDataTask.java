@@ -64,7 +64,7 @@ public class LoadBusAndBikeDataTask extends AsyncTask<Void, Void, Void> {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(activity, "Bus error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Util.showMessage(activity, "Error!");
                 }
             });
             Log.e(TAG, e.getMessage(), e);
