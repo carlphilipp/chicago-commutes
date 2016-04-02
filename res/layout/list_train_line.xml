@@ -43,7 +43,7 @@
         android:layout_toEndOf="@+id/station_color_value"
         android:paddingLeft="16dp"
         android:paddingStart="16dp"
-        android:textColor="@color/black"
+        android:textColor="@color/grey_M_B"
         android:textIsSelectable="false"
         android:textSize="16sp"
         android:textStyle="normal"
