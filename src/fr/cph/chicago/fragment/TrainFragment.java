@@ -41,6 +41,7 @@ import fr.cph.chicago.util.Util;
  * @version 1
  */
 public final class TrainFragment extends Fragment {
+
     private static final String ARG_SECTION_NUMBER = "section_number";
     private MainActivity activity;
 
@@ -59,7 +60,7 @@ public final class TrainFragment extends Fragment {
     }
 
     @Override
-    public final void onCreate(Bundle savedInstanceState) {
+    public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Util.trackScreen(getString(R.string.analytics_train_fragment));
     }

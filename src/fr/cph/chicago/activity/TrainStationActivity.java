@@ -20,7 +20,7 @@ import android.app.ListActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.FrameLayout;
+
 import fr.cph.chicago.R;
 import fr.cph.chicago.adapter.TrainAdapter;
 import fr.cph.chicago.entity.enumeration.TrainLine;
@@ -52,9 +52,6 @@ public class TrainStationActivity extends ListActivity {
 
             setContentView(R.layout.activity_train_station);
 
-            final FrameLayout container = (FrameLayout) findViewById(R.id.container);
-            container.getForeground().setAlpha(0);
-
             final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             Util.setWindowsColor(this, toolbar, trainLine);
             toolbar.setTitle(trainLine.toString() + " Line");
@@ -69,6 +66,13 @@ public class TrainStationActivity extends ListActivity {
 
             final TrainAdapter ada = new TrainAdapter(trainLine, this);
             setListAdapter(ada);
+            //final ListView listView = (ListView) findViewById(R.id.list_trains);
+            //listView.setAdapter(ada);
+//            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                @Override
+//                public void onItemClick(final AdapterView<?> parentView, final View childView, final int position, final long id) {
+//                }
+//            });
         }
     }
 

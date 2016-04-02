@@ -455,7 +455,7 @@ public final class Util {
     }
 
     @NonNull
-    public static LinearLayout createColoredRound(@NonNull final TrainLine trainLine) {
+    public static LinearLayout createColoredRoundForFavorites(@NonNull final TrainLine trainLine) {
         final LinearLayout lineIndication = new LinearLayout(App.getContext());
         final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.height = 30;

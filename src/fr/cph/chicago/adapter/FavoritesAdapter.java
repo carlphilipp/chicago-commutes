@@ -205,7 +205,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                     final RelativeLayout left = new RelativeLayout(context);
                     left.setLayoutParams(leftParam);
 
-                    final LinearLayout lineIndication = Util.createColoredRound(trainLine);
+                    final LinearLayout lineIndication = Util.createColoredRoundForFavorites(trainLine);
                     int lineId = Util.generateViewId();
                     lineIndication.setId(lineId);
 
@@ -308,7 +308,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 final RelativeLayout left = new RelativeLayout(context);
                 left.setLayoutParams(leftParams);
 
-                final LinearLayout lineIndication = Util.createColoredRound(TrainLine.NA);
+                final LinearLayout lineIndication = Util.createColoredRoundForFavorites(TrainLine.NA);
                 int lineId = Util.generateViewId();
                 lineIndication.setId(lineId);
 
@@ -466,7 +466,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         final RelativeLayout left = new RelativeLayout(context);
         left.setLayoutParams(leftParam);
 
-        final LinearLayout lineIndication = Util.createColoredRound(TrainLine.NA);
+        final LinearLayout lineIndication = Util.createColoredRoundForFavorites(TrainLine.NA);
         int lineId = Util.generateViewId();
         lineIndication.setId(lineId);
 

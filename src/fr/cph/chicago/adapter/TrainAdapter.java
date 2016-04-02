@@ -60,7 +60,6 @@ public final class TrainAdapter extends BaseAdapter {
         final TrainData data = dataHolder.getTrainData();
         this.stations = data.getStationsForLine(line);
         this.activity = activity;
-        ;
     }
 
     @Override
@@ -100,7 +99,6 @@ public final class TrainAdapter extends BaseAdapter {
         holder.stationNameView.setText(station.getName());
 
         holder.stationColorView.removeAllViews();
-        int index = 0;
         for (final TrainLine tl : lines) {
             final LinearLayout layout = Util.createColoredRoundForMultiple(tl);
             holder.stationColorView.addView(layout);
