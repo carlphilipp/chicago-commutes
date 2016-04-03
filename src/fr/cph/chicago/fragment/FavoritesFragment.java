@@ -123,9 +123,8 @@ public class FavoritesFragment extends Fragment {
             }
             final RecyclerView listView = (RecyclerView) rootView.findViewById(R.id.favorites_list);
             listView.setAdapter(favoritesAdapter);
-            //listView.setHasFixedSize(true);
 
-            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(activity);
+            final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(activity);
             listView.setLayoutManager(mLayoutManager);
 
             startRefreshTask();
@@ -146,10 +145,11 @@ public class FavoritesFragment extends Fragment {
             listView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrolled(final RecyclerView recyclerView, final int dx, final int dy) {
-                    if (dy > 0 && floatingButton.isShown())
+                    if (dy > 0 && floatingButton.isShown()) {
                         floatingButton.hide();
-                    else if (dy < 0 && !floatingButton.isShown())
+                    } else if (dy < 0 && !floatingButton.isShown()) {
                         floatingButton.show();
+                    }
                 }
             });
 
