@@ -96,11 +96,7 @@ public class BusFragment extends Fragment {
         if (!activity.isFinishing()) {
             textFilter = (EditText) rootView.findViewById(R.id.bus_filter);
             listView = (ListView) rootView.findViewById(R.id.bus_list);
-            if (Util.isNetworkAvailable()) {
-                addView();
-            } else {
-                Util.showSettingsAlert(activity);
-            }
+            addView();
         }
         return rootView;
     }

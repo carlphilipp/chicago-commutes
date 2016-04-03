@@ -24,6 +24,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.util.List;
+
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
@@ -31,8 +34,6 @@ import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.task.DirectionAsyncTask;
-
-import java.util.List;
 
 /**
  * Adapter that will handle buses
@@ -42,7 +43,7 @@ import java.util.List;
  */
 public final class BusAdapter extends BaseAdapter {
 
-    private MainActivity mainActivity;
+    private MainActivity activity;
     private List<BusRoute> busRoutes;
 
     /**
@@ -51,7 +52,7 @@ public final class BusAdapter extends BaseAdapter {
      * @param activity the main activity
      */
     public BusAdapter(@NonNull final MainActivity activity) {
-        this.mainActivity = activity;
+        this.activity = activity;
         final BusData busData = DataHolder.getInstance().getBusData();
         this.busRoutes = busData.getRoutes();
     }
@@ -107,7 +108,7 @@ public final class BusAdapter extends BaseAdapter {
             @Override
             public void onClick(final View v) {
                 detailsLayout.setVisibility(LinearLayout.VISIBLE);
-                new DirectionAsyncTask(mainActivity, parent).execute(route, detailsLayout);
+                new DirectionAsyncTask(activity, parent).execute(route, detailsLayout);
             }
         });
 
