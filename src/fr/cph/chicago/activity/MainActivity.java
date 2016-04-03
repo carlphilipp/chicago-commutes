@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
+    private MenuItem menuItem;
 
     private FavoritesFragment favoritesFragment;
     private TrainFragment trainFragment;
@@ -97,7 +98,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (currentPosition == R.id.navigation_favorites) {
             finish();
         } else {
-            itemSelection(R.id.navigation_favorites);
+            this.onNavigationItemSelected(menuItem);
+            //itemSelection(R.id.navigation_favorites);
         }
     }
 
@@ -108,9 +110,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void initView() {
-        final NavigationView mDrawer = (NavigationView) findViewById(R.id.main_drawer);
-        mDrawer.setNavigationItemSelectedListener(this);
+        final NavigationView drawer = (NavigationView) findViewById(R.id.main_drawer);
+        drawer.setNavigationItemSelectedListener(this);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        menuItem = drawer.getMenu().getItem(0);
     }
 
     private void setToolbar() {

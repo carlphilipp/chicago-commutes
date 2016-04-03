@@ -18,6 +18,13 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="en">
 
+    <!-- Drawer Menu -->
+    <string name="menu_favorites">Favorites</string>
+    <string name="menu_train">Train</string>
+    <string name="menu_bus">Bus</string>
+    <string name="menu_divvy">Divvy</string>
+    <string name="menu_nearby">Nearby</string>
+
 	<!-- Bundle -->
 	<string name="bundle_train_arrivals">trainArrivals</string>
 	<string name="bundle_bus_arrivals">busArrivals</string>
