@@ -22,9 +22,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:paddingBottom="14dp"
-    android:paddingEnd="@dimen/activity_train_line_padding_right"
+    android:paddingEnd="16dp"
     android:paddingLeft="16dp"
-    android:paddingRight="@dimen/activity_train_line_padding_right"
+    android:paddingRight="16dp"
     android:paddingStart="16dp"
     android:paddingTop="14dp">
 
