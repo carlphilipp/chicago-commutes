@@ -134,7 +134,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
             listView = (ListView) rootView.findViewById(R.id.fragment_nearby_list);
             listView.setAdapter(nearbyAdapter);
             loadLayout = rootView.findViewById(R.id.loading_layout);
-            nearbyContainer = (RelativeLayout) rootView.findViewById(R.id.nerby_list_container);
+            nearbyContainer = (RelativeLayout) rootView.findViewById(R.id.nearby_list_container);
 
             hideStationsStops = Preferences.getHideShowNearby();
             final CheckBox checkBox = (CheckBox) rootView.findViewById(R.id.hideEmptyStops);
