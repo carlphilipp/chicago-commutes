@@ -66,13 +66,6 @@ public class TrainStationActivity extends ListActivity {
 
             final TrainAdapter ada = new TrainAdapter(trainLine, this);
             setListAdapter(ada);
-            //final ListView listView = (ListView) findViewById(R.id.list_trains);
-            //listView.setAdapter(ada);
-//            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                @Override
-//                public void onItemClick(final AdapterView<?> parentView, final View childView, final int position, final long id) {
-//                }
-//            });
         }
     }
 

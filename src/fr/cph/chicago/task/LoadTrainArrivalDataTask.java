@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.StationActivity;
 import fr.cph.chicago.connection.CtaConnect;
@@ -54,8 +53,10 @@ public class LoadTrainArrivalDataTask extends AsyncTask<MultiValuedMap<String, S
 
     private static final String TAG = LoadTrainArrivalDataTask.class.getSimpleName();
 
-    private TrainData trainData;
     private StationActivity activity;
+
+    private TrainData trainData;
+
     private TrackerException trackerException;
     private SwipeRefreshLayout swipeRefreshLayout;
 
@@ -130,7 +131,7 @@ public class LoadTrainArrivalDataTask extends AsyncTask<MultiValuedMap<String, S
                 activity.drawAllArrivalsTrain(eta);
             }
         } else {
-            App.startErrorActivity(activity, trackerException.getMessage());
+            Util.showNetworkErrorMessage(swipeRefreshLayout);
         }
         if (swipeRefreshLayout != null) {
             swipeRefreshLayout.setRefreshing(false);
