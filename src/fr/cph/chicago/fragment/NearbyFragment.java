@@ -74,7 +74,6 @@ import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
-import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.json.JsonParser;
 import fr.cph.chicago.task.LoadNearbyTask;
 import fr.cph.chicago.util.Util;
@@ -184,12 +183,6 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
                 }
             }
         });
-    }
-
-    public final void displayError(@NonNull final TrackerException exceptionToBeThrown) {
-        DataHolder.getInstance().setTrainData(null);
-        DataHolder.getInstance().setBusData(null);
-        App.startErrorActivity(activity, exceptionToBeThrown.getMessage());
     }
 
     @Override
