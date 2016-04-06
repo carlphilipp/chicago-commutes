@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
@@ -181,9 +182,9 @@ public final class NearbyAdapter extends BaseAdapter {
                 routeView.setText(station.getName());
                 holder.stationNameView = routeView;
 
-                final TextView typeView = (TextView) convertView.findViewById(R.id.train_bus_type);
-                typeView.setText(activity.getString(R.string.T));
-                holder.type = typeView;
+                final ImageView imageView = (ImageView) convertView.findViewById(R.id.icon);
+                imageView.setImageDrawable(ContextCompat.getDrawable(App.getContext(), R.drawable.ic_train_white_24dp));
+                holder.imageView = imageView;
 
                 convertView.setTag(holder);
             }
@@ -298,7 +299,7 @@ public final class NearbyAdapter extends BaseAdapter {
 
     static class TrainViewHolder {
         TextView stationNameView;
-        TextView type;
+        ImageView imageView;
     }
 
     // TODO play with view holder pattern here
@@ -307,8 +308,8 @@ public final class NearbyAdapter extends BaseAdapter {
         final int index = position - stations.size();
         final BusStop busStop = busStops.get(index);
 
-        final TextView typeView = (TextView) convertView.findViewById(R.id.train_bus_type);
-        typeView.setText(activity.getString(R.string.B));
+        final ImageView imageView = (ImageView) convertView.findViewById(R.id.icon);
+        imageView.setImageDrawable(ContextCompat.getDrawable(App.getContext(), R.drawable.ic_directions_bus_white_24dp));
 
         final TextView routeView = (TextView) convertView.findViewById(R.id.station_name);
         routeView.setText(busStop.getName());
@@ -388,8 +389,9 @@ public final class NearbyAdapter extends BaseAdapter {
 
         final LinearLayout favoritesData = (LinearLayout) convertView.findViewById(R.id.nearby_results);
 
-        final TextView typeView = (TextView) convertView.findViewById(R.id.train_bus_type);
-        typeView.setText("D");
+        final ImageView imageView = (ImageView) convertView.findViewById(R.id.icon);
+        imageView.setImageDrawable(ContextCompat.getDrawable(App.getContext(), R.drawable.ic_directions_bus_white_24dp));
+
 
         final TextView routeView = (TextView) convertView.findViewById(R.id.station_name);
         routeView.setText(bikeStation.getName());
