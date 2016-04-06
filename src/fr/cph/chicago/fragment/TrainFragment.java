@@ -90,9 +90,4 @@ public final class TrainFragment extends Fragment {
         });
         return rootView;
     }
-
-    @Override
-    public final void onSaveInstanceState(final Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
 }

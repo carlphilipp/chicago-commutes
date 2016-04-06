@@ -20,10 +20,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -40,6 +42,7 @@ import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.listener.TrainOnClickListener;
 import fr.cph.chicago.task.DirectionAsyncTask;
+import fr.cph.chicago.util.LayoutUtil;
 
 /**
  * Adapter that will handle search
@@ -103,28 +106,17 @@ public final class SearchAdapter extends BaseAdapter {
             final LinearLayout stationColorView = (LinearLayout) convertView.findViewById(R.id.station_color);
 
             final Set<TrainLine> lines = station.getLines();
-            int index = 0;
-            for (final TrainLine trainLine : lines) {
-                TextView textView = new TextView(context);
-                textView.setBackgroundColor(trainLine.getColor());
-                textView.setText(" ");
-                textView.setTextSize(context.getResources().getDimension(R.dimen.activity_list_station_colors));
-                stationColorView.addView(textView);
-                if (index != lines.size()) {
-                    textView = new TextView(context);
-                    textView.setText("");
-                    textView.setPadding(0, 0, (int) context.getResources().getDimension(R.dimen.activity_list_station_colors_space), 0);
-                    textView.setTextSize(context.getResources().getDimension(R.dimen.activity_list_station_colors));
-                    stationColorView.addView(textView);
-                }
-                index++;
+            for (final TrainLine tl : lines) {
+                final LinearLayout layout = LayoutUtil.createColoredRoundForMultiple(tl);
+                stationColorView.addView(layout);
             }
+
             convertView.setOnClickListener(new TrainOnClickListener(searchActivity, station.getId(), lines));
         } else if (position < trains.size() + busRoutes.size()) {
             final BusRoute busRoute = (BusRoute) getItem(position);
 
-            final TextView type = (TextView) convertView.findViewById(R.id.train_bus_type);
-            type.setText(searchActivity.getString(R.string.B));
+            final ImageView icon = (ImageView) convertView.findViewById(R.id.icon);
+            icon.setImageDrawable(ContextCompat.getDrawable(App.getContext(), R.drawable.ic_directions_bus_white_24dp));
 
             final String name = busRoute.getId() + " " + busRoute.getName();
             routeName.setText(name);
@@ -140,8 +132,8 @@ public final class SearchAdapter extends BaseAdapter {
         } else {
             final BikeStation bikeStation = (BikeStation) getItem(position);
 
-            final TextView type = (TextView) convertView.findViewById(R.id.train_bus_type);
-            type.setText(searchActivity.getString(R.string.D));
+            final ImageView icon = (ImageView) convertView.findViewById(R.id.icon);
+            icon.setImageDrawable(ContextCompat.getDrawable(App.getContext(), R.drawable.ic_directions_bike_white_24dp));
 
             routeName.setText(bikeStation.getName());
 

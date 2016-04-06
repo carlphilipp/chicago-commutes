@@ -32,15 +32,15 @@ import fr.cph.chicago.R;
  */
 public enum TrainLine {
 
-    BLUE("Blue", "Blue", "Blue line", Color.rgb(0, 158, 218)),
-    BROWN("Brn", "Brown", "Brown line", Color.rgb(102, 51, 0)),
-    GREEN("G", "Green", "Green line", Color.rgb(0, 153, 0)),
-    ORANGE("Org", "Orange", "Orange line", Color.rgb(255, 128, 0)),
-    PINK("Pink", "Pink", "Pink line", Color.rgb(204, 0, 102)),
-    PURPLE("P", "Purple", "Purple line", Color.rgb(102, 0, 102)),
-    RED("Red", "Red", "Red line", Color.rgb(240, 0, 0)),
-    YELLOW("Y", "Yellow", "Yellow line", ContextCompat.getColor(App.getContext(), R.color.yellowLine)),
-    NA("N/A", "N/A", "N/A line", Color.BLACK);
+    BLUE("Blue", "Blue", Color.rgb(0, 158, 218)),
+    BROWN("Brn", "Brown", Color.rgb(102, 51, 0)),
+    GREEN("G", "Green", Color.rgb(0, 153, 0)),
+    ORANGE("Org", "Orange", Color.rgb(255, 128, 0)),
+    PINK("Pink", "Pink", Color.rgb(204, 0, 102)),
+    PURPLE("P", "Purple", Color.rgb(102, 0, 102)),
+    RED("Red", "Red", Color.rgb(240, 0, 0)),
+    YELLOW("Y", "Yellow", ContextCompat.getColor(App.getContext(), R.color.yellowLine)),
+    NA("N/A", "N/A", Color.BLACK);
 
     /**
      * The text
@@ -50,10 +50,6 @@ public enum TrainLine {
      * The name
      **/
     private String name;
-    /**
-     * The name with line
-     **/
-    private String withLine;
     /**
      * THe color
      **/
@@ -67,10 +63,9 @@ public enum TrainLine {
      * @param withLine the name with 'line'
      * @param color    the color
      */
-    TrainLine(final String text, final String name, final String withLine, final int color) {
+    TrainLine(final String text, final String name, final int color) {
         this.text = text;
         this.name = name;
-        this.withLine = withLine;
         this.color = color;
     }
 
@@ -82,7 +77,7 @@ public enum TrainLine {
      */
     @Nullable
     public static TrainLine fromXmlString(@NonNull final String text) {
-        for (TrainLine b : TrainLine.values()) {
+        for (final TrainLine b : TrainLine.values()) {
             if (text.equalsIgnoreCase(b.text)) {
                 return b;
             }
@@ -113,7 +108,7 @@ public enum TrainLine {
      */
     @NonNull
     public final String toStringWithLine() {
-        return withLine;
+        return name + " Line";
     }
 
     /**
