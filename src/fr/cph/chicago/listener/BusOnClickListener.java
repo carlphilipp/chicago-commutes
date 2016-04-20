@@ -91,8 +91,7 @@ public class BusOnClickListener implements OnClickListener {
                             // Open details
                             final String boundTitle = busArrival.getRouteDirection();
                             final BusDirection.BusDirectionEnum busDirectionEnum = BusDirection.BusDirectionEnum.fromString(boundTitle);
-                            new FavoritesAdapter.BusBoundAsyncTask(activity).execute(busArrival.getRouteId(), busDirectionEnum.getShortUpperCase(), boundTitle,
-                                    String.valueOf(busArrival.getStopId()), busRoute.getName());
+                            new FavoritesAdapter.BusBoundAsyncTask(activity).execute(busArrival.getRouteId(), busDirectionEnum.getShortUpperCase(), boundTitle, Integer.toString(busArrival.getStopId()), busRoute.getName());
                         }
                         i++;
                     }

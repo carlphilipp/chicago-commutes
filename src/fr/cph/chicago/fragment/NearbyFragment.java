@@ -263,7 +263,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
                 try {
                     final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
                     if (NearbyFragment.this.isAdded()) {
-                        reqParams.put(getString(R.string.request_map_id), String.valueOf(station.getId()));
+                        reqParams.put(getString(R.string.request_map_id), Integer.toString(station.getId()));
                         final InputStream xmlRes = cta.connect(TRAIN_ARRIVALS, reqParams);
                         final XmlParser xml = XmlParser.getInstance();
                         final SparseArray<TrainArrival> temp = xml.parseArrivals(xmlRes, DataHolder.getInstance().getTrainData());
@@ -357,7 +357,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
         for (final Station station : stations) {
             for (final Position position : station.getStopsPosition()) {
                 point = new LatLng(position.getLatitude(), position.getLongitude());
-                options = new MarkerOptions().position(point).title(station.getName()).snippet(String.valueOf(station.getId()));
+                options = new MarkerOptions().position(point).title(station.getName()).snippet(Integer.toString(station.getId()));
                 options.icon(violet);
                 marker = googleMap.addMarker(options);
                 markers.add(marker);
@@ -385,7 +385,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
             public boolean onMarkerClick(Marker marker) {
                 boolean found = false;
                 for (int i = 0; i < stations.size(); i++) {
-                    if (marker.getSnippet().equals(String.valueOf(stations.get(i).getId()))) {
+                    if (marker.getSnippet().equals(Integer.toString(stations.get(i).getId()))) {
                         listView.smoothScrollToPosition(i);
                         found = true;
                         break;

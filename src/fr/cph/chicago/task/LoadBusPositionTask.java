@@ -19,6 +19,13 @@ package fr.cph.chicago.task;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
+
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+
+import java.io.InputStream;
+import java.util.List;
+
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BusMapActivity;
 import fr.cph.chicago.connection.CtaConnect;
@@ -27,11 +34,6 @@ import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.XmlParser;
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-
-import java.io.InputStream;
-import java.util.List;
 
 import static fr.cph.chicago.connection.CtaRequestType.BUS_VEHICLES;
 
@@ -57,7 +59,7 @@ public class LoadBusPositionTask extends AsyncTask<Boolean, Void, List<Bus>> {
         final CtaConnect connect = CtaConnect.getInstance();
         final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
         if (busId != 0) {
-            connectParam.put("vid", String.valueOf(busId));
+            connectParam.put("vid", Integer.toString(busId));
         } else {
             connectParam.put(activity.getString(R.string.request_rt), busRouteId);
         }

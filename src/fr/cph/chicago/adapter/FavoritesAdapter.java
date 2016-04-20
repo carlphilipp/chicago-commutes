@@ -602,7 +602,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 final List<BusStop> busStops = DataHolder.getInstance().getBusData().loadBusStop(busRouteId, boundTitle);
 
                 for (final BusStop bus : busStops) {
-                    if (String.valueOf(bus.getId()).equals(stopId)) {
+                    if (Integer.toString(bus.getId()).equals(stopId)) {
                         res = bus;
                         break;
                     }

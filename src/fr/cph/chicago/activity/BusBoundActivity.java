@@ -225,7 +225,7 @@ public class BusBoundActivity extends ListActivity {
                 for (final PatternPoint patternPoint : pattern.getPoints()) {
                     final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
                     poly.add(point);
-                    marker = googleMap.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName()).snippet(String.valueOf(patternPoint.getSequence())));
+                    marker = googleMap.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName()).snippet(Integer.toString(patternPoint.getSequence())));
                     markers.add(marker);
                     marker.setVisible(false);
                 }

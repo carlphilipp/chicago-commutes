@@ -50,7 +50,7 @@ public class LoadStationDataTask extends AsyncTask<Void, Void, List<BusArrival>>
     protected List<BusArrival> doInBackground(final Void... params) {
         final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
         reqParams.put(activity.getString(R.string.request_rt), busRouteId);
-        reqParams.put(activity.getString(R.string.request_stop_id), String.valueOf(busStopId));
+        reqParams.put(activity.getString(R.string.request_stop_id), Integer.toString(busStopId));
         final CtaConnect connect = CtaConnect.getInstance();
         try {
             final XmlParser xml = XmlParser.getInstance();

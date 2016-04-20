@@ -113,7 +113,7 @@ public class StationActivity extends Activity {
                 station = trainData.getStation(stationId);
 
                 final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-                reqParams.put(getString(R.string.request_map_id), String.valueOf(station.getId()));
+                reqParams.put(getString(R.string.request_map_id), Integer.toString(station.getId()));
 
                 swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_station_swipe_refresh_layout);
                 swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -211,7 +211,7 @@ public class StationActivity extends Activity {
                     public void onClick(final View v) {
                         // Update timing
                         final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-                        reqParams.put(getString(R.string.request_map_id), String.valueOf(station.getId()));
+                        reqParams.put(getString(R.string.request_map_id), Integer.toString(station.getId()));
                         new LoadTrainArrivalDataTask(StationActivity.this, trainData, swipeRefreshLayout).execute(reqParams);
                     }
                 });
@@ -258,7 +258,7 @@ public class StationActivity extends Activity {
             public boolean onMenuItemClick(final MenuItem item) {
                 swipeRefreshLayout.setRefreshing(true);
                 final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-                reqParams.put(getString(R.string.request_map_id), String.valueOf(station.getId()));
+                reqParams.put(getString(R.string.request_map_id), Integer.toString(station.getId()));
                 new LoadTrainArrivalDataTask(StationActivity.this, trainData, swipeRefreshLayout).execute(reqParams);
                 return false;
             }
@@ -312,7 +312,7 @@ public class StationActivity extends Activity {
         }
         return false;
     }
-    
+
     // FIXME: delete view instead of hiding it
     public void hideAllArrivalViews() {
         final Set<TrainLine> trainLines = station.getLines();
