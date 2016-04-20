@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,7 +23,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -68,10 +67,9 @@ public class BusActivity extends Activity {
     private boolean isFavorite;
 
     private SwipeRefreshLayout scrollView;
-    private ImageView streetViewImage, favoritesImage;
+    private ImageView favoritesImage;
     private LinearLayout stopsView;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private TextView streetViewText;
 
     @Override
     protected final void onCreate(final Bundle savedInstanceState) {
@@ -82,27 +80,27 @@ public class BusActivity extends Activity {
 
             scrollView = (SwipeRefreshLayout) findViewById(R.id.activity_bus_stop_swipe_refresh_layout);
 
-
             if (busStopId == null || busRouteId == null || bound == null || busStopName == null || busRouteName == null || boundTitle == null) {
-                busStopId = getIntent().getExtras().getInt(getString(R.string.bundle_bus_stop_id));
-                busRouteId = getIntent().getExtras().getString(getString(R.string.bundle_bus_route_id));
-                bound = getIntent().getExtras().getString(getString(R.string.bundle_bus_bound));
-                boundTitle = getIntent().getExtras().getString(getString(R.string.bundle_bus_bound_title));
-                busStopName = getIntent().getExtras().getString(getString(R.string.bundle_bus_stop_name));
-                busRouteName = getIntent().getExtras().getString(getString(R.string.bundle_bus_route_name));
-                latitude = getIntent().getExtras().getDouble(getString(R.string.bundle_bus_latitude));
-                longitude = getIntent().getExtras().getDouble(getString(R.string.bundle_bus_longitude));
+                final Bundle extras = getIntent().getExtras();
+                busStopId = extras.getInt(getString(R.string.bundle_bus_stop_id));
+                busRouteId = extras.getString(getString(R.string.bundle_bus_route_id));
+                bound = extras.getString(getString(R.string.bundle_bus_bound));
+                boundTitle = extras.getString(getString(R.string.bundle_bus_bound_title));
+                busStopName = extras.getString(getString(R.string.bundle_bus_stop_name));
+                busRouteName = extras.getString(getString(R.string.bundle_bus_route_name));
+                latitude = extras.getDouble(getString(R.string.bundle_bus_latitude));
+                longitude = extras.getDouble(getString(R.string.bundle_bus_longitude));
             }
 
             final Position position = new Position();
             position.setLatitude(latitude);
             position.setLongitude(longitude);
 
-            isFavorite = isFavorite();
+            isFavorite = setupFavorite();
 
             stopsView = (LinearLayout) findViewById(R.id.activity_bus_stops);
-            streetViewImage = (ImageView) findViewById(R.id.activity_bus_streetview_image);
-            streetViewText = (TextView) findViewById(R.id.activity_bus_steetview_text);
+            final ImageView streetViewImage = (ImageView) findViewById(R.id.activity_bus_streetview_image);
+            final TextView streetViewText = (TextView) findViewById(R.id.activity_bus_steetview_text);
             final ImageView mapImage = (ImageView) findViewById(R.id.activity_map_image);
             mapImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
             final ImageView directionImage = (ImageView) findViewById(R.id.activity_map_direction);
@@ -247,16 +245,14 @@ public class BusActivity extends Activity {
         }
     }
 
-    private boolean isFavorite() {
-        boolean isFavorite = false;
+    private boolean setupFavorite() {
         final List<String> favorites = Preferences.getBusFavorites(App.PREFERENCE_FAVORITES_BUS);
         for (final String favorite : favorites) {
             if (favorite.equals(busRouteId + "_" + busStopId + "_" + boundTitle)) {
-                isFavorite = true;
-                break;
+                return true;
             }
         }
-        return isFavorite;
+        return false;
     }
 
     /**
@@ -269,7 +265,6 @@ public class BusActivity extends Activity {
             isFavorite = false;
         } else {
             Util.addToBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, App.PREFERENCE_FAVORITES_BUS, scrollView);
-            Log.i(TAG, "busRouteName: " + busRouteName);
             Preferences.addBusRouteNameMapping(String.valueOf(busStopId), busRouteName);
             Preferences.addBusStopNameMapping(String.valueOf(busStopId), busStopName);
             favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));

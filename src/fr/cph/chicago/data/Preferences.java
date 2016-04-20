@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,7 +51,7 @@ public final class Preferences {
      **/
     private static final String TAG = Preferences.class.getSimpleName();
 
-    private static final Pattern pattern = Pattern.compile("(\\d{1,3})");
+    private static final Pattern PATTERN = Pattern.compile("(\\d{1,3})");
 
     /**
      * Check if the user has favorites already
@@ -114,8 +114,7 @@ public final class Preferences {
     @NonNull
     public static String getBikeRouteNameMapping(@NonNull final String bikeId) {
         final Context context = App.getContext();
-        final SharedPreferences sharedPref = context
-            .getSharedPreferences(App.PREFERENCE_FAVORITES_BIKE_NAME_MAPPING, Context.MODE_PRIVATE);
+        final SharedPreferences sharedPref = context.getSharedPreferences(App.PREFERENCE_FAVORITES_BIKE_NAME_MAPPING, Context.MODE_PRIVATE);
         final String bikeName = sharedPref.getString(bikeId, null);
         Log.v(TAG, "Get bike name mapping : " + bikeId + " => " + bikeName);
         return bikeName;
@@ -163,12 +162,12 @@ public final class Preferences {
                 final String str1Decoded = Util.decodeBusFavorite(str1)[0];
                 final String str2Decoded = Util.decodeBusFavorite(str2)[0];
 
-                final Matcher matcher1 = pattern.matcher(str1Decoded);
-                final Matcher matcher2 = pattern.matcher(str2Decoded);
+                final Matcher matcher1 = PATTERN.matcher(str1Decoded);
+                final Matcher matcher2 = PATTERN.matcher(str2Decoded);
                 if (matcher1.find() && matcher2.find()) {
-                    final Integer one = Integer.valueOf(matcher1.group(1));
-                    final Integer two = Integer.valueOf(matcher2.group(1));
-                    return one.compareTo(two);
+                    final int one = Integer.parseInt(matcher1.group(1));
+                    final int two = Integer.parseInt(matcher1.group(1));
+                    return one < two ? -1 : (one == two ? 0 : 1);
                 } else {
                     return str1Decoded.compareTo(str2Decoded);
                 }
@@ -275,8 +274,7 @@ public final class Preferences {
      * @param value     the value
      */
     public static void saveTrainFilter(@NonNull final Integer stationId, @NonNull final TrainLine line, @NonNull final TrainDirection direction, final boolean value) {
-        final Context context = App.getContext();
-        final SharedPreferences sharedPref = context.getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+        final SharedPreferences sharedPref = App.getContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = sharedPref.edit();
         editor.putBoolean(String.valueOf(stationId) + "_" + line + "_" + direction, value);
         editor.apply();
@@ -296,16 +294,14 @@ public final class Preferences {
     }
 
     public static void saveHideShowNearby(boolean hide) {
-        final Context context = App.getContext();
-        final SharedPreferences sharedPref = context.getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+        final SharedPreferences sharedPref = App.getContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = sharedPref.edit();
         editor.putBoolean("hideNearby", hide);
         editor.apply();
     }
 
     public static boolean getHideShowNearby() {
-        final Context context = App.getContext();
-        final SharedPreferences sharedPref = context.getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+        final SharedPreferences sharedPref = App.getContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
         return sharedPref.getBoolean("hideNearby", true);
     }
 }

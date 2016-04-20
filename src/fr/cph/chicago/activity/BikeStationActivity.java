@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -101,7 +101,7 @@ public class BikeStationActivity extends Activity {
                 final LinearLayout favoritesImageContainer = (LinearLayout) findViewById(R.id.favorites_container);
                 favoritesImageContainer.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
+                    public void onClick(final View view) {
                         BikeStationActivity.this.switchFavorite();
                     }
                 });
@@ -225,16 +225,13 @@ public class BikeStationActivity extends Activity {
     private void switchFavorite() {
         if (isFavorite) {
             Util.removeFromBikeFavorites(bikeStation.getId(), App.PREFERENCE_FAVORITES_BIKE, swipeRefreshLayout);
+            favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
             isFavorite = false;
         } else {
             Util.addToBikeFavorites(bikeStation.getId(), App.PREFERENCE_FAVORITES_BIKE, swipeRefreshLayout);
-            Preferences.addBikeRouteNameMapping(String.valueOf(bikeStation.getId()), bikeStation.getName());
-            isFavorite = true;
-        }
-        if (isFavorite) {
+            Preferences.addBikeRouteNameMapping(Integer.toString(bikeStation.getId()), bikeStation.getName());
             favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
-        } else {
-            favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
+            isFavorite = true;
         }
     }
 }
