@@ -205,14 +205,14 @@ public class BusActivity extends Activity {
      * Draw arrivals in current layout
      */
     public void drawArrivals() {
-        final Map<String, TextView> mapRes = new HashMap<>();
+        final Map<String, TextView> tempMap = new HashMap<>();
         if (busArrivals.size() != 0) {
             for (final BusArrival arrival : busArrivals) {
                 if (arrival.getRouteDirection().equals(bound) || arrival.getRouteDirection().equals(boundTitle)) {
                     final String destination = arrival.getBusDestination();
-                    if (mapRes.containsKey(destination)) {
-                        final TextView arrivalView = mapRes.get(destination);
-                        String arrivalText;
+                    final String arrivalText;
+                    if (tempMap.containsKey(destination)) {
+                        final TextView arrivalView = tempMap.get(destination);
                         if (arrival.isDly()) {
                             arrivalText = arrivalView.getText() + " Delay";
                         } else {
@@ -221,7 +221,6 @@ public class BusActivity extends Activity {
                         arrivalView.setText(arrivalText);
                     } else {
                         final TextView arrivalView = new TextView(App.getContext());
-                        String arrivalText;
                         if (arrival.isDly()) {
                             arrivalText = arrival.getBusDestination() + ": Delay";
                         } else {
@@ -229,7 +228,7 @@ public class BusActivity extends Activity {
                         }
                         arrivalView.setText(arrivalText);
                         arrivalView.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey));
-                        mapRes.put(destination, arrivalView);
+                        tempMap.put(destination, arrivalView);
                     }
                 }
             }
@@ -237,10 +236,10 @@ public class BusActivity extends Activity {
             final TextView arrivalView = new TextView(App.getContext());
             arrivalView.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey));
             arrivalView.setText(getString(R.string.bus_activity_no_service));
-            mapRes.put("", arrivalView);
+            tempMap.put("", arrivalView);
         }
         stopsView.removeAllViews();
-        for (final Entry<String, TextView> entry : mapRes.entrySet()) {
+        for (final Entry<String, TextView> entry : tempMap.entrySet()) {
             stopsView.addView(entry.getValue());
         }
     }

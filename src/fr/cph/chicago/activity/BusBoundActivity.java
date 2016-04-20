@@ -83,11 +83,12 @@ public class BusBoundActivity extends ListActivity {
 
             layout = (LinearLayout) findViewById(R.id.bellow);
 
-            if (busRouteId == null && busRouteName == null && bound == null && boundTitle == null) {
-                busRouteId = getIntent().getExtras().getString(getString(R.string.bundle_bus_route_id));
-                busRouteName = getIntent().getExtras().getString(getString(R.string.bundle_bus_route_name));
-                bound = getIntent().getExtras().getString(getString(R.string.bundle_bus_bound));
-                boundTitle = getIntent().getExtras().getString(getString(R.string.bundle_bus_bound_title));
+            if (busRouteId == null || busRouteName == null || bound == null || boundTitle == null) {
+                final Bundle extras = getIntent().getExtras();
+                busRouteId = extras.getString(getString(R.string.bundle_bus_route_id));
+                busRouteName = extras.getString(getString(R.string.bundle_bus_route_name));
+                bound = extras.getString(getString(R.string.bundle_bus_bound));
+                boundTitle = extras.getString(getString(R.string.bundle_bus_bound_title));
             }
             busBoundAdapter = new BusBoundAdapter(busRouteId);
             setListAdapter(busBoundAdapter);
@@ -171,11 +172,6 @@ public class BusBoundActivity extends ListActivity {
             mapFragment.setRetainInstance(true);
             fm.beginTransaction().replace(R.id.map, mapFragment).commit();
         }
-    }
-
-    @Override
-    public final void onStop() {
-        super.onStop();
     }
 
     @Override

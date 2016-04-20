@@ -70,7 +70,7 @@ public class TrainMapActivity extends Activity {
     private Marker selectedMarker;
     private Map<Marker, View> views;
     private RelativeLayout layout;
-    String line;
+    private String line;
     private Map<Marker, Boolean> status;
     private List<Marker> markers;
     private TrainData trainData;

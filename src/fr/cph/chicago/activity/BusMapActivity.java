@@ -33,6 +33,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
@@ -47,6 +48,17 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
@@ -64,15 +76,6 @@ import fr.cph.chicago.task.LoadBusPositionTask;
 import fr.cph.chicago.task.LoadCurrentPositionTask;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.XmlParser;
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 import static fr.cph.chicago.connection.CtaRequestType.BUS_DIRECTION;
 import static fr.cph.chicago.connection.CtaRequestType.BUS_PATTERN;
@@ -117,9 +120,10 @@ public class BusMapActivity extends Activity {
                 busRouteId = savedInstanceState.getString(getString(R.string.bundle_bus_route_id));
                 bounds = savedInstanceState.getStringArray(getString(R.string.bundle_bus_bounds));
             } else {
-                busId = getIntent().getExtras().getInt(getString(R.string.bundle_bus_id));
-                busRouteId = getIntent().getExtras().getString(getString(R.string.bundle_bus_route_id));
-                bounds = getIntent().getExtras().getStringArray(getString(R.string.bundle_bus_bounds));
+                final Bundle extras = getIntent().getExtras();
+                busId = extras.getInt(getString(R.string.bundle_bus_id));
+                busRouteId = extras.getString(getString(R.string.bundle_bus_route_id));
+                bounds = extras.getStringArray(getString(R.string.bundle_bus_bounds));
             }
 
             busMarkers = new ArrayList<>();
@@ -150,20 +154,10 @@ public class BusMapActivity extends Activity {
     }
 
     @Override
-    public final void onPause() {
-        super.onPause();
-    }
-
-    @Override
     public final void onStop() {
         super.onStop();
         centerMap = false;
         loadPattern = false;
-    }
-
-    @Override
-    public final void onDestroy() {
-        super.onDestroy();
     }
 
     @Override

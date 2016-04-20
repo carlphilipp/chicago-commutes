@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -78,11 +78,9 @@ public class StationActivity extends Activity {
 
     private ViewGroup viewGroup;
     private ScrollView scrollView;
-    private ImageView streetViewImage;
     private ImageView favoritesImage;
     private LinearLayout.LayoutParams paramsStop;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private TextView streetViewText;
 
     private boolean isFavorite;
     private TrainData trainData;
@@ -134,8 +132,8 @@ public class StationActivity extends Activity {
 
                 isFavorite = isFavorite();
 
-                streetViewImage = (ImageView) findViewById(R.id.activity_train_station_streetview_image);
-                streetViewText = (TextView) findViewById(R.id.activity_train_station_steetview_text);
+                final ImageView streetViewImage = (ImageView) findViewById(R.id.activity_train_station_streetview_image);
+                final TextView streetViewText = (TextView) findViewById(R.id.activity_train_station_steetview_text);
 
                 new DisplayGoogleStreetPictureTask(this, streetViewImage, streetViewText).execute(position.getLatitude(), position.getLongitude());
 
@@ -314,12 +312,7 @@ public class StationActivity extends Activity {
         }
         return false;
     }
-
-    /**
-     * Reset arrival layouts
-     *
-     * @param station the station
-     */
+    
     // FIXME: delete view instead of hiding it
     public void hideAllArrivalViews() {
         final Set<TrainLine> trainLines = station.getLines();
