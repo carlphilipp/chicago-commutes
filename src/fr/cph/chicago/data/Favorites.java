@@ -140,12 +140,12 @@ public class Favorites {
      * @return a train arrival
      */
     @NonNull
-    public final TrainArrival getTrainArrival(@NonNull final Integer stationId) {
-        return trainArrivals.get(stationId);
+    public final TrainArrival getTrainArrival(final int stationId) {
+        return trainArrivals.get(stationId, new TrainArrival());
     }
 
     @NonNull
-    public final Map<String, StringBuilder> getTrainArrivalByLine(@NonNull final Integer stationId, @NonNull final TrainLine trainLine) {
+    public final Map<String, StringBuilder> getTrainArrivalByLine(final int stationId, @NonNull final TrainLine trainLine) {
         final List<Eta> etas = getTrainArrival(stationId).getEtas(trainLine);
         final Map<String, StringBuilder> result = new HashMap<>();
         for (final Eta eta : etas) {

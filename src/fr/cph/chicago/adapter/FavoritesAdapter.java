@@ -88,8 +88,6 @@ import static java.util.Map.Entry;
 // TODO to analyze and refactor
 public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder> {
 
-    private static final String TAG = FavoritesAdapter.class.getSimpleName();
-
     private static final int GREY_5 = ContextCompat.getColor(App.getContext(), R.color.grey_5);
 
     private Context context;
@@ -189,66 +187,63 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         });
         holder.mapButton.setOnClickListener(new FavoritesTrainOnClickListener(activity, stationId, trainLines));
 
-        // TODO create a method to check if empty
-        if (favorites.getTrainArrival(stationId) != null) {
-            for (final TrainLine trainLine : trainLines) {
-                boolean newLine = true;
-                int i = 0;
-                final Map<String, StringBuilder> etas = favorites.getTrainArrivalByLine(stationId, trainLine);
-                for (final Entry<String, StringBuilder> entry : etas.entrySet()) {
-                    final LinearLayout.LayoutParams containParam = getInsideParams(newLine, i == etas.size() - 1);
-                    final LinearLayout container = new LinearLayout(context);
-                    container.setOrientation(LinearLayout.HORIZONTAL);
-                    container.setLayoutParams(containParam);
+        for (final TrainLine trainLine : trainLines) {
+            boolean newLine = true;
+            int i = 0;
+            final Map<String, StringBuilder> etas = favorites.getTrainArrivalByLine(stationId, trainLine);
+            for (final Entry<String, StringBuilder> entry : etas.entrySet()) {
+                final LinearLayout.LayoutParams containParam = getInsideParams(newLine, i == etas.size() - 1);
+                final LinearLayout container = new LinearLayout(context);
+                container.setOrientation(LinearLayout.HORIZONTAL);
+                container.setLayoutParams(containParam);
 
-                    // Left
-                    final LinearLayout.LayoutParams leftParam = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                    final RelativeLayout left = new RelativeLayout(context);
-                    left.setLayoutParams(leftParam);
+                // Left
+                final LinearLayout.LayoutParams leftParam = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                final RelativeLayout left = new RelativeLayout(context);
+                left.setLayoutParams(leftParam);
 
-                    final LinearLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(trainLine);
-                    int lineId = Util.generateViewId();
-                    lineIndication.setId(lineId);
+                final LinearLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(trainLine);
+                int lineId = Util.generateViewId();
+                lineIndication.setId(lineId);
 
-                    final RelativeLayout.LayoutParams destinationParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    destinationParams.addRule(RelativeLayout.RIGHT_OF, lineId);
-                    destinationParams.setMargins(pixelsHalf, 0, 0, 0);
+                final RelativeLayout.LayoutParams destinationParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                destinationParams.addRule(RelativeLayout.RIGHT_OF, lineId);
+                destinationParams.setMargins(pixelsHalf, 0, 0, 0);
 
-                    final String destination = "  " + entry.getKey();
-                    final TextView destinationTextView = new TextView(context);
-                    destinationTextView.setTextColor(GREY_5);
-                    destinationTextView.setText(destination);
-                    destinationTextView.setLines(1);
-                    destinationTextView.setLayoutParams(destinationParams);
+                final String destination = "  " + entry.getKey();
+                final TextView destinationTextView = new TextView(context);
+                destinationTextView.setTextColor(GREY_5);
+                destinationTextView.setText(destination);
+                destinationTextView.setLines(1);
+                destinationTextView.setLayoutParams(destinationParams);
 
-                    left.addView(lineIndication);
-                    left.addView(destinationTextView);
+                left.addView(lineIndication);
+                left.addView(destinationTextView);
 
-                    // Right
-                    final LinearLayout.LayoutParams rightParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-                    final LinearLayout right = new LinearLayout(context);
-                    right.setOrientation(LinearLayout.VERTICAL);
-                    right.setLayoutParams(rightParams);
+                // Right
+                final LinearLayout.LayoutParams rightParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+                final LinearLayout right = new LinearLayout(context);
+                right.setOrientation(LinearLayout.VERTICAL);
+                right.setLayoutParams(rightParams);
 
-                    final StringBuilder currentEtas = entry.getValue();
-                    final TextView arrivalText = new TextView(context);
-                    arrivalText.setText(currentEtas);
-                    arrivalText.setGravity(Gravity.RIGHT);
-                    arrivalText.setGravity(Gravity.END);
-                    arrivalText.setLines(1);
-                    arrivalText.setTextColor(GREY_5);
-                    arrivalText.setEllipsize(TextUtils.TruncateAt.END);
+                final StringBuilder currentEtas = entry.getValue();
+                final TextView arrivalText = new TextView(context);
+                arrivalText.setText(currentEtas);
+                arrivalText.setGravity(Gravity.RIGHT);
+                arrivalText.setGravity(Gravity.END);
+                arrivalText.setLines(1);
+                arrivalText.setTextColor(GREY_5);
+                arrivalText.setEllipsize(TextUtils.TruncateAt.END);
 
-                    right.addView(arrivalText);
+                right.addView(arrivalText);
 
-                    container.addView(left);
-                    container.addView(right);
+                container.addView(left);
+                container.addView(right);
 
-                    holder.mainLayout.addView(container);
+                holder.mainLayout.addView(container);
 
-                    newLine = false;
-                    i++;
-                }
+                newLine = false;
+                i++;
             }
         }
     }
@@ -560,12 +555,57 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
      * Refresh udpdated view
      */
     public final void refreshUpdatedView() {
-        final Date lastUpdate = App.getLastUpdate();
-        // FIXME What the hell? Did it ever worked?
-        if (!String.valueOf(getLastUpdateInMinutes(lastUpdate)).equals(lastUpdate)) {
-            this.lastUpdate = String.valueOf(getLastUpdateInMinutes(lastUpdate));
-            this.notifyDataSetChanged();
+        lastUpdate = getLastUpdateInMinutes();
+        notifyDataSetChanged();
+    }
+
+    /**
+     * Get last update in minutes
+     *
+     * @return a string
+     */
+    private String getLastUpdateInMinutes() {
+        final StringBuilder lastUpdateInMinutes = new StringBuilder();
+        final Date currentDate = Calendar.getInstance().getTime();
+        final long[] diff = getTimeDifference(App.getLastUpdate(), currentDate);
+        final long hours = diff[0];
+        final long minutes = diff[1];
+        if (hours == 0 && minutes == 0) {
+            lastUpdateInMinutes.append("now");
+        } else {
+            if (hours == 0) {
+                lastUpdateInMinutes.append(minutes).append(" min");
+            } else {
+                lastUpdateInMinutes.append(hours).append(" h ").append(minutes).append(" min");
+            }
         }
+        return lastUpdateInMinutes.toString();
+    }
+
+    /**
+     * Get time difference between 2 dates
+     *
+     * @param date1 the date one
+     * @param date2 the date two
+     * @return a tab containing in 0 the hour and in 1 the minutes
+     */
+    private long[] getTimeDifference(@NonNull final Date date1, @NonNull final Date date2) {
+        final long[] result = new long[2];
+        final Calendar cal = Calendar.getInstance();
+        cal.setTime(date1);
+        final long t1 = cal.getTimeInMillis();
+        cal.setTime(date2);
+        long diff = Math.abs(cal.getTimeInMillis() - t1);
+        final int day = 1000 * 60 * 60 * 24;
+        final int hour = day / 24;
+        final int minute = hour / 60;
+        diff %= day;
+        long h = diff / hour;
+        diff %= hour;
+        long m = diff / minute;
+        result[0] = h;
+        result[1] = m;
+        return result;
     }
 
     /**
@@ -633,57 +673,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 activity.startActivity(intent);
             } else {
                 Util.showNetworkErrorMessage(activity);
-                //App.startErrorActivity(activity, trackerException.getMessage());
             }
         }
-    }
-
-    /**
-     * Get time difference between 2 dates
-     *
-     * @param date1 the date one
-     * @param date2 the date two
-     * @return a tab containing in 0 the hour and in 1 the minutes
-     */
-    private long[] getTimeDifference(@NonNull final Date date1, @NonNull final Date date2) {
-        final long[] result = new long[2];
-        final Calendar cal = Calendar.getInstance();
-        cal.setTime(date1);
-        final long t1 = cal.getTimeInMillis();
-        cal.setTime(date2);
-        long diff = Math.abs(cal.getTimeInMillis() - t1);
-        final int day = 1000 * 60 * 60 * 24;
-        final int hour = day / 24;
-        final int minute = hour / 60;
-        diff %= day;
-        long h = diff / hour;
-        diff %= hour;
-        long m = diff / minute;
-        result[0] = h;
-        result[1] = m;
-        return result;
-    }
-
-    /**
-     * Get last update in minutes
-     *
-     * @param lastUpdate the last update
-     * @return a string
-     */
-    private String getLastUpdateInMinutes(@NonNull final Date lastUpdate) {
-        final StringBuilder res = new StringBuilder();
-        final Date currentCDate = Calendar.getInstance().getTime();
-        final long[] diff = getTimeDifference(lastUpdate, currentCDate);
-        if (diff[0] == 0 && diff[1] == 0) {
-            res.append("now");
-        } else {
-            final String min = Long.toString(diff[1]);
-            if (diff[0] == 0) {
-                res.append(min).append(" min");
-            } else {
-                res.append(Long.toString(diff[0])).append(" h ").append(min).append(" min");
-            }
-        }
-        return res.toString();
     }
 }

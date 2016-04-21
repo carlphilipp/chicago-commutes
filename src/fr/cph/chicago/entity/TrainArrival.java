@@ -72,7 +72,7 @@ public class TrainArrival implements Parcelable {
     @NonNull
     public final List<Eta> getEtas(@NonNull final TrainLine line) {
         List<Eta> etas = new ArrayList<>();
-        for (final Eta eta : getEtas()) {
+        for (final Eta eta : this.etas) {
             if (eta.getRouteName() == line) {
                 etas.add(eta);
             }
