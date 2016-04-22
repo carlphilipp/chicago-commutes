@@ -242,60 +242,51 @@ public final class Util {
     public static void setWindowsColor(@NonNull final Activity activity, @NonNull final Toolbar toolbar, @NonNull final TrainLine trainLine) {
         int backgroundColor = 0;
         int statusBarColor = 0;
-        int navigationBarColor = 0;
+        //int navigationBarColor = 0;
         int textTitleColor = R.color.white;
         switch (trainLine) {
             case BLUE:
                 backgroundColor = R.color.blueLine;
                 statusBarColor = R.color.blueLineDark;
-                navigationBarColor = R.color.blueLineDarker;
                 break;
             case BROWN:
                 backgroundColor = R.color.brownLine;
                 statusBarColor = R.color.brownLineDark;
-                navigationBarColor = R.color.brownLineDarker;
                 break;
             case GREEN:
                 backgroundColor = R.color.greenLine;
                 statusBarColor = R.color.greenLineDark;
-                navigationBarColor = R.color.greenLineDarker;
                 break;
             case ORANGE:
                 backgroundColor = R.color.orangeLine;
-                statusBarColor = R.color.orangeLineDark;
-                navigationBarColor = R.color.orangeLineDarker;
+                statusBarColor = R.color.orangeLineDarker;
                 break;
             case PINK:
                 backgroundColor = R.color.pinkLine;
                 statusBarColor = R.color.pinkLineDark;
-                navigationBarColor = R.color.pinkLineDarker;
                 break;
             case PURPLE:
                 backgroundColor = R.color.purpleLine;
                 statusBarColor = R.color.purpleLineDark;
-                navigationBarColor = R.color.purpleLineDarker;
                 break;
             case RED:
                 backgroundColor = R.color.redLine;
                 statusBarColor = R.color.redLineDark;
-                navigationBarColor = R.color.redLineDarker;
                 break;
             case YELLOW:
                 backgroundColor = R.color.yellowLine;
                 statusBarColor = R.color.yellowLineDark;
-                navigationBarColor = R.color.yellowLineDarker;
                 break;
             case NA:
                 backgroundColor = R.color.primaryColor;
                 statusBarColor = R.color.primaryColorDark;
-                navigationBarColor = R.color.primaryColorDarker;
                 break;
         }
         toolbar.setBackgroundColor(ContextCompat.getColor(App.getContext(), backgroundColor));
         toolbar.setTitleTextColor(ContextCompat.getColor(App.getContext(), textTitleColor));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             activity.getWindow().setStatusBarColor(ContextCompat.getColor(activity, statusBarColor));
-            activity.getWindow().setNavigationBarColor(ContextCompat.getColor(activity, navigationBarColor));
+            activity.getWindow().setNavigationBarColor(ContextCompat.getColor(activity, R.color.primaryColorDarker));
         }
     }
 
