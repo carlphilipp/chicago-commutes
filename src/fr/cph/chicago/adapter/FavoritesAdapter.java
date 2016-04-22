@@ -471,11 +471,10 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         availableParam.setMargins(pixelsHalf, 0, 0, 0);
 
         final TextView boundCustomTextView = new TextView(context);
-        boundCustomTextView.setText(activity.getString(R.string.bike_available_bikes));
+        boundCustomTextView.setText(activity.getString(R.string.bike_available_docks));
         boundCustomTextView.setLines(1);
         boundCustomTextView.setLayoutParams(availableParam);
         boundCustomTextView.setTextColor(GREY_5);
-        boundCustomTextView.setWidth(300);
         int availableId = Util.generateViewId();
         boundCustomTextView.setId(availableId);
 

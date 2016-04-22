@@ -163,7 +163,6 @@ public class BikeStationActivity extends Activity {
         availableBikes.setOrientation(LinearLayout.HORIZONTAL);
         availableBike.setText(getResources().getText(R.string.bike_available_bikes));
         availableBike.setTextColor(ContextCompat.getColor(context, R.color.grey_5));
-        availableBike.setWidth(300);
         availableBikes.addView(availableBike);
         amountBike.setText(String.valueOf(bikeStation.getAvailableBikes()));
         if (bikeStation.getAvailableBikes() == 0) {
@@ -176,7 +175,6 @@ public class BikeStationActivity extends Activity {
         availableDocks.setOrientation(LinearLayout.HORIZONTAL);
         availableDock.setText(getResources().getText(R.string.bike_available_docks));
         availableDock.setTextColor(ContextCompat.getColor(context, R.color.grey_5));
-        availableDock.setWidth(300);
         availableDocks.addView(availableDock);
         amountDock.setText(String.valueOf(bikeStation.getAvailableDocks()));
         if (bikeStation.getAvailableDocks() == 0) {
