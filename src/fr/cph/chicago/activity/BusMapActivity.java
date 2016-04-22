@@ -312,7 +312,6 @@ public class BusMapActivity extends Activity {
                 }
 
                 busListener.setBusMarkers(busMarkers);
-                // TODO Reactivate to see if when we zoom the bug of the info windows disappear
                 googleMap.setOnCameraChangeListener(busListener);
             }
         });
@@ -354,8 +353,6 @@ public class BusMapActivity extends Activity {
                     j++;
                 }
                 busListener.setBusStationMarkers(busStationMarkers);
-
-                // TODO Reactivate to see if when we zoom the bug of the info windows disappear
                 googleMap.setOnCameraChangeListener(busListener);
             }
         });
