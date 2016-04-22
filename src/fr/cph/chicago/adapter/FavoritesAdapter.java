@@ -475,6 +475,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         boundCustomTextView.setLines(1);
         boundCustomTextView.setLayoutParams(availableParam);
         boundCustomTextView.setTextColor(GREY_5);
+        boundCustomTextView.setWidth(300);
         int availableId = Util.generateViewId();
         boundCustomTextView.setId(availableId);
 
