@@ -34,7 +34,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
@@ -52,12 +51,10 @@ import com.google.android.gms.maps.model.LatLng;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -103,24 +100,6 @@ public final class Util {
                 return result;
             }
         }
-    }
-
-    /**
-     * Get property from file
-     *
-     * @param property the property to get
-     * @return the value of the property
-     */
-    @NonNull
-    public static String getProperty(@NonNull final String property) {
-        final Properties prop = new Properties();
-        try {
-            prop.load(App.getContext().getAssets().open("app.properties"));
-        } catch (IOException e) {
-            Log.e(TAG, e.getMessage(), e);
-            return null;
-        }
-        return prop.getProperty(property, null);
     }
 
     /**
