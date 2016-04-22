@@ -116,7 +116,7 @@ public class TrainMapActivity extends Activity {
         trainData = dataHolder.getTrainData();
         markers = new ArrayList<>();
         status = new HashMap<>();
-        trainListener = TrainMapOnCameraChangeListener.getInstance();
+        trainListener = new TrainMapOnCameraChangeListener();
     }
 
     private void setToolbar() {
@@ -298,7 +298,7 @@ public class TrainMapActivity extends Activity {
                 trainListener.setTrainMarkers(markers);
 
                 // TODO Reactivate to see if when we zoom the bug of the info windows disappear
-                //googleMap.setOnCameraChangeListener(trainListener);
+                googleMap.setOnCameraChangeListener(trainListener);
             }
         });
     }

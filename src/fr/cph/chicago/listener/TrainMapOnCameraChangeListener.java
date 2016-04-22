@@ -39,23 +39,13 @@ import fr.cph.chicago.R;
  */
 public class TrainMapOnCameraChangeListener implements OnCameraChangeListener {
 
-    private static TrainMapOnCameraChangeListener INSTANCE;
-
     private BitmapDescriptor bitmapDescriptor1;
     private BitmapDescriptor bitmapDescriptor2;
     private BitmapDescriptor bitmapDescriptor3;
     private BitmapDescriptor currentBitmapDescriptor;
     private List<Marker> trainMarkers;
 
-    @NonNull
-    public static TrainMapOnCameraChangeListener getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new TrainMapOnCameraChangeListener();
-        }
-        return INSTANCE;
-    }
-
-    private TrainMapOnCameraChangeListener() {
+    public TrainMapOnCameraChangeListener() {
         final Bitmap icon = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.train);
         final Bitmap bitmap1 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 9, icon.getHeight() / 9, true);
         final Bitmap bitmap2 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 5, icon.getHeight() / 5, true);
@@ -79,6 +69,7 @@ public class TrainMapOnCameraChangeListener implements OnCameraChangeListener {
         if (position.zoom != currentZoom) {
             float oldZoom = currentZoom;
             currentZoom = position.zoom;
+
             if (isIn(currentZoom, 12.9f, 11f) && !isIn(oldZoom, 12.9f, 11f)) {
                 for (final Marker marker : trainMarkers) {
                     marker.setIcon(bitmapDescriptor1);

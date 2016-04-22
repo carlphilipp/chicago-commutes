@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p>
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,7 +19,6 @@ package fr.cph.chicago.activity;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -298,12 +297,10 @@ public class BusMapActivity extends Activity {
                     marker.remove();
                 }
                 busMarkers.clear();
-                final Bitmap bitmap = busListener.getCurrentBitmap();
+                final BitmapDescriptor bitmapDescr = busListener.getCurrentBitmapDescriptor();
                 for (final Bus bus : buses) {
                     final LatLng point = new LatLng(bus.getPosition().getLatitude(), bus.getPosition().getLongitude());
-                    final Marker marker = googleMap.addMarker(
-                            new MarkerOptions().position(point).title("To " + bus.getDestination()).snippet(bus.getId() + "").icon(BitmapDescriptorFactory.fromBitmap(bitmap)).anchor(0.5f, 0.5f)
-                                    .rotation(bus.getHeading()).flat(true));
+                    final Marker marker = googleMap.addMarker(new MarkerOptions().position(point).title("To " + bus.getDestination()).snippet(bus.getId() + "").icon(bitmapDescr).anchor(0.5f, 0.5f).rotation(bus.getHeading()).flat(true));
                     busMarkers.add(marker);
 
                     final LayoutInflater layoutInflater = (LayoutInflater) BusMapActivity.this.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -316,7 +313,7 @@ public class BusMapActivity extends Activity {
 
                 busListener.setBusMarkers(busMarkers);
                 // TODO Reactivate to see if when we zoom the bug of the info windows disappear
-                //googleMap.setOnCameraChangeListener(busListener);
+                googleMap.setOnCameraChangeListener(busListener);
             }
         });
     }
