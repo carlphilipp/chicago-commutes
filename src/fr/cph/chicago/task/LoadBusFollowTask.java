@@ -74,7 +74,7 @@ public class LoadBusFollowTask extends AsyncTask<String, Void, List<BusArrival>>
         if (!loadAll && arrivals.size() > 7) {
             arrivals = arrivals.subList(0, 6);
             final BusArrival arrival = new BusArrival();
-            arrival.setStopName("Display all results");
+            arrival.setStopName(activity.getString(R.string.bus_all_results));
             arrival.setDly(false);
             arrivals.add(arrival);
         }

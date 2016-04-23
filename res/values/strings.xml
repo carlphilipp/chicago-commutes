@@ -90,6 +90,7 @@
 	<string name="bus_activity_street_view_text">Street view</string>
 	<string name="bus_fragment_filter">Filter</string>
 	<string name="bus_fragment_notloaded">Divvy data deactivated</string>
+    <string name="bus_all_results">Display all results</string>
 
 	<!-- Bus Bound -->
 	<string name="bus_bound_activity">Bus Bound</string>
