@@ -83,7 +83,7 @@ public class LoadTrainFollowTask extends AsyncTask<String, Void, List<Eta>> {
         } catch (final ConnectException | ParserException e) {
             Log.e(TAG, e.getMessage(), e);
         }
-        Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_follow, 0);
+        Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_follow, 0);
         if (!loadAll && etas.size() > 7) {
             etas = etas.subList(0, 6);
 

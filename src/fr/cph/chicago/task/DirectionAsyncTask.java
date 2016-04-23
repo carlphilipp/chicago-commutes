@@ -85,7 +85,7 @@ public class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
         } catch (ParserException | ConnectException e) {
             this.trackerException = e;
         }
-        Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_direction, 0);
+        Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_direction, 0);
         return busDirections;
     }
 

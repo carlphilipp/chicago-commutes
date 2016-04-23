@@ -65,7 +65,7 @@ public class LoadLocalDataTask extends AsyncTask<Void, String, Void> {
     }
 
     private void trackWithGoogleAnalytics() {
-        Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
-        Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
+        Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_arrivals, 0);
+        Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
     }
 }

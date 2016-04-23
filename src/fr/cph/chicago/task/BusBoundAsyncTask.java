@@ -63,7 +63,7 @@ public class BusBoundAsyncTask extends AsyncTask<Void, Void, List<BusStop>> {
         } catch (final ParserException | ConnectException e) {
             this.trackerException = e;
         }
-        Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_stop, 0);
+        Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_stop, 0);
         return busStops;
     }
 

@@ -75,7 +75,7 @@ public class LoadTrainPositionTask extends AsyncTask<Boolean, Void, List<Train>>
         } catch (final ConnectException | ParserException e) {
             Log.e(TAG, e.getMessage(), e);
         }
-        Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_location, 0);
+        Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_location, 0);
         if (trainData == null) {
             final DataHolder dataHolder = DataHolder.getInstance();
             trainData = dataHolder.getTrainData();

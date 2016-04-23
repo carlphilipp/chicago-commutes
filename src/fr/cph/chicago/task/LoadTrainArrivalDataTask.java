@@ -104,7 +104,7 @@ public class LoadTrainArrivalDataTask extends AsyncTask<MultiValuedMap<String, S
             Log.e(TAG, e.getMessage(), e);
             trackerException = e;
         }
-        Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
+        Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_arrivals, 0);
         if (arrivals.size() == 1) {
             final String id = ((List<String>) params[0].get(activity.getString(R.string.request_map_id))).get(0);
             return arrivals.get(Integer.valueOf(id));

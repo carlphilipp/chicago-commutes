@@ -57,7 +57,7 @@ public class LoadBusAndBikeDataTask extends AsyncTask<Void, Void, Void> {
         // Load buses data
         try {
             busData.loadBusRoutes();
-            Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_routes, 0);
+            Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_routes, 0);
             publishProgress();
         } catch (final ParserException | ConnectException e) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {

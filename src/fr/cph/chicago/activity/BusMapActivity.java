@@ -380,7 +380,7 @@ public class BusMapActivity extends Activity {
                     for (int i = 0; i < busDirections.getLBusDirection().size(); i++) {
                         bounds[i] = busDirections.getLBusDirection().get(i).getBusDirectionEnum().toString();
                     }
-                    Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_direction, 0);
+                    Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_direction, 0);
                 }
 
                 final MultiValuedMap<String, String> routeIdParam = new ArrayListValuedHashMap<>();
@@ -399,7 +399,7 @@ public class BusMapActivity extends Activity {
             } catch (final ConnectException | ParserException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
-            Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_pattern, 0);
+            Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_pattern, 0);
             return this.patterns;
         }
 

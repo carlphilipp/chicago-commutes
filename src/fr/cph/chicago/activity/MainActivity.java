@@ -132,8 +132,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Util.loadAllFavorites(favoritesFragment, FavoritesFragment.class);
 
                     // Google analytics
-                    Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
-                    Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
+                    Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
+                    Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_arrivals, 0);
                     Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
                     // Check if bus/bike or alert data are not loaded. If not, load them.
                     // Can happen when the app has been loaded without any data connection

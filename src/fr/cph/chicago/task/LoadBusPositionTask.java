@@ -70,7 +70,7 @@ public class LoadBusPositionTask extends AsyncTask<Boolean, Void, List<Bus>> {
         } catch (final ConnectException | ParserException e) {
             Log.e(TAG, e.getMessage(), e);
         }
-        Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_vehicles, 0);
+        Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_vehicles, 0);
         return buses;
     }
 

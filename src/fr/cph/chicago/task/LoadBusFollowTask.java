@@ -70,7 +70,7 @@ public class LoadBusFollowTask extends AsyncTask<String, Void, List<BusArrival>>
         } catch (final ConnectException | ParserException e) {
             Log.e(TAG, e.getMessage(), e);
         }
-        Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
+        Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
         if (!loadAll && arrivals.size() > 7) {
             arrivals = arrivals.subList(0, 6);
             final BusArrival arrival = new BusArrival();

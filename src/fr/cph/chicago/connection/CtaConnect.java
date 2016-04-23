@@ -92,31 +92,31 @@ public class CtaConnect {
         final StringBuilder address;
         switch (requestType) {
             case TRAIN_ARRIVALS:
-                address = new StringBuilder(App.getContext().getString(R.string.analytics_action_get_train_arrivals) + "?key=" + CTA_TRAIN_KEY);
+                address = new StringBuilder(App.getContext().getString(R.string.url_train_arrivals) + "?key=" + CTA_TRAIN_KEY);
                 break;
             case TRAIN_FOLLOW:
-                address = new StringBuilder(App.getContext().getString(R.string.analytics_action_get_train_follow) + "?key=" + CTA_TRAIN_KEY);
+                address = new StringBuilder(App.getContext().getString(R.string.url_train_follow) + "?key=" + CTA_TRAIN_KEY);
                 break;
             case TRAIN_LOCATION:
-                address = new StringBuilder(App.getContext().getString(R.string.analytics_action_get_train_location) + "?key=" + CTA_TRAIN_KEY);
+                address = new StringBuilder(App.getContext().getString(R.string.url_train_location) + "?key=" + CTA_TRAIN_KEY);
                 break;
             case BUS_ROUTES:
-                address = new StringBuilder(App.getContext().getString(R.string.analytics_action_get_bus_routes) + "?key=" + CTA_BUS_KEY);
+                address = new StringBuilder(App.getContext().getString(R.string.url_bus_routes) + "?key=" + CTA_BUS_KEY);
                 break;
             case BUS_DIRECTION:
-                address = new StringBuilder(App.getContext().getString(R.string.analytics_action_get_bus_direction) + "?key=" + CTA_BUS_KEY);
+                address = new StringBuilder(App.getContext().getString(R.string.url_bus_direction) + "?key=" + CTA_BUS_KEY);
                 break;
             case BUS_STOP_LIST:
-                address = new StringBuilder(App.getContext().getString(R.string.analytics_action_get_bus_stop) + "?key=" + CTA_BUS_KEY);
+                address = new StringBuilder(App.getContext().getString(R.string.url_bus_stop) + "?key=" + CTA_BUS_KEY);
                 break;
             case BUS_VEHICLES:
-                address = new StringBuilder(App.getContext().getString(R.string.analytics_action_get_bus_vehicles) + "?key=" + CTA_BUS_KEY);
+                address = new StringBuilder(App.getContext().getString(R.string.url_bus_vehicles) + "?key=" + CTA_BUS_KEY);
                 break;
             case BUS_ARRIVALS:
-                address = new StringBuilder(App.getContext().getString(R.string.analytics_action_get_bus_arrival) + "?key=" + CTA_BUS_KEY);
+                address = new StringBuilder(App.getContext().getString(R.string.url_bus_arrival) + "?key=" + CTA_BUS_KEY);
                 break;
             case BUS_PATTERN:
-                address = new StringBuilder(App.getContext().getString(R.string.analytics_action_get_bus_pattern) + "?key=" + CTA_BUS_KEY);
+                address = new StringBuilder(App.getContext().getString(R.string.url_bus_pattern) + "?key=" + CTA_BUS_KEY);
                 break;
             default:
                 address = new StringBuilder();

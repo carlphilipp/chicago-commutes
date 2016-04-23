@@ -249,7 +249,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
                                 tempMap.put(direction, temp);
                             }
                         }
-                        Util.trackAction(NearbyFragment.this.activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
+                        Util.trackAction(NearbyFragment.this.activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
                     }
                 } catch (final ConnectException | ParserException e) {
                     Log.e(TAG, e.getMessage(), e);
@@ -270,7 +270,7 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
                         for (int j = 0; j < temp.size(); j++) {
                             trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
                         }
-                        Util.trackAction(NearbyFragment.this.activity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.analytics_action_get_train_arrivals, 0);
+                        Util.trackAction(NearbyFragment.this.activity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_arrivals, 0);
                     }
                 } catch (final ConnectException | ParserException e) {
                     Log.e(TAG, e.getMessage(), e);

@@ -61,7 +61,7 @@ public class LoadStationDataTask extends AsyncTask<Void, Void, List<BusArrival>>
         } catch (final ParserException | ConnectException e) {
             this.trackerException = e;
         }
-        Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_arrival, 0);
+        Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
         return null;
     }
 

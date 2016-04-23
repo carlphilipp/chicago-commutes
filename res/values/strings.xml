@@ -18,6 +18,18 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="en">
 
+    <!-- URL -->
+    <string name="url_train_arrivals">http://lapi.transitchicago.com/api/1.0/ttarrivals.aspx</string>
+    <string name="url_train_follow">http://lapi.transitchicago.com/api/1.0/ttfollow.aspx</string>
+    <string name="url_train_location">http://lapi.transitchicago.com/api/1.0/ttpositions.aspx</string>
+
+    <string name="url_bus_routes">http://www.ctabustracker.com/bustime/api/v1/getroutes</string>
+    <string name="url_bus_direction">http://www.ctabustracker.com/bustime/api/v1/getdirections</string>
+    <string name="url_bus_stop">http://www.ctabustracker.com/bustime/api/v1/getstops</string>
+    <string name="url_bus_vehicles">http://www.ctabustracker.com/bustime/api/v1/getvehicles</string>
+    <string name="url_bus_arrival">http://www.ctabustracker.com/bustime/api/v1/getpredictions</string>
+    <string name="url_bus_pattern">http://www.ctabustracker.com/bustime/api/v1/getpatterns</string>
+
     <!-- Drawer Menu -->
     <string name="menu_favorites">Favorites</string>
     <string name="menu_train">Train</string>
@@ -157,17 +169,6 @@
     <string name="analytics_action_get_divvy_all">All</string>
 
     <string name="analytics_action_get_google_map_street_view">Street View Picture</string>
-
-    <string name="analytics_action_get_train_arrivals">http://lapi.transitchicago.com/api/1.0/ttarrivals.aspx</string>
-    <string name="analytics_action_get_train_follow">http://lapi.transitchicago.com/api/1.0/ttfollow.aspx</string>
-    <string name="analytics_action_get_train_location">http://lapi.transitchicago.com/api/1.0/ttpositions.aspx</string>
-
-    <string name="analytics_action_get_bus_routes">http://www.ctabustracker.com/bustime/api/v1/getroutes</string>
-    <string name="analytics_action_get_bus_direction">http://www.ctabustracker.com/bustime/api/v1/getdirections</string>
-    <string name="analytics_action_get_bus_stop">http://www.ctabustracker.com/bustime/api/v1/getstops</string>
-    <string name="analytics_action_get_bus_vehicles">http://www.ctabustracker.com/bustime/api/v1/getvehicles</string>
-    <string name="analytics_action_get_bus_arrival">http://www.ctabustracker.com/bustime/api/v1/getpredictions</string>
-    <string name="analytics_action_get_bus_pattern">http://www.ctabustracker.com/bustime/api/v1/getpatterns</string>
 
     <string name="analytics_action_refresh_fav">Refresh favorites</string>
     <string name="analytics_action_refresh_bike">Refresh bike</string>

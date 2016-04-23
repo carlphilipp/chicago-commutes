@@ -87,7 +87,7 @@ public class LoadBusPatternTask extends AsyncTask<Void, Void, BusPattern> {
         } catch (final ConnectException | ParserException e) {
             Log.e(TAG, e.getMessage(), e);
         }
-        Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_pattern, 0);
+        Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_pattern, 0);
         return this.busPattern;
     }
 
