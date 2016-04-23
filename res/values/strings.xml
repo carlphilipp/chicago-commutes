@@ -173,6 +173,7 @@
 
 	<!-- Requests -->
 	<string name="request_map_id">mapid</string>
+    <string name="request_vid">vid</string>
 	<string name="request_rt">rt</string>
 	<string name="request_stop_id">stpid</string>
 </resources>

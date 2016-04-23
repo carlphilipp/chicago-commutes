@@ -59,7 +59,7 @@ public class LoadBusPositionTask extends AsyncTask<Boolean, Void, List<Bus>> {
         final CtaConnect connect = CtaConnect.getInstance();
         final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
         if (busId != 0) {
-            connectParam.put("vid", Integer.toString(busId));
+            connectParam.put(activity.getString(R.string.request_vid), Integer.toString(busId));
         } else {
             connectParam.put(activity.getString(R.string.request_rt), busRouteId);
         }

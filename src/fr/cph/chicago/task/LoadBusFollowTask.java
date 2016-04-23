@@ -22,6 +22,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BusMapActivity;
 import fr.cph.chicago.adapter.BusMapSnippetAdapter;
@@ -31,12 +39,6 @@ import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.XmlParser;
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
 
@@ -61,7 +63,7 @@ public class LoadBusFollowTask extends AsyncTask<String, Void, List<BusArrival>>
         try {
             CtaConnect connect = CtaConnect.getInstance();
             MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
-            connectParam.put("vid", busId);
+            connectParam.put(activity.getString(R.string.request_vid), busId);
             InputStream content = connect.connect(BUS_ARRIVALS, connectParam);
             XmlParser xml = XmlParser.getInstance();
             arrivals = xml.parseBusArrivals(content);
