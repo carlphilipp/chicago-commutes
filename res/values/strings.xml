@@ -206,4 +206,5 @@
     <string name="message_error">Error!</string>
     <string name="message_error_could_not_load_path">Sorry, could not load the path!</string>
     <string name="message_error_divvy">Error while connecting or parsing divvy data</string>
+    <string name="message_open_details">Open details</string>
 </resources>

@@ -46,71 +46,71 @@ import fr.cph.chicago.util.Util;
  * @version 1
  */
 public class TrainOnClickListener implements OnClickListener {
-	/**
-	 * The main activity
-	 **/
-	private Activity activity;
-	/**
-	 * The station id
-	 **/
-	private int stationId;
-	/**
-	 * Train lines
-	 **/
-	private Set<TrainLine> trainLines;
+    /**
+     * The main activity
+     **/
+    private Activity activity;
+    /**
+     * The station id
+     **/
+    private int stationId;
+    /**
+     * Train lines
+     **/
+    private Set<TrainLine> trainLines;
 
-	public TrainOnClickListener(@NonNull final Activity activity, final int stationId, final Set<TrainLine> trainLines) {
-		this.activity = activity;
-		this.stationId = stationId;
-		this.trainLines = trainLines;
-	}
+    public TrainOnClickListener(@NonNull final Activity activity, final int stationId, final Set<TrainLine> trainLines) {
+        this.activity = activity;
+        this.stationId = stationId;
+        this.trainLines = trainLines;
+    }
 
-	@Override
-	public void onClick(final View view) {
+    @Override
+    public void onClick(final View view) {
         if (!Util.isNetworkAvailable()) {
             Util.showNetworkErrorMessage(activity);
-		} else {
-			final List<String> values = new ArrayList<>();
-			final List<Integer> colors = new ArrayList<>();
-			values.add("Open details");
-			for (final TrainLine line : trainLines) {
-				values.add(line.toString() + " line - See trains");
-				if (line != TrainLine.YELLOW) {
-					colors.add(line.getColor());
-				} else {
-					colors.add(ContextCompat.getColor(App.getContext(), R.color.yellowLine));
-				}
-			}
-			final PopupTrainAdapter ada = new PopupTrainAdapter(activity, values, colors);
+        } else {
+            final List<String> values = new ArrayList<>();
+            final List<Integer> colors = new ArrayList<>();
+            values.add(activity.getString(R.string.message_open_details));
+            for (final TrainLine line : trainLines) {
+                values.add(line.toString() + " line - See trains");
+                if (line != TrainLine.YELLOW) {
+                    colors.add(line.getColor());
+                } else {
+                    colors.add(ContextCompat.getColor(App.getContext(), R.color.yellowLine));
+                }
+            }
+            final PopupTrainAdapter ada = new PopupTrainAdapter(activity, values, colors);
 
-			final List<TrainLine> lines = new ArrayList<>();
-			lines.addAll(trainLines);
+            final List<TrainLine> lines = new ArrayList<>();
+            lines.addAll(trainLines);
 
-			final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-			builder.setAdapter(ada, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(final DialogInterface dialog, final int position) {
-					final Bundle extras = new Bundle();
-					if (position == 0) {
-						// Start station activity
-						final Intent intent = new Intent(App.getContext(), StationActivity.class);
-						extras.putInt(activity.getString(R.string.bundle_train_stationId), stationId);
-						intent.putExtras(extras);
-						activity.startActivity(intent);
-					} else {
-						// Follow all trains from given line on google map view
-						final Intent intent = new Intent(App.getContext(), TrainMapActivity.class);
-						extras.putString(activity.getString(R.string.bundle_train_line), lines.get(position - 1).toTextString());
-						intent.putExtras(extras);
-						activity.startActivity(intent);
-					}
-				}
-			});
+            final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setAdapter(ada, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(final DialogInterface dialog, final int position) {
+                    final Bundle extras = new Bundle();
+                    if (position == 0) {
+                        // Start station activity
+                        final Intent intent = new Intent(App.getContext(), StationActivity.class);
+                        extras.putInt(activity.getString(R.string.bundle_train_stationId), stationId);
+                        intent.putExtras(extras);
+                        activity.startActivity(intent);
+                    } else {
+                        // Follow all trains from given line on google map view
+                        final Intent intent = new Intent(App.getContext(), TrainMapActivity.class);
+                        extras.putString(activity.getString(R.string.bundle_train_line), lines.get(position - 1).toTextString());
+                        intent.putExtras(extras);
+                        activity.startActivity(intent);
+                    }
+                }
+            });
 
-			final int[] screenSize = Util.getScreenSize();
-			final AlertDialog dialog = builder.create();
-			dialog.show();
-			dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
-		}
-	}
+            final int[] screenSize = Util.getScreenSize();
+            final AlertDialog dialog = builder.create();
+            dialog.show();
+            dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
+        }
+    }
 }

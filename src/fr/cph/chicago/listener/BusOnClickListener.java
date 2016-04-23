@@ -138,7 +138,7 @@ public class BusOnClickListener implements OnClickListener {
         final Set<String> keySet = mapBusArrivals.keySet();
         // In case of several bounds, we put at the top of the list the ability to open details for those bounds. Very not common
         for (final String key : keySet) {
-            final StringBuilder openDetails = new StringBuilder("Open details");
+            final StringBuilder openDetails = new StringBuilder(activity.getString(R.string.message_open_details));
             if (keySet.size() > 1) {
                 openDetails.append(" (").append(key).append(")");
             }
