@@ -55,10 +55,10 @@ public class BaseActivity extends Activity {
      *
      * @param message the message to pass to the error activity
      */
-    public void displayError(@NonNull final String message) {
+    public void displayError(@NonNull final Integer message) {
         DataHolder.getInstance().setTrainData(null);
         DataHolder.getInstance().setBusData(null);
-        App.startErrorActivity(this, message);
+        App.startErrorActivity(this, getString(message));
     }
 
     /**

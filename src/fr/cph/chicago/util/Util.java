@@ -74,19 +74,11 @@ import fr.cph.chicago.task.GlobalConnectTask;
  */
 public final class Util {
 
-    private static final String TAG = Util.class.getSimpleName();
-
     public static final LatLng CHICAGO = new LatLng(41.8819, -87.6278);
 
     private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
 
-    public static final String NETWORK_ERROR = "No network connection detected!";
-
-    private static final String ADDED_TO_FAVORITES = "Added to favorites!";
-
-    private static final String REMOVED_FROM_FAVORITES = "Removed from favorites!";
-
-    private Util(){
+    private Util() {
     }
 
     public static int generateViewId() {
@@ -113,7 +105,7 @@ public final class Util {
         if (!favorites.contains(stationId)) {
             favorites.add(stationId);
             Preferences.saveTrainFavorites(App.PREFERENCE_FAVORITES_TRAIN, favorites);
-            showSnackBar(view, ADDED_TO_FAVORITES);
+            showSnackBar(view, R.string.message_add_fav);
         }
     }
 
@@ -127,7 +119,7 @@ public final class Util {
         final List<Integer> favorites = Preferences.getTrainFavorites(preference);
         favorites.remove(stationId);
         Preferences.saveTrainFavorites(App.PREFERENCE_FAVORITES_TRAIN, favorites);
-        showSnackBar(view, REMOVED_FROM_FAVORITES);
+        showSnackBar(view, R.string.message_remove_fav);
     }
 
     /**
@@ -143,7 +135,7 @@ public final class Util {
         final List<String> favorites = Preferences.getBusFavorites(preference);
         favorites.remove(id);
         Preferences.saveBusFavorites(App.PREFERENCE_FAVORITES_BUS, favorites);
-        showSnackBar(view, REMOVED_FROM_FAVORITES);
+        showSnackBar(view, R.string.message_remove_fav);
     }
 
     /**
@@ -160,7 +152,7 @@ public final class Util {
         if (!favorites.contains(id)) {
             favorites.add(id);
             Preferences.saveBusFavorites(App.PREFERENCE_FAVORITES_BUS, favorites);
-            showSnackBar(view, ADDED_TO_FAVORITES);
+            showSnackBar(view, R.string.message_add_fav);
         }
     }
 
@@ -169,7 +161,7 @@ public final class Util {
         if (!favorites.contains(Integer.toString(stationId))) {
             favorites.add(Integer.toString(stationId));
             Preferences.saveBikeFavorites(App.PREFERENCE_FAVORITES_BIKE, favorites);
-            showSnackBar(view, ADDED_TO_FAVORITES);
+            showSnackBar(view, R.string.message_add_fav);
         }
     }
 
@@ -177,7 +169,7 @@ public final class Util {
         final List<String> favorites = Preferences.getBikeFavorites(preference);
         favorites.remove(Integer.toString(stationId));
         Preferences.saveBikeFavorites(App.PREFERENCE_FAVORITES_BIKE, favorites);
-        showSnackBar(view, REMOVED_FROM_FAVORITES);
+        showSnackBar(view, R.string.message_remove_fav);
     }
 
     /**
@@ -392,27 +384,27 @@ public final class Util {
     }
 
     public static void showNetworkErrorMessage(@NonNull final Activity activity) {
-        showSnackBar(activity, NETWORK_ERROR);
+        showSnackBar(activity, R.string.message_network_error);
     }
 
     public static void showNetworkErrorMessage(@NonNull final View view) {
-        showSnackBar(view, NETWORK_ERROR);
+        showSnackBar(view, R.string.message_network_error);
     }
 
-    public static void showMessage(final Activity activity, final String message) {
+    public static void showMessage(final Activity activity, final int message) {
         showSnackBar(activity, message);
     }
 
-    private static void showSnackBar(@NonNull final Activity activity, @NonNull final String message) {
+    private static void showSnackBar(@NonNull final Activity activity, final int message) {
         if (activity.getCurrentFocus() != null) {
-            Snackbar.make(activity.getCurrentFocus(), message, Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(activity.getCurrentFocus(), activity.getString(message), Snackbar.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, activity.getString(message), Toast.LENGTH_LONG).show();
         }
     }
 
-    private static void showSnackBar(@NonNull final View view, @NonNull final String message) {
-        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
+    private static void showSnackBar(@NonNull final View view, final int message) {
+        Snackbar.make(view, view.getContext().getString(message), Snackbar.LENGTH_SHORT).show();
     }
 
     @NonNull

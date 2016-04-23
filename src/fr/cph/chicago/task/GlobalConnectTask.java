@@ -31,6 +31,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 
+import fr.cph.chicago.App;
+import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.DivvyConnect;
 import fr.cph.chicago.data.DataHolder;
@@ -257,7 +259,7 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
             if (networkAvailable) {
                 clazz.getMethod("reloadData", SparseArray.class, List.class, List.class, Boolean.class).invoke(instance, trainArrivals, busArrivals, bikeStations, error);
             } else {
-                clazz.getMethod("displayError", String.class).invoke(instance, Util.NETWORK_ERROR);
+                clazz.getMethod("displayError", String.class).invoke(instance, App.getContext().getString(R.string.message_network_error));
             }
         } catch (final Exception e) {
             Log.e(TAG, e.getMessage(), e);

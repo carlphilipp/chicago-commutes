@@ -59,92 +59,92 @@ import static fr.cph.chicago.connection.CtaRequestType.BUS_DIRECTION;
  */
 public class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 
-	private Activity activity;
-	private BusRoute busRoute;
-	private View convertView;
-	private ViewGroup viewGroup;
-	private TrackerException trackerException;
+    private Activity activity;
+    private BusRoute busRoute;
+    private View convertView;
+    private ViewGroup viewGroup;
+    private TrackerException trackerException;
 
-	public DirectionAsyncTask(@NonNull final Activity activity, @NonNull final ViewGroup viewGroup) {
-		this.activity = activity;
-		this.viewGroup = viewGroup;
-	}
+    public DirectionAsyncTask(@NonNull final Activity activity, @NonNull final ViewGroup viewGroup) {
+        this.activity = activity;
+        this.viewGroup = viewGroup;
+    }
 
-	@Override
-	protected final BusDirections doInBackground(final Object... params) {
-		final CtaConnect connect = CtaConnect.getInstance();
-		BusDirections busDirections = null;
-		try {
-			final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-			busRoute = (BusRoute) params[0];
-			convertView = (View) params[1];
-			reqParams.put(activity.getString(R.string.request_rt), busRoute.getId());
-			final XmlParser xml = XmlParser.getInstance();
-			final InputStream xmlResult = connect.connect(BUS_DIRECTION, reqParams);
-			busDirections = xml.parseBusDirections(xmlResult, busRoute.getId());
-		} catch (ParserException | ConnectException e) {
-			this.trackerException = e;
-		}
-		Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_direction, 0);
-		return busDirections;
-	}
+    @Override
+    protected final BusDirections doInBackground(final Object... params) {
+        final CtaConnect connect = CtaConnect.getInstance();
+        BusDirections busDirections = null;
+        try {
+            final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
+            busRoute = (BusRoute) params[0];
+            convertView = (View) params[1];
+            reqParams.put(activity.getString(R.string.request_rt), busRoute.getId());
+            final XmlParser xml = XmlParser.getInstance();
+            final InputStream xmlResult = connect.connect(BUS_DIRECTION, reqParams);
+            busDirections = xml.parseBusDirections(xmlResult, busRoute.getId());
+        } catch (ParserException | ConnectException e) {
+            this.trackerException = e;
+        }
+        Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.analytics_action_get_bus_direction, 0);
+        return busDirections;
+    }
 
-	@Override
-	protected final void onPostExecute(final BusDirections result) {
-		if (trackerException == null) {
-			final List<BusDirection> busDirections = result.getLBusDirection();
-			final List<String> data = new ArrayList<>();
-			for (final BusDirection busDir : busDirections) {
-				data.add(busDir.getBusDirectionEnum().toString());
-			}
-			data.add("See all buses on line " + result.getId());
+    @Override
+    protected final void onPostExecute(final BusDirections result) {
+        if (trackerException == null) {
+            final List<BusDirection> busDirections = result.getLBusDirection();
+            final List<String> data = new ArrayList<>();
+            for (final BusDirection busDir : busDirections) {
+                data.add(busDir.getBusDirectionEnum().toString());
+            }
+            data.add(activity.getString(R.string.message_see_all_buses_on_line) + result.getId());
 
-			final View popupView = activity.getLayoutInflater().inflate(R.layout.popup_bus, viewGroup, false);
-			final ListView listView = (ListView) popupView.findViewById(R.id.details);
-			final PopupBusAdapter ada = new PopupBusAdapter(activity, data);
-			listView.setAdapter(ada);
+            final View popupView = activity.getLayoutInflater().inflate(R.layout.popup_bus, viewGroup, false);
+            final ListView listView = (ListView) popupView.findViewById(R.id.details);
+            final PopupBusAdapter ada = new PopupBusAdapter(activity, data);
+            listView.setAdapter(ada);
 
-			final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-			builder.setAdapter(ada, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(final DialogInterface dialog, final int position) {
-					final Bundle extras = new Bundle();
-					if (position != data.size() - 1) {
-						final Intent intent = new Intent(activity, BusBoundActivity.class);
-						extras.putString(activity.getString(R.string.bundle_bus_route_id), busRoute.getId());
-						extras.putString(activity.getString(R.string.bundle_bus_route_name), busRoute.getName());
-						extras.putString(activity.getString(R.string.bundle_bus_bound), busDirections.get(position).getBusTextReceived());
-						extras.putString(activity.getString(R.string.bundle_bus_bound_title), busDirections.get(position).getBusDirectionEnum().toString());
-						intent.putExtras(extras);
-						activity.startActivity(intent);
-					} else {
-						final String[] busDirectionArray = new String[busDirections.size()];
-						int i = 0;
-						for (final BusDirection busDir : busDirections) {
-							busDirectionArray[i++] = busDir.getBusDirectionEnum().toString();
-						}
-						final Intent intent = new Intent(activity, BusMapActivity.class);
-						extras.putString(activity.getString(R.string.bundle_bus_route_id), result.getId());
-						extras.putStringArray(activity.getString(R.string.bundle_bus_bounds), busDirectionArray);
-						intent.putExtras(extras);
-						activity.startActivity(intent);
-					}
-					convertView.setVisibility(LinearLayout.GONE);
-				}
-			});
-			builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
-				@Override
-				public void onCancel(DialogInterface dialog) {
-					convertView.setVisibility(LinearLayout.GONE);
-				}
-			});
-			final int[] screenSize = Util.getScreenSize();
-			final AlertDialog dialog = builder.create();
-			dialog.show();
-			dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), ViewGroup.LayoutParams.WRAP_CONTENT);
-		} else {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setAdapter(ada, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(final DialogInterface dialog, final int position) {
+                    final Bundle extras = new Bundle();
+                    if (position != data.size() - 1) {
+                        final Intent intent = new Intent(activity, BusBoundActivity.class);
+                        extras.putString(activity.getString(R.string.bundle_bus_route_id), busRoute.getId());
+                        extras.putString(activity.getString(R.string.bundle_bus_route_name), busRoute.getName());
+                        extras.putString(activity.getString(R.string.bundle_bus_bound), busDirections.get(position).getBusTextReceived());
+                        extras.putString(activity.getString(R.string.bundle_bus_bound_title), busDirections.get(position).getBusDirectionEnum().toString());
+                        intent.putExtras(extras);
+                        activity.startActivity(intent);
+                    } else {
+                        final String[] busDirectionArray = new String[busDirections.size()];
+                        int i = 0;
+                        for (final BusDirection busDir : busDirections) {
+                            busDirectionArray[i++] = busDir.getBusDirectionEnum().toString();
+                        }
+                        final Intent intent = new Intent(activity, BusMapActivity.class);
+                        extras.putString(activity.getString(R.string.bundle_bus_route_id), result.getId());
+                        extras.putStringArray(activity.getString(R.string.bundle_bus_bounds), busDirectionArray);
+                        intent.putExtras(extras);
+                        activity.startActivity(intent);
+                    }
+                    convertView.setVisibility(LinearLayout.GONE);
+                }
+            });
+            builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    convertView.setVisibility(LinearLayout.GONE);
+                }
+            });
+            final int[] screenSize = Util.getScreenSize();
+            final AlertDialog dialog = builder.create();
+            dialog.show();
+            dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), ViewGroup.LayoutParams.WRAP_CONTENT);
+        } else {
             Util.showNetworkErrorMessage(activity);
             convertView.setVisibility(LinearLayout.GONE);
-		}
-	}
+        }
+    }
 }

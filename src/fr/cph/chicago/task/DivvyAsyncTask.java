@@ -65,7 +65,7 @@ public class DivvyAsyncTask extends AsyncTask<Void, Void, List<BikeStation>> {
         } catch (final ConnectException | ParserException e) {
             activity.runOnUiThread(new Runnable() {
                 public void run() {
-                    Util.showMessage(activity, "A surprising error has occurred. Try again!");
+                    Util.showMessage(activity, R.string.message_surprising_error);
                 }
             });
             Log.e(TAG, "Error while connecting or parsing divvy data", e);

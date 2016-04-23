@@ -101,5 +101,5 @@
 -keep class android.net.http.** { *; }
 -keepclassmembers class * {
 	public void reloadData(android.util.SparseArray, java.util.List, java.util.List, java.lang.Boolean);
-	public void displayError(java.lang.String);
+	public void displayError(java.lang.Integer);
 }

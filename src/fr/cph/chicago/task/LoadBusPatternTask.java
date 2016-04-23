@@ -22,7 +22,6 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -100,7 +99,7 @@ public class LoadBusPatternTask extends AsyncTask<Void, Void, BusPattern> {
             mapFragment.getMapAsync(new OnMapReadyCallback() {
                 @Override
                 public void onMapReady(final GoogleMap googleMap) {
-                    if(loadUserPosition) {
+                    if (loadUserPosition) {
                         if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
                             return;
@@ -118,7 +117,7 @@ public class LoadBusPatternTask extends AsyncTask<Void, Void, BusPattern> {
             });
             activity.drawPattern(result);
         } else {
-            Util.showMessage(activity, "Sorry, could not load the path!");
+            Util.showMessage(activity, R.string.message_error_could_not_load_path);
         }
     }
 }

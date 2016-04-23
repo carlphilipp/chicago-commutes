@@ -133,7 +133,7 @@ public class FavoritesFragment extends Fragment {
                 @Override
                 public void onClick(final View v) {
                     if (bikeStations.isEmpty()) {
-                        Util.showMessage(activity, "You are a bit fast! Try again in a second!");
+                        Util.showMessage(activity, R.string.message_too_fast);
                     } else {
                         final Intent intent = new Intent(activity, SearchActivity.class);
                         intent.putParcelableArrayListExtra(getString(R.string.bundle_bike_stations), (ArrayList<BikeStation>) bikeStations);
@@ -271,7 +271,7 @@ public class FavoritesFragment extends Fragment {
         }, 100);
         stopRefreshing();
         if (error) {
-            Util.showMessage(activity, "Oops something went wrong!");
+            Util.showMessage(activity, R.string.message_something_went_wrong);
         }
     }
 
@@ -281,7 +281,7 @@ public class FavoritesFragment extends Fragment {
      * @param message the message
      */
     // TODO remove the message if not used
-    public final void displayError(final String message) {
+    public final void displayError(@NonNull final Integer message) {
         Util.showMessage(activity, message);
         stopRefreshing();
     }

@@ -63,7 +63,7 @@ public final class DisplayGoogleStreetPictureTask extends AsyncTask<Double, Void
             Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_google, R.string.analytics_action_get_google_map_street_view, 0);
             return connect.connect(latitude, longitude);
         } catch (final IOException e) {
-            Log.e(TAG, "Error while connecting to google street view API", e);
+            Log.e(TAG, activity.getString(R.string.message_error_google_street), e);
             return null;
         }
     }

@@ -420,7 +420,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                     intent.putExtras(extras);
                     activity.startActivity(intent);
                 } else {
-                    Util.showMessage(activity, "Not ready yet. Please try again in few seconds!");
+                    Util.showMessage(activity, R.string.message_not_ready);
                 }
             }
         });

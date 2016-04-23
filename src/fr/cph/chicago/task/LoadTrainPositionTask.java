@@ -94,10 +94,10 @@ public class LoadTrainPositionTask extends AsyncTask<Boolean, Void, List<Train>>
                     activity.centerMapOnTrain(trains);
                 }
             } else {
-                Util.showMessage(activity, activity.getString(R.string.message_no_train_found));
+                Util.showMessage(activity, R.string.message_no_train_found);
             }
         } else {
-            Util.showMessage(activity, activity.getString(R.string.message_error_while_loading_data));
+            Util.showMessage(activity, R.string.message_error_while_loading_data);
         }
     }
 }

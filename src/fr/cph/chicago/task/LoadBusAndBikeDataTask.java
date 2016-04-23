@@ -20,7 +20,6 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -64,7 +63,7 @@ public class LoadBusAndBikeDataTask extends AsyncTask<Void, Void, Void> {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-                    Util.showMessage(activity, "Error!");
+                    Util.showMessage(activity, R.string.message_error);
                 }
             });
             Log.e(TAG, e.getMessage(), e);
