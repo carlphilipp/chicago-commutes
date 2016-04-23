@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p>
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -88,7 +88,7 @@ import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class NearbyFragment extends Fragment implements GoogleMapAbility {
+public class NearbyFragment extends Fragment {
 
     private static final String TAG = NearbyFragment.class.getSimpleName();
     private static final String ARG_SECTION_NUMBER = "section_number";
@@ -183,11 +183,6 @@ public class NearbyFragment extends Fragment implements GoogleMapAbility {
                 }
             }
         });
-    }
-
-    @Override
-    public void setGoogleMap(@NonNull final GoogleMap googleMap) {
-        this.googleMap = googleMap;
     }
 
     public void loadArrivals(@NonNull final List<BusStop> busStops, @NonNull final List<Station> trainStations, @NonNull final List<BikeStation> bikeStations) {

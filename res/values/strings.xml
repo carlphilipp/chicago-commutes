@@ -30,6 +30,10 @@
     <string name="url_bus_arrival">http://www.ctabustracker.com/bustime/api/v1/getpredictions</string>
     <string name="url_bus_pattern">http://www.ctabustracker.com/bustime/api/v1/getpatterns</string>
 
+    <string name="url_divvy">http://www.divvybikes.com/stations/json</string>
+
+    <string name="url_street_view">http://maps.googleapis.com/maps/api/streetview</string>
+
     <!-- Drawer Menu -->
     <string name="menu_favorites">Favorites</string>
     <string name="menu_train">Train</string>
@@ -177,6 +181,7 @@
     <string name="request_map_id">mapid</string>
     <string name="request_vid">vid</string>
     <string name="request_rt">rt</string>
+    <string name="request_dir">dir</string>
     <string name="request_stop_id">stpid</string>
     <string name="request_runnumber">runnumber</string>
 

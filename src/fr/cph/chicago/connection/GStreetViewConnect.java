@@ -38,7 +38,6 @@ import fr.cph.chicago.R;
 public class GStreetViewConnect {
 
     private static final String TAG = GStreetViewConnect.class.getSimpleName();
-    private static final String BASE_URL = "http://maps.googleapis.com/maps/api/streetview";
     private static final int WIDTH = 1000;
     private static final int HEIGHT = 300;
 
@@ -68,7 +67,7 @@ public class GStreetViewConnect {
 
     @NonNull
     public final Drawable connect(final double latitude, final double longitude) throws IOException {
-        final StringBuilder address = new StringBuilder(BASE_URL);
+        final StringBuilder address = new StringBuilder(App.getContext().getString(R.string.url_street_view));
         address.append("?key=");
         address.append(googleKey);
         address.append("&sensor=false");

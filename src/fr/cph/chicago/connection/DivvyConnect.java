@@ -18,8 +18,6 @@ package fr.cph.chicago.connection;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
-import fr.cph.chicago.exception.ConnectException;
-import org.apache.commons.io.IOUtils;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -27,13 +25,16 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import fr.cph.chicago.App;
+import fr.cph.chicago.R;
+import fr.cph.chicago.exception.ConnectException;
+
 public class DivvyConnect {
 
 	private static final String TAG = DivvyConnect.class.getSimpleName();
-	private static final String URL = "http://www.divvybikes.com/stations/json";
 
 	private static DivvyConnect instance = null;
-	
+
 	private DivvyConnect() {
 	}
 
@@ -49,8 +50,9 @@ public class DivvyConnect {
 	public final InputStream connect() throws ConnectException {
 		final InputStream inputStream;
 		try {
-			Log.v(TAG, "Address: " + URL);
-			final URL url = new URL(URL);
+            final String urlDivvy = App.getContext().getString(R.string.url_divvy);
+            Log.v(TAG, "Address: " + urlDivvy);
+			final URL url = new URL(urlDivvy);
 			final HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 			urlConnection.setConnectTimeout(5000);
 			urlConnection.setReadTimeout(5000);

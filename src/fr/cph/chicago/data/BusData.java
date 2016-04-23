@@ -28,6 +28,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import fr.cph.chicago.App;
+import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.csv.BusStopCsvParser;
 import fr.cph.chicago.entity.BusRoute;
@@ -47,8 +49,6 @@ import static fr.cph.chicago.connection.CtaRequestType.BUS_STOP_LIST;
  * @version 1
  */
 public class BusData {
-
-    private static final String TAG = BusData.class.getSimpleName();
 
     private static BusData busData;
 
@@ -156,8 +156,8 @@ public class BusData {
     public final List<BusStop> loadBusStop(@NonNull final String stopId, @NonNull final String bound) throws ConnectException, ParserException {
         final CtaConnect connect = CtaConnect.getInstance();
         final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
-        params.put("rt", stopId);
-        params.put("dir", bound);
+        params.put(App.getContext().getString(R.string.request_rt), stopId);
+        params.put(App.getContext().getString(R.string.request_dir), bound);
         final InputStream xmlResult = connect.connect(BUS_STOP_LIST, params);
         final XmlParser xml = XmlParser.getInstance();
         return xml.parseBusBounds(xmlResult);
