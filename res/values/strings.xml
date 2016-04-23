@@ -25,159 +25,164 @@
     <string name="menu_divvy">Divvy</string>
     <string name="menu_nearby">Nearby</string>
 
-	<!-- Bundle -->
-	<string name="bundle_train_arrivals">trainArrivals</string>
-	<string name="bundle_bus_arrivals">busArrivals</string>
-	<string name="bundle_error">error</string>
-	<string name="bundle_bike_station">station</string>
-	<string name="bundle_bus_stop_id">busStopId</string>
-	<string name="bundle_bus_route_id">busRouteId</string>
-	<string name="bundle_bus_bound">bound</string>
-	<string name="bundle_bus_bound_title">boundTitle</string>
-	<string name="bundle_bus_stop_name">busStopName</string>
-	<string name="bundle_bus_route_name">busRouteName</string>
-	<string name="bundle_bus_latitude">latitude</string>
-	<string name="bundle_bus_longitude">longitude</string>
-	<string name="bundle_bus_id">busId</string>
-	<string name="bundle_bus_bounds">bounds</string>
-	<string name="bundle_train_line">line</string>
-	<string name="bundle_bike_stations">bikeStations</string>
-	<string name="bundle_train_stationId">stationId</string>
+    <!-- Bundle -->
+    <string name="bundle_train_arrivals">trainArrivals</string>
+    <string name="bundle_bus_arrivals">busArrivals</string>
+    <string name="bundle_error">error</string>
+    <string name="bundle_bike_station">station</string>
+    <string name="bundle_bus_stop_id">busStopId</string>
+    <string name="bundle_bus_route_id">busRouteId</string>
+    <string name="bundle_bus_bound">bound</string>
+    <string name="bundle_bus_bound_title">boundTitle</string>
+    <string name="bundle_bus_stop_name">busStopName</string>
+    <string name="bundle_bus_route_name">busRouteName</string>
+    <string name="bundle_bus_latitude">latitude</string>
+    <string name="bundle_bus_longitude">longitude</string>
+    <string name="bundle_bus_id">busId</string>
+    <string name="bundle_bus_bounds">bounds</string>
+    <string name="bundle_train_line">line</string>
+    <string name="bundle_bike_stations">bikeStations</string>
+    <string name="bundle_train_stationId">stationId</string>
     <string name="bundle_title">title</string>
 
-	<!-- Preferences -->
-	<string name="preferences_cta_train">cta_train</string>
-	<string name="preferences_cta_bus">cta_bus</string>
+    <!-- Preferences -->
+    <string name="preferences_cta_train">cta_train</string>
+    <string name="preferences_cta_bus">cta_bus</string>
 
-	<string name="empty_string">&#160;</string>
-	<string name="app_name">Chicago Commutes</string>
-	<string name="favorites">Favorites</string>
-	<string name="train">Train</string>
-	<string name="bus">Bus</string>
-	<string name="divvy">Divvy</string>
-	<string name="nearby">Nearby</string>
-	<string name="map">\'L\' System Map</string>
-	<string name="settings">Settings</string>
-	<string name="navigation_drawer_open">Open navigation drawer</string>
-	<string name="navigation_drawer_close">Close navigation drawer</string>
-	<string name="action_settings">Settings</string>
-	<string name="action_refresh">Refresh</string>
-	<string name="progress_error">Error, try to refresh</string>
-	<string name="progress_message">Loading&#8230;</string>
-	<string name="progress_wait">Please wait</string>
-	<string name="B">B</string>
-	<string name="T">T</string>
-	<string name="D">D</string>
+    <string name="empty_string">&#160;</string>
+    <string name="app_name">Chicago Commutes</string>
+    <string name="favorites">Favorites</string>
+    <string name="train">Train</string>
+    <string name="bus">Bus</string>
+    <string name="divvy">Divvy</string>
+    <string name="nearby">Nearby</string>
+    <string name="map">\'L\' System Map</string>
+    <string name="settings">Settings</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="progress_error">Error, try to refresh</string>
+    <string name="progress_message">Loading&#8230;</string>
+    <string name="progress_wait">Please wait</string>
+    <string name="B">B</string>
+    <string name="T">T</string>
+    <string name="D">D</string>
 
-	<!-- Favorites -->
-	<string name="no_fav">Welcome to Chicago Commutes!</string>
-	<string name="add_fav">Add favorites from</string>
-	<string name="add_fav2">train/bus/bike tab</string>
+    <!-- Favorites -->
+    <string name="no_fav">Welcome to Chicago Commutes!</string>
+    <string name="add_fav">Add favorites from</string>
+    <string name="add_fav2">train/bus/bike tab</string>
 
-	<!-- Station -->
-	<string name="station_activity">Station</string>
-	<string name="train_station_activity">Stations</string>
-	<string name="station_activity_google_map_link_desc">Link to google map</string>
-	<string name="station_activity_street_view">Street view</string>
-	<string name="station_activity_favorite_icon">Favorite</string>
-	<string name="station_activity_map_icon">Map</string>
-	<string name="station_activity_walk_icon">Walk</string>
+    <!-- Station -->
+    <string name="station_activity">Station</string>
+    <string name="train_station_activity">Stations</string>
+    <string name="station_activity_google_map_link_desc">Link to google map</string>
+    <string name="station_activity_street_view">Street view</string>
+    <string name="station_activity_favorite_icon">Favorite</string>
+    <string name="station_activity_map_icon">Map</string>
+    <string name="station_activity_walk_icon">Walk</string>
 
-	<!-- Bus -->
-	<string name="bus_activity_google_map_link_desc">Link to google map</string>
-	<string name="bus_activity_street_view">Street view</string>
-	<string name="bus_activity_no_service">No service</string>
-	<string name="bus_activity_street_view_text">Street view</string>
-	<string name="bus_fragment_filter">Filter</string>
-	<string name="bus_fragment_notloaded">Divvy data deactivated</string>
+    <!-- Bus -->
+    <string name="bus_activity_google_map_link_desc">Link to google map</string>
+    <string name="bus_activity_street_view">Street view</string>
+    <string name="bus_activity_no_service">No service</string>
+    <string name="bus_activity_street_view_text">Street view</string>
+    <string name="bus_fragment_filter">Filter</string>
+    <string name="bus_fragment_notloaded">Divvy data deactivated</string>
     <string name="bus_all_results">Display all results</string>
 
-	<!-- Bus Bound -->
-	<string name="bus_bound_activity">Bus Bound</string>
+    <!-- Bus Bound -->
+    <string name="bus_bound_activity">Bus Bound</string>
 
-	<!-- Error -->
-	<string name="error_desc">Error</string>
-	<string name="error_retry">Retry</string>
+    <!-- Error -->
+    <string name="error_desc">Error</string>
+    <string name="error_retry">Retry</string>
 
-	<!-- Search -->
-	<string name="search_title">Search</string>
-	<string name="search_hint">Search&#8230;</string>
+    <!-- Search -->
+    <string name="search_title">Search</string>
+    <string name="search_hint">Search&#8230;</string>
 
-	<!-- Nearby -->
-	<string name="nearby_check_box">Hide stations/stops with no results</string>
+    <!-- Nearby -->
+    <string name="nearby_check_box">Hide stations/stops with no results</string>
 
-	<!-- CTA System map -->
-	<string name="fragment_image_description">A nice description</string>
+    <!-- CTA System map -->
+    <string name="fragment_image_description">A nice description</string>
 
-	<!-- Loading -->
-	<string name="loading_image_description">A nice description</string>
+    <!-- Loading -->
+    <string name="loading_image_description">A nice description</string>
 
-	<!-- Bike -->
-	<string name="bike_activity">Divvy</string>
-	<string name="bike_fragment_notloaded">Divvy data deactivated</string>
-	<string name="bike_fragment_filter">Filter</string>
-	<string name="bike_available_bikes">Available bikes&#160;&#160;&#160;</string>
-	<string name="bike_available_docks">Available docks&#160;&#160;</string>
+    <!-- Bike -->
+    <string name="bike_activity">Divvy</string>
+    <string name="bike_fragment_notloaded">Divvy data deactivated</string>
+    <string name="bike_fragment_filter">Filter</string>
+    <string name="bike_available_bikes">Available bikes&#160;&#160;&#160;</string>
+    <string name="bike_available_docks">Available docks&#160;&#160;</string>
 
-	<!-- Preferences -->
-	<string name="pref_trains_title">CTA trains</string>
-	<string name="pref_trains_summary">Use trains data</string>
-	<string name="pref_buses_title">CTA buses</string>
-	<string name="pref_buses_summary">Use buses data</string>
-	<string name="pref_bikes_title">Divvy bikes</string>
-	<string name="pref_bikes_summary">Use bikes data</string>
+    <!-- Preferences -->
+    <string name="pref_trains_title">CTA trains</string>
+    <string name="pref_trains_summary">Use trains data</string>
+    <string name="pref_buses_title">CTA buses</string>
+    <string name="pref_buses_summary">Use buses data</string>
+    <string name="pref_bikes_title">Divvy bikes</string>
+    <string name="pref_bikes_summary">Use bikes data</string>
 
-	<!-- Map -->
-	<string name="map_activity">Map</string>
-	<string name="map_train_follow_error">Unable to determine upcoming stops</string>
+    <!-- Map -->
+    <string name="map_activity">Map</string>
+    <string name="map_train_follow_error">Unable to determine upcoming stops</string>
 
-	<!-- Analytics -->
-	<string name="analytics_bike_fragment">Bike fragment</string>
-	<string name="analytics_bus_fragment">Bus fragment</string>
-	<string name="analytics_favorites_fragment">Favorites fragment</string>
-	<string name="analytics_L_fragment">L System Map fragment</string>
-	<string name="analytics_settings_fragment">Settings fragment</string>
-	<string name="analytics_nearby_fragment">Nearby fragment</string>
-	<string name="analytics_train_fragment">Train fragment</string>
+    <!-- Analytics -->
+    <string name="analytics_bike_fragment">Bike fragment</string>
+    <string name="analytics_bus_fragment">Bus fragment</string>
+    <string name="analytics_favorites_fragment">Favorites fragment</string>
+    <string name="analytics_L_fragment">L System Map fragment</string>
+    <string name="analytics_settings_fragment">Settings fragment</string>
+    <string name="analytics_nearby_fragment">Nearby fragment</string>
+    <string name="analytics_train_fragment">Train fragment</string>
 
-	<string name="analytics_bus_details">Bus details</string>
-	<string name="analytics_train_details">Train details</string>
-	<string name="analytics_bus_map">Map bus</string>
-	<string name="analytics_train_map">Map train</string>
+    <string name="analytics_bus_details">Bus details</string>
+    <string name="analytics_train_details">Train details</string>
+    <string name="analytics_bus_map">Map bus</string>
+    <string name="analytics_train_map">Map train</string>
 
 
-	<string name="analytics_category_ui">UI</string>
-	<string name="analytics_category_req">Request</string>
-	<string name="analytics_action_press">Press</string>
-	<string name="analytics_action_get_bus">CTA Bus</string>
-	<string name="analytics_action_get_train">CTA Train</string>
-	<string name="analytics_action_get_divvy">Divvy</string>
-	<string name="analytics_action_get_google">Google</string>
+    <string name="analytics_category_ui">UI</string>
+    <string name="analytics_category_req">Request</string>
+    <string name="analytics_action_press">Press</string>
+    <string name="analytics_action_get_bus">CTA Bus</string>
+    <string name="analytics_action_get_train">CTA Train</string>
+    <string name="analytics_action_get_divvy">Divvy</string>
+    <string name="analytics_action_get_google">Google</string>
 
-	<string name="analytics_action_get_divvy_all">All</string>
+    <string name="analytics_action_get_divvy_all">All</string>
 
-	<string name="analytics_action_get_google_map_street_view">Street View Picture</string>
+    <string name="analytics_action_get_google_map_street_view">Street View Picture</string>
 
-	<string name="analytics_action_get_train_arrivals">http://lapi.transitchicago.com/api/1.0/ttarrivals.aspx</string>
-	<string name="analytics_action_get_train_follow">http://lapi.transitchicago.com/api/1.0/ttfollow.aspx</string>
-	<string name="analytics_action_get_train_location">http://lapi.transitchicago.com/api/1.0/ttpositions.aspx</string>
+    <string name="analytics_action_get_train_arrivals">http://lapi.transitchicago.com/api/1.0/ttarrivals.aspx</string>
+    <string name="analytics_action_get_train_follow">http://lapi.transitchicago.com/api/1.0/ttfollow.aspx</string>
+    <string name="analytics_action_get_train_location">http://lapi.transitchicago.com/api/1.0/ttpositions.aspx</string>
 
-	<string name="analytics_action_get_bus_routes">http://www.ctabustracker.com/bustime/api/v1/getroutes</string>
-	<string name="analytics_action_get_bus_direction">http://www.ctabustracker.com/bustime/api/v1/getdirections</string>
-	<string name="analytics_action_get_bus_stop">http://www.ctabustracker.com/bustime/api/v1/getstops</string>
-	<string name="analytics_action_get_bus_vehicles">http://www.ctabustracker.com/bustime/api/v1/getvehicles</string>
-	<string name="analytics_action_get_bus_arrival">http://www.ctabustracker.com/bustime/api/v1/getpredictions</string>
-	<string name="analytics_action_get_bus_pattern">http://www.ctabustracker.com/bustime/api/v1/getpatterns</string>
+    <string name="analytics_action_get_bus_routes">http://www.ctabustracker.com/bustime/api/v1/getroutes</string>
+    <string name="analytics_action_get_bus_direction">http://www.ctabustracker.com/bustime/api/v1/getdirections</string>
+    <string name="analytics_action_get_bus_stop">http://www.ctabustracker.com/bustime/api/v1/getstops</string>
+    <string name="analytics_action_get_bus_vehicles">http://www.ctabustracker.com/bustime/api/v1/getvehicles</string>
+    <string name="analytics_action_get_bus_arrival">http://www.ctabustracker.com/bustime/api/v1/getpredictions</string>
+    <string name="analytics_action_get_bus_pattern">http://www.ctabustracker.com/bustime/api/v1/getpatterns</string>
 
-	<string name="analytics_action_refresh_fav">Refresh favorites</string>
-	<string name="analytics_action_refresh_bike">Refresh bike</string>
+    <string name="analytics_action_refresh_fav">Refresh favorites</string>
+    <string name="analytics_action_refresh_bike">Refresh bike</string>
 
-	<!-- Requests -->
-	<string name="request_map_id">mapid</string>
+    <!-- Requests -->
+    <string name="request_map_id">mapid</string>
     <string name="request_vid">vid</string>
-	<string name="request_rt">rt</string>
-	<string name="request_stop_id">stpid</string>
+    <string name="request_rt">rt</string>
+    <string name="request_stop_id">stpid</string>
     <string name="request_runnumber">runnumber</string>
+
+    <!-- Time -->
+    <string name="time_now">now</string>
+    <string name="time_min">&#160;min</string>
+    <string name="time_hour">&#160;h&#160;</string>
 
     <!-- Message -->
     <string name="message_no_bus_found">No bus found!</string>
@@ -194,4 +199,5 @@
     <string name="message_surprising_error">A surprising error has occurred. Try again!</string>
     <string name="message_error">Error!</string>
     <string name="message_error_could_not_load_path">Sorry, could not load the path!</string>
+    <string name="message_error_divvy">Error while connecting or parsing divvy data</string>
 </resources>

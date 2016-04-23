@@ -571,12 +571,12 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         final long hours = diff[0];
         final long minutes = diff[1];
         if (hours == 0 && minutes == 0) {
-            lastUpdateInMinutes.append("now");
+            lastUpdateInMinutes.append(activity.getString(R.string.time_now));
         } else {
             if (hours == 0) {
-                lastUpdateInMinutes.append(minutes).append(" min");
+                lastUpdateInMinutes.append(minutes).append(activity.getString(R.string.time_min));
             } else {
-                lastUpdateInMinutes.append(hours).append(" h ").append(minutes).append(" min");
+                lastUpdateInMinutes.append(hours).append(activity.getString(R.string.time_hour)).append(minutes).append(activity.getString(R.string.time_min));
             }
         }
         return lastUpdateInMinutes.toString();

@@ -41,154 +41,118 @@ import fr.cph.chicago.exception.ConnectException;
  */
 public class CtaConnect {
 
-	/**
-	 * Tag
-	 **/
-	private static final String TAG = CtaConnect.class.getSimpleName();
-	/**
-	 * Singleton
-	 **/
-	private static CtaConnect instance = null;
-	/**
-	 * The train arrival address
-	 **/
-	private static final String BASE_URL_TRAIN_ARRIVALS = "http://lapi.transitchicago.com/api/1.0/ttarrivals.aspx";
-	/**
-	 * The train follow address
-	 **/
-	private static final String BASE_URL_TRAIN_FOLLOW = "http://lapi.transitchicago.com/api/1.0/ttfollow.aspx";
-	/**
-	 * The train location address
-	 **/
-	private static final String BASE_URL_TRAIN_LOCATION = "http://lapi.transitchicago.com/api/1.0/ttpositions.aspx";
-	/**
-	 * The buses routes address
-	 **/
-	private static final String BASE_URL_BUS_ROUTES = "http://www.ctabustracker.com/bustime/api/v1/getroutes";
-	/**
-	 * The buses direction address
-	 **/
-	private static final String BASE_URL_BUS_DIRECTION = "http://www.ctabustracker.com/bustime/api/v1/getdirections";
-	/**
-	 * The buses stops address
-	 **/
-	private static final String BASE_URL_BUS_STOPS = "http://www.ctabustracker.com/bustime/api/v1/getstops";
-	/**
-	 * The buses vehicles address
-	 **/
-	private static final String BASE_URL_BUS_VEHICLES = "http://www.ctabustracker.com/bustime/api/v1/getvehicles";
-	/**
-	 * The buses arrival address
-	 **/
-	private static final String BASE_URL_BUS_ARRIVAL = "http://www.ctabustracker.com/bustime/api/v1/getpredictions";
-	/**
-	 * The buses pattern address
-	 **/
-	private static final String BASE_URL_BUS_PATTERN = "http://www.ctabustracker.com/bustime/api/v1/getpatterns";
-	/**
-	 * The cta bus API key
-	 **/
-	private static String CTA_BUS_KEY;
-	/**
-	 * The cta train API key
-	 **/
-	private static String CTA_TRAIN_KEY;
+    /**
+     * Tag
+     **/
+    private static final String TAG = CtaConnect.class.getSimpleName();
+    /**
+     * Singleton
+     **/
+    private static CtaConnect instance = null;
+    /**
+     * The cta bus API key
+     **/
+    private static String CTA_BUS_KEY;
+    /**
+     * The cta train API key
+     **/
+    private static String CTA_TRAIN_KEY;
 
-	/**
-	 * Private constructor
-	 */
-	private CtaConnect() {
+    /**
+     * Private constructor
+     */
+    private CtaConnect() {
         CTA_TRAIN_KEY = App.getContext().getString(R.string.cta_train_key);
         CTA_BUS_KEY = App.getContext().getString(R.string.cta_bus_key);
-	}
+    }
 
-	/**
-	 * Get a singleton access to this class
-	 *
-	 * @return a CtaConnect instance
-	 */
+    /**
+     * Get a singleton access to this class
+     *
+     * @return a CtaConnect instance
+     */
     @NonNull
-	public static CtaConnect getInstance() {
-		if (instance == null) {
-			instance = new CtaConnect();
-		}
-		return instance;
-	}
+    public static CtaConnect getInstance() {
+        if (instance == null) {
+            instance = new CtaConnect();
+        }
+        return instance;
+    }
 
-	/**
-	 * Connect
-	 *
-	 * @param requestType the type of request
-	 * @param params      the params
-	 * @return a string
-	 * @throws ConnectException
-	 */
+    /**
+     * Connect
+     *
+     * @param requestType the type of request
+     * @param params      the params
+     * @return a string
+     * @throws ConnectException
+     */
     @NonNull
-	public final InputStream connect(@NonNull final CtaRequestType requestType, @NonNull final MultiValuedMap<String, String> params) throws ConnectException {
-		final StringBuilder address;
-		switch (requestType) {
-		case TRAIN_ARRIVALS:
-			address = new StringBuilder(BASE_URL_TRAIN_ARRIVALS + "?key=" + CTA_TRAIN_KEY);
-			break;
-		case TRAIN_FOLLOW:
-			address = new StringBuilder(BASE_URL_TRAIN_FOLLOW + "?key=" + CTA_TRAIN_KEY);
-			break;
-		case TRAIN_LOCATION:
-			address = new StringBuilder(BASE_URL_TRAIN_LOCATION + "?key=" + CTA_TRAIN_KEY);
-			break;
-		case BUS_ROUTES:
-			address = new StringBuilder(BASE_URL_BUS_ROUTES + "?key=" + CTA_BUS_KEY);
-			break;
-		case BUS_DIRECTION:
-			address = new StringBuilder(BASE_URL_BUS_DIRECTION + "?key=" + CTA_BUS_KEY);
-			break;
-		case BUS_STOP_LIST:
-			address = new StringBuilder(BASE_URL_BUS_STOPS + "?key=" + CTA_BUS_KEY);
-			break;
-		case BUS_VEHICLES:
-			address = new StringBuilder(BASE_URL_BUS_VEHICLES + "?key=" + CTA_BUS_KEY);
-			break;
-		case BUS_ARRIVALS:
-			address = new StringBuilder(BASE_URL_BUS_ARRIVAL + "?key=" + CTA_BUS_KEY);
-			break;
-		case BUS_PATTERN:
-			address = new StringBuilder(BASE_URL_BUS_PATTERN + "?key=" + CTA_BUS_KEY);
-			break;
-		default:
-			address = new StringBuilder();
-		}
-		for (final Entry<String, Collection<String>> entry : params.asMap().entrySet()) {
-			final String key = entry.getKey();
-			final Collection<String> values = entry.getValue();
-			for (final String value : values) {
-				address.append("&").append(key).append("=").append(value);
-			}
-		}
-		return connectUrl(address.toString());
-	}
+    public final InputStream connect(@NonNull final CtaRequestType requestType, @NonNull final MultiValuedMap<String, String> params) throws ConnectException {
+        final StringBuilder address;
+        switch (requestType) {
+            case TRAIN_ARRIVALS:
+                address = new StringBuilder(App.getContext().getString(R.string.analytics_action_get_train_arrivals) + "?key=" + CTA_TRAIN_KEY);
+                break;
+            case TRAIN_FOLLOW:
+                address = new StringBuilder(App.getContext().getString(R.string.analytics_action_get_train_follow) + "?key=" + CTA_TRAIN_KEY);
+                break;
+            case TRAIN_LOCATION:
+                address = new StringBuilder(App.getContext().getString(R.string.analytics_action_get_train_location) + "?key=" + CTA_TRAIN_KEY);
+                break;
+            case BUS_ROUTES:
+                address = new StringBuilder(App.getContext().getString(R.string.analytics_action_get_bus_routes) + "?key=" + CTA_BUS_KEY);
+                break;
+            case BUS_DIRECTION:
+                address = new StringBuilder(App.getContext().getString(R.string.analytics_action_get_bus_direction) + "?key=" + CTA_BUS_KEY);
+                break;
+            case BUS_STOP_LIST:
+                address = new StringBuilder(App.getContext().getString(R.string.analytics_action_get_bus_stop) + "?key=" + CTA_BUS_KEY);
+                break;
+            case BUS_VEHICLES:
+                address = new StringBuilder(App.getContext().getString(R.string.analytics_action_get_bus_vehicles) + "?key=" + CTA_BUS_KEY);
+                break;
+            case BUS_ARRIVALS:
+                address = new StringBuilder(App.getContext().getString(R.string.analytics_action_get_bus_arrival) + "?key=" + CTA_BUS_KEY);
+                break;
+            case BUS_PATTERN:
+                address = new StringBuilder(App.getContext().getString(R.string.analytics_action_get_bus_pattern) + "?key=" + CTA_BUS_KEY);
+                break;
+            default:
+                address = new StringBuilder();
+        }
+        for (final Entry<String, Collection<String>> entry : params.asMap().entrySet()) {
+            final String key = entry.getKey();
+            final Collection<String> values = entry.getValue();
+            for (final String value : values) {
+                address.append("&").append(key).append("=").append(value);
+            }
+        }
+        return connectUrl(address.toString());
+    }
 
-	/**
-	 * Connect url
-	 *
-	 * @param address the address
-	 * @return the answer
-	 * @throws ConnectException
-	 */
+    /**
+     * Connect url
+     *
+     * @param address the address
+     * @return the answer
+     * @throws ConnectException
+     */
     @NonNull
-	private InputStream connectUrl(@NonNull final String address) throws ConnectException {
-		final HttpURLConnection urlConnection;
-		final InputStream inputStream;
-		try {
-			Log.v(TAG, "Address: " + address);
-			final URL url = new URL(address);
-			urlConnection = (HttpURLConnection) url.openConnection();
-			urlConnection.setConnectTimeout(5000);
-			urlConnection.setReadTimeout(5000);
-			inputStream = new BufferedInputStream(urlConnection.getInputStream());
-		} catch (final IOException e) {
-			Log.e(TAG, e.getMessage(), e);
-			throw new ConnectException(ConnectException.ERROR, e);
-		}
-		return inputStream;
-	}
+    private InputStream connectUrl(@NonNull final String address) throws ConnectException {
+        final HttpURLConnection urlConnection;
+        final InputStream inputStream;
+        try {
+            Log.v(TAG, "Address: " + address);
+            final URL url = new URL(address);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setConnectTimeout(5000);
+            urlConnection.setReadTimeout(5000);
+            inputStream = new BufferedInputStream(urlConnection.getInputStream());
+        } catch (final IOException e) {
+            Log.e(TAG, e.getMessage(), e);
+            throw new ConnectException(ConnectException.ERROR, e);
+        }
+        return inputStream;
+    }
 }

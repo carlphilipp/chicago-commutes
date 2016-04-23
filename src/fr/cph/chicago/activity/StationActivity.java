@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p>
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -107,7 +107,7 @@ public class StationActivity extends Activity {
             ids = new HashMap<>();
 
             // Get station id from bundle extra
-            stationId = getIntent().getExtras().getInt("stationId", 0);
+            stationId = getIntent().getExtras().getInt(getString(R.string.bundle_train_stationId), 0);
             if (stationId != 0) {
                 // Get station from station id
                 station = trainData.getStation(stationId);
@@ -284,12 +284,12 @@ public class StationActivity extends Activity {
     @Override
     public void onRestoreInstanceState(final Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        stationId = savedInstanceState.getInt("stationId");
+        stationId = savedInstanceState.getInt(getString(R.string.bundle_train_stationId));
     }
 
     @Override
     public void onSaveInstanceState(final Bundle savedInstanceState) {
-        savedInstanceState.putInt("stationId", stationId);
+        savedInstanceState.putInt(getString(R.string.bundle_train_stationId), stationId);
         super.onSaveInstanceState(savedInstanceState);
     }
 

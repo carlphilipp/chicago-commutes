@@ -68,7 +68,7 @@ public class DivvyAsyncTask extends AsyncTask<Void, Void, List<BikeStation>> {
                     Util.showMessage(activity, R.string.message_surprising_error);
                 }
             });
-            Log.e(TAG, "Error while connecting or parsing divvy data", e);
+            Log.e(TAG, activity.getString(R.string.message_error_divvy), e);
         }
         return bikeStations;
     }

@@ -83,7 +83,6 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
     private TrackerException trackerTrainException, trackerBusException, trackerBikeException;
 
     private boolean loadBike;
-    private boolean networkAvailable;
 
     /**
      * Constructor
@@ -118,7 +117,7 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 
     @Override
     protected final Boolean doInBackground(final Void... connects) {
-        networkAvailable = Util.isNetworkAvailable();
+        boolean networkAvailable = Util.isNetworkAvailable();
         if (networkAvailable) {
             loadTrains();
             loadBuses();
@@ -221,8 +220,8 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
             }
             for (int i = 0; i < rts.size(); i++) {
                 final MultiValuedMap<String, String> para = new ArrayListValuedHashMap<>();
-                para.put("rt", rts.get(i));
-                para.put("stpid", stpids.get(i));
+                para.put(App.getContext().getString(R.string.request_rt), rts.get(i));
+                para.put(App.getContext().getString(R.string.request_stop_id), stpids.get(i));
                 final InputStream xmlResult = ctaConnect.connect(BUS_ARRIVALS, para);
                 busArrivals.addAll(xmlParser.parseBusArrivals(xmlResult));
             }
