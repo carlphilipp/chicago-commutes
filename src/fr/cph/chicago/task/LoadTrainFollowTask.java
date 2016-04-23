@@ -76,7 +76,7 @@ public class LoadTrainFollowTask extends AsyncTask<String, Void, List<Eta>> {
         try {
             final CtaConnect connect = CtaConnect.getInstance();
             final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
-            connectParam.put("runnumber", runNumber);
+            connectParam.put(activity.getString(R.string.request_runnumber), runNumber);
             final InputStream content = connect.connect(TRAIN_FOLLOW, connectParam);
             final XmlParser xml = XmlParser.getInstance();
             etas = xml.parseTrainsFollow(content, trainData);
