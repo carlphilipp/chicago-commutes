@@ -178,4 +178,9 @@
 	<string name="request_rt">rt</string>
 	<string name="request_stop_id">stpid</string>
     <string name="request_runnumber">runnumber</string>
+
+    <!-- Message -->
+    <string name="message_no_bus_found">No bus found!</string>
+    <string name="message_no_train_found">No trains found!</string>
+    <string name="message_error_while_loading_data">Error while loading data!</string>
 </resources>
