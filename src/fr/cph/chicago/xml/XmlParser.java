@@ -211,9 +211,11 @@ public final class XmlParser {
                                     final TrainArrival arri = arrivals.get(staId, null);
                                     if (arri != null) {
                                         final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-                                        if ("See train".equalsIgnoreCase(text) && currentEta.getStop().getDescription().contains("Loop")) {
+                                        if ("See train".equalsIgnoreCase(text) && currentEta.getStop().getDescription().contains("Loop") && currentEta.getRouteName() == TrainLine.GREEN) {
                                             currentEta.setDestName("Loop");
-                                        } else if ("Loop, Midway".equalsIgnoreCase(text)) {
+                                        } else if ("See train".equalsIgnoreCase(text) && currentEta.getStop().getDescription().contains("Loop") && currentEta.getRouteName() == TrainLine.BROWN) {
+                                            currentEta.setDestName("Loop");
+                                        } else if ("Loop, Midway".equalsIgnoreCase(text) && currentEta.getRouteName() == TrainLine.BROWN) {
                                             currentEta.setDestName("Loop");
                                         } else {
                                             currentEta.setDestName(text);
