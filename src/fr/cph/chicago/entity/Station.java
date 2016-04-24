@@ -83,7 +83,7 @@ public class Station implements Comparable<Station>, Parcelable {
     @NonNull
     public final Set<TrainLine> getLines() {
         if (stops != null) {
-            Set<TrainLine> lines = new TreeSet<>();
+            final Set<TrainLine> lines = new TreeSet<>();
             for (final Stop stop : stops) {
                 for (final TrainLine trainLine : stop.getLines()) {
                     lines.add(trainLine);

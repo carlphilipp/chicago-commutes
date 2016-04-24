@@ -169,8 +169,6 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
             while (index < trainArrivals.size()) {
                 final TrainArrival arri = trainArrivals.valueAt(index++);
                 final List<Eta> etas = arri.getEtas();
-                // Sort Eta by arriving time
-                Collections.sort(etas);
                 // Copy data into new list to be able to avoid looping on a list that we want to modify
                 final List<Eta> etas2 = new ArrayList<>();
                 etas2.addAll(etas);
@@ -185,7 +183,11 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
                         etas.remove(i - j++);
                     }
                 }
+
+                // Sort Eta by arriving time
+                Collections.sort(etas);
             }
+
 
         } catch (final ConnectException | ParserException e) {
             Log.e(TAG, e.getMessage());

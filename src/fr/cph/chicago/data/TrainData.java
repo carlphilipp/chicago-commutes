@@ -194,7 +194,7 @@ public class TrainData {
      * @return the station
      */
     @Nullable
-    public final Station getStation(final Integer id) {
+    public final Station getStation(final int id) {
         return stations.get(id);
     }
 
