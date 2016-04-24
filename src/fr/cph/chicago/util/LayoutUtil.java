@@ -20,7 +20,9 @@ import android.support.annotation.NonNull;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+
 import fr.cph.chicago.App;
+import fr.cph.chicago.R;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
 /**
@@ -38,8 +40,8 @@ public class LayoutUtil {
     public static LinearLayout createColoredRoundForFavorites(@NonNull final TrainLine trainLine) {
         final LinearLayout lineIndication = new LinearLayout(App.getContext());
         final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.height = 30;
-        params.width = 30;
+        params.height =  App.getContext().getResources().getDimensionPixelSize(R.dimen.layout_round_height);
+        params.width = App.getContext().getResources().getDimensionPixelSize(R.dimen.layout_round_width);
         params.addRule(RelativeLayout.CENTER_VERTICAL);
         lineIndication.setBackgroundColor(trainLine.getColor());
         lineIndication.setLayoutParams(params);
@@ -50,8 +52,8 @@ public class LayoutUtil {
     public static LinearLayout createColoredRoundForMultiple(@NonNull final TrainLine trainLine) {
         final LinearLayout lineIndication = new LinearLayout(App.getContext());
         final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.height = 30;
-        params.width = 30;
+        params.height =  App.getContext().getResources().getDimensionPixelSize(R.dimen.layout_round_height);
+        params.width = App.getContext().getResources().getDimensionPixelSize(R.dimen.layout_round_width);
         params.setMargins(10, 0, 0, 0);
         lineIndication.setBackgroundColor(trainLine.getColor());
         lineIndication.setLayoutParams(params);

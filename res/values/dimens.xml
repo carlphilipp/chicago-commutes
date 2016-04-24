@@ -38,4 +38,8 @@
 	<!-- Activity list train station for one line -->
 	<dimen name="activity_list_station_colors">8dp</dimen>
 	<dimen name="activity_list_station_colors_space">2dp</dimen>
+
+    <!-- Layout dimension -->
+    <dimen name="layout_round_height">11dp</dimen>
+    <dimen name="layout_round_width">11dp</dimen>
 </resources>
