@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,10 +17,7 @@
 package fr.cph.chicago.entity.enumeration;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.WordUtils;
+import android.util.Log;
 
 import java.util.Locale;
 
@@ -32,6 +29,8 @@ import java.util.Locale;
  */
 
 public class BusDirection {
+
+    private static final String TAG = BusDirection.class.getSimpleName();
 
     private String textReceived;
     private BusDirectionEnum busDirectionEnum;
@@ -73,7 +72,7 @@ public class BusDirection {
             this.shortLowerCase = shortLowerCase;
         }
 
-        @Nullable
+        @NonNull
         public static BusDirectionEnum fromString(@NonNull final String text) {
             for (final BusDirectionEnum busDirectionEnum : BusDirectionEnum.values()) {
                 if (text.equalsIgnoreCase(busDirectionEnum.text)) {
@@ -84,7 +83,8 @@ public class BusDirection {
                     return busDirectionEnum;
                 }
             }
-            return null;
+            Log.e(TAG, "Bus direction enum not found: " + text);
+            throw new IllegalStateException();
         }
 
         @Override

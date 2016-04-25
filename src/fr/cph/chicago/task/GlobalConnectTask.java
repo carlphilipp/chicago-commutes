@@ -64,9 +64,6 @@ import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
 // TODO refactor
 public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 
-    /**
-     * Tag
-     **/
     private static final String TAG = GlobalConnectTask.class.getSimpleName();
 
     private Object instance;
