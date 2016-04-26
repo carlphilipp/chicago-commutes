@@ -32,7 +32,7 @@ public class BusDirection {
 
     private static final String TAG = BusDirection.class.getSimpleName();
 
-    private String textReceived;
+    private final String textReceived;
     private BusDirectionEnum busDirectionEnum;
 
     public BusDirection(@NonNull final String textReceived) {
@@ -62,9 +62,9 @@ public class BusDirection {
 
         NORTHBOUND("Northbound", "NORTH", "North"), WESTBOUND("Westbound", "WEST", "West"), SOUTHBOUND("Southbound", "SOUTH", "South"), EASTBOUND("Eastbound", "EAST", "East");
 
-        private String text;
-        private String shortUpperCase;
-        private String shortLowerCase;
+        private final String text;
+        private final String shortUpperCase;
+        private final String shortLowerCase;
 
         BusDirectionEnum(final String text, final String shortUpperCase, final String shortLowerCase) {
             this.text = text;

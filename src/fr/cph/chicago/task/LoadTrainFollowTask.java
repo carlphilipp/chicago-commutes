@@ -51,10 +51,10 @@ public class LoadTrainFollowTask extends AsyncTask<String, Void, List<Eta>> {
 
     private static final String TAG = LoadTrainFollowTask.class.getSimpleName();
 
-    private TrainMapActivity activity;
-    private TrainData trainData;
-    private View view;
-    private boolean loadAll;
+    private final TrainMapActivity activity;
+    private final TrainData trainData;
+    private final View view;
+    private final boolean loadAll;
 
     /**
      * Constructor

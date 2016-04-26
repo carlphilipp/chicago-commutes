@@ -102,7 +102,6 @@
                     android:id="@+id/activity_bus_stops"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/activity_bike_title2"
                     android:orientation="vertical">
                 </LinearLayout>
             </LinearLayout>

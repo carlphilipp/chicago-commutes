@@ -90,13 +90,13 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
     private static final int GREY_5 = ContextCompat.getColor(App.getContext(), R.color.grey_5);
 
-    private Context context;
-    private MainActivity activity;
-    private Favorites favorites;
+    private final Context context;
+    private final MainActivity activity;
+    private final Favorites favorites;
     private String lastUpdate;
-    private int pixels;
-    private int pixelsHalf;
-    private int pixelsQuarter;
+    private final int pixels;
+    private final int pixelsHalf;
+    private final int pixelsQuarter;
 
     public FavoritesAdapter(@NonNull final MainActivity activity) {
         this.context = App.getContext();
@@ -110,13 +110,13 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     }
 
     static class FavoritesViewHolder extends RecyclerView.ViewHolder {
-        public LinearLayout mainLayout;
-        public RelativeLayout buttonsLayout;
-        public TextView lastUpdateTextView;
-        public TextView stationNameTextView;
-        public ImageView favoriteImage;
-        public Button detailsButton;
-        public Button mapButton;
+        public final LinearLayout mainLayout;
+        public final RelativeLayout buttonsLayout;
+        public final TextView lastUpdateTextView;
+        public final TextView stationNameTextView;
+        public final ImageView favoriteImage;
+        public final Button detailsButton;
+        public final Button mapButton;
 
         public FavoritesViewHolder(final View view) {
             super(view);
@@ -185,7 +185,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 activity.startActivity(intent);
             }
         });
-        holder.mapButton.setOnClickListener(new FavoritesTrainOnClickListener(activity, stationId, trainLines));
+        holder.mapButton.setOnClickListener(new FavoritesTrainOnClickListener(activity, trainLines));
 
         for (final TrainLine trainLine : trainLines) {
             boolean newLine = true;
@@ -622,7 +622,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         private String stopId;
         private String busRouteName;
         private TrackerException trackerException;
-        private MainActivity activity;
+        private final MainActivity activity;
 
         public BusBoundAsyncTask(@NonNull final MainActivity activity) {
             this.activity = activity;

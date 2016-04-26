@@ -44,9 +44,9 @@ public final class DisplayGoogleStreetPictureTask extends AsyncTask<Double, Void
 
     private static final String TAG = DisplayGoogleStreetPictureTask.class.getSimpleName();
 
-    private Activity activity;
-    private ImageView streetViewImage;
-    private TextView streetViewText;
+    private final Activity activity;
+    private final ImageView streetViewImage;
+    private final TextView streetViewText;
 
     public DisplayGoogleStreetPictureTask(@NonNull final Activity activity, @NonNull final ImageView streetViewImage, @NonNull final TextView streetViewText) {
         this.activity = activity;

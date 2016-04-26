@@ -42,9 +42,9 @@ public class DivvyAsyncTask extends AsyncTask<Void, Void, List<BikeStation>> {
 
     private static final String TAG = DivvyAsyncTask.class.getSimpleName();
 
-    private BikeStationActivity activity;
-    private int bikeStationId;
-    private SwipeRefreshLayout swipeRefreshLayout;
+    private final BikeStationActivity activity;
+    private final int bikeStationId;
+    private final SwipeRefreshLayout swipeRefreshLayout;
 
     public DivvyAsyncTask(@NonNull final BikeStationActivity activity, final int bikeStationId, @NonNull final SwipeRefreshLayout swipeRefreshLayout) {
         this.activity = activity;

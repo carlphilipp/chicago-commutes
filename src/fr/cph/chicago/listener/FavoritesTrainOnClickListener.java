@@ -48,19 +48,14 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
     /**
      * The main activity
      **/
-    private Activity activity;
-    /**
-     * The station id
-     **/
-    private int stationId;
+    private final Activity activity;
     /**
      * Train lines
      **/
-    private Set<TrainLine> trainLines;
+    private final Set<TrainLine> trainLines;
 
-    public FavoritesTrainOnClickListener(@NonNull final Activity activity, final int stationId, @NonNull final Set<TrainLine> trainLines) {
+    public FavoritesTrainOnClickListener(@NonNull final Activity activity, @NonNull final Set<TrainLine> trainLines) {
         this.activity = activity;
-        this.stationId = stationId;
         this.trainLines = trainLines;
     }
 

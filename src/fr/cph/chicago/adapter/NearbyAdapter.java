@@ -70,19 +70,19 @@ import fr.cph.chicago.util.Util;
 public final class NearbyAdapter extends BaseAdapter {
 
     private GoogleMap googleMap;
-    private Context context;
-    private MainActivity activity;
+    private final Context context;
+    private final MainActivity activity;
 
-    private BusData busData;
+    private final BusData busData;
     private SparseArray<Map<String, List<BusArrival>>> busArrivals;
     private SparseArray<TrainArrival> trainArrivals;
     private List<BusStop> busStops;
     private List<Station> stations;
     private List<Marker> markers;
     private List<BikeStation> bikeStations;
-    private Map<String, Integer> ids;
-    private Map<Integer, LinearLayout> layouts;
-    private Map<Integer, View> views;
+    private final Map<String, Integer> ids;
+    private final Map<Integer, LinearLayout> layouts;
+    private final Map<Integer, View> views;
 
     public NearbyAdapter(@NonNull final MainActivity activity) {
         this.activity = activity;

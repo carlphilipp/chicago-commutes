@@ -36,8 +36,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 public class LoadCurrentPositionTask extends AsyncTask<Boolean, Void, Void> implements LocationListener {
 
     private LocationManager locationManager;
-    private Activity activity;
-    private MapFragment mapFragment;
+    private final Activity activity;
+    private final MapFragment mapFragment;
 
     public LoadCurrentPositionTask(@NonNull final Activity currentActivity, @NonNull final MapFragment mapFragment) {
         this.activity = currentActivity;

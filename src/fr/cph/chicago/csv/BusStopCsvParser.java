@@ -2,15 +2,16 @@ package fr.cph.chicago.csv;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
+
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
-
-import fr.cph.chicago.App;
-import fr.cph.chicago.entity.BusStop;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+
+import fr.cph.chicago.App;
+import fr.cph.chicago.entity.BusStop;
 
 public class BusStopCsvParser {
 
@@ -18,8 +19,8 @@ public class BusStopCsvParser {
 
 	private static final String STOP_FILE_PATH = "stops.txt";
 
-	private CsvParser parser;
-	private BusStopCsvProcessor rowProcessor;
+	private final CsvParser parser;
+	private final BusStopCsvProcessor rowProcessor;
 
 	public BusStopCsvParser() {
 		final CsvParserSettings settings = new CsvParserSettings();

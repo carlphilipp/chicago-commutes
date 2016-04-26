@@ -56,10 +56,10 @@ public class TrainData {
 
     private static TrainData trainData;
 
-    private SparseArray<Station> stations;
+    private final SparseArray<Station> stations;
     private Map<TrainLine, List<Station>> stationsOrderByLineMap;
-    private SparseArray<Stop> stops;
-    private CsvParser parser;
+    private final SparseArray<Stop> stops;
+    private final CsvParser parser;
 
     private TrainData() {
         this.stations = new SparseArray<>();

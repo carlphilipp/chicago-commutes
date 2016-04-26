@@ -22,9 +22,9 @@ import android.view.View;
 
 public abstract class GoogleMapListener implements View.OnClickListener {
 
-	protected Activity activity;
-	protected double latitude;
-	protected double longitude;
+	protected final Activity activity;
+	protected final double latitude;
+	protected final double longitude;
 
 	public GoogleMapListener(@NonNull final Activity activity, final double latitude, final double longitude) {
 		this.activity = activity;

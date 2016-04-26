@@ -48,8 +48,8 @@ public class LoadTrainPositionTask extends AsyncTask<Boolean, Void, List<Train>>
 
     private static final String TAG = LoadTrainPositionTask.class.getSimpleName();
 
-    private TrainMapActivity activity;
-    private String line;
+    private final TrainMapActivity activity;
+    private final String line;
     private TrainData trainData;
 
     private boolean centerMap;

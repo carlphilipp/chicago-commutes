@@ -49,15 +49,15 @@ public class TrainOnClickListener implements OnClickListener {
     /**
      * The main activity
      **/
-    private Activity activity;
+    private final Activity activity;
     /**
      * The station id
      **/
-    private int stationId;
+    private final int stationId;
     /**
      * Train lines
      **/
-    private Set<TrainLine> trainLines;
+    private final Set<TrainLine> trainLines;
 
     public TrainOnClickListener(@NonNull final Activity activity, final int stationId, final Set<TrainLine> trainLines) {
         this.activity = activity;

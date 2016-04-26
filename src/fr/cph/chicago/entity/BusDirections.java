@@ -33,7 +33,7 @@ import lombok.Data;
 @Data
 public final class BusDirections {
     private String id;
-    private List<BusDirection> lBusDirection;
+    private final List<BusDirection> lBusDirection;
 
     /**
      * Constructor

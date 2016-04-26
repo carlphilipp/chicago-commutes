@@ -191,11 +191,11 @@ public class NearbyFragment extends Fragment {
 
     private class LoadArrivals extends AsyncTask<List<?>, Void, Void> {
 
-        private SparseArray<Map<String, List<BusArrival>>> busArrivalsMap;
-        private SparseArray<TrainArrival> trainArrivals;
+        private final SparseArray<Map<String, List<BusArrival>>> busArrivalsMap;
+        private final SparseArray<TrainArrival> trainArrivals;
         private List<BusStop> busStops;
         private List<Station> stations;
-        private List<BikeStation> bikeStationsRes;
+        private final List<BikeStation> bikeStationsRes;
         private List<BikeStation> bikeStationsTemp;
 
         private LoadArrivals() {

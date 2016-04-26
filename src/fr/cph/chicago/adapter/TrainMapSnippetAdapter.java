@@ -27,11 +27,11 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.util.List;
+
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.entity.Eta;
-
-import java.util.List;
 
 /**
  * @author Carl-Philipp Harmant
@@ -39,7 +39,7 @@ import java.util.List;
  */
 public class TrainMapSnippetAdapter extends BaseAdapter {
 
-	private List<Eta> etas;
+	private final List<Eta> etas;
 
 	/**
 	 * @param etas

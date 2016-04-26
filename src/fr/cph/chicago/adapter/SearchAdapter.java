@@ -52,12 +52,12 @@ import fr.cph.chicago.util.LayoutUtil;
  */
 public final class SearchAdapter extends BaseAdapter {
 
-    private Context context;
+    private final Context context;
 
     private List<Station> trains;
     private List<BusRoute> busRoutes;
     private List<BikeStation> bikeStations;
-    private SearchActivity searchActivity;
+    private final SearchActivity searchActivity;
 
     /**
      * Constructor

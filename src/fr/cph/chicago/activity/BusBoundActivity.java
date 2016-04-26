@@ -90,7 +90,7 @@ public class BusBoundActivity extends ListActivity {
                 bound = extras.getString(getString(R.string.bundle_bus_bound));
                 boundTitle = extras.getString(getString(R.string.bundle_bus_bound_title));
             }
-            busBoundAdapter = new BusBoundAdapter(busRouteId);
+            busBoundAdapter = new BusBoundAdapter();
             setListAdapter(busBoundAdapter);
             getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override

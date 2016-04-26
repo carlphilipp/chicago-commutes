@@ -43,7 +43,7 @@ import fr.cph.chicago.task.DirectionAsyncTask;
  */
 public final class BusAdapter extends BaseAdapter {
 
-    private MainActivity activity;
+    private final MainActivity activity;
     private List<BusRoute> busRoutes;
 
     /**

@@ -31,7 +31,7 @@
         android:id="@+id/icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="icon"
+        android:contentDescription="@string/description"
         android:src="@drawable/ic_train_white_24dp"
         android:tint="@color/grey_5"/>
 

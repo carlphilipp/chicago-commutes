@@ -52,12 +52,12 @@ public class LoadBusPatternTask extends AsyncTask<Void, Void, BusPattern> {
 
     private static final String TAG = LoadBusPatternTask.class.getSimpleName();
 
-    private BusBoundActivity activity;
-    private MapFragment mapFragment;
+    private final BusBoundActivity activity;
+    private final MapFragment mapFragment;
     private BusPattern busPattern;
-    private String busRouteId;
-    private String bound;
-    private boolean loadUserPosition;
+    private final String busRouteId;
+    private final String bound;
+    private final boolean loadUserPosition;
 
     public LoadBusPatternTask(@NonNull final BusBoundActivity activity, @NonNull final MapFragment mapFragment, @NonNull final String busRouteId, @NonNull final String bound, final boolean loadUserPosition) {
         this.activity = activity;

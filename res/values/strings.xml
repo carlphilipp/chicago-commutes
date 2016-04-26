@@ -82,16 +82,18 @@
     <string name="progress_message">Loading&#8230;</string>
     <string name="progress_wait">Please wait</string>
     <string name="B">B</string>
-    <string name="T">T</string>
     <string name="D">D</string>
 
     <!-- Favorites -->
     <string name="no_fav">Welcome to Chicago Commutes!</string>
     <string name="add_fav">Add favorites from</string>
     <string name="add_fav2">train/bus/bike tab</string>
+    <string name="favorites_detail">details</string>
+    <string name="favorites_view_map">view map</string>
 
     <!-- Station -->
     <string name="station_activity">Station</string>
+    <string name="station_name">Station Name</string>
     <string name="train_station_activity">Stations</string>
     <string name="station_activity_google_map_link_desc">Link to google map</string>
     <string name="station_activity_street_view">Street view</string>
@@ -101,9 +103,7 @@
 
     <!-- Bus -->
     <string name="bus_activity_google_map_link_desc">Link to google map</string>
-    <string name="bus_activity_street_view">Street view</string>
     <string name="bus_activity_no_service">No service</string>
-    <string name="bus_activity_street_view_text">Street view</string>
     <string name="bus_fragment_filter">Filter</string>
     <string name="bus_fragment_notloaded">Divvy data deactivated</string>
     <string name="bus_all_results">Display all results</string>
@@ -130,7 +130,6 @@
 
     <!-- Bike -->
     <string name="bike_activity">Divvy</string>
-    <string name="bike_fragment_notloaded">Divvy data deactivated</string>
     <string name="bike_fragment_filter">Filter</string>
     <string name="bike_available_bikes">Available bikes&#160;&#160;&#160;</string>
     <string name="bike_available_docks">Available docks&#160;&#160;</string>
@@ -152,7 +151,6 @@
     <string name="analytics_bus_fragment">Bus fragment</string>
     <string name="analytics_favorites_fragment">Favorites fragment</string>
     <string name="analytics_L_fragment">L System Map fragment</string>
-    <string name="analytics_settings_fragment">Settings fragment</string>
     <string name="analytics_nearby_fragment">Nearby fragment</string>
     <string name="analytics_train_fragment">Train fragment</string>
 
@@ -175,7 +173,6 @@
     <string name="analytics_action_get_google_map_street_view">Street View Picture</string>
 
     <string name="analytics_action_refresh_fav">Refresh favorites</string>
-    <string name="analytics_action_refresh_bike">Refresh bike</string>
 
     <!-- Requests -->
     <string name="request_map_id">mapid</string>
@@ -207,4 +204,7 @@
     <string name="message_error_could_not_load_path">Sorry, could not load the path!</string>
     <string name="message_error_divvy">Error while connecting or parsing divvy data</string>
     <string name="message_open_details">Open details</string>
+
+    <!-- Description -->
+    <string name="description">Description</string>
 </resources>

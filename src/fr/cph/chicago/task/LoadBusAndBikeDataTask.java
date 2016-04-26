@@ -41,7 +41,7 @@ public class LoadBusAndBikeDataTask extends AsyncTask<Void, Void, Void> {
 
     private static final String TAG = LoadBusAndBikeDataTask.class.getSimpleName();
 
-    private MainActivity activity;
+    private final MainActivity activity;
     private BusData busData;
     private List<BikeStation> bikeStations;
 

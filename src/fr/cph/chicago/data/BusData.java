@@ -55,7 +55,7 @@ public class BusData {
     private List<BusRoute> busRoutes;
     private List<BusStop> busStops;
 
-    private BusStopCsvParser parser;
+    private final BusStopCsvParser parser;
 
     private BusData() {
         this.busRoutes = new ArrayList<>();

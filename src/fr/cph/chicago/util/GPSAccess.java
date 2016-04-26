@@ -22,9 +22,9 @@ public class GPSAccess {
     // The minimum time between updates in milliseconds
     private static final long MIN_TIME_BW_UPDATES = 1000 * 60; // 1 minute
 
-    private LocationListener locationListener;
-    private LocationManager locationManager;
-    private Activity activity;
+    private final LocationListener locationListener;
+    private final LocationManager locationManager;
+    private final Activity activity;
     private Location location;
     private double latitude;
     private double longitude;

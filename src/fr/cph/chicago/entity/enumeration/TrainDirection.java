@@ -32,11 +32,11 @@ public enum TrainDirection {
     /**
      * The text
      **/
-    private String text;
+    private final String text;
     /**
      * The formatted text
      **/
-    private String formattedText;
+    private final String formattedText;
 
     /**
      * Private constructor

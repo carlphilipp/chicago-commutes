@@ -59,10 +59,11 @@ import static fr.cph.chicago.connection.CtaRequestType.BUS_DIRECTION;
  */
 public class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
 
-    private Activity activity;
+    private final Activity activity;
+    private final ViewGroup viewGroup;
+
     private BusRoute busRoute;
     private View convertView;
-    private ViewGroup viewGroup;
     private TrackerException trackerException;
 
     public DirectionAsyncTask(@NonNull final Activity activity, @NonNull final ViewGroup viewGroup) {

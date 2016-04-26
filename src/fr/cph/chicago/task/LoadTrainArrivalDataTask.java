@@ -53,12 +53,12 @@ public class LoadTrainArrivalDataTask extends AsyncTask<MultiValuedMap<String, S
 
     private static final String TAG = LoadTrainArrivalDataTask.class.getSimpleName();
 
-    private StationActivity activity;
+    private final StationActivity activity;
 
-    private TrainData trainData;
+    private final TrainData trainData;
 
     private TrackerException trackerException;
-    private SwipeRefreshLayout swipeRefreshLayout;
+    private final SwipeRefreshLayout swipeRefreshLayout;
 
     public LoadTrainArrivalDataTask(@NonNull final StationActivity activity, @NonNull final TrainData trainData, @NonNull final SwipeRefreshLayout swipeRefreshLayout) {
         this.activity = activity;

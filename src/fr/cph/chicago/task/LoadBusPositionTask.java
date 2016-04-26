@@ -42,9 +42,9 @@ public class LoadBusPositionTask extends AsyncTask<Boolean, Void, List<Bus>> {
     private static final String TAG = LoadBusPositionTask.class.getSimpleName();
 
     private boolean centerMap;
-    private BusMapActivity activity;
-    private int busId;
-    private String busRouteId;
+    private final BusMapActivity activity;
+    private final int busId;
+    private final String busRouteId;
 
     public LoadBusPositionTask(@NonNull final BusMapActivity activity, final int busId, @NonNull final String busRouteId) {
         this.activity = activity;

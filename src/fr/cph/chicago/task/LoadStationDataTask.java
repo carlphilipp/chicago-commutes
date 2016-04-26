@@ -33,10 +33,10 @@ public class LoadStationDataTask extends AsyncTask<Void, Void, List<BusArrival>>
     /**
      * The exception that could potentially been thrown during request
      **/
-    private BusActivity activity;
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private String busRouteId;
-    private int busStopId;
+    private final BusActivity activity;
+    private final SwipeRefreshLayout swipeRefreshLayout;
+    private final String busRouteId;
+    private final int busStopId;
     private TrackerException trackerException;
 
     public LoadStationDataTask(@NonNull final BusActivity activity, @NonNull final SwipeRefreshLayout swipeRefreshLayout, @NonNull final String busRouteId, final int busStopId) {

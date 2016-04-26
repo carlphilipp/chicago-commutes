@@ -39,9 +39,9 @@ import fr.cph.chicago.R;
  */
 public class TrainMapOnCameraChangeListener implements OnCameraChangeListener {
 
-    private BitmapDescriptor bitmapDescriptor1;
-    private BitmapDescriptor bitmapDescriptor2;
-    private BitmapDescriptor bitmapDescriptor3;
+    private final BitmapDescriptor bitmapDescriptor1;
+    private final BitmapDescriptor bitmapDescriptor2;
+    private final BitmapDescriptor bitmapDescriptor3;
     private BitmapDescriptor currentBitmapDescriptor;
     private List<Marker> trainMarkers;
 

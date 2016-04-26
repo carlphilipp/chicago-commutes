@@ -19,12 +19,13 @@ package fr.cph.chicago.entity;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import fr.cph.chicago.entity.enumeration.TrainLine;
-import lombok.Data;
 
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+
+import fr.cph.chicago.entity.enumeration.TrainLine;
+import lombok.Data;
 
 /**
  * Eta entity
@@ -114,7 +115,7 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	 * @return
 	 */
     @NonNull
-	public final String getTimeLeft() {
+	private String getTimeLeft() {
 		long time = arrivalDepartureDate.getTime() - predictionDate.getTime();
 		return String.format(Locale.ENGLISH, "%d min", TimeUnit.MILLISECONDS.toMinutes(time));
 	}

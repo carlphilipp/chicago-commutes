@@ -25,11 +25,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import java.util.List;
+
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.entity.BusArrival;
-
-import java.util.List;
 
 /**
  * Adapter that will handle bus map
@@ -39,8 +40,8 @@ import java.util.List;
  */
 public class BusMapSnippetAdapter extends BaseAdapter {
 
-    private Activity activity;
-    private List<BusArrival> arrivals;
+    private final Activity activity;
+    private final List<BusArrival> arrivals;
 
     /**
      * @param arrivals

@@ -46,9 +46,9 @@ public class LoadBusFollowTask extends AsyncTask<String, Void, List<BusArrival>>
 
     private static final String TAG = LoadBusFollowTask.class.getSimpleName();
 
-    private BusMapActivity activity;
-    private View view;
-    private boolean loadAll;
+    private final BusMapActivity activity;
+    private final View view;
+    private final boolean loadAll;
 
     public LoadBusFollowTask(@NonNull final BusMapActivity activity, @NonNull final View view, final boolean loadAll) {
         this.activity = activity;

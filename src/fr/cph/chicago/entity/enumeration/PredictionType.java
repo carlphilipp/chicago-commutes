@@ -31,7 +31,7 @@ public enum PredictionType {
     /**
      * The message
      **/
-    private String message;
+    private final String message;
 
     /**
      * Private constructor

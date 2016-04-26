@@ -46,8 +46,8 @@ import fr.cph.chicago.util.LayoutUtil;
  */
 public final class TrainAdapter extends BaseAdapter {
 
-    private Activity activity;
-    private List<Station> stations;
+    private final Activity activity;
+    private final List<Station> stations;
 
     /**
      * Constructor

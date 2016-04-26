@@ -71,11 +71,11 @@ public class LoadNearbyTask extends AsyncTask<Void, Void, Void> implements Locat
      **/
     private LocationManager locationManager;
 
-    private MainActivity activity;
+    private final MainActivity activity;
 
-    private NearbyFragment fragment;
+    private final NearbyFragment fragment;
 
-    private SupportMapFragment mapFragment;
+    private final SupportMapFragment mapFragment;
 
     public LoadNearbyTask(@NonNull final NearbyFragment fragment, @NonNull final MainActivity activity, @NonNull final SupportMapFragment mapFragment) {
         this.fragment = fragment;

@@ -50,15 +50,15 @@ public class Favorites {
 
     private static Favorites INSTANCE;
 
-    private TrainData trainData;
-    private BusData busData;
+    private final TrainData trainData;
+    private final BusData busData;
 
     private SparseArray<TrainArrival> trainArrivals;
     private List<BusArrival> busArrivals;
     private List<BikeStation> bikeStations;
     private List<Integer> trainFavorites;
     private List<String> busFavorites;
-    private List<String> bikeFavorites;
+    private final List<String> bikeFavorites;
     private List<String> fakeBusFavorites;
 
     private Favorites() {
@@ -140,7 +140,7 @@ public class Favorites {
      * @return a train arrival
      */
     @NonNull
-    public final TrainArrival getTrainArrival(final int stationId) {
+    private TrainArrival getTrainArrival(final int stationId) {
         return trainArrivals.get(stationId, new TrainArrival());
     }
 

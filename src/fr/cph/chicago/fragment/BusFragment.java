@@ -136,9 +136,4 @@ public class BusFragment extends Fragment {
             }
         });
     }
-
-    @Override
-    public final void onSaveInstanceState(final Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
 }

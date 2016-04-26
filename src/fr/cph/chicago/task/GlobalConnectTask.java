@@ -66,17 +66,17 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
 
     private static final String TAG = GlobalConnectTask.class.getSimpleName();
 
-    private Object instance;
-    private Class<?> clazz;
-    private MultiValuedMap<String, String> trainParams, busParams;
-    private XmlParser xmlParser;
-    private JsonParser jsonParser;
+    private final Object instance;
+    private final Class<?> clazz;
+    private final MultiValuedMap<String, String> trainParams, busParams;
+    private final XmlParser xmlParser;
+    private final JsonParser jsonParser;
 
     private SparseArray<TrainArrival> trainArrivals;
-    private List<BusArrival> busArrivals;
+    private final List<BusArrival> busArrivals;
     private List<BikeStation> bikeStations;
 
-    private TrainData train;
+    private final TrainData train;
     private TrackerException trackerTrainException, trackerBusException, trackerBikeException;
 
     private boolean loadBike;

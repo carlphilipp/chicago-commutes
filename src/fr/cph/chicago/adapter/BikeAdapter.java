@@ -43,7 +43,7 @@ import fr.cph.chicago.entity.BikeStation;
  */
 public final class BikeAdapter extends BaseAdapter {
 
-    private MainActivity mainActivity;
+    private final MainActivity mainActivity;
     private List<BikeStation> bikeStations;
 
     /**

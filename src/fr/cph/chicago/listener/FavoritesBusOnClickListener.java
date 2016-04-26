@@ -52,10 +52,10 @@ import fr.cph.chicago.util.Util;
  */
 public class FavoritesBusOnClickListener implements OnClickListener {
 
-    private ViewGroup group;
-    private MainActivity activity;
-    private BusRoute busRoute;
-    private Map<String, List<BusArrival>> mapBusArrivals;
+    private final ViewGroup group;
+    private final MainActivity activity;
+    private final BusRoute busRoute;
+    private final Map<String, List<BusArrival>> mapBusArrivals;
 
     public FavoritesBusOnClickListener(@NonNull final MainActivity activity,
                                        @NonNull final ViewGroup group,

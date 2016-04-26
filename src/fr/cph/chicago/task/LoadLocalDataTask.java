@@ -34,7 +34,7 @@ import fr.cph.chicago.util.Util;
  */
 public class LoadLocalDataTask extends AsyncTask<Void, String, Void> {
 
-    private BaseActivity activity;
+    private final BaseActivity activity;
     private BusData busData;
     private TrainData trainData;
 

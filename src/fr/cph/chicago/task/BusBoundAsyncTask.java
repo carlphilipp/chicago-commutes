@@ -39,10 +39,10 @@ import fr.cph.chicago.util.Util;
  */
 public class BusBoundAsyncTask extends AsyncTask<Void, Void, List<BusStop>> {
 
-    private BusBoundActivity activity;
-    private String busRouteId;
-    private String bound;
-    private BusBoundAdapter busBoundAdapter;
+    private final BusBoundActivity activity;
+    private final String busRouteId;
+    private final String bound;
+    private final BusBoundAdapter busBoundAdapter;
     private TrackerException trackerException;
 
     public BusBoundAsyncTask(@NonNull final BusBoundActivity activity,

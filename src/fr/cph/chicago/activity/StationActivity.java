@@ -27,7 +27,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils.TruncateAt;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -291,11 +290,6 @@ public class StationActivity extends Activity {
     public void onSaveInstanceState(final Bundle savedInstanceState) {
         savedInstanceState.putInt(getString(R.string.bundle_train_stationId), stationId);
         super.onSaveInstanceState(savedInstanceState);
-    }
-
-    @Override
-    public final boolean onCreateOptionsMenu(final Menu menu) {
-        return super.onCreateOptionsMenu(menu);
     }
 
     /**

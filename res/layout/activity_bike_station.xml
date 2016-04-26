@@ -101,7 +101,6 @@
                     android:id="@+id/favorites_bikes_list"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/activity_bike_title2"
                     android:orientation="vertical">
                 </LinearLayout>
             </LinearLayout>
