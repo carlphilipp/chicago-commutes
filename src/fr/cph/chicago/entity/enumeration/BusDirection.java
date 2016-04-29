@@ -40,12 +40,12 @@ public class BusDirection {
     }
 
     public boolean isOk() {
-        final BusDirectionEnum en = BusDirectionEnum.fromString(textReceived);
-        if (en != null) {
-            busDirectionEnum = en;
+        try {
+            busDirectionEnum = BusDirectionEnum.fromString(textReceived);
             return true;
+        }catch (final Exception e){
+            return false;
         }
-        return false;
     }
 
     @NonNull
@@ -83,7 +83,7 @@ public class BusDirection {
                     return busDirectionEnum;
                 }
             }
-            Log.e(TAG, "Bus direction enum not found: " + text);
+            Log.w(TAG, "Bus direction enum not found: " + text);
             throw new IllegalStateException();
         }
 
