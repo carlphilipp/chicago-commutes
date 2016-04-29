@@ -89,7 +89,7 @@
     <string name="add_fav">Add favorites from</string>
     <string name="add_fav2">train/bus/bike tab</string>
     <string name="favorites_detail">details</string>
-    <string name="favorites_view_map">view map</string>
+    <string name="favorites_view_trains">view trains</string>
 
     <!-- Station -->
     <string name="station_activity">Station</string>

@@ -129,7 +129,7 @@
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp"
                     android:paddingTop="16dp"
-                    android:text="@string/favorites_view_map"
+                    android:text="@string/favorites_view_trains"
                     android:theme="@style/MyButton"/>
             </RelativeLayout>
         </LinearLayout>
