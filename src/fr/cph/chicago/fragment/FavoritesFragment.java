@@ -280,7 +280,6 @@ public class FavoritesFragment extends Fragment {
      *
      * @param message the message
      */
-    // TODO remove the message if not used
     public final void displayError(@NonNull final Integer message) {
         Util.showMessage(activity, message);
         stopRefreshing();

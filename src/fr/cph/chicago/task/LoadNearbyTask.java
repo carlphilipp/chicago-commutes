@@ -45,9 +45,6 @@ import fr.cph.chicago.fragment.NearbyFragment;
 import fr.cph.chicago.util.GPSAccess;
 import fr.cph.chicago.util.Util;
 
-/**
- * Created by carl on 3/6/2016.
- */
 public class LoadNearbyTask extends AsyncTask<Void, Void, Void> implements LocationListener {
 
     /**

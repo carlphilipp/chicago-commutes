@@ -51,7 +51,6 @@ import fr.cph.chicago.util.Util;
  */
 public class BikeFragment extends Fragment {
 
-    private static final String TAG = BikeFragment.class.getSimpleName();
     private static final String ARG_SECTION_NUMBER = "section_number";
 
     private View rootView;

@@ -41,9 +41,6 @@ import fr.cph.chicago.xml.XmlParser;
 
 import static fr.cph.chicago.connection.CtaRequestType.TRAIN_LOCATION;
 
-/**
- * Created by carl on 3/7/2016.
- */
 public class LoadTrainPositionTask extends AsyncTask<Boolean, Void, List<Train>> {
 
     private static final String TAG = LoadTrainPositionTask.class.getSimpleName();

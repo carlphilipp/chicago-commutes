@@ -39,6 +39,7 @@ import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Station;
+import fr.cph.chicago.entity.Stop;
 import fr.cph.chicago.entity.factory.StationFactory;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
@@ -94,7 +95,7 @@ public class LoadTrainFollowTask extends AsyncTask<String, Void, List<Eta>> {
             final Date currentDate = Calendar.getInstance().getTime();
             eta.setArrivalDepartureDate(currentDate);
             eta.setPredictionDate(currentDate);
-            final Station fakeStation = StationFactory.buildStation(0, activity.getString(R.string.bus_all_results), null);
+            final Station fakeStation = StationFactory.buildStation(0, activity.getString(R.string.bus_all_results), new ArrayList<Stop>());
             eta.setStation(fakeStation);
             etas.add(eta);
         }

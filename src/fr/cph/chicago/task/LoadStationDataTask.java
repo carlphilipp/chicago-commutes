@@ -77,8 +77,6 @@ public class LoadStationDataTask extends AsyncTask<Void, Void, List<BusArrival>>
         } else {
             Util.showNetworkErrorMessage(swipeRefreshLayout);
         }
-        if (swipeRefreshLayout != null) {
-            swipeRefreshLayout.setRefreshing(false);
-        }
+        swipeRefreshLayout.setRefreshing(false);
     }
 }

@@ -111,7 +111,7 @@ public final class Preferences {
         editor.apply();
     }
 
-    @NonNull
+    @Nullable
     public static String getBikeRouteNameMapping(@NonNull final String bikeId) {
         final Context context = App.getContext();
         final SharedPreferences sharedPref = context.getSharedPreferences(App.PREFERENCE_FAVORITES_BIKE_NAME_MAPPING, Context.MODE_PRIVATE);

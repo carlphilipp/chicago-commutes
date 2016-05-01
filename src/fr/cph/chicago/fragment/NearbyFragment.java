@@ -222,7 +222,7 @@ public class NearbyFragment extends Fragment {
                 int busId = busStop.getId();
                 // Create
                 final Map<String, List<BusArrival>> tempMap = busArrivalsMap.get(busId, new HashMap<String, List<BusArrival>>());
-                if (!tempMap.containsKey(busId)) {
+                if (!tempMap.containsKey(Integer.toString(busId))) {
                     busArrivalsMap.put(busId, tempMap);
                 }
 

@@ -13,9 +13,6 @@ import android.support.v4.app.ActivityCompat;
 
 import fr.cph.chicago.entity.Position;
 
-/**
- * Created by carl on 3/7/2016.
- */
 public class GPSAccess {
     // The minimum distance to change Updates in meters
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
@@ -53,12 +50,10 @@ public class GPSAccess {
                     return null;
                 }
                 locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener, Looper.getMainLooper());
-                if (locationManager != null) {
-                    location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                    if (location != null) {
-                        latitude = location.getLatitude();
-                        longitude = location.getLongitude();
-                    }
+                location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                if (location != null) {
+                    latitude = location.getLatitude();
+                    longitude = location.getLongitude();
                 }
             }
             // if GPS Enabled get lat/long using GPS Services
@@ -69,13 +64,12 @@ public class GPSAccess {
                         return null;
                     }
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener, Looper.getMainLooper());
-                    if (locationManager != null) {
-                        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                        if (location != null) {
-                            latitude = location.getLatitude();
-                            longitude = location.getLongitude();
-                        }
+                    location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    if (location != null) {
+                        latitude = location.getLatitude();
+                        longitude = location.getLongitude();
                     }
+
                 }
             }
         }

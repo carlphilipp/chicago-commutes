@@ -17,7 +17,6 @@
 package fr.cph.chicago.entity.enumeration;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 /**
  * Enumeration, train direction
@@ -27,7 +26,7 @@ import android.support.annotation.Nullable;
  */
 public enum TrainDirection {
 
-    NORTH("N", "North"), SOUTH("S", "South"), EAST("E", "East"), WEST("W", "West");
+    NORTH("N", "North"), SOUTH("S", "South"), EAST("E", "East"), WEST("W", "West"), UNKNOWN("U", "Unknown");
 
     /**
      * The text
@@ -55,14 +54,14 @@ public enum TrainDirection {
      * @param text the text
      * @return the train direction
      */
-    @Nullable
+    @NonNull
     public static TrainDirection fromString(@NonNull final String text) {
-        for (TrainDirection b : TrainDirection.values()) {
+        for (final TrainDirection b : TrainDirection.values()) {
             if (text.equalsIgnoreCase(b.text)) {
                 return b;
             }
         }
-        return null;
+        return TrainDirection.UNKNOWN;
     }
 
     @Override

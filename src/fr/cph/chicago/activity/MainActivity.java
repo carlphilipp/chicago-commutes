@@ -125,9 +125,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     nearbyFragment.reloadData();
                 } else {
                     // Favorite fragment
-                    if (favoritesFragment != null) {
-                        favoritesFragment.startRefreshing();
-                    }
+                    favoritesFragment.startRefreshing();
 
                     Util.loadAllFavorites(favoritesFragment, FavoritesFragment.class);
 

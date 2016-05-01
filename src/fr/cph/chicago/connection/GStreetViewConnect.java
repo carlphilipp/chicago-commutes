@@ -71,7 +71,7 @@ public class GStreetViewConnect {
         address.append("?key=");
         address.append(googleKey);
         address.append("&sensor=false");
-        address.append("&size=" + WIDTH + "x" + HEIGHT);
+        address.append("&size=").append(WIDTH).append("x").append(HEIGHT);
         address.append("&fov=120");
         address.append("&location=");
         address.append(latitude);

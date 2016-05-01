@@ -9,6 +9,7 @@ import java.util.List;
 import fr.cph.chicago.entity.BikeStation;
 
 public class DivvyJson {
+
     @JsonProperty("executionTime")
     private String executionTime;
     @JsonProperty("stationBeanList")

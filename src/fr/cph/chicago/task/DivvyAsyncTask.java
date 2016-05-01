@@ -35,9 +35,6 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.json.JsonParser;
 import fr.cph.chicago.util.Util;
 
-/**
- * Created by carl on 3/13/2016.
- */
 public class DivvyAsyncTask extends AsyncTask<Void, Void, List<BikeStation>> {
 
     private static final String TAG = DivvyAsyncTask.class.getSimpleName();
@@ -83,8 +80,6 @@ public class DivvyAsyncTask extends AsyncTask<Void, Void, List<BikeStation>> {
                 break;
             }
         }
-        if (swipeRefreshLayout != null) {
-            swipeRefreshLayout.setRefreshing(false);
-        }
+        swipeRefreshLayout.setRefreshing(false);
     }
 }

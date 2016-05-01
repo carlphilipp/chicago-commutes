@@ -133,8 +133,6 @@ public class LoadTrainArrivalDataTask extends AsyncTask<MultiValuedMap<String, S
         } else {
             Util.showNetworkErrorMessage(swipeRefreshLayout);
         }
-        if (swipeRefreshLayout != null) {
-            swipeRefreshLayout.setRefreshing(false);
-        }
+        swipeRefreshLayout.setRefreshing(false);
     }
 }

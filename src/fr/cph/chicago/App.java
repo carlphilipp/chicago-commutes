@@ -136,12 +136,6 @@ public class App extends Application {
         activity.startActivity(intent);
     }
 
-    public static void checkData(@NonNull final Activity mActivity) {
-        if (DataHolder.getInstance().getBusData() == null || DataHolder.getInstance().getTrainData() == null) {
-            startErrorActivity(mActivity);
-        }
-    }
-
     public static boolean checkTrainData(@NonNull final Activity activity) {
         if (DataHolder.getInstance().getTrainData() == null) {
             startErrorActivity(activity);
@@ -150,12 +144,10 @@ public class App extends Application {
         return true;
     }
 
-    public static boolean checkBusData(@NonNull final Activity mActivity) {
+    public static void checkBusData(@NonNull final Activity mActivity) {
         if (DataHolder.getInstance().getBusData() == null) {
             startErrorActivity(mActivity);
-            return false;
         }
-        return true;
     }
 
     public static void reloadData() {

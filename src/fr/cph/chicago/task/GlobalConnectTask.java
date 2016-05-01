@@ -79,7 +79,7 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
     private final TrainData train;
     private TrackerException trackerTrainException, trackerBusException, trackerBikeException;
 
-    private boolean loadBike;
+    private final boolean loadBike;
 
     /**
      * Constructor
