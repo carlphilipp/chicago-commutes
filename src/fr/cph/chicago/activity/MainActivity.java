@@ -99,7 +99,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             finish();
         } else {
             this.onNavigationItemSelected(menuItem);
-            //itemSelection(R.id.navigation_favorites);
         }
     }
 
