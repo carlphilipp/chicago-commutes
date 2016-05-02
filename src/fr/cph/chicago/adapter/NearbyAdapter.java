@@ -388,7 +388,7 @@ public final class NearbyAdapter extends BaseAdapter {
         final LinearLayout favoritesData = (LinearLayout) convertView.findViewById(R.id.nearby_results);
 
         final ImageView imageView = (ImageView) convertView.findViewById(R.id.icon);
-        imageView.setImageDrawable(ContextCompat.getDrawable(App.getContext(), R.drawable.ic_directions_bus_white_24dp));
+        imageView.setImageDrawable(ContextCompat.getDrawable(App.getContext(), R.drawable.ic_directions_bike_white_24dp));
 
 
         final TextView routeView = (TextView) convertView.findViewById(R.id.station_name);
