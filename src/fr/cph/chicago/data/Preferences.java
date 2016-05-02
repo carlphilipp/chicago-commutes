@@ -46,9 +46,6 @@ import fr.cph.chicago.util.Util;
 public final class Preferences {
     // FIXME change all bikeId (and other ids?) that should be int. Be sure whenever a user as a favorite already saved on the phone that it will work correctly
 
-    /**
-     * Tag
-     **/
     private static final String TAG = Preferences.class.getSimpleName();
 
     private static final Pattern PATTERN = Pattern.compile("(\\d{1,3})");
@@ -207,8 +204,7 @@ public final class Preferences {
     @Nullable
     public static String getBusStopNameMapping(@NonNull final String busStopId) {
         final Context context = App.getContext();
-        final SharedPreferences sharedPref = context
-            .getSharedPreferences(App.PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING, Context.MODE_PRIVATE);
+        final SharedPreferences sharedPref = context.getSharedPreferences(App.PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING, Context.MODE_PRIVATE);
         final String stopName = sharedPref.getString(busStopId, null);
         Log.v(TAG, "Get bus stop name mapping : " + busStopId + " => " + stopName);
         return stopName;
