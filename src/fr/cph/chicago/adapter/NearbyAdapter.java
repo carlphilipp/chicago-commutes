@@ -152,15 +152,13 @@ public final class NearbyAdapter extends BaseAdapter {
             convertView.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(final View v) {
-                    if (googleMap != null) {
-                        final LatLng latLng = new LatLng(station.getStopsPosition().get(0).getLatitude(), station.getStopsPosition().get(0).getLongitude());
-                        final CameraPosition current = new CameraPosition.Builder().target(latLng).zoom(15.5f).bearing(0).tilt(0).build();
-                        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(current), Math.max(1000, 1), null);
-                        for (final Marker marker : markers) {
-                            if (marker.getSnippet().equals(Integer.toString(station.getId()))) {
-                                marker.showInfoWindow();
-                                break;
-                            }
+                    final LatLng latLng = new LatLng(station.getStopsPosition().get(0).getLatitude(), station.getStopsPosition().get(0).getLongitude());
+                    final CameraPosition current = new CameraPosition.Builder().target(latLng).zoom(15.5f).bearing(0).tilt(0).build();
+                    googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(current), Math.max(1000, 1), null);
+                    for (final Marker marker : markers) {
+                        if (marker.getSnippet().equals(Integer.toString(station.getId()))) {
+                            marker.showInfoWindow();
+                            break;
                         }
                     }
                 }

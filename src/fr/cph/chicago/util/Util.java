@@ -303,7 +303,7 @@ public final class Util {
                 googleMap.setMyLocationEnabled(true);
                 if (position != null) {
                     final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
                 } else {
                     googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CHICAGO, 10));
                 }
