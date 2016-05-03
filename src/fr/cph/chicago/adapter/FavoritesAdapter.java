@@ -94,6 +94,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     private final MainActivity activity;
     private final Favorites favorites;
     private String lastUpdate;
+    private final int marginLeftPixel;
     private final int pixels;
     private final int pixelsHalf;
     private final int pixelsQuarter;
@@ -104,6 +105,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         this.activity = activity;
         this.favorites = Favorites.getInstance();
 
+        this.marginLeftPixel = Util.convertDpToPixel(this.activity, 10);
         this.pixels = Util.convertDpToPixel(this.activity, 16);
         this.pixelsHalf = pixels / 2;
         this.pixelsQuarter = pixels / 4;
@@ -198,19 +200,19 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 container.setLayoutParams(containParam);
 
                 // Left
-                final LinearLayout.LayoutParams leftParam = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                final RelativeLayout.LayoutParams leftParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                 final RelativeLayout left = new RelativeLayout(context);
                 left.setLayoutParams(leftParam);
 
-                final LinearLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(trainLine);
+                final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(trainLine);
                 int lineId = Util.generateViewId();
                 lineIndication.setId(lineId);
 
-                final RelativeLayout.LayoutParams destinationParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                final RelativeLayout.LayoutParams destinationParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                 destinationParams.addRule(RelativeLayout.RIGHT_OF, lineId);
                 destinationParams.setMargins(pixelsHalf, 0, 0, 0);
 
-                final String destination = "  " + entry.getKey();
+                final String destination = entry.getKey();
                 final TextView destinationTextView = new TextView(context);
                 destinationTextView.setTextColor(GREY_5);
                 destinationTextView.setText(destination);
@@ -222,6 +224,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
                 // Right
                 final LinearLayout.LayoutParams rightParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+                rightParams.setMargins(marginLeftPixel, 0, 0, 0);
                 final LinearLayout right = new LinearLayout(context);
                 right.setOrientation(LinearLayout.VERTICAL);
                 right.setLayoutParams(rightParams);
@@ -231,7 +234,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 arrivalText.setText(currentEtas);
                 arrivalText.setGravity(Gravity.RIGHT);
                 arrivalText.setGravity(Gravity.END);
-                arrivalText.setLines(1);
+                arrivalText.setSingleLine(true);
                 arrivalText.setTextColor(GREY_5);
                 arrivalText.setEllipsize(TextUtils.TruncateAt.END);
 
@@ -304,7 +307,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 final RelativeLayout left = new RelativeLayout(context);
                 left.setLayoutParams(leftParams);
 
-                final LinearLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(TrainLine.NA);
+                final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(TrainLine.NA);
                 int lineId = Util.generateViewId();
                 lineIndication.setId(lineId);
 
@@ -320,7 +323,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
                 final TextView boundCustomTextView = new TextView(context);
                 boundCustomTextView.setText(destinationSpannable);
-                boundCustomTextView.setLines(1);
+                boundCustomTextView.setSingleLine(true);
                 boundCustomTextView.setLayoutParams(destinationParams);
 
                 left.addView(lineIndication);
@@ -328,6 +331,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
                 // Right
                 final LinearLayout.LayoutParams rightParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+                rightParams.setMargins(marginLeftPixel, 0, 0, 0);
                 final LinearLayout right = new LinearLayout(context);
                 right.setOrientation(LinearLayout.VERTICAL);
                 right.setLayoutParams(rightParams);
@@ -341,7 +345,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 arrivalText.setText(currentEtas);
                 arrivalText.setGravity(Gravity.RIGHT);
                 arrivalText.setGravity(Gravity.END);
-                arrivalText.setLines(1);
+                arrivalText.setSingleLine(true);
                 arrivalText.setTextColor(GREY_5);
                 arrivalText.setEllipsize(TextUtils.TruncateAt.END);
 
@@ -462,7 +466,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         final RelativeLayout left = new RelativeLayout(context);
         left.setLayoutParams(leftParam);
 
-        final LinearLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(TrainLine.NA);
+        final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(TrainLine.NA);
         int lineId = Util.generateViewId();
         lineIndication.setId(lineId);
 
@@ -472,7 +476,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
         final TextView boundCustomTextView = new TextView(context);
         boundCustomTextView.setText(activity.getString(R.string.bike_available_docks));
-        boundCustomTextView.setLines(1);
+        boundCustomTextView.setSingleLine(true);
         boundCustomTextView.setLayoutParams(availableParam);
         boundCustomTextView.setTextColor(GREY_5);
         int availableId = Util.generateViewId();

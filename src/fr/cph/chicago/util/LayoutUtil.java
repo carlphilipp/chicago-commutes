@@ -37,12 +37,13 @@ public class LayoutUtil {
     }
 
     @NonNull
-    public static LinearLayout createColoredRoundForFavorites(@NonNull final TrainLine trainLine) {
-        final LinearLayout lineIndication = new LinearLayout(App.getContext());
+    public static RelativeLayout createColoredRoundForFavorites(@NonNull final TrainLine trainLine) {
+        final RelativeLayout lineIndication = new RelativeLayout(App.getContext());
         final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.height =  App.getContext().getResources().getDimensionPixelSize(R.dimen.layout_round_height);
         params.width = App.getContext().getResources().getDimensionPixelSize(R.dimen.layout_round_width);
         params.addRule(RelativeLayout.CENTER_VERTICAL);
+        //params.addRule(RelativeLayout.CENTER_IN_PARENT);
         lineIndication.setBackgroundColor(trainLine.getColor());
         lineIndication.setLayoutParams(params);
         return lineIndication;
