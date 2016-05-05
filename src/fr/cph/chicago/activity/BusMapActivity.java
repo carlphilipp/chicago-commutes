@@ -39,6 +39,7 @@ import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -111,6 +112,7 @@ public class BusMapActivity extends Activity {
         super.onCreate(savedInstanceState);
         App.checkBusData(this);
         if (!this.isFinishing()) {
+            MapsInitializer.initialize(getApplicationContext());
             setContentView(R.layout.activity_map);
             layout = (RelativeLayout) findViewById(R.id.map);
             viewGroup = (ViewGroup) findViewById(android.R.id.content);
