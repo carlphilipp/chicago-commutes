@@ -75,6 +75,7 @@ public class BusMapOnCameraChangeListener implements OnCameraChangeListener {
             float oldZoom = currentZoom;
             currentZoom = position.zoom;
 
+            // Handle bus bitmap
             if (isIn(currentZoom, 12.9f, 11f) && !isIn(oldZoom, 12.9f, 11f)) {
                 for (final Marker marker : busMarkers) {
                     marker.setIcon(bitmapDescriptor1);
@@ -91,11 +92,13 @@ public class BusMapOnCameraChangeListener implements OnCameraChangeListener {
                 }
                 setCurrentBitmapDescriptor(bitmapDescriptor3);
             }
+
+            // Handle stops markers
             if (isIn(currentZoom, 21f, 16f) && !isIn(oldZoom, 21f, 16f)) {
                 for (final Marker marker : busStationMarkers) {
                     marker.setVisible(true);
                 }
-            } else if (!isIn(currentZoom, 21f, 16f) && isIn(oldZoom, 21f, 16f)) {
+            } else {
                 for (final Marker marker : busStationMarkers) {
                     marker.setVisible(false);
                 }
