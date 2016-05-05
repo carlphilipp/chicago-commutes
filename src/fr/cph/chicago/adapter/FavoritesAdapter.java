@@ -187,6 +187,8 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 activity.startActivity(intent);
             }
         });
+
+        holder.mapButton.setText(activity.getString(R.string.favorites_view_trains));
         holder.mapButton.setOnClickListener(new FavoritesTrainOnClickListener(activity, trainLines));
 
         for (final TrainLine trainLine : trainLines) {
@@ -361,6 +363,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
             }
         }
 
+        holder.mapButton.setText(activity.getString(R.string.favorites_view_buses));
         holder.detailsButton.setOnClickListener(new View.OnClickListener() {
             // TODO find a solution when stop name are too long (54A stop nam for example)
             @Override
@@ -428,6 +431,8 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 }
             }
         });
+
+        holder.mapButton.setText(activity.getString(R.string.favorites_view_station));
         holder.mapButton.setOnClickListener(new GoogleMapOnClickListener(activity, bikeStation.getLatitude(), bikeStation.getLongitude()));
 
         final LinearLayout.LayoutParams containerParams = getInsideParams(true, true);
