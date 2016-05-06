@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,8 +16,6 @@
 
 package fr.cph.chicago.fragment;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -28,7 +26,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import fr.cph.chicago.R;
-import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.activity.TrainStationActivity;
 import fr.cph.chicago.adapter.TrainStationAdapter;
 import fr.cph.chicago.entity.enumeration.TrainLine;
@@ -43,13 +40,12 @@ import fr.cph.chicago.util.Util;
 public final class TrainFragment extends Fragment {
 
     private static final String ARG_SECTION_NUMBER = "section_number";
-    private MainActivity activity;
 
     /**
      * Returns a new instance of this fragment for the given section number.
      *
-     * @param sectionNumber
-     * @return
+     * @param sectionNumber the section number
+     * @return a train fragment
      */
     public static TrainFragment newInstance(final int sectionNumber) {
         final TrainFragment fragment = new TrainFragment();
@@ -66,12 +62,6 @@ public final class TrainFragment extends Fragment {
     }
 
     @Override
-    public final void onAttach(final Context context) {
-        super.onAttach(context);
-        activity = context instanceof Activity ? (MainActivity) context : null;
-    }
-
-    @Override
     public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_train, container, false);
         final TrainStationAdapter ada = new TrainStationAdapter();
@@ -80,10 +70,10 @@ public final class TrainFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(final AdapterView<?> parentView, final View childView, final int position, final long id) {
-                final Intent intent = new Intent(activity, TrainStationActivity.class);
+                final Intent intent = new Intent(getContext(), TrainStationActivity.class);
                 final Bundle extras = new Bundle();
                 final String line = TrainLine.values()[position].toString();
-                extras.putString(activity.getString(R.string.bundle_train_line), line);
+                extras.putString(getContext().getString(R.string.bundle_train_line), line);
                 intent.putExtras(extras);
                 startActivity(intent);
             }
