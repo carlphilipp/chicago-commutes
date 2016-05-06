@@ -17,7 +17,6 @@
 package fr.cph.chicago.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
@@ -31,9 +30,9 @@ import java.util.List;
 
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
-import fr.cph.chicago.activity.BikeStationActivity;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.entity.BikeStation;
+import fr.cph.chicago.listener.BikeStationOnClickListener;
 
 /**
  * Adapter that will handle bikes
@@ -96,16 +95,7 @@ public final class BikeAdapter extends BaseAdapter {
         }
         holder.stationNameView.setText(station.getName());
 
-        convertView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                final Intent intent = new Intent(App.getContext(), BikeStationActivity.class);
-                final Bundle extras = new Bundle();
-                extras.putParcelable(mainActivity.getString(R.string.bundle_bike_station), station);
-                intent.putExtras(extras);
-                mainActivity.startActivity(intent);
-            }
-        });
+        convertView.setOnClickListener(new BikeStationOnClickListener(station));
         return convertView;
     }
 
