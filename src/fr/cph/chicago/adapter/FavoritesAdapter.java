@@ -413,8 +413,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     private void handleBikeStation(@NonNull final FavoritesViewHolder holder, @NonNull final BikeStation bikeStation) {
         holder.stationNameTextView.setText(bikeStation.getName());
         holder.favoriteImage.setImageResource(R.drawable.ic_directions_bike_white_24dp);
-
-        // TODO extract those identical listener
+        
         holder.detailsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
