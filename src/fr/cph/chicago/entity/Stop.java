@@ -66,9 +66,6 @@ public class Stop implements Comparable<Stop>, Parcelable {
     public Stop() {
     }
 
-    /**
-     * @param in
-     */
     private Stop(@NonNull final Parcel in) {
         readFromParcel(in);
     }

@@ -54,8 +54,6 @@ public class GStreetViewConnect {
 
     /**
      * Get instance of this class
-     *
-     * @return
      */
     @NonNull
     public static GStreetViewConnect getInstance() {
@@ -66,7 +64,7 @@ public class GStreetViewConnect {
     }
 
     @NonNull
-    public final Drawable connect(final double latitude, final double longitude) throws IOException {
+    public final Drawable connect(final double latitude, final double longitude) {
         final StringBuilder address = new StringBuilder(App.getContext().getString(R.string.url_street_view));
         address.append("?key=");
         address.append(googleKey);
@@ -84,7 +82,6 @@ public class GStreetViewConnect {
      *
      * @param address the address to connect to
      * @return a drawable map
-     * @throws IOException
      */
     @NonNull
     private Drawable connectUrl(@NonNull final String address) {

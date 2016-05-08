@@ -55,9 +55,6 @@ public class Station implements Comparable<Station>, Parcelable {
     public Station() {
     }
 
-    /**
-     * @param in
-     */
     private Station(@NonNull final Parcel in) {
         readFromParcel(in);
     }
@@ -77,9 +74,6 @@ public class Station implements Comparable<Station>, Parcelable {
         return stb.toString();
     }
 
-    /**
-     * @return
-     */
     @NonNull
     public final Set<TrainLine> getLines() {
         if (stops != null) {

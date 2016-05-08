@@ -69,9 +69,6 @@ public enum TrainDirection {
         return this.formattedText;
     }
 
-    /**
-     * @return
-     */
     @NonNull
     public final String toTextString() {
         return this.text;

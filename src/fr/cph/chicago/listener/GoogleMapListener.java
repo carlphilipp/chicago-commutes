@@ -20,13 +20,13 @@ import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.view.View;
 
-public abstract class GoogleMapListener implements View.OnClickListener {
+abstract class GoogleMapListener implements View.OnClickListener {
 
-	protected final Activity activity;
-	protected final double latitude;
-	protected final double longitude;
+	final Activity activity;
+	final double latitude;
+	final double longitude;
 
-	public GoogleMapListener(@NonNull final Activity activity, final double latitude, final double longitude) {
+	GoogleMapListener(@NonNull final Activity activity, final double latitude, final double longitude) {
 		this.activity = activity;
 		this.latitude = latitude;
 		this.longitude = longitude;

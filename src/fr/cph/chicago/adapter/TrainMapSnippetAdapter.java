@@ -40,10 +40,7 @@ import fr.cph.chicago.entity.Eta;
 public class TrainMapSnippetAdapter extends BaseAdapter {
 
 	private final List<Eta> etas;
-
-	/**
-	 * @param etas
-	 */
+    
 	public TrainMapSnippetAdapter(@NonNull final List<Eta> etas) {
 		this.etas = etas;
 	}

@@ -55,9 +55,6 @@ public class PatternPoint implements Parcelable {
     public PatternPoint() {
     }
 
-    /**
-     * @param in
-     */
     private PatternPoint(@NonNull final Parcel in) {
         readFromParcel(in);
     }

@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p>
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -78,26 +78,20 @@ public class BusData {
 
     /**
      * Method that read bus stops from CSV
-     *
-     * @return a list of bus stops
      */
-    @NonNull
-    public final List<BusStop> readBusStops() {
+    public final void readBusStops() {
         if (busStops.size() == 0) {
             busStops = parser.parse();
         }
-        return busStops;
     }
 
     /**
      * Load bus routes from CTA API
      *
-     * @return a list of bus route
      * @throws ParserException  a parser exception
      * @throws ConnectException a connect exception
      */
-    @NonNull
-    public final List<BusRoute> loadBusRoutes() throws ParserException, ConnectException {
+    public final void loadBusRoutes() throws ParserException, ConnectException {
         if (busRoutes.size() == 0) {
             final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
             final CtaConnect connect = CtaConnect.getInstance();
@@ -105,7 +99,6 @@ public class BusData {
             final InputStream xmlResult = connect.connect(BUS_ROUTES, params);
             busRoutes = xml.parseBusRoutes(xmlResult);
         }
-        return busRoutes;
     }
 
     /**

@@ -51,9 +51,6 @@ public final class BusRoute implements Parcelable, Serializable {
     public BusRoute() {
     }
 
-    /**
-     * @param in
-     */
     private BusRoute(@NonNull final Parcel in) {
         readFromParcel(in);
     }

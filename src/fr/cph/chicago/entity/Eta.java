@@ -104,25 +104,16 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	public Eta() {
 	}
 
-	/**
-	 * @param in
-	 */
 	private Eta(@NonNull final Parcel in) {
 		readFromParcel(in);
 	}
 
-	/**
-	 * @return
-	 */
     @NonNull
 	private String getTimeLeft() {
 		long time = arrivalDepartureDate.getTime() - predictionDate.getTime();
 		return String.format(Locale.ENGLISH, "%d min", TimeUnit.MILLISECONDS.toMinutes(time));
 	}
 
-	/**
-	 * @return
-	 */
     @NonNull
 	public final String getTimeLeftDueDelay() {
 		String result;
@@ -138,31 +129,19 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 		return result;
 	}
 
-	/**
-	 * @return
-	 */
 	public final int getDestSt() {
 		return destSt;
 	}
 
-	/**
-	 * @param destSt
-	 */
 	public final void setDestSt(final int destSt) {
 		this.destSt = destSt;
 	}
 
-	/**
-	 * @return
-	 */
     @NonNull
 	public final String getDestName() {
 		return destName;
 	}
 
-	/**
-	 * @param destName
-	 */
 	public final void setDestName(@NonNull final String destName) {
 		this.destName = destName;
 	}

@@ -42,9 +42,6 @@ public final class BusDirections {
         lBusDirection = new ArrayList<>();
     }
 
-    /**
-     * @param dir
-     */
     public final void addBusDirection(@NonNull final BusDirection dir) {
         if (!lBusDirection.contains(dir)) {
             lBusDirection.add(dir);

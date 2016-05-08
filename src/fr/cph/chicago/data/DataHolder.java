@@ -48,8 +48,6 @@ public class DataHolder {
 
     /**
      * Get instance of the class. Singleton
-     *
-     * @return
      */
     @NonNull
     public static DataHolder getInstance() {

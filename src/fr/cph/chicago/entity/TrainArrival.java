@@ -58,17 +58,10 @@ public class TrainArrival implements Parcelable {
     public TrainArrival() {
     }
 
-    /**
-     * @param in
-     */
     private TrainArrival(@NonNull final Parcel in) {
         readFromParcel(in);
     }
 
-    /**
-     * @param line
-     * @return
-     */
     @NonNull
     public final List<Eta> getEtas(@NonNull final TrainLine line) {
         List<Eta> etas = new ArrayList<>();

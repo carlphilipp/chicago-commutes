@@ -56,9 +56,6 @@ public class TrainMapOnCameraChangeListener implements OnCameraChangeListener {
         this.setCurrentBitmapDescriptor(bitmapDescriptor2);
     }
 
-    /**
-     * @param trainMarkers
-     */
     public void setTrainMarkers(@NonNull final List<Marker> trainMarkers) {
         this.trainMarkers = trainMarkers;
     }

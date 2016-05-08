@@ -58,9 +58,6 @@ public final class BusPattern implements Parcelable {
         this.points.add(patternPoint);
     }
 
-    /**
-     * @param in
-     */
     private BusPattern(@NonNull final Parcel in) {
         readFromParcel(in);
     }

@@ -11,7 +11,7 @@ import fr.cph.chicago.entity.BikeStation;
 
 public class BikeStationOnClickListener implements View.OnClickListener {
 
-    private BikeStation station;
+    private final BikeStation station;
 
     public BikeStationOnClickListener(final BikeStation station) {
         this.station = station;

@@ -102,8 +102,6 @@ public enum TrainLine {
 
     /**
      * Get to string with line
-     *
-     * @return
      */
     @NonNull
     public final String toStringWithLine() {
@@ -124,9 +122,6 @@ public enum TrainLine {
         return name;
     }
 
-    /**
-     * @return
-     */
     @NonNull
     public final String toTextString() {
         return text;

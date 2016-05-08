@@ -88,7 +88,6 @@ public class GlobalConnectTask extends AsyncTask<Void, Void, Boolean> {
      * @param clazz       The class
      * @param trainParams the trainParams
      * @param busParams   the trainParams
-     * @throws ParserException the parser exception
      */
     // TODO remove some of the trainParams as always the same are used
     public GlobalConnectTask(@NonNull final Object instance,

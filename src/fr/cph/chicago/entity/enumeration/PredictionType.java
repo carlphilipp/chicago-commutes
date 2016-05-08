@@ -35,8 +35,6 @@ public enum PredictionType {
 
     /**
      * Private constructor
-     *
-     * @param message
      */
     PredictionType(final String message) {
         this.message = message;

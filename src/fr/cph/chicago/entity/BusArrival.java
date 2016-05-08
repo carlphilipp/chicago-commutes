@@ -95,16 +95,10 @@ public final class BusArrival implements Parcelable {
 
     }
 
-    /**
-     * @param in
-     */
     private BusArrival(final Parcel in) {
         readFromParcel(in);
     }
 
-    /**
-     * @return
-     */
     @NonNull
     public final String getTimeLeft() {
         if (getPredictionTime() != null && getTimeStamp() != null) {
@@ -115,9 +109,6 @@ public final class BusArrival implements Parcelable {
         }
     }
 
-    /**
-     * @return
-     */
     @NonNull
     public final String getTimeLeftDueDelay() {
         String result;

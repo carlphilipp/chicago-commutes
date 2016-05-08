@@ -55,9 +55,6 @@ public final class BusStop implements Comparable<BusStop>, Parcelable, Serializa
     public BusStop() {
     }
 
-    /**
-     * @param in
-     */
     private BusStop(@NonNull final Parcel in) {
         readFromParcel(in);
     }

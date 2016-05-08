@@ -34,7 +34,7 @@ import fr.cph.chicago.entity.BusDetailsDTO;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class PopupBusDetailsFavoritesAdapter extends ArrayAdapter<BusDetailsDTO> {
+class PopupBusDetailsFavoritesAdapter extends ArrayAdapter<BusDetailsDTO> {
 
     private final Activity activity;
     private final List<BusDetailsDTO> values;
