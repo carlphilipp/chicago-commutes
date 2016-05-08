@@ -61,10 +61,6 @@
     <string name="bundle_train_stationId">stationId</string>
     <string name="bundle_title">title</string>
 
-    <!-- Preferences -->
-    <string name="preferences_cta_train">cta_train</string>
-    <string name="preferences_cta_bus">cta_bus</string>
-
     <string name="empty_string">&#160;</string>
     <string name="app_name">Chicago Commutes</string>
     <string name="favorites">Favorites</string>
@@ -72,17 +68,12 @@
     <string name="bus">Bus</string>
     <string name="divvy">Divvy</string>
     <string name="nearby">Nearby</string>
-    <string name="map">\'L\' System Map</string>
-    <string name="settings">Settings</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="action_settings">Settings</string>
     <string name="action_refresh">Refresh</string>
     <string name="progress_error">Error, try to refresh</string>
     <string name="progress_message">Loading&#8230;</string>
     <string name="progress_wait">Please wait</string>
-    <string name="B">B</string>
-    <string name="D">D</string>
 
     <!-- Favorites -->
     <string name="no_fav">Welcome to Chicago Commutes!</string>
@@ -124,9 +115,6 @@
     <!-- Nearby -->
     <string name="nearby_check_box">Hide stations/stops with no results</string>
 
-    <!-- CTA System map -->
-    <string name="fragment_image_description">A nice description</string>
-
     <!-- Loading -->
     <string name="loading_image_description">A nice description</string>
 
@@ -136,14 +124,6 @@
     <string name="bike_available_bikes">Available bikes&#160;&#160;</string>
     <string name="bike_available_docks">Available docks&#160;</string>
 
-    <!-- Preferences -->
-    <string name="pref_trains_title">CTA trains</string>
-    <string name="pref_trains_summary">Use trains data</string>
-    <string name="pref_buses_title">CTA buses</string>
-    <string name="pref_buses_summary">Use buses data</string>
-    <string name="pref_bikes_title">Divvy bikes</string>
-    <string name="pref_bikes_summary">Use bikes data</string>
-
     <!-- Map -->
     <string name="map_activity">Map</string>
     <string name="map_train_follow_error">Unable to determine upcoming stops</string>
@@ -152,7 +132,6 @@
     <string name="analytics_bike_fragment">Bike fragment</string>
     <string name="analytics_bus_fragment">Bus fragment</string>
     <string name="analytics_favorites_fragment">Favorites fragment</string>
-    <string name="analytics_L_fragment">L System Map fragment</string>
     <string name="analytics_nearby_fragment">Nearby fragment</string>
     <string name="analytics_train_fragment">Train fragment</string>
 
