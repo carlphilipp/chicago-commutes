@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -112,6 +112,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     }
 
     static class FavoritesViewHolder extends RecyclerView.ViewHolder {
+        public final ViewGroup parent;
         public final LinearLayout mainLayout;
         public final RelativeLayout buttonsLayout;
         public final TextView lastUpdateTextView;
@@ -120,8 +121,9 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         public final Button detailsButton;
         public final Button mapButton;
 
-        public FavoritesViewHolder(final View view) {
+        public FavoritesViewHolder(final View view, final ViewGroup parent) {
             super(view);
+            this.parent = parent;
             this.mainLayout = (LinearLayout) view.findViewById(R.id.favorites_arrival_layout);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 this.mainLayout.setBackground(ContextCompat.getDrawable(App.getContext(), R.drawable.any_selector));
@@ -144,7 +146,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     public FavoritesViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
         // create a new view
         final View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_favorites_train, parent, false);
-        return new FavoritesViewHolder(v);
+        return new FavoritesViewHolder(v, parent);
     }
 
     @Override
@@ -370,11 +372,10 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
             public void onClick(final View v) {
                 if (busDetailsDTOs.size() == 1) {
                     final BusDetailsDTO busDetails = busDetailsDTOs.get(0);
-                    new FavoritesAdapter.BusBoundAsyncTask(activity)
-                        .execute(busDetails.getBusRouteId(), busDetails.getBound(), busDetails.getBoundTitle(), busDetails.getStopId(), busDetails.getRouteName());
+                    new FavoritesAdapter.BusBoundAsyncTask(activity).execute(busDetails.getBusRouteId(), busDetails.getBound(), busDetails.getBoundTitle(), busDetails.getStopId(), busDetails.getRouteName());
                 } else {
                     final PopupBusDetailsFavoritesAdapter ada = new PopupBusDetailsFavoritesAdapter(activity, busDetailsDTOs);
-                    final View popupView = activity.getLayoutInflater().inflate(R.layout.popup_bus, null);
+                    final View popupView = activity.getLayoutInflater().inflate(R.layout.popup_bus, holder.parent, false);
                     final ListView listView = (ListView) popupView.findViewById(R.id.details);
                     listView.setAdapter(ada);
                     final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -413,7 +414,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     private void handleBikeStation(@NonNull final FavoritesViewHolder holder, @NonNull final BikeStation bikeStation) {
         holder.stationNameTextView.setText(bikeStation.getName());
         holder.favoriteImage.setImageResource(R.drawable.ic_directions_bike_white_24dp);
-        
+
         holder.detailsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
