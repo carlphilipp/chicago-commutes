@@ -56,13 +56,13 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:orientation="horizontal"></LinearLayout>
+        android:orientation="horizontal" />
 
     <LinearLayout
         android:id="@+id/nearby_results"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/icon"
-        android:orientation="vertical"></LinearLayout>
+        android:orientation="vertical" />
 
 </RelativeLayout>

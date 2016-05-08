@@ -43,9 +43,6 @@ public class BusMapSnippetAdapter extends BaseAdapter {
     private final Activity activity;
     private final List<BusArrival> arrivals;
 
-    /**
-     * @param arrivals
-     */
     public BusMapSnippetAdapter(@NonNull final Activity activity, @NonNull final List<BusArrival> arrivals) {
         this.activity = activity;
         this.arrivals = arrivals;

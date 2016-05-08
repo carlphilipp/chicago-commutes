@@ -243,6 +243,7 @@ public final class NearbyAdapter extends BaseAdapter {
                             resultLayout.addView(llh);
 
                         } else {
+                            // TODO refactor that unused code
                             llh = (LinearLayout) resultLayout.findViewById(idLayout);
                             llv = (LinearLayout) resultLayout.findViewById(idLayout2);
                         }
