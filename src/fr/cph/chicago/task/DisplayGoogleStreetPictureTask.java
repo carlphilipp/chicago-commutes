@@ -20,13 +20,10 @@ import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import java.io.IOException;
 
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
@@ -56,16 +53,11 @@ public final class DisplayGoogleStreetPictureTask extends AsyncTask<Double, Void
 
     @Override
     protected final Drawable doInBackground(final Double... params) {
-        try {
-            final GStreetViewConnect connect = GStreetViewConnect.getInstance();
-            double latitude = params[0];
-            double longitude = params[1];
-            Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_google, R.string.analytics_action_get_google_map_street_view, 0);
-            return connect.connect(latitude, longitude);
-        } catch (final IOException e) {
-            Log.e(TAG, activity.getString(R.string.message_error_google_street), e);
-            return null;
-        }
+        final GStreetViewConnect connect = GStreetViewConnect.getInstance();
+        double latitude = params[0];
+        double longitude = params[1];
+        Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_google, R.string.analytics_action_get_google_map_street_view, 0);
+        return connect.connect(latitude, longitude);
     }
 
     @Override
