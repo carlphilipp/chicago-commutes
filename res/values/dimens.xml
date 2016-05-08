@@ -21,6 +21,7 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
 
     <!-- Font activity station -->
+    <dimen name="activity_station_stops_0dp">0dp</dimen>
     <dimen name="activity_station_stops_padding_top">5dp</dimen>
     <dimen name="activity_station_stops_line1_padding_color">4dp</dimen>
     <dimen name="activity_station_stops_line3_padding_left">7dp</dimen>

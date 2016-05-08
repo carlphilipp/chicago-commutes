@@ -17,17 +17,16 @@
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:baselineAligned="false"
-              android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:baselineAligned="false"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1">
-    </RelativeLayout>
+        android:layout_weight="1"></RelativeLayout>
 
     <LinearLayout
         android:id="@+id/loading_layout_container"
@@ -43,14 +42,15 @@
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingEnd="@dimen/activity_station_stops_0dp"
             android:paddingLeft="@dimen/activity_train_line_padding_left"
+            android:paddingRight="@dimen/activity_station_stops_0dp"
             android:paddingStart="@dimen/activity_train_line_padding_left">
 
             <CheckBox
                 android:id="@+id/hideEmptyStops"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-            </CheckBox>
+                android:layout_height="wrap_content" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -60,7 +60,7 @@
                 android:layout_toRightOf="@+id/hideEmptyStops"
                 android:ellipsize="end"
                 android:lines="1"
-                android:text="@string/nearby_check_box"/>
+                android:text="@string/nearby_check_box" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -72,8 +72,7 @@
             <ListView
                 android:id="@+id/fragment_nearby_list"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-            </ListView>
+                android:layout_height="match_parent" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -91,7 +90,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:focusable="false"
-                android:focusableInTouchMode="false"/>
+                android:focusableInTouchMode="false" />
         </RelativeLayout>
     </LinearLayout>
 

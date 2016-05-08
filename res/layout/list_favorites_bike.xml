@@ -17,15 +17,15 @@
 -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/any_selector"
-                android:paddingBottom="@dimen/activity_train_line_padding_bottom"
-                android:paddingEnd="@dimen/activity_train_line_padding_right"
-                android:paddingLeft="@dimen/activity_train_line_padding_left"
-                android:paddingRight="@dimen/activity_train_line_padding_right"
-                android:paddingStart="@dimen/activity_train_line_padding_left"
-                android:paddingTop="@dimen/activity_train_line_padding_top">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/any_selector"
+    android:paddingBottom="@dimen/activity_train_line_padding_bottom"
+    android:paddingEnd="@dimen/activity_train_line_padding_right"
+    android:paddingLeft="@dimen/activity_train_line_padding_left"
+    android:paddingRight="@dimen/activity_train_line_padding_right"
+    android:paddingStart="@dimen/activity_train_line_padding_left"
+    android:paddingTop="@dimen/activity_train_line_padding_top">
 
     <RelativeLayout
         android:id="@+id/line1"
@@ -39,12 +39,14 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:paddingEnd="@dimen/activity_station_stops_line1_padding_color"
+            android:paddingLeft="@dimen/activity_station_stops_0dp"
             android:paddingRight="@dimen/activity_station_stops_line1_padding_color"
+            android:paddingStart="@dimen/activity_station_stops_0dp"
             android:text="@string/D"
             android:textColor="@color/grey_M_B"
             android:textIsSelectable="false"
             android:textSize="@dimen/activity_train_line_M"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/station_separator"
@@ -56,7 +58,7 @@
             android:background="@color/grey_5"
             android:text="@string/empty_string"
             android:textIsSelectable="false"
-            android:textSize="@dimen/activity_train_line_M"/>
+            android:textSize="@dimen/activity_train_line_M" />
 
         <TextView
             android:id="@+id/bike_station_name"
@@ -69,13 +71,15 @@
             android:layout_toStartOf="@+id/station_updated"
             android:ellipsize="end"
             android:lines="1"
+            android:paddingEnd="@dimen/activity_station_stops_0dp"
             android:paddingLeft="@dimen/activity_station_stops_line1_padding_color"
+            android:paddingRight="@dimen/activity_station_stops_0dp"
             android:paddingStart="@dimen/activity_station_stops_line1_padding_color"
             android:scrollHorizontally="true"
             android:textColor="@color/black"
             android:textIsSelectable="false"
             android:textSize="@dimen/activity_train_station_name"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/station_updated"
@@ -85,7 +89,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:textColor="@color/grey"
-            android:textIsSelectable="false"/>
+            android:textIsSelectable="false" />
     </RelativeLayout>
 
     <LinearLayout
@@ -93,6 +97,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/line1"
-        android:orientation="vertical">
-    </LinearLayout>
+        android:orientation="vertical"></LinearLayout>
 </RelativeLayout>

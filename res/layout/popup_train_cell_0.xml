@@ -9,7 +9,9 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:paddingLeft="10dp"
-        android:paddingStart="10dp">
+        android:paddingStart="10dp"
+        android:paddingRight="@dimen/activity_station_stops_0dp"
+        android:paddingEnd="@dimen/activity_station_stops_0dp">
     </TextView>
 
 </RelativeLayout>

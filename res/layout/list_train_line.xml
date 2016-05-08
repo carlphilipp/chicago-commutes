@@ -17,14 +17,14 @@
 -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingBottom="14dp"
-                android:paddingEnd="@dimen/activity_train_line_padding_right"
-                android:paddingLeft="16dp"
-                android:paddingRight="@dimen/activity_train_line_padding_right"
-                android:paddingStart="16dp"
-                android:paddingTop="14dp">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="14dp"
+    android:paddingEnd="@dimen/activity_train_line_padding_right"
+    android:paddingLeft="16dp"
+    android:paddingRight="@dimen/activity_train_line_padding_right"
+    android:paddingStart="16dp"
+    android:paddingTop="14dp">
 
     <LinearLayout
         android:id="@+id/station_color_value"
@@ -32,7 +32,7 @@
         android:layout_height="12dp"
         android:layout_centerVertical="true"
         android:background="@color/black"
-        android:orientation="horizontal"/>
+        android:orientation="horizontal" />
 
     <TextView
         android:id="@+id/station_name_value"
@@ -41,11 +41,13 @@
         android:layout_centerVertical="true"
         android:layout_toEndOf="@+id/station_color_value"
         android:layout_toRightOf="@+id/station_color_value"
+        android:paddingEnd="@dimen/activity_station_stops_0dp"
         android:paddingLeft="16dp"
+        android:paddingRight="@dimen/activity_station_stops_0dp"
         android:paddingStart="16dp"
         android:textColor="@color/grey_M_B"
         android:textIsSelectable="false"
         android:textSize="16sp"
-        android:textStyle="normal"/>
+        android:textStyle="normal" />
 
 </RelativeLayout>

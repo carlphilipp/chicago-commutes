@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="fill_parent"
-                android:layout_height="50dp"
-                android:layout_centerInParent="true"
-                android:background="?attr/selectableItemBackground">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="50dp"
+    android:layout_centerInParent="true"
+    android:background="?attr/selectableItemBackground">
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -18,8 +18,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:contentDescription="@string/empty_string"
-            android:src="@drawable/ic_map_white_24dp">
-        </ImageView>
+            android:src="@drawable/ic_map_white_24dp" />
 
         <TextView
             android:id="@+id/label"
@@ -28,9 +27,10 @@
             android:layout_centerVertical="true"
             android:layout_toEndOf="@+id/popup_train_map"
             android:layout_toRightOf="@+id/popup_train_map"
+            android:paddingEnd="@dimen/activity_station_stops_0dp"
             android:paddingLeft="10dp"
-            android:paddingStart="10dp">
-        </TextView>
+            android:paddingRight="@dimen/activity_station_stops_0dp"
+            android:paddingStart="10dp" />
     </RelativeLayout>
 
 </RelativeLayout>
