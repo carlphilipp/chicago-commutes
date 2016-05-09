@@ -69,9 +69,11 @@ import fr.cph.chicago.util.Util;
 // TODO to analyze and refactor
 public final class NearbyAdapter extends BaseAdapter {
 
+    private static final int LINE_1_PADDING_COLOR = (int) App.getContext().getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
+    private static final int STOPS_PADDING_TOP = (int) App.getContext().getResources().getDimension(R.dimen.activity_station_stops_padding_top);
+
     private GoogleMap googleMap;
     private final Context context;
-    private final MainActivity activity;
 
     private final BusData busData;
     private SparseArray<Map<String, List<BusArrival>>> busArrivals;
@@ -84,8 +86,7 @@ public final class NearbyAdapter extends BaseAdapter {
     private final Map<Integer, LinearLayout> layouts;
     private final Map<Integer, View> views;
 
-    public NearbyAdapter(@NonNull final MainActivity activity) {
-        this.activity = activity;
+    public NearbyAdapter() {
         this.context = App.getContext();
         this.busStops = new ArrayList<>();
         this.busArrivals = new SparseArray<>();
@@ -138,8 +139,6 @@ public final class NearbyAdapter extends BaseAdapter {
     public final View getView(final int position, View convertView, final ViewGroup parent) {
         final LinearLayout.LayoutParams paramsLayout = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         final LinearLayout.LayoutParams paramsTextView = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
-        final int line1PaddingColor = (int) context.getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
-        final int stopsPaddingTop = (int) context.getResources().getDimension(R.dimen.activity_station_stops_padding_top);
 
         final LayoutInflater vi = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         convertView = vi.inflate(R.layout.list_nearby, parent, false);
@@ -189,7 +188,7 @@ public final class NearbyAdapter extends BaseAdapter {
 
             final LinearLayout.LayoutParams paramsArrival = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
-            final Set<TrainLine> setTL = station.getLines();
+            final Set<TrainLine> trainLines = station.getLines();
 
             // Reset ETAs
             for (int i = 0; i < resultLayout.getChildCount(); i++) {
@@ -205,12 +204,12 @@ public final class NearbyAdapter extends BaseAdapter {
                 }
             }
 
-            for (final TrainLine tl : setTL) {
+            for (final TrainLine trainLine : trainLines) {
                 if (trainArrivals.get(station.getId()) != null) {
-                    final List<Eta> etas = trainArrivals.get(station.getId()).getEtas(tl);
+                    final List<Eta> etas = trainArrivals.get(station.getId()).getEtas(trainLine);
                     if (etas.size() != 0) {
-                        final String key = station.getName() + "_" + tl.toString() + "_h";
-                        final String key2 = station.getName() + "_" + tl.toString() + "_v";
+                        final String key = station.getName() + "_" + trainLine.toString() + "_h";
+                        final String key2 = station.getName() + "_" + trainLine.toString() + "_v";
                         final Integer idLayout = ids.get(key);
                         final Integer idLayout2 = ids.get(key2);
 
@@ -220,13 +219,13 @@ public final class NearbyAdapter extends BaseAdapter {
                             // llh.setBackgroundResource(R.drawable.border);
                             llh.setLayoutParams(paramsLayout);
                             llh.setOrientation(LinearLayout.HORIZONTAL);
-                            llh.setPadding(line1PaddingColor, stopsPaddingTop, 0, 0);
+                            llh.setPadding(LINE_1_PADDING_COLOR, STOPS_PADDING_TOP, 0, 0);
                             final int id = Util.generateViewId();
                             llh.setId(id);
                             ids.put(key, id);
 
                             final TextView tlView = new TextView(context);
-                            tlView.setBackgroundColor(tl.getColor());
+                            tlView.setBackgroundColor(trainLine.getColor());
                             tlView.setText("   ");
                             tlView.setLayoutParams(paramsTextView);
                             llh.addView(tlView);
@@ -234,7 +233,7 @@ public final class NearbyAdapter extends BaseAdapter {
                             llv = new LinearLayout(context);
                             llv.setLayoutParams(paramsLayout);
                             llv.setOrientation(LinearLayout.VERTICAL);
-                            llv.setPadding(line1PaddingColor, 0, 0, 0);
+                            llv.setPadding(LINE_1_PADDING_COLOR, 0, 0, 0);
                             final int id2 = Util.generateViewId();
                             llv.setId(id2);
                             ids.put(key2, id2);
@@ -243,13 +242,11 @@ public final class NearbyAdapter extends BaseAdapter {
                             resultLayout.addView(llh);
 
                         } else {
-                            // TODO refactor that unused code
-                            llh = (LinearLayout) resultLayout.findViewById(idLayout);
                             llv = (LinearLayout) resultLayout.findViewById(idLayout2);
                         }
                         for (final Eta eta : etas) {
                             final Stop stop = eta.getStop();
-                            final String key3 = (station.getName() + "_" + tl.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName());
+                            final String key3 = (station.getName() + "_" + trainLine.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName());
                             final Integer idLayout3 = ids.get(key3);
                             if (idLayout3 == null) {
                                 final LinearLayout insideLayout = new LinearLayout(context);
@@ -289,9 +286,9 @@ public final class NearbyAdapter extends BaseAdapter {
                 }
             }
         } else if (position < stations.size() + busStops.size()) {
-            handleBuses(position, convertView, paramsLayout, paramsTextView, line1PaddingColor, stopsPaddingTop);
+            handleBuses(position, convertView, paramsLayout, paramsTextView);
         } else {
-            handleBikes(position, convertView, paramsLayout, paramsTextView, line1PaddingColor, stopsPaddingTop);
+            handleBikes(position, convertView, paramsLayout, paramsTextView);
         }
         return convertView;
     }
@@ -302,7 +299,7 @@ public final class NearbyAdapter extends BaseAdapter {
     }
 
     // TODO play with view holder pattern here
-    private void handleBuses(final int position, @NonNull final View convertView, @NonNull final LinearLayout.LayoutParams paramsLayout, @NonNull final LinearLayout.LayoutParams paramsTextView, final int line1PaddingColor, final int stopsPaddingTop) {
+    private void handleBuses(final int position, @NonNull final View convertView, @NonNull final LinearLayout.LayoutParams paramsLayout, @NonNull final LinearLayout.LayoutParams paramsTextView) {
         // Bus
         final int index = position - stations.size();
         final BusStop busStop = busStops.get(index);
@@ -336,7 +333,7 @@ public final class NearbyAdapter extends BaseAdapter {
                 final LinearLayout llh = new LinearLayout(context);
                 llh.setLayoutParams(paramsLayout);
                 llh.setOrientation(LinearLayout.HORIZONTAL);
-                llh.setPadding(line1PaddingColor, stopsPaddingTop, 0, 0);
+                llh.setPadding(LINE_1_PADDING_COLOR, STOPS_PADDING_TOP, 0, 0);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                     llh.setBackground(ContextCompat.getDrawable(App.getContext(), R.drawable.any_selector));
@@ -353,7 +350,7 @@ public final class NearbyAdapter extends BaseAdapter {
 
                 final LinearLayout stopLayout = new LinearLayout(context);
                 stopLayout.setOrientation(LinearLayout.VERTICAL);
-                stopLayout.setPadding(line1PaddingColor, 0, 0, 0);
+                stopLayout.setPadding(LINE_1_PADDING_COLOR, 0, 0, 0);
 
                 final LinearLayout boundLayout = new LinearLayout(context);
                 boundLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -382,7 +379,7 @@ public final class NearbyAdapter extends BaseAdapter {
     }
 
     // TODO play with view holder pattern here
-    private void handleBikes(final int position, @NonNull final View convertView, @NonNull final LinearLayout.LayoutParams paramsLayout, @NonNull final LinearLayout.LayoutParams paramsTextView, final int line1PaddingColor, final int stopsPaddingTop) {
+    private void handleBikes(final int position, @NonNull final View convertView, @NonNull final LinearLayout.LayoutParams paramsLayout, @NonNull final LinearLayout.LayoutParams paramsTextView) {
         final int index = position - (stations.size() + busStops.size());
         final BikeStation bikeStation = bikeStations.get(index);
 
@@ -398,7 +395,7 @@ public final class NearbyAdapter extends BaseAdapter {
         final LinearLayout llh = new LinearLayout(context);
         llh.setLayoutParams(paramsLayout);
         llh.setOrientation(LinearLayout.HORIZONTAL);
-        llh.setPadding(line1PaddingColor, stopsPaddingTop, 0, 0);
+        llh.setPadding(LINE_1_PADDING_COLOR, STOPS_PADDING_TOP, 0, 0);
 
         final TextView tlView = new TextView(context);
         tlView.setBackgroundColor(ContextCompat.getColor(context, R.color.black));
@@ -411,10 +408,10 @@ public final class NearbyAdapter extends BaseAdapter {
 
         final LinearLayout availableBikes = new LinearLayout(context);
         availableBikes.setOrientation(LinearLayout.HORIZONTAL);
-        availableBikes.setPadding(line1PaddingColor, 0, 0, 0);
+        availableBikes.setPadding(LINE_1_PADDING_COLOR, 0, 0, 0);
 
         final TextView availableBike = new TextView(context);
-        availableBike.setText(activity.getString(R.string.bike_available_bikes));
+        availableBike.setText(context.getString(R.string.bike_available_bikes));
         availableBike.setTextColor(ContextCompat.getColor(context, R.color.grey_5));
         availableBikes.addView(availableBike);
 
@@ -432,10 +429,10 @@ public final class NearbyAdapter extends BaseAdapter {
 
         final LinearLayout availableDocks = new LinearLayout(context);
         availableDocks.setOrientation(LinearLayout.HORIZONTAL);
-        availableDocks.setPadding(line1PaddingColor, 0, 0, 0);
+        availableDocks.setPadding(LINE_1_PADDING_COLOR, 0, 0, 0);
 
         final TextView availableDock = new TextView(context);
-        availableDock.setText(activity.getString(R.string.bike_available_docks));
+        availableDock.setText(context.getString(R.string.bike_available_docks));
         availableDock.setTextColor(ContextCompat.getColor(context, R.color.grey_5));
         availableDocks.addView(availableDock);
 
