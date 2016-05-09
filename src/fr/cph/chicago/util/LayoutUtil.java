@@ -43,7 +43,6 @@ public class LayoutUtil {
         params.height =  App.getContext().getResources().getDimensionPixelSize(R.dimen.layout_round_height);
         params.width = App.getContext().getResources().getDimensionPixelSize(R.dimen.layout_round_width);
         params.addRule(RelativeLayout.CENTER_VERTICAL);
-        //params.addRule(RelativeLayout.CENTER_IN_PARENT);
         lineIndication.setBackgroundColor(trainLine.getColor());
         lineIndication.setLayoutParams(params);
         return lineIndication;

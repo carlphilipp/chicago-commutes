@@ -21,6 +21,7 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils.TruncateAt;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +31,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -47,7 +49,6 @@ import java.util.Set;
 
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
-import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BikeStation;
@@ -58,6 +59,7 @@ import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.Stop;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.TrainLine;
+import fr.cph.chicago.util.LayoutUtil;
 import fr.cph.chicago.util.Util;
 
 /**
@@ -187,17 +189,15 @@ public final class NearbyAdapter extends BaseAdapter {
             }
 
             final LinearLayout.LayoutParams paramsArrival = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-
             final Set<TrainLine> trainLines = station.getLines();
 
             // Reset ETAs
             for (int i = 0; i < resultLayout.getChildCount(); i++) {
                 final LinearLayout layout = (LinearLayout) resultLayout.getChildAt(i);
-                final LinearLayout layoutChild = (LinearLayout) layout.getChildAt(1);
+                final LinearLayout layoutChild = (LinearLayout) layout.getChildAt(0);
                 for (int j = 0; j < layoutChild.getChildCount(); j++) {
                     final LinearLayout layoutChildV = (LinearLayout) layoutChild.getChildAt(j);
-                    final TextView timing = (TextView) layoutChildV.getChildAt(1);
-                    // to delete ?
+                    final TextView timing = (TextView) layoutChildV.getChildAt(2);
                     if (timing != null) {
                         timing.setText("");
                     }
@@ -205,30 +205,25 @@ public final class NearbyAdapter extends BaseAdapter {
             }
 
             for (final TrainLine trainLine : trainLines) {
-                if (trainArrivals.get(station.getId()) != null) {
+                if (trainArrivals.indexOfKey(station.getId()) != -1) {
                     final List<Eta> etas = trainArrivals.get(station.getId()).getEtas(trainLine);
                     if (etas.size() != 0) {
                         final String key = station.getName() + "_" + trainLine.toString() + "_h";
                         final String key2 = station.getName() + "_" + trainLine.toString() + "_v";
-                        final Integer idLayout = ids.get(key);
-                        final Integer idLayout2 = ids.get(key2);
 
                         final LinearLayout llh, llv;
-                        if (idLayout == null) {
+                        if (ids.containsKey(key)) {
+                            // Can not be null (from previous block)
+                            final Integer idLayout2 = ids.get(key2);
+                            llv = (LinearLayout) resultLayout.findViewById(idLayout2);
+                        } else {
                             llh = new LinearLayout(context);
-                            // llh.setBackgroundResource(R.drawable.border);
                             llh.setLayoutParams(paramsLayout);
                             llh.setOrientation(LinearLayout.HORIZONTAL);
                             llh.setPadding(LINE_1_PADDING_COLOR, STOPS_PADDING_TOP, 0, 0);
                             final int id = Util.generateViewId();
                             llh.setId(id);
                             ids.put(key, id);
-
-                            final TextView tlView = new TextView(context);
-                            tlView.setBackgroundColor(trainLine.getColor());
-                            tlView.setText("   ");
-                            tlView.setLayoutParams(paramsTextView);
-                            llh.addView(tlView);
 
                             llv = new LinearLayout(context);
                             llv.setLayoutParams(paramsLayout);
@@ -240,45 +235,43 @@ public final class NearbyAdapter extends BaseAdapter {
 
                             llh.addView(llv);
                             resultLayout.addView(llh);
-
-                        } else {
-                            llv = (LinearLayout) resultLayout.findViewById(idLayout2);
                         }
-                        for (final Eta eta : etas) {
-                            final Stop stop = eta.getStop();
-                            final String key3 = (station.getName() + "_" + trainLine.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName());
-                            final Integer idLayout3 = ids.get(key3);
-                            if (idLayout3 == null) {
-                                final LinearLayout insideLayout = new LinearLayout(context);
-                                insideLayout.setOrientation(LinearLayout.HORIZONTAL);
-                                insideLayout.setLayoutParams(paramsArrival);
-                                final int newId = Util.generateViewId();
-                                insideLayout.setId(newId);
-                                ids.put(key3, newId);
-
-                                final TextView stopName = new TextView(context);
-                                final String destName = eta.getDestName() + ": ";
-                                stopName.setText(destName);
-                                stopName.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey_5));
-                                insideLayout.addView(stopName);
-
-                                final TextView timing = new TextView(context);
-                                final String timeLeftDueDelay = eta.getTimeLeftDueDelay() + " ";
-                                timing.setText(timeLeftDueDelay);
-                                timing.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey));
-                                timing.setLines(1);
-                                timing.setEllipsize(TruncateAt.END);
-                                insideLayout.addView(timing);
-
-                                llv.addView(insideLayout);
-                            } else {
-                                // llv can be null sometimes (after a remove from favorites for example)
-                                if (llv != null) {
+                        if (llv != null) {
+                            for (final Eta eta : etas) {
+                                final Stop stop = eta.getStop();
+                                final String key3 = (station.getName() + "_" + trainLine.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName());
+                                if (ids.containsKey(key3)) {
+                                    final Integer idLayout3 = ids.get(key3);
                                     final LinearLayout insideLayout = (LinearLayout) llv.findViewById(idLayout3);
-                                    // InsideLayout can be null too if removed before
-                                    final TextView timing = (TextView) insideLayout.getChildAt(1);
+                                    final TextView timing = (TextView) insideLayout.getChildAt(2);
                                     final String timingText = timing.getText() + eta.getTimeLeftDueDelay() + " ";
                                     timing.setText(timingText);
+                                } else {
+                                    final LinearLayout insideLayout = new LinearLayout(context);
+                                    insideLayout.setOrientation(LinearLayout.HORIZONTAL);
+                                    insideLayout.setLayoutParams(paramsArrival);
+                                    final int newId = Util.generateViewId();
+                                    insideLayout.setId(newId);
+                                    ids.put(key3, newId);
+
+                                    final RelativeLayout coloredRound = LayoutUtil.createColoredRoundForFavorites(trainLine);
+                                    insideLayout.addView(coloredRound);
+
+                                    final TextView stopName = new TextView(context);
+                                    final String destName = eta.getDestName() + ": ";
+                                    stopName.setText(destName);
+                                    stopName.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey_5));
+                                    insideLayout.addView(stopName);
+
+                                    final TextView timing = new TextView(context);
+                                    final String timeLeftDueDelay = eta.getTimeLeftDueDelay() + " ";
+                                    timing.setText(timeLeftDueDelay);
+                                    timing.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey));
+                                    timing.setLines(1);
+                                    timing.setEllipsize(TruncateAt.END);
+                                    insideLayout.addView(timing);
+
+                                    llv.addView(insideLayout);
                                 }
                             }
                         }
