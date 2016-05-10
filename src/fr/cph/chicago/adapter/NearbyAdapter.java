@@ -21,7 +21,6 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils.TruncateAt;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -140,15 +139,10 @@ public final class NearbyAdapter extends BaseAdapter {
         if (position < stations.size()) {
             return handleTrains(position, convertView, parent, paramsLayout);
         } else if (position < stations.size() + busStops.size()) {
-            final LayoutInflater vi = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = vi.inflate(R.layout.list_nearby, parent, false);
-            handleBuses(position, convertView, paramsLayout, paramsTextView);
+            return handleBuses(position, parent, paramsLayout, paramsTextView);
         } else {
-            final LayoutInflater vi = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = vi.inflate(R.layout.list_nearby, parent, false);
-            handleBikes(position, convertView, paramsLayout, paramsTextView);
+            return handleBikes(position, parent, paramsLayout, paramsTextView);
         }
-        return convertView;
     }
 
     static class TrainViewHolder {
@@ -159,7 +153,7 @@ public final class NearbyAdapter extends BaseAdapter {
         Map<String, LinearLayout> arrivalTime;
     }
 
-    private View handleTrains(final int position, View convertView, final ViewGroup parent, LinearLayout.LayoutParams paramsLayout){
+    private View handleTrains(final int position, View convertView, @NonNull final ViewGroup parent, @NonNull LinearLayout.LayoutParams paramsLayout) {
         // Train
         final Station station = stations.get(position);
         final LinearLayout.LayoutParams paramsArrival = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
@@ -218,7 +212,7 @@ public final class NearbyAdapter extends BaseAdapter {
                         if (viewHolder.arrivalTime.containsKey(key)) {
                             final LinearLayout insideLayout = viewHolder.arrivalTime.get(key);
                             final TextView timing = (TextView) insideLayout.getChildAt(2);
-                            if(cleanBeforeAdd && !keysCleaned.contains(key)){
+                            if (cleanBeforeAdd && !keysCleaned.contains(key)) {
                                 timing.setText("");
                                 keysCleaned.add(key);
                             }
@@ -271,7 +265,9 @@ public final class NearbyAdapter extends BaseAdapter {
     }
 
     // TODO play with view holder pattern here
-    private void handleBuses(final int position, @NonNull final View convertView, @NonNull final LinearLayout.LayoutParams paramsLayout, @NonNull final LinearLayout.LayoutParams paramsTextView) {
+    private View handleBuses(final int position, @NonNull final ViewGroup parent, @NonNull final LayoutParams paramsLayout, @NonNull final LayoutParams paramsTextView) {
+        final LayoutInflater vi = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View convertView = vi.inflate(R.layout.list_nearby, parent, false);
         // Bus
         final int index = position - stations.size();
         final BusStop busStop = busStops.get(index);
@@ -348,10 +344,14 @@ public final class NearbyAdapter extends BaseAdapter {
                 resultLayout.addView(llh);
             }
         }
+        return convertView;
     }
 
     // TODO play with view holder pattern here
-    private void handleBikes(final int position, @NonNull final View convertView, @NonNull final LinearLayout.LayoutParams paramsLayout, @NonNull final LinearLayout.LayoutParams paramsTextView) {
+    private View handleBikes(final int position, @NonNull final ViewGroup parent, @NonNull final LinearLayout.LayoutParams paramsLayout, @NonNull final LinearLayout.LayoutParams paramsTextView) {
+        final LayoutInflater vi = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View convertView = vi.inflate(R.layout.list_nearby, parent, false);
+
         final int index = position - (stations.size() + busStops.size());
         final BikeStation bikeStation = bikeStations.get(index);
 
@@ -439,6 +439,7 @@ public final class NearbyAdapter extends BaseAdapter {
                 }
             }
         });
+        return convertView;
     }
 
     public final void updateData(@NonNull final List<BusStop> busStops,
