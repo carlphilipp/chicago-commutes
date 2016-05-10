@@ -60,7 +60,6 @@ import fr.cph.chicago.entity.Stop;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.LayoutUtil;
-import fr.cph.chicago.util.Util;
 
 /**
  * Adapter that will handle nearby
@@ -84,9 +83,7 @@ public final class NearbyAdapter extends BaseAdapter {
     private List<Station> stations;
     private List<Marker> markers;
     private List<BikeStation> bikeStations;
-    private final Map<String, Integer> ids;
-    private final Map<Integer, LinearLayout> layouts;
-    private final Map<Integer, View> views;
+    final Map<String, Integer> ids;
 
     public NearbyAdapter() {
         this.context = App.getContext();
@@ -98,8 +95,6 @@ public final class NearbyAdapter extends BaseAdapter {
         this.busData = DataHolder.getInstance().getBusData();
 
         this.ids = new HashMap<>();
-        this.layouts = new HashMap<>();
-        this.views = new HashMap<>();
     }
 
     @Override
@@ -142,145 +137,15 @@ public final class NearbyAdapter extends BaseAdapter {
         final LinearLayout.LayoutParams paramsLayout = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         final LinearLayout.LayoutParams paramsTextView = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
 
-        final LayoutInflater vi = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        convertView = vi.inflate(R.layout.list_nearby, parent, false);
-
         if (position < stations.size()) {
-            // TODO refactor that part
-            // Train
-            final Station station = stations.get(position);
-
-            convertView.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(final View v) {
-                    final LatLng latLng = new LatLng(station.getStopsPosition().get(0).getLatitude(), station.getStopsPosition().get(0).getLongitude());
-                    final CameraPosition current = new CameraPosition.Builder().target(latLng).zoom(15.5f).bearing(0).tilt(0).build();
-                    googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(current), Math.max(1000, 1), null);
-                    for (final Marker marker : markers) {
-                        if (marker.getSnippet().equals(Integer.toString(station.getId()))) {
-                            marker.showInfoWindow();
-                            break;
-                        }
-                    }
-                }
-            });
-
-            final LinearLayout resultLayout;
-
-            if (layouts.containsKey(station.getId())) {
-                resultLayout = layouts.get(station.getId());
-                convertView = views.get(station.getId());
-            } else {
-                resultLayout = (LinearLayout) convertView.findViewById(R.id.nearby_results);
-                layouts.put(station.getId(), resultLayout);
-                views.put(station.getId(), convertView);
-
-                final TrainViewHolder holder = new TrainViewHolder();
-
-                final TextView routeView = (TextView) convertView.findViewById(R.id.station_name);
-                routeView.setText(station.getName());
-                holder.stationNameView = routeView;
-
-                final ImageView imageView = (ImageView) convertView.findViewById(R.id.icon);
-                imageView.setImageDrawable(ContextCompat.getDrawable(App.getContext(), R.drawable.ic_train_white_24dp));
-                holder.imageView = imageView;
-
-                convertView.setTag(holder);
-            }
-
-            final LinearLayout.LayoutParams paramsArrival = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-            final Set<TrainLine> trainLines = station.getLines();
-
-            // Reset ETAs
-            for (int i = 0; i < resultLayout.getChildCount(); i++) {
-                final LinearLayout layout = (LinearLayout) resultLayout.getChildAt(i);
-                final LinearLayout layoutChild = (LinearLayout) layout.getChildAt(0);
-                for (int j = 0; j < layoutChild.getChildCount(); j++) {
-                    final LinearLayout layoutChildV = (LinearLayout) layoutChild.getChildAt(j);
-                    final TextView timing = (TextView) layoutChildV.getChildAt(2);
-                    if (timing != null) {
-                        timing.setText("");
-                    }
-                }
-            }
-
-            for (final TrainLine trainLine : trainLines) {
-                if (trainArrivals.indexOfKey(station.getId()) != -1) {
-                    final List<Eta> etas = trainArrivals.get(station.getId()).getEtas(trainLine);
-                    if (etas.size() != 0) {
-                        final String key = station.getName() + "_" + trainLine.toString() + "_h";
-                        final String key2 = station.getName() + "_" + trainLine.toString() + "_v";
-
-                        final LinearLayout llh, llv;
-                        if (ids.containsKey(key)) {
-                            // Can not be null (from previous block)
-                            final Integer idLayout2 = ids.get(key2);
-                            llv = (LinearLayout) resultLayout.findViewById(idLayout2);
-                        } else {
-                            llh = new LinearLayout(context);
-                            llh.setLayoutParams(paramsLayout);
-                            llh.setOrientation(LinearLayout.HORIZONTAL);
-                            llh.setPadding(LINE_1_PADDING_COLOR, STOPS_PADDING_TOP, 0, 0);
-                            final int id = Util.generateViewId();
-                            llh.setId(id);
-                            ids.put(key, id);
-
-                            llv = new LinearLayout(context);
-                            llv.setLayoutParams(paramsLayout);
-                            llv.setOrientation(LinearLayout.VERTICAL);
-                            llv.setPadding(LINE_1_PADDING_COLOR, 0, 0, 0);
-                            final int id2 = Util.generateViewId();
-                            llv.setId(id2);
-                            ids.put(key2, id2);
-
-                            llh.addView(llv);
-                            resultLayout.addView(llh);
-                        }
-                        if (llv != null) {
-                            for (final Eta eta : etas) {
-                                final Stop stop = eta.getStop();
-                                final String key3 = (station.getName() + "_" + trainLine.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName());
-                                if (ids.containsKey(key3)) {
-                                    final Integer idLayout3 = ids.get(key3);
-                                    final LinearLayout insideLayout = (LinearLayout) llv.findViewById(idLayout3);
-                                    final TextView timing = (TextView) insideLayout.getChildAt(2);
-                                    final String timingText = timing.getText() + eta.getTimeLeftDueDelay() + " ";
-                                    timing.setText(timingText);
-                                } else {
-                                    final LinearLayout insideLayout = new LinearLayout(context);
-                                    insideLayout.setOrientation(LinearLayout.HORIZONTAL);
-                                    insideLayout.setLayoutParams(paramsArrival);
-                                    final int newId = Util.generateViewId();
-                                    insideLayout.setId(newId);
-                                    ids.put(key3, newId);
-
-                                    final RelativeLayout coloredRound = LayoutUtil.createColoredRoundForFavorites(trainLine);
-                                    insideLayout.addView(coloredRound);
-
-                                    final TextView stopName = new TextView(context);
-                                    final String destName = eta.getDestName() + ": ";
-                                    stopName.setText(destName);
-                                    stopName.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey_5));
-                                    insideLayout.addView(stopName);
-
-                                    final TextView timing = new TextView(context);
-                                    final String timeLeftDueDelay = eta.getTimeLeftDueDelay() + " ";
-                                    timing.setText(timeLeftDueDelay);
-                                    timing.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey));
-                                    timing.setLines(1);
-                                    timing.setEllipsize(TruncateAt.END);
-                                    insideLayout.addView(timing);
-
-                                    llv.addView(insideLayout);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            return handleTrains(position, convertView, parent, paramsLayout);
         } else if (position < stations.size() + busStops.size()) {
+            final LayoutInflater vi = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = vi.inflate(R.layout.list_nearby, parent, false);
             handleBuses(position, convertView, paramsLayout, paramsTextView);
         } else {
+            final LayoutInflater vi = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = vi.inflate(R.layout.list_nearby, parent, false);
             handleBikes(position, convertView, paramsLayout, paramsTextView);
         }
         return convertView;
@@ -289,6 +154,120 @@ public final class NearbyAdapter extends BaseAdapter {
     static class TrainViewHolder {
         TextView stationNameView;
         ImageView imageView;
+        LinearLayout resultLayout;
+        Map<TrainLine, LinearLayout> details;
+        Map<String, LinearLayout> arrivalTime;
+    }
+
+    private View handleTrains(final int position, View convertView, final ViewGroup parent, LinearLayout.LayoutParams paramsLayout){
+        // Train
+        final Station station = stations.get(position);
+        final LinearLayout.LayoutParams paramsArrival = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        final Set<TrainLine> trainLines = station.getLines();
+
+        TrainViewHolder viewHolder;
+        if (convertView == null || convertView.getTag() == null) {
+            final LayoutInflater vi = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = vi.inflate(R.layout.list_nearby, parent, false);
+
+            viewHolder = new TrainViewHolder();
+            viewHolder.resultLayout = (LinearLayout) convertView.findViewById(R.id.nearby_results);
+            viewHolder.stationNameView = (TextView) convertView.findViewById(R.id.station_name);
+            viewHolder.imageView = (ImageView) convertView.findViewById(R.id.icon);
+            viewHolder.details = new HashMap<>();
+            viewHolder.arrivalTime = new HashMap<>();
+
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (TrainViewHolder) convertView.getTag();
+        }
+
+        viewHolder.stationNameView.setText(station.getName());
+        viewHolder.imageView.setImageDrawable(ContextCompat.getDrawable(App.getContext(), R.drawable.ic_train_white_24dp));
+
+        for (final TrainLine trainLine : trainLines) {
+            if (trainArrivals.indexOfKey(station.getId()) != -1) {
+                final List<Eta> etas = trainArrivals.get(station.getId()).getEtas(trainLine);
+                if (etas.size() != 0) {
+                    final LinearLayout llv;
+                    boolean cleanBeforeAdd = false;
+                    if (viewHolder.details.containsKey(trainLine)) {
+                        llv = viewHolder.details.get(trainLine);
+                        cleanBeforeAdd = true;
+                    } else {
+                        final LinearLayout llh = new LinearLayout(context);
+                        llh.setLayoutParams(paramsLayout);
+                        llh.setOrientation(LinearLayout.HORIZONTAL);
+                        llh.setPadding(LINE_1_PADDING_COLOR, STOPS_PADDING_TOP, 0, 0);
+
+                        llv = new LinearLayout(context);
+                        llv.setLayoutParams(paramsLayout);
+                        llv.setOrientation(LinearLayout.VERTICAL);
+                        llv.setPadding(LINE_1_PADDING_COLOR, 0, 0, 0);
+
+                        llh.addView(llv);
+                        viewHolder.resultLayout.addView(llh);
+                        viewHolder.details.put(trainLine, llv);
+                    }
+
+                    List<String> keysCleaned = new ArrayList<>();
+
+                    for (final Eta eta : etas) {
+                        final Stop stop = eta.getStop();
+                        final String key = station.getName() + "_" + trainLine.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName();
+                        if (viewHolder.arrivalTime.containsKey(key)) {
+                            final LinearLayout insideLayout = viewHolder.arrivalTime.get(key);
+                            final TextView timing = (TextView) insideLayout.getChildAt(2);
+                            if(cleanBeforeAdd && !keysCleaned.contains(key)){
+                                timing.setText("");
+                                keysCleaned.add(key);
+                            }
+                            final String timingText = timing.getText() + eta.getTimeLeftDueDelay() + " ";
+                            timing.setText(timingText);
+                        } else {
+                            final LinearLayout insideLayout = new LinearLayout(context);
+                            insideLayout.setOrientation(LinearLayout.HORIZONTAL);
+                            insideLayout.setLayoutParams(paramsArrival);
+
+                            final RelativeLayout coloredRound = LayoutUtil.createColoredRoundForFavorites(trainLine);
+                            insideLayout.addView(coloredRound);
+
+                            final TextView stopName = new TextView(context);
+                            final String destName = eta.getDestName() + ": ";
+                            stopName.setText(destName);
+                            stopName.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey_5));
+                            insideLayout.addView(stopName);
+
+                            final TextView timing = new TextView(context);
+                            final String timeLeftDueDelay = eta.getTimeLeftDueDelay() + " ";
+                            timing.setText(timeLeftDueDelay);
+                            timing.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey));
+                            timing.setLines(1);
+                            timing.setEllipsize(TruncateAt.END);
+                            insideLayout.addView(timing);
+
+                            llv.addView(insideLayout);
+                            viewHolder.arrivalTime.put(key, insideLayout);
+                        }
+                    }
+                }
+            }
+        }
+        convertView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                final LatLng latLng = new LatLng(station.getStopsPosition().get(0).getLatitude(), station.getStopsPosition().get(0).getLongitude());
+                final CameraPosition current = new CameraPosition.Builder().target(latLng).zoom(15.5f).bearing(0).tilt(0).build();
+                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(current), Math.max(1000, 1), null);
+                for (final Marker marker : markers) {
+                    if (marker.getSnippet().equals(Integer.toString(station.getId()))) {
+                        marker.showInfoWindow();
+                        break;
+                    }
+                }
+            }
+        });
+        return convertView;
     }
 
     // TODO play with view holder pattern here

@@ -50,15 +50,6 @@
         android:textStyle="bold" />
 
     <LinearLayout
-        android:id="@+id/station_color"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:orientation="horizontal" />
-
-    <LinearLayout
         android:id="@+id/nearby_results"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
