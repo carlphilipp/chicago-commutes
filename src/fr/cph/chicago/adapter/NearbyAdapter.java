@@ -66,7 +66,7 @@ import fr.cph.chicago.util.LayoutUtil;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-// TODO to analyze and refactor
+// FIXME use one view holder for trains/buses and bikes. Tried already but did not work
 public final class NearbyAdapter extends BaseAdapter {
 
     private static final int LINE_1_PADDING_COLOR = (int) App.getContext().getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
@@ -82,7 +82,6 @@ public final class NearbyAdapter extends BaseAdapter {
     private List<Station> stations;
     private List<Marker> markers;
     private List<BikeStation> bikeStations;
-    final Map<String, Integer> ids;
 
     public NearbyAdapter() {
         this.context = App.getContext();
@@ -92,8 +91,6 @@ public final class NearbyAdapter extends BaseAdapter {
         this.bikeStations = new ArrayList<>();
         this.trainArrivals = new SparseArray<>();
         this.busData = DataHolder.getInstance().getBusData();
-
-        this.ids = new HashMap<>();
     }
 
     @Override
@@ -103,17 +100,17 @@ public final class NearbyAdapter extends BaseAdapter {
 
     @Override
     public final Object getItem(final int position) {
-        final Object res;
+        final Object object;
         if (position < stations.size()) {
-            res = stations.get(position);
+            object = stations.get(position);
         } else if (position < stations.size() + busStops.size()) {
             int index = position - stations.size();
-            res = busStops.get(index);
+            object = busStops.get(index);
         } else {
             int index = position - (stations.size() + busStops.size());
-            res = bikeStations.get(index);
+            object = bikeStations.get(index);
         }
-        return res;
+        return object;
     }
 
     @Override
@@ -145,15 +142,7 @@ public final class NearbyAdapter extends BaseAdapter {
         }
     }
 
-    static class TrainViewHolder {
-        TextView stationNameView;
-        ImageView imageView;
-        LinearLayout resultLayout;
-        Map<TrainLine, LinearLayout> details;
-        Map<String, LinearLayout> arrivalTime;
-    }
-
-    private View handleTrains(final int position, View convertView, @NonNull final ViewGroup parent, @NonNull LinearLayout.LayoutParams paramsLayout) {
+    private View handleTrains(final int position, View convertView, final ViewGroup parent, LinearLayout.LayoutParams paramsLayout) {
         // Train
         final Station station = stations.get(position);
         final LinearLayout.LayoutParams paramsArrival = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
@@ -247,6 +236,7 @@ public final class NearbyAdapter extends BaseAdapter {
                 }
             }
         }
+
         convertView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -264,10 +254,10 @@ public final class NearbyAdapter extends BaseAdapter {
         return convertView;
     }
 
-    // TODO play with view holder pattern here
-    private View handleBuses(final int position, @NonNull final ViewGroup parent, @NonNull final LayoutParams paramsLayout, @NonNull final LayoutParams paramsTextView) {
+    private View handleBuses(final int position, @NonNull final ViewGroup parent, @NonNull final LinearLayout.LayoutParams paramsLayout, @NonNull final LinearLayout.LayoutParams paramsTextView) {
         final LayoutInflater vi = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View convertView = vi.inflate(R.layout.list_nearby, parent, false);
+        final View convertView = vi.inflate(R.layout.list_nearby, parent, false);
+
         // Bus
         final int index = position - stations.size();
         final BusStop busStop = busStops.get(index);
@@ -277,22 +267,6 @@ public final class NearbyAdapter extends BaseAdapter {
 
         final TextView routeView = (TextView) convertView.findViewById(R.id.station_name);
         routeView.setText(busStop.getName());
-
-        convertView.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(final View v) {
-                final LatLng latLng = new LatLng(busStop.getPosition().getLatitude(), busStop.getPosition().getLongitude());
-                final CameraPosition current = new CameraPosition.Builder().target(latLng).zoom(15.5f).bearing(0).tilt(0).build();
-                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(current), Math.max(1000, 1), null);
-                for (final Marker marker : markers) {
-                    if (marker.getSnippet().equals(Integer.toString(busStop.getId()))) {
-                        marker.showInfoWindow();
-                        break;
-                    }
-                }
-            }
-        });
 
         final LinearLayout resultLayout = (LinearLayout) convertView.findViewById(R.id.nearby_results);
 
@@ -344,13 +318,27 @@ public final class NearbyAdapter extends BaseAdapter {
                 resultLayout.addView(llh);
             }
         }
+
+        convertView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                final LatLng latLng = new LatLng(busStop.getPosition().getLatitude(), busStop.getPosition().getLongitude());
+                final CameraPosition current = new CameraPosition.Builder().target(latLng).zoom(15.5f).bearing(0).tilt(0).build();
+                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(current), Math.max(1000, 1), null);
+                for (final Marker marker : markers) {
+                    if (marker.getSnippet().equals(Integer.toString(busStop.getId()))) {
+                        marker.showInfoWindow();
+                        break;
+                    }
+                }
+            }
+        });
         return convertView;
     }
 
-    // TODO play with view holder pattern here
     private View handleBikes(final int position, @NonNull final ViewGroup parent, @NonNull final LinearLayout.LayoutParams paramsLayout, @NonNull final LinearLayout.LayoutParams paramsTextView) {
         final LayoutInflater vi = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View convertView = vi.inflate(R.layout.list_nearby, parent, false);
+        final View convertView = vi.inflate(R.layout.list_nearby, parent, false);
 
         final int index = position - (stations.size() + busStops.size());
         final BikeStation bikeStation = bikeStations.get(index);
@@ -417,7 +405,6 @@ public final class NearbyAdapter extends BaseAdapter {
             amountDock.setTextColor(ContextCompat.getColor(context, R.color.green));
         }
         availableDocks.addView(amountDock);
-
         availableLayout.addView(availableDocks);
 
         llh.addView(availableLayout);
@@ -425,14 +412,13 @@ public final class NearbyAdapter extends BaseAdapter {
         favoritesData.addView(llh);
 
         convertView.setOnClickListener(new OnClickListener() {
-
             @Override
             public void onClick(final View v) {
                 final LatLng latLng = new LatLng(bikeStation.getLatitude(), bikeStation.getLongitude());
                 final CameraPosition current = new CameraPosition.Builder().target(latLng).zoom(15.5f).bearing(0).tilt(0).build();
                 googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(current), Math.max(1000, 1), null);
                 for (final Marker marker : markers) {
-                    if (marker.getSnippet().equals(bikeStation.getId() + "")) {
+                    if (marker.getSnippet().equals(Integer.toString(bikeStation.getId()))) {
                         marker.showInfoWindow();
                         break;
                     }
@@ -456,5 +442,13 @@ public final class NearbyAdapter extends BaseAdapter {
         this.bikeStations = bikeStations;
         this.googleMap = map;
         this.markers = markers;
+    }
+
+    static class TrainViewHolder {
+        TextView stationNameView;
+        ImageView imageView;
+        LinearLayout resultLayout;
+        Map<TrainLine, LinearLayout> details;
+        Map<String, LinearLayout> arrivalTime;
     }
 }
