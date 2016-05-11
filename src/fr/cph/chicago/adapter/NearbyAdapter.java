@@ -270,50 +270,50 @@ public final class NearbyAdapter extends BaseAdapter {
 
         final LinearLayout resultLayout = (LinearLayout) convertView.findViewById(R.id.nearby_results);
 
-        if (busArrivals.size() > 0) {
-            for (final Entry<String, List<BusArrival>> entry : busArrivals.get(busStop.getId()).entrySet()) {
-                final LinearLayout llh = new LinearLayout(context);
-                llh.setLayoutParams(paramsLayout);
-                llh.setOrientation(LinearLayout.HORIZONTAL);
-                llh.setPadding(LINE_1_PADDING_COLOR, STOPS_PADDING_TOP, 0, 0);
+        final Map<String, List<BusArrival>> arrivalsForStop = busArrivals.get(busStop.getId(), new HashMap<String, List<BusArrival>>());
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    llh.setBackground(ContextCompat.getDrawable(App.getContext(), R.drawable.any_selector));
-                }
+        for (final Entry<String, List<BusArrival>> entry : arrivalsForStop.entrySet()) {
+            final LinearLayout llh = new LinearLayout(context);
+            llh.setLayoutParams(paramsLayout);
+            llh.setOrientation(LinearLayout.HORIZONTAL);
+            llh.setPadding(LINE_1_PADDING_COLOR, STOPS_PADDING_TOP, 0, 0);
 
-                final RelativeLayout coloredRound = LayoutUtil.createColoredRoundForFavorites(TrainLine.NA);
-                llh.addView(coloredRound);
-
-                final String key2 = entry.getKey();
-                final List<BusArrival> buses = entry.getValue();
-
-                final LinearLayout stopLayout = new LinearLayout(context);
-                stopLayout.setOrientation(LinearLayout.VERTICAL);
-                stopLayout.setPadding(LINE_1_PADDING_COLOR, 0, 0, 0);
-
-                final LinearLayout boundLayout = new LinearLayout(context);
-                boundLayout.setOrientation(LinearLayout.HORIZONTAL);
-
-                final TextView bound = new TextView(context);
-                final String routeId = busData.getRoute(buses.get(0).getRouteId()).getId();
-                final String routeIdText = routeId + " (" + key2 + "): ";
-                bound.setText(routeIdText);
-                bound.setTextColor(ContextCompat.getColor(context, R.color.grey_5));
-                boundLayout.addView(bound);
-
-                for (final BusArrival arri : buses) {
-                    final TextView timeView = new TextView(context);
-                    final String timeLeftDueDelay = arri.getTimeLeftDueDelay() + " ";
-                    timeView.setText(timeLeftDueDelay);
-                    timeView.setTextColor(ContextCompat.getColor(context, R.color.grey));
-                    timeView.setLines(1);
-                    timeView.setEllipsize(TruncateAt.END);
-                    boundLayout.addView(timeView);
-                }
-                stopLayout.addView(boundLayout);
-                llh.addView(stopLayout);
-                resultLayout.addView(llh);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                llh.setBackground(ContextCompat.getDrawable(App.getContext(), R.drawable.any_selector));
             }
+
+            final RelativeLayout coloredRound = LayoutUtil.createColoredRoundForFavorites(TrainLine.NA);
+            llh.addView(coloredRound);
+
+            final String direction = entry.getKey();
+            final List<BusArrival> busArrivals = entry.getValue();
+
+            final LinearLayout stopLayout = new LinearLayout(context);
+            stopLayout.setOrientation(LinearLayout.VERTICAL);
+            stopLayout.setPadding(LINE_1_PADDING_COLOR, 0, 0, 0);
+
+            final LinearLayout boundLayout = new LinearLayout(context);
+            boundLayout.setOrientation(LinearLayout.HORIZONTAL);
+
+            final TextView bound = new TextView(context);
+            final String routeId = busData.getRoute(busArrivals.get(0).getRouteId()).getId();
+            final String routeIdText = routeId + " (" + direction + "): ";g
+            bound.setText(routeIdText);
+            bound.setTextColor(ContextCompat.getColor(context, R.color.grey_5));
+            boundLayout.addView(bound);
+
+            for (final BusArrival busArrival : busArrivals) {
+                final TextView timeView = new TextView(context);
+                final String timeLeftDueDelay = busArrival.getTimeLeftDueDelay() + " ";
+                timeView.setText(timeLeftDueDelay);
+                timeView.setTextColor(ContextCompat.getColor(context, R.color.grey));
+                timeView.setLines(1);
+                timeView.setEllipsize(TruncateAt.END);
+                boundLayout.addView(timeView);
+            }
+            stopLayout.addView(boundLayout);
+            llh.addView(stopLayout);
+            resultLayout.addView(llh);
         }
 
         convertView.setOnClickListener(new OnClickListener() {

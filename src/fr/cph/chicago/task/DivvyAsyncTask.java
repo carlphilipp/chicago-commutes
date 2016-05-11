@@ -23,6 +23,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -51,7 +52,7 @@ public class DivvyAsyncTask extends AsyncTask<Void, Void, List<BikeStation>> {
 
     @Override
     protected List<BikeStation> doInBackground(final Void... params) {
-        List<BikeStation> bikeStations = null;
+        List<BikeStation> bikeStations = new ArrayList<>();
         try {
             final JsonParser json = JsonParser.getInstance();
             final DivvyConnect divvyConnect = DivvyConnect.getInstance();
