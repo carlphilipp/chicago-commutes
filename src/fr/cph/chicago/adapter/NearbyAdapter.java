@@ -281,11 +281,8 @@ public final class NearbyAdapter extends BaseAdapter {
                     llh.setBackground(ContextCompat.getDrawable(App.getContext(), R.drawable.any_selector));
                 }
 
-                final TextView tlView = new TextView(context);
-                tlView.setBackgroundColor(ContextCompat.getColor(context, R.color.black));
-                tlView.setText("   ");
-                tlView.setLayoutParams(paramsTextView);
-                llh.addView(tlView);
+                final RelativeLayout coloredRound = LayoutUtil.createColoredRoundForFavorites(TrainLine.NA);
+                llh.addView(coloredRound);
 
                 final String key2 = entry.getKey();
                 final List<BusArrival> buses = entry.getValue();
@@ -348,7 +345,6 @@ public final class NearbyAdapter extends BaseAdapter {
         final ImageView imageView = (ImageView) convertView.findViewById(R.id.icon);
         imageView.setImageDrawable(ContextCompat.getDrawable(App.getContext(), R.drawable.ic_directions_bike_white_24dp));
 
-
         final TextView routeView = (TextView) convertView.findViewById(R.id.station_name);
         routeView.setText(bikeStation.getName());
 
@@ -357,18 +353,15 @@ public final class NearbyAdapter extends BaseAdapter {
         llh.setOrientation(LinearLayout.HORIZONTAL);
         llh.setPadding(LINE_1_PADDING_COLOR, STOPS_PADDING_TOP, 0, 0);
 
-        final TextView tlView = new TextView(context);
-        tlView.setBackgroundColor(ContextCompat.getColor(context, R.color.black));
-        tlView.setText("   ");
-        tlView.setLayoutParams(paramsTextView);
-        llh.addView(tlView);
-
         final LinearLayout availableLayout = new LinearLayout(context);
         availableLayout.setOrientation(LinearLayout.VERTICAL);
 
         final LinearLayout availableBikes = new LinearLayout(context);
         availableBikes.setOrientation(LinearLayout.HORIZONTAL);
         availableBikes.setPadding(LINE_1_PADDING_COLOR, 0, 0, 0);
+
+        final RelativeLayout coloredRound1 = LayoutUtil.createColoredRoundForFavorites(TrainLine.NA);
+        availableBikes.addView(coloredRound1);
 
         final TextView availableBike = new TextView(context);
         availableBike.setText(context.getString(R.string.bike_available_bikes));
@@ -390,6 +383,9 @@ public final class NearbyAdapter extends BaseAdapter {
         final LinearLayout availableDocks = new LinearLayout(context);
         availableDocks.setOrientation(LinearLayout.HORIZONTAL);
         availableDocks.setPadding(LINE_1_PADDING_COLOR, 0, 0, 0);
+
+        final RelativeLayout coloredRound2 = LayoutUtil.createColoredRoundForFavorites(TrainLine.NA);
+        availableDocks.addView(coloredRound2);
 
         final TextView availableDock = new TextView(context);
         availableDock.setText(context.getString(R.string.bike_available_docks));
