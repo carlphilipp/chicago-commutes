@@ -297,7 +297,7 @@ public final class NearbyAdapter extends BaseAdapter {
 
             final TextView bound = new TextView(context);
             final String routeId = busData.getRoute(busArrivals.get(0).getRouteId()).getId();
-            final String routeIdText = routeId + " (" + direction + "): ";g
+            final String routeIdText = routeId + " (" + direction + "): ";
             bound.setText(routeIdText);
             bound.setTextColor(ContextCompat.getColor(context, R.color.grey_5));
             boundLayout.addView(bound);
