@@ -19,6 +19,7 @@ package fr.cph.chicago.task;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import fr.cph.chicago.R;
@@ -57,7 +58,7 @@ public class BusBoundAsyncTask extends AsyncTask<Void, Void, List<BusStop>> {
 
     @Override
     protected final List<BusStop> doInBackground(final Void... params) {
-        List<BusStop> busStops = null;
+        List<BusStop> busStops = new ArrayList<>();
         try {
             busStops = DataHolder.getInstance().getBusData().loadBusStop(busRouteId, bound);
         } catch (final ParserException | ConnectException e) {

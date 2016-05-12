@@ -74,7 +74,7 @@ public class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
     @Override
     protected final BusDirections doInBackground(final Object... params) {
         final CtaConnect connect = CtaConnect.getInstance();
-        BusDirections busDirections = null;
+        BusDirections busDirections = new BusDirections();
         try {
             final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
             busRoute = (BusRoute) params[0];

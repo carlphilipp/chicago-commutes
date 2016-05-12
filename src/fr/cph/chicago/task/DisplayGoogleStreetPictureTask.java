@@ -39,8 +39,6 @@ import fr.cph.chicago.util.Util;
 // TODO do the update of image and text in the activity. This class should only do the call
 public final class DisplayGoogleStreetPictureTask extends AsyncTask<Double, Void, Drawable> {
 
-    private static final String TAG = DisplayGoogleStreetPictureTask.class.getSimpleName();
-
     private final Activity activity;
     private final ImageView streetViewImage;
     private final TextView streetViewText;

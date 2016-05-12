@@ -23,7 +23,6 @@ public class BikeStationOnClickListener implements View.OnClickListener {
         final Bundle extras = new Bundle();
         extras.putParcelable(App.getContext().getString(R.string.bundle_bike_station), station);
         intent.putExtras(extras);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         App.getContext().startActivity(intent);
     }

@@ -80,7 +80,7 @@ public class LoadBusPatternTask extends AsyncTask<Void, Void, BusPattern> {
             for (final BusPattern pattern : patterns) {
                 final String directionIgnoreCase = pattern.getDirection().toLowerCase(Locale.US);
                 if (pattern.getDirection().equals(bound) || boundIgnoreCase.contains(directionIgnoreCase)) {
-                    this.busPattern = pattern;
+                    busPattern = pattern;
                     break;
                 }
             }
@@ -88,7 +88,7 @@ public class LoadBusPatternTask extends AsyncTask<Void, Void, BusPattern> {
             Log.e(TAG, e.getMessage(), e);
         }
         Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_pattern, 0);
-        return this.busPattern;
+        return busPattern;
     }
 
     @Override
