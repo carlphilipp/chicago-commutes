@@ -48,8 +48,6 @@ import java.util.Set;
 
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
-import fr.cph.chicago.data.BusData;
-import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusStop;
@@ -75,7 +73,6 @@ public final class NearbyAdapter extends BaseAdapter {
     private GoogleMap googleMap;
     private final Context context;
 
-    private final BusData busData;
     private SparseArray<Map<String, List<BusArrival>>> busArrivals;
     private SparseArray<TrainArrival> trainArrivals;
     private List<BusStop> busStops;
@@ -90,7 +87,6 @@ public final class NearbyAdapter extends BaseAdapter {
         this.stations = new ArrayList<>();
         this.bikeStations = new ArrayList<>();
         this.trainArrivals = new SparseArray<>();
-        this.busData = DataHolder.getInstance().getBusData();
     }
 
     @Override
@@ -287,6 +283,7 @@ public final class NearbyAdapter extends BaseAdapter {
 
             final String direction = entry.getKey();
             final List<BusArrival> busArrivals = entry.getValue();
+            final String routeId = busArrivals.get(0).getRouteId();
 
             final LinearLayout stopLayout = new LinearLayout(context);
             stopLayout.setOrientation(LinearLayout.VERTICAL);
@@ -296,7 +293,6 @@ public final class NearbyAdapter extends BaseAdapter {
             boundLayout.setOrientation(LinearLayout.HORIZONTAL);
 
             final TextView bound = new TextView(context);
-            final String routeId = busData.getRoute(busArrivals.get(0).getRouteId()).getId();
             final String routeIdText = routeId + " (" + direction + "): ";
             bound.setText(routeIdText);
             bound.setTextColor(ContextCompat.getColor(context, R.color.grey_5));
