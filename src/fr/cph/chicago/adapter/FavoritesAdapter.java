@@ -72,8 +72,11 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
+import fr.cph.chicago.listener.BusMapOnClickListener;
+import fr.cph.chicago.listener.BusStopOnClickListener;
 import fr.cph.chicago.listener.FavoritesTrainOnClickListener;
 import fr.cph.chicago.listener.GoogleMapOnClickListener;
+import fr.cph.chicago.listener.TrainStationOnClickListener;
 import fr.cph.chicago.util.LayoutUtil;
 import fr.cph.chicago.util.Util;
 
@@ -178,17 +181,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
         holder.favoriteImage.setImageResource(R.drawable.ic_train_white_24dp);
         holder.stationNameTextView.setText(station.getName());
-        holder.detailsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                // Start station activity
-                final Bundle extras = new Bundle();
-                final Intent intent = new Intent(App.getContext(), StationActivity.class);
-                extras.putInt(activity.getString(R.string.bundle_train_stationId), stationId);
-                intent.putExtras(extras);
-                activity.startActivity(intent);
-            }
-        });
+        holder.detailsButton.setOnClickListener(new TrainStationOnClickListener(activity, stationId));
 
         holder.mapButton.setText(activity.getString(R.string.favorites_view_trains));
         holder.mapButton.setOnClickListener(new FavoritesTrainOnClickListener(activity, trainLines));
@@ -364,49 +357,8 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         }
 
         holder.mapButton.setText(activity.getString(R.string.favorites_view_buses));
-        holder.detailsButton.setOnClickListener(new View.OnClickListener() {
-            // TODO find a solution when stop name are too long (54A stop nam for example)
-            @Override
-            public void onClick(final View v) {
-                if (busDetailsDTOs.size() == 1) {
-                    final BusDetailsDTO busDetails = busDetailsDTOs.get(0);
-                    new FavoritesAdapter.BusBoundAsyncTask(activity).execute(busDetails.getBusRouteId(), busDetails.getBound(), busDetails.getBoundTitle(), busDetails.getStopId(), busDetails.getRouteName());
-                } else {
-                    final PopupBusDetailsFavoritesAdapter ada = new PopupBusDetailsFavoritesAdapter(activity, busDetailsDTOs);
-                    final View popupView = activity.getLayoutInflater().inflate(R.layout.popup_bus, holder.parent, false);
-                    final ListView listView = (ListView) popupView.findViewById(R.id.details);
-                    listView.setAdapter(ada);
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-                    builder.setAdapter(ada, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(final DialogInterface dialog, final int position) {
-                            final BusDetailsDTO busDetails = busDetailsDTOs.get(position);
-                            new FavoritesAdapter.BusBoundAsyncTask(activity)
-                                .execute(busDetails.getBusRouteId(), busDetails.getBound(), busDetails.getBoundTitle(), busDetails.getStopId(), busDetails.getRouteName());
-                        }
-                    });
-                    final int[] screenSize = Util.getScreenSize();
-                    final AlertDialog dialog = builder.create();
-                    dialog.show();
-                    dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), ViewGroup.LayoutParams.WRAP_CONTENT);
-                }
-            }
-        });
-        holder.mapButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                final Set<String> bounds = new HashSet<>();
-                for (final BusDetailsDTO busDetail : busDetailsDTOs) {
-                    bounds.add(busDetail.getBound());
-                }
-                final Intent intent = new Intent(App.getContext(), BusMapActivity.class);
-                final Bundle extras = new Bundle();
-                extras.putString(activity.getString(R.string.bundle_bus_route_id), busRoute.getId());
-                extras.putStringArray(activity.getString(R.string.bundle_bus_bounds), bounds.toArray(new String[bounds.size()]));
-                intent.putExtras(extras);
-                activity.startActivity(intent);
-            }
-        });
+        holder.detailsButton.setOnClickListener(new BusStopOnClickListener(activity, holder.parent, busDetailsDTOs));
+        holder.mapButton.setOnClickListener(new BusMapOnClickListener(activity, busDetailsDTOs, busRoute.getId()));
     }
 
     private void handleBikeStation(@NonNull final FavoritesViewHolder holder, @NonNull final BikeStation bikeStation) {
