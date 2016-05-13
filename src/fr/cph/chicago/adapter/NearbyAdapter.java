@@ -24,7 +24,6 @@ import android.text.TextUtils.TruncateAt;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -33,10 +32,7 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
 import java.util.ArrayList;
@@ -56,6 +52,7 @@ import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.Stop;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.TrainLine;
+import fr.cph.chicago.listener.NearbyOnClickListener;
 import fr.cph.chicago.util.LayoutUtil;
 
 /**
@@ -189,7 +186,7 @@ public final class NearbyAdapter extends BaseAdapter {
                         viewHolder.details.put(trainLine, llv);
                     }
 
-                    List<String> keysCleaned = new ArrayList<>();
+                    final List<String> keysCleaned = new ArrayList<>();
 
                     for (final Eta eta : etas) {
                         final Stop stop = eta.getStop();
@@ -232,21 +229,7 @@ public final class NearbyAdapter extends BaseAdapter {
                 }
             }
         }
-
-        convertView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                final LatLng latLng = new LatLng(station.getStopsPosition().get(0).getLatitude(), station.getStopsPosition().get(0).getLongitude());
-                final CameraPosition current = new CameraPosition.Builder().target(latLng).zoom(15.5f).bearing(0).tilt(0).build();
-                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(current), Math.max(1000, 1), null);
-                for (final Marker marker : markers) {
-                    if (marker.getSnippet().equals(Integer.toString(station.getId()))) {
-                        marker.showInfoWindow();
-                        break;
-                    }
-                }
-            }
-        });
+        convertView.setOnClickListener(new NearbyOnClickListener(googleMap, markers, station.getId(), station.getStopsPosition().get(0).getLatitude(), station.getStopsPosition().get(0).getLongitude()));
         return convertView;
     }
 
@@ -311,21 +294,7 @@ public final class NearbyAdapter extends BaseAdapter {
             llh.addView(stopLayout);
             resultLayout.addView(llh);
         }
-
-        convertView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                final LatLng latLng = new LatLng(busStop.getPosition().getLatitude(), busStop.getPosition().getLongitude());
-                final CameraPosition current = new CameraPosition.Builder().target(latLng).zoom(15.5f).bearing(0).tilt(0).build();
-                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(current), Math.max(1000, 1), null);
-                for (final Marker marker : markers) {
-                    if (marker.getSnippet().equals(Integer.toString(busStop.getId()))) {
-                        marker.showInfoWindow();
-                        break;
-                    }
-                }
-            }
-        });
+        convertView.setOnClickListener(new NearbyOnClickListener(googleMap, markers, busStop.getId(), busStop.getPosition().getLatitude(), busStop.getPosition().getLongitude()));
         return convertView;
     }
 
@@ -403,20 +372,7 @@ public final class NearbyAdapter extends BaseAdapter {
 
         favoritesData.addView(llh);
 
-        convertView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                final LatLng latLng = new LatLng(bikeStation.getLatitude(), bikeStation.getLongitude());
-                final CameraPosition current = new CameraPosition.Builder().target(latLng).zoom(15.5f).bearing(0).tilt(0).build();
-                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(current), Math.max(1000, 1), null);
-                for (final Marker marker : markers) {
-                    if (marker.getSnippet().equals(Integer.toString(bikeStation.getId()))) {
-                        marker.showInfoWindow();
-                        break;
-                    }
-                }
-            }
-        });
+        convertView.setOnClickListener(new NearbyOnClickListener(googleMap, markers, bikeStation.getId(), bikeStation.getLatitude(), bikeStation.getLongitude()));
         return convertView;
     }
 
