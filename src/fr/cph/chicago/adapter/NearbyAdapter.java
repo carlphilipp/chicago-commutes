@@ -268,7 +268,7 @@ public final class NearbyAdapter extends BaseAdapter {
             final LinearLayout.LayoutParams leftParam = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             final RelativeLayout insideLayout = new RelativeLayout(context);
             insideLayout.setLayoutParams(leftParam);
-            insideLayout.setPadding(LINE_1_PADDING_COLOR * 2, 0, 0, 0);
+            insideLayout.setPadding(LINE_1_PADDING_COLOR * 2, STOPS_PADDING_TOP, 0, 0);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 insideLayout.setBackground(ContextCompat.getDrawable(App.getContext(), R.drawable.any_selector));
