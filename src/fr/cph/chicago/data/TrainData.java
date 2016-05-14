@@ -144,7 +144,7 @@ public class TrainData {
 
                     final Stop stop = StopFactory.buildStop(stopId, stopName, direction);
                     stop.setPosition(new Position(longitude, latitude));
-                    final Station station = StationFactory.buildStation(parentStopId, stationName, new ArrayList<Stop>());
+                    final Station station = StationFactory.buildStation(parentStopId, stationName, new ArrayList<>());
                     stop.setAda(ada);
                     stop.setLines(lines);
                     stops.append(stopId, stop);

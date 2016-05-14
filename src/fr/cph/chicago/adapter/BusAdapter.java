@@ -104,12 +104,9 @@ public final class BusAdapter extends BaseAdapter {
         routeNameView.setText(route.getName());
         routeNumberView.setText(route.getId());
 
-        convertView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                detailsLayout.setVisibility(LinearLayout.VISIBLE);
-                new DirectionAsyncTask(activity, parent).execute(route, detailsLayout);
-            }
+        convertView.setOnClickListener(v -> {
+            detailsLayout.setVisibility(LinearLayout.VISIBLE);
+            new DirectionAsyncTask(activity, parent).execute(route, detailsLayout);
         });
 
         return convertView;

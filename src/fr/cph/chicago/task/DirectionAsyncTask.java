@@ -106,39 +106,31 @@ public class DirectionAsyncTask extends AsyncTask<Object, Void, BusDirections> {
             listView.setAdapter(ada);
 
             final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-            builder.setAdapter(ada, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(final DialogInterface dialog, final int position) {
-                    final Bundle extras = new Bundle();
-                    if (position != data.size() - 1) {
-                        final Intent intent = new Intent(activity, BusBoundActivity.class);
-                        extras.putString(activity.getString(R.string.bundle_bus_route_id), busRoute.getId());
-                        extras.putString(activity.getString(R.string.bundle_bus_route_name), busRoute.getName());
-                        extras.putString(activity.getString(R.string.bundle_bus_bound), busDirections.get(position).getBusTextReceived());
-                        extras.putString(activity.getString(R.string.bundle_bus_bound_title), busDirections.get(position).getBusDirectionEnum().toString());
-                        intent.putExtras(extras);
-                        activity.startActivity(intent);
-                    } else {
-                        final String[] busDirectionArray = new String[busDirections.size()];
-                        int i = 0;
-                        for (final BusDirection busDir : busDirections) {
-                            busDirectionArray[i++] = busDir.getBusDirectionEnum().toString();
-                        }
-                        final Intent intent = new Intent(activity, BusMapActivity.class);
-                        extras.putString(activity.getString(R.string.bundle_bus_route_id), result.getId());
-                        extras.putStringArray(activity.getString(R.string.bundle_bus_bounds), busDirectionArray);
-                        intent.putExtras(extras);
-                        activity.startActivity(intent);
+            builder.setAdapter(ada, (dialog, position) -> {
+                final Bundle extras = new Bundle();
+                if (position != data.size() - 1) {
+                    final Intent intent = new Intent(activity, BusBoundActivity.class);
+                    extras.putString(activity.getString(R.string.bundle_bus_route_id), busRoute.getId());
+                    extras.putString(activity.getString(R.string.bundle_bus_route_name), busRoute.getName());
+                    extras.putString(activity.getString(R.string.bundle_bus_bound), busDirections.get(position).getBusTextReceived());
+                    extras.putString(activity.getString(R.string.bundle_bus_bound_title), busDirections.get(position).getBusDirectionEnum().toString());
+                    intent.putExtras(extras);
+                    activity.startActivity(intent);
+                } else {
+                    final String[] busDirectionArray = new String[busDirections.size()];
+                    int i = 0;
+                    for (final BusDirection busDir : busDirections) {
+                        busDirectionArray[i++] = busDir.getBusDirectionEnum().toString();
                     }
-                    convertView.setVisibility(LinearLayout.GONE);
+                    final Intent intent = new Intent(activity, BusMapActivity.class);
+                    extras.putString(activity.getString(R.string.bundle_bus_route_id), result.getId());
+                    extras.putStringArray(activity.getString(R.string.bundle_bus_bounds), busDirectionArray);
+                    intent.putExtras(extras);
+                    activity.startActivity(intent);
                 }
+                convertView.setVisibility(LinearLayout.GONE);
             });
-            builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    convertView.setVisibility(LinearLayout.GONE);
-                }
-            });
+            builder.setOnCancelListener(dialog -> convertView.setVisibility(LinearLayout.GONE));
             final int[] screenSize = Util.getScreenSize();
             final AlertDialog dialog = builder.create();
             dialog.show();

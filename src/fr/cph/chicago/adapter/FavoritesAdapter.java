@@ -18,7 +18,6 @@ package fr.cph.chicago.adapter;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -39,7 +38,6 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -58,6 +56,7 @@ import fr.cph.chicago.activity.BusActivity;
 import fr.cph.chicago.activity.BusMapActivity;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.activity.StationActivity;
+import fr.cph.chicago.activity.TrainMapActivity;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Favorites;
 import fr.cph.chicago.entity.BikeStation;
@@ -72,11 +71,8 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
-import fr.cph.chicago.listener.BusMapOnClickListener;
 import fr.cph.chicago.listener.BusStopOnClickListener;
-import fr.cph.chicago.listener.FavoritesTrainOnClickListener;
 import fr.cph.chicago.listener.GoogleMapOnClickListener;
-import fr.cph.chicago.listener.TrainStationOnClickListener;
 import fr.cph.chicago.util.LayoutUtil;
 import fr.cph.chicago.util.Util;
 
@@ -181,10 +177,52 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
         holder.favoriteImage.setImageResource(R.drawable.ic_train_white_24dp);
         holder.stationNameTextView.setText(station.getName());
-        holder.detailsButton.setOnClickListener(new TrainStationOnClickListener(activity, stationId));
+        holder.detailsButton.setOnClickListener(v -> {
+            if (!Util.isNetworkAvailable()) {
+                Util.showNetworkErrorMessage(activity);
+            } else {
+                // Start station activity
+                final Bundle extras = new Bundle();
+                final Intent intent = new Intent(App.getContext(), StationActivity.class);
+                extras.putInt(activity.getString(R.string.bundle_train_stationId), stationId);
+                intent.putExtras(extras);
+                activity.startActivity(intent);
+            }
+        });
 
         holder.mapButton.setText(activity.getString(R.string.favorites_view_trains));
-        holder.mapButton.setOnClickListener(new FavoritesTrainOnClickListener(activity, trainLines));
+        holder.mapButton.setOnClickListener(v -> {
+            if (!Util.isNetworkAvailable()) {
+                Util.showNetworkErrorMessage(activity);
+            } else {
+                if (trainLines.size() == 1) {
+                    startActivity(trainLines.iterator().next());
+                } else {
+                    final List<String> values = new ArrayList<>();
+                    final List<Integer> colors = new ArrayList<>();
+                    for (final TrainLine line : trainLines) {
+                        values.add(line.toStringWithLine());
+                        if (line != TrainLine.YELLOW) {
+                            colors.add(line.getColor());
+                        } else {
+                            colors.add(ContextCompat.getColor(App.getContext(), R.color.yellowLine));
+                        }
+                    }
+                    final PopupFavoritesTrainAdapter ada = new PopupFavoritesTrainAdapter(activity, values, colors);
+
+                    final List<TrainLine> lines = new ArrayList<>();
+                    lines.addAll(trainLines);
+
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                    builder.setAdapter(ada, (dialog, position) -> startActivity(lines.get(position)));
+
+                    final int[] screenSize = Util.getScreenSize();
+                    final AlertDialog dialog = builder.create();
+                    dialog.show();
+                    dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
+                }
+            }
+        });
 
         for (final TrainLine trainLine : trainLines) {
             boolean newLine = true;
@@ -245,6 +283,14 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 i++;
             }
         }
+    }
+
+    private void startActivity(final TrainLine trainLine) {
+        final Bundle extras = new Bundle();
+        final Intent intent = new Intent(App.getContext(), TrainMapActivity.class);
+        extras.putString(activity.getString(R.string.bundle_train_line), trainLine.toTextString());
+        intent.putExtras(extras);
+        activity.startActivity(intent);
     }
 
     @NonNull
@@ -358,27 +404,39 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
         holder.mapButton.setText(activity.getString(R.string.favorites_view_buses));
         holder.detailsButton.setOnClickListener(new BusStopOnClickListener(activity, holder.parent, busDetailsDTOs));
-        holder.mapButton.setOnClickListener(new BusMapOnClickListener(activity, busDetailsDTOs, busRoute.getId()));
+        holder.mapButton.setOnClickListener(v -> {
+            if (!Util.isNetworkAvailable()) {
+                Util.showNetworkErrorMessage(activity);
+            } else {
+                final Set<String> bounds = new HashSet<>();
+                for (final BusDetailsDTO busDetail : busDetailsDTOs) {
+                    bounds.add(busDetail.getBound());
+                }
+                final Intent intent = new Intent(App.getContext(), BusMapActivity.class);
+                final Bundle extras = new Bundle();
+                extras.putString(activity.getString(R.string.bundle_bus_route_id), busRoute.getId());
+                extras.putStringArray(activity.getString(R.string.bundle_bus_bounds), bounds.toArray(new String[bounds.size()]));
+                intent.putExtras(extras);
+                activity.startActivity(intent);
+            }
+        });
     }
 
     private void handleBikeStation(@NonNull final FavoritesViewHolder holder, @NonNull final BikeStation bikeStation) {
         holder.stationNameTextView.setText(bikeStation.getName());
         holder.favoriteImage.setImageResource(R.drawable.ic_directions_bike_white_24dp);
 
-        holder.detailsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                if (!Util.isNetworkAvailable()) {
-                    Util.showNetworkErrorMessage(activity);
-                } else if (bikeStation.getLatitude() != 0 && bikeStation.getLongitude() != 0) {
-                    final Intent intent = new Intent(App.getContext(), BikeStationActivity.class);
-                    final Bundle extras = new Bundle();
-                    extras.putParcelable(activity.getString(R.string.bundle_bike_station), bikeStation);
-                    intent.putExtras(extras);
-                    activity.startActivity(intent);
-                } else {
-                    Util.showMessage(activity, R.string.message_not_ready);
-                }
+        holder.detailsButton.setOnClickListener(v -> {
+            if (!Util.isNetworkAvailable()) {
+                Util.showNetworkErrorMessage(activity);
+            } else if (bikeStation.getLatitude() != 0 && bikeStation.getLongitude() != 0) {
+                final Intent intent = new Intent(App.getContext(), BikeStationActivity.class);
+                final Bundle extras = new Bundle();
+                extras.putParcelable(activity.getString(R.string.bundle_bike_station), bikeStation);
+                intent.putExtras(extras);
+                activity.startActivity(intent);
+            } else {
+                Util.showMessage(activity, R.string.message_not_ready);
             }
         });
 

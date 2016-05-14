@@ -164,56 +164,53 @@ public class BusMapActivity extends Activity {
     @Override
     public final void onResume() {
         super.onResume();
-        mapFragment.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(final GoogleMap googleMap) {
-                googleMap.setInfoWindowAdapter(new InfoWindowAdapter() {
-                    @Override
-                    public View getInfoWindow(final Marker marker) {
+        mapFragment.getMapAsync(googleMap -> {
+            googleMap.setInfoWindowAdapter(new InfoWindowAdapter() {
+                @Override
+                public View getInfoWindow(final Marker marker) {
+                    return null;
+                }
+
+                @Override
+                public View getInfoContents(final Marker marker) {
+                    if (!"".equals(marker.getSnippet())) {
+                        final View view = views.get(marker);
+                        if (!refreshingInfoWindow) {
+                            selectedMarker = marker;
+                            final String busId1 = marker.getSnippet();
+                            new LoadBusFollowTask(BusMapActivity.this, view, false).execute(busId1);
+                            status.put(marker, false);
+                        }
+                        return view;
+                    } else {
                         return null;
                     }
-
-                    @Override
-                    public View getInfoContents(final Marker marker) {
-                        if (!"".equals(marker.getSnippet())) {
-                            final View view = views.get(marker);
-                            if (!refreshingInfoWindow) {
-                                selectedMarker = marker;
-                                final String busId = marker.getSnippet();
-                                new LoadBusFollowTask(BusMapActivity.this, view, false).execute(busId);
-                                status.put(marker, false);
-                            }
-                            return view;
-                        } else {
-                            return null;
-                        }
-                    }
-                });
-
-                googleMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
-                    @Override
-                    public void onInfoWindowClick(Marker marker) {
-                        if (!"".equals(marker.getSnippet())) {
-                            final View view = views.get(marker);
-                            if (!refreshingInfoWindow) {
-                                selectedMarker = marker;
-                                final String runNumber = marker.getSnippet();
-                                final boolean current = status.get(marker);
-                                new LoadBusFollowTask(BusMapActivity.this, view, !current).execute(runNumber);
-                                status.put(marker, !current);
-                            }
-                        }
-                    }
-                });
-                if (Util.isNetworkAvailable()) {
-                    new LoadCurrentPositionTask(BusMapActivity.this, mapFragment).execute();
-                    new LoadBusPositionTask(BusMapActivity.this, busId, busRouteId).execute(centerMap, !loadPattern);
-                    if (loadPattern) {
-                        new LoadPattern().execute();
-                    }
-                } else {
-                    Util.showNetworkErrorMessage(layout);
                 }
+            });
+
+            googleMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
+                @Override
+                public void onInfoWindowClick(Marker marker) {
+                    if (!"".equals(marker.getSnippet())) {
+                        final View view = views.get(marker);
+                        if (!refreshingInfoWindow) {
+                            selectedMarker = marker;
+                            final String runNumber = marker.getSnippet();
+                            final boolean current = status.get(marker);
+                            new LoadBusFollowTask(BusMapActivity.this, view, !current).execute(runNumber);
+                            status.put(marker, !current);
+                        }
+                    }
+                }
+            });
+            if (Util.isNetworkAvailable()) {
+                new LoadCurrentPositionTask(BusMapActivity.this, mapFragment).execute();
+                new LoadBusPositionTask(BusMapActivity.this, busId, busRouteId).execute(centerMap, !loadPattern);
+                if (loadPattern) {
+                    new LoadPattern().execute();
+                }
+            } else {
+                Util.showNetworkErrorMessage(layout);
             }
         });
     }
@@ -238,13 +235,10 @@ public class BusMapActivity extends Activity {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         toolbar.inflateMenu(R.menu.main);
-        toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                new LoadCurrentPositionTask(BusMapActivity.this, mapFragment).execute();
-                new LoadBusPositionTask(BusMapActivity.this, busId, busRouteId).execute(false, true);
-                return false;
-            }
+        toolbar.setOnMenuItemClickListener((item -> {
+            new LoadCurrentPositionTask(BusMapActivity.this, mapFragment).execute();
+            new LoadBusPositionTask(BusMapActivity.this, busId, busRouteId).execute(false, true);
+            return false;
         }));
 
         Util.setWindowsColor(this, toolbar, TrainLine.NA);
@@ -255,12 +249,7 @@ public class BusMapActivity extends Activity {
 
         toolbar.setTitle(busRouteId);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-        toolbar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                finish();
-            }
-        });
+        toolbar.setOnClickListener(v -> finish());
     }
 
     public void refreshInfoWindow() {
@@ -273,90 +262,81 @@ public class BusMapActivity extends Activity {
     }
 
     public void centerMapOnBus(@NonNull final List<Bus> result) {
-        mapFragment.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(final GoogleMap googleMap) {
-                final Position position;
-                final int zoom;
-                if (result.size() == 1) {
-                    position = result.get(0).getPosition();
-                    zoom = 15;
-                } else {
-                    position = Bus.getBestPosition(result);
-                    zoom = 11;
-                }
-                final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+        mapFragment.getMapAsync(googleMap -> {
+            final Position position;
+            final int zoom;
+            if (result.size() == 1) {
+                position = result.get(0).getPosition();
+                zoom = 15;
+            } else {
+                position = Bus.getBestPosition(result);
+                zoom = 11;
             }
+            final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
         });
     }
 
     public void drawBuses(@NonNull final List<Bus> buses) {
-        mapFragment.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(final GoogleMap googleMap) {
-                for (final Marker marker : busMarkers) {
-                    marker.remove();
-                }
-                busMarkers.clear();
-                final BitmapDescriptor bitmapDescr = busListener.getCurrentBitmapDescriptor();
-                for (final Bus bus : buses) {
-                    final LatLng point = new LatLng(bus.getPosition().getLatitude(), bus.getPosition().getLongitude());
-                    final Marker marker = googleMap.addMarker(new MarkerOptions().position(point).title("To " + bus.getDestination()).snippet(bus.getId() + "").icon(bitmapDescr).anchor(0.5f, 0.5f).rotation(bus.getHeading()).flat(true));
-                    busMarkers.add(marker);
-
-                    final LayoutInflater layoutInflater = (LayoutInflater) BusMapActivity.this.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    final View view = layoutInflater.inflate(R.layout.marker_train, viewGroup, false);
-                    final TextView title = (TextView) view.findViewById(R.id.title);
-                    title.setText(marker.getTitle());
-
-                    views.put(marker, view);
-                }
-
-                busListener.setBusMarkers(busMarkers);
-                googleMap.setOnCameraChangeListener(busListener);
+        mapFragment.getMapAsync(googleMap -> {
+            for (final Marker marker : busMarkers) {
+                marker.remove();
             }
+            busMarkers.clear();
+            final BitmapDescriptor bitmapDescr = busListener.getCurrentBitmapDescriptor();
+            for (final Bus bus : buses) {
+                final LatLng point = new LatLng(bus.getPosition().getLatitude(), bus.getPosition().getLongitude());
+                final Marker marker = googleMap.addMarker(new MarkerOptions().position(point).title("To " + bus.getDestination()).snippet(bus.getId() + "").icon(bitmapDescr).anchor(0.5f, 0.5f).rotation(bus.getHeading()).flat(true));
+                busMarkers.add(marker);
+
+                final LayoutInflater layoutInflater = (LayoutInflater) BusMapActivity.this.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                final View view = layoutInflater.inflate(R.layout.marker_train, viewGroup, false);
+                final TextView title = (TextView) view.findViewById(R.id.title);
+                title.setText(marker.getTitle());
+
+                views.put(marker, view);
+            }
+
+            busListener.setBusMarkers(busMarkers);
+            googleMap.setOnCameraChangeListener(busListener);
         });
     }
 
     private void drawPattern(@NonNull final List<BusPattern> patterns) {
-        mapFragment.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(final GoogleMap googleMap) {
-                int j = 0;
-                final BitmapDescriptor red = BitmapDescriptorFactory.defaultMarker();
-                final BitmapDescriptor blue = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
-                for (final BusPattern pattern : patterns) {
-                    final PolylineOptions poly = new PolylineOptions();
-                    if (j == 0) {
-                        poly.geodesic(true).color(Color.RED);
-                    } else if (j == 1) {
-                        poly.geodesic(true).color(Color.BLUE);
-                    } else {
-                        poly.geodesic(true).color(Color.YELLOW);
-                    }
-                    poly.width(7f);
-                    for (final PatternPoint patternPoint : pattern.getPoints()) {
-                        final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
-                        poly.add(point);
-                        final MarkerOptions options = new MarkerOptions();
-                        options.position(point).title(patternPoint.getStopName() + " (" + pattern.getDirection() + ")").snippet("");
-                        if (j == 0) {
-                            options.icon(red);
-                        } else {
-                            options.icon(blue);
-                        }
-
-                        final Marker marker = googleMap.addMarker(options);
-                        busStationMarkers.add(marker);
-                        marker.setVisible(false);
-                    }
-                    googleMap.addPolyline(poly);
-                    j++;
+        mapFragment.getMapAsync(googleMap -> {
+            int j = 0;
+            final BitmapDescriptor red = BitmapDescriptorFactory.defaultMarker();
+            final BitmapDescriptor blue = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
+            for (final BusPattern pattern : patterns) {
+                final PolylineOptions poly = new PolylineOptions();
+                if (j == 0) {
+                    poly.geodesic(true).color(Color.RED);
+                } else if (j == 1) {
+                    poly.geodesic(true).color(Color.BLUE);
+                } else {
+                    poly.geodesic(true).color(Color.YELLOW);
                 }
-                busListener.setBusStationMarkers(busStationMarkers);
-                googleMap.setOnCameraChangeListener(busListener);
+                poly.width(7f);
+                for (final PatternPoint patternPoint : pattern.getPoints()) {
+                    final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
+                    poly.add(point);
+                    final MarkerOptions options = new MarkerOptions();
+                    options.position(point).title(patternPoint.getStopName() + " (" + pattern.getDirection() + ")").snippet("");
+                    if (j == 0) {
+                        options.icon(red);
+                    } else {
+                        options.icon(blue);
+                    }
+
+                    final Marker marker = googleMap.addMarker(options);
+                    busStationMarkers.add(marker);
+                    marker.setVisible(false);
+                }
+                googleMap.addPolyline(poly);
+                j++;
             }
+            busListener.setBusStationMarkers(busStationMarkers);
+            googleMap.setOnCameraChangeListener(busListener);
         });
     }
 

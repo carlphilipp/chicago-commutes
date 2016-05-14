@@ -139,14 +139,11 @@ public class NearbyFragment extends Fragment {
             hideStationsStops = Preferences.getHideShowNearby();
             final CheckBox checkBox = (CheckBox) rootView.findViewById(R.id.hideEmptyStops);
             checkBox.setChecked(hideStationsStops);
-            checkBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
-                    Preferences.saveHideShowNearby(isChecked);
-                    hideStationsStops = isChecked;
-                    if (Util.isNetworkAvailable()) {
-                        reloadData();
-                    }
+            checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                Preferences.saveHideShowNearby(isChecked);
+                hideStationsStops = isChecked;
+                if (Util.isNetworkAvailable()) {
+                    reloadData();
                 }
             });
             showProgress(true);
@@ -169,18 +166,15 @@ public class NearbyFragment extends Fragment {
     @Override
     public final void onResume() {
         super.onResume();
-        mapFragment.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(final GoogleMap googleMap) {
-                NearbyFragment.this.googleMap = googleMap;
-                if (Util.isNetworkAvailable()) {
-                    new LoadNearbyTask(NearbyFragment.this, activity, mapFragment).execute();
-                    nearbyContainer.setVisibility(View.GONE);
-                    showProgress(true);
-                } else {
-                    Util.showNetworkErrorMessage(activity);
-                    showProgress(false);
-                }
+        mapFragment.getMapAsync(googleMap1 -> {
+            NearbyFragment.this.googleMap = googleMap1;
+            if (Util.isNetworkAvailable()) {
+                new LoadNearbyTask(NearbyFragment.this, activity, mapFragment).execute();
+                nearbyContainer.setVisibility(View.GONE);
+                showProgress(true);
+            } else {
+                Util.showNetworkErrorMessage(activity);
+                showProgress(false);
             }
         });
     }
@@ -221,7 +215,7 @@ public class NearbyFragment extends Fragment {
             for (final BusStop busStop : busStops) {
                 int busId = busStop.getId();
                 // Create
-                final Map<String, List<BusArrival>> tempMap = busArrivalsMap.get(busId, new HashMap<String, List<BusArrival>>());
+                final Map<String, List<BusArrival>> tempMap = busArrivalsMap.get(busId, new HashMap<>());
                 if (!tempMap.containsKey(Integer.toString(busId))) {
                     busArrivalsMap.put(busId, tempMap);
                 }
@@ -321,11 +315,7 @@ public class NearbyFragment extends Fragment {
                 stations.clear();
                 stations = trainStationTmp;
             }
-            activity.runOnUiThread(new Runnable() {
-                public void run() {
-                    load(busStops, busArrivalsMap, stations, trainArrivals, bikeStationsRes);
-                }
-            });
+            activity.runOnUiThread(() -> load(busStops, busArrivalsMap, stations, trainArrivals, bikeStationsRes));
         }
     }
 
@@ -374,36 +364,32 @@ public class NearbyFragment extends Fragment {
     }
 
     private void addClickEventsToMarkers(@NonNull final List<BusStop> busStops, @NonNull final List<Station> stations, @NonNull final List<BikeStation> bikeStations) {
-        googleMap.setOnMarkerClickListener(new OnMarkerClickListener() {
-
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                boolean found = false;
-                for (int i = 0; i < stations.size(); i++) {
-                    if (marker.getSnippet().equals(Integer.toString(stations.get(i).getId()))) {
-                        listView.smoothScrollToPosition(i);
-                        found = true;
-                        break;
-                    }
+        googleMap.setOnMarkerClickListener(marker -> {
+            boolean found = false;
+            for (int i = 0; i < stations.size(); i++) {
+                if (marker.getSnippet().equals(Integer.toString(stations.get(i).getId()))) {
+                    listView.smoothScrollToPosition(i);
+                    found = true;
+                    break;
                 }
-                if (!found) {
-                    for (int i = 0; i < busStops.size(); i++) {
-                        int index = i + stations.size();
-                        if (marker.getSnippet().equals(Integer.toString(busStops.get(i).getId()))) {
-                            listView.smoothScrollToPosition(index);
-                            break;
-                        }
-                    }
-                }
-                for (int i = 0; i < bikeStations.size(); i++) {
-                    int index = i + stations.size() + busStops.size();
-                    if (marker.getSnippet().equals(bikeStations.get(i).getId() + "")) {
+            }
+            if (!found) {
+                for (int i = 0; i < busStops.size(); i++) {
+                    int index = i + stations.size();
+                    if (marker.getSnippet().equals(Integer.toString(busStops.get(i).getId()))) {
                         listView.smoothScrollToPosition(index);
                         break;
                     }
                 }
-                return false;
             }
+            for (int i = 0; i < bikeStations.size(); i++) {
+                int index = i + stations.size() + busStops.size();
+                if (marker.getSnippet().equals(bikeStations.get(i).getId() + "")) {
+                    listView.smoothScrollToPosition(index);
+                    break;
+                }
+            }
+            return false;
         });
     }
 

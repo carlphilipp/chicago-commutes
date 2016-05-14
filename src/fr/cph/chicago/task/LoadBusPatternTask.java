@@ -96,23 +96,20 @@ public class LoadBusPatternTask extends AsyncTask<Void, Void, BusPattern> {
         if (result != null) {
             final int center = result.getPoints().size() / 2;
             final Position position = result.getPoints().get(center).getPosition();
-            mapFragment.getMapAsync(new OnMapReadyCallback() {
-                @Override
-                public void onMapReady(final GoogleMap googleMap) {
-                    if (loadUserPosition) {
-                        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-                            return;
-                        }
-                        googleMap.setMyLocationEnabled(true);
+            mapFragment.getMapAsync(googleMap -> {
+                if (loadUserPosition) {
+                    if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+                        return;
                     }
-                    if (position != null) {
-                        final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
-                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
-                        googleMap.animateCamera(CameraUpdateFactory.zoomTo(9), 500, null);
-                    } else {
-                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Util.CHICAGO, 10));
-                    }
+                    googleMap.setMyLocationEnabled(true);
+                }
+                if (position != null) {
+                    final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
+                    googleMap.animateCamera(CameraUpdateFactory.zoomTo(9), 500, null);
+                } else {
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Util.CHICAGO, 10));
                 }
             });
             activity.drawPattern(result);

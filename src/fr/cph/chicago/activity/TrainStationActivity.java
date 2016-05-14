@@ -57,12 +57,7 @@ public class TrainStationActivity extends ListActivity {
             toolbar.setTitle(trainLine.toStringWithLine());
 
             toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-            toolbar.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(final View v) {
-                    finish();
-                }
-            });
+            toolbar.setOnClickListener(v -> finish());
 
             final TrainAdapter ada = new TrainAdapter(trainLine, this);
             setListAdapter(ada);

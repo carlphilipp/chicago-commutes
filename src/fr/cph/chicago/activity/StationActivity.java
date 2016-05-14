@@ -115,12 +115,7 @@ public class StationActivity extends Activity {
                 reqParams.put(getString(R.string.request_map_id), Integer.toString(station.getId()));
 
                 swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_station_swipe_refresh_layout);
-                swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                    @Override
-                    public void onRefresh() {
-                        new LoadTrainArrivalDataTask(StationActivity.this, trainData, swipeRefreshLayout).execute(reqParams);
-                    }
-                });
+                swipeRefreshLayout.setOnRefreshListener(() -> new LoadTrainArrivalDataTask(StationActivity.this, trainData, swipeRefreshLayout).execute(reqParams));
 
                 new LoadTrainArrivalDataTask(StationActivity.this, trainData, swipeRefreshLayout).execute(reqParams);
 
@@ -144,12 +139,7 @@ public class StationActivity extends Activity {
                 final LinearLayout walkContainer = (LinearLayout) findViewById(R.id.walk_container);
                 favoritesImage = (ImageView) findViewById(R.id.activity_favorite_star);
                 final LinearLayout favoritesImageContainer = (LinearLayout) findViewById(R.id.favorites_container);
-                favoritesImageContainer.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(final View v) {
-                        StationActivity.this.switchFavorite();
-                    }
-                });
+                favoritesImageContainer.setOnClickListener(v -> StationActivity.this.switchFavorite());
                 if (isFavorite) {
                     favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
                 } else {
@@ -198,21 +188,12 @@ public class StationActivity extends Activity {
                 line2.setLayoutParams(paramsStop);
 
                 final AppCompatCheckBox checkBox = new AppCompatCheckBox(this);
-                checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
-                        Preferences.saveTrainFilter(stationId, line, stop.getDirection(), isChecked);
-                    }
-                });
-                checkBox.setOnClickListener(new View.OnClickListener() {
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public void onClick(final View v) {
-                        // Update timing
-                        final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-                        reqParams.put(getString(R.string.request_map_id), Integer.toString(station.getId()));
-                        new LoadTrainArrivalDataTask(StationActivity.this, trainData, swipeRefreshLayout).execute(reqParams);
-                    }
+                checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> Preferences.saveTrainFilter(stationId, line, stop.getDirection(), isChecked));
+                checkBox.setOnClickListener(v -> {
+                    // Update timing
+                    final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
+                    reqParams.put(getString(R.string.request_map_id), Integer.toString(station.getId()));
+                    new LoadTrainArrivalDataTask(StationActivity.this, trainData, swipeRefreshLayout).execute(reqParams);
                 });
                 checkBox.setChecked(Preferences.getTrainFilter(stationId, line, stop.getDirection()));
                 checkBox.setTypeface(checkBox.getTypeface(), Typeface.BOLD);
@@ -252,15 +233,12 @@ public class StationActivity extends Activity {
     private void setToolBar(@NonNull final TrainLine randomTrainLine) {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.main);
-        toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(final MenuItem item) {
-                swipeRefreshLayout.setRefreshing(true);
-                final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-                reqParams.put(getString(R.string.request_map_id), Integer.toString(station.getId()));
-                new LoadTrainArrivalDataTask(StationActivity.this, trainData, swipeRefreshLayout).execute(reqParams);
-                return false;
-            }
+        toolbar.setOnMenuItemClickListener((item -> {
+            swipeRefreshLayout.setRefreshing(true);
+            final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
+            reqParams.put(getString(R.string.request_map_id), Integer.toString(station.getId()));
+            new LoadTrainArrivalDataTask(StationActivity.this, trainData, swipeRefreshLayout).execute(reqParams);
+            return false;
         }));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -272,12 +250,7 @@ public class StationActivity extends Activity {
         toolbar.setTitle(station.getName());
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
 
-        toolbar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        toolbar.setOnClickListener(v -> finish());
     }
 
     @Override

@@ -102,12 +102,7 @@ public class BusActivity extends Activity {
             final ImageView directionImage = (ImageView) findViewById(R.id.activity_map_direction);
             directionImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
             final LinearLayout favoritesImageContainer = (LinearLayout) findViewById(R.id.favorites_container);
-            favoritesImageContainer.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(final View v) {
-                    BusActivity.this.switchFavorite();
-                }
-            });
+            favoritesImageContainer.setOnClickListener(v -> BusActivity.this.switchFavorite());
             final LinearLayout walkContainer = (LinearLayout) findViewById(R.id.walk_container);
             final LinearLayout mapContainer = (LinearLayout) findViewById(R.id.map_container);
             favoritesImage = (ImageView) findViewById(R.id.activity_favorite_star);
@@ -117,12 +112,7 @@ public class BusActivity extends Activity {
                 favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
             }
             swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_bus_stop_swipe_refresh_layout);
-            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    new LoadStationDataTask(BusActivity.this, swipeRefreshLayout, busRouteId, busStopId).execute();
-                }
-            });
+            swipeRefreshLayout.setOnRefreshListener(() -> new LoadStationDataTask(BusActivity.this, swipeRefreshLayout, busRouteId, busStopId).execute());
             streetViewImage.setOnClickListener(new GoogleStreetOnClickListener(this, latitude, longitude));
             mapContainer.setOnClickListener(new GoogleMapOnClickListener(this, latitude, longitude));
             walkContainer.setOnClickListener(new GoogleMapDirectionOnClickListener(this, latitude, longitude));
@@ -145,13 +135,10 @@ public class BusActivity extends Activity {
     private void setToolBar() {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.main);
-        toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                swipeRefreshLayout.setRefreshing(true);
-                new LoadStationDataTask(BusActivity.this, swipeRefreshLayout, busRouteId, busStopId).execute();
-                return false;
-            }
+        toolbar.setOnMenuItemClickListener((item -> {
+            swipeRefreshLayout.setRefreshing(true);
+            new LoadStationDataTask(BusActivity.this, swipeRefreshLayout, busRouteId, busStopId).execute();
+            return false;
         }));
         Util.setWindowsColor(this, toolbar, TrainLine.NA);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -159,12 +146,7 @@ public class BusActivity extends Activity {
         }
         toolbar.setTitle(busRouteId + " - " + busStopName);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-        toolbar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        toolbar.setOnClickListener(v -> finish());
     }
 
     @Override

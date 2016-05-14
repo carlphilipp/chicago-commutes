@@ -1,13 +1,18 @@
 buildscript {
     repositories {
         jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath group: 'com.android.tools.build', name: 'gradle', version: "$android_tools_build_version"
+        classpath 'me.tatarka:gradle-retrolambda:3.2.3'
+        classpath 'me.tatarka.retrolambda.projectlombok:lombok.ast:0.2.3.a2'
     }
+    configurations.classpath.exclude group: 'com.android.tools.external.lombok'
 }
 
 apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
 
 dependencies {
     repositories {
@@ -56,7 +61,7 @@ android {
     }
 
     compileOptions {
-        def javaVersion = JavaVersion.VERSION_1_7
+        def javaVersion = JavaVersion.VERSION_1_8
         sourceCompatibility = javaVersion
         targetCompatibility = javaVersion
     }
@@ -117,4 +122,8 @@ android {
         exclude 'META-INF/dependencies.txt'
         exclude 'META-INF/LGPL2.1'
     }
+}
+
+retrolambda {
+    jvmArgs '-noverify'
 }

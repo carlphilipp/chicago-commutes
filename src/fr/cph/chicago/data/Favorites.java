@@ -170,11 +170,8 @@ public class Favorites {
      */
     @NonNull
     public final Map<String, Map<String, List<BusArrival>>> getBusArrivalsMapped(@NonNull final String routeId) {
-        final Map<String, Map<String, List<BusArrival>>> res = new TreeMap<>(new Comparator<String>() {
-            @Override
-            public int compare(final String lhs, final String rhs) {
-                return lhs.compareTo(rhs);
-            }
+        final Map<String, Map<String, List<BusArrival>>> res = new TreeMap<>((Comparator<String>) (lhs, rhs) -> {
+            return lhs.compareTo(rhs);
         });
         if (busArrivals != null) {
             if (busArrivals.size() == 0) {

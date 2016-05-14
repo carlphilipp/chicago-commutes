@@ -289,24 +289,21 @@ public final class Util {
     }
 
     public static void centerMap(@NonNull final SupportMapFragment mapFragment, @NonNull final Activity activity, @Nullable final Position position) {
-        mapFragment.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(final GoogleMap googleMap) {
-                if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED
-                    && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(activity,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-                    return;
-                }
-                googleMap.setMyLocationEnabled(true);
-                if (position != null) {
-                    final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
-                } else {
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CHICAGO, 10));
-                }
+        mapFragment.getMapAsync(googleMap -> {
+            if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(activity,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+                return;
+            }
+            googleMap.setMyLocationEnabled(true);
+            if (position != null) {
+                final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
+            } else {
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CHICAGO, 10));
             }
         });
     }
@@ -355,24 +352,18 @@ public final class Util {
     public static void showSettingsAlert(@NonNull final Activity activity) {
         new Thread() {
             public void run() {
-                activity.runOnUiThread(new Runnable() {
-                    public void run() {
-                        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
-                        alertDialogBuilder.setTitle("GPS settings");
-                        alertDialogBuilder.setMessage("GPS is not enabled. Do you want to go to settings menu?");
-                        alertDialogBuilder.setCancelable(false).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                final Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                                activity.startActivity(intent);
-                            }
-                        }).setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-                        final AlertDialog alertDialog = alertDialogBuilder.create();
-                        alertDialog.show();
-                    }
+                activity.runOnUiThread(() -> {
+                    final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
+                    alertDialogBuilder.setTitle("GPS settings");
+                    alertDialogBuilder.setMessage("GPS is not enabled. Do you want to go to settings menu?");
+                    alertDialogBuilder.setCancelable(false).setPositiveButton("Yes", (dialog, id) -> {
+                        final Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        activity.startActivity(intent);
+                    }).setNegativeButton("No", (dialog, id) -> {
+                        dialog.cancel();
+                    });
+                    final AlertDialog alertDialog = alertDialogBuilder.create();
+                    alertDialog.show();
                 });
             }
         }.start();

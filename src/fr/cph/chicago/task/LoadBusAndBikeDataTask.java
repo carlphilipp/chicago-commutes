@@ -60,12 +60,7 @@ public class LoadBusAndBikeDataTask extends AsyncTask<Void, Void, Void> {
             Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_routes, 0);
             publishProgress();
         } catch (final ParserException | ConnectException e) {
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    Util.showMessage(activity, R.string.message_error);
-                }
-            });
+            new Handler(Looper.getMainLooper()).post(() -> Util.showMessage(activity, R.string.message_error));
             Log.e(TAG, e.getMessage(), e);
         }
 

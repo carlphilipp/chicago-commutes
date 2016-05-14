@@ -56,12 +56,9 @@ public class BusStopOnClickListener implements View.OnClickListener {
             final ListView listView = (ListView) popupView.findViewById(R.id.details);
             listView.setAdapter(ada);
             final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-            builder.setAdapter(ada, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(final DialogInterface dialog, final int position) {
-                    final BusDetailsDTO busDetails = busDetailsDTOs.get(position);
-                    new FavoritesAdapter.BusBoundAsyncTask(activity).execute(busDetails.getBusRouteId(), busDetails.getBound(), busDetails.getBoundTitle(), busDetails.getStopId(), busDetails.getRouteName());
-                }
+            builder.setAdapter(ada, (dialog, position) -> {
+                final BusDetailsDTO busDetails = busDetailsDTOs.get(position);
+                new FavoritesAdapter.BusBoundAsyncTask(activity).execute(busDetails.getBusRouteId(), busDetails.getBound(), busDetails.getBoundTitle(), busDetails.getStopId(), busDetails.getRouteName());
             });
             final int[] screenSize = Util.getScreenSize();
             final AlertDialog dialog = builder.create();
