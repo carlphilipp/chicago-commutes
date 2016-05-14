@@ -17,6 +17,7 @@
 package fr.cph.chicago.task;
 
 import android.app.Activity;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -69,5 +70,6 @@ public final class DisplayGoogleStreetPictureTask extends AsyncTask<Double, Void
         streetViewImage.setLayoutParams(params);
         streetViewImage.setImageDrawable(result);
         streetViewText.setText(App.getContext().getString(R.string.station_activity_street_view));
+        streetViewText.setTypeface(null, Typeface.BOLD);
     }
 }
