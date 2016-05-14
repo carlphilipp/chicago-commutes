@@ -61,11 +61,7 @@ public class DivvyAsyncTask extends AsyncTask<Void, Void, List<BikeStation>> {
             Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
             Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
         } catch (final ConnectException | ParserException e) {
-            activity.runOnUiThread(new Runnable() {
-                public void run() {
-                    Util.showMessage(activity, R.string.message_surprising_error);
-                }
-            });
+            Util.showNetworkErrorMessage(swipeRefreshLayout);
             Log.e(TAG, activity.getString(R.string.message_error_divvy), e);
         }
         return bikeStations;
