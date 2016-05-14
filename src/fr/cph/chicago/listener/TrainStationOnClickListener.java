@@ -24,6 +24,7 @@ import android.view.View;
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.StationActivity;
+import fr.cph.chicago.util.Util;
 
 public class TrainStationOnClickListener implements View.OnClickListener {
 
@@ -37,11 +38,15 @@ public class TrainStationOnClickListener implements View.OnClickListener {
 
     @Override
     public void onClick(final View v) {
-        // Start station activity
-        final Bundle extras = new Bundle();
-        final Intent intent = new Intent(App.getContext(), StationActivity.class);
-        extras.putInt(activity.getString(R.string.bundle_train_stationId), stationId);
-        intent.putExtras(extras);
-        activity.startActivity(intent);
+        if (!Util.isNetworkAvailable()) {
+            Util.showNetworkErrorMessage(activity);
+        } else {
+            // Start station activity
+            final Bundle extras = new Bundle();
+            final Intent intent = new Intent(App.getContext(), StationActivity.class);
+            extras.putInt(activity.getString(R.string.bundle_train_stationId), stationId);
+            intent.putExtras(extras);
+            activity.startActivity(intent);
+        }
     }
 }
