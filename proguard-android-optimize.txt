@@ -97,6 +97,10 @@
 -keep public class fr.cph.chicago.exception.TrackerException
 -keep @interface *
 -keepnames class com.fasterxml.jackson.** { *; }
+-keep public class fr.cph.chicago.json.DivvyJson {
+  public *** get*();
+  public void set*(***);
+}
 -keep class org.apache.http.** { *; }
 -keep class android.net.http.** { *; }
 -keepclassmembers class * {
