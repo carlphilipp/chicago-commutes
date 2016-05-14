@@ -365,20 +365,17 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         holder.stationNameTextView.setText(bikeStation.getName());
         holder.favoriteImage.setImageResource(R.drawable.ic_directions_bike_white_24dp);
 
-        holder.detailsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                if (!Util.isNetworkAvailable()) {
-                    Util.showNetworkErrorMessage(activity);
-                } else if (bikeStation.getLatitude() != 0 && bikeStation.getLongitude() != 0) {
-                    final Intent intent = new Intent(App.getContext(), BikeStationActivity.class);
-                    final Bundle extras = new Bundle();
-                    extras.putParcelable(activity.getString(R.string.bundle_bike_station), bikeStation);
-                    intent.putExtras(extras);
-                    activity.startActivity(intent);
-                } else {
-                    Util.showMessage(activity, R.string.message_not_ready);
-                }
+        holder.detailsButton.setOnClickListener(v -> {
+            if (!Util.isNetworkAvailable()) {
+                Util.showNetworkErrorMessage(activity);
+            } else if (bikeStation.getLatitude() != 0 && bikeStation.getLongitude() != 0) {
+                final Intent intent = new Intent(App.getContext(), BikeStationActivity.class);
+                final Bundle extras = new Bundle();
+                extras.putParcelable(activity.getString(R.string.bundle_bike_station), bikeStation);
+                intent.putExtras(extras);
+                activity.startActivity(intent);
+            } else {
+                Util.showMessage(activity, R.string.message_not_ready);
             }
         });
 

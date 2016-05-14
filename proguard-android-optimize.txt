@@ -107,3 +107,4 @@
 	public void reloadData(android.util.SparseArray, java.util.List, java.util.List, java.lang.Boolean);
 	public void displayError(java.lang.Integer);
 }
+-dontwarn java.lang.invoke.*
