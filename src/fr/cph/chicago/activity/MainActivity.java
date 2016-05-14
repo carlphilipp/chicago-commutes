@@ -117,45 +117,42 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void setToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(final MenuItem item) {
-                if (getString(R.string.nearby).equals(toolbar.getTitle())) {
-                    nearbyFragment.reloadData();
-                } else {
-                    // Favorite fragment
-                    favoritesFragment.startRefreshing();
+        toolbar.setOnMenuItemClickListener(item -> {
+            if (getString(R.string.nearby).equals(toolbar.getTitle())) {
+                nearbyFragment.reloadData();
+            } else {
+                // Favorite fragment
+                favoritesFragment.startRefreshing();
 
-                    Util.loadAllFavorites(favoritesFragment, FavoritesFragment.class);
+                Util.loadAllFavorites(favoritesFragment, FavoritesFragment.class);
 
-                    // Google analytics
-                    Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
-                    Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_arrivals, 0);
-                    Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
-                    // Check if bus/bike or alert data are not loaded. If not, load them.
-                    // Can happen when the app has been loaded without any data connection
-                    boolean loadData = false;
-                    final DataHolder dataHolder = DataHolder.getInstance();
+                // Google analytics
+                Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
+                Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_arrivals, 0);
+                Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
+                // Check if bus/bike or alert data are not loaded. If not, load them.
+                // Can happen when the app has been loaded without any data connection
+                boolean loadData = false;
+                final DataHolder dataHolder = DataHolder.getInstance();
 
-                    final BusData busData = dataHolder.getBusData();
+                final BusData busData = dataHolder.getBusData();
 
-                    final Bundle bundle = MainActivity.this.getIntent().getExtras();
-                    final List<BikeStation> bikeStations = bundle.getParcelableArrayList(getString(R.string.bundle_bike_stations));
+                final Bundle bundle = MainActivity.this.getIntent().getExtras();
+                final List<BikeStation> bikeStations = bundle.getParcelableArrayList(getString(R.string.bundle_bike_stations));
 
-                    if (busData.getRoutes() != null && busData.getRoutes().size() == 0) {
-                        loadData = true;
-                    }
-                    if (!loadData && bikeStations == null) {
-                        loadData = true;
-                    }
-                    if (loadData) {
-                        favoritesFragment.startRefreshing();
-                        new LoadBusAndBikeDataTask(MainActivity.this).execute();
-                    }
-                    Util.trackAction(MainActivity.this, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
+                if (busData.getRoutes() != null && busData.getRoutes().size() == 0) {
+                    loadData = true;
                 }
-                return true;
+                if (!loadData && bikeStations == null) {
+                    loadData = true;
+                }
+                if (loadData) {
+                    favoritesFragment.startRefreshing();
+                    new LoadBusAndBikeDataTask(MainActivity.this).execute();
+                }
+                Util.trackAction(MainActivity.this, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
             }
+            return true;
         });
         toolbar.inflateMenu(R.menu.main);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

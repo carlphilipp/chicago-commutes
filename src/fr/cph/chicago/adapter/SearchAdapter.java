@@ -120,12 +120,9 @@ public final class SearchAdapter extends BaseAdapter {
             routeName.setText(name);
 
             final TextView loadingTextView = (TextView) convertView.findViewById(R.id.loading_text_view);
-            convertView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(final View v) {
-                    loadingTextView.setVisibility(LinearLayout.VISIBLE);
-                    new DirectionAsyncTask(searchActivity, parent).execute(busRoute, loadingTextView);
-                }
+            convertView.setOnClickListener(v -> {
+                loadingTextView.setVisibility(LinearLayout.VISIBLE);
+                new DirectionAsyncTask(searchActivity, parent).execute(busRoute, loadingTextView);
             });
         } else {
             final BikeStation bikeStation = (BikeStation) getItem(position);

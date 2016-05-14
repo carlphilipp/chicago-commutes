@@ -83,12 +83,7 @@ public class FavoritesTrainOnClickListener implements OnClickListener {
                 lines.addAll(trainLines);
 
                 final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-                builder.setAdapter(ada, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(final DialogInterface dialog, final int position) {
-                        startActivity(lines.get(position));
-                    }
-                });
+                builder.setAdapter(ada, (dialog, position) -> startActivity(lines.get(position)));
 
                 final int[] screenSize = Util.getScreenSize();
                 final AlertDialog dialog = builder.create();

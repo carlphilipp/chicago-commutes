@@ -129,16 +129,13 @@ public class FavoritesFragment extends Fragment {
 
             startRefreshTask();
             final FloatingActionButton floatingButton = (FloatingActionButton) rootView.findViewById(R.id.floating_button);
-            floatingButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(final View v) {
-                    if (bikeStations.isEmpty()) {
-                        Util.showMessage(activity, R.string.message_too_fast);
-                    } else {
-                        final Intent intent = new Intent(activity, SearchActivity.class);
-                        intent.putParcelableArrayListExtra(getString(R.string.bundle_bike_stations), (ArrayList<BikeStation>) bikeStations);
-                        activity.startActivity(intent);
-                    }
+            floatingButton.setOnClickListener(v -> {
+                if (bikeStations.isEmpty()) {
+                    Util.showMessage(activity, R.string.message_too_fast);
+                } else {
+                    final Intent intent = new Intent(activity, SearchActivity.class);
+                    intent.putParcelableArrayListExtra(getString(R.string.bundle_bike_stations), (ArrayList<BikeStation>) bikeStations);
+                    activity.startActivity(intent);
                 }
             });
 
@@ -154,38 +151,34 @@ public class FavoritesFragment extends Fragment {
             });
 
             swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.activity_main_swipe_refresh_layout);
-            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            swipeRefreshLayout.setOnRefreshListener(() -> {
+                Util.loadAllFavorites(FavoritesFragment.this, FavoritesFragment.class);
+                // Google analytics
+                Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_arrivals, 0);
+                Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
+                Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
 
-                @Override
-                public void onRefresh() {
-                    Util.loadAllFavorites(FavoritesFragment.this, FavoritesFragment.class);
-                    // Google analytics
-                    Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_arrivals, 0);
-                    Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
-                    Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
+                // Check if bus or bike data are not loaded. If not, load them.
+                // Can happen when the app has been loaded without any data connection
+                boolean loadData = false;
+                final DataHolder dataHolder = DataHolder.getInstance();
+                final BusData busData = dataHolder.getBusData();
 
-                    // Check if bus or bike data are not loaded. If not, load them.
-                    // Can happen when the app has been loaded without any data connection
-                    boolean loadData = false;
-                    final DataHolder dataHolder = DataHolder.getInstance();
-                    final BusData busData = dataHolder.getBusData();
+                final Bundle bundle = activity.getIntent().getExtras();
+                final List<BikeStation> bikeStations1 = bundle.getParcelableArrayList(getString(R.string.bundle_bike_stations));
 
-                    final Bundle bundle = activity.getIntent().getExtras();
-                    final List<BikeStation> bikeStations = bundle.getParcelableArrayList(getString(R.string.bundle_bike_stations));
-
-                    if (busData.getRoutes() != null && busData.getRoutes().size() == 0) {
-                        loadData = true;
-                    }
-                    if (!loadData && bikeStations == null) {
-                        loadData = true;
-                    }
-                    if (loadData) {
-                        LoadBusAndBikeDataTask reload = new LoadBusAndBikeDataTask(activity);
-                        reload.execute();
-                    }
-                    Util.trackAction(activity, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
-                    swipeRefreshLayout.setColorSchemeColors(Util.getRandomColor());
+                if (busData.getRoutes() != null && busData.getRoutes().size() == 0) {
+                    loadData = true;
                 }
+                if (!loadData && bikeStations1 == null) {
+                    loadData = true;
+                }
+                if (loadData) {
+                    LoadBusAndBikeDataTask reload = new LoadBusAndBikeDataTask(activity);
+                    reload.execute();
+                }
+                Util.trackAction(activity, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
+                swipeRefreshLayout.setColorSchemeColors(Util.getRandomColor());
             });
         }
         return rootView;
@@ -264,11 +257,7 @@ public class FavoritesFragment extends Fragment {
         this.bikeStations = bikeStations;
         // Highlight background
         rootView.setBackgroundResource(R.drawable.highlight_selector);
-        rootView.postDelayed(new Runnable() {
-            public void run() {
-                rootView.setBackgroundResource(R.drawable.bg_selector);
-            }
-        }, 100);
+        rootView.postDelayed(() -> rootView.setBackgroundResource(R.drawable.bg_selector), 100);
         stopRefreshing();
         if (error) {
             Util.showMessage(activity, R.string.message_something_went_wrong);

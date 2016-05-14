@@ -92,26 +92,23 @@ public class BusBoundActivity extends ListActivity {
             }
             busBoundAdapter = new BusBoundAdapter();
             setListAdapter(busBoundAdapter);
-            getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(final AdapterView<?> adapterView, final View view, final int position, final long id) {
-                    final BusStop busStop = (BusStop) busBoundAdapter.getItem(position);
-                    final Intent intent = new Intent(App.getContext(), BusActivity.class);
+            getListView().setOnItemClickListener((adapterView, view, position, id) -> {
+                final BusStop busStop = (BusStop) busBoundAdapter.getItem(position);
+                final Intent intent = new Intent(App.getContext(), BusActivity.class);
 
-                    final Bundle extras = new Bundle();
-                    extras.putInt(getString(R.string.bundle_bus_stop_id), busStop.getId());
-                    extras.putString(getString(R.string.bundle_bus_stop_name), busStop.getName());
-                    extras.putString(getString(R.string.bundle_bus_route_id), busRouteId);
-                    extras.putString(getString(R.string.bundle_bus_route_name), busRouteName);
-                    extras.putString(getString(R.string.bundle_bus_bound), bound);
-                    extras.putString(getString(R.string.bundle_bus_bound_title), boundTitle);
-                    extras.putDouble(getString(R.string.bundle_bus_latitude), busStop.getPosition().getLatitude());
-                    extras.putDouble(getString(R.string.bundle_bus_longitude), busStop.getPosition().getLongitude());
+                final Bundle extras = new Bundle();
+                extras.putInt(getString(R.string.bundle_bus_stop_id), busStop.getId());
+                extras.putString(getString(R.string.bundle_bus_stop_name), busStop.getName());
+                extras.putString(getString(R.string.bundle_bus_route_id), busRouteId);
+                extras.putString(getString(R.string.bundle_bus_route_name), busRouteName);
+                extras.putString(getString(R.string.bundle_bus_bound), bound);
+                extras.putString(getString(R.string.bundle_bus_bound_title), boundTitle);
+                extras.putDouble(getString(R.string.bundle_bus_latitude), busStop.getPosition().getLatitude());
+                extras.putDouble(getString(R.string.bundle_bus_longitude), busStop.getPosition().getLongitude());
 
-                    intent.putExtras(extras);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                }
+                intent.putExtras(extras);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             });
 
             final EditText filter = (EditText) findViewById(R.id.bus_filter);
@@ -146,12 +143,7 @@ public class BusBoundActivity extends ListActivity {
             toolbar.setTitle(busRouteId + " - " + boundTitle);
 
             toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-            toolbar.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    finish();
-                }
-            });
+            toolbar.setOnClickListener(v -> finish());
 
             new BusBoundAsyncTask(this, busRouteId, bound, busBoundAdapter).execute();
 
@@ -177,16 +169,13 @@ public class BusBoundActivity extends ListActivity {
     @Override
     public final void onResume() {
         super.onResume();
-        mapFragment.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(final GoogleMap googleMap) {
-                googleMap.getUiSettings().setMyLocationButtonEnabled(false);
-                googleMap.getUiSettings().setZoomControlsEnabled(false);
-                if (Util.isNetworkAvailable()) {
-                    new LoadBusPatternTask(BusBoundActivity.this, mapFragment, busRouteId, boundTitle, false).execute();
-                } else {
-                    Util.showNetworkErrorMessage(layout);
-                }
+        mapFragment.getMapAsync(googleMap -> {
+            googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+            googleMap.getUiSettings().setZoomControlsEnabled(false);
+            if (Util.isNetworkAvailable()) {
+                new LoadBusPatternTask(BusBoundActivity.this, mapFragment, busRouteId, boundTitle, false).execute();
+            } else {
+                Util.showNetworkErrorMessage(layout);
             }
         });
     }
@@ -214,43 +203,40 @@ public class BusBoundActivity extends ListActivity {
     }
 
     public void drawPattern(@NonNull final BusPattern pattern) {
-        mapFragment.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(final GoogleMap googleMap) {
-                final List<Marker> markers = new ArrayList<>();
-                final PolylineOptions poly = new PolylineOptions();
-                poly.geodesic(true).color(Color.BLACK);
-                poly.width(7f);
-                Marker marker;
-                for (final PatternPoint patternPoint : pattern.getPoints()) {
-                    final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
-                    poly.add(point);
-                    marker = googleMap.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName()).snippet(Integer.toString(patternPoint.getSequence())));
-                    markers.add(marker);
-                    marker.setVisible(false);
-                }
-                googleMap.addPolyline(poly);
+        mapFragment.getMapAsync(googleMap -> {
+            final List<Marker> markers = new ArrayList<>();
+            final PolylineOptions poly = new PolylineOptions();
+            poly.geodesic(true).color(Color.BLACK);
+            poly.width(7f);
+            Marker marker;
+            for (final PatternPoint patternPoint : pattern.getPoints()) {
+                final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
+                poly.add(point);
+                marker = googleMap.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName()).snippet(Integer.toString(patternPoint.getSequence())));
+                markers.add(marker);
+                marker.setVisible(false);
+            }
+            googleMap.addPolyline(poly);
 
-                googleMap.setOnCameraChangeListener(new OnCameraChangeListener() {
-                    private float currentZoom = -1;
+            googleMap.setOnCameraChangeListener(new OnCameraChangeListener() {
+                private float currentZoom = -1;
 
-                    @Override
-                    public void onCameraChange(final CameraPosition pos) {
-                        if (pos.zoom != currentZoom) {
-                            currentZoom = pos.zoom;
-                            if (currentZoom >= 14) {
-                                for (final Marker marker : markers) {
-                                    marker.setVisible(true);
-                                }
-                            } else {
-                                for (final Marker marker : markers) {
-                                    marker.setVisible(false);
-                                }
+                @Override
+                public void onCameraChange(final CameraPosition pos) {
+                    if (pos.zoom != currentZoom) {
+                        currentZoom = pos.zoom;
+                        if (currentZoom >= 14) {
+                            for (final Marker marker : markers) {
+                                marker.setVisible(true);
+                            }
+                        } else {
+                            for (final Marker marker : markers) {
+                                marker.setVisible(false);
                             }
                         }
                     }
-                });
-            }
+                }
+            });
         });
     }
 }

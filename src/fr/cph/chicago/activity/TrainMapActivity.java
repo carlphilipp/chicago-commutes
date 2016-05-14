@@ -122,13 +122,10 @@ public class TrainMapActivity extends Activity {
     private void setToolbar() {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.main);
-        toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(final MenuItem item) {
-                new LoadCurrentPositionTask(TrainMapActivity.this, mapFragment).execute();
-                new LoadTrainPositionTask(TrainMapActivity.this, line, trainData).execute(false, true);
-                return false;
-            }
+        toolbar.setOnMenuItemClickListener((item -> {
+            new LoadCurrentPositionTask(TrainMapActivity.this, mapFragment).execute();
+            new LoadTrainPositionTask(TrainMapActivity.this, line, trainData).execute(false, true);
+            return false;
         }));
         final TrainLine trainLine = TrainLine.fromXmlString(line);
         Util.setWindowsColor(this, toolbar, trainLine);
@@ -136,12 +133,7 @@ public class TrainMapActivity extends Activity {
             toolbar.setElevation(4);
         }
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-        toolbar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        toolbar.setOnClickListener(v -> finish());
 
         toolbar.setTitle(trainLine.toStringWithLine());
     }
@@ -170,54 +162,51 @@ public class TrainMapActivity extends Activity {
     @Override
     public final void onResume() {
         super.onResume();
-        mapFragment.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(final GoogleMap googleMap) {
+        mapFragment.getMapAsync(googleMap -> {
 
-                googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-                    @Override
-                    public View getInfoWindow(final Marker marker) {
+            googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+                @Override
+                public View getInfoWindow(final Marker marker) {
+                    return null;
+                }
+
+                @Override
+                public View getInfoContents(final Marker marker) {
+                    if (!"".equals(marker.getSnippet())) {
+                        final View view = views.get(marker);
+                        if (!refreshingInfoWindow) {
+                            selectedMarker = marker;
+                            final String runNumber = marker.getSnippet();
+                            new LoadTrainFollowTask(TrainMapActivity.this, view, false, trainData).execute(runNumber);
+                            status.put(marker, false);
+                        }
+                        return view;
+                    } else {
                         return null;
                     }
-
-                    @Override
-                    public View getInfoContents(final Marker marker) {
-                        if (!"".equals(marker.getSnippet())) {
-                            final View view = views.get(marker);
-                            if (!refreshingInfoWindow) {
-                                selectedMarker = marker;
-                                final String runNumber = marker.getSnippet();
-                                new LoadTrainFollowTask(TrainMapActivity.this, view, false, trainData).execute(runNumber);
-                                status.put(marker, false);
-                            }
-                            return view;
-                        } else {
-                            return null;
-                        }
-                    }
-                });
-
-                googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                    @Override
-                    public void onInfoWindowClick(final Marker marker) {
-                        if (!"".equals(marker.getSnippet())) {
-                            final View view = views.get(marker);
-                            if (!refreshingInfoWindow) {
-                                selectedMarker = marker;
-                                final String runNumber = marker.getSnippet();
-                                final Boolean current = status.get(marker);
-                                new LoadTrainFollowTask(TrainMapActivity.this, view, !current, trainData).execute(runNumber);
-                                status.put(marker, !current);
-                            }
-                        }
-                    }
-                });
-                if (Util.isNetworkAvailable()) {
-                    new LoadCurrentPositionTask(TrainMapActivity.this, mapFragment).execute();
-                    new LoadTrainPositionTask(TrainMapActivity.this, line, trainData).execute(centerMap, true);
-                } else {
-                    Util.showNetworkErrorMessage(layout);
                 }
+            });
+
+            googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                @Override
+                public void onInfoWindowClick(final Marker marker) {
+                    if (!"".equals(marker.getSnippet())) {
+                        final View view = views.get(marker);
+                        if (!refreshingInfoWindow) {
+                            selectedMarker = marker;
+                            final String runNumber = marker.getSnippet();
+                            final Boolean current = status.get(marker);
+                            new LoadTrainFollowTask(TrainMapActivity.this, view, !current, trainData).execute(runNumber);
+                            status.put(marker, !current);
+                        }
+                    }
+                }
+            });
+            if (Util.isNetworkAvailable()) {
+                new LoadCurrentPositionTask(TrainMapActivity.this, mapFragment).execute();
+                new LoadTrainPositionTask(TrainMapActivity.this, line, trainData).execute(centerMap, true);
+            } else {
+                Util.showNetworkErrorMessage(layout);
             }
         });
     }
@@ -244,78 +233,69 @@ public class TrainMapActivity extends Activity {
     }
 
     public void centerMapOnTrain(@NonNull final List<Train> result) {
-        mapFragment.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(final GoogleMap googleMap) {
-                final Position position;
-                final int zoom;
-                if (result.size() == 1) {
-                    position = result.get(0).getPosition();
-                    zoom = 15;
-                } else {
-                    position = Train.getBestPosition(result);
-                    zoom = 11;
-                }
-                final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+        mapFragment.getMapAsync(googleMap -> {
+            final Position position;
+            final int zoom;
+            if (result.size() == 1) {
+                position = result.get(0).getPosition();
+                zoom = 15;
+            } else {
+                position = Train.getBestPosition(result);
+                zoom = 11;
             }
+            final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
         });
     }
 
     public void drawTrains(@NonNull final List<Train> trains) {
-        mapFragment.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(final GoogleMap googleMap) {
-                if (views == null) {
-                    views = new HashMap<>();
-                } else {
-                    views.clear();
-                }
-                for (final Marker marker : markers) {
-                    marker.remove();
-                }
-                markers.clear();
-                final BitmapDescriptor bitmapDescr = trainListener.getCurrentBitmapDescriptor();
-                for (final Train train : trains) {
-                    final LatLng point = new LatLng(train.getPosition().getLatitude(), train.getPosition().getLongitude());
-                    final String title = "To " + train.getDestName();
-                    final String snippet = Integer.toString(train.getRouteNumber());
-
-                    final Marker marker = googleMap.addMarker(new MarkerOptions().position(point).title(title).snippet(snippet).icon(bitmapDescr).anchor(0.5f, 0.5f).rotation(train.getHeading()).flat(true));
-                    markers.add(marker);
-
-                    final View view = TrainMapActivity.this.getLayoutInflater().inflate(R.layout.marker_train, viewGroup, false);
-                    final TextView title2 = (TextView) view.findViewById(R.id.title);
-                    title2.setText(title);
-
-                    final TextView color = (TextView) view.findViewById(R.id.route_color_value);
-                    color.setBackgroundColor(TrainLine.fromXmlString(line).getColor());
-
-                    views.put(marker, view);
-                }
-
-
-                trainListener.setTrainMarkers(markers);
-
-                googleMap.setOnCameraChangeListener(trainListener);
+        mapFragment.getMapAsync(googleMap -> {
+            if (views == null) {
+                views = new HashMap<>();
+            } else {
+                views.clear();
             }
+            for (final Marker marker : markers) {
+                marker.remove();
+            }
+            markers.clear();
+            final BitmapDescriptor bitmapDescr = trainListener.getCurrentBitmapDescriptor();
+            for (final Train train : trains) {
+                final LatLng point = new LatLng(train.getPosition().getLatitude(), train.getPosition().getLongitude());
+                final String title = "To " + train.getDestName();
+                final String snippet = Integer.toString(train.getRouteNumber());
+
+                final Marker marker = googleMap.addMarker(new MarkerOptions().position(point).title(title).snippet(snippet).icon(bitmapDescr).anchor(0.5f, 0.5f).rotation(train.getHeading()).flat(true));
+                markers.add(marker);
+
+                final View view = TrainMapActivity.this.getLayoutInflater().inflate(R.layout.marker_train, viewGroup, false);
+                final TextView title2 = (TextView) view.findViewById(R.id.title);
+                title2.setText(title);
+
+                final TextView color = (TextView) view.findViewById(R.id.route_color_value);
+                color.setBackgroundColor(TrainLine.fromXmlString(line).getColor());
+
+                views.put(marker, view);
+            }
+
+
+            trainListener.setTrainMarkers(markers);
+
+            googleMap.setOnCameraChangeListener(trainListener);
         });
     }
 
     public void drawLine(@NonNull final List<Position> positions) {
         if (drawLine) {
-            mapFragment.getMapAsync(new OnMapReadyCallback() {
-                @Override
-                public void onMapReady(final GoogleMap googleMap) {
-                    final PolylineOptions poly = new PolylineOptions();
-                    poly.width(7f);
-                    poly.geodesic(true).color(TrainLine.fromXmlString(line).getColor());
-                    for (final Position position : positions) {
-                        final LatLng point = new LatLng(position.getLatitude(), position.getLongitude());
-                        poly.add(point);
-                    }
-                    googleMap.addPolyline(poly);
+            mapFragment.getMapAsync(googleMap -> {
+                final PolylineOptions poly = new PolylineOptions();
+                poly.width(7f);
+                poly.geodesic(true).color(TrainLine.fromXmlString(line).getColor());
+                for (final Position position : positions) {
+                    final LatLng point = new LatLng(position.getLatitude(), position.getLongitude());
+                    poly.add(point);
                 }
+                googleMap.addPolyline(poly);
             });
             drawLine = false;
         }

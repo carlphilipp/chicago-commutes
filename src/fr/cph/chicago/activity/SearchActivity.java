@@ -54,7 +54,7 @@ public class SearchActivity extends AppCompatActivity {
                 container.getForeground().setAlpha(0);
 
                 searchAdapter = new SearchAdapter(this);
-                searchAdapter.updateData(new ArrayList<Station>(), new ArrayList<BusRoute>(), new ArrayList<BikeStation>());
+                searchAdapter.updateData(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
                 bikeStations = getIntent().getExtras().getParcelableArrayList(getString(R.string.bundle_bike_stations));
                 handleIntent(getIntent());
 

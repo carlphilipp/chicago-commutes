@@ -69,12 +69,7 @@ public class BikeStationActivity extends Activity {
                 final double longitude = bikeStation.getLongitude();
 
                 swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_station_swipe_refresh_layout);
-                swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                    @Override
-                    public void onRefresh() {
-                        new DivvyAsyncTask(BikeStationActivity.this, bikeStation.getId(), swipeRefreshLayout).execute();
-                    }
-                });
+                swipeRefreshLayout.setOnRefreshListener(() -> new DivvyAsyncTask(BikeStationActivity.this, bikeStation.getId(), swipeRefreshLayout).execute());
 
                 isFavorite = isFavorite();
 
@@ -97,12 +92,7 @@ public class BikeStationActivity extends Activity {
                     favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
                 }
                 final LinearLayout favoritesImageContainer = (LinearLayout) findViewById(R.id.favorites_container);
-                favoritesImageContainer.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(final View view) {
-                        BikeStationActivity.this.switchFavorite();
-                    }
-                });
+                favoritesImageContainer.setOnClickListener(view -> BikeStationActivity.this.switchFavorite());
 
                 final TextView bikeStationValue = (TextView) findViewById(R.id.activity_bike_station_value);
                 bikeStationValue.setText(bikeStation.getStAddress1());
@@ -120,13 +110,10 @@ public class BikeStationActivity extends Activity {
     private void setToolBar() {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.main);
-        toolbar.setOnMenuItemClickListener((new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                swipeRefreshLayout.setRefreshing(true);
-                new DivvyAsyncTask(BikeStationActivity.this, bikeStation.getId(), swipeRefreshLayout).execute();
-                return false;
-            }
+        toolbar.setOnMenuItemClickListener((item -> {
+            swipeRefreshLayout.setRefreshing(true);
+            new DivvyAsyncTask(BikeStationActivity.this, bikeStation.getId(), swipeRefreshLayout).execute();
+            return false;
         }));
         Util.setWindowsColor(this, toolbar, TrainLine.NA);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -134,12 +121,7 @@ public class BikeStationActivity extends Activity {
         }
         toolbar.setTitle(bikeStation.getName());
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-        toolbar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        toolbar.setOnClickListener(v -> finish());
     }
 
     private void drawData() {

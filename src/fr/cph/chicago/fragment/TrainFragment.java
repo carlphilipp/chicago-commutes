@@ -67,16 +67,13 @@ public final class TrainFragment extends Fragment {
         final TrainStationAdapter ada = new TrainStationAdapter();
         final ListView listView = (ListView) rootView.findViewById(R.id.train_list);
         listView.setAdapter(ada);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(final AdapterView<?> parentView, final View childView, final int position, final long id) {
-                final Intent intent = new Intent(getContext(), TrainStationActivity.class);
-                final Bundle extras = new Bundle();
-                final String line = TrainLine.values()[position].toString();
-                extras.putString(getContext().getString(R.string.bundle_train_line), line);
-                intent.putExtras(extras);
-                startActivity(intent);
-            }
+        listView.setOnItemClickListener((parentView, childView, position, id) -> {
+            final Intent intent = new Intent(getContext(), TrainStationActivity.class);
+            final Bundle extras = new Bundle();
+            final String line = TrainLine.values()[position].toString();
+            extras.putString(getContext().getString(R.string.bundle_train_line), line);
+            intent.putExtras(extras);
+            startActivity(intent);
         });
         return rootView;
     }

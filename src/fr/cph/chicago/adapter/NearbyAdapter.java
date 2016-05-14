@@ -262,7 +262,7 @@ public final class NearbyAdapter extends BaseAdapter {
 
         final LinearLayout resultLayout = (LinearLayout) convertView.findViewById(R.id.nearby_results);
 
-        final Map<String, List<BusArrival>> arrivalsForStop = busArrivals.get(busStop.getId(), new HashMap<String, List<BusArrival>>());
+        final Map<String, List<BusArrival>> arrivalsForStop = busArrivals.get(busStop.getId(), new HashMap<>());
 
         for (final Entry<String, List<BusArrival>> entry : arrivalsForStop.entrySet()) {
             final LinearLayout.LayoutParams leftParam = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);

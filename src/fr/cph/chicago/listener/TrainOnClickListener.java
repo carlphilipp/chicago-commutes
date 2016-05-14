@@ -87,23 +87,20 @@ public class TrainOnClickListener implements OnClickListener {
             lines.addAll(trainLines);
 
             final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-            builder.setAdapter(ada, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(final DialogInterface dialog, final int position) {
-                    final Bundle extras = new Bundle();
-                    if (position == 0) {
-                        // Start station activity
-                        final Intent intent = new Intent(App.getContext(), StationActivity.class);
-                        extras.putInt(activity.getString(R.string.bundle_train_stationId), stationId);
-                        intent.putExtras(extras);
-                        activity.startActivity(intent);
-                    } else {
-                        // Follow all trains from given line on google map view
-                        final Intent intent = new Intent(App.getContext(), TrainMapActivity.class);
-                        extras.putString(activity.getString(R.string.bundle_train_line), lines.get(position - 1).toTextString());
-                        intent.putExtras(extras);
-                        activity.startActivity(intent);
-                    }
+            builder.setAdapter(ada, (dialog, position) -> {
+                final Bundle extras = new Bundle();
+                if (position == 0) {
+                    // Start station activity
+                    final Intent intent = new Intent(App.getContext(), StationActivity.class);
+                    extras.putInt(activity.getString(R.string.bundle_train_stationId), stationId);
+                    intent.putExtras(extras);
+                    activity.startActivity(intent);
+                } else {
+                    // Follow all trains from given line on google map view
+                    final Intent intent = new Intent(App.getContext(), TrainMapActivity.class);
+                    extras.putString(activity.getString(R.string.bundle_train_line), lines.get(position - 1).toTextString());
+                    intent.putExtras(extras);
+                    activity.startActivity(intent);
                 }
             });
 

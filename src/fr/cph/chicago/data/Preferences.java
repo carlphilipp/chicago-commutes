@@ -153,21 +153,18 @@ public final class Preferences {
                 favorites.add(value);
             }
         }
-        Collections.sort(favorites, new Comparator<String>() {
-            @Override
-            public int compare(final String str1, final String str2) {
-                final String str1Decoded = Util.decodeBusFavorite(str1)[0];
-                final String str2Decoded = Util.decodeBusFavorite(str2)[0];
+        Collections.sort(favorites, (str1, str2) -> {
+            final String str1Decoded = Util.decodeBusFavorite(str1)[0];
+            final String str2Decoded = Util.decodeBusFavorite(str2)[0];
 
-                final Matcher matcher1 = PATTERN.matcher(str1Decoded);
-                final Matcher matcher2 = PATTERN.matcher(str2Decoded);
-                if (matcher1.find() && matcher2.find()) {
-                    final int one = Integer.parseInt(matcher1.group(1));
-                    final int two = Integer.parseInt(matcher1.group(1));
-                    return one < two ? -1 : (one == two ? 0 : 1);
-                } else {
-                    return str1Decoded.compareTo(str2Decoded);
-                }
+            final Matcher matcher1 = PATTERN.matcher(str1Decoded);
+            final Matcher matcher2 = PATTERN.matcher(str2Decoded);
+            if (matcher1.find() && matcher2.find()) {
+                final int one = Integer.parseInt(matcher1.group(1));
+                final int two = Integer.parseInt(matcher1.group(1));
+                return one < two ? -1 : (one == two ? 0 : 1);
+            } else {
+                return str1Decoded.compareTo(str2Decoded);
             }
         });
         Log.v(TAG, "Read bus favorites : " + favorites.toString());

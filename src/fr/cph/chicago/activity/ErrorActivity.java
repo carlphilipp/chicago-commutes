@@ -51,14 +51,11 @@ public class ErrorActivity extends Activity {
         final TextView errorText = (TextView) findViewById(R.id.error_message);
         errorText.setText(error);
         final Button button = (Button) findViewById(R.id.retry_button);
-        button.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Intent intent = new Intent(ErrorActivity.this, BaseActivity.class);
-                intent.putExtra(ErrorActivity.this.getString(R.string.bundle_error), true);
-                finish();
-                startActivity(intent);
-            }
+        button.setOnClickListener(v -> {
+            final Intent intent = new Intent(ErrorActivity.this, BaseActivity.class);
+            intent.putExtra(ErrorActivity.this.getString(R.string.bundle_error), true);
+            finish();
+            startActivity(intent);
         });
     }
 

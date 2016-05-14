@@ -192,12 +192,7 @@ public class BusData {
                 res.add(busStop);
             }
         }
-        Collections.sort(res, new Comparator<BusStop>() {
-            @Override
-            public int compare(final BusStop lhs, final BusStop rhs) {
-                return lhs.getName().compareTo(rhs.getName());
-            }
-        });
+        Collections.sort(res, (lhs, rhs) -> lhs.getName().compareTo(rhs.getName()));
         return res;
     }
 }
