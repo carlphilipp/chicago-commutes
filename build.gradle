@@ -26,6 +26,8 @@ dependencies {
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: "$jackson_version_version"
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "$jackson_version_version"
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: "$jackson_version_version"
+    compile group: 'io.reactivex', name: 'rxandroid', version: "$reactivex_android_version"
+    compile group: 'io.reactivex', name: 'rxjava', version: "$reactivex_java_version"
 
     provided group: 'org.projectlombok', name: 'lombok', version: "$lombok_version"
 }
