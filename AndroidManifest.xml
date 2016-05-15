@@ -39,8 +39,8 @@
         android:fullBackupContent="true"
         android:icon="@drawable/ic_logo_1"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:supportsRtl="true">
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
         <activity
             android:name="fr.cph.chicago.activity.BaseActivity"
             android:alwaysRetainTaskState="true"
@@ -70,15 +70,9 @@
             android:label="@string/station_activity"
             android:parentActivityName="fr.cph.chicago.activity.MainActivity"
             android:screenOrientation="portrait">
-
-            <!--
-            android:parentActivityName Load the names activity when pushed by user.
-                    May have issue with data persistence
-
-            -->
         </activity>
         <activity
-            android:name="fr.cph.chicago.activity.TrainStationActivity"
+            android:name=".activity.TrainListStationActivity"
             android:label="@string/train_station_activity"
             android:parentActivityName="fr.cph.chicago.activity.MainActivity"
             android:screenOrientation="portrait">

@@ -32,7 +32,7 @@ import fr.cph.chicago.util.Util;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class TrainStationActivity extends ListActivity {
+public class TrainListStationActivity extends ListActivity {
 
     private TrainLine trainLine;
     private String lineParam;

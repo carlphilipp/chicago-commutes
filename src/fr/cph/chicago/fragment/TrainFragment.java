@@ -22,11 +22,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import fr.cph.chicago.R;
-import fr.cph.chicago.activity.TrainStationActivity;
+import fr.cph.chicago.activity.TrainListStationActivity;
 import fr.cph.chicago.adapter.TrainStationAdapter;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.Util;
@@ -68,7 +67,7 @@ public final class TrainFragment extends Fragment {
         final ListView listView = (ListView) rootView.findViewById(R.id.train_list);
         listView.setAdapter(ada);
         listView.setOnItemClickListener((parentView, childView, position, id) -> {
-            final Intent intent = new Intent(getContext(), TrainStationActivity.class);
+            final Intent intent = new Intent(getContext(), TrainListStationActivity.class);
             final Bundle extras = new Bundle();
             final String line = TrainLine.values()[position].toString();
             extras.putString(getContext().getString(R.string.bundle_train_line), line);
