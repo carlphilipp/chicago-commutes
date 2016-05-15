@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,7 +16,6 @@
 
 package fr.cph.chicago.activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,8 +23,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -40,7 +37,6 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.listener.GoogleMapDirectionOnClickListener;
 import fr.cph.chicago.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.listener.GoogleStreetOnClickListener;
-import fr.cph.chicago.task.DisplayGoogleStreetPictureTask;
 import fr.cph.chicago.task.DivvyAsyncTask;
 import fr.cph.chicago.util.Util;
 
@@ -50,7 +46,7 @@ import fr.cph.chicago.util.Util;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class BikeStationActivity extends Activity {
+public class BikeStationActivity extends AbstractStationActivity {
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private ImageView favoritesImage;
@@ -77,7 +73,8 @@ public class BikeStationActivity extends Activity {
                 final TextView streetViewText = (TextView) findViewById(R.id.activity_bike_station_steetview_text);
 
                 // Call google street api to load image
-                new DisplayGoogleStreetPictureTask(this, streetViewImage, streetViewText).execute(latitude, longitude);
+                createGoogleStreetObservable(latitude, longitude);
+                subscribeToGoogleStreet(streetViewImage, streetViewText);
 
                 final ImageView mapImage = (ImageView) findViewById(R.id.activity_map_image);
                 mapImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));

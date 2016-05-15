@@ -24,6 +24,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -60,6 +61,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
+import fr.cph.chicago.connection.GStreetViewConnect;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.Position;

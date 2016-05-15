@@ -18,6 +18,7 @@ package fr.cph.chicago.connection;
 
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.apache.commons.io.IOUtils;
@@ -62,7 +63,7 @@ public class GStreetViewConnect {
         return instance;
     }
 
-    @NonNull
+    @Nullable
     public final Drawable connect(final double latitude, final double longitude) {
         final StringBuilder address = new StringBuilder(App.getContext().getString(R.string.url_street_view));
         address.append("?key=");
@@ -82,7 +83,7 @@ public class GStreetViewConnect {
      * @param address the address to connect to
      * @return a drawable map
      */
-    @NonNull
+    @Nullable
     private Drawable connectUrl(@NonNull final String address) {
         Log.v(TAG, "Address: " + address);
         InputStream is = null;
