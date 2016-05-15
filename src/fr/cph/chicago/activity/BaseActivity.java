@@ -23,45 +23,25 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.SparseArray;
 
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
-import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
-import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BusArrival;
-import fr.cph.chicago.entity.Eta;
-import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.entity.enumeration.TrainDirection;
-import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.exception.ConnectException;
-import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.service.FavoritesService;
 import fr.cph.chicago.service.FavoritesServiceImpl;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.web.FavoritesResult;
-import fr.cph.chicago.xml.XmlParser;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func2;
 import rx.schedulers.Schedulers;
-
-import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
-import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
 
 /**
  * This class represents the base activity of the application It will load the loading screen and/or the main
@@ -76,7 +56,7 @@ public class BaseActivity extends Activity {
 
     private final FavoritesService service;
 
-    public BaseActivity(){
+    public BaseActivity() {
         service = new FavoritesServiceImpl();
     }
 
@@ -109,7 +89,7 @@ public class BaseActivity extends Activity {
             .observeOn(AndroidSchedulers.mainThread());
 
         final Observable<List<BusArrival>> busArrivalsObservable = Observable.create(
-            (Subscriber<? super List<BusArrival>> subscriber) ->  subscriber.onNext(service.loadFavoritesBuses()))
+            (Subscriber<? super List<BusArrival>> subscriber) -> subscriber.onNext(service.loadFavoritesBuses()))
             .onErrorReturn(throwable -> {
                 Log.e(TAG, throwable.getMessage(), throwable);
                 return new ArrayList<>();
@@ -117,16 +97,13 @@ public class BaseActivity extends Activity {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
 
-        Observable.zip(trainArrivalsObservable, busArrivalsObservable, new Func2<SparseArray<TrainArrival>, List<BusArrival>, FavoritesResult>() {
-                @Override
-                public FavoritesResult call(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals) {
-                    App.modifyLastUpdate(Calendar.getInstance().getTime());
-                    trackWithGoogleAnalytics();
-                    final FavoritesResult favoritesResult = new FavoritesResult();
-                    favoritesResult.setTrainArrivals(trainArrivals);
-                    favoritesResult.setBusArrivals(busArrivals);
-                    return favoritesResult;
-                }
+        Observable.zip(trainArrivalsObservable, busArrivalsObservable, (trainArrivals, busArrivals) -> {
+                App.modifyLastUpdate(Calendar.getInstance().getTime());
+                trackWithGoogleAnalytics();
+                final FavoritesResult favorigitesResult = new FavoritesResult();
+                favoritesResult.setTrainArrivals(trainArrivals);
+                favoritesResult.setBusArrivals(busArrivals);
+                return favoritesResult;
             }
         ).subscribe(
             this::startMainActivity,
