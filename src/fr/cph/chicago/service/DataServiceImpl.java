@@ -16,8 +16,10 @@ import java.util.Map;
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
+import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
+import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Station;
@@ -28,21 +30,19 @@ import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.XmlParser;
+import rx.exceptions.Exceptions;
 
 import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
 import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
 
-/**
- * Created by carl on 5/15/16.
- */
-public class FavoritesServiceImpl implements FavoritesService {
+public class DataServiceImpl implements DataService {
 
-    private static final String TAG = FavoritesServiceImpl.class.getSimpleName();
+    private static final String TAG = DataServiceImpl.class.getSimpleName();
 
     private XmlParser xmlParser;
 
-    public FavoritesServiceImpl() {
-        xmlParser = XmlParser.getInstance();
+    public DataServiceImpl() {
+        this.xmlParser = XmlParser.getInstance();
     }
 
     @Override
@@ -107,10 +107,8 @@ public class FavoritesServiceImpl implements FavoritesService {
                 // Sort Eta by arriving time
                 Collections.sort(etas);
             }
-
-
         } catch (final ConnectException | ParserException e) {
-            Log.e(TAG, e.getMessage(), e);
+            throw Exceptions.propagate(e);
         }
         return trainArrivals;
     }
@@ -151,9 +149,20 @@ public class FavoritesServiceImpl implements FavoritesService {
                 busArrivals.addAll(xmlParser.parseBusArrivals(xmlResult));
             }
         } catch (final ConnectException | ParserException e) {
-            Log.e(TAG, e.getMessage(), e);
+            throw Exceptions.propagate(e);
         }
-        throw new RuntimeException("DERODERO");
-        //return busArrivals;
+        return busArrivals;
+    }
+
+    @Override
+    public BusData loadLocalBusData() {
+        BusData.getInstance().readBusStops();
+        return BusData.getInstance();
+    }
+
+    @Override
+    public TrainData loadLocalTrainData() {
+        TrainData.getInstance().read();
+        return TrainData.getInstance();
     }
 }

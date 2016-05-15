@@ -4,11 +4,18 @@ import android.util.SparseArray;
 
 import java.util.List;
 
+import fr.cph.chicago.data.BusData;
+import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
 
-public interface FavoritesService {
+public interface DataService {
+
     SparseArray<TrainArrival> loadFavoritesTrain();
 
     List<BusArrival> loadFavoritesBuses();
+
+    BusData loadLocalBusData();
+
+    TrainData loadLocalTrainData();
 }

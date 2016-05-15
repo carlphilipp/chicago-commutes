@@ -34,8 +34,8 @@ import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.service.FavoritesService;
-import fr.cph.chicago.service.FavoritesServiceImpl;
+import fr.cph.chicago.service.DataService;
+import fr.cph.chicago.service.DataServiceImpl;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.web.FavoritesResult;
 import rx.Observable;
@@ -54,33 +54,47 @@ public class BaseActivity extends Activity {
 
     private static final String TAG = BaseActivity.class.getSimpleName();
 
-    private final FavoritesService service;
+    private final DataService service;
 
     public BaseActivity() {
-        service = new FavoritesServiceImpl();
+        service = new DataServiceImpl();
     }
 
     @Override
     protected final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.loading);
-        loadLocalData();
-        loadFavorites();
+        new Thread(this::loadLocalAndFavoritesData).start();
     }
 
-    private void loadLocalData() {
-        final TrainData trainData = TrainData.getInstance();
-        trainData.read();
-        final BusData busData = BusData.getInstance();
-        busData.readBusStops();
-        final DataHolder dataHolder = DataHolder.getInstance();
-        dataHolder.setBusData(busData);
-        dataHolder.setTrainData(trainData);
-    }
+    private void loadLocalAndFavoritesData() {
 
-    private void loadFavorites() {
+        // Train local data
+        final Observable<TrainData> trainDataObservable = Observable.create(
+            (Subscriber<? super TrainData> subscriber) -> {
+                subscriber.onNext(service.loadLocalTrainData());
+                subscriber.onCompleted();
+            })
+            .doOnNext(onNextTrainData -> DataHolder.getInstance().setTrainData(onNextTrainData))
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread());
+
+        // Bus local data
+        final Observable<BusData> busDataObservable = Observable.create(
+            (Subscriber<? super BusData> subscriber) -> {
+                subscriber.onNext(service.loadLocalBusData());
+                subscriber.onCompleted();
+            })
+            .doOnNext(onNextBusData -> DataHolder.getInstance().setBusData(onNextBusData))
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread());
+
+        // Train online favorites
         final Observable<SparseArray<TrainArrival>> trainArrivalsObservable = Observable.create(
-            (Subscriber<? super SparseArray<TrainArrival>> subscriber) -> subscriber.onNext(service.loadFavoritesTrain()))
+            (Subscriber<? super SparseArray<TrainArrival>> subscriber) -> {
+                subscriber.onNext(service.loadFavoritesTrain());
+                subscriber.onCompleted();
+            })
             .onErrorReturn(throwable -> {
                 Log.e(TAG, throwable.getMessage(), throwable);
                 return new SparseArray<>();
@@ -88,8 +102,12 @@ public class BaseActivity extends Activity {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
 
+        // Bus online favorites
         final Observable<List<BusArrival>> busArrivalsObservable = Observable.create(
-            (Subscriber<? super List<BusArrival>> subscriber) -> subscriber.onNext(service.loadFavoritesBuses()))
+            (Subscriber<? super List<BusArrival>> subscriber) -> {
+                subscriber.onNext(service.loadFavoritesBuses());
+                subscriber.onCompleted();
+            })
             .onErrorReturn(throwable -> {
                 Log.e(TAG, throwable.getMessage(), throwable);
                 return new ArrayList<>();
@@ -97,21 +115,23 @@ public class BaseActivity extends Activity {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
 
-        Observable.zip(trainArrivalsObservable, busArrivalsObservable, (trainArrivals, busArrivals) -> {
-                App.modifyLastUpdate(Calendar.getInstance().getTime());
-                trackWithGoogleAnalytics();
-                final FavoritesResult favoritesResult = new FavoritesResult();
-                favoritesResult.setTrainArrivals(trainArrivals);
-                favoritesResult.setBusArrivals(busArrivals);
-                return favoritesResult;
-            }
-        ).subscribe(
-            this::startMainActivity,
-            onError -> {
-                Log.e(TAG, onError.getMessage(), onError);
-                displayError("Oops, something went wrong!");
-            }
-        );
+        // Run local first and then online: Ensure that local data is loaded first
+        Observable.zip(trainDataObservable, busDataObservable, (trainData, busData) -> true)
+            .doOnCompleted(() -> Observable.zip(trainArrivalsObservable, busArrivalsObservable, (trainArrivals, busArrivals) -> {
+                    App.modifyLastUpdate(Calendar.getInstance().getTime());
+                    trackWithGoogleAnalytics();
+                    final FavoritesResult favoritesResult = new FavoritesResult();
+                    favoritesResult.setTrainArrivals(trainArrivals);
+                    favoritesResult.setBusArrivals(busArrivals);
+                    return favoritesResult;
+                }
+            ).subscribe(
+                BaseActivity.this::startMainActivity,
+                onError -> {
+                    Log.e(TAG, onError.getMessage(), onError);
+                    displayError("Oops, something went wrong!");
+                }
+            )).subscribe();
     }
 
 
@@ -123,20 +143,17 @@ public class BaseActivity extends Activity {
     /**
      * Finish current activity and start main activity with custom transition
      *
-     * @param trainArrivals the train arrivals
-     * @param busArrivals   the bus arrivals
+     * @param result the trains and buses arrivals
      */
     private void startMainActivity(@NonNull final FavoritesResult result) {
-        if (!isFinishing()) {
-            final Intent intent = new Intent(this, MainActivity.class);
-            final Bundle bundle = new Bundle();
-            bundle.putParcelableArrayList(getString(R.string.bundle_bus_arrivals), (ArrayList<BusArrival>) result.getBusArrivals());
-            bundle.putSparseParcelableArray(getString(R.string.bundle_train_arrivals), result.getTrainArrivals());
-            intent.putExtras(bundle);
+        final Intent intent = new Intent(this, MainActivity.class);
+        final Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(getString(R.string.bundle_bus_arrivals), (ArrayList<BusArrival>) result.getBusArrivals());
+        bundle.putSparseParcelableArray(getString(R.string.bundle_train_arrivals), result.getTrainArrivals());
+        intent.putExtras(bundle);
 
-            finish();
-            startActivity(intent);
-        }
+        finish();
+        startActivity(intent);
     }
 
     public void displayError(@NonNull final String message) {
