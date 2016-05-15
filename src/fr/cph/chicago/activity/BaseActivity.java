@@ -100,7 +100,7 @@ public class BaseActivity extends Activity {
         Observable.zip(trainArrivalsObservable, busArrivalsObservable, (trainArrivals, busArrivals) -> {
                 App.modifyLastUpdate(Calendar.getInstance().getTime());
                 trackWithGoogleAnalytics();
-                final FavoritesResult favorigitesResult = new FavoritesResult();
+                final FavoritesResult favoritesResult = new FavoritesResult();
                 favoritesResult.setTrainArrivals(trainArrivals);
                 favoritesResult.setBusArrivals(busArrivals);
                 return favoritesResult;
