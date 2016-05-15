@@ -314,12 +314,6 @@ public final class Util {
         return Boolean.parseBoolean(number);
     }
 
-    public static void loadTrainFavorites(@NonNull final Object instance, @NonNull final Class<?> clazz) {
-        final MultiValuedMap<String, String> paramTrain = Util.getFavoritesTrainParams();
-        final MultiValuedMap<String, String> paramBus = Util.getFavoritesBusParams();
-        new GlobalConnectTask(instance, clazz, paramTrain, paramBus, false).execute();
-    }
-
     public static void loadAllFavorites(@NonNull final Object instance, @NonNull final Class<?> clazz) {
         final MultiValuedMap<String, String> paramTrain = Util.getFavoritesTrainParams();
         final MultiValuedMap<String, String> paramBus = Util.getFavoritesBusParams();
