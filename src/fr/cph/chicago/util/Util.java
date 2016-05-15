@@ -327,7 +327,7 @@ public final class Util {
     }
 
     @NonNull
-    private static MultiValuedMap<String, String> getFavoritesTrainParams() {
+    public static MultiValuedMap<String, String> getFavoritesTrainParams() {
         final MultiValuedMap<String, String> paramsTrain = new ArrayListValuedHashMap<>();
         final List<Integer> favorites = Preferences.getTrainFavorites(App.PREFERENCE_FAVORITES_TRAIN);
         for (final Integer favorite : favorites) {
@@ -337,7 +337,7 @@ public final class Util {
     }
 
     @NonNull
-    private static MultiValuedMap<String, String> getFavoritesBusParams() {
+    public static MultiValuedMap<String, String> getFavoritesBusParams() {
         final MultiValuedMap<String, String> paramsBus = new ArrayListValuedHashMap<>();
         final List<String> busFavorites = Preferences.getBusFavorites(App.PREFERENCE_FAVORITES_BUS);
         for (final String busFavorite : busFavorites) {

@@ -18,14 +18,12 @@ public abstract class AbstractStationActivity extends Activity {
     private Observable<Drawable> googleMapImageObservable;
 
     protected final void createGoogleStreetObservable(final double latitude, final double longitude) {
-        googleMapImageObservable = Observable.create(new Observable.OnSubscribe<Drawable>() {
-            @Override
-            public void call(final Subscriber<? super Drawable> subscriber) {
+        googleMapImageObservable = Observable.create(
+            (Subscriber<? super Drawable> subscriber) -> {
                 final GStreetViewConnect connect = GStreetViewConnect.getInstance();
                 subscriber.onNext(connect.connect(latitude, longitude));
                 subscriber.onCompleted();
-            }
-        })
+            })
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
     }
