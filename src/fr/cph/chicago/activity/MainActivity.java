@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Util.trackAction(MainActivity.this, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
 
                 if (Util.isNetworkAvailable()) {
-                    final Observable<FavoritesResult> zipped = ObservableUtil.createFavoritesObservables();
+                    final Observable<FavoritesResult> zipped = ObservableUtil.createAllDataObservables();
                     zipped.subscribe(favoritesResult -> MainActivity.this.favoritesFragment.reloadData(favoritesResult),
                         onError -> {
                             Log.e(TAG, onError.getMessage(), onError);

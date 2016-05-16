@@ -69,7 +69,7 @@ public class ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<FavoritesResult> createFavoritesObservables() {
+    public static Observable<FavoritesResult> createAllDataObservables() {
         // Train online favorites
         final Observable<SparseArray<TrainArrival>> trainArrivalsObservable = ObservableUtil.createTrainArrivals();
         // Bus online favorites
