@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,11 +20,9 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
-import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -40,15 +38,17 @@ import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
-
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-
+import fr.cph.chicago.App;
+import fr.cph.chicago.R;
+import fr.cph.chicago.data.Preferences;
+import fr.cph.chicago.entity.BikeStation;
+import fr.cph.chicago.entity.Position;
+import fr.cph.chicago.entity.enumeration.TrainLine;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
@@ -58,15 +58,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import fr.cph.chicago.App;
-import fr.cph.chicago.R;
-import fr.cph.chicago.connection.GStreetViewConnect;
-import fr.cph.chicago.data.Preferences;
-import fr.cph.chicago.entity.BikeStation;
-import fr.cph.chicago.entity.Position;
-import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.task.GlobalConnectTask;
 
 /**
  * Util class
@@ -132,7 +123,8 @@ public final class Util {
      * @param bound      the bus bound
      * @param preference the preference
      */
-    public static void removeFromBusFavorites(@NonNull final String busRouteId, @NonNull final String busStopId, @NonNull final String bound, @NonNull final String preference, @NonNull final View view) {
+    public static void removeFromBusFavorites(@NonNull final String busRouteId, @NonNull final String busStopId, @NonNull final String bound, @NonNull final String preference,
+        @NonNull final View view) {
         final String id = busRouteId + "_" + busStopId + "_" + bound;
         final List<String> favorites = Preferences.getBusFavorites(preference);
         favorites.remove(id);
@@ -187,7 +179,7 @@ public final class Util {
         final int sec = favorite.indexOf('_', first + 1);
         final String stopId = favorite.substring(first + 1, sec);
         final String bound = favorite.substring(sec + 1, favorite.length());
-        return new String[]{routeId, stopId, bound};
+        return new String[] { routeId, stopId, bound };
     }
 
     public static final Comparator<BikeStation> BIKE_COMPARATOR_NAME = new BikeStationComparator();
@@ -210,7 +202,7 @@ public final class Util {
         final Display display = wm.getDefaultDisplay();
         final Point size = new Point();
         display.getSize(size);
-        return new int[]{size.x, size.y};
+        return new int[] { size.x, size.y };
     }
 
     /**
@@ -239,42 +231,42 @@ public final class Util {
         //int navigationBarColor = 0;
         int textTitleColor = R.color.white;
         switch (trainLine) {
-            case BLUE:
-                backgroundColor = R.color.blueLine;
-                statusBarColor = R.color.blueLineDark;
-                break;
-            case BROWN:
-                backgroundColor = R.color.brownLine;
-                statusBarColor = R.color.brownLineDark;
-                break;
-            case GREEN:
-                backgroundColor = R.color.greenLine;
-                statusBarColor = R.color.greenLineDark;
-                break;
-            case ORANGE:
-                backgroundColor = R.color.orangeLine;
-                statusBarColor = R.color.orangeLineDarker;
-                break;
-            case PINK:
-                backgroundColor = R.color.pinkLine;
-                statusBarColor = R.color.pinkLineDark;
-                break;
-            case PURPLE:
-                backgroundColor = R.color.purpleLine;
-                statusBarColor = R.color.purpleLineDark;
-                break;
-            case RED:
-                backgroundColor = R.color.redLine;
-                statusBarColor = R.color.redLineDark;
-                break;
-            case YELLOW:
-                backgroundColor = R.color.yellowLine;
-                statusBarColor = R.color.yellowLineDark;
-                break;
-            case NA:
-                backgroundColor = R.color.primaryColor;
-                statusBarColor = R.color.primaryColorDark;
-                break;
+        case BLUE:
+            backgroundColor = R.color.blueLine;
+            statusBarColor = R.color.blueLineDark;
+            break;
+        case BROWN:
+            backgroundColor = R.color.brownLine;
+            statusBarColor = R.color.brownLineDark;
+            break;
+        case GREEN:
+            backgroundColor = R.color.greenLine;
+            statusBarColor = R.color.greenLineDark;
+            break;
+        case ORANGE:
+            backgroundColor = R.color.orangeLine;
+            statusBarColor = R.color.orangeLineDarker;
+            break;
+        case PINK:
+            backgroundColor = R.color.pinkLine;
+            statusBarColor = R.color.pinkLineDark;
+            break;
+        case PURPLE:
+            backgroundColor = R.color.purpleLine;
+            statusBarColor = R.color.purpleLineDark;
+            break;
+        case RED:
+            backgroundColor = R.color.redLine;
+            statusBarColor = R.color.redLineDark;
+            break;
+        case YELLOW:
+            backgroundColor = R.color.yellowLine;
+            statusBarColor = R.color.yellowLineDark;
+            break;
+        case NA:
+            backgroundColor = R.color.primaryColor;
+            statusBarColor = R.color.primaryColorDark;
+            break;
         }
         toolbar.setBackgroundColor(ContextCompat.getColor(App.getContext(), backgroundColor));
         toolbar.setTitleTextColor(ContextCompat.getColor(App.getContext(), textTitleColor));
@@ -297,7 +289,7 @@ public final class Util {
                 && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(activity,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+                    new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
                 return;
             }
             googleMap.setMyLocationEnabled(true);
@@ -312,12 +304,6 @@ public final class Util {
 
     public static boolean textNumberToBoolean(@NonNull final String number) {
         return Boolean.parseBoolean(number);
-    }
-
-    public static void loadAllFavorites(@NonNull final Object instance, @NonNull final Class<?> clazz) {
-        final MultiValuedMap<String, String> paramTrain = Util.getFavoritesTrainParams();
-        final MultiValuedMap<String, String> paramBus = Util.getFavoritesBusParams();
-        new GlobalConnectTask(instance, clazz, paramTrain, paramBus, true).execute();
     }
 
     @NonNull

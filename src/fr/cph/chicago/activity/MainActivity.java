@@ -29,21 +29,13 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BikeStation;
-import fr.cph.chicago.entity.BusArrival;
-import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.fragment.BikeFragment;
 import fr.cph.chicago.fragment.BusFragment;
 import fr.cph.chicago.fragment.FavoritesFragment;
@@ -54,6 +46,9 @@ import fr.cph.chicago.util.ObservableUtil;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.web.FavoritesResult;
 import rx.Observable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -134,62 +129,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 // Favorite fragment
                 favoritesFragment.startRefreshing();
 
-                // TODO here!
-                //Util.loadAllFavorites(favoritesFragment, FavoritesFragment.class);
-
-                // Train online favorites
-                final Observable<SparseArray<TrainArrival>> trainArrivalsObservable = ObservableUtil.createTrainArrivals();
-                // Bus online favorites
-                final Observable<List<BusArrival>> busArrivalsObservable = ObservableUtil.createBusArrivals();
-                // Bikes online all stations
-                final Observable<List<BikeStation>> bikeStationsObservable = ObservableUtil.createAllBikeStations();
-                Observable.zip(trainArrivalsObservable, busArrivalsObservable, bikeStationsObservable,
-                    (trainArrivals, busArrivals, bikeStations) -> {
-                        App.modifyLastUpdate(Calendar.getInstance().getTime());
-
-                        // Google analytics
-                        Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
-                        Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_arrivals, 0);
-                        Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
-
-                        final FavoritesResult favoritesResult = new FavoritesResult();
-                        favoritesResult.setTrainArrivals(trainArrivals);
-                        favoritesResult.setBusArrivals(busArrivals);
-                        favoritesResult.setBikeStations(bikeStations);
-                        if (bikeStations.isEmpty()) {
-                            favoritesResult.setBikeError(true);
-                        }
-                        return favoritesResult;
-                    }).subscribe(
-                    favoritesResult -> MainActivity.this.favoritesFragment.reloadData(favoritesResult),
-                    onError -> {
-                        Log.e(TAG, onError.getMessage(), onError);
-                        MainActivity.this.favoritesFragment.displayError(R.string.message_something_went_wrong);
-                    }
-                );
-
-
-                // Check if bus/bike or alert data are not loaded. If not, load them.
-                // Can happen when the app has been loaded without any data connection
-//                boolean loadData = false;
-//                final DataHolder dataHolder = DataHolder.getInstance();
-//
-//                final BusData busData = dataHolder.getBusData();
-//
-//                final Bundle bundle = MainActivity.this.getIntent().getExtras();
-//                final List<BikeStation> bikeStations = bundle.getParcelableArrayList(getString(R.string.bundle_bike_stations));
-//
-//                if (busData.getRoutes() != null && busData.getRoutes().size() == 0) {
-//                    loadData = true;
-//                }
-//                if (!loadData && bikeStations == null) {
-//                    loadData = true;
-//                }
-//                if (loadData) {
-//                    favoritesFragment.startRefreshing();
-//                    new LoadBusAndBikeDataTask(MainActivity.this).execute();
-//                }
+                Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
+                Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_arrivals, 0);
+                Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
                 Util.trackAction(MainActivity.this, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
+
+                if (Util.isNetworkAvailable()) {
+                    final Observable<FavoritesResult> zipped = ObservableUtil.createFavoritesObservables();
+                    zipped.subscribe(favoritesResult -> MainActivity.this.favoritesFragment.reloadData(favoritesResult),
+                        onError -> {
+                            Log.e(TAG, onError.getMessage(), onError);
+                            MainActivity.this.favoritesFragment.displayError(R.string.message_something_went_wrong);
+                        }
+                    );
+                } else {
+                    MainActivity.this.favoritesFragment.displayError(R.string.message_network_error);
+                }
             }
             return true;
         });
@@ -229,61 +184,61 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         final FragmentManager fragmentManager = getSupportFragmentManager();
         currentPosition = position;
         switch (position) {
-            case R.id.navigation_favorites:
-                setBarTitle(getString(R.string.favorites));
-                if (favoritesFragment == null) {
-                    favoritesFragment = FavoritesFragment.newInstance(position + 1);
-                }
-                if (!this.isFinishing()) {
-                    fragmentManager.beginTransaction().replace(R.id.container, favoritesFragment).commit();
-                }
-                drawerLayout.closeDrawer(GravityCompat.START);
-                showActionBarMenu();
-                break;
-            case R.id.navigation_train:
-                setBarTitle(getString(R.string.train));
-                if (trainFragment == null) {
-                    trainFragment = TrainFragment.newInstance(position + 1);
-                }
-                if (!this.isFinishing()) {
-                    fragmentManager.beginTransaction().replace(R.id.container, trainFragment).commit();
-                }
-                drawerLayout.closeDrawer(GravityCompat.START);
-                hideActionBarMenu();
-                break;
-            case R.id.navigation_bus:
-                setBarTitle(getString(R.string.bus));
-                if (busFragment == null) {
-                    busFragment = BusFragment.newInstance(position + 1);
-                }
-                if (!this.isFinishing()) {
-                    fragmentManager.beginTransaction().replace(R.id.container, busFragment).commit();
-                }
-                drawerLayout.closeDrawer(GravityCompat.START);
-                hideActionBarMenu();
-                break;
-            case R.id.navigation_bike:
-                setBarTitle(getString(R.string.divvy));
-                if (bikeFragment == null) {
-                    bikeFragment = BikeFragment.newInstance(position + 1);
-                }
-                if (!this.isFinishing()) {
-                    fragmentManager.beginTransaction().replace(R.id.container, bikeFragment).commit();
-                }
-                drawerLayout.closeDrawer(GravityCompat.START);
-                hideActionBarMenu();
-                break;
-            case R.id.navigation_nearby:
-                setBarTitle(getString(R.string.nearby));
-                if (nearbyFragment == null) {
-                    nearbyFragment = NearbyFragment.newInstance(position + 1);
-                }
-                if (!this.isFinishing()) {
-                    fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
-                }
-                drawerLayout.closeDrawer(GravityCompat.START);
-                showActionBarMenu();
-                break;
+        case R.id.navigation_favorites:
+            setBarTitle(getString(R.string.favorites));
+            if (favoritesFragment == null) {
+                favoritesFragment = FavoritesFragment.newInstance(position + 1);
+            }
+            if (!this.isFinishing()) {
+                fragmentManager.beginTransaction().replace(R.id.container, favoritesFragment).commit();
+            }
+            drawerLayout.closeDrawer(GravityCompat.START);
+            showActionBarMenu();
+            break;
+        case R.id.navigation_train:
+            setBarTitle(getString(R.string.train));
+            if (trainFragment == null) {
+                trainFragment = TrainFragment.newInstance(position + 1);
+            }
+            if (!this.isFinishing()) {
+                fragmentManager.beginTransaction().replace(R.id.container, trainFragment).commit();
+            }
+            drawerLayout.closeDrawer(GravityCompat.START);
+            hideActionBarMenu();
+            break;
+        case R.id.navigation_bus:
+            setBarTitle(getString(R.string.bus));
+            if (busFragment == null) {
+                busFragment = BusFragment.newInstance(position + 1);
+            }
+            if (!this.isFinishing()) {
+                fragmentManager.beginTransaction().replace(R.id.container, busFragment).commit();
+            }
+            drawerLayout.closeDrawer(GravityCompat.START);
+            hideActionBarMenu();
+            break;
+        case R.id.navigation_bike:
+            setBarTitle(getString(R.string.divvy));
+            if (bikeFragment == null) {
+                bikeFragment = BikeFragment.newInstance(position + 1);
+            }
+            if (!this.isFinishing()) {
+                fragmentManager.beginTransaction().replace(R.id.container, bikeFragment).commit();
+            }
+            drawerLayout.closeDrawer(GravityCompat.START);
+            hideActionBarMenu();
+            break;
+        case R.id.navigation_nearby:
+            setBarTitle(getString(R.string.nearby));
+            if (nearbyFragment == null) {
+                nearbyFragment = NearbyFragment.newInstance(position + 1);
+            }
+            if (!this.isFinishing()) {
+                fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
+            }
+            drawerLayout.closeDrawer(GravityCompat.START);
+            showActionBarMenu();
+            break;
         }
     }
 

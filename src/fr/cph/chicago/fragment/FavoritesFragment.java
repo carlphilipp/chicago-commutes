@@ -34,24 +34,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.activity.SearchActivity;
 import fr.cph.chicago.adapter.FavoritesAdapter;
-import fr.cph.chicago.data.BusData;
-import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.task.LoadBusAndBikeDataTask;
+import fr.cph.chicago.util.ObservableUtil;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.web.FavoritesResult;
+import rx.Observable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Favorites Fragment
@@ -156,34 +154,24 @@ public class FavoritesFragment extends Fragment {
 
             swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.activity_main_swipe_refresh_layout);
             swipeRefreshLayout.setOnRefreshListener(() -> {
-                // TODO here!
-                //Util.loadAllFavorites(FavoritesFragment.this, FavoritesFragment.class);
-                // Google analytics
-                Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_arrivals, 0);
-                Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
-                Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
-
-                // Check if bus or bike data are not loaded. If not, load them.
-                // Can happen when the app has been loaded without any data connection
-                boolean loadData = false;
-                final DataHolder dataHolder = DataHolder.getInstance();
-                final BusData busData = dataHolder.getBusData();
-
-                final Bundle bundle = activity.getIntent().getExtras();
-                final List<BikeStation> bikeStations1 = bundle.getParcelableArrayList(getString(R.string.bundle_bike_stations));
-
-                if (busData.getRoutes() != null && busData.getRoutes().size() == 0) {
-                    loadData = true;
-                }
-                if (!loadData && bikeStations1 == null) {
-                    loadData = true;
-                }
-                if (loadData) {
-                    LoadBusAndBikeDataTask reload = new LoadBusAndBikeDataTask(activity);
-                    reload.execute();
-                }
-                Util.trackAction(activity, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
                 swipeRefreshLayout.setColorSchemeColors(Util.getRandomColor());
+                Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
+                Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_arrivals, 0);
+                Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
+                Util.trackAction(activity, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
+
+                if (Util.isNetworkAvailable()) {
+                    final Observable<FavoritesResult> zipped = ObservableUtil.createFavoritesObservables();
+                    zipped.subscribe(
+                        this::reloadData,
+                        onError -> {
+                            Log.e(TAG, onError.getMessage(), onError);
+                            this.displayError(R.string.message_something_went_wrong);
+                        }
+                    );
+                } else {
+                    this.displayError(R.string.message_network_error);
+                }
             });
         }
         return rootView;

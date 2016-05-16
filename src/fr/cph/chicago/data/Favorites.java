@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,6 +19,14 @@ package fr.cph.chicago.data;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
+import fr.cph.chicago.App;
+import fr.cph.chicago.entity.BikeStation;
+import fr.cph.chicago.entity.BusArrival;
+import fr.cph.chicago.entity.BusRoute;
+import fr.cph.chicago.entity.Eta;
+import fr.cph.chicago.entity.TrainArrival;
+import fr.cph.chicago.entity.enumeration.TrainLine;
+import fr.cph.chicago.util.Util;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,15 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-
-import fr.cph.chicago.App;
-import fr.cph.chicago.entity.BikeStation;
-import fr.cph.chicago.entity.BusArrival;
-import fr.cph.chicago.entity.BusRoute;
-import fr.cph.chicago.entity.Eta;
-import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.util.Util;
 
 /**
  * Vehicle Arrival. Hold data for favorites adapter.
@@ -339,16 +338,6 @@ public class Favorites {
         }
         return favorites;
     }
-
-//    public final void setArrivalsAndBikeStations(@NonNull final SparseArray<TrainArrival> trainArrivals, @NonNull final List<BusArrival> busArrivals, @NonNull final List<BikeStation> bikeStations) {
-//        this.trainArrivals.clear();
-//        this.trainArrivals = trainArrivals;
-//        removeDuplicates(busArrivals);
-//        this.busArrivals.clear();
-//        this.busArrivals = busArrivals;
-//        this.bikeStations.clear();
-//        this.bikeStations = bikeStations;
-//    }
 
     // TODO Do that when populating the list
     private void removeDuplicates(@NonNull final List<BusArrival> busArrivals) {

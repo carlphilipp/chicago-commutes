@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,15 +40,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BikeStationActivity;
@@ -75,6 +66,14 @@ import fr.cph.chicago.listener.BusStopOnClickListener;
 import fr.cph.chicago.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.util.LayoutUtil;
 import fr.cph.chicago.util.Util;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static java.util.Map.Entry;
 
@@ -539,16 +538,6 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     public final int getItemCount() {
         return favorites.size();
     }
-
-    /**
-     * Set favorites
-     *
-     * @param arrivals    the trains arrivals
-     * @param busArrivals the buses arrivals
-     */
-//    public final void setArrivalsAndBikeStations(@NonNull final SparseArray<TrainArrival> arrivals, @NonNull final List<BusArrival> busArrivals, @NonNull final List<BikeStation> bikeStations) {
-//        favorites.setArrivalsAndBikeStations(arrivals, busArrivals, bikeStations);
-//    }
 
     public final void setTrainArrivals(@NonNull final SparseArray<TrainArrival> arrivals) {
         favorites.setTrainArrivals(arrivals);

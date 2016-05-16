@@ -1,17 +1,6 @@
 package fr.cph.chicago.service;
 
 import android.util.SparseArray;
-
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
@@ -32,7 +21,16 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.json.JsonParser;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.XmlParser;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import rx.exceptions.Exceptions;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
 import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
@@ -150,11 +148,10 @@ public class DataServiceImpl implements DataService {
                 final InputStream xmlResult = ctaConnect.connect(BUS_ARRIVALS, para);
                 busArrivals.addAll(xmlParser.parseBusArrivals(xmlResult));
             }
-            throw new ParserException("ddd");
         } catch (final ConnectException | ParserException e) {
             throw Exceptions.propagate(e);
         }
-        //return busArrivals;
+        return busArrivals;
     }
 
     @Override
@@ -164,7 +161,6 @@ public class DataServiceImpl implements DataService {
             final InputStream bikeContent = divvyConnect.connect();
             final List<BikeStation> bikeStations = jsonParser.parseStations(bikeContent);
             Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
-            //throw new ParserException("ddd");
             return bikeStations;
         } catch (final ParserException | ConnectException e) {
             throw Exceptions.propagate(e);

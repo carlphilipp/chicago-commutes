@@ -22,11 +22,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.SparseArray;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.BusData;
@@ -43,6 +38,10 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 /**
  * This class represents the base activity of the application It will load the loading screen and/or the main
@@ -65,7 +64,8 @@ public class BaseActivity extends Activity {
     protected final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.loading);
-        new Thread(this::loadLocalAndFavoritesData).start();
+        loadLocalAndFavoritesData();
+        trackWithGoogleAnalytics();
     }
 
     private void loadLocalAndFavoritesData() {
@@ -100,7 +100,6 @@ public class BaseActivity extends Activity {
         Observable.zip(trainDataObservable, busDataObservable, (trainData, busData) -> true)
             .doOnCompleted(() -> Observable.zip(trainArrivalsObservable, busArrivalsObservable, (trainArrivals, busArrivals) -> {
                     App.modifyLastUpdate(Calendar.getInstance().getTime());
-                    trackWithGoogleAnalytics();
                     final FavoritesResult favoritesResult = new FavoritesResult();
                     favoritesResult.setTrainArrivals(trainArrivals);
                     favoritesResult.setBusArrivals(busArrivals);
@@ -115,7 +114,6 @@ public class BaseActivity extends Activity {
             )).subscribe();
     }
 
-
     private void trackWithGoogleAnalytics() {
         Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_arrivals, 0);
         Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
@@ -129,9 +127,12 @@ public class BaseActivity extends Activity {
     private void startMainActivity(@NonNull final FavoritesResult result) {
         final Intent intent = new Intent(this, MainActivity.class);
         final Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(getString(R.string.bundle_bus_arrivals), (ArrayList<BusArrival>) result.getBusArrivals());
-        bundle.putSparseParcelableArray(getString(R.string.bundle_train_arrivals), result.getTrainArrivals());
+        final SparseArray<TrainArrival> trainArrival = result.getTrainArrivals() != null ? result.getTrainArrivals() : new SparseArray<>();
+        final List<BusArrival> busArrivals = result.getBusArrivals() != null ? result.getBusArrivals() : new ArrayList<>();
+        bundle.putParcelableArrayList(getString(R.string.bundle_bus_arrivals), (ArrayList<BusArrival>) busArrivals);
+        bundle.putSparseParcelableArray(getString(R.string.bundle_train_arrivals), trainArrival);
         intent.putExtras(bundle);
+        // TODO add her some stuff in bundle to handle errors from observable
 
         finish();
         startActivity(intent);
