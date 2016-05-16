@@ -113,9 +113,10 @@ public class FavoritesFragment extends Fragment {
 
     @Override
     public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_main, container, false);
         if (!activity.isFinishing()) {
+            rootView = inflater.inflate(R.layout.fragment_main, container, false);
             welcomeLayout = (RelativeLayout) rootView.findViewById(R.id.welcome);
+            swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.activity_main_swipe_refresh_layout);
             if (favoritesAdapter == null) {
                 favoritesAdapter = new FavoritesAdapter(activity);
                 favoritesAdapter.setTrainArrivals(trainArrivals);
@@ -124,13 +125,11 @@ public class FavoritesFragment extends Fragment {
                 favoritesAdapter.setFavorites();
             }
             final RecyclerView listView = (RecyclerView) rootView.findViewById(R.id.favorites_list);
-            listView.setAdapter(favoritesAdapter);
-
             final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(activity);
-            listView.setLayoutManager(mLayoutManager);
-
-            startRefreshTask();
             final FloatingActionButton floatingButton = (FloatingActionButton) rootView.findViewById(R.id.floating_button);
+
+            listView.setAdapter(favoritesAdapter);
+            listView.setLayoutManager(mLayoutManager);
             floatingButton.setOnClickListener(v -> {
                 if (bikeStations.isEmpty()) {
                     Util.showMessage(activity, R.string.message_too_fast);
@@ -140,7 +139,6 @@ public class FavoritesFragment extends Fragment {
                     activity.startActivity(intent);
                 }
             });
-
             listView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrolled(final RecyclerView recyclerView, final int dx, final int dy) {
@@ -152,7 +150,6 @@ public class FavoritesFragment extends Fragment {
                 }
             });
 
-            swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.activity_main_swipe_refresh_layout);
             swipeRefreshLayout.setOnRefreshListener(() -> {
                 swipeRefreshLayout.setColorSchemeColors(Util.getRandomColor());
                 Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
@@ -173,6 +170,8 @@ public class FavoritesFragment extends Fragment {
                     this.displayError(R.string.message_network_error);
                 }
             });
+
+            startRefreshTask();
         }
         return rootView;
     }
