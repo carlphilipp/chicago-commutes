@@ -36,6 +36,7 @@ import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.service.DataService;
 import fr.cph.chicago.service.DataServiceImpl;
+import fr.cph.chicago.util.ObservableUtil;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.web.FavoritesResult;
 import rx.Observable;
@@ -90,30 +91,10 @@ public class BaseActivity extends Activity {
             .observeOn(AndroidSchedulers.mainThread());
 
         // Train online favorites
-        final Observable<SparseArray<TrainArrival>> trainArrivalsObservable = Observable.create(
-            (Subscriber<? super SparseArray<TrainArrival>> subscriber) -> {
-                subscriber.onNext(service.loadFavoritesTrain());
-                subscriber.onCompleted();
-            })
-            .onErrorReturn(throwable -> {
-                Log.e(TAG, throwable.getMessage(), throwable);
-                return new SparseArray<>();
-            })
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread());
+        final Observable<SparseArray<TrainArrival>> trainArrivalsObservable = ObservableUtil.createTrainArrivals();
 
         // Bus online favorites
-        final Observable<List<BusArrival>> busArrivalsObservable = Observable.create(
-            (Subscriber<? super List<BusArrival>> subscriber) -> {
-                subscriber.onNext(service.loadFavoritesBuses());
-                subscriber.onCompleted();
-            })
-            .onErrorReturn(throwable -> {
-                Log.e(TAG, throwable.getMessage(), throwable);
-                return new ArrayList<>();
-            })
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread());
+        final Observable<List<BusArrival>> busArrivalsObservable = ObservableUtil.createBusArrivals();
 
         // Run local first and then online: Ensure that local data is loaded first
         Observable.zip(trainDataObservable, busDataObservable, (trainData, busData) -> true)

@@ -65,7 +65,7 @@ public class LoadBusFollowTask extends AsyncTask<String, Void, List<BusArrival>>
             MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
             connectParam.put(activity.getString(R.string.request_vid), busId);
             InputStream content = connect.connect(BUS_ARRIVALS, connectParam);
-            XmlParser xml = XmlParser.getInstance();
+            final XmlParser xml = XmlParser.getInstance();
             arrivals = xml.parseBusArrivals(content);
         } catch (final ConnectException | ParserException e) {
             Log.e(TAG, e.getMessage(), e);

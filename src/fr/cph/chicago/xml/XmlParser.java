@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -98,7 +98,7 @@ public final class XmlParser {
      * @throws ParserException the parser exception
      */
     @NonNull
-    public final SparseArray<TrainArrival> parseArrivals(@NonNull final InputStream is, @NonNull final TrainData trainData) throws ParserException {
+    public final synchronized SparseArray<TrainArrival> parseArrivals(@NonNull final InputStream is, @NonNull final TrainData trainData) throws ParserException {
         final SparseArray<TrainArrival> arrivals = new SparseArray<>();
         try {
             parser.setInput(is, "UTF-8");
@@ -326,6 +326,7 @@ public final class XmlParser {
                 eventType = parser.next();
             }
         } catch (final XmlPullParserException | ParseException | IOException e) {
+            Log.e(TAG, e.getMessage(), e);
             throw new ParserException(TrackerException.ERROR, e);
         } finally {
             IOUtils.closeQuietly(is);
@@ -341,7 +342,7 @@ public final class XmlParser {
      * @throws ParserException a parser exception
      */
     @NonNull
-    public final List<BusRoute> parseBusRoutes(@NonNull final InputStream xml) throws ParserException {
+    public final synchronized List<BusRoute> parseBusRoutes(@NonNull final InputStream xml) throws ParserException {
         final List<BusRoute> routes = new ArrayList<>();
         try {
             parser.setInput(xml, "UTF-8");
@@ -414,7 +415,7 @@ public final class XmlParser {
      * @throws ParserException a parser exception
      */
     @NonNull
-    public final BusDirections parseBusDirections(@NonNull final InputStream xml, @NonNull final String id) throws ParserException {
+    public final synchronized BusDirections parseBusDirections(@NonNull final InputStream xml, @NonNull final String id) throws ParserException {
         final BusDirections directions = new BusDirections();
         directions.setId(id);
         try {
@@ -446,7 +447,7 @@ public final class XmlParser {
      * @throws ParserException a parser exception
      */
     @NonNull
-    public final List<BusStop> parseBusBounds(@NonNull final InputStream xml) throws ParserException {
+    public final synchronized List<BusStop> parseBusBounds(@NonNull final InputStream xml) throws ParserException {
         final List<BusStop> busStops = new ArrayList<>();
         String tagName = null;
         BusStop busStop = null;
@@ -504,7 +505,7 @@ public final class XmlParser {
      * @throws ParserException a parser exception
      */
     @NonNull
-    public final List<BusArrival> parseBusArrivals(@NonNull final InputStream xml) throws ParserException {
+    public final synchronized List<BusArrival> parseBusArrivals(@NonNull final InputStream xml) throws ParserException {
         final List<BusArrival> busArrivals = new ArrayList<>();
         String tagName = null;
         BusArrival busArrival = null;
@@ -592,7 +593,7 @@ public final class XmlParser {
      * @throws ParserException a parser exception
      */
     @NonNull
-    public final List<BusPattern> parsePatterns(@NonNull final InputStream xml) throws ParserException {
+    public final synchronized List<BusPattern> parsePatterns(@NonNull final InputStream xml) throws ParserException {
         final List<BusPattern> patterns = new ArrayList<>();
         String tagName = null;
         BusPattern pattern = null;
@@ -676,7 +677,7 @@ public final class XmlParser {
     }
 
     @NonNull
-    public final List<Bus> parseVehicles(@NonNull final InputStream is) throws ParserException {
+    public final synchronized List<Bus> parseVehicles(@NonNull final InputStream is) throws ParserException {
         final List<Bus> buses = new ArrayList<>();
         String tagName = null;
         Bus bus = null;
@@ -746,7 +747,7 @@ public final class XmlParser {
     }
 
     @NonNull
-    public final List<Train> parseTrainsLocation(@NonNull final InputStream is) throws ParserException {
+    public final synchronized List<Train> parseTrainsLocation(@NonNull final InputStream is) throws ParserException {
         final List<Train> trains = new ArrayList<>();
         String tagName = null;
         Train train = null;
@@ -815,7 +816,7 @@ public final class XmlParser {
     }
 
     @NonNull
-    public final List<Eta> parseTrainsFollow(@NonNull final InputStream is, @NonNull final TrainData data) throws ParserException {
+    public final synchronized List<Eta> parseTrainsFollow(@NonNull final InputStream is, @NonNull final TrainData data) throws ParserException {
         SparseArray<TrainArrival> arrivals = new SparseArray<>();
         try {
             parser.setInput(is, "UTF-8");

@@ -340,15 +340,15 @@ public class Favorites {
         return favorites;
     }
 
-    public final void setArrivalsAndBikeStations(@NonNull final SparseArray<TrainArrival> trainArrivals, @NonNull final List<BusArrival> busArrivals, @NonNull final List<BikeStation> bikeStations) {
-        this.trainArrivals.clear();
-        this.trainArrivals = trainArrivals;
-        removeDuplicates(busArrivals);
-        this.busArrivals.clear();
-        this.busArrivals = busArrivals;
-        this.bikeStations.clear();
-        this.bikeStations = bikeStations;
-    }
+//    public final void setArrivalsAndBikeStations(@NonNull final SparseArray<TrainArrival> trainArrivals, @NonNull final List<BusArrival> busArrivals, @NonNull final List<BikeStation> bikeStations) {
+//        this.trainArrivals.clear();
+//        this.trainArrivals = trainArrivals;
+//        removeDuplicates(busArrivals);
+//        this.busArrivals.clear();
+//        this.busArrivals = busArrivals;
+//        this.bikeStations.clear();
+//        this.bikeStations = bikeStations;
+//    }
 
     // TODO Do that when populating the list
     private void removeDuplicates(@NonNull final List<BusArrival> busArrivals) {
@@ -360,6 +360,16 @@ public class Favorites {
     public final void setBikeStations(@NonNull final List<BikeStation> bikeStations) {
         this.bikeStations.clear();
         this.bikeStations = bikeStations;
-        setFavorites();
+    }
+
+    public final void setBusArrivals(@NonNull final List<BusArrival> busArrivals) {
+        this.busArrivals.clear();
+        removeDuplicates(busArrivals);
+        this.busArrivals = busArrivals;
+    }
+
+    public void setTrainArrivals(@NonNull final SparseArray<TrainArrival> trainArrivals) {
+        this.trainArrivals.clear();
+        this.trainArrivals = trainArrivals;
     }
 }

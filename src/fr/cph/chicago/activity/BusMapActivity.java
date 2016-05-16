@@ -349,13 +349,14 @@ public class BusMapActivity extends Activity {
         @Override
         protected final List<BusPattern> doInBackground(final Void... params) {
             this.patterns = new ArrayList<>();
+            final XmlParser xml = XmlParser.getInstance();
             final CtaConnect connect = CtaConnect.getInstance();
             try {
                 if (busId == 0) {
                     // Search for directions
                     final MultiValuedMap<String, String> directionParams = new ArrayListValuedHashMap<>();
                     directionParams.put(getString(R.string.request_rt), busRouteId);
-                    final XmlParser xml = XmlParser.getInstance();
+
                     final InputStream xmlResult = connect.connect(BUS_DIRECTION, directionParams);
                     final BusDirections busDirections = xml.parseBusDirections(xmlResult, busRouteId);
                     bounds = new String[busDirections.getLBusDirection().size()];
@@ -368,7 +369,6 @@ public class BusMapActivity extends Activity {
                 final MultiValuedMap<String, String> routeIdParam = new ArrayListValuedHashMap<>();
                 routeIdParam.put(getResources().getString(R.string.request_rt), busRouteId);
                 final InputStream content = connect.connect(BUS_PATTERN, routeIdParam);
-                final XmlParser xml = XmlParser.getInstance();
                 final List<BusPattern> patterns = xml.parsePatterns(content);
                 for (final BusPattern pattern : patterns) {
                     final String directionIgnoreCase = pattern.getDirection().toLowerCase(Locale.US);

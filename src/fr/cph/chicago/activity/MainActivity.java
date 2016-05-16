@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,10 +28,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.util.SparseArray;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import fr.cph.chicago.App;
@@ -39,15 +42,22 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BikeStation;
+import fr.cph.chicago.entity.BusArrival;
+import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.fragment.BikeFragment;
 import fr.cph.chicago.fragment.BusFragment;
 import fr.cph.chicago.fragment.FavoritesFragment;
 import fr.cph.chicago.fragment.NearbyFragment;
 import fr.cph.chicago.fragment.TrainFragment;
 import fr.cph.chicago.task.LoadBusAndBikeDataTask;
+import fr.cph.chicago.util.ObservableUtil;
 import fr.cph.chicago.util.Util;
+import fr.cph.chicago.web.FavoritesResult;
+import rx.Observable;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final String SELECTED_ID = "SELECTED_ID";
     private static final int POSITION_BUS = 2;
@@ -124,32 +134,61 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 // Favorite fragment
                 favoritesFragment.startRefreshing();
 
-                Util.loadAllFavorites(favoritesFragment, FavoritesFragment.class);
+                // TODO here!
+                //Util.loadAllFavorites(favoritesFragment, FavoritesFragment.class);
 
-                // Google analytics
-                Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
-                Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_arrivals, 0);
-                Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
+                // Train online favorites
+                final Observable<SparseArray<TrainArrival>> trainArrivalsObservable = ObservableUtil.createTrainArrivals();
+                // Bus online favorites
+                final Observable<List<BusArrival>> busArrivalsObservable = ObservableUtil.createBusArrivals();
+                // Bikes online all stations
+                final Observable<List<BikeStation>> bikeStationsObservable = ObservableUtil.createAllBikeStations();
+                Observable.zip(trainArrivalsObservable, busArrivalsObservable, bikeStationsObservable,
+                    (trainArrivals, busArrivals, bikeStations) -> {
+                        App.modifyLastUpdate(Calendar.getInstance().getTime());
+
+                        // Google analytics
+                        Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
+                        Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_arrivals, 0);
+                        Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
+
+                        final FavoritesResult favoritesResult = new FavoritesResult();
+                        favoritesResult.setTrainArrivals(trainArrivals);
+                        favoritesResult.setBusArrivals(busArrivals);
+                        favoritesResult.setBikeStations(bikeStations);
+                        if (bikeStations.isEmpty()) {
+                            favoritesResult.setBikeError(true);
+                        }
+                        return favoritesResult;
+                    }).subscribe(
+                    favoritesResult -> MainActivity.this.favoritesFragment.reloadData(favoritesResult),
+                    onError -> {
+                        Log.e(TAG, onError.getMessage(), onError);
+                        MainActivity.this.favoritesFragment.displayError(R.string.message_something_went_wrong);
+                    }
+                );
+
+
                 // Check if bus/bike or alert data are not loaded. If not, load them.
                 // Can happen when the app has been loaded without any data connection
-                boolean loadData = false;
-                final DataHolder dataHolder = DataHolder.getInstance();
-
-                final BusData busData = dataHolder.getBusData();
-
-                final Bundle bundle = MainActivity.this.getIntent().getExtras();
-                final List<BikeStation> bikeStations = bundle.getParcelableArrayList(getString(R.string.bundle_bike_stations));
-
-                if (busData.getRoutes() != null && busData.getRoutes().size() == 0) {
-                    loadData = true;
-                }
-                if (!loadData && bikeStations == null) {
-                    loadData = true;
-                }
-                if (loadData) {
-                    favoritesFragment.startRefreshing();
-                    new LoadBusAndBikeDataTask(MainActivity.this).execute();
-                }
+//                boolean loadData = false;
+//                final DataHolder dataHolder = DataHolder.getInstance();
+//
+//                final BusData busData = dataHolder.getBusData();
+//
+//                final Bundle bundle = MainActivity.this.getIntent().getExtras();
+//                final List<BikeStation> bikeStations = bundle.getParcelableArrayList(getString(R.string.bundle_bike_stations));
+//
+//                if (busData.getRoutes() != null && busData.getRoutes().size() == 0) {
+//                    loadData = true;
+//                }
+//                if (!loadData && bikeStations == null) {
+//                    loadData = true;
+//                }
+//                if (loadData) {
+//                    favoritesFragment.startRefreshing();
+//                    new LoadBusAndBikeDataTask(MainActivity.this).execute();
+//                }
                 Util.trackAction(MainActivity.this, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
             }
             return true;

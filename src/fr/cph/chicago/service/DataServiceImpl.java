@@ -1,6 +1,5 @@
 package fr.cph.chicago.service;
 
-import android.util.Log;
 import android.util.SparseArray;
 
 import org.apache.commons.collections4.MultiValuedMap;
@@ -16,10 +15,12 @@ import java.util.Map;
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
+import fr.cph.chicago.connection.DivvyConnect;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.data.TrainData;
+import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Station;
@@ -28,6 +29,7 @@ import fr.cph.chicago.entity.enumeration.TrainDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
+import fr.cph.chicago.json.JsonParser;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.XmlParser;
 import rx.exceptions.Exceptions;
@@ -37,11 +39,11 @@ import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
 
 public class DataServiceImpl implements DataService {
 
-    private static final String TAG = DataServiceImpl.class.getSimpleName();
-
-    private XmlParser xmlParser;
+    private final JsonParser jsonParser;
+    private final XmlParser xmlParser;
 
     public DataServiceImpl() {
+        this.jsonParser = JsonParser.getInstance();
         this.xmlParser = XmlParser.getInstance();
     }
 
@@ -148,10 +150,25 @@ public class DataServiceImpl implements DataService {
                 final InputStream xmlResult = ctaConnect.connect(BUS_ARRIVALS, para);
                 busArrivals.addAll(xmlParser.parseBusArrivals(xmlResult));
             }
+            throw new ParserException("ddd");
         } catch (final ConnectException | ParserException e) {
             throw Exceptions.propagate(e);
         }
-        return busArrivals;
+        //return busArrivals;
+    }
+
+    @Override
+    public List<BikeStation> loadAllBikes() {
+        try {
+            final DivvyConnect divvyConnect = DivvyConnect.getInstance();
+            final InputStream bikeContent = divvyConnect.connect();
+            final List<BikeStation> bikeStations = jsonParser.parseStations(bikeContent);
+            Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
+            //throw new ParserException("ddd");
+            return bikeStations;
+        } catch (final ParserException | ConnectException e) {
+            throw Exceptions.propagate(e);
+        }
     }
 
     @Override

@@ -546,8 +546,16 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
      * @param arrivals    the trains arrivals
      * @param busArrivals the buses arrivals
      */
-    public final void setArrivalsAndBikeStations(@NonNull final SparseArray<TrainArrival> arrivals, @NonNull final List<BusArrival> busArrivals, @NonNull final List<BikeStation> bikeStations) {
-        favorites.setArrivalsAndBikeStations(arrivals, busArrivals, bikeStations);
+//    public final void setArrivalsAndBikeStations(@NonNull final SparseArray<TrainArrival> arrivals, @NonNull final List<BusArrival> busArrivals, @NonNull final List<BikeStation> bikeStations) {
+//        favorites.setArrivalsAndBikeStations(arrivals, busArrivals, bikeStations);
+//    }
+
+    public final void setTrainArrivals(@NonNull final SparseArray<TrainArrival> arrivals) {
+        favorites.setTrainArrivals(arrivals);
+    }
+
+    public final void setBusArrivals(@NonNull final List<BusArrival> busArrivals) {
+        favorites.setBusArrivals(busArrivals);
     }
 
     public final void setBikeStations(@NonNull final List<BikeStation> bikeStations) {

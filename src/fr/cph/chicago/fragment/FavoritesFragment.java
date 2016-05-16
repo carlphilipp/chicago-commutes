@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,6 +51,7 @@ import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.task.LoadBusAndBikeDataTask;
 import fr.cph.chicago.util.Util;
+import fr.cph.chicago.web.FavoritesResult;
 
 /**
  * Favorites Fragment
@@ -119,7 +120,10 @@ public class FavoritesFragment extends Fragment {
             welcomeLayout = (RelativeLayout) rootView.findViewById(R.id.welcome);
             if (favoritesAdapter == null) {
                 favoritesAdapter = new FavoritesAdapter(activity);
-                favoritesAdapter.setArrivalsAndBikeStations(trainArrivals, busArrivals, bikeStations);
+                favoritesAdapter.setTrainArrivals(trainArrivals);
+                favoritesAdapter.setBusArrivals(busArrivals);
+                favoritesAdapter.setBikeStations(bikeStations);
+                favoritesAdapter.setFavorites();
             }
             final RecyclerView listView = (RecyclerView) rootView.findViewById(R.id.favorites_list);
             listView.setAdapter(favoritesAdapter);
@@ -152,7 +156,8 @@ public class FavoritesFragment extends Fragment {
 
             swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.activity_main_swipe_refresh_layout);
             swipeRefreshLayout.setOnRefreshListener(() -> {
-                Util.loadAllFavorites(FavoritesFragment.this, FavoritesFragment.class);
+                // TODO here!
+                //Util.loadAllFavorites(FavoritesFragment.this, FavoritesFragment.class);
                 // Google analytics
                 Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_arrivals, 0);
                 Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
@@ -240,21 +245,32 @@ public class FavoritesFragment extends Fragment {
         outState.putParcelableArrayList(getString(R.string.bundle_bike_stations), (ArrayList<BikeStation>) bikeStations);
     }
 
-    /**
-     * Reload data
-     *
-     * @param trainArrivals the train arrivals list
-     * @param busArrivals   the bus arrivals list
-     */
-    public final void reloadData(final SparseArray<TrainArrival> trainArrivals, final List<BusArrival> busArrivals, final List<BikeStation> bikeStations, final Boolean error) {
-        // Put into intent new bike stations data
-        activity.getIntent().putParcelableArrayListExtra(getString(R.string.bundle_bike_stations), (ArrayList<BikeStation>) bikeStations);
+    public final void reloadData(final FavoritesResult favoritesResult) {
+        boolean error = false;
+        if (!favoritesResult.isBikeError()) {
+            // Put into intent new bike stations data
+            activity.getIntent().putParcelableArrayListExtra(getString(R.string.bundle_bike_stations), (ArrayList<BikeStation>) favoritesResult.getBikeStations());
+            this.bikeStations = favoritesResult.getBikeStations();
+        } else {
+            error = true;
+        }
 
-        favoritesAdapter.setArrivalsAndBikeStations(trainArrivals, busArrivals, bikeStations);
+        if (!favoritesResult.isBusError()) {
+            favoritesAdapter.setBusArrivals(favoritesResult.getBusArrivals());
+        } else {
+            error = true;
+        }
+
+        if (!favoritesResult.isTrainError()) {
+            favoritesAdapter.setTrainArrivals(favoritesResult.getTrainArrivals());
+        } else {
+            error = true;
+        }
+        favoritesAdapter.setFavorites();
         favoritesAdapter.refreshUpdated();
         favoritesAdapter.refreshUpdatedView();
         favoritesAdapter.notifyDataSetChanged();
-        this.bikeStations = bikeStations;
+
         // Highlight background
         rootView.setBackgroundResource(R.drawable.highlight_selector);
         rootView.postDelayed(() -> rootView.setBackgroundResource(R.drawable.bg_selector), 100);
