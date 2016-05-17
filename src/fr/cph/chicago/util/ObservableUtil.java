@@ -1,10 +1,17 @@
 package fr.cph.chicago.util;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.SparseArray;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
 import fr.cph.chicago.App;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
+import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.service.DataService;
 import fr.cph.chicago.service.DataServiceImpl;
@@ -13,10 +20,6 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
 
 public class ObservableUtil {
 
@@ -69,7 +72,7 @@ public class ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<FavoritesResult> createAllDataObservables() {
+    public static Observable<FavoritesResult> createAllDataObservable() {
         // Train online favorites
         final Observable<SparseArray<TrainArrival>> trainArrivalsObservable = ObservableUtil.createTrainArrivals();
         // Bus online favorites
@@ -97,5 +100,15 @@ public class ObservableUtil {
                 }
                 return favoritesResult;
             });
+    }
+
+    public static Observable<List<BusStop>> createBusStopBoundObservable(@NonNull final String stopId, @NonNull final String bound) {
+        return Observable.create(
+            (Subscriber<? super List<BusStop>> subscriber) -> {
+                subscriber.onNext(SERVICE.loadOneBusStop(stopId, bound));
+                subscriber.onCompleted();
+            })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread());
     }
 }

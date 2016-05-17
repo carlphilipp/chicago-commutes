@@ -145,16 +145,16 @@ public class BusData {
      * @throws ConnectException a connect exception
      * @throws ParserException  a parser exception
      */
-    @NonNull
-    public final List<BusStop> loadBusStop(@NonNull final String stopId, @NonNull final String bound) throws ConnectException, ParserException {
-        final CtaConnect connect = CtaConnect.getInstance();
-        final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
-        params.put(App.getContext().getString(R.string.request_rt), stopId);
-        params.put(App.getContext().getString(R.string.request_dir), bound);
-        final InputStream xmlResult = connect.connect(BUS_STOP_LIST, params);
-        final XmlParser xml = XmlParser.getInstance();
-        return xml.parseBusBounds(xmlResult);
-    }
+//    @NonNull
+//    public final List<BusStop> loadBusStop(@NonNull final String stopId, @NonNull final String bound) throws ConnectException, ParserException {
+//        final CtaConnect connect = CtaConnect.getInstance();
+//        final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
+//        params.put(App.getContext().getString(R.string.request_rt), stopId);
+//        params.put(App.getContext().getString(R.string.request_dir), bound);
+//        final InputStream xmlResult = connect.connect(BUS_STOP_LIST, params);
+//        final XmlParser xml = XmlParser.getInstance();
+//        return xml.parseBusBounds(xmlResult);
+//    }
 
     /**
      * Get all bus stops from CSV

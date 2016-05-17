@@ -1,6 +1,18 @@
 package fr.cph.chicago.service;
 
+import android.support.annotation.NonNull;
 import android.util.SparseArray;
+
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
@@ -11,6 +23,7 @@ import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
+import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.TrainArrival;
@@ -21,18 +34,10 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.json.JsonParser;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.XmlParser;
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import rx.exceptions.Exceptions;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
+import static fr.cph.chicago.connection.CtaRequestType.BUS_STOP_LIST;
 import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
 
 public class DataServiceImpl implements DataService {
@@ -107,7 +112,7 @@ public class DataServiceImpl implements DataService {
                 // Sort Eta by arriving time
                 Collections.sort(etas);
             }
-        } catch (final ConnectException | ParserException e) {
+        } catch (final Throwable e) {
             throw Exceptions.propagate(e);
         }
         return trainArrivals;
@@ -148,7 +153,7 @@ public class DataServiceImpl implements DataService {
                 final InputStream xmlResult = ctaConnect.connect(BUS_ARRIVALS, para);
                 busArrivals.addAll(xmlParser.parseBusArrivals(xmlResult));
             }
-        } catch (final ConnectException | ParserException e) {
+        } catch (final Throwable e) {
             throw Exceptions.propagate(e);
         }
         return busArrivals;
@@ -162,8 +167,23 @@ public class DataServiceImpl implements DataService {
             final List<BikeStation> bikeStations = jsonParser.parseStations(bikeContent);
             Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
             return bikeStations;
-        } catch (final ParserException | ConnectException e) {
-            throw Exceptions.propagate(e);
+        } catch (final Throwable throwable) {
+            throw Exceptions.propagate(throwable);
+        }
+    }
+
+    @Override
+    public List<BusStop> loadOneBusStop(@NonNull final String stopId, @NonNull final String bound) {
+        try {
+            final CtaConnect connect = CtaConnect.getInstance();
+            final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
+            params.put(App.getContext().getString(R.string.request_rt), stopId);
+            params.put(App.getContext().getString(R.string.request_dir), bound);
+            final InputStream xmlResult = connect.connect(BUS_STOP_LIST, params);
+            final XmlParser xml = XmlParser.getInstance();
+            return xml.parseBusBounds(xmlResult);
+        } catch (final Throwable throwable) {
+            throw Exceptions.propagate(throwable);
         }
     }
 

@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,17 +24,14 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.View;
+import android.util.Log;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -53,8 +50,8 @@ import fr.cph.chicago.entity.BusPattern;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.PatternPoint;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.task.BusBoundAsyncTask;
 import fr.cph.chicago.task.LoadBusPatternTask;
+import fr.cph.chicago.util.ObservableUtil;
 import fr.cph.chicago.util.Util;
 
 /**
@@ -64,6 +61,8 @@ import fr.cph.chicago.util.Util;
  * @version 1
  */
 public class BusBoundActivity extends ListActivity {
+
+    private static final String TAG = BusBoundActivity.class.getSimpleName();
 
     private MapFragment mapFragment;
     private LinearLayout layout;
@@ -145,7 +144,19 @@ public class BusBoundActivity extends ListActivity {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
             toolbar.setOnClickListener(v -> finish());
 
-            new BusBoundAsyncTask(this, busRouteId, bound, busBoundAdapter).execute();
+            ObservableUtil.createBusStopBoundObservable(busRouteId, bound)
+                .subscribe(onNext -> {
+                        BusBoundActivity.this.setBusStops(onNext);
+                        busBoundAdapter.update(onNext);
+                        busBoundAdapter.notifyDataSetChanged();
+                    },
+                    onError -> {
+                        Log.e(TAG, onError.getMessage(), onError);
+                        Util.showOopsSomethingWentWrong(BusBoundActivity.this.getListView());
+                    }
+                );
+
+            Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_stop, 0);
 
             // Preventing keyboard from moving background when showing up
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);

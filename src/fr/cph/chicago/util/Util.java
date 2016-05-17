@@ -368,7 +368,7 @@ public final class Util {
         showSnackBar(activity, message);
     }
 
-    private static void showSnackBar(@NonNull final Activity activity, final int message) {
+    public static void showSnackBar(@NonNull final Activity activity, final int message) {
         if (activity.getCurrentFocus() != null) {
             Snackbar.make(activity.getCurrentFocus(), activity.getString(message), Snackbar.LENGTH_SHORT).show();
         } else {
@@ -376,8 +376,12 @@ public final class Util {
         }
     }
 
-    private static void showSnackBar(@NonNull final View view, final int message) {
+    public static void showSnackBar(@NonNull final View view, final int message) {
         Snackbar.make(view, view.getContext().getString(message), Snackbar.LENGTH_SHORT).show();
+    }
+
+    public static void showOopsSomethingWentWrong(@NonNull final View view) {
+        Snackbar.make(view, view.getContext().getString(R.string.message_something_went_wrong), Snackbar.LENGTH_SHORT).show();
     }
 
     @NonNull
