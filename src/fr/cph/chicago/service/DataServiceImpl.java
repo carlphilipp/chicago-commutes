@@ -23,20 +23,20 @@ import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
+import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.TrainDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.exception.ConnectException;
-import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.json.JsonParser;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.XmlParser;
 import rx.exceptions.Exceptions;
 
 import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
+import static fr.cph.chicago.connection.CtaRequestType.BUS_DIRECTION;
 import static fr.cph.chicago.connection.CtaRequestType.BUS_STOP_LIST;
 import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
 
@@ -197,5 +197,19 @@ public class DataServiceImpl implements DataService {
     public TrainData loadLocalTrainData() {
         TrainData.getInstance().read();
         return TrainData.getInstance();
+    }
+
+    @Override
+    public BusDirections loadBusDirections(@NonNull final String busRouteId) {
+        try {
+            final CtaConnect connect = CtaConnect.getInstance();
+            final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
+            reqParams.put(App.getContext().getString(R.string.request_rt), busRouteId);
+            final XmlParser xml = XmlParser.getInstance();
+            final InputStream xmlResult = connect.connect(BUS_DIRECTION, reqParams);
+            return xml.parseBusDirections(xmlResult, busRouteId);
+        } catch (final Throwable throwable) {
+            throw Exceptions.propagate(throwable);
+        }
     }
 }

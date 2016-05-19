@@ -19,6 +19,7 @@ package fr.cph.chicago.adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,10 +38,14 @@ import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.enumeration.TrainLine;
+import fr.cph.chicago.exception.ConnectException;
+import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.listener.BikeStationOnClickListener;
 import fr.cph.chicago.listener.TrainOnClickListener;
-import fr.cph.chicago.task.DirectionAsyncTask;
+import fr.cph.chicago.rx.subscriber.BusDirectionSubscriber;
 import fr.cph.chicago.util.LayoutUtil;
+import fr.cph.chicago.rx.observable.ObservableUtil;
+import fr.cph.chicago.util.Util;
 
 /**
  * Adapter that will handle search
@@ -49,6 +54,8 @@ import fr.cph.chicago.util.LayoutUtil;
  * @version 1
  */
 public final class SearchAdapter extends BaseAdapter {
+
+    private static final String TAG = SearchAdapter.class.getSimpleName();
 
     private final Context context;
 
@@ -122,7 +129,16 @@ public final class SearchAdapter extends BaseAdapter {
             final TextView loadingTextView = (TextView) convertView.findViewById(R.id.loading_text_view);
             convertView.setOnClickListener(v -> {
                 loadingTextView.setVisibility(LinearLayout.VISIBLE);
-                new DirectionAsyncTask(searchActivity, parent).execute(busRoute, loadingTextView);
+                ObservableUtil.createBusDirections(busRoute.getId())
+                    .onErrorReturn(throwable -> {
+                        if (throwable.getCause() instanceof ConnectException) {
+                            Util.showNetworkErrorMessage(searchActivity);
+                        } else if (throwable.getCause() instanceof ParserException) {
+                            Util.showOopsSomethingWentWrong(loadingTextView);
+                        }
+                        Log.e(TAG, throwable.getMessage(), throwable);
+                        return null;
+                    }).subscribe(new BusDirectionSubscriber(searchActivity, parent, loadingTextView, busRoute));
             });
         } else {
             final BikeStation bikeStation = (BikeStation) getItem(position);

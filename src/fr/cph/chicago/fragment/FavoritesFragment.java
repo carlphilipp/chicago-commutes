@@ -43,7 +43,7 @@ import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.util.ObservableUtil;
+import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.web.FavoritesResult;
 import rx.Observable;

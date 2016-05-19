@@ -33,7 +33,7 @@ import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.adapter.PopupBusDetailsFavoritesAdapter;
 import fr.cph.chicago.entity.BusDetailsDTO;
 import fr.cph.chicago.entity.BusStop;
-import fr.cph.chicago.util.ObservableUtil;
+import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.util.Util;
 import rx.Observable;
 

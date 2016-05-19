@@ -1,4 +1,4 @@
-package fr.cph.chicago.util;
+package fr.cph.chicago.rx.observable;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -11,6 +11,7 @@ import java.util.List;
 import fr.cph.chicago.App;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
+import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.service.DataService;
@@ -106,6 +107,16 @@ public class ObservableUtil {
         return Observable.create(
             (Subscriber<? super List<BusStop>> subscriber) -> {
                 subscriber.onNext(SERVICE.loadOneBusStop(stopId, bound));
+                subscriber.onCompleted();
+            })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public static Observable<BusDirections> createBusDirections(final String busRouteId){
+        return Observable.create(
+            (Subscriber<? super BusDirections> subscriber) -> {
+                subscriber.onNext(SERVICE.loadBusDirections(busRouteId));
                 subscriber.onCompleted();
             })
             .subscribeOn(Schedulers.io())

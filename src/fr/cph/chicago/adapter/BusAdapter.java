@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,6 +18,7 @@ package fr.cph.chicago.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +34,11 @@ import fr.cph.chicago.activity.MainActivity;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BusRoute;
-import fr.cph.chicago.task.DirectionAsyncTask;
+import fr.cph.chicago.exception.ConnectException;
+import fr.cph.chicago.exception.ParserException;
+import fr.cph.chicago.rx.subscriber.BusDirectionSubscriber;
+import fr.cph.chicago.rx.observable.ObservableUtil;
+import fr.cph.chicago.util.Util;
 
 /**
  * Adapter that will handle buses
@@ -42,6 +47,8 @@ import fr.cph.chicago.task.DirectionAsyncTask;
  * @version 1
  */
 public final class BusAdapter extends BaseAdapter {
+
+    private static final String TAG = BusAdapter.class.getSimpleName();
 
     private final MainActivity activity;
     private List<BusRoute> busRoutes;
@@ -106,9 +113,18 @@ public final class BusAdapter extends BaseAdapter {
 
         convertView.setOnClickListener(v -> {
             detailsLayout.setVisibility(LinearLayout.VISIBLE);
-            new DirectionAsyncTask(activity, parent).execute(route, detailsLayout);
+            ObservableUtil.createBusDirections(route.getId())
+                .onErrorReturn(throwable -> {
+                    if (throwable.getCause() instanceof ConnectException) {
+                        Util.showNetworkErrorMessage(activity);
+                    } else if (throwable.getCause() instanceof ParserException) {
+                        Util.showOopsSomethingWentWrong(detailsLayout);
+                    }
+                    Log.e(TAG, throwable.getMessage(), throwable);
+                    return null;
+                })
+                .subscribe(new BusDirectionSubscriber(activity, parent, detailsLayout, route));
         });
-
         return convertView;
     }
 

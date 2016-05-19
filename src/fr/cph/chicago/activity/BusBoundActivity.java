@@ -51,7 +51,7 @@ import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.PatternPoint;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.task.LoadBusPatternTask;
-import fr.cph.chicago.util.ObservableUtil;
+import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.util.Util;
 
 /**

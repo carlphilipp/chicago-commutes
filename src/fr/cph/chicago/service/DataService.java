@@ -9,6 +9,7 @@ import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
+import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.TrainArrival;
 
@@ -25,4 +26,6 @@ public interface DataService {
     BusData loadLocalBusData();
 
     TrainData loadLocalTrainData();
+
+    BusDirections loadBusDirections(@NonNull final String busRouteId);
 }

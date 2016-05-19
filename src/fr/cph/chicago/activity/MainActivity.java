@@ -42,7 +42,7 @@ import fr.cph.chicago.fragment.FavoritesFragment;
 import fr.cph.chicago.fragment.NearbyFragment;
 import fr.cph.chicago.fragment.TrainFragment;
 import fr.cph.chicago.task.LoadBusAndBikeDataTask;
-import fr.cph.chicago.util.ObservableUtil;
+import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.web.FavoritesResult;
 import rx.Observable;
