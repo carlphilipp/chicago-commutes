@@ -22,6 +22,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.SparseArray;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.BusData;
@@ -29,19 +34,17 @@ import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.service.DataService;
-import fr.cph.chicago.service.DataServiceImpl;
 import fr.cph.chicago.rx.observable.ObservableUtil;
+import fr.cph.chicago.service.BusService;
+import fr.cph.chicago.service.TrainService;
+import fr.cph.chicago.service.impl.BusServiceImpl;
+import fr.cph.chicago.service.impl.TrainServiceImpl;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.web.FavoritesResult;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
 
 /**
  * This class represents the base activity of the application It will load the loading screen and/or the main
@@ -54,10 +57,12 @@ public class BaseActivity extends Activity {
 
     private static final String TAG = BaseActivity.class.getSimpleName();
 
-    private final DataService service;
+    private final TrainService trainService;
+    private final BusService busService;
 
     public BaseActivity() {
-        service = new DataServiceImpl();
+        trainService = new TrainServiceImpl();
+        busService = new BusServiceImpl();
     }
 
     @Override
@@ -73,7 +78,7 @@ public class BaseActivity extends Activity {
         // Train local data
         final Observable<TrainData> trainDataObservable = Observable.create(
             (Subscriber<? super TrainData> subscriber) -> {
-                subscriber.onNext(service.loadLocalTrainData());
+                subscriber.onNext(trainService.loadLocalTrainData());
                 subscriber.onCompleted();
             })
             .doOnNext(onNextTrainData -> DataHolder.getInstance().setTrainData(onNextTrainData))
@@ -83,7 +88,7 @@ public class BaseActivity extends Activity {
         // Bus local data
         final Observable<BusData> busDataObservable = Observable.create(
             (Subscriber<? super BusData> subscriber) -> {
-                subscriber.onNext(service.loadLocalBusData());
+                subscriber.onNext(busService.loadLocalBusData());
                 subscriber.onCompleted();
             })
             .doOnNext(onNextBusData -> DataHolder.getInstance().setBusData(onNextBusData))

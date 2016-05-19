@@ -14,8 +14,12 @@ import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.service.DataService;
-import fr.cph.chicago.service.DataServiceImpl;
+import fr.cph.chicago.service.BikeService;
+import fr.cph.chicago.service.BusService;
+import fr.cph.chicago.service.TrainService;
+import fr.cph.chicago.service.impl.BikeServiceImpl;
+import fr.cph.chicago.service.impl.BusServiceImpl;
+import fr.cph.chicago.service.impl.TrainServiceImpl;
 import fr.cph.chicago.web.FavoritesResult;
 import rx.Observable;
 import rx.Subscriber;
@@ -26,7 +30,9 @@ public class ObservableUtil {
 
     private static final String TAG = ObservableUtil.class.getSimpleName();
 
-    private static final DataService SERVICE = new DataServiceImpl();
+    private static final TrainService TRAIN_SERVICE = new TrainServiceImpl();
+    private static final BusService BUS_SERVICE = new BusServiceImpl();
+    private static final BikeService BIKE_SERVICE = new BikeServiceImpl();
 
     private ObservableUtil() {
     }
@@ -34,7 +40,7 @@ public class ObservableUtil {
     public static Observable<SparseArray<TrainArrival>> createTrainArrivals() {
         return Observable.create(
             (Subscriber<? super SparseArray<TrainArrival>> subscriber) -> {
-                subscriber.onNext(SERVICE.loadFavoritesTrain());
+                subscriber.onNext(TRAIN_SERVICE.loadFavoritesTrain());
                 subscriber.onCompleted();
             })
             .onErrorReturn(throwable -> {
@@ -48,7 +54,7 @@ public class ObservableUtil {
     public static Observable<List<BusArrival>> createBusArrivals() {
         return Observable.create(
             (Subscriber<? super List<BusArrival>> subscriber) -> {
-                subscriber.onNext(SERVICE.loadFavoritesBuses());
+                subscriber.onNext(BUS_SERVICE.loadFavoritesBuses());
                 subscriber.onCompleted();
             })
             .onErrorReturn(throwable -> {
@@ -62,7 +68,7 @@ public class ObservableUtil {
     public static Observable<List<BikeStation>> createAllBikeStations() {
         return Observable.create(
             (Subscriber<? super List<BikeStation>> subscriber) -> {
-                subscriber.onNext(SERVICE.loadAllBikes());
+                subscriber.onNext(BIKE_SERVICE.loadAllBikes());
                 subscriber.onCompleted();
             })
             .onErrorReturn(throwable -> {
@@ -106,17 +112,17 @@ public class ObservableUtil {
     public static Observable<List<BusStop>> createBusStopBoundObservable(@NonNull final String stopId, @NonNull final String bound) {
         return Observable.create(
             (Subscriber<? super List<BusStop>> subscriber) -> {
-                subscriber.onNext(SERVICE.loadOneBusStop(stopId, bound));
+                subscriber.onNext(BUS_SERVICE.loadOneBusStop(stopId, bound));
                 subscriber.onCompleted();
             })
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<BusDirections> createBusDirections(final String busRouteId){
+    public static Observable<BusDirections> createBusDirections(final String busRouteId) {
         return Observable.create(
             (Subscriber<? super BusDirections> subscriber) -> {
-                subscriber.onNext(SERVICE.loadBusDirections(busRouteId));
+                subscriber.onNext(BUS_SERVICE.loadBusDirections(busRouteId));
                 subscriber.onCompleted();
             })
             .subscribeOn(Schedulers.io())
