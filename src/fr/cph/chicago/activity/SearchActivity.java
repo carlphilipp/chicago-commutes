@@ -169,7 +169,7 @@ public class SearchActivity extends AppCompatActivity {
                 }
             }
 
-            for (final BusRoute busRoute : busData.getRoutes()) {
+            for (final BusRoute busRoute : busData.getBusRoutes()) {
                 if (containsIgnoreCase(busRoute.getId(), query) || containsIgnoreCase(busRoute.getName(), query)) {
                     if (!foundBusRoutes.contains(busRoute)) {
                         foundBusRoutes.add(busRoute);

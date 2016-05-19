@@ -12,6 +12,7 @@ import fr.cph.chicago.App;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusDirections;
+import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.service.BikeService;
@@ -21,6 +22,7 @@ import fr.cph.chicago.service.impl.BikeServiceImpl;
 import fr.cph.chicago.service.impl.BusServiceImpl;
 import fr.cph.chicago.service.impl.TrainServiceImpl;
 import fr.cph.chicago.web.FavoritesResult;
+import fr.cph.chicago.web.FirstLoadResult;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -119,7 +121,7 @@ public class ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<BusDirections> createBusDirections(final String busRouteId) {
+    public static Observable<BusDirections> createBusDirectionsObservable(final String busRouteId) {
         return Observable.create(
             (Subscriber<? super BusDirections> subscriber) -> {
                 subscriber.onNext(BUS_SERVICE.loadBusDirections(busRouteId));
@@ -127,5 +129,46 @@ public class ObservableUtil {
             })
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public static Observable<FirstLoadResult> createOnFirstLoadObservable() {
+        final Observable<List<BusRoute>> busRoutesObs = Observable.create(
+            (Subscriber<? super List<BusRoute>> subscriber) -> {
+                subscriber.onNext(BUS_SERVICE.loadBusRoutes());
+                subscriber.onCompleted();
+            })
+            .onErrorReturn(throwable -> {
+                Log.e(TAG, throwable.getMessage(), throwable);
+                return null;
+            })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread());
+
+        final Observable<List<BikeStation>> bikeStationsObs = Observable.create(
+            (Subscriber<? super List<BikeStation>> subscriber) -> {
+                subscriber.onNext(BIKE_SERVICE.loadAllBikes());
+                subscriber.onCompleted();
+            })
+            .onErrorReturn(throwable -> {
+                Log.e(TAG, throwable.getMessage(), throwable);
+                return null;
+            })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread());
+
+        return Observable.zip(busRoutesObs, bikeStationsObs, (busRoutes, bikeStations) -> {
+            final FirstLoadResult result = new FirstLoadResult();
+            if (busRoutes == null) {
+                busRoutes = new ArrayList<>();
+                result.setBusRoutesError(true);
+            }
+            if (bikeStations == null) {
+                bikeStations = new ArrayList<>();
+                result.setBikeStationsError(true);
+            }
+            result.setBusRoutes(busRoutes);
+            result.setBikeStations(bikeStations);
+            return result;
+        });
     }
 }

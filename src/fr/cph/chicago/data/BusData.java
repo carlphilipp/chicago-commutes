@@ -25,11 +25,8 @@ import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
-import fr.cph.chicago.App;
-import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.csv.BusStopCsvParser;
 import fr.cph.chicago.entity.BusRoute;
@@ -38,9 +35,10 @@ import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.xml.XmlParser;
+import lombok.Getter;
+import lombok.Setter;
 
 import static fr.cph.chicago.connection.CtaRequestType.BUS_ROUTES;
-import static fr.cph.chicago.connection.CtaRequestType.BUS_STOP_LIST;
 
 /**
  * Class that handle bus data. Singleton
@@ -52,6 +50,8 @@ public class BusData {
 
     private static BusData busData;
 
+    @Getter
+    @Setter
     private List<BusRoute> busRoutes;
     private List<BusStop> busStops;
 
@@ -99,16 +99,6 @@ public class BusData {
             final InputStream xmlResult = connect.connect(BUS_ROUTES, params);
             busRoutes = xml.parseBusRoutes(xmlResult);
         }
-    }
-
-    /**
-     * Get bus routes
-     *
-     * @return a list of bus route
-     */
-    @NonNull
-    public final List<BusRoute> getRoutes() {
-        return busRoutes;
     }
 
     /**

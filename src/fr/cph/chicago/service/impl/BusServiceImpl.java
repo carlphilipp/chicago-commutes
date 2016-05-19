@@ -17,6 +17,7 @@ import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusDirections;
+import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.service.BusService;
 import fr.cph.chicago.util.Util;
@@ -25,6 +26,7 @@ import rx.exceptions.Exceptions;
 
 import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
 import static fr.cph.chicago.connection.CtaRequestType.BUS_DIRECTION;
+import static fr.cph.chicago.connection.CtaRequestType.BUS_ROUTES;
 import static fr.cph.chicago.connection.CtaRequestType.BUS_STOP_LIST;
 
 public class BusServiceImpl implements BusService {
@@ -108,6 +110,19 @@ public class BusServiceImpl implements BusService {
             final XmlParser xml = XmlParser.getInstance();
             final InputStream xmlResult = connect.connect(BUS_DIRECTION, reqParams);
             return xml.parseBusDirections(xmlResult, busRouteId);
+        } catch (final Throwable throwable) {
+            throw Exceptions.propagate(throwable);
+        }
+    }
+
+    @Override
+    public List<BusRoute> loadBusRoutes() {
+        try {
+            final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
+            final CtaConnect connect = CtaConnect.getInstance();
+            final XmlParser xml = XmlParser.getInstance();
+            final InputStream xmlResult = connect.connect(BUS_ROUTES, params);
+            return xml.parseBusRoutes(xmlResult);
         } catch (final Throwable throwable) {
             throw Exceptions.propagate(throwable);
         }

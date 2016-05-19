@@ -61,7 +61,7 @@ public final class BusAdapter extends BaseAdapter {
     public BusAdapter(@NonNull final MainActivity activity) {
         this.activity = activity;
         final BusData busData = DataHolder.getInstance().getBusData();
-        this.busRoutes = busData.getRoutes();
+        this.busRoutes = busData.getBusRoutes();
     }
 
     @Override
@@ -113,7 +113,7 @@ public final class BusAdapter extends BaseAdapter {
 
         convertView.setOnClickListener(v -> {
             detailsLayout.setVisibility(LinearLayout.VISIBLE);
-            ObservableUtil.createBusDirections(route.getId())
+            ObservableUtil.createBusDirectionsObservable(route.getId())
                 .onErrorReturn(throwable -> {
                     if (throwable.getCause() instanceof ConnectException) {
                         Util.showNetworkErrorMessage(activity);

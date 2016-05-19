@@ -129,7 +129,7 @@ public final class SearchAdapter extends BaseAdapter {
             final TextView loadingTextView = (TextView) convertView.findViewById(R.id.loading_text_view);
             convertView.setOnClickListener(v -> {
                 loadingTextView.setVisibility(LinearLayout.VISIBLE);
-                ObservableUtil.createBusDirections(busRoute.getId())
+                ObservableUtil.createBusDirectionsObservable(busRoute.getId())
                     .onErrorReturn(throwable -> {
                         if (throwable.getCause() instanceof ConnectException) {
                             Util.showNetworkErrorMessage(searchActivity);

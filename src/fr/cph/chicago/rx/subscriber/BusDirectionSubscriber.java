@@ -23,9 +23,6 @@ import fr.cph.chicago.entity.enumeration.BusDirection;
 import fr.cph.chicago.util.Util;
 import rx.Subscriber;
 
-/**
- * Created by carl on 5/18/16.
- */
 public class BusDirectionSubscriber extends Subscriber<BusDirections> {
 
     private final Activity activity;

@@ -31,6 +31,10 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.BusData;
@@ -41,14 +45,10 @@ import fr.cph.chicago.fragment.BusFragment;
 import fr.cph.chicago.fragment.FavoritesFragment;
 import fr.cph.chicago.fragment.NearbyFragment;
 import fr.cph.chicago.fragment.TrainFragment;
-import fr.cph.chicago.task.LoadBusAndBikeDataTask;
 import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.web.FavoritesResult;
 import rx.Observable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -81,7 +81,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
             setContentView(R.layout.activity_main);
 
-            new LoadBusAndBikeDataTask(this).execute();
+            ObservableUtil.createOnFirstLoadObservable().subscribe(
+                onNext -> {
+                    final DataHolder dataHolder = DataHolder.getInstance();
+                    dataHolder.getBusData().setBusRoutes(onNext.getBusRoutes());
+                    MainActivity.this.refresh(dataHolder.getBusData(), onNext.getBikeStations());
+                    if (onNext.isBikeStationsError() || onNext.isBusRoutesError()) {
+                        Util.showOopsSomethingWentWrong(drawerLayout);
+                    }
+                },
+                onError -> Util.showOopsSomethingWentWrong(drawerLayout),
+                () -> {
+                    Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_routes, 0);
+                    Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
+                }
+            );
 
             App.container = (FrameLayout) findViewById(R.id.container);
             App.container.getForeground().setAlpha(0);
@@ -184,61 +198,61 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         final FragmentManager fragmentManager = getSupportFragmentManager();
         currentPosition = position;
         switch (position) {
-        case R.id.navigation_favorites:
-            setBarTitle(getString(R.string.favorites));
-            if (favoritesFragment == null) {
-                favoritesFragment = FavoritesFragment.newInstance(position + 1);
-            }
-            if (!this.isFinishing()) {
-                fragmentManager.beginTransaction().replace(R.id.container, favoritesFragment).commit();
-            }
-            drawerLayout.closeDrawer(GravityCompat.START);
-            showActionBarMenu();
-            break;
-        case R.id.navigation_train:
-            setBarTitle(getString(R.string.train));
-            if (trainFragment == null) {
-                trainFragment = TrainFragment.newInstance(position + 1);
-            }
-            if (!this.isFinishing()) {
-                fragmentManager.beginTransaction().replace(R.id.container, trainFragment).commit();
-            }
-            drawerLayout.closeDrawer(GravityCompat.START);
-            hideActionBarMenu();
-            break;
-        case R.id.navigation_bus:
-            setBarTitle(getString(R.string.bus));
-            if (busFragment == null) {
-                busFragment = BusFragment.newInstance(position + 1);
-            }
-            if (!this.isFinishing()) {
-                fragmentManager.beginTransaction().replace(R.id.container, busFragment).commit();
-            }
-            drawerLayout.closeDrawer(GravityCompat.START);
-            hideActionBarMenu();
-            break;
-        case R.id.navigation_bike:
-            setBarTitle(getString(R.string.divvy));
-            if (bikeFragment == null) {
-                bikeFragment = BikeFragment.newInstance(position + 1);
-            }
-            if (!this.isFinishing()) {
-                fragmentManager.beginTransaction().replace(R.id.container, bikeFragment).commit();
-            }
-            drawerLayout.closeDrawer(GravityCompat.START);
-            hideActionBarMenu();
-            break;
-        case R.id.navigation_nearby:
-            setBarTitle(getString(R.string.nearby));
-            if (nearbyFragment == null) {
-                nearbyFragment = NearbyFragment.newInstance(position + 1);
-            }
-            if (!this.isFinishing()) {
-                fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
-            }
-            drawerLayout.closeDrawer(GravityCompat.START);
-            showActionBarMenu();
-            break;
+            case R.id.navigation_favorites:
+                setBarTitle(getString(R.string.favorites));
+                if (favoritesFragment == null) {
+                    favoritesFragment = FavoritesFragment.newInstance(position + 1);
+                }
+                if (!this.isFinishing()) {
+                    fragmentManager.beginTransaction().replace(R.id.container, favoritesFragment).commit();
+                }
+                drawerLayout.closeDrawer(GravityCompat.START);
+                showActionBarMenu();
+                break;
+            case R.id.navigation_train:
+                setBarTitle(getString(R.string.train));
+                if (trainFragment == null) {
+                    trainFragment = TrainFragment.newInstance(position + 1);
+                }
+                if (!this.isFinishing()) {
+                    fragmentManager.beginTransaction().replace(R.id.container, trainFragment).commit();
+                }
+                drawerLayout.closeDrawer(GravityCompat.START);
+                hideActionBarMenu();
+                break;
+            case R.id.navigation_bus:
+                setBarTitle(getString(R.string.bus));
+                if (busFragment == null) {
+                    busFragment = BusFragment.newInstance(position + 1);
+                }
+                if (!this.isFinishing()) {
+                    fragmentManager.beginTransaction().replace(R.id.container, busFragment).commit();
+                }
+                drawerLayout.closeDrawer(GravityCompat.START);
+                hideActionBarMenu();
+                break;
+            case R.id.navigation_bike:
+                setBarTitle(getString(R.string.divvy));
+                if (bikeFragment == null) {
+                    bikeFragment = BikeFragment.newInstance(position + 1);
+                }
+                if (!this.isFinishing()) {
+                    fragmentManager.beginTransaction().replace(R.id.container, bikeFragment).commit();
+                }
+                drawerLayout.closeDrawer(GravityCompat.START);
+                hideActionBarMenu();
+                break;
+            case R.id.navigation_nearby:
+                setBarTitle(getString(R.string.nearby));
+                if (nearbyFragment == null) {
+                    nearbyFragment = NearbyFragment.newInstance(position + 1);
+                }
+                if (!this.isFinishing()) {
+                    fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
+                }
+                drawerLayout.closeDrawer(GravityCompat.START);
+                showActionBarMenu();
+                break;
         }
     }
 
