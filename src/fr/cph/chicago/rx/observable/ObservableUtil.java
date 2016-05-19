@@ -65,7 +65,7 @@ public class ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<List<BikeStation>> createAllBikeStations() {
+    public static Observable<List<BikeStation>> createAllBikeStationsObservable() {
         return Observable.create(
             (Subscriber<? super List<BikeStation>> subscriber) -> {
                 subscriber.onNext(BIKE_SERVICE.loadAllBikes());
@@ -85,7 +85,7 @@ public class ObservableUtil {
         // Bus online favorites
         final Observable<List<BusArrival>> busArrivalsObservable = ObservableUtil.createBusArrivals();
         // Bikes online all stations
-        final Observable<List<BikeStation>> bikeStationsObservable = ObservableUtil.createAllBikeStations();
+        final Observable<List<BikeStation>> bikeStationsObservable = ObservableUtil.createAllBikeStationsObservable();
         return Observable.zip(trainArrivalsObservable, busArrivalsObservable, bikeStationsObservable,
             (trainArrivals, busArrivals, bikeStations) -> {
                 App.modifyLastUpdate(Calendar.getInstance().getTime());

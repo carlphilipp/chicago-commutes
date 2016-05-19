@@ -37,7 +37,8 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.listener.GoogleMapDirectionOnClickListener;
 import fr.cph.chicago.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.listener.GoogleStreetOnClickListener;
-import fr.cph.chicago.task.DivvyAsyncTask;
+import fr.cph.chicago.rx.observable.ObservableUtil;
+import fr.cph.chicago.rx.subscriber.BikeAllBikeStationsSubscriber;
 import fr.cph.chicago.util.Util;
 
 /**
@@ -65,7 +66,10 @@ public class BikeStationActivity extends AbstractStationActivity {
                 final double longitude = bikeStation.getLongitude();
 
                 swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_station_swipe_refresh_layout);
-                swipeRefreshLayout.setOnRefreshListener(() -> new DivvyAsyncTask(BikeStationActivity.this, bikeStation.getId(), swipeRefreshLayout).execute());
+                swipeRefreshLayout.setOnRefreshListener(
+                    () -> ObservableUtil.createAllBikeStationsObservable()
+                        .subscribe(new BikeAllBikeStationsSubscriber(BikeStationActivity.this, bikeStation.getId(), swipeRefreshLayout))
+                );
 
                 isFavorite = isFavorite();
 
@@ -109,7 +113,8 @@ public class BikeStationActivity extends AbstractStationActivity {
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener((item -> {
             swipeRefreshLayout.setRefreshing(true);
-            new DivvyAsyncTask(BikeStationActivity.this, bikeStation.getId(), swipeRefreshLayout).execute();
+            ObservableUtil.createAllBikeStationsObservable()
+                .subscribe(new BikeAllBikeStationsSubscriber(BikeStationActivity.this, bikeStation.getId(), swipeRefreshLayout));
             return false;
         }));
         Util.setWindowsColor(this, toolbar, TrainLine.NA);
