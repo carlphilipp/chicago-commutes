@@ -1,6 +1,7 @@
 package fr.cph.chicago.rx.subscriber;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -12,23 +13,28 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.activity.BusMapActivity;
 import fr.cph.chicago.adapter.BusMapSnippetAdapter;
 import fr.cph.chicago.entity.BusArrival;
+import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.util.Util;
 import rx.Subscriber;
 
 public class BusFollowSubscriber extends Subscriber<List<BusArrival>> {
 
+    private static final String TAG = BusFollowSubscriber.class.getSimpleName();
+
     private final BusMapActivity activity;
     private final View view;
-    final boolean loadAll;
+    private final View layout;
+    private final boolean loadAll;
 
-    public BusFollowSubscriber(final BusMapActivity activity, final View view, final boolean loadAll) {
+    public BusFollowSubscriber(final BusMapActivity activity, final View layout, final View view, final boolean loadAll) {
         this.activity = activity;
+        this.layout = layout;
         this.view = view;
         this.loadAll = loadAll;
     }
 
     @Override
-    public void onNext(@NonNull List<BusArrival> onNext) {
+    public void onNext(List<BusArrival> onNext) {
         if (!loadAll && onNext.size() > 7) {
             onNext = onNext.subList(0, 6);
             final BusArrival arrival = new BusArrival();
@@ -52,11 +58,15 @@ public class BusFollowSubscriber extends Subscriber<List<BusArrival>> {
 
     @Override
     public void onError(@NonNull final Throwable throwable) {
-        Util.showOopsSomethingWentWrong(view);
+        if (throwable.getCause() instanceof ConnectException) {
+            Util.showNetworkErrorMessage(layout);
+        } else {
+            Util.showOopsSomethingWentWrong(layout);
+        }
+        Log.e(TAG, throwable.getMessage(), throwable);
     }
 
     @Override
     public void onCompleted() {
-
     }
 }

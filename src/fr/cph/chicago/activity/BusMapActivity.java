@@ -177,7 +177,8 @@ public class BusMapActivity extends Activity {
                             selectedMarker = marker;
                             final String busId = marker.getSnippet();
                             Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
-                            ObservableUtil.createFollowBusObservable(busId).subscribe(new BusFollowSubscriber(BusMapActivity.this, view, false));
+                            ObservableUtil.createFollowBusObservable(busId)
+                                .subscribe(new BusFollowSubscriber(BusMapActivity.this, mapFragment.getView(), view, false));
                             status.put(marker, false);
                         }
                         return view;
@@ -197,7 +198,8 @@ public class BusMapActivity extends Activity {
                             final String runNumber = marker.getSnippet();
                             final boolean current = status.get(marker);
                             Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
-                            ObservableUtil.createFollowBusObservable(runNumber).subscribe(new BusFollowSubscriber(BusMapActivity.this, view, !current));
+                            ObservableUtil.createFollowBusObservable(runNumber)
+                                .subscribe(new BusFollowSubscriber(BusMapActivity.this, mapFragment.getView(), view, !current));
                             status.put(marker, !current);
                         }
                     }
