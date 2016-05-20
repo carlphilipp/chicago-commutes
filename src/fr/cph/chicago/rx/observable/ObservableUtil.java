@@ -121,7 +121,7 @@ public class ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<BusDirections> createBusDirectionsObservable(final String busRouteId) {
+    public static Observable<BusDirections> createBusDirectionsObservable(@NonNull final String busRouteId) {
         return Observable.create(
             (Subscriber<? super BusDirections> subscriber) -> {
                 subscriber.onNext(BUS_SERVICE.loadBusDirections(busRouteId));
@@ -170,5 +170,15 @@ public class ObservableUtil {
             result.setBikeStations(bikeStations);
             return result;
         });
+    }
+
+    public static Observable<List<BusArrival>> createFollowBusObservable(@NonNull final String busId) {
+        return Observable.create(
+            (Subscriber<? super List<BusArrival>> subscriber) -> {
+                subscriber.onNext(BUS_SERVICE.loadFollowBus(busId));
+                subscriber.onCompleted();
+            })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread());
     }
 }

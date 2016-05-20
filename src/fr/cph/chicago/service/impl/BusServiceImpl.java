@@ -34,7 +34,7 @@ public class BusServiceImpl implements BusService {
     private final XmlParser xmlParser;
 
     public BusServiceImpl() {
-        xmlParser = XmlParser.getInstance();
+        this.xmlParser = XmlParser.getInstance();
     }
 
     @Override
@@ -123,6 +123,20 @@ public class BusServiceImpl implements BusService {
             final XmlParser xml = XmlParser.getInstance();
             final InputStream xmlResult = connect.connect(BUS_ROUTES, params);
             return xml.parseBusRoutes(xmlResult);
+        } catch (final Throwable throwable) {
+            throw Exceptions.propagate(throwable);
+        }
+    }
+
+    @Override
+    public List<BusArrival> loadFollowBus(@NonNull final String busId) {
+        try {
+            CtaConnect connect = CtaConnect.getInstance();
+            MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
+            connectParam.put(App.getContext().getString(R.string.request_vid), busId);
+            InputStream content = connect.connect(BUS_ARRIVALS, connectParam);
+            final XmlParser xml = XmlParser.getInstance();
+            return xml.parseBusArrivals(content);
         } catch (final Throwable throwable) {
             throw Exceptions.propagate(throwable);
         }

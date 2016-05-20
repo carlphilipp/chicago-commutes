@@ -27,20 +27,17 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -71,7 +68,8 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.listener.BusMapOnCameraChangeListener;
-import fr.cph.chicago.task.LoadBusFollowTask;
+import fr.cph.chicago.rx.observable.ObservableUtil;
+import fr.cph.chicago.rx.subscriber.BusFollowSubscriber;
 import fr.cph.chicago.task.LoadBusPositionTask;
 import fr.cph.chicago.task.LoadCurrentPositionTask;
 import fr.cph.chicago.util.Util;
@@ -177,8 +175,9 @@ public class BusMapActivity extends Activity {
                         final View view = views.get(marker);
                         if (!refreshingInfoWindow) {
                             selectedMarker = marker;
-                            final String busId1 = marker.getSnippet();
-                            new LoadBusFollowTask(BusMapActivity.this, view, false).execute(busId1);
+                            final String busId = marker.getSnippet();
+                            Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
+                            ObservableUtil.createFollowBusObservable(busId).subscribe(new BusFollowSubscriber(BusMapActivity.this, view, false));
                             status.put(marker, false);
                         }
                         return view;
@@ -197,7 +196,8 @@ public class BusMapActivity extends Activity {
                             selectedMarker = marker;
                             final String runNumber = marker.getSnippet();
                             final boolean current = status.get(marker);
-                            new LoadBusFollowTask(BusMapActivity.this, view, !current).execute(runNumber);
+                            Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
+                            ObservableUtil.createFollowBusObservable(runNumber).subscribe(new BusFollowSubscriber(BusMapActivity.this, view, !current));
                             status.put(marker, !current);
                         }
                     }

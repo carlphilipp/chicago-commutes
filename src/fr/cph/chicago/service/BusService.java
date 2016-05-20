@@ -21,4 +21,6 @@ public interface BusService {
     BusDirections loadBusDirections(@NonNull final String busRouteId);
 
     List<BusRoute> loadBusRoutes();
+
+    List<BusArrival> loadFollowBus(@NonNull final String busId);
 }
