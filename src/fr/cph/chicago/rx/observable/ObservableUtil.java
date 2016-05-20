@@ -12,6 +12,7 @@ import fr.cph.chicago.App;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusDirections;
+import fr.cph.chicago.entity.BusPattern;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.TrainArrival;
@@ -176,6 +177,16 @@ public class ObservableUtil {
         return Observable.create(
             (Subscriber<? super List<BusArrival>> subscriber) -> {
                 subscriber.onNext(BUS_SERVICE.loadFollowBus(busId));
+                subscriber.onCompleted();
+            })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public static Observable<BusPattern> createBusPatternObservable(@NonNull final String busRouteId, @NonNull final String bound) {
+        return Observable.create(
+            (Subscriber<? super BusPattern> subscriber) -> {
+                subscriber.onNext(BUS_SERVICE.loadBusPattern(busRouteId, bound));
                 subscriber.onCompleted();
             })
             .subscribeOn(Schedulers.io())

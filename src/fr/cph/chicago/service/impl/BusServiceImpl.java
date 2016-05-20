@@ -1,6 +1,7 @@
 package fr.cph.chicago.service.impl;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
@@ -9,6 +10,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import fr.cph.chicago.App;
@@ -17,6 +19,7 @@ import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusDirections;
+import fr.cph.chicago.entity.BusPattern;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.service.BusService;
@@ -26,6 +29,7 @@ import rx.exceptions.Exceptions;
 
 import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
 import static fr.cph.chicago.connection.CtaRequestType.BUS_DIRECTION;
+import static fr.cph.chicago.connection.CtaRequestType.BUS_PATTERN;
 import static fr.cph.chicago.connection.CtaRequestType.BUS_ROUTES;
 import static fr.cph.chicago.connection.CtaRequestType.BUS_STOP_LIST;
 
@@ -37,6 +41,7 @@ public class BusServiceImpl implements BusService {
         this.xmlParser = XmlParser.getInstance();
     }
 
+    @NonNull
     @Override
     public List<BusArrival> loadFavoritesBuses() {
         final List<BusArrival> busArrivals = new ArrayList<>();
@@ -78,6 +83,7 @@ public class BusServiceImpl implements BusService {
         return busArrivals;
     }
 
+    @NonNull
     @Override
     public List<BusStop> loadOneBusStop(@NonNull final String stopId, @NonNull final String bound) {
         try {
@@ -93,14 +99,14 @@ public class BusServiceImpl implements BusService {
         }
     }
 
-
+    @NonNull
     @Override
     public BusData loadLocalBusData() {
         BusData.getInstance().readBusStops();
         return BusData.getInstance();
     }
 
-
+    @NonNull
     @Override
     public BusDirections loadBusDirections(@NonNull final String busRouteId) {
         try {
@@ -115,6 +121,7 @@ public class BusServiceImpl implements BusService {
         }
     }
 
+    @NonNull
     @Override
     public List<BusRoute> loadBusRoutes() {
         try {
@@ -128,6 +135,7 @@ public class BusServiceImpl implements BusService {
         }
     }
 
+    @NonNull
     @Override
     public List<BusArrival> loadFollowBus(@NonNull final String busId) {
         try {
@@ -140,5 +148,28 @@ public class BusServiceImpl implements BusService {
         } catch (final Throwable throwable) {
             throw Exceptions.propagate(throwable);
         }
+    }
+
+    @Nullable
+    @Override
+    public BusPattern loadBusPattern(@NonNull final String busRouteId, @NonNull final String bound) {
+        final CtaConnect connect = CtaConnect.getInstance();
+        final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
+        connectParam.put(App.getContext().getString(R.string.request_rt), busRouteId);
+        final String boundIgnoreCase = bound.toLowerCase(Locale.US);
+        try {
+            final InputStream content = connect.connect(BUS_PATTERN, connectParam);
+            final XmlParser xml = XmlParser.getInstance();
+            final List<BusPattern> patterns = xml.parsePatterns(content);
+            for (final BusPattern pattern : patterns) {
+                final String directionIgnoreCase = pattern.getDirection().toLowerCase(Locale.US);
+                if (pattern.getDirection().equals(bound) || boundIgnoreCase.contains(directionIgnoreCase)) {
+                    return pattern;
+                }
+            }
+        } catch (final Throwable throwable) {
+            throw Exceptions.propagate(throwable);
+        }
+        return null;
     }
 }

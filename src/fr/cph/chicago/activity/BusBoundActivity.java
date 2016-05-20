@@ -29,6 +29,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
@@ -49,8 +50,9 @@ import fr.cph.chicago.adapter.BusBoundAdapter;
 import fr.cph.chicago.entity.BusPattern;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.PatternPoint;
+import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.task.LoadBusPatternTask;
+import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.util.Util;
 
@@ -183,11 +185,36 @@ public class BusBoundActivity extends ListActivity {
         mapFragment.getMapAsync(googleMap -> {
             googleMap.getUiSettings().setMyLocationButtonEnabled(false);
             googleMap.getUiSettings().setZoomControlsEnabled(false);
-            if (Util.isNetworkAvailable()) {
-                new LoadBusPatternTask(BusBoundActivity.this, mapFragment, busRouteId, boundTitle, false).execute();
-            } else {
-                Util.showNetworkErrorMessage(layout);
-            }
+            Util.trackAction(BusBoundActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_pattern, 0);
+            ObservableUtil.createBusPatternObservable(busRouteId, bound)
+                .subscribe(
+                    onNext -> {
+                        if (onNext != null) {
+                            final int center = onNext.getPoints().size() / 2;
+                            final Position position = onNext.getPoints().get(center).getPosition();
+                            mapFragment.getMapAsync(googleMap2 -> {
+                                if (position != null) {
+                                    final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
+                                    googleMap2.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
+                                    googleMap2.animateCamera(CameraUpdateFactory.zoomTo(9), 500, null);
+                                } else {
+                                    googleMap2.moveCamera(CameraUpdateFactory.newLatLngZoom(Util.CHICAGO, 10));
+                                }
+                            });
+                            BusBoundActivity.this.drawPattern(onNext);
+                        } else {
+                            Util.showMessage(BusBoundActivity.this, R.string.message_error_could_not_load_path);
+                        }
+                    },
+                    onError -> {
+                        if (onError.getCause() instanceof ConnectException) {
+                            Util.showNetworkErrorMessage(layout);
+                        } else {
+                            Util.showOopsSomethingWentWrong(layout);
+                        }
+                        Log.e(TAG, onError.getMessage(), onError);
+                    }
+                );
         });
     }
 

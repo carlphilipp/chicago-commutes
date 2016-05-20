@@ -7,6 +7,7 @@ import java.util.List;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusDirections;
+import fr.cph.chicago.entity.BusPattern;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
 
@@ -23,4 +24,6 @@ public interface BusService {
     List<BusRoute> loadBusRoutes();
 
     List<BusArrival> loadFollowBus(@NonNull final String busId);
+
+    BusPattern loadBusPattern(@NonNull final String busRouteId, @NonNull final String bound);
 }
