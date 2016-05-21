@@ -194,7 +194,7 @@ public class ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<List<Bus>> createBusList(final int busId, @NonNull final String busRouteId) {
+    public static Observable<List<Bus>> createBusListObservable(final int busId, @NonNull final String busRouteId) {
         return Observable.create(
             (Subscriber<? super List<Bus>> subscriber) -> {
                 subscriber.onNext(BUS_SERVICE.loadBus(busId, busRouteId));
@@ -203,4 +203,14 @@ public class ObservableUtil {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
     }
+
+//    public static Observable<LocationManager> createCurrentPositionObservable(final int busId, @NonNull final String busRouteId) {
+//        return Observable.create(
+//            (Subscriber<? super LocationManager> subscriber) -> {
+//                subscriber.onNext((LocationManager) activity.getSystemService(Context.LOCATION_SERVICE));
+//                subscriber.onCompleted();
+//            })
+//            .subscribeOn(Schedulers.io())
+//            .observeOn(AndroidSchedulers.mainThread());
+//    }
 }

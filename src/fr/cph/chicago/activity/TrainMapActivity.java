@@ -22,7 +22,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -33,7 +32,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -54,7 +52,6 @@ import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Train;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.listener.TrainMapOnCameraChangeListener;
-import fr.cph.chicago.task.LoadCurrentPositionTask;
 import fr.cph.chicago.task.LoadTrainFollowTask;
 import fr.cph.chicago.task.LoadTrainPositionTask;
 import fr.cph.chicago.util.Util;
@@ -123,7 +120,6 @@ public class TrainMapActivity extends Activity {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener((item -> {
-            new LoadCurrentPositionTask(TrainMapActivity.this, mapFragment).execute();
             new LoadTrainPositionTask(TrainMapActivity.this, line, trainData).execute(false, true);
             return false;
         }));
@@ -163,7 +159,7 @@ public class TrainMapActivity extends Activity {
     public final void onResume() {
         super.onResume();
         mapFragment.getMapAsync(googleMap -> {
-
+            Util.setLocationOnMap(this, googleMap);
             googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                 @Override
                 public View getInfoWindow(final Marker marker) {
@@ -203,7 +199,6 @@ public class TrainMapActivity extends Activity {
                 }
             });
             if (Util.isNetworkAvailable()) {
-                new LoadCurrentPositionTask(TrainMapActivity.this, mapFragment).execute();
                 new LoadTrainPositionTask(TrainMapActivity.this, line, trainData).execute(centerMap, true);
             } else {
                 Util.showNetworkErrorMessage(layout);

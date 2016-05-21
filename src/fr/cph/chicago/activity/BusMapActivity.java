@@ -71,7 +71,6 @@ import fr.cph.chicago.listener.BusMapOnCameraChangeListener;
 import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.rx.subscriber.BusFollowSubscriber;
 import fr.cph.chicago.rx.subscriber.BusSubscriber;
-import fr.cph.chicago.task.LoadCurrentPositionTask;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.XmlParser;
 
@@ -163,6 +162,7 @@ public class BusMapActivity extends Activity {
     public final void onResume() {
         super.onResume();
         mapFragment.getMapAsync(googleMap -> {
+            Util.setLocationOnMap(this, googleMap);
             googleMap.setInfoWindowAdapter(new InfoWindowAdapter() {
                 @Override
                 public View getInfoWindow(final Marker marker) {
@@ -206,9 +206,9 @@ public class BusMapActivity extends Activity {
                 }
             });
             if (Util.isNetworkAvailable()) {
-                new LoadCurrentPositionTask(BusMapActivity.this, mapFragment).execute();
+                Util.setLocationOnMap(this, googleMap);
                 Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_vehicles, 0);
-                ObservableUtil.createBusList(busId, busRouteId).subscribe(new BusSubscriber(BusMapActivity.this, centerMap, layout));
+                ObservableUtil.createBusListObservable(busId, busRouteId).subscribe(new BusSubscriber(BusMapActivity.this, centerMap, layout));
                 if (loadPattern) {
                     new LoadPattern().execute();
                 }
@@ -239,9 +239,8 @@ public class BusMapActivity extends Activity {
 
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener((item -> {
-            new LoadCurrentPositionTask(BusMapActivity.this, mapFragment).execute();
             Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_vehicles, 0);
-            ObservableUtil.createBusList(busId, busRouteId).subscribe(new BusSubscriber(BusMapActivity.this, centerMap, layout));
+            ObservableUtil.createBusListObservable(busId, busRouteId).subscribe(new BusSubscriber(BusMapActivity.this, centerMap, layout));
             return false;
         }));
 

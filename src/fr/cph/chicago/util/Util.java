@@ -38,17 +38,14 @@ import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
+
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import fr.cph.chicago.App;
-import fr.cph.chicago.R;
-import fr.cph.chicago.data.Preferences;
-import fr.cph.chicago.entity.BikeStation;
-import fr.cph.chicago.entity.Position;
-import fr.cph.chicago.entity.enumeration.TrainLine;
+
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
@@ -58,6 +55,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import fr.cph.chicago.App;
+import fr.cph.chicago.R;
+import fr.cph.chicago.data.Preferences;
+import fr.cph.chicago.entity.BikeStation;
+import fr.cph.chicago.entity.Position;
+import fr.cph.chicago.entity.enumeration.TrainLine;
 
 /**
  * Util class
@@ -124,7 +128,7 @@ public final class Util {
      * @param preference the preference
      */
     public static void removeFromBusFavorites(@NonNull final String busRouteId, @NonNull final String busStopId, @NonNull final String bound, @NonNull final String preference,
-        @NonNull final View view) {
+                                              @NonNull final View view) {
         final String id = busRouteId + "_" + busStopId + "_" + bound;
         final List<String> favorites = Preferences.getBusFavorites(preference);
         favorites.remove(id);
@@ -179,7 +183,7 @@ public final class Util {
         final int sec = favorite.indexOf('_', first + 1);
         final String stopId = favorite.substring(first + 1, sec);
         final String bound = favorite.substring(sec + 1, favorite.length());
-        return new String[] { routeId, stopId, bound };
+        return new String[]{routeId, stopId, bound};
     }
 
     public static final Comparator<BikeStation> BIKE_COMPARATOR_NAME = new BikeStationComparator();
@@ -202,7 +206,7 @@ public final class Util {
         final Display display = wm.getDefaultDisplay();
         final Point size = new Point();
         display.getSize(size);
-        return new int[] { size.x, size.y };
+        return new int[]{size.x, size.y};
     }
 
     /**
@@ -231,42 +235,42 @@ public final class Util {
         //int navigationBarColor = 0;
         int textTitleColor = R.color.white;
         switch (trainLine) {
-        case BLUE:
-            backgroundColor = R.color.blueLine;
-            statusBarColor = R.color.blueLineDark;
-            break;
-        case BROWN:
-            backgroundColor = R.color.brownLine;
-            statusBarColor = R.color.brownLineDark;
-            break;
-        case GREEN:
-            backgroundColor = R.color.greenLine;
-            statusBarColor = R.color.greenLineDark;
-            break;
-        case ORANGE:
-            backgroundColor = R.color.orangeLine;
-            statusBarColor = R.color.orangeLineDarker;
-            break;
-        case PINK:
-            backgroundColor = R.color.pinkLine;
-            statusBarColor = R.color.pinkLineDark;
-            break;
-        case PURPLE:
-            backgroundColor = R.color.purpleLine;
-            statusBarColor = R.color.purpleLineDark;
-            break;
-        case RED:
-            backgroundColor = R.color.redLine;
-            statusBarColor = R.color.redLineDark;
-            break;
-        case YELLOW:
-            backgroundColor = R.color.yellowLine;
-            statusBarColor = R.color.yellowLineDark;
-            break;
-        case NA:
-            backgroundColor = R.color.primaryColor;
-            statusBarColor = R.color.primaryColorDark;
-            break;
+            case BLUE:
+                backgroundColor = R.color.blueLine;
+                statusBarColor = R.color.blueLineDark;
+                break;
+            case BROWN:
+                backgroundColor = R.color.brownLine;
+                statusBarColor = R.color.brownLineDark;
+                break;
+            case GREEN:
+                backgroundColor = R.color.greenLine;
+                statusBarColor = R.color.greenLineDark;
+                break;
+            case ORANGE:
+                backgroundColor = R.color.orangeLine;
+                statusBarColor = R.color.orangeLineDarker;
+                break;
+            case PINK:
+                backgroundColor = R.color.pinkLine;
+                statusBarColor = R.color.pinkLineDark;
+                break;
+            case PURPLE:
+                backgroundColor = R.color.purpleLine;
+                statusBarColor = R.color.purpleLineDark;
+                break;
+            case RED:
+                backgroundColor = R.color.redLine;
+                statusBarColor = R.color.redLineDark;
+                break;
+            case YELLOW:
+                backgroundColor = R.color.yellowLine;
+                statusBarColor = R.color.yellowLineDark;
+                break;
+            case NA:
+                backgroundColor = R.color.primaryColor;
+                statusBarColor = R.color.primaryColorDark;
+                break;
         }
         toolbar.setBackgroundColor(ContextCompat.getColor(App.getContext(), backgroundColor));
         toolbar.setTitleTextColor(ContextCompat.getColor(App.getContext(), textTitleColor));
@@ -289,7 +293,7 @@ public final class Util {
                 && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(activity,
-                    new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
                 return;
             }
             googleMap.setMyLocationEnabled(true);
@@ -391,5 +395,16 @@ public final class Util {
         } else {
             return name;
         }
+    }
+
+    public static void setLocationOnMap(@NonNull final Activity activity, @NonNull final GoogleMap googleMap) {
+        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+            return;
+        }
+        googleMap.setMyLocationEnabled(true);
     }
 }
