@@ -150,7 +150,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 if (Util.isNetworkAvailable()) {
                     final Observable<FavoritesResult> zipped = ObservableUtil.createAllDataObservable();
-                    zipped.subscribe(favoritesResult -> MainActivity.this.favoritesFragment.reloadData(favoritesResult),
+                    zipped.subscribe(
+                        favoritesResult -> MainActivity.this.favoritesFragment.reloadData(favoritesResult),
                         onError -> {
                             Log.e(TAG, onError.getMessage(), onError);
                             MainActivity.this.favoritesFragment.displayError(R.string.message_something_went_wrong);
