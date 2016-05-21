@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import java.util.List;
 
 import fr.cph.chicago.data.BusData;
+import fr.cph.chicago.entity.Bus;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusPattern;
@@ -26,4 +27,6 @@ public interface BusService {
     List<BusArrival> loadFollowBus(@NonNull final String busId);
 
     BusPattern loadBusPattern(@NonNull final String busRouteId, @NonNull final String bound);
+
+    List<Bus> loadBus(final int busId, @NonNull final String busRouteId);
 }

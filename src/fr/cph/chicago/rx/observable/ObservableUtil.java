@@ -10,6 +10,7 @@ import java.util.List;
 
 import fr.cph.chicago.App;
 import fr.cph.chicago.entity.BikeStation;
+import fr.cph.chicago.entity.Bus;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusPattern;
@@ -187,6 +188,16 @@ public class ObservableUtil {
         return Observable.create(
             (Subscriber<? super BusPattern> subscriber) -> {
                 subscriber.onNext(BUS_SERVICE.loadBusPattern(busRouteId, bound));
+                subscriber.onCompleted();
+            })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public static Observable<List<Bus>> createBusList(final int busId, @NonNull final String busRouteId) {
+        return Observable.create(
+            (Subscriber<? super List<Bus>> subscriber) -> {
+                subscriber.onNext(BUS_SERVICE.loadBus(busId, busRouteId));
                 subscriber.onCompleted();
             })
             .subscribeOn(Schedulers.io())
