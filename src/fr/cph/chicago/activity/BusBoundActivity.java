@@ -29,6 +29,8 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.GoogleMapOptions;
@@ -124,11 +126,10 @@ public class BusBoundActivity extends ListActivity {
                 @Override
                 public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
                     if (busStops != null) {
-                        for (final BusStop busStop : busStops) {
-                            if (StringUtils.containsIgnoreCase(busStop.getName(), s)) {
-                                busStopsFiltered.add(busStop);
-                            }
-                        }
+                        busStopsFiltered.addAll(
+                            Stream.of(busStops)
+                                .filter(busStop -> StringUtils.containsIgnoreCase(busStop.getName(), s))
+                                .collect(Collectors.toList()));
                     }
                 }
 

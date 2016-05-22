@@ -40,10 +40,12 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -401,10 +403,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
             if (!Util.isNetworkAvailable()) {
                 Util.showNetworkErrorMessage(activity);
             } else {
-                final Set<String> bounds = new HashSet<>();
-                for (final BusDetailsDTO busDetail : busDetailsDTOs) {
-                    bounds.add(busDetail.getBound());
-                }
+                final Set<String> bounds = Stream.of(busDetailsDTOs).map(BusDetailsDTO::getBound).collect(Collectors.toSet());
                 final Intent intent = new Intent(App.getContext(), BusMapActivity.class);
                 final Bundle extras = new Bundle();
                 extras.putString(activity.getString(R.string.bundle_bus_route_id), busRoute.getId());

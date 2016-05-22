@@ -32,6 +32,9 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
+
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -142,11 +145,11 @@ public class BikeFragment extends Fragment {
 
             @Override
             public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
-                for (final BikeStation bikeStation : BikeFragment.this.bikeStations) {
-                    if (StringUtils.containsIgnoreCase(bikeStation.getName(), s.toString().trim())) {
-                        bikeStations.add(bikeStation);
-                    }
-                }
+                bikeStations.addAll(
+                    Stream.of(BikeFragment.this.bikeStations)
+                        .filter(bikeStation -> StringUtils.containsIgnoreCase(bikeStation.getName(), s.toString().trim()))
+                        .collect(Collectors.toList())
+                );
             }
 
             @Override

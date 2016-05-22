@@ -20,7 +20,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-import java.util.ArrayList;
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -222,13 +224,9 @@ public final class BusArrival implements Parcelable {
         }
     };
 
-    public static List<BusArrival> getRealBusArrival(List<BusArrival> arrivals) {
-        final List<BusArrival> res = new ArrayList<>();
-        for (final BusArrival arrival : arrivals) {
-            if (!arrival.getTimeLeft().equals(NO_SERVICE)) {
-                res.add(arrival);
-            }
-        }
-        return res;
+    public static List<BusArrival> getRealBusArrival(final List<BusArrival> arrivals) {
+        return Stream.of(arrivals)
+            .filter(arrival -> !arrival.getTimeLeft().equals(NO_SERVICE))
+            .collect(Collectors.toList());
     }
 }

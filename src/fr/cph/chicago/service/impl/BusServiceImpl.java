@@ -175,7 +175,7 @@ public class BusServiceImpl implements BusService {
         return null;
     }
 
-    @Nullable
+    @NonNull
     @Override
     public List<Bus> loadBus(final int busId, @NonNull final String busRouteId) {
         final CtaConnect connect = CtaConnect.getInstance();

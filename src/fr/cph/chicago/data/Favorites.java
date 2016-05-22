@@ -19,6 +19,19 @@ package fr.cph.chicago.data;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
+
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+
 import fr.cph.chicago.App;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
@@ -27,16 +40,6 @@ import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.Util;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
 /**
  * Vehicle Arrival. Hold data for favorites adapter.
@@ -169,9 +172,7 @@ public class Favorites {
      */
     @NonNull
     public final Map<String, Map<String, List<BusArrival>>> getBusArrivalsMapped(@NonNull final String routeId) {
-        final Map<String, Map<String, List<BusArrival>>> res = new TreeMap<>((Comparator<String>) (lhs, rhs) -> {
-            return lhs.compareTo(rhs);
-        });
+        final Map<String, Map<String, List<BusArrival>>> res = new TreeMap<>(String::compareTo);
         if (busArrivals != null) {
             if (busArrivals.size() == 0) {
                 // Handle the case where no arrival train are there
@@ -317,9 +318,11 @@ public class Favorites {
                 }
             }
             Collections.sort(bikeStationsFavoritesTemp, Util.BIKE_COMPARATOR_NAME);
-            for (final BikeStation station : bikeStationsFavoritesTemp) {
-                bikeFavorites.add(Integer.toString(station.getId()));
-            }
+            bikeFavorites.addAll(
+                Stream.of(bikeStationsFavoritesTemp)
+                    .map(station -> Integer.toString(station.getId()))
+                    .collect(Collectors.toList())
+            );
         } else {
             bikeFavorites.addAll(bikeFavoritesTemp);
         }

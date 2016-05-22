@@ -19,26 +19,16 @@ package fr.cph.chicago.data;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.csv.BusStopCsvParser;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Position;
-import fr.cph.chicago.exception.ConnectException;
-import fr.cph.chicago.exception.ParserException;
-import fr.cph.chicago.xml.XmlParser;
 import lombok.Getter;
 import lombok.Setter;
-
-import static fr.cph.chicago.connection.CtaRequestType.BUS_ROUTES;
 
 /**
  * Class that handle bus data. Singleton
@@ -82,22 +72,6 @@ public class BusData {
     public final void readBusStops() {
         if (busStops.size() == 0) {
             busStops = parser.parse();
-        }
-    }
-
-    /**
-     * Load bus routes from CTA API
-     *
-     * @throws ParserException  a parser exception
-     * @throws ConnectException a connect exception
-     */
-    public final void loadBusRoutes() throws ParserException, ConnectException {
-        if (busRoutes.size() == 0) {
-            final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
-            final CtaConnect connect = CtaConnect.getInstance();
-            final XmlParser xml = XmlParser.getInstance();
-            final InputStream xmlResult = connect.connect(BUS_ROUTES, params);
-            busRoutes = xml.parseBusRoutes(xmlResult);
         }
     }
 

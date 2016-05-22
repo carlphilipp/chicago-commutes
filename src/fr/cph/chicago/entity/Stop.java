@@ -20,6 +20,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,10 +111,7 @@ public class Stop implements Comparable<Stop>, Parcelable {
         dest.writeString(direction.toTextString());
         dest.writeParcelable(position, PARCELABLE_WRITE_RETURN_VALUE);
         dest.writeString(String.valueOf(ada));
-        List<String> linesString = new ArrayList<>();
-        for (TrainLine line : lines) {
-            linesString.add(line.toTextString());
-        }
+        List<String> linesString = Stream.of(lines).map(TrainLine::toTextString).collect(Collectors.toList());
         dest.writeStringList(linesString);
     }
 
@@ -124,9 +124,7 @@ public class Stop implements Comparable<Stop>, Parcelable {
         List<String> linesString = new ArrayList<>();
         in.readStringList(linesString);
         lines = new ArrayList<>();
-        for (String line : linesString) {
-            lines.add(TrainLine.fromXmlString(line));
-        }
+        lines.addAll(Stream.of(linesString).map(TrainLine::fromXmlString).collect(Collectors.toList()));
     }
 
     public static final Parcelable.Creator<Stop> CREATOR = new Parcelable.Creator<Stop>() {

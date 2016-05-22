@@ -345,9 +345,7 @@ public final class Util {
                     alertDialogBuilder.setCancelable(false).setPositiveButton("Yes", (dialog, id) -> {
                         final Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                         activity.startActivity(intent);
-                    }).setNegativeButton("No", (dialog, id) -> {
-                        dialog.cancel();
-                    });
+                    }).setNegativeButton("No", (dialog, id) -> dialog.cancel());
                     final AlertDialog alertDialog = alertDialogBuilder.create();
                     alertDialog.show();
                 });

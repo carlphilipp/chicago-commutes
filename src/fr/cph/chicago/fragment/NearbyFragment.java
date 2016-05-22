@@ -31,15 +31,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMapOptions;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -276,11 +274,11 @@ public class NearbyFragment extends Fragment {
                     final JsonParser json = JsonParser.getInstance();
                     final InputStream content = connect.connect();
                     final List<BikeStation> bikeStationUpdated = json.parseStations(content);
-                    for (final BikeStation station : bikeStationUpdated) {
-                        if (bikeStationsTemp.contains(station)) {
-                            bikeStationsRes.add(station);
-                        }
-                    }
+                    bikeStationsRes.addAll(
+                        Stream.of(bikeStationUpdated)
+                            .filter(station -> bikeStationsTemp.contains(station))
+                            .collect(Collectors.toList())
+                    );
                     Collections.sort(bikeStationsRes, Util.BIKE_COMPARATOR_NAME);
                     Util.trackAction(NearbyFragment.this.activity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
                 } catch (final ConnectException | ParserException e) {

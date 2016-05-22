@@ -83,6 +83,8 @@
 -dontwarn com.google.android.gms.**
 -dontwarn com.fasterxml.jackson.**
 -dontwarn android.support.design.**
+-dontwarn com.univocity.parsers.**
+-dontwarn rx.internal.util.unsafe.**
 
 -dontnote android.net.http.**
 -dontnote org.apache.http.**
@@ -93,7 +95,9 @@
 -dontnote org.w3c.dom.**
 -dontnote com.google.android.gms.**
 -dontnote com.fasterxml.jackson.**
+-dontnote com.univocity.parsers.common.beans.**
 
+-keepnames class rx.** { *; }
 -keep public class fr.cph.chicago.exception.TrackerException
 -keep @interface *
 -keepnames class com.fasterxml.jackson.** { *; }
@@ -107,4 +111,7 @@
 	public void reloadData(android.util.SparseArray, java.util.List, java.util.List, java.lang.Boolean);
 	public void displayError(java.lang.Integer);
 }
+
+-keep class android.os.Build$VERSION { int SDK_INT; }
+
 -dontwarn java.lang.invoke.*

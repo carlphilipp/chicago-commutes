@@ -30,6 +30,9 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
+
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -115,18 +118,19 @@ public class BusFragment extends Fragment {
             List<BusRoute> busRoutes = null;
 
             @Override
-            public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
+            public void beforeTextChanged(final CharSequence c, final int start, final int count, final int after) {
                 busRoutes = new ArrayList<>();
             }
 
             @Override
-            public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
+            public void onTextChanged(final CharSequence c, final int start, final int before, final int count) {
                 final List<BusRoute> busRoutes = busData.getBusRoutes();
-                for (final BusRoute busRoute : busRoutes) {
-                    if (StringUtils.containsIgnoreCase(busRoute.getId(), s.toString().trim()) || StringUtils.containsIgnoreCase(busRoute.getName(), s.toString().trim())) {
-                        this.busRoutes.add(busRoute);
-                    }
-                }
+                final CharSequence trimmed = c.toString().trim();
+                this.busRoutes.addAll(
+                    Stream.of(busRoutes)
+                        .filter(busRoute -> StringUtils.containsIgnoreCase(busRoute.getId(), trimmed) || StringUtils.containsIgnoreCase(busRoute.getName(), trimmed))
+                        .collect(Collectors.toList())
+                );
             }
 
             @Override

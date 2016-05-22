@@ -20,6 +20,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -79,9 +82,7 @@ public class Station implements Comparable<Station>, Parcelable {
         if (stops != null) {
             final Set<TrainLine> lines = new TreeSet<>();
             for (final Stop stop : stops) {
-                for (final TrainLine trainLine : stop.getLines()) {
-                    lines.add(trainLine);
-                }
+                lines.addAll(stop.getLines());
             }
             return lines;
         } else {
@@ -117,11 +118,7 @@ public class Station implements Comparable<Station>, Parcelable {
 
     @NonNull
     public List<Position> getStopsPosition() {
-        final List<Position> positions = new ArrayList<>();
-        for (Stop stop : stops) {
-            positions.add(stop.getPosition());
-        }
-        return positions;
+        return Stream.of(stops).map(Stop::getPosition).collect(Collectors.toList());
     }
 
     @Override

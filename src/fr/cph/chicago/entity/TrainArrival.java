@@ -20,6 +20,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -66,11 +69,11 @@ public class TrainArrival implements Parcelable {
     public final List<Eta> getEtas(@NonNull final TrainLine line) {
         List<Eta> etas = new ArrayList<>();
         if (this.etas != null) {
-            for (final Eta eta : this.etas) {
-                if (eta.getRouteName() == line) {
-                    etas.add(eta);
-                }
-            }
+            etas.addAll(
+                Stream.of(this.etas)
+                    .filter(eta -> eta.getRouteName() == line)
+                    .collect(Collectors.toList())
+            );
         }
         return etas;
     }

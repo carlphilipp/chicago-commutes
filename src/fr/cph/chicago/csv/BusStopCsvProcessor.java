@@ -6,12 +6,13 @@ import com.univocity.parsers.common.CommonSettings;
 import com.univocity.parsers.common.Format;
 import com.univocity.parsers.common.ParsingContext;
 import com.univocity.parsers.common.processor.RowProcessor;
-import fr.cph.chicago.entity.BusStop;
-import fr.cph.chicago.entity.Position;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import fr.cph.chicago.entity.BusStop;
+import fr.cph.chicago.entity.Position;
 
 public class BusStopCsvProcessor implements RowProcessor {
 
@@ -60,6 +61,6 @@ public class BusStopCsvProcessor implements RowProcessor {
 
     @NonNull
 	public List<BusStop> getRows() {
-		return rows == null ? Collections.<BusStop>emptyList() : rows;
+		return rows == null ? Collections.emptyList() : rows;
 	}
 }

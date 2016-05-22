@@ -22,9 +22,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
+
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -75,9 +77,7 @@ public final class Preferences {
         final SharedPreferences sharedPref = context.getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = sharedPref.edit();
         final Set<String> set = new LinkedHashSet<>();
-        for (final String fav : favorites) {
-            set.add(fav);
-        }
+        set.addAll(favorites);
         Log.v(TAG, "Put bike favorites: " + set.toString());
         editor.putStringSet(name, set);
         editor.apply();
@@ -90,9 +90,7 @@ public final class Preferences {
         final Set<String> setPref = sharedPref.getStringSet(name, null);
         final List<String> favorites = new ArrayList<>();
         if (setPref != null) {
-            for (final String value : setPref) {
-                favorites.add(value);
-            }
+            favorites.addAll(setPref);
         }
         Collections.sort(favorites);
         Log.v(TAG, "Read bike favorites : " + favorites);
@@ -128,9 +126,7 @@ public final class Preferences {
         final SharedPreferences sharedPref = context.getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = sharedPref.edit();
         final Set<String> set = new LinkedHashSet<>();
-        for (final String fav : favorites) {
-            set.add(fav);
-        }
+        set.addAll(favorites);
         Log.v(TAG, "Put bus favorites: " + favorites.toString());
         editor.putStringSet(name, set);
         editor.apply();
@@ -149,9 +145,7 @@ public final class Preferences {
         final Set<String> setPref = sharedPref.getStringSet(name, null);
         final List<String> favorites = new ArrayList<>();
         if (setPref != null) {
-            for (final String value : setPref) {
-                favorites.add(value);
-            }
+            favorites.addAll(setPref);
         }
         Collections.sort(favorites, (str1, str2) -> {
             final String str1Decoded = Util.decodeBusFavorite(str1)[0];
@@ -217,10 +211,7 @@ public final class Preferences {
         final Context context = App.getContext();
         final SharedPreferences sharedPref = context.getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = sharedPref.edit();
-        final Set<String> set = new LinkedHashSet<>();
-        for (final Integer favorite : favorites) {
-            set.add(favorite.toString());
-        }
+        final Set<String> set = Stream.of(favorites).map(Object::toString).collect(Collectors.toSet());
         Log.v(TAG, "Put train favorites: " + favorites.toString());
         editor.putStringSet(name, set);
         editor.apply();
@@ -239,9 +230,7 @@ public final class Preferences {
         final Set<String> setPref = sharedPref.getStringSet(name, null);
         final List<Integer> favorites = new ArrayList<>();
         if (setPref != null) {
-            for (final String value : setPref) {
-                favorites.add(Integer.valueOf(value));
-            }
+            favorites.addAll(Stream.of(setPref).map(Integer::valueOf).collect(Collectors.toList()));
         }
         final DataHolder dataHolder = DataHolder.getInstance();
         final List<Station> stations = new ArrayList<>();
@@ -250,10 +239,7 @@ public final class Preferences {
             stations.add(station);
         }
         Collections.sort(stations);
-        final List<Integer> res = new ArrayList<>();
-        for (final Station station : stations) {
-            res.add(station.getId());
-        }
+        final List<Integer> res = Stream.of(stations).map(Station::getId).collect(Collectors.toList());
         Log.v(TAG, "Read train favorites : " + res.toString());
         return res;
     }

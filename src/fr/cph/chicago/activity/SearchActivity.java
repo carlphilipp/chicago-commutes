@@ -17,6 +17,8 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 
+import com.annimon.stream.Stream;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -160,31 +162,22 @@ public class SearchActivity extends AppCompatActivity {
             final List<BikeStation> foundBikeStations = new ArrayList<>();
 
             for (final Entry<TrainLine, List<Station>> e : trainData.getAllStations().entrySet()) {
-                for (final Station station : e.getValue()) {
-                    if (containsIgnoreCase(station.getName(), query)) {
-                        if (!foundStations.contains(station)) {
-                            foundStations.add(station);
-                        }
-                    }
-                }
+                Stream.of(e.getValue())
+                    .filter(station -> containsIgnoreCase(station.getName(), query))
+                    .filter(station -> !foundStations.contains(station))
+                    .forEach(foundStations::add);
             }
 
-            for (final BusRoute busRoute : busData.getBusRoutes()) {
-                if (containsIgnoreCase(busRoute.getId(), query) || containsIgnoreCase(busRoute.getName(), query)) {
-                    if (!foundBusRoutes.contains(busRoute)) {
-                        foundBusRoutes.add(busRoute);
-                    }
-                }
-            }
+            Stream.of(busData.getBusRoutes())
+                .filter(busRoute -> containsIgnoreCase(busRoute.getId(), query) || containsIgnoreCase(busRoute.getName(), query))
+                .filter(busRoute -> !foundBusRoutes.contains(busRoute))
+                .forEach(foundBusRoutes::add);
 
             if (bikeStations != null) {
-                for (final BikeStation bikeStation : bikeStations) {
-                    if (containsIgnoreCase(bikeStation.getName(), query) || containsIgnoreCase(bikeStation.getStAddress1(), query)) {
-                        if (!foundBikeStations.contains(bikeStation)) {
-                            foundBikeStations.add(bikeStation);
-                        }
-                    }
-                }
+                Stream.of(bikeStations)
+                    .filter(bikeStation -> containsIgnoreCase(bikeStation.getName(), query) || containsIgnoreCase(bikeStation.getStAddress1(), query))
+                    .filter(bikeStation -> !foundBikeStations.contains(bikeStation))
+                    .forEach(foundBikeStations::add);
             }
             searchAdapter.updateData(foundStations, foundBusRoutes, foundBikeStations);
             searchAdapter.notifyDataSetChanged();

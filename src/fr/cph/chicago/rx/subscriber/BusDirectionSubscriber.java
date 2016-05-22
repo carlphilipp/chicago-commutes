@@ -10,7 +10,9 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
-import java.util.ArrayList;
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
+
 import java.util.List;
 
 import fr.cph.chicago.R;
@@ -41,10 +43,9 @@ public class BusDirectionSubscriber extends Subscriber<BusDirections> {
     public void onNext(final BusDirections onNext) {
         if (onNext != null) {
             final List<BusDirection> busDirections = onNext.getLBusDirection();
-            final List<String> data = new ArrayList<>();
-            for (final BusDirection busDir : busDirections) {
-                data.add(busDir.getBusDirectionEnum().toString());
-            }
+            final List<String> data = Stream.of(busDirections)
+                .map(busDir -> busDir.getBusDirectionEnum().toString())
+                .collect(Collectors.toList());
             data.add(activity.getString(R.string.message_see_all_buses_on_line) + onNext.getId());
 
             final View popupView = activity.getLayoutInflater().inflate(R.layout.popup_bus, parent, false);
