@@ -37,6 +37,8 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.annimon.stream.Stream;
+
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
@@ -275,14 +277,13 @@ public class StationActivity extends AbstractStationActivity {
      *
      * @return if the station is favorite
      */
-    private boolean isFavorite() {
+    @Override
+    protected boolean isFavorite() {
         final List<Integer> favorites = Preferences.getTrainFavorites(App.PREFERENCE_FAVORITES_TRAIN);
-        for (final Integer favorite : favorites) {
-            if (favorite == stationId) {
-                return true;
-            }
-        }
-        return false;
+        return Stream.of(favorites)
+            .filter(favorite -> favorite == stationId)
+            .findFirst()
+            .isPresent();
     }
 
     // FIXME: delete view instead of hiding it

@@ -17,7 +17,7 @@ public abstract class AbstractStationActivity extends Activity {
 
     private Observable<Drawable> googleMapImageObservable;
 
-    protected final void createGoogleStreetObservable(final double latitude, final double longitude) {
+    final void createGoogleStreetObservable(final double latitude, final double longitude) {
         googleMapImageObservable = Observable.create(
             (Subscriber<? super Drawable> subscriber) -> {
                 final GStreetViewConnect connect = GStreetViewConnect.getInstance();
@@ -28,7 +28,7 @@ public abstract class AbstractStationActivity extends Activity {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    protected final void subscribeToGoogleStreet(final ImageView streetViewImage, final TextView streetViewText) {
+    final void subscribeToGoogleStreet(final ImageView streetViewImage, final TextView streetViewText) {
         googleMapImageObservable.subscribe(
             drawable -> {
                 streetViewImage.setImageDrawable(drawable);
@@ -36,4 +36,6 @@ public abstract class AbstractStationActivity extends Activity {
             }
         );
     }
+
+    protected abstract boolean isFavorite();
 }

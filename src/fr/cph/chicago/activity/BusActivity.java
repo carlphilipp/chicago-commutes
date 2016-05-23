@@ -26,10 +26,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.annimon.stream.Stream;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
@@ -61,7 +62,6 @@ public class BusActivity extends AbstractStationActivity {
     private SwipeRefreshLayout scrollView;
     private ImageView favoritesImage;
     private LinearLayout stopsView;
-    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected final void onCreate(final Bundle savedInstanceState) {
@@ -88,7 +88,7 @@ public class BusActivity extends AbstractStationActivity {
             position.setLatitude(latitude);
             position.setLongitude(longitude);
 
-            isFavorite = setupFavorite();
+            isFavorite = isFavorite();
 
             stopsView = (LinearLayout) findViewById(R.id.activity_bus_stops);
             final ImageView streetViewImage = (ImageView) findViewById(R.id.activity_bus_streetview_image);
@@ -107,8 +107,7 @@ public class BusActivity extends AbstractStationActivity {
             } else {
                 favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
             }
-            swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_bus_stop_swipe_refresh_layout);
-            swipeRefreshLayout.setOnRefreshListener(() -> new LoadStationDataTask(BusActivity.this, swipeRefreshLayout, busRouteId, busStopId).execute());
+            scrollView.setOnRefreshListener(() -> new LoadStationDataTask(BusActivity.this, scrollView, busRouteId, busStopId).execute());
             streetViewImage.setOnClickListener(new GoogleStreetOnClickListener(this, latitude, longitude));
             mapContainer.setOnClickListener(new GoogleMapOnClickListener(this, latitude, longitude));
             walkContainer.setOnClickListener(new GoogleMapDirectionOnClickListener(this, latitude, longitude));
@@ -120,7 +119,7 @@ public class BusActivity extends AbstractStationActivity {
             // Load google street picture and data
             createGoogleStreetObservable(position.getLatitude(), position.getLongitude());
             subscribeToGoogleStreet(streetViewImage, streetViewText);
-            new LoadStationDataTask(this, swipeRefreshLayout, busRouteId, busStopId).execute();
+            new LoadStationDataTask(this, scrollView, busRouteId, busStopId).execute();
 
             setToolBar();
 
@@ -133,8 +132,8 @@ public class BusActivity extends AbstractStationActivity {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener((item -> {
-            swipeRefreshLayout.setRefreshing(true);
-            new LoadStationDataTask(BusActivity.this, swipeRefreshLayout, busRouteId, busStopId).execute();
+            scrollView.setRefreshing(true);
+            new LoadStationDataTask(BusActivity.this, scrollView, busRouteId, busStopId).execute();
             return false;
         }));
         Util.setWindowsColor(this, toolbar, TrainLine.NA);
@@ -182,8 +181,9 @@ public class BusActivity extends AbstractStationActivity {
     public void drawArrivals() {
         final Map<String, TextView> tempMap = new HashMap<>();
         if (busArrivals.size() != 0) {
-            for (final BusArrival arrival : busArrivals) {
-                if (arrival.getRouteDirection().equals(bound) || arrival.getRouteDirection().equals(boundTitle)) {
+            Stream.of(busArrivals)
+                .filter(arrival -> arrival.getRouteDirection().equals(bound) || arrival.getRouteDirection().equals(boundTitle))
+                .forEach(arrival -> {
                     final String destination = arrival.getBusDestination();
                     final String arrivalText;
                     if (tempMap.containsKey(destination)) {
@@ -205,8 +205,7 @@ public class BusActivity extends AbstractStationActivity {
                         arrivalView.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey));
                         tempMap.put(destination, arrivalView);
                     }
-                }
-            }
+                });
         } else {
             final TextView arrivalView = new TextView(App.getContext());
             arrivalView.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey));
@@ -214,19 +213,16 @@ public class BusActivity extends AbstractStationActivity {
             tempMap.put("", arrivalView);
         }
         stopsView.removeAllViews();
-        for (final Entry<String, TextView> entry : tempMap.entrySet()) {
-            stopsView.addView(entry.getValue());
-        }
+        Stream.of(tempMap.entrySet()).forEach(entry -> stopsView.addView(entry.getValue()));
     }
 
-    private boolean setupFavorite() {
+    @Override
+    protected boolean isFavorite() {
         final List<String> favorites = Preferences.getBusFavorites(App.PREFERENCE_FAVORITES_BUS);
-        for (final String favorite : favorites) {
-            if (favorite.equals(busRouteId + "_" + busStopId + "_" + boundTitle)) {
-                return true;
-            }
-        }
-        return false;
+        return Stream.of(favorites)
+            .filter(favorite -> favorite.equals(busRouteId + "_" + busStopId + "_" + boundTitle))
+            .findFirst()
+            .isPresent();
     }
 
     /**

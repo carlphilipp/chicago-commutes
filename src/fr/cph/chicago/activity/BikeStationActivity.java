@@ -188,7 +188,8 @@ public class BikeStationActivity extends AbstractStationActivity {
      *
      * @return if the station is favorite
      */
-    private boolean isFavorite() {
+    @Override
+    protected boolean isFavorite() {
         final List<String> favorites = Preferences.getBikeFavorites(App.PREFERENCE_FAVORITES_BIKE);
         return Stream.of(favorites)
             .filter(favorite -> Integer.valueOf(favorite) == bikeStation.getId())
