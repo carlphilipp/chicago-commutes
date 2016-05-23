@@ -21,10 +21,10 @@ import android.support.annotation.Nullable;
 import android.util.SparseArray;
 
 import com.annimon.stream.Collectors;
+import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -122,16 +122,17 @@ public class Favorites {
             }
         } else {
             final int index = position - (trainFavorites.size() + fakeBusFavorites.size());
-            Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
-            for (final BikeStation bikeStation : bikeStations) {
-                if (Integer.toString(bikeStation.getId()).equals(bikeFavorites.get(index))) {
-                    return bikeStation;
-                }
+            final Optional<BikeStation> found = Stream.of(bikeStations)
+                .filter(bikeStation -> Integer.toString(bikeStation.getId()).equals(bikeFavorites.get(index)))
+                .findFirst();
+            if (found.isPresent()) {
+                return found.get();
+            } else {
+                final BikeStation bikeStation = new BikeStation();
+                final String stationName = Preferences.getBikeRouteNameMapping(bikeFavorites.get(index));
+                bikeStation.setName(stationName);
+                return bikeStation;
             }
-            final BikeStation bikeStation = new BikeStation();
-            final String stationName = Preferences.getBikeRouteNameMapping(bikeFavorites.get(index));
-            bikeStation.setName(stationName);
-            return bikeStation;
         }
     }
 
@@ -291,14 +292,12 @@ public class Favorites {
      * @return a boolean
      */
     private boolean isInFavorites(@NonNull final String routeId, final int stopId, @NonNull final String bound) {
-        for (final String fav : busFavorites) {
-            final String[] decoded = Util.decodeBusFavorite(fav);
+        return Stream.of(busFavorites)
+            .map(Util::decodeBusFavorite)
             // TODO: Is that correct ? maybe remove stopId
-            if (routeId.equals(decoded[0]) && Integer.toString(stopId).equals(decoded[1]) && bound.equals(decoded[2])) {
-                return true;
-            }
-        }
-        return false;
+            .filter(decoded -> routeId.equals(decoded[0]) && Integer.toString(stopId).equals(decoded[1]) && bound.equals(decoded[2]))
+            .findFirst()
+            .isPresent();
     }
 
     public final void setFavorites() {
@@ -309,17 +308,16 @@ public class Favorites {
         final List<String> bikeFavoritesTemp = Preferences.getBikeFavorites(App.PREFERENCE_FAVORITES_BIKE);
         final List<BikeStation> bikeStationsFavoritesTemp = new ArrayList<>(bikeFavoritesTemp.size());
         if (bikeStations != null && bikeStations.size() != 0) {
-            for (final String bikeStationId : bikeFavoritesTemp) {
-                for (final BikeStation station : bikeStations) {
-                    if (Integer.toString(station.getId()).equals(bikeStationId)) {
-                        bikeStationsFavoritesTemp.add(station);
-                        break;
-                    }
-                }
-            }
-            Collections.sort(bikeStationsFavoritesTemp, Util.BIKE_COMPARATOR_NAME);
+            Stream.of(bikeFavoritesTemp)
+                .flatMap(bikeStationId -> Stream.of(bikeStations)
+                    .filter(station -> Integer.toString(station.getId()).equals(bikeStationId))
+                )
+                .findFirst()
+                .map(bikeStationsFavoritesTemp::add);
+
             bikeFavorites.addAll(
                 Stream.of(bikeStationsFavoritesTemp)
+                    .sorted(Util.BIKE_COMPARATOR_NAME)
                     .map(station -> Integer.toString(station.getId()))
                     .collect(Collectors.toList())
             );
@@ -330,6 +328,7 @@ public class Favorites {
 
     @NonNull
     private List<String> calculateActualRouteNumberBusFavorites() {
+        // TODO find a good way to refactor with stream
         final List<String> found = new ArrayList<>(busFavorites.size());
         final List<String> favorites = new ArrayList<>(busFavorites.size());
         for (final String fav : busFavorites) {
@@ -352,6 +351,7 @@ public class Favorites {
     public final void setBikeStations(@NonNull final List<BikeStation> bikeStations) {
         this.bikeStations.clear();
         this.bikeStations = bikeStations;
+        Stream.of(this.bikeStations).sorted(Util.BIKE_COMPARATOR_NAME);
     }
 
     public final void setBusArrivals(@NonNull final List<BusArrival> busArrivals) {

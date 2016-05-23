@@ -27,6 +27,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.annimon.stream.Stream;
+
 import java.util.List;
 
 import fr.cph.chicago.App;
@@ -188,12 +190,10 @@ public class BikeStationActivity extends AbstractStationActivity {
      */
     private boolean isFavorite() {
         final List<String> favorites = Preferences.getBikeFavorites(App.PREFERENCE_FAVORITES_BIKE);
-        for (final String favorite : favorites) {
-            if (Integer.valueOf(favorite) == bikeStation.getId()) {
-                return true;
-            }
-        }
-        return false;
+        return Stream.of(favorites)
+            .filter(favorite -> Integer.valueOf(favorite) == bikeStation.getId())
+            .findFirst()
+            .isPresent();
     }
 
     public void refreshStation(@NonNull final BikeStation station) {
