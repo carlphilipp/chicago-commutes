@@ -26,7 +26,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils.TruncateAt;
-import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -38,12 +37,7 @@ import android.widget.TextView;
 
 import com.annimon.stream.Stream;
 
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +45,6 @@ import java.util.Random;
 
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
-import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.data.TrainData;
@@ -62,21 +55,17 @@ import fr.cph.chicago.entity.Stop;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.TrainDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.exception.ConnectException;
-import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.listener.GoogleMapDirectionOnClickListener;
 import fr.cph.chicago.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.listener.GoogleStreetOnClickListener;
 import fr.cph.chicago.rx.subscriber.SubscriberTrainArrival;
+import fr.cph.chicago.service.TrainService;
+import fr.cph.chicago.service.impl.TrainServiceImpl;
 import fr.cph.chicago.util.Util;
-import fr.cph.chicago.xml.XmlParser;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.exceptions.Exceptions;
 import rx.schedulers.Schedulers;
-
-import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
 
 /**
  * Activity that represents the train station
@@ -93,12 +82,17 @@ public class StationActivity extends AbstractStationActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
 
     private boolean isFavorite;
-    private TrainData trainData;
     private int stationId;
     private Station station;
     private Map<String, Integer> ids;
 
     private Observable<TrainArrival> trainArrivalObservable;
+
+    private final TrainService trainService;
+
+    public StationActivity() {
+        trainService = new TrainServiceImpl();
+    }
 
     @Override
     protected final void onCreate(final Bundle savedInstanceState) {
@@ -119,8 +113,7 @@ public class StationActivity extends AbstractStationActivity {
                 paramsStop = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
                 // Get station
-                final DataHolder dataHolder = DataHolder.getInstance();
-                trainData = dataHolder.getTrainData();
+                final TrainData trainData = DataHolder.getInstance().getTrainData();
                 station = trainData.getStation(stationId);
 
                 final ImageView streetViewImage = (ImageView) findViewById(R.id.activity_train_station_streetview_image);
@@ -380,56 +373,12 @@ public class StationActivity extends AbstractStationActivity {
     }
 
     private void createTrainArrivalObservableAndSubscribe() {
-        final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
-        params.put(getString(R.string.request_map_id), Integer.toString(station.getId()));
-
         trainArrivalObservable = Observable.create((Subscriber<? super TrainArrival> subscriber) -> {
-            subscriber.onNext(requestTrainArrival(params));
+            subscriber.onNext(trainService.loadStationTrainArrival(station.getId()));
             subscriber.onCompleted();
         })
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
         trainArrivalObservable.subscribe(new SubscriberTrainArrival(this, swipeRefreshLayout));
-    }
-
-    @SafeVarargs
-    public final TrainArrival requestTrainArrival(final MultiValuedMap<String, String>... params) {
-        SparseArray<TrainArrival> arrivals;
-        final CtaConnect connect = CtaConnect.getInstance();
-        try {
-            final XmlParser xml = XmlParser.getInstance();
-            final InputStream xmlResult = connect.connect(TRAIN_ARRIVALS, params[0]);
-            arrivals = xml.parseArrivals(xmlResult, trainData);
-            // Apply filters
-            int index = 0;
-            while (index < arrivals.size()) {
-                final TrainArrival arri = arrivals.valueAt(index++);
-                final List<Eta> etas = arri.getEtas();
-                // Sort Eta by arriving time
-                Collections.sort(etas);
-                // Copy data into new list to be able to avoid looping on a list that we want to modify
-                final List<Eta> etasCopy = new ArrayList<>();
-                etasCopy.addAll(etas);
-                int j = 0;
-                for (int i = 0; i < etasCopy.size(); i++) {
-                    final Eta eta = etasCopy.get(i);
-                    final Station station = eta.getStation();
-                    final TrainLine line = eta.getRouteName();
-                    final TrainDirection direction = eta.getStop().getDirection();
-                    final boolean toRemove = Preferences.getTrainFilter(station.getId(), line, direction);
-                    if (!toRemove) {
-                        etas.remove(i - j++);
-                    }
-                }
-            }
-        } catch (final ParserException | ConnectException e) {
-            throw Exceptions.propagate(e);
-        }
-        if (arrivals.size() == 1) {
-            final String id = ((List<String>) params[0].get(getString(R.string.request_map_id))).get(0);
-            return arrivals.get(Integer.parseInt(id));
-        } else {
-            return null;
-        }
     }
 }

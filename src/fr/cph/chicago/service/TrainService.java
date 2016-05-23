@@ -10,4 +10,6 @@ public interface TrainService {
     SparseArray<TrainArrival> loadFavoritesTrain();
 
     TrainData loadLocalTrainData();
+
+    TrainArrival loadStationTrainArrival(int stationId);
 }

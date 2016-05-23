@@ -1,17 +1,21 @@
 package fr.cph.chicago.service.impl;
 
+import android.support.annotation.Nullable;
 import android.util.SparseArray;
+
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import fr.cph.chicago.App;
+import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
@@ -78,25 +82,17 @@ public class TrainServiceImpl implements TrainService {
             // Apply filters
             int index = 0;
             while (index < trainArrivals.size()) {
-                final TrainArrival arri = trainArrivals.valueAt(index++);
-                final List<Eta> etas = arri.getEtas();
-                // Copy data into new list to be able to avoid looping on a list that we want to modify
-                final List<Eta> etas2 = new ArrayList<>();
-                etas2.addAll(etas);
-                int j = 0;
-                for (int i = 0; i < etas2.size(); i++) {
-                    final Eta eta = etas2.get(i);
-                    final Station station = eta.getStation();
-                    final TrainLine line = eta.getRouteName();
-                    final TrainDirection direction = eta.getStop().getDirection();
-                    final boolean toRemove = Preferences.getTrainFilter(station.getId(), line, direction);
-                    if (!toRemove) {
-                        etas.remove(i - j++);
-                    }
-                }
-
-                // Sort Eta by arriving time
-                Collections.sort(etas);
+                final TrainArrival trainArrival = trainArrivals.valueAt(index++);
+                final List<Eta> etas = trainArrival.getEtas();
+                trainArrival.setEtas(Stream.of(etas)
+                    .filter(eta -> {
+                        final Station station = eta.getStation();
+                        final TrainLine line = eta.getRouteName();
+                        final TrainDirection direction = eta.getStop().getDirection();
+                        return Preferences.getTrainFilter(station.getId(), line, direction);
+                    })
+                    .sorted()
+                    .collect(Collectors.toList()));
             }
         } catch (final Throwable e) {
             throw Exceptions.propagate(e);
@@ -108,5 +104,26 @@ public class TrainServiceImpl implements TrainService {
     public TrainData loadLocalTrainData() {
         TrainData.getInstance().read();
         return TrainData.getInstance();
+    }
+
+    @Nullable
+    @Override
+    public TrainArrival loadStationTrainArrival(int stationId) {
+        try {
+            final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
+            params.put(App.getContext().getString(R.string.request_map_id), Integer.toString(stationId));
+
+            final XmlParser xml = XmlParser.getInstance();
+            final InputStream xmlResult = CtaConnect.getInstance().connect(TRAIN_ARRIVALS, params);
+            final SparseArray<TrainArrival> arrivals = xml.parseArrivals(xmlResult, TrainData.getInstance());
+
+            if (arrivals.size() == 1) {
+                return arrivals.get(stationId);
+            } else {
+                return null;
+            }
+        } catch (final Throwable e) {
+            throw Exceptions.propagate(e);
+        }
     }
 }
