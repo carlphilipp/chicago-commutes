@@ -32,6 +32,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.annimon.stream.Stream;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
@@ -62,7 +63,6 @@ import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.entity.Bus;
 import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusPattern;
-import fr.cph.chicago.entity.PatternPoint;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
@@ -98,6 +98,7 @@ public class BusMapActivity extends Activity {
     private Integer busId;
     private String busRouteId;
     private String[] bounds;
+    private int j;
     private BusMapOnCameraChangeListener busListener;
 
     private boolean refreshingInfoWindow = false;
@@ -287,7 +288,7 @@ public class BusMapActivity extends Activity {
             }
             busMarkers.clear();
             final BitmapDescriptor bitmapDescr = busListener.getCurrentBitmapDescriptor();
-            for (final Bus bus : buses) {
+            Stream.of(buses).forEach(bus -> {
                 final LatLng point = new LatLng(bus.getPosition().getLatitude(), bus.getPosition().getLongitude());
                 final Marker marker = googleMap.addMarker(new MarkerOptions().position(point).title("To " + bus.getDestination()).snippet(bus.getId() + "").icon(bitmapDescr).anchor(0.5f, 0.5f).rotation(bus.getHeading()).flat(true));
                 busMarkers.add(marker);
@@ -298,7 +299,7 @@ public class BusMapActivity extends Activity {
                 title.setText(marker.getTitle());
 
                 views.put(marker, view);
-            }
+            });
 
             busListener.setBusMarkers(busMarkers);
             googleMap.setOnCameraChangeListener(busListener);
@@ -307,10 +308,10 @@ public class BusMapActivity extends Activity {
 
     private void drawPattern(@NonNull final List<BusPattern> patterns) {
         mapFragment.getMapAsync(googleMap -> {
-            int j = 0;
+            j = 0;
             final BitmapDescriptor red = BitmapDescriptorFactory.defaultMarker();
             final BitmapDescriptor blue = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
-            for (final BusPattern pattern : patterns) {
+            Stream.of(patterns).forEach(pattern -> {
                 final PolylineOptions poly = new PolylineOptions();
                 if (j == 0) {
                     poly.geodesic(true).color(Color.RED);
@@ -320,24 +321,26 @@ public class BusMapActivity extends Activity {
                     poly.geodesic(true).color(Color.YELLOW);
                 }
                 poly.width(7f);
-                for (final PatternPoint patternPoint : pattern.getPoints()) {
-                    final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
-                    poly.add(point);
-                    final MarkerOptions options = new MarkerOptions();
-                    options.position(point).title(patternPoint.getStopName() + " (" + pattern.getDirection() + ")").snippet("");
-                    if (j == 0) {
-                        options.icon(red);
-                    } else {
-                        options.icon(blue);
-                    }
+                Stream.of(pattern.getPoints())
+                    .map(patternPoint -> {
+                        final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
+                        poly.add(point);
+                        final MarkerOptions options = new MarkerOptions();
+                        options.position(point).title(patternPoint.getStopName() + " (" + pattern.getDirection() + ")").snippet("");
+                        if (j == 0) {
+                            options.icon(red);
+                        } else {
+                            options.icon(blue);
+                        }
 
-                    final Marker marker = googleMap.addMarker(options);
-                    busStationMarkers.add(marker);
-                    marker.setVisible(false);
-                }
+                        final Marker marker = googleMap.addMarker(options);
+                        marker.setVisible(false);
+                        return marker;
+                    })
+                    .forEach(busStationMarkers::add);
                 googleMap.addPolyline(poly);
                 j++;
-            }
+            });
             busListener.setBusStationMarkers(busStationMarkers);
             googleMap.setOnCameraChangeListener(busListener);
         });
@@ -373,14 +376,13 @@ public class BusMapActivity extends Activity {
                 routeIdParam.put(getResources().getString(R.string.request_rt), busRouteId);
                 final InputStream content = connect.connect(BUS_PATTERN, routeIdParam);
                 final List<BusPattern> patterns = xml.parsePatterns(content);
-                for (final BusPattern pattern : patterns) {
-                    final String directionIgnoreCase = pattern.getDirection().toLowerCase(Locale.US);
-                    for (final String bound : bounds) {
-                        if (pattern.getDirection().equals(bound) || bound.toLowerCase(Locale.US).contains(directionIgnoreCase)) {
-                            this.patterns.add(pattern);
-                        }
-                    }
-                }
+                Stream.of(patterns)
+                    .flatMap(pattern ->
+                        Stream.of(bounds)
+                            .filter(bound -> pattern.getDirection().equals(bound) || bound.toLowerCase(Locale.US).contains(pattern.getDirection().toLowerCase(Locale.US)))
+                            .map(value -> pattern)
+                    )
+                    .forEach(this.patterns::add);
             } catch (final ConnectException | ParserException e) {
                 Log.e(TAG, e.getMessage(), e);
             }

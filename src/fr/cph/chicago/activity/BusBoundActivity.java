@@ -32,13 +32,10 @@ import android.widget.LinearLayout;
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.apache.commons.lang3.StringUtils;
@@ -51,7 +48,6 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.adapter.BusBoundAdapter;
 import fr.cph.chicago.entity.BusPattern;
 import fr.cph.chicago.entity.BusStop;
-import fr.cph.chicago.entity.PatternPoint;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
@@ -243,39 +239,16 @@ public class BusBoundActivity extends ListActivity {
 
     public void drawPattern(@NonNull final BusPattern pattern) {
         mapFragment.getMapAsync(googleMap -> {
-            final List<Marker> markers = new ArrayList<>();
             final PolylineOptions poly = new PolylineOptions();
             poly.geodesic(true).color(Color.BLACK);
             poly.width(7f);
-            Marker marker;
-            for (final PatternPoint patternPoint : pattern.getPoints()) {
-                final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
-                poly.add(point);
-                marker = googleMap.addMarker(new MarkerOptions().position(point).title(patternPoint.getStopName()).snippet(Integer.toString(patternPoint.getSequence())));
-                markers.add(marker);
-                marker.setVisible(false);
-            }
+            Stream.of(pattern.getPoints())
+                .forEach(patternPoint -> {
+                    final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
+                    poly.add(point);
+                });
+
             googleMap.addPolyline(poly);
-
-            googleMap.setOnCameraChangeListener(new OnCameraChangeListener() {
-                private float currentZoom = -1;
-
-                @Override
-                public void onCameraChange(final CameraPosition pos) {
-                    if (pos.zoom != currentZoom) {
-                        currentZoom = pos.zoom;
-                        if (currentZoom >= 14) {
-                            for (final Marker marker : markers) {
-                                marker.setVisible(true);
-                            }
-                        } else {
-                            for (final Marker marker : markers) {
-                                marker.setVisible(false);
-                            }
-                        }
-                    }
-                }
-            });
         });
     }
 }
