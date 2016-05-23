@@ -26,7 +26,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils.TruncateAt;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,9 +47,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Random;
-import java.util.Set;
 
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
@@ -70,6 +67,7 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.listener.GoogleMapDirectionOnClickListener;
 import fr.cph.chicago.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.listener.GoogleStreetOnClickListener;
+import fr.cph.chicago.rx.subscriber.SubscriberTrainArrival;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.xml.XmlParser;
 import rx.Observable;
@@ -87,8 +85,6 @@ import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
  * @version 1
  */
 public class StationActivity extends AbstractStationActivity {
-
-    private static final String TAG = StationActivity.class.getSimpleName();
 
     private ViewGroup viewGroup;
     private ScrollView scrollView;
@@ -114,11 +110,6 @@ public class StationActivity extends AbstractStationActivity {
             stationId = getIntent().getExtras().getInt(getString(R.string.bundle_train_stationId), 0);
             if (stationId != 0) {
 
-                // Get station
-                final DataHolder dataHolder = DataHolder.getInstance();
-                trainData = dataHolder.getTrainData();
-                station = trainData.getStation(stationId);
-
                 // Layout setup
                 setContentView(R.layout.activity_station);
                 scrollView = (ScrollView) findViewById(R.id.scrollViewTrainStation);
@@ -126,6 +117,11 @@ public class StationActivity extends AbstractStationActivity {
                 swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_station_swipe_refresh_layout);
                 favoritesImage = (ImageView) findViewById(R.id.activity_favorite_star);
                 paramsStop = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+
+                // Get station
+                final DataHolder dataHolder = DataHolder.getInstance();
+                trainData = dataHolder.getTrainData();
+                station = trainData.getStation(stationId);
 
                 final ImageView streetViewImage = (ImageView) findViewById(R.id.activity_train_station_streetview_image);
                 final TextView streetViewText = (TextView) findViewById(R.id.activity_train_station_steetview_text);
@@ -149,7 +145,7 @@ public class StationActivity extends AbstractStationActivity {
                 streetViewImage.setOnClickListener(new GoogleStreetOnClickListener(this, position.getLatitude(), position.getLongitude()));
                 streetViewImage.setLayoutParams(params);
                 streetViewText.setTypeface(null, Typeface.BOLD);
-                swipeRefreshLayout.setOnRefreshListener(() -> trainArrivalObservable.subscribe(new SubscriberTrainArrival()));
+                swipeRefreshLayout.setOnRefreshListener(() -> trainArrivalObservable.subscribe(new SubscriberTrainArrival(this, swipeRefreshLayout)));
                 if (isFavorite) {
                     favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
                 } else {
@@ -178,10 +174,9 @@ public class StationActivity extends AbstractStationActivity {
     @SuppressWarnings("unchecked")
     private void setUpStopLayouts(@NonNull final Map<TrainLine, List<Stop>> stopByLines) {
         final LinearLayout stopsView = (LinearLayout) findViewById(R.id.activity_train_station_details);
-        for (final Entry<TrainLine, List<Stop>> entry : stopByLines.entrySet()) {
+        Stream.of(stopByLines.entrySet()).forEach(entry -> {
             final TrainLine line = entry.getKey();
             final List<Stop> stops = entry.getValue();
-            Collections.sort(stops);
             final View lineTitleView = getLayoutInflater().inflate(R.layout.activity_station_line_title, viewGroup, false);
 
             final TextView testView = (TextView) lineTitleView.findViewById(R.id.train_line_title);
@@ -193,16 +188,16 @@ public class StationActivity extends AbstractStationActivity {
 
             stopsView.addView(lineTitleView);
 
-            for (final Stop stop : stops) {
-                final LinearLayout line2 = new LinearLayout(this);
-                line2.setOrientation(LinearLayout.HORIZONTAL);
-                line2.setLayoutParams(paramsStop);
+            Stream.of(stops).sorted().forEach(stop -> {
+                final LinearLayout linearLayout = new LinearLayout(this);
+                linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+                linearLayout.setLayoutParams(paramsStop);
 
                 final AppCompatCheckBox checkBox = new AppCompatCheckBox(this);
                 checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> Preferences.saveTrainFilter(stationId, line, stop.getDirection(), isChecked));
                 checkBox.setOnClickListener(v -> {
                     if (checkBox.isChecked()) {
-                        trainArrivalObservable.subscribe(new SubscriberTrainArrival());
+                        trainArrivalObservable.subscribe(new SubscriberTrainArrival(this, swipeRefreshLayout));
                     }
                 });
                 checkBox.setChecked(Preferences.getTrainFilter(stationId, line, stop.getDirection()));
@@ -224,19 +219,19 @@ public class StationActivity extends AbstractStationActivity {
                     }
                 }
 
-                line2.addView(checkBox);
+                linearLayout.addView(checkBox);
 
                 final LinearLayout arrivalTrainsLayout = new LinearLayout(this);
                 arrivalTrainsLayout.setOrientation(LinearLayout.VERTICAL);
                 arrivalTrainsLayout.setLayoutParams(paramsStop);
-                int id3 = Util.generateViewId();
-                arrivalTrainsLayout.setId(id3);
-                ids.put(line.toString() + "_" + stop.getDirection().toString(), id3);
+                int id = Util.generateViewId();
+                arrivalTrainsLayout.setId(id);
+                ids.put(line.toString() + "_" + stop.getDirection().toString(), id);
 
-                line2.addView(arrivalTrainsLayout);
-                stopsView.addView(line2);
-            }
-        }
+                linearLayout.addView(arrivalTrainsLayout);
+                stopsView.addView(linearLayout);
+            });
+        });
     }
 
     private void setToolBar(@NonNull final TrainLine randomTrainLine) {
@@ -244,7 +239,7 @@ public class StationActivity extends AbstractStationActivity {
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener(item -> {
             swipeRefreshLayout.setRefreshing(true);
-            trainArrivalObservable.subscribe(new SubscriberTrainArrival());
+            trainArrivalObservable.subscribe(new SubscriberTrainArrival(this, swipeRefreshLayout));
             return false;
         });
 
@@ -288,28 +283,29 @@ public class StationActivity extends AbstractStationActivity {
 
     // FIXME: delete view instead of hiding it
     public void hideAllArrivalViews() {
-        final Set<TrainLine> trainLines = station.getLines();
-        for (final TrainLine trainLine : trainLines) {
-            for (final TrainDirection trainDirection : TrainDirection.values()) {
-                final String key = trainLine.toString() + "_" + trainDirection.toString();
+        Stream.of(station.getLines())
+            .flatMap(trainLine ->
+                Stream.of(TrainDirection.values())
+                    .map(trainDirection -> trainLine.toString() + "_" + trainDirection.toString())
+            )
+            .forEach(key -> {
                 if (ids.containsKey(key)) {
                     final int id = ids.get(key);
                     final LinearLayout line3View = (LinearLayout) findViewById(id);
                     if (line3View != null) {
                         line3View.setVisibility(View.GONE);
                         if (line3View.getChildCount() > 0) {
-                            for (int i = 0; i < line3View.getChildCount(); i++) {
+                            Stream.range(0, line3View.getChildCount()).forEach(i -> {
                                 final LinearLayout view = (LinearLayout) line3View.getChildAt(i);
                                 final TextView timing = (TextView) view.getChildAt(1);
                                 if (timing != null) {
                                     timing.setText("");
                                 }
-                            }
+                            });
                         }
                     }
                 }
-            }
-        }
+            });
     }
 
     /**
@@ -387,16 +383,13 @@ public class StationActivity extends AbstractStationActivity {
         final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
         params.put(getString(R.string.request_map_id), Integer.toString(station.getId()));
 
-        trainArrivalObservable = Observable.create(new Observable.OnSubscribe<TrainArrival>() {
-            @Override
-            public void call(final Subscriber<? super TrainArrival> subscriber) {
-                subscriber.onNext(requestTrainArrival(params));
-                subscriber.onCompleted();
-            }
+        trainArrivalObservable = Observable.create((Subscriber<? super TrainArrival> subscriber) -> {
+            subscriber.onNext(requestTrainArrival(params));
+            subscriber.onCompleted();
         })
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
-        trainArrivalObservable.subscribe(new SubscriberTrainArrival());
+        trainArrivalObservable.subscribe(new SubscriberTrainArrival(this, swipeRefreshLayout));
     }
 
     @SafeVarargs
@@ -437,40 +430,6 @@ public class StationActivity extends AbstractStationActivity {
             return arrivals.get(Integer.parseInt(id));
         } else {
             return null;
-        }
-    }
-
-    private class SubscriberTrainArrival extends Subscriber<TrainArrival> {
-
-        @Override
-        public void onNext(final TrainArrival trainArrival) {
-            Log.d(TAG, "Found train arrival: " + trainArrival);
-            final List<Eta> etas;
-            if (trainArrival != null) {
-                etas = trainArrival.getEtas();
-            } else {
-                etas = Collections.emptyList();
-            }
-            StationActivity.this.hideAllArrivalViews();
-            for (final Eta eta : etas) {
-                StationActivity.this.drawAllArrivalsTrain(eta);
-            }
-        }
-
-        @Override
-        public void onError(final Throwable e) {
-            Log.e(TAG, "Error while getting trains arrival time: " + e.getMessage(), e);
-            if (swipeRefreshLayout.isRefreshing()) {
-                swipeRefreshLayout.setRefreshing(false);
-            }
-            Util.showNetworkErrorMessage(swipeRefreshLayout);
-        }
-
-        @Override
-        public void onCompleted() {
-            if (swipeRefreshLayout.isRefreshing()) {
-                swipeRefreshLayout.setRefreshing(false);
-            }
         }
     }
 }
