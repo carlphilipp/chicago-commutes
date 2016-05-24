@@ -231,21 +231,18 @@ public class BusBoundActivity extends ListActivity {
         super.onSaveInstanceState(savedInstanceState);
     }
 
-    public void setBusStops(@NonNull final List<BusStop> busStops) {
+    private void setBusStops(@NonNull final List<BusStop> busStops) {
         this.busStops = busStops;
     }
 
-    public void drawPattern(@NonNull final BusPattern pattern) {
+    private void drawPattern(@NonNull final BusPattern pattern) {
         mapFragment.getMapAsync(googleMap -> {
             final PolylineOptions poly = new PolylineOptions();
             poly.geodesic(true).color(Color.BLACK);
             poly.width(7f);
             Stream.of(pattern.getPoints())
-                .forEach(patternPoint -> {
-                    final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
-                    poly.add(point);
-                });
-
+                .map(patternPoint -> new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude()))
+                .forEach(poly::add);
             googleMap.addPolyline(poly);
         });
     }
