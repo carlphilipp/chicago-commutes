@@ -19,8 +19,11 @@ package fr.cph.chicago.data;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Optional;
+import com.annimon.stream.Stream;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import fr.cph.chicago.csv.BusStopCsvParser;
@@ -38,7 +41,7 @@ import lombok.Setter;
  */
 public class BusData {
 
-    private static BusData busData;
+    private static BusData BUS_DATA;
 
     @Getter
     @Setter
@@ -60,17 +63,17 @@ public class BusData {
      */
     @NonNull
     public static BusData getInstance() {
-        if (busData == null) {
-            busData = new BusData();
+        if (BUS_DATA == null) {
+            BUS_DATA = new BusData();
         }
-        return busData;
+        return BUS_DATA;
     }
 
     /**
      * Method that read bus stops from CSV
      */
     public final void readBusStops() {
-        if (busStops.size() == 0) {
+        if (busStops.isEmpty()) {
             busStops = parser.parse();
         }
     }
@@ -82,22 +85,18 @@ public class BusData {
      * @return a bus route
      */
     @Nullable
-    public final BusRoute getRoute(@NonNull final String routeId) {
-        for (final BusRoute busRoute : busRoutes) {
-            if (busRoute.getId().equals(routeId)) {
-                return busRoute;
-            }
-        }
-        return null;
+    final BusRoute getRoute(@NonNull final String routeId) {
+        final Optional<BusRoute> busRoute = Stream.of(busRoutes)
+            .filter(busR -> busR.getId().equals(routeId))
+            .findFirst();
+        return busRoute.isPresent() ? busRoute.get() : null;
     }
 
-    public final boolean containsRoute(@NonNull final String routeId) {
-        for (final BusRoute br : busRoutes) {
-            if (br.getId().equals(routeId)) {
-                return true;
-            }
-        }
-        return false;
+    final boolean containsRoute(@NonNull final String routeId) {
+        final Optional<BusRoute> busRoute = Stream.of(busRoutes)
+            .filter(busR -> busR.getId().equals(routeId))
+            .findFirst();
+        return busRoute.isPresent();
     }
 
     /**
@@ -120,7 +119,6 @@ public class BusData {
     public final List<BusStop> readNearbyStops(@NonNull final Position position) {
         final double dist = 0.004472;
 
-        final List<BusStop> res = new ArrayList<>();
         final double latitude = position.getLatitude();
         final double longitude = position.getLongitude();
 
@@ -129,14 +127,13 @@ public class BusData {
         final double lonMax = longitude + dist;
         final double lonMin = longitude - dist;
 
-        for (final BusStop busStop : busStops) {
-            final double busLatitude = busStop.getPosition().getLatitude();
-            final double busLongitude = busStop.getPosition().getLongitude();
-            if (busLatitude <= latMax && busLatitude >= latMin && busLongitude <= lonMax && busLongitude >= lonMin) {
-                res.add(busStop);
-            }
-        }
-        Collections.sort(res, (lhs, rhs) -> lhs.getName().compareTo(rhs.getName()));
-        return res;
+        return Stream.of(busStops)
+            .filter(busStop -> {
+                final double busLatitude = busStop.getPosition().getLatitude();
+                final double busLongitude = busStop.getPosition().getLongitude();
+                return busLatitude <= latMax && busLatitude >= latMin && busLongitude <= lonMax && busLongitude >= lonMin;
+            })
+            .sorted((left, right) -> left.getName().compareTo(right.getName()))
+            .collect(Collectors.toList());
     }
 }
