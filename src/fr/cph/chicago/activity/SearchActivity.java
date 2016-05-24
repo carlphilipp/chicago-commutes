@@ -17,11 +17,11 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 
+import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 
 import fr.cph.chicago.App;
 import fr.cph.chicago.R;
@@ -42,6 +42,10 @@ public class SearchActivity extends AppCompatActivity {
     private SearchView searchView;
     private SearchAdapter searchAdapter;
     private List<BikeStation> bikeStations;
+
+    public SearchActivity() {
+        this.bikeStations = new ArrayList<>();
+    }
 
     @Override
     protected void onCreate(final Bundle state) {
@@ -157,28 +161,21 @@ public class SearchActivity extends AppCompatActivity {
 
             final String query = intent.getStringExtra(SearchManager.QUERY).trim();
 
-            final List<Station> foundStations = new ArrayList<>();
-            final List<BusRoute> foundBusRoutes = new ArrayList<>();
-            final List<BikeStation> foundBikeStations = new ArrayList<>();
+            final List<Station> foundStations = Stream.of(trainData.getAllStations().entrySet())
+                .flatMap(entry -> Stream.of(entry.getValue()))
+                .filter(station -> containsIgnoreCase(station.getName(), query))
+                .distinct()
+                .collect(Collectors.toList());
 
-            for (final Entry<TrainLine, List<Station>> e : trainData.getAllStations().entrySet()) {
-                Stream.of(e.getValue())
-                    .filter(station -> containsIgnoreCase(station.getName(), query))
-                    .filter(station -> !foundStations.contains(station))
-                    .forEach(foundStations::add);
-            }
-
-            Stream.of(busData.getBusRoutes())
+            final List<BusRoute> foundBusRoutes = Stream.of(busData.getBusRoutes())
                 .filter(busRoute -> containsIgnoreCase(busRoute.getId(), query) || containsIgnoreCase(busRoute.getName(), query))
-                .filter(busRoute -> !foundBusRoutes.contains(busRoute))
-                .forEach(foundBusRoutes::add);
+                .distinct()
+                .collect(Collectors.toList());
 
-            if (bikeStations != null) {
-                Stream.of(bikeStations)
-                    .filter(bikeStation -> containsIgnoreCase(bikeStation.getName(), query) || containsIgnoreCase(bikeStation.getStAddress1(), query))
-                    .filter(bikeStation -> !foundBikeStations.contains(bikeStation))
-                    .forEach(foundBikeStations::add);
-            }
+            final List<BikeStation> foundBikeStations = Stream.of(bikeStations)
+                .filter(bikeStation -> containsIgnoreCase(bikeStation.getName(), query) || containsIgnoreCase(bikeStation.getStAddress1(), query))
+                .distinct()
+                .collect(Collectors.toList());
             searchAdapter.updateData(foundStations, foundBusRoutes, foundBikeStations);
             searchAdapter.notifyDataSetChanged();
         }
