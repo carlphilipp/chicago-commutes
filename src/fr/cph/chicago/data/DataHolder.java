@@ -27,17 +27,8 @@ import android.support.annotation.Nullable;
  */
 public class DataHolder {
 
-    /**
-     * Singleton
-     **/
-    private static DataHolder dataHolder;
-    /**
-     * Train data
-     **/
+    private static DataHolder DATA_HOLDER;
     private TrainData trainData;
-    /**
-     * Bus data
-     **/
     private BusData busData;
 
     /**
@@ -51,10 +42,10 @@ public class DataHolder {
      */
     @NonNull
     public static DataHolder getInstance() {
-        if (dataHolder == null) {
-            dataHolder = new DataHolder();
+        if (DATA_HOLDER == null) {
+            DATA_HOLDER = new DataHolder();
         }
-        return dataHolder;
+        return DATA_HOLDER;
     }
 
     /**

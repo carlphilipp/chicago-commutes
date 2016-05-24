@@ -21,6 +21,8 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.SparseArray;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 
@@ -53,13 +55,12 @@ public class TrainData {
     private static final String TAG = TrainData.class.getSimpleName();
 
     private static final String TRAIN_FILE_PATH = "cta_L_stops_cph.csv";
-
-    private static TrainData trainData;
+    private static TrainData TRAIN_DATA;
 
     private final SparseArray<Station> stations;
-    private Map<TrainLine, List<Station>> stationsOrderByLineMap;
     private final SparseArray<Stop> stops;
     private final CsvParser parser;
+    private Map<TrainLine, List<Station>> stationsOrderByLineMap;
 
     private TrainData() {
         this.stations = new SparseArray<>();
@@ -71,10 +72,10 @@ public class TrainData {
 
     @NonNull
     public static TrainData getInstance() {
-        if (trainData == null) {
-            trainData = new TrainData();
+        if (TRAIN_DATA == null) {
+            TRAIN_DATA = new TrainData();
         }
-        return trainData;
+        return TRAIN_DATA;
     }
 
     /**
@@ -151,9 +152,7 @@ public class TrainData {
 
                     final Station currentStation = stations.get(parentStopId, null);
                     if (currentStation == null) {
-                        final List<Stop> st = new ArrayList<>();
-                        st.add(stop);
-                        station.setStops(st);
+                        station.setStops(Stream.of(stop).collect(Collectors.toList()));
                         stations.append(parentStopId, station);
                     } else {
                         currentStation.getStops().add(stop);
@@ -232,7 +231,6 @@ public class TrainData {
 
         final double dist = 0.004472;
 
-        final List<Station> nearByStations = new ArrayList<>();
         final double latitude = position.getLatitude();
         final double longitude = position.getLongitude();
 
@@ -241,16 +239,19 @@ public class TrainData {
         final double lonMax = longitude + dist;
         final double lonMin = longitude - dist;
 
+        final List<Station> nearByStations = new ArrayList<>();
         for (int i = 0; i < stations.size(); i++) {
             final Station station = stations.valueAt(i);
-            for (final Position stopPosition : station.getStopsPosition()) {
-                final double trainLatitude = stopPosition.getLatitude();
-                final double trainLongitude = stopPosition.getLongitude();
-                if (trainLatitude <= latMax && trainLatitude >= latMin && trainLongitude <= lonMax && trainLongitude >= lonMin) {
-                    nearByStations.add(station);
-                    break;
-                }
-            }
+            Stream.of(station.getStopsPosition())
+                .filter(stopPosition -> {
+                    final double trainLatitude = stopPosition.getLatitude();
+                    final double trainLongitude = stopPosition.getLongitude();
+                    return trainLatitude <= latMax && trainLatitude >= latMin && trainLongitude <= lonMax && trainLongitude >= lonMin;
+                })
+                .map(stopPosition -> station)
+                // TODO understand why we limit to one here.
+                .limit(1)
+                .forEach(nearByStations::add);
         }
         return nearByStations;
     }
@@ -260,14 +261,16 @@ public class TrainData {
         final List<Position> positions = new ArrayList<>();
         try {
             final List<String[]> allRows = parser.parseAll(new InputStreamReader(App.getContext().getAssets().open("train_pattern/" + line.toTextString() + "_pattern.csv")));
-            for (final String[] row : allRows) {
-                final double longitude = Double.parseDouble(row[0]);
-                final double latitude = Double.parseDouble(row[1]);
-                final Position position = new Position();
-                position.setLatitude(latitude);
-                position.setLongitude(longitude);
-                positions.add(position);
-            }
+            Stream.of(allRows)
+                .map(row -> {
+                    final double longitude = Double.parseDouble(row[0]);
+                    final double latitude = Double.parseDouble(row[1]);
+                    final Position position = new Position();
+                    position.setLatitude(latitude);
+                    position.setLongitude(longitude);
+                    return position;
+                })
+                .forEach(positions::add);
         } catch (final IOException e) {
             Log.e(TAG, e.getMessage(), e);
         }
@@ -281,15 +284,15 @@ public class TrainData {
         stationsOrderByLineMap = new TreeMap<>();
         for (int i = 0; i < stations.size(); i++) {
             final Station station = stations.valueAt(i);
-            final Set<TrainLine> tls = station.getLines();
-            for (final TrainLine tl : tls) {
-                if (stationsOrderByLineMap.containsKey(tl)) {
-                    final List<Station> stations = stationsOrderByLineMap.get(tl);
+            final Set<TrainLine> trainLines = station.getLines();
+            for (final TrainLine trainLine : trainLines) {
+                if (stationsOrderByLineMap.containsKey(trainLine)) {
+                    final List<Station> stations = stationsOrderByLineMap.get(trainLine);
                     stations.add(station);
                     Collections.sort(stations);
                 } else {
                     final List<Station> stations = new ArrayList<>();
-                    stationsOrderByLineMap.put(tl, stations);
+                    stationsOrderByLineMap.put(trainLine, stations);
                     stations.add(station);
                 }
             }
