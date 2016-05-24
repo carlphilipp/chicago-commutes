@@ -189,15 +189,13 @@ public class BusBoundActivity extends ListActivity {
                         if (onNext != null) {
                             final int center = onNext.getPoints().size() / 2;
                             final Position position = onNext.getPoints().get(center).getPosition();
-                            mapFragment.getMapAsync(googleMap2 -> {
-                                if (position != null) {
-                                    final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
-                                    googleMap2.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
-                                    googleMap2.animateCamera(CameraUpdateFactory.zoomTo(9), 500, null);
-                                } else {
-                                    googleMap2.moveCamera(CameraUpdateFactory.newLatLngZoom(Util.CHICAGO, 10));
-                                }
-                            });
+                            if (position != null) {
+                                final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
+                                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
+                                googleMap.animateCamera(CameraUpdateFactory.zoomTo(9), 500, null);
+                            } else {
+                                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Util.CHICAGO, 10));
+                            }
                             BusBoundActivity.this.drawPattern(onNext);
                         } else {
                             Util.showMessage(BusBoundActivity.this, R.string.message_error_could_not_load_path);
