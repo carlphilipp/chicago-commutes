@@ -51,7 +51,6 @@ import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -277,9 +276,9 @@ public class NearbyFragment extends Fragment {
                     bikeStationsRes.addAll(
                         Stream.of(bikeStationUpdated)
                             .filter(station -> bikeStationsTemp.contains(station))
+                            .sorted(Util.BIKE_COMPARATOR_NAME)
                             .collect(Collectors.toList())
                     );
-                    Collections.sort(bikeStationsRes, Util.BIKE_COMPARATOR_NAME);
                     Util.trackAction(NearbyFragment.this.activity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
                 } catch (final ConnectException | ParserException e) {
                     Log.e(TAG, e.getMessage(), e);

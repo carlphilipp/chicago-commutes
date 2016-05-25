@@ -193,16 +193,17 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 if (trainLines.size() == 1) {
                     startActivity(trainLines.iterator().next());
                 } else {
-                    final List<String> values = new ArrayList<>();
                     final List<Integer> colors = new ArrayList<>();
-                    for (final TrainLine line : trainLines) {
-                        values.add(line.toStringWithLine());
-                        if (line != TrainLine.YELLOW) {
-                            colors.add(line.getColor());
-                        } else {
-                            colors.add(ContextCompat.getColor(App.getContext(), R.color.yellowLine));
-                        }
-                    }
+                    final List<String> values = Stream.of(trainLines)
+                        .flatMap(line -> {
+                            if (line != TrainLine.YELLOW) {
+                                colors.add(line.getColor());
+                            } else {
+                                colors.add(ContextCompat.getColor(App.getContext(), R.color.yellowLine));
+                            }
+                            return Stream.of(line.toStringWithLine());
+                        }).collect(Collectors.toList());
+
                     final PopupFavoritesTrainAdapter ada = new PopupFavoritesTrainAdapter(activity, values, colors);
 
                     final List<TrainLine> lines = new ArrayList<>();

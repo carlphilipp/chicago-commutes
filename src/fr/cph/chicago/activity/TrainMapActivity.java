@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.annimon.stream.Stream;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
@@ -273,7 +274,6 @@ public class TrainMapActivity extends Activity {
                 views.put(marker, view);
             }
 
-
             trainListener.setTrainMarkers(markers);
 
             googleMap.setOnCameraChangeListener(trainListener);
@@ -286,10 +286,10 @@ public class TrainMapActivity extends Activity {
                 final PolylineOptions poly = new PolylineOptions();
                 poly.width(7f);
                 poly.geodesic(true).color(TrainLine.fromXmlString(line).getColor());
-                for (final Position position : positions) {
-                    final LatLng point = new LatLng(position.getLatitude(), position.getLongitude());
-                    poly.add(point);
-                }
+                Stream.of(positions)
+                    .map(position -> new LatLng(position.getLatitude(), position.getLongitude()))
+                    .forEach(poly::add);
+
                 googleMap.addPolyline(poly);
             });
             drawLine = false;

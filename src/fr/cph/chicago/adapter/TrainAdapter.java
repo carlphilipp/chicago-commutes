@@ -26,6 +26,8 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.annimon.stream.Stream;
+
 import java.util.List;
 import java.util.Set;
 
@@ -99,10 +101,9 @@ public final class TrainAdapter extends BaseAdapter {
         holder.stationNameView.setText(station.getName());
 
         holder.stationColorView.removeAllViews();
-        for (final TrainLine tl : lines) {
-            final LinearLayout layout = LayoutUtil.createColoredRoundForMultiple(tl);
-            holder.stationColorView.addView(layout);
-        }
+        Stream.of(lines)
+            .map(LayoutUtil::createColoredRoundForMultiple)
+            .forEach(layout -> holder.stationColorView.addView(layout));
         convertView.setOnClickListener(new TrainOnClickListener(activity, station.getId(), lines));
         return convertView;
     }

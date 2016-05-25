@@ -93,10 +93,10 @@ public class BusData {
     }
 
     final boolean containsRoute(@NonNull final String routeId) {
-        final Optional<BusRoute> busRoute = Stream.of(busRoutes)
+        return Stream.of(busRoutes)
             .filter(busR -> busR.getId().equals(routeId))
-            .findFirst();
-        return busRoute.isPresent();
+            .findFirst()
+            .isPresent();
     }
 
     /**
