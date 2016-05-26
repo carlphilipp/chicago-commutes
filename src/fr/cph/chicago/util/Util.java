@@ -39,6 +39,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.annimon.stream.Stream;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -288,12 +289,9 @@ public final class Util {
 
     public static void centerMap(@NonNull final SupportMapFragment mapFragment, @NonNull final Activity activity, @Nullable final Position position) {
         mapFragment.getMapAsync(googleMap -> {
-            if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(activity,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+            if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
                 return;
             }
             googleMap.setMyLocationEnabled(true);
@@ -314,9 +312,7 @@ public final class Util {
     public static MultiValuedMap<String, String> getFavoritesTrainParams() {
         final MultiValuedMap<String, String> paramsTrain = new ArrayListValuedHashMap<>();
         final List<Integer> favorites = Preferences.getTrainFavorites(App.PREFERENCE_FAVORITES_TRAIN);
-        for (final Integer favorite : favorites) {
-            paramsTrain.put(App.getContext().getString(R.string.request_map_id), favorite.toString());
-        }
+        Stream.of(favorites).forEach(favorite -> paramsTrain.put(App.getContext().getString(R.string.request_map_id), favorite.toString()));
         return paramsTrain;
     }
 
@@ -324,11 +320,12 @@ public final class Util {
     public static MultiValuedMap<String, String> getFavoritesBusParams() {
         final MultiValuedMap<String, String> paramsBus = new ArrayListValuedHashMap<>();
         final List<String> busFavorites = Preferences.getBusFavorites(App.PREFERENCE_FAVORITES_BUS);
-        for (final String busFavorite : busFavorites) {
-            final String[] fav = Util.decodeBusFavorite(busFavorite);
-            paramsBus.put(App.getContext().getString(R.string.request_rt), fav[0]);
-            paramsBus.put(App.getContext().getString(R.string.request_stop_id), fav[1]);
-        }
+        Stream.of(busFavorites)
+            .map(Util::decodeBusFavorite)
+            .forEach(fav -> {
+                paramsBus.put(App.getContext().getString(R.string.request_rt), fav[0]);
+                paramsBus.put(App.getContext().getString(R.string.request_stop_id), fav[1]);
+            });
         return paramsBus;
     }
 
@@ -396,10 +393,8 @@ public final class Util {
     }
 
     public static void setLocationOnMap(@NonNull final Activity activity, @NonNull final GoogleMap googleMap) {
-        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
             return;
         }
