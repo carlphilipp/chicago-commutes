@@ -25,8 +25,6 @@ import android.util.Log;
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,7 +44,7 @@ import fr.cph.chicago.util.Util;
  * @version 1
  */
 public final class Preferences {
-    // FIXME change all bikeId (and other ids?) that should be int. Be sure whenever a user as a favorite already saved on the phone that it will work correctly
+    // FIXME change all bikeId (and other ids?) that should be int. Be sure whenever a user has a favorite already saved on the phone that it will work correctly
 
     private static final String TAG = Preferences.class.getSimpleName();
 
@@ -65,19 +63,14 @@ public final class Preferences {
         final Set<String> setPref1 = sharedPref.getStringSet(trains, null);
         final Set<String> setPref2 = sharedPref.getStringSet(bus, null);
         final Set<String> setPref3 = sharedPref.getStringSet(bike, null);
-        boolean res = true;
-        if ((setPref1 == null || setPref1.size() == 0) && (setPref2 == null || setPref2.size() == 0) && (setPref3 == null || setPref3.size() == 0)) {
-            res = false;
-        }
-        return res;
+        return !((setPref1 == null || setPref1.size() == 0) && (setPref2 == null || setPref2.size() == 0) && (setPref3 == null || setPref3.size() == 0));
     }
 
     public static void saveBikeFavorites(@NonNull final String name, @NonNull final List<String> favorites) {
         final Context context = App.getContext();
         final SharedPreferences sharedPref = context.getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = sharedPref.edit();
-        final Set<String> set = new LinkedHashSet<>();
-        set.addAll(favorites);
+        final Set<String> set = Stream.of(favorites).collect(Collectors.toSet());
         Log.v(TAG, "Put bike favorites: " + set.toString());
         editor.putStringSet(name, set);
         editor.apply();
@@ -87,14 +80,9 @@ public final class Preferences {
     public static List<String> getBikeFavorites(@NonNull final String name) {
         final Context context = App.getContext();
         final SharedPreferences sharedPref = context.getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
-        final Set<String> setPref = sharedPref.getStringSet(name, null);
-        final List<String> favorites = new ArrayList<>();
-        if (setPref != null) {
-            favorites.addAll(setPref);
-        }
-        Collections.sort(favorites);
-        Log.v(TAG, "Read bike favorites : " + favorites);
-        return favorites;
+        final Set<String> setPref = sharedPref.getStringSet(name, new LinkedHashSet<>());
+        Log.v(TAG, "Read bike favorites : " + setPref.toString());
+        return Stream.of(setPref).sorted().collect(Collectors.toList());
     }
 
     public static void addBikeRouteNameMapping(@NonNull final String bikeId, @NonNull final String bikeName) {
@@ -142,27 +130,23 @@ public final class Preferences {
     public static List<String> getBusFavorites(@NonNull final String name) {
         final Context context = App.getContext();
         final SharedPreferences sharedPref = context.getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
-        final Set<String> setPref = sharedPref.getStringSet(name, null);
-        final List<String> favorites = new ArrayList<>();
-        if (setPref != null) {
-            favorites.addAll(setPref);
-        }
-        Collections.sort(favorites, (str1, str2) -> {
-            final String str1Decoded = Util.decodeBusFavorite(str1)[0];
-            final String str2Decoded = Util.decodeBusFavorite(str2)[0];
+        final Set<String> setPref = sharedPref.getStringSet(name, new LinkedHashSet<>());
+        Log.v(TAG, "Read bus favorites : " + setPref.toString());
+        return Stream.of(setPref).sorted(
+            (str1, str2) -> {
+                final String str1Decoded = Util.decodeBusFavorite(str1)[0];
+                final String str2Decoded = Util.decodeBusFavorite(str2)[0];
 
-            final Matcher matcher1 = PATTERN.matcher(str1Decoded);
-            final Matcher matcher2 = PATTERN.matcher(str2Decoded);
-            if (matcher1.find() && matcher2.find()) {
-                final int one = Integer.parseInt(matcher1.group(1));
-                final int two = Integer.parseInt(matcher1.group(1));
-                return one < two ? -1 : (one == two ? 0 : 1);
-            } else {
-                return str1Decoded.compareTo(str2Decoded);
-            }
-        });
-        Log.v(TAG, "Read bus favorites : " + favorites.toString());
-        return favorites;
+                final Matcher matcher1 = PATTERN.matcher(str1Decoded);
+                final Matcher matcher2 = PATTERN.matcher(str2Decoded);
+                if (matcher1.find() && matcher2.find()) {
+                    final int one = Integer.parseInt(matcher1.group(1));
+                    final int two = Integer.parseInt(matcher1.group(1));
+                    return one < two ? -1 : (one == two ? 0 : 1);
+                } else {
+                    return str1Decoded.compareTo(str2Decoded);
+                }
+            }).collect(Collectors.toList());
     }
 
     public static void addBusRouteNameMapping(@NonNull final String busStopId, @NonNull final String routeName) {
@@ -227,21 +211,14 @@ public final class Preferences {
     public static List<Integer> getTrainFavorites(@NonNull final String name) {
         final Context context = App.getContext();
         final SharedPreferences sharedPref = context.getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
-        final Set<String> setPref = sharedPref.getStringSet(name, null);
-        final List<Integer> favorites = new ArrayList<>();
-        if (setPref != null) {
-            favorites.addAll(Stream.of(setPref).map(Integer::valueOf).collect(Collectors.toList()));
-        }
-        final DataHolder dataHolder = DataHolder.getInstance();
-        final List<Station> stations = new ArrayList<>();
-        for (final Integer favorite : favorites) {
-            final Station station = dataHolder.getTrainData().getStation(favorite);
-            stations.add(station);
-        }
-        Collections.sort(stations);
-        final List<Integer> res = Stream.of(stations).map(Station::getId).collect(Collectors.toList());
-        Log.v(TAG, "Read train favorites : " + res.toString());
-        return res;
+        final Set<String> setPref = sharedPref.getStringSet(name, new LinkedHashSet<>());
+        Log.v(TAG, "Read train favorites : " + setPref);
+        return Stream.of(setPref)
+            .map(Integer::valueOf)
+            .map(favorite -> DataHolder.getInstance().getTrainData().getStation(favorite))
+            .sorted()
+            .map(Station::getId)
+            .collect(Collectors.toList());
     }
 
     /**
