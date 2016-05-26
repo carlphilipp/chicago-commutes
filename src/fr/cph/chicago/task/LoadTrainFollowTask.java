@@ -39,7 +39,6 @@ import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Station;
-import fr.cph.chicago.entity.Stop;
 import fr.cph.chicago.entity.factory.StationFactory;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;

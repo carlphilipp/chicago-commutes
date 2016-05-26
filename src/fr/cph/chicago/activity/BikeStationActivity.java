@@ -207,11 +207,11 @@ public class BikeStationActivity extends AbstractStationActivity {
      */
     private void switchFavorite() {
         if (isFavorite) {
-            Util.removeFromBikeFavorites(bikeStation.getId(), App.PREFERENCE_FAVORITES_BIKE, swipeRefreshLayout);
+            Util.removeFromBikeFavorites(bikeStation.getId(), swipeRefreshLayout);
             favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
             isFavorite = false;
         } else {
-            Util.addToBikeFavorites(bikeStation.getId(), App.PREFERENCE_FAVORITES_BIKE, swipeRefreshLayout);
+            Util.addToBikeFavorites(bikeStation.getId(), swipeRefreshLayout);
             Preferences.addBikeRouteNameMapping(Integer.toString(bikeStation.getId()), bikeStation.getName());
             favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
             isFavorite = true;

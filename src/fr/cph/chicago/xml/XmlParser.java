@@ -66,16 +66,16 @@ public final class XmlParser {
 
     private static final String TAG = XmlParser.class.getSimpleName();
 
-    private static XmlParser instance;
+    private static XmlParser INSTANCE;
     private XmlPullParser parser;
     private SimpleDateFormat simpleDateFormatTrain;
     private SimpleDateFormat simpleDateFormatBus;
 
     public static XmlParser getInstance() {
-        if (instance == null) {
-            instance = new XmlParser();
+        if (INSTANCE == null) {
+            INSTANCE = new XmlParser();
         }
-        return instance;
+        return INSTANCE;
     }
 
     private XmlParser() {

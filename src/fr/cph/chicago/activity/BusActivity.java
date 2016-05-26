@@ -230,11 +230,11 @@ public class BusActivity extends AbstractStationActivity {
      */
     private void switchFavorite() {
         if (isFavorite) {
-            Util.removeFromBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, App.PREFERENCE_FAVORITES_BUS, scrollView);
+            Util.removeFromBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, scrollView);
             favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
             isFavorite = false;
         } else {
-            Util.addToBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, App.PREFERENCE_FAVORITES_BUS, scrollView);
+            Util.addToBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, scrollView);
             Preferences.addBusRouteNameMapping(String.valueOf(busStopId), busRouteName);
             Preferences.addBusStopNameMapping(String.valueOf(busStopId), busStopName);
             favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));

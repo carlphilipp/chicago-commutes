@@ -32,7 +32,7 @@ import fr.cph.chicago.R;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class PopupFavoritesTrainAdapter extends ArrayAdapter<String> {
+class PopupFavoritesTrainAdapter extends ArrayAdapter<String> {
 
     private final Activity activity;
     private final List<String> values;

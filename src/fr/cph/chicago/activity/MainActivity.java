@@ -97,8 +97,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             );
 
-            App.container = (FrameLayout) findViewById(R.id.container);
-            App.container.getForeground().setAlpha(0);
+            final FrameLayout frameLayout = (FrameLayout) findViewById(R.id.container);
+            frameLayout.getForeground().setAlpha(0);
 
             initView();
             setToolbar();
@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    public void refresh(@NonNull final BusData busData, @NonNull final List<BikeStation> bikeStations) {
+    private void refresh(@NonNull final BusData busData, @NonNull final List<BikeStation> bikeStations) {
         // Put data into data holder
         final DataHolder dataHolder = DataHolder.getInstance();
         dataHolder.setBusData(busData);

@@ -19,7 +19,6 @@ package fr.cph.chicago.activity;
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 
 import fr.cph.chicago.R;
 import fr.cph.chicago.adapter.TrainAdapter;

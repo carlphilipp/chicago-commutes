@@ -14,7 +14,7 @@ import java.util.List;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Position;
 
-public class BusStopCsvProcessor implements RowProcessor {
+class BusStopCsvProcessor implements RowProcessor {
 
 	private List<BusStop> rows;
 

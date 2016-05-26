@@ -143,7 +143,7 @@ public class BaseActivity extends Activity {
         startActivity(intent);
     }
 
-    public void displayError(@NonNull final String message) {
+    private void displayError(@NonNull final String message) {
         DataHolder.getInstance().setTrainData(null);
         DataHolder.getInstance().setBusData(null);
         App.startErrorActivity(this, message);

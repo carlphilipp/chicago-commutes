@@ -22,7 +22,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.widget.FrameLayout;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
@@ -73,15 +72,12 @@ public class App extends Application {
     /**
      * Application context
      **/
+    // FIXME do not put the context into a static field, it's "bad" (memory leak issue)
     private static Context context;
     /**
      * Last update of favorites
      **/
     private static Date lastUpdate;
-    /**
-     * Container that is used to get a faded black background
-     **/
-    public static FrameLayout container;
     /**
      * Analytics stuff
      **/

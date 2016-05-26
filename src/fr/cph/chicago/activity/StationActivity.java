@@ -356,11 +356,11 @@ public class StationActivity extends AbstractStationActivity {
      */
     private void switchFavorite() {
         if (isFavorite) {
-            Util.removeFromTrainFavorites(stationId, App.PREFERENCE_FAVORITES_TRAIN, scrollView);
+            Util.removeFromTrainFavorites(stationId, scrollView);
             isFavorite = false;
             favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
         } else {
-            Util.addToTrainFavorites(stationId, App.PREFERENCE_FAVORITES_TRAIN, scrollView);
+            Util.addToTrainFavorites(stationId, scrollView);
             isFavorite = true;
             favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
         }

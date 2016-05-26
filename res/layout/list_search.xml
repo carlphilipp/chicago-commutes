@@ -49,7 +49,7 @@
         android:paddingLeft="16dp"
         android:paddingRight="@dimen/activity_station_stops_0dp"
         android:paddingStart="16dp"
-        android:singleLine="true"
+        android:maxLines="1"
         android:textColor="@color/black"
         android:textIsSelectable="false" />
 
