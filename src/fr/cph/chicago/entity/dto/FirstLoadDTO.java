@@ -1,4 +1,4 @@
-package fr.cph.chicago.web;
+package fr.cph.chicago.entity.dto;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import fr.cph.chicago.entity.BusRoute;
 import lombok.Data;
 
 @Data
-public class FirstLoadResult {
+public class FirstLoadDTO {
     private boolean busRoutesError;
     private boolean bikeStationsError;
     private List<BusRoute> busRoutes;

@@ -49,7 +49,7 @@ import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.util.Util;
-import fr.cph.chicago.web.FavoritesResult;
+import fr.cph.chicago.entity.dto.FavoritesDTO;
 import rx.Observable;
 
 /**
@@ -159,7 +159,7 @@ public class FavoritesFragment extends Fragment {
                 Util.trackAction(activity, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
 
                 if (Util.isNetworkAvailable()) {
-                    final Observable<FavoritesResult> zipped = ObservableUtil.createAllDataObservable();
+                    final Observable<FavoritesDTO> zipped = ObservableUtil.createAllDataObservable();
                     zipped.subscribe(
                         this::reloadData,
                         onError -> {
@@ -233,24 +233,24 @@ public class FavoritesFragment extends Fragment {
         outState.putParcelableArrayList(getString(R.string.bundle_bike_stations), (ArrayList<BikeStation>) bikeStations);
     }
 
-    public final void reloadData(final FavoritesResult favoritesResult) {
+    public final void reloadData(final FavoritesDTO favoritesDTO) {
         boolean error = false;
-        if (!favoritesResult.isBikeError()) {
+        if (!favoritesDTO.isBikeError()) {
             // Put into intent new bike stations data
-            activity.getIntent().putParcelableArrayListExtra(getString(R.string.bundle_bike_stations), (ArrayList<BikeStation>) favoritesResult.getBikeStations());
-            this.bikeStations = favoritesResult.getBikeStations();
+            activity.getIntent().putParcelableArrayListExtra(getString(R.string.bundle_bike_stations), (ArrayList<BikeStation>) favoritesDTO.getBikeStations());
+            this.bikeStations = favoritesDTO.getBikeStations();
         } else {
             error = true;
         }
 
-        if (!favoritesResult.isBusError()) {
-            favoritesAdapter.setBusArrivals(favoritesResult.getBusArrivals());
+        if (!favoritesDTO.isBusError()) {
+            favoritesAdapter.setBusArrivals(favoritesDTO.getBusArrivals());
         } else {
             error = true;
         }
 
-        if (!favoritesResult.isTrainError()) {
-            favoritesAdapter.setTrainArrivals(favoritesResult.getTrainArrivals());
+        if (!favoritesDTO.isTrainError()) {
+            favoritesAdapter.setTrainArrivals(favoritesDTO.getTrainArrivals());
         } else {
             error = true;
         }

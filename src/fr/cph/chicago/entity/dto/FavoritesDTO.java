@@ -1,4 +1,4 @@
-package fr.cph.chicago.web;
+package fr.cph.chicago.entity.dto;
 
 import android.util.SparseArray;
 
@@ -10,7 +10,7 @@ import fr.cph.chicago.entity.TrainArrival;
 import lombok.Data;
 
 @Data
-public class FavoritesResult {
+public class FavoritesDTO {
     private boolean trainError;
     private boolean busError;
     private boolean bikeError;

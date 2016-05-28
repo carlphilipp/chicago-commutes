@@ -1,4 +1,4 @@
-package fr.cph.chicago.web;
+package fr.cph.chicago.entity.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -8,13 +8,13 @@ import fr.cph.chicago.entity.BikeStation;
 import lombok.Data;
 
 @Data
-public class DivvyResult {
+public class DivvyDTO {
 
     @JsonProperty("executionTime")
     private String executionTime;
     @JsonProperty("stationBeanList")
     private List<BikeStation> stations;
 
-    public DivvyResult() {
+    public DivvyDTO() {
     }
 }

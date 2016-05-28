@@ -23,8 +23,8 @@ import fr.cph.chicago.service.TrainService;
 import fr.cph.chicago.service.impl.BikeServiceImpl;
 import fr.cph.chicago.service.impl.BusServiceImpl;
 import fr.cph.chicago.service.impl.TrainServiceImpl;
-import fr.cph.chicago.web.FavoritesResult;
-import fr.cph.chicago.web.FirstLoadResult;
+import fr.cph.chicago.entity.dto.FavoritesDTO;
+import fr.cph.chicago.entity.dto.FirstLoadDTO;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -83,7 +83,7 @@ public class ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<FavoritesResult> createAllDataObservable() {
+    public static Observable<FavoritesDTO> createAllDataObservable() {
         // Train online favorites
         final Observable<SparseArray<TrainArrival>> trainArrivalsObservable = ObservableUtil.createTrainArrivals();
         // Bus online favorites
@@ -93,23 +93,23 @@ public class ObservableUtil {
         return Observable.zip(trainArrivalsObservable, busArrivalsObservable, bikeStationsObservable,
             (trainArrivals, busArrivals, bikeStations) -> {
                 App.modifyLastUpdate(Calendar.getInstance().getTime());
-                final FavoritesResult favoritesResult = new FavoritesResult();
-                favoritesResult.setTrainArrivals(trainArrivals);
-                favoritesResult.setBusArrivals(busArrivals);
-                favoritesResult.setBikeStations(bikeStations);
+                final FavoritesDTO favoritesDTO = new FavoritesDTO();
+                favoritesDTO.setTrainArrivals(trainArrivals);
+                favoritesDTO.setBusArrivals(busArrivals);
+                favoritesDTO.setBikeStations(bikeStations);
                 if (trainArrivals == null) {
-                    favoritesResult.setTrainError(true);
-                    favoritesResult.setTrainArrivals(new SparseArray<>());
+                    favoritesDTO.setTrainError(true);
+                    favoritesDTO.setTrainArrivals(new SparseArray<>());
                 }
                 if (busArrivals == null) {
-                    favoritesResult.setBusError(true);
-                    favoritesResult.setBusArrivals(new ArrayList<>());
+                    favoritesDTO.setBusError(true);
+                    favoritesDTO.setBusArrivals(new ArrayList<>());
                 }
                 if (bikeStations == null) {
-                    favoritesResult.setBikeError(true);
-                    favoritesResult.setBikeStations(new ArrayList<>());
+                    favoritesDTO.setBikeError(true);
+                    favoritesDTO.setBikeStations(new ArrayList<>());
                 }
-                return favoritesResult;
+                return favoritesDTO;
             });
     }
 
@@ -133,7 +133,7 @@ public class ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<FirstLoadResult> createOnFirstLoadObservable() {
+    public static Observable<FirstLoadDTO> createOnFirstLoadObservable() {
         final Observable<List<BusRoute>> busRoutesObs = Observable.create(
             (Subscriber<? super List<BusRoute>> subscriber) -> {
                 subscriber.onNext(BUS_SERVICE.loadBusRoutes());
@@ -159,7 +159,7 @@ public class ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread());
 
         return Observable.zip(busRoutesObs, bikeStationsObs, (busRoutes, bikeStations) -> {
-            final FirstLoadResult result = new FirstLoadResult();
+            final FirstLoadDTO result = new FirstLoadDTO();
             if (busRoutes == null) {
                 busRoutes = new ArrayList<>();
                 result.setBusRoutesError(true);

@@ -21,7 +21,7 @@ import android.support.annotation.NonNull;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fr.cph.chicago.web.DivvyResult;
+import fr.cph.chicago.entity.dto.DivvyDTO;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -55,7 +55,7 @@ public final class JsonParser {
     @NonNull
     public List<BikeStation> parseStations(@NonNull final InputStream stream) throws ParserException {
         try {
-            final DivvyResult divvyJson = MAPPER.readValue(stream, new TypeReference<DivvyResult>() {
+            final DivvyDTO divvyJson = MAPPER.readValue(stream, new TypeReference<DivvyDTO>() {
             });
             return divvyJson.getStations();
         } catch (final IOException e) {

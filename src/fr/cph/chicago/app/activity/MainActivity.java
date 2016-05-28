@@ -47,7 +47,7 @@ import fr.cph.chicago.app.fragment.NearbyFragment;
 import fr.cph.chicago.app.fragment.TrainFragment;
 import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.util.Util;
-import fr.cph.chicago.web.FavoritesResult;
+import fr.cph.chicago.entity.dto.FavoritesDTO;
 import rx.Observable;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Util.trackAction(MainActivity.this, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
 
                 if (Util.isNetworkAvailable()) {
-                    final Observable<FavoritesResult> zipped = ObservableUtil.createAllDataObservable();
+                    final Observable<FavoritesDTO> zipped = ObservableUtil.createAllDataObservable();
                     zipped.subscribe(
                         favoritesResult -> MainActivity.this.favoritesFragment.reloadData(favoritesResult),
                         onError -> {

@@ -40,7 +40,7 @@ import fr.cph.chicago.service.TrainService;
 import fr.cph.chicago.service.impl.BusServiceImpl;
 import fr.cph.chicago.service.impl.TrainServiceImpl;
 import fr.cph.chicago.util.Util;
-import fr.cph.chicago.web.FavoritesResult;
+import fr.cph.chicago.entity.dto.FavoritesDTO;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -105,10 +105,10 @@ public class BaseActivity extends Activity {
         Observable.zip(trainDataObservable, busDataObservable, (trainData, busData) -> true)
             .doOnCompleted(() -> Observable.zip(trainArrivalsObservable, busArrivalsObservable, (trainArrivals, busArrivals) -> {
                     App.modifyLastUpdate(Calendar.getInstance().getTime());
-                    final FavoritesResult favoritesResult = new FavoritesResult();
-                    favoritesResult.setTrainArrivals(trainArrivals);
-                    favoritesResult.setBusArrivals(busArrivals);
-                    return favoritesResult;
+                    final FavoritesDTO favoritesDTO = new FavoritesDTO();
+                    favoritesDTO.setTrainArrivals(trainArrivals);
+                    favoritesDTO.setBusArrivals(busArrivals);
+                    return favoritesDTO;
                 }
             ).subscribe(
                 BaseActivity.this::startMainActivity,
@@ -129,7 +129,7 @@ public class BaseActivity extends Activity {
      *
      * @param result the trains and buses arrivals
      */
-    private void startMainActivity(@NonNull final FavoritesResult result) {
+    private void startMainActivity(@NonNull final FavoritesDTO result) {
         final Intent intent = new Intent(this, MainActivity.class);
         final Bundle bundle = new Bundle();
         final SparseArray<TrainArrival> trainArrival = result.getTrainArrivals() != null ? result.getTrainArrivals() : new SparseArray<>();

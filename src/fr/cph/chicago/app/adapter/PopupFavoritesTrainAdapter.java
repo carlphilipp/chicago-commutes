@@ -38,7 +38,7 @@ class PopupFavoritesTrainAdapter extends ArrayAdapter<String> {
     private final List<String> values;
     private final List<Integer> colors;
 
-    public PopupFavoritesTrainAdapter(@NonNull final Activity activity, @NonNull final List<String> values, @NonNull final List<Integer> colors) {
+    PopupFavoritesTrainAdapter(@NonNull final Activity activity, @NonNull final List<String> values, @NonNull final List<Integer> colors) {
         super(activity, R.layout.popup_train_cell, values);
         this.activity = activity;
         this.values = values;
