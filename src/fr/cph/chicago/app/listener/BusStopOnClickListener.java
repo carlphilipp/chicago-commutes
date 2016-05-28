@@ -26,7 +26,6 @@ import android.widget.ListView;
 
 import java.util.List;
 
-import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.app.activity.BusActivity;
 import fr.cph.chicago.app.activity.MainActivity;
@@ -81,7 +80,7 @@ public class BusStopOnClickListener implements View.OnClickListener {
                         .filter(busStop -> Integer.toString(busStop.getId()).equals(busDetails.getStopId()))
                         .first()
                         .subscribe((BusStop busStop) -> {
-                                final Intent intent = new Intent(App.getContext(), BusActivity.class);
+                                final Intent intent = new Intent(activity.getApplicationContext(), BusActivity.class);
                                 final Bundle extras = new Bundle();
                                 extras.putInt(activity.getString(R.string.bundle_bus_stop_id), busStop.getId());
                                 extras.putString(activity.getString(R.string.bundle_bus_stop_name), busStop.getName());

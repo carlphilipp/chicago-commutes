@@ -28,7 +28,6 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.app.activity.MainActivity;
 import fr.cph.chicago.data.BusData;
@@ -36,8 +35,8 @@ import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
-import fr.cph.chicago.rx.subscriber.BusDirectionSubscriber;
 import fr.cph.chicago.rx.observable.ObservableUtil;
+import fr.cph.chicago.rx.subscriber.BusDirectionSubscriber;
 import fr.cph.chicago.util.Util;
 
 /**
@@ -88,7 +87,7 @@ public final class BusAdapter extends BaseAdapter {
         final LinearLayout detailsLayout;
 
         if (convertView == null) {
-            final LayoutInflater vi = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final LayoutInflater vi = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = vi.inflate(R.layout.list_bus, parent, false);
 
             final ViewHolder holder = new ViewHolder();

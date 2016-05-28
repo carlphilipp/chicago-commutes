@@ -27,7 +27,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.entity.BusStop;
 
@@ -68,7 +67,7 @@ public class BusBoundAdapter extends BaseAdapter {
         final TextView routNameView;
 
         if (convertView == null) {
-            final LayoutInflater vi = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final LayoutInflater vi = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = vi.inflate(R.layout.list_bus_bounds, parent, false);
 
             final ViewHolder holder = new ViewHolder();

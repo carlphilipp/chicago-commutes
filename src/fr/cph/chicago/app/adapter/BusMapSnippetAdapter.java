@@ -76,7 +76,7 @@ public class BusMapSnippetAdapter extends BaseAdapter {
         } else {
             stationNameTextView.setTypeface(null, Typeface.BOLD);
             stationNameTextView.setText(arrival.getStopName());
-            stationNameTextView.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey));
+            stationNameTextView.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.grey));
             stationNameTextView.setGravity(Gravity.CENTER);
         }
         return convertView;

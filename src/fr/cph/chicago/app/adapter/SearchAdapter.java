@@ -31,20 +31,19 @@ import android.widget.TextView;
 import java.util.List;
 import java.util.Set;
 
-import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.app.activity.SearchActivity;
+import fr.cph.chicago.app.listener.BikeStationOnClickListener;
+import fr.cph.chicago.app.listener.TrainOnClickListener;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
-import fr.cph.chicago.app.listener.BikeStationOnClickListener;
-import fr.cph.chicago.app.listener.TrainOnClickListener;
+import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.rx.subscriber.BusDirectionSubscriber;
 import fr.cph.chicago.util.LayoutUtil;
-import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.util.Util;
 
 /**
@@ -70,7 +69,7 @@ public final class SearchAdapter extends BaseAdapter {
      * @param activity the search activity
      */
     public SearchAdapter(@NonNull final SearchActivity activity) {
-        this.context = App.getContext();
+        this.context = activity.getApplicationContext();
         this.searchActivity = activity;
     }
 
@@ -121,7 +120,7 @@ public final class SearchAdapter extends BaseAdapter {
             final BusRoute busRoute = (BusRoute) getItem(position);
 
             final ImageView icon = (ImageView) convertView.findViewById(R.id.icon);
-            icon.setImageDrawable(ContextCompat.getDrawable(App.getContext(), R.drawable.ic_directions_bus_white_24dp));
+            icon.setImageDrawable(ContextCompat.getDrawable(parent.getContext(), R.drawable.ic_directions_bus_white_24dp));
 
             final String name = busRoute.getId() + " " + busRoute.getName();
             routeName.setText(name);
@@ -144,7 +143,7 @@ public final class SearchAdapter extends BaseAdapter {
             final BikeStation bikeStation = (BikeStation) getItem(position);
 
             final ImageView icon = (ImageView) convertView.findViewById(R.id.icon);
-            icon.setImageDrawable(ContextCompat.getDrawable(App.getContext(), R.drawable.ic_directions_bike_white_24dp));
+            icon.setImageDrawable(ContextCompat.getDrawable(parent.getContext(), R.drawable.ic_directions_bike_white_24dp));
 
             routeName.setText(bikeStation.getName());
 

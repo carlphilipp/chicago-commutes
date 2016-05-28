@@ -41,9 +41,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.app.activity.MainActivity;
+import fr.cph.chicago.app.listener.NearbyOnClickListener;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusStop;
@@ -52,7 +52,6 @@ import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.Stop;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.app.listener.NearbyOnClickListener;
 import fr.cph.chicago.util.LayoutUtil;
 import fr.cph.chicago.util.Util;
 
@@ -65,13 +64,13 @@ import fr.cph.chicago.util.Util;
 // FIXME use one view holder for trains/buses and bikes. Tried already but did not work
 public final class NearbyAdapter extends BaseAdapter {
 
-    private static final int LINE_1_PADDING_COLOR = (int) App.getContext().getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
-    private static final int STOPS_PADDING_TOP = (int) App.getContext().getResources().getDimension(R.dimen.activity_station_stops_padding_top);
-
     private final MainActivity activity;
-    private GoogleMap googleMap;
     private final Context context;
 
+    private final int line1PaddingColor;
+    private final int stopsPaddingTop;
+
+    private GoogleMap googleMap;
     private SparseArray<Map<String, List<BusArrival>>> busArrivals;
     private SparseArray<TrainArrival> trainArrivals;
     private List<BusStop> busStops;
@@ -81,7 +80,9 @@ public final class NearbyAdapter extends BaseAdapter {
 
     public NearbyAdapter(@NonNull final MainActivity activity) {
         this.activity = activity;
-        this.context = App.getContext();
+        this.context = activity.getApplicationContext();
+        this.line1PaddingColor = (int) context.getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
+        this.stopsPaddingTop = (int) context.getResources().getDimension(R.dimen.activity_station_stops_padding_top);
         this.busStops = new ArrayList<>();
         this.busArrivals = new SparseArray<>();
         this.stations = new ArrayList<>();
@@ -142,7 +143,7 @@ public final class NearbyAdapter extends BaseAdapter {
 
         TrainViewHolder viewHolder;
         if (convertView == null || convertView.getTag() == null) {
-            final LayoutInflater vi = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final LayoutInflater vi = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = vi.inflate(R.layout.list_nearby, parent, false);
 
             viewHolder = new TrainViewHolder();
@@ -158,7 +159,7 @@ public final class NearbyAdapter extends BaseAdapter {
         }
 
         viewHolder.stationNameView.setText(station.getName());
-        viewHolder.imageView.setImageDrawable(ContextCompat.getDrawable(App.getContext(), R.drawable.ic_train_white_24dp));
+        viewHolder.imageView.setImageDrawable(ContextCompat.getDrawable(parent.getContext(), R.drawable.ic_train_white_24dp));
 
         for (final TrainLine trainLine : trainLines) {
             if (trainArrivals.indexOfKey(station.getId()) != -1) {
@@ -172,11 +173,11 @@ public final class NearbyAdapter extends BaseAdapter {
                     } else {
                         final LinearLayout llh = new LinearLayout(context);
                         llh.setOrientation(LinearLayout.HORIZONTAL);
-                        llh.setPadding(LINE_1_PADDING_COLOR, STOPS_PADDING_TOP, 0, 0);
+                        llh.setPadding(line1PaddingColor, stopsPaddingTop, 0, 0);
 
                         llv = new LinearLayout(context);
                         llv.setOrientation(LinearLayout.VERTICAL);
-                        llv.setPadding(LINE_1_PADDING_COLOR, 0, 0, 0);
+                        llv.setPadding(line1PaddingColor, 0, 0, 0);
 
                         llh.addView(llv);
                         viewHolder.resultLayout.addView(llh);
@@ -213,7 +214,7 @@ public final class NearbyAdapter extends BaseAdapter {
                             final TextView stopName = new TextView(context);
                             final String destName = eta.getDestName() + ": ";
                             stopName.setText(destName);
-                            stopName.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey_5));
+                            stopName.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.grey_5));
                             stopName.setLayoutParams(availableParam);
                             int availableId = Util.generateViewId();
                             stopName.setId(availableId);
@@ -225,7 +226,7 @@ public final class NearbyAdapter extends BaseAdapter {
                             final TextView timing = new TextView(context);
                             final String timeLeftDueDelay = eta.getTimeLeftDueDelay() + " ";
                             timing.setText(timeLeftDueDelay);
-                            timing.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey));
+                            timing.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.grey));
                             timing.setLines(1);
                             timing.setEllipsize(TruncateAt.END);
                             timing.setLayoutParams(availableValueParam);
@@ -247,7 +248,7 @@ public final class NearbyAdapter extends BaseAdapter {
     }
 
     private View handleBuses(final int position, @NonNull final ViewGroup parent) {
-        final LayoutInflater vi = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final LayoutInflater vi = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View convertView = vi.inflate(R.layout.list_nearby, parent, false);
 
         // Bus
@@ -255,7 +256,7 @@ public final class NearbyAdapter extends BaseAdapter {
         final BusStop busStop = busStops.get(index);
 
         final ImageView imageView = (ImageView) convertView.findViewById(R.id.icon);
-        imageView.setImageDrawable(ContextCompat.getDrawable(App.getContext(), R.drawable.ic_directions_bus_white_24dp));
+        imageView.setImageDrawable(ContextCompat.getDrawable(parent.getContext(), R.drawable.ic_directions_bus_white_24dp));
 
         final TextView routeView = (TextView) convertView.findViewById(R.id.station_name);
         routeView.setText(busStop.getName());
@@ -268,10 +269,10 @@ public final class NearbyAdapter extends BaseAdapter {
             final LinearLayout.LayoutParams leftParam = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             final RelativeLayout insideLayout = new RelativeLayout(context);
             insideLayout.setLayoutParams(leftParam);
-            insideLayout.setPadding(LINE_1_PADDING_COLOR * 2, STOPS_PADDING_TOP, 0, 0);
+            insideLayout.setPadding(line1PaddingColor * 2, stopsPaddingTop, 0, 0);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                insideLayout.setBackground(ContextCompat.getDrawable(App.getContext(), R.drawable.any_selector));
+                insideLayout.setBackground(ContextCompat.getDrawable(parent.getContext(), R.drawable.any_selector));
             }
 
             final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(TrainLine.NA);
@@ -324,7 +325,7 @@ public final class NearbyAdapter extends BaseAdapter {
     }
 
     private View handleBikes(final int position, @NonNull final ViewGroup parent) {
-        final LayoutInflater vi = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final LayoutInflater vi = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View convertView = vi.inflate(R.layout.list_nearby, parent, false);
 
         final int index = position - (stations.size() + busStops.size());
@@ -333,14 +334,14 @@ public final class NearbyAdapter extends BaseAdapter {
         final LinearLayout favoritesData = (LinearLayout) convertView.findViewById(R.id.nearby_results);
 
         final ImageView imageView = (ImageView) convertView.findViewById(R.id.icon);
-        imageView.setImageDrawable(ContextCompat.getDrawable(App.getContext(), R.drawable.ic_directions_bike_white_24dp));
+        imageView.setImageDrawable(ContextCompat.getDrawable(parent.getContext(), R.drawable.ic_directions_bike_white_24dp));
 
         final TextView routeView = (TextView) convertView.findViewById(R.id.station_name);
         routeView.setText(bikeStation.getName());
 
         final LinearLayout llh = new LinearLayout(context);
         llh.setOrientation(LinearLayout.HORIZONTAL);
-        llh.setPadding(LINE_1_PADDING_COLOR, STOPS_PADDING_TOP, 0, 0);
+        llh.setPadding(line1PaddingColor, stopsPaddingTop, 0, 0);
 
         final LinearLayout availableLayout = new LinearLayout(context);
         availableLayout.setOrientation(LinearLayout.VERTICAL);
@@ -348,7 +349,7 @@ public final class NearbyAdapter extends BaseAdapter {
         final LinearLayout.LayoutParams leftParam = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         final RelativeLayout availableBikes = new RelativeLayout(context);
         availableBikes.setLayoutParams(leftParam);
-        availableBikes.setPadding(LINE_1_PADDING_COLOR, 0, 0, 0);
+        availableBikes.setPadding(line1PaddingColor, 0, 0, 0);
 
         final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(TrainLine.NA);
         int lineId = Util.generateViewId();
@@ -385,7 +386,7 @@ public final class NearbyAdapter extends BaseAdapter {
         final LinearLayout.LayoutParams leftParam2 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         final RelativeLayout availableDocks = new RelativeLayout(context);
         availableDocks.setLayoutParams(leftParam2);
-        availableDocks.setPadding(LINE_1_PADDING_COLOR, 0, 0, 0);
+        availableDocks.setPadding(line1PaddingColor, 0, 0, 0);
 
         final RelativeLayout lineIndication2 = LayoutUtil.createColoredRoundForFavorites(TrainLine.NA);
         int lineId2 = Util.generateViewId();
@@ -446,7 +447,7 @@ public final class NearbyAdapter extends BaseAdapter {
         this.markers = markers;
     }
 
-    static class TrainViewHolder {
+    private static class TrainViewHolder {
         TextView stationNameView;
         ImageView imageView;
         LinearLayout resultLayout;

@@ -57,8 +57,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
+import fr.cph.chicago.app.App;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.Position;
@@ -95,8 +95,8 @@ public final class Util {
     /**
      * Add to train favorites
      *
-     * @param stationId  the station id
-     * @param preference the preference
+     * @param stationId the station id
+     * @param view      the view
      */
     public static void addToTrainFavorites(@NonNull final Integer stationId, @NonNull final View view) {
         final List<Integer> favorites = Preferences.getTrainFavorites(App.PREFERENCE_FAVORITES_TRAIN);
@@ -110,8 +110,8 @@ public final class Util {
     /**
      * Remove train from favorites
      *
-     * @param stationId  the station id
-     * @param preference the preference
+     * @param stationId the station id
+     * @param view      the view
      */
     public static void removeFromTrainFavorites(@NonNull final Integer stationId, @NonNull final View view) {
         final List<Integer> favorites = Preferences.getTrainFavorites(App.PREFERENCE_FAVORITES_TRAIN);
@@ -126,7 +126,7 @@ public final class Util {
      * @param busRouteId the bus route id
      * @param busStopId  the bus stop id
      * @param bound      the bus bound
-     * @param preference the preference
+     * @param view       the view
      */
     public static void removeFromBusFavorites(@NonNull final String busRouteId, @NonNull final String busStopId, @NonNull final String bound,
                                               @NonNull final View view) {
@@ -143,7 +143,7 @@ public final class Util {
      * @param busRouteId the bus route id
      * @param busStopId  the bus stop id
      * @param bound      the bus bound
-     * @param preference the preference
+     * @param view       the view
      */
     public static void addToBusFavorites(@NonNull final String busRouteId, @NonNull final String busStopId, @NonNull final String bound, @NonNull final View view) {
         final String id = busRouteId + "_" + busStopId + "_" + bound;

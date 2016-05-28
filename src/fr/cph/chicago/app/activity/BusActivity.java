@@ -195,20 +195,20 @@ public class BusActivity extends AbstractStationActivity {
                         }
                         arrivalView.setText(arrivalText);
                     } else {
-                        final TextView arrivalView = new TextView(App.getContext());
+                        final TextView arrivalView = new TextView(getApplicationContext());
                         if (arrival.isDly()) {
                             arrivalText = arrival.getBusDestination() + ": Delay";
                         } else {
                             arrivalText = arrival.getBusDestination() + ": " + arrival.getTimeLeft();
                         }
                         arrivalView.setText(arrivalText);
-                        arrivalView.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey));
+                        arrivalView.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.grey));
                         tempMap.put(destination, arrivalView);
                     }
                 });
         } else {
-            final TextView arrivalView = new TextView(App.getContext());
-            arrivalView.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey));
+            final TextView arrivalView = new TextView(getApplicationContext());
+            arrivalView.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.grey));
             arrivalView.setText(getString(R.string.bus_activity_no_service));
             tempMap.put("", arrivalView);
         }

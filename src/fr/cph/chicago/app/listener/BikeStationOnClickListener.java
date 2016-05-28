@@ -19,11 +19,11 @@ public class BikeStationOnClickListener implements View.OnClickListener {
 
     @Override
     public void onClick(final View v) {
-        final Intent intent = new Intent(App.getContext(), BikeStationActivity.class);
+        final Intent intent = new Intent(v.getContext(), BikeStationActivity.class);
         final Bundle extras = new Bundle();
-        extras.putParcelable(App.getContext().getString(R.string.bundle_bike_station), station);
+        extras.putParcelable(v.getContext().getString(R.string.bundle_bike_station), station);
         intent.putExtras(extras);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        App.getContext().startActivity(intent);
+        v.getContext().startActivity(intent);
     }
 }

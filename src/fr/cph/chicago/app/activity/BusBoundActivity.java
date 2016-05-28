@@ -92,7 +92,7 @@ public class BusBoundActivity extends ListActivity {
             setListAdapter(busBoundAdapter);
             getListView().setOnItemClickListener((adapterView, view, position, id) -> {
                 final BusStop busStop = (BusStop) busBoundAdapter.getItem(position);
-                final Intent intent = new Intent(App.getContext(), BusActivity.class);
+                final Intent intent = new Intent(getApplicationContext(), BusActivity.class);
 
                 final Bundle extras = new Bundle();
                 extras.putInt(getString(R.string.bundle_bus_stop_id), busStop.getId());

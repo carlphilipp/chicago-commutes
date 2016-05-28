@@ -38,7 +38,7 @@ public class BusFollowSubscriber extends Subscriber<List<BusArrival>> {
         if (!loadAll && onNext.size() > 7) {
             onNext = onNext.subList(0, 6);
             final BusArrival arrival = new BusArrival();
-            arrival.setStopName(App.getContext().getString(R.string.bus_all_results));
+            arrival.setStopName(view.getContext().getString(R.string.bus_all_results));
             arrival.setDly(false);
             onNext.add(arrival);
         }

@@ -176,7 +176,7 @@ public class StationActivity extends AbstractStationActivity {
             testView.setText(line.toStringWithLine());
             testView.setBackgroundColor(line.getColor());
             if (line == TrainLine.YELLOW) {
-                testView.setBackgroundColor(ContextCompat.getColor(App.getContext(), R.color.yellowLine));
+                testView.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.yellowLine));
             }
 
             stopsView.addView(lineTitleView);
@@ -196,19 +196,19 @@ public class StationActivity extends AbstractStationActivity {
                 checkBox.setChecked(Preferences.getTrainFilter(stationId, line, stop.getDirection()));
                 checkBox.setTypeface(checkBox.getTypeface(), Typeface.BOLD);
                 checkBox.setText(stop.getDirection().toString());
-                checkBox.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey));
+                checkBox.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.grey));
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     checkBox.setBackgroundTintList(ColorStateList.valueOf(line.getColor()));
                     checkBox.setButtonTintList(ColorStateList.valueOf(line.getColor()));
                     if (line == TrainLine.YELLOW) {
-                        checkBox.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(App.getContext(), R.color.yellowLine)));
-                        checkBox.setButtonTintList(ColorStateList.valueOf(ContextCompat.getColor(App.getContext(), R.color.yellowLine)));
+                        checkBox.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getApplicationContext(), R.color.yellowLine)));
+                        checkBox.setButtonTintList(ColorStateList.valueOf(ContextCompat.getColor(getApplicationContext(), R.color.yellowLine)));
                     }
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     checkBox.setForegroundTintList(ColorStateList.valueOf(line.getColor()));
                     if (line == TrainLine.YELLOW) {
-                        checkBox.setForegroundTintList(ColorStateList.valueOf(ContextCompat.getColor(App.getContext(), R.color.yellowLine)));
+                        checkBox.setForegroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getApplicationContext(), R.color.yellowLine)));
                     }
                 }
 
@@ -328,14 +328,14 @@ public class StationActivity extends AbstractStationActivity {
                 final TextView stopName = new TextView(this);
                 final String stopNameData = eta.getDestName() + ": ";
                 stopName.setText(stopNameData);
-                stopName.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey));
+                stopName.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.grey));
                 stopName.setPadding(line3PaddingLeft, line3PaddingTop, 0, 0);
                 insideLayout.addView(stopName);
 
                 final TextView timing = new TextView(this);
                 final String timingData = eta.getTimeLeftDueDelay() + " ";
                 timing.setText(timingData);
-                timing.setTextColor(ContextCompat.getColor(App.getContext(), R.color.grey));
+                timing.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.grey));
                 timing.setLines(1);
                 timing.setEllipsize(TruncateAt.END);
                 insideLayout.addView(timing);

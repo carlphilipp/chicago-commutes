@@ -82,19 +82,20 @@ import static java.util.Map.Entry;
 // TODO to analyze and refactor
 public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder> {
 
-    private static final int GREY_5 = ContextCompat.getColor(App.getContext(), R.color.grey_5);
-
+    private final int grey5;
     private final Context context;
     private final MainActivity activity;
     private final Favorites favorites;
-    private String lastUpdate;
     private final int marginLeftPixel;
     private final int pixels;
     private final int pixelsHalf;
     private final int pixelsQuarter;
 
+    private String lastUpdate;
+
     public FavoritesAdapter(@NonNull final MainActivity activity) {
-        this.context = App.getContext();
+        this.context = activity.getApplicationContext();
+        this.grey5 = ContextCompat.getColor(context, R.color.grey_5);
 
         this.activity = activity;
         this.favorites = Favorites.getInstance();
@@ -120,7 +121,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
             this.parent = parent;
             this.mainLayout = (LinearLayout) view.findViewById(R.id.favorites_arrival_layout);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                this.mainLayout.setBackground(ContextCompat.getDrawable(App.getContext(), R.drawable.any_selector));
+                this.mainLayout.setBackground(ContextCompat.getDrawable(parent.getContext(), R.drawable.any_selector));
             }
             this.buttonsLayout = (RelativeLayout) view.findViewById(R.id.favorites_buttons);
             this.favoriteImage = (ImageView) view.findViewById(R.id.favorites_icon);
@@ -178,7 +179,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
             } else {
                 // Start station activity
                 final Bundle extras = new Bundle();
-                final Intent intent = new Intent(App.getContext(), StationActivity.class);
+                final Intent intent = new Intent(activity.getApplicationContext(), StationActivity.class);
                 extras.putInt(activity.getString(R.string.bundle_train_stationId), stationId);
                 intent.putExtras(extras);
                 activity.startActivity(intent);
@@ -199,7 +200,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                             if (line != TrainLine.YELLOW) {
                                 colors.add(line.getColor());
                             } else {
-                                colors.add(ContextCompat.getColor(App.getContext(), R.color.yellowLine));
+                                colors.add(ContextCompat.getColor(activity.getApplicationContext(), R.color.yellowLine));
                             }
                             return Stream.of(line.toStringWithLine());
                         }).collect(Collectors.toList());
@@ -245,7 +246,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
                 final String destination = entry.getKey();
                 final TextView destinationTextView = new TextView(context);
-                destinationTextView.setTextColor(GREY_5);
+                destinationTextView.setTextColor(grey5);
                 destinationTextView.setText(destination);
                 destinationTextView.setLines(1);
                 destinationTextView.setLayoutParams(destinationParams);
@@ -265,7 +266,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 arrivalText.setText(currentEtas);
                 arrivalText.setGravity(Gravity.END);
                 arrivalText.setSingleLine(true);
-                arrivalText.setTextColor(GREY_5);
+                arrivalText.setTextColor(grey5);
                 arrivalText.setEllipsize(TextUtils.TruncateAt.END);
 
                 right.addView(arrivalText);
@@ -283,7 +284,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
     private void startActivity(final TrainLine trainLine) {
         final Bundle extras = new Bundle();
-        final Intent intent = new Intent(App.getContext(), TrainMapActivity.class);
+        final Intent intent = new Intent(activity.getApplicationContext(), TrainMapActivity.class);
         extras.putString(activity.getString(R.string.bundle_train_line), trainLine.toTextString());
         intent.putExtras(extras);
         activity.startActivity(intent);
@@ -357,7 +358,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 final String leftString = stopNameTrimmed + " " + bound;
                 final SpannableString destinationSpannable = new SpannableString(leftString);
                 destinationSpannable.setSpan(new RelativeSizeSpan(0.65f), stopNameTrimmed.length(), leftString.length(), 0); // set size
-                destinationSpannable.setSpan(new ForegroundColorSpan(GREY_5), 0, leftString.length(), 0); // set color
+                destinationSpannable.setSpan(new ForegroundColorSpan(grey5), 0, leftString.length(), 0); // set color
 
                 final TextView boundCustomTextView = new TextView(context);
                 boundCustomTextView.setText(destinationSpannable);
@@ -383,7 +384,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 arrivalText.setText(currentEtas);
                 arrivalText.setGravity(Gravity.END);
                 arrivalText.setSingleLine(true);
-                arrivalText.setTextColor(GREY_5);
+                arrivalText.setTextColor(grey5);
                 arrivalText.setEllipsize(TextUtils.TruncateAt.END);
 
                 right.addView(arrivalText);
@@ -405,7 +406,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 Util.showNetworkErrorMessage(activity);
             } else {
                 final Set<String> bounds = Stream.of(busDetailsDTOs).map(BusDetailsDTO::getBound).collect(Collectors.toSet());
-                final Intent intent = new Intent(App.getContext(), BusMapActivity.class);
+                final Intent intent = new Intent(activity.getApplicationContext(), BusMapActivity.class);
                 final Bundle extras = new Bundle();
                 extras.putString(activity.getString(R.string.bundle_bus_route_id), busRoute.getId());
                 extras.putStringArray(activity.getString(R.string.bundle_bus_bounds), bounds.toArray(new String[bounds.size()]));
@@ -423,7 +424,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
             if (!Util.isNetworkAvailable()) {
                 Util.showNetworkErrorMessage(activity);
             } else if (bikeStation.getLatitude() != 0 && bikeStation.getLongitude() != 0) {
-                final Intent intent = new Intent(App.getContext(), BikeStationActivity.class);
+                final Intent intent = new Intent(activity.getApplicationContext(), BikeStationActivity.class);
                 final Bundle extras = new Bundle();
                 extras.putParcelable(activity.getString(R.string.bundle_bike_station), bikeStation);
                 intent.putExtras(extras);
@@ -484,7 +485,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         boundCustomTextView.setText(activity.getString(R.string.bike_available_docks));
         boundCustomTextView.setSingleLine(true);
         boundCustomTextView.setLayoutParams(availableParam);
-        boundCustomTextView.setTextColor(GREY_5);
+        boundCustomTextView.setTextColor(grey5);
         int availableId = Util.generateViewId();
         boundCustomTextView.setId(availableId);
 
@@ -504,14 +505,14 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         }
         if (data == null) {
             amountBike.setText("?");
-            amountBike.setTextColor(ContextCompat.getColor(App.getContext(), R.color.orange));
+            amountBike.setTextColor(ContextCompat.getColor(activity.getApplicationContext(), R.color.orange));
         } else {
             final String availableBikesText = String.valueOf(data);
             amountBike.setText(availableBikesText);
             if (data == 0) {
-                amountBike.setTextColor(ContextCompat.getColor(App.getContext(), R.color.red));
+                amountBike.setTextColor(ContextCompat.getColor(activity.getApplicationContext(), R.color.red));
             } else {
-                amountBike.setTextColor(ContextCompat.getColor(App.getContext(), R.color.green));
+                amountBike.setTextColor(ContextCompat.getColor(activity.getApplicationContext(), R.color.green));
             }
         }
         amountBike.setLayoutParams(availableValueParam);

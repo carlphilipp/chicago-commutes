@@ -129,7 +129,7 @@ public class BikeStationActivity extends AbstractStationActivity {
     }
 
     private void drawData() {
-        final Context context = App.getContext();
+        final Context context = getApplicationContext();
 
         final LinearLayout container = (LinearLayout) findViewById(R.id.favorites_bikes_list);
         final LinearLayout availableLayout = new LinearLayout(context);

@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.GStreetViewConnect;
 import rx.Observable;
@@ -32,7 +31,7 @@ public abstract class AbstractStationActivity extends Activity {
         googleMapImageObservable.subscribe(
             drawable -> {
                 streetViewImage.setImageDrawable(drawable);
-                streetViewText.setText(App.getContext().getString(R.string.station_activity_street_view));
+                streetViewText.setText(AbstractStationActivity.this.getApplicationContext().getString(R.string.station_activity_street_view));
             }
         );
     }

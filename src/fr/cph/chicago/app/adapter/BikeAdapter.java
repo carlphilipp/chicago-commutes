@@ -16,6 +16,7 @@
 
 package fr.cph.chicago.app.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -28,11 +29,10 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.app.activity.MainActivity;
-import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.app.listener.BikeStationOnClickListener;
+import fr.cph.chicago.entity.BikeStation;
 
 /**
  * Adapter that will handle bikes
@@ -42,6 +42,7 @@ import fr.cph.chicago.app.listener.BikeStationOnClickListener;
  */
 public final class BikeAdapter extends BaseAdapter {
 
+    private final Activity activity;
     private List<BikeStation> bikeStations;
 
     /**
@@ -50,6 +51,7 @@ public final class BikeAdapter extends BaseAdapter {
      * @param activity the main activity
      */
     public BikeAdapter(@NonNull final MainActivity activity) {
+        this.activity = activity;
         final Bundle bundle = activity.getIntent().getExtras();
         this.bikeStations = bundle.getParcelableArrayList(activity.getString(R.string.bundle_bike_stations));
         if (this.bikeStations == null) {
@@ -81,7 +83,7 @@ public final class BikeAdapter extends BaseAdapter {
         final ViewHolder holder;
 
         if (convertView == null) {
-            final LayoutInflater vi = (LayoutInflater) App.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final LayoutInflater vi = (LayoutInflater) activity.getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = vi.inflate(R.layout.list_bike, parent, false);
 
             holder = new ViewHolder();

@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.app.activity.StationActivity;
 import fr.cph.chicago.app.activity.TrainMapActivity;
@@ -77,7 +76,7 @@ public class TrainOnClickListener implements OnClickListener {
                 if (line != TrainLine.YELLOW) {
                     colors.add(line.getColor());
                 } else {
-                    colors.add(ContextCompat.getColor(App.getContext(), R.color.yellowLine));
+                    colors.add(ContextCompat.getColor(view.getContext(), R.color.yellowLine));
                 }
             }
             final PopupTrainAdapter ada = new PopupTrainAdapter(activity, values, colors);
@@ -90,13 +89,13 @@ public class TrainOnClickListener implements OnClickListener {
                 final Bundle extras = new Bundle();
                 if (position == 0) {
                     // Start station activity
-                    final Intent intent = new Intent(App.getContext(), StationActivity.class);
+                    final Intent intent = new Intent(view.getContext(), StationActivity.class);
                     extras.putInt(activity.getString(R.string.bundle_train_stationId), stationId);
                     intent.putExtras(extras);
                     activity.startActivity(intent);
                 } else {
                     // Follow all trains from given line on google map view
-                    final Intent intent = new Intent(App.getContext(), TrainMapActivity.class);
+                    final Intent intent = new Intent(view.getContext(), TrainMapActivity.class);
                     extras.putString(activity.getString(R.string.bundle_train_line), lines.get(position - 1).toTextString());
                     intent.putExtras(extras);
                     activity.startActivity(intent);
