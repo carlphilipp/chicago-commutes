@@ -42,7 +42,7 @@ import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.fragment.NearbyFragment;
-import fr.cph.chicago.util.GPSAccess;
+import fr.cph.chicago.util.GPSUtil;
 import fr.cph.chicago.util.Util;
 
 public class LoadNearbyTask extends AsyncTask<Void, Void, Void> implements LocationListener {
@@ -92,8 +92,8 @@ public class LoadNearbyTask extends AsyncTask<Void, Void, Void> implements Locat
 
         locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
 
-        final GPSAccess gpsAccess = new GPSAccess(this, activity, locationManager);
-        position = gpsAccess.getLocation();
+        final GPSUtil gpsUtil = new GPSUtil(this, activity, locationManager);
+        position = gpsUtil.getLocation();
         if (position != null) {
             busStops = busData.readNearbyStops(position);
             trainStations = trainData.readNearbyStation(position);
