@@ -50,13 +50,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
+import fr.cph.chicago.app.App;
 import fr.cph.chicago.app.activity.BikeStationActivity;
 import fr.cph.chicago.app.activity.BusMapActivity;
 import fr.cph.chicago.app.activity.MainActivity;
 import fr.cph.chicago.app.activity.StationActivity;
 import fr.cph.chicago.app.activity.TrainMapActivity;
+import fr.cph.chicago.app.listener.BusStopOnClickListener;
+import fr.cph.chicago.app.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.data.Favorites;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
@@ -66,8 +68,6 @@ import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.BusDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.app.listener.BusStopOnClickListener;
-import fr.cph.chicago.app.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.util.LayoutUtil;
 import fr.cph.chicago.util.Util;
 
@@ -98,10 +98,10 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         this.grey5 = ContextCompat.getColor(context, R.color.grey_5);
 
         this.activity = activity;
-        this.favorites = Favorites.getInstance(activity.getApplicationContext());
+        this.favorites = Favorites.getInstance(context);
 
-        this.marginLeftPixel = Util.convertDpToPixel(this.activity, 10);
-        this.pixels = Util.convertDpToPixel(this.activity, 16);
+        this.marginLeftPixel = Util.convertDpToPixel(context, 10);
+        this.pixels = Util.convertDpToPixel(context, 16);
         this.pixelsHalf = pixels / 2;
         this.pixelsQuarter = pixels / 4;
     }
@@ -174,12 +174,12 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         holder.favoriteImage.setImageResource(R.drawable.ic_train_white_24dp);
         holder.stationNameTextView.setText(station.getName());
         holder.detailsButton.setOnClickListener(v -> {
-            if (!Util.isNetworkAvailable(activity.getApplicationContext())) {
+            if (!Util.isNetworkAvailable(context)) {
                 Util.showNetworkErrorMessage(activity);
             } else {
                 // Start station activity
                 final Bundle extras = new Bundle();
-                final Intent intent = new Intent(activity.getApplicationContext(), StationActivity.class);
+                final Intent intent = new Intent(context, StationActivity.class);
                 extras.putInt(activity.getString(R.string.bundle_train_stationId), stationId);
                 intent.putExtras(extras);
                 activity.startActivity(intent);
@@ -188,7 +188,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
         holder.mapButton.setText(activity.getString(R.string.favorites_view_trains));
         holder.mapButton.setOnClickListener(v -> {
-            if (!Util.isNetworkAvailable(activity.getApplicationContext())) {
+            if (!Util.isNetworkAvailable(context)) {
                 Util.showNetworkErrorMessage(activity);
             } else {
                 if (trainLines.size() == 1) {
@@ -200,7 +200,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                             if (line != TrainLine.YELLOW) {
                                 colors.add(line.getColor());
                             } else {
-                                colors.add(ContextCompat.getColor(activity.getApplicationContext(), R.color.yellowLine));
+                                colors.add(ContextCompat.getColor(context, R.color.yellowLine));
                             }
                             return Stream.of(line.toStringWithLine());
                         }).collect(Collectors.toList());
@@ -213,7 +213,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                     final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                     builder.setAdapter(ada, (dialog, position) -> startActivity(lines.get(position)));
 
-                    final int[] screenSize = Util.getScreenSize(activity.getApplicationContext());
+                    final int[] screenSize = Util.getScreenSize(context);
                     final AlertDialog dialog = builder.create();
                     dialog.show();
                     dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
@@ -236,7 +236,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 final RelativeLayout left = new RelativeLayout(context);
                 left.setLayoutParams(leftParam);
 
-                final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(activity.getApplicationContext(), trainLine);
+                final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(context, trainLine);
                 int lineId = Util.generateViewId();
                 lineIndication.setId(lineId);
 
@@ -284,7 +284,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
     private void startActivity(final TrainLine trainLine) {
         final Bundle extras = new Bundle();
-        final Intent intent = new Intent(activity.getApplicationContext(), TrainMapActivity.class);
+        final Intent intent = new Intent(context, TrainMapActivity.class);
         extras.putString(activity.getString(R.string.bundle_train_line), trainLine.toTextString());
         intent.putExtras(extras);
         activity.startActivity(intent);
@@ -346,7 +346,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 final RelativeLayout left = new RelativeLayout(context);
                 left.setLayoutParams(leftParams);
 
-                final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(activity.getApplicationContext(), TrainLine.NA);
+                final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(context, TrainLine.NA);
                 int lineId = Util.generateViewId();
                 lineIndication.setId(lineId);
 
@@ -402,7 +402,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         holder.mapButton.setText(activity.getString(R.string.favorites_view_buses));
         holder.detailsButton.setOnClickListener(new BusStopOnClickListener(activity, holder.parent, busDetailsDTOs));
         holder.mapButton.setOnClickListener(v -> {
-            if (!Util.isNetworkAvailable(activity.getApplicationContext())) {
+            if (!Util.isNetworkAvailable(context)) {
                 Util.showNetworkErrorMessage(activity);
             } else {
                 final Set<String> bounds = Stream.of(busDetailsDTOs).map(BusDetailsDTO::getBound).collect(Collectors.toSet());
@@ -421,7 +421,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         holder.favoriteImage.setImageResource(R.drawable.ic_directions_bike_white_24dp);
 
         holder.detailsButton.setOnClickListener(v -> {
-            if (!Util.isNetworkAvailable(activity.getApplicationContext())) {
+            if (!Util.isNetworkAvailable(context)) {
                 Util.showNetworkErrorMessage(activity);
             } else if (bikeStation.getLatitude() != 0 && bikeStation.getLongitude() != 0) {
                 final Intent intent = new Intent(activity.getApplicationContext(), BikeStationActivity.class);
@@ -473,7 +473,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         final RelativeLayout left = new RelativeLayout(context);
         left.setLayoutParams(leftParam);
 
-        final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(activity.getApplicationContext(), TrainLine.NA);
+        final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(context, TrainLine.NA);
         int lineId = Util.generateViewId();
         lineIndication.setId(lineId);
 
@@ -505,14 +505,14 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         }
         if (data == null) {
             amountBike.setText("?");
-            amountBike.setTextColor(ContextCompat.getColor(activity.getApplicationContext(), R.color.orange));
+            amountBike.setTextColor(ContextCompat.getColor(context, R.color.orange));
         } else {
             final String availableBikesText = String.valueOf(data);
             amountBike.setText(availableBikesText);
             if (data == 0) {
-                amountBike.setTextColor(ContextCompat.getColor(activity.getApplicationContext(), R.color.red));
+                amountBike.setTextColor(ContextCompat.getColor(context, R.color.red));
             } else {
-                amountBike.setTextColor(ContextCompat.getColor(activity.getApplicationContext(), R.color.green));
+                amountBike.setTextColor(ContextCompat.getColor(context, R.color.green));
             }
         }
         amountBike.setLayoutParams(availableValueParam);

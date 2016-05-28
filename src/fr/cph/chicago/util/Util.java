@@ -350,8 +350,8 @@ public final class Util {
         }.start();
     }
 
-    public static int convertDpToPixel(final Activity activity, final int dp) {
-        float pixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, activity.getResources().getDisplayMetrics());
+    public static int convertDpToPixel(@NonNull final Context context, final int dp) {
+        float pixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
         return (int) pixels;
     }
 

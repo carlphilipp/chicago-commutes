@@ -16,6 +16,7 @@
 
 package fr.cph.chicago.app.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -29,7 +30,6 @@ import android.widget.TextView;
 import java.util.List;
 
 import fr.cph.chicago.R;
-import fr.cph.chicago.app.activity.MainActivity;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BusRoute;
@@ -49,7 +49,7 @@ public final class BusAdapter extends BaseAdapter {
 
     private static final String TAG = BusAdapter.class.getSimpleName();
 
-    private final MainActivity activity;
+    private final Activity activity;
     private List<BusRoute> busRoutes;
 
     /**
@@ -57,7 +57,7 @@ public final class BusAdapter extends BaseAdapter {
      *
      * @param activity the main activity
      */
-    public BusAdapter(@NonNull final MainActivity activity) {
+    public BusAdapter(@NonNull final Activity activity) {
         this.activity = activity;
         final BusData busData = DataHolder.getInstance().getBusData();
         this.busRoutes = busData.getBusRoutes();

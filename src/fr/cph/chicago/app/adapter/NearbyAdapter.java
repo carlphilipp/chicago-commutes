@@ -203,13 +203,13 @@ public final class NearbyAdapter extends BaseAdapter {
                             final RelativeLayout insideLayout = new RelativeLayout(context);
                             insideLayout.setLayoutParams(leftParam);
 
-                            final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(activity.getApplicationContext(), trainLine);
+                            final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(context, trainLine);
                             int lineId = Util.generateViewId();
                             lineIndication.setId(lineId);
 
                             final RelativeLayout.LayoutParams availableParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                             availableParam.addRule(RelativeLayout.RIGHT_OF, lineId);
-                            availableParam.setMargins(Util.convertDpToPixel(activity, 10), 0, 0, 0);
+                            availableParam.setMargins(Util.convertDpToPixel(context, 10), 0, 0, 0);
 
                             final TextView stopName = new TextView(context);
                             final String destName = eta.getDestName() + ": ";
@@ -281,7 +281,7 @@ public final class NearbyAdapter extends BaseAdapter {
 
             final RelativeLayout.LayoutParams stopParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             stopParam.addRule(RelativeLayout.RIGHT_OF, lineId);
-            stopParam.setMargins(Util.convertDpToPixel(activity, 10), 0, 0, 0);
+            stopParam.setMargins(Util.convertDpToPixel(context, 10), 0, 0, 0);
 
             final LinearLayout stopLayout = new LinearLayout(context);
             stopLayout.setOrientation(LinearLayout.VERTICAL);
@@ -357,7 +357,7 @@ public final class NearbyAdapter extends BaseAdapter {
 
         final RelativeLayout.LayoutParams availableParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         availableParam.addRule(RelativeLayout.RIGHT_OF, lineId);
-        availableParam.setMargins(Util.convertDpToPixel(activity, 10), 0, 0, 0);
+        availableParam.setMargins(Util.convertDpToPixel(context, 10), 0, 0, 0);
 
         final TextView availableBike = new TextView(context);
         availableBike.setText(context.getString(R.string.bike_available_bikes));
@@ -394,7 +394,7 @@ public final class NearbyAdapter extends BaseAdapter {
 
         final RelativeLayout.LayoutParams availableDockParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         availableDockParam.addRule(RelativeLayout.RIGHT_OF, lineId2);
-        availableDockParam.setMargins(Util.convertDpToPixel(activity, 10), 0, 0, 0);
+        availableDockParam.setMargins(Util.convertDpToPixel(context, 10), 0, 0, 0);
 
         final TextView availableDock = new TextView(context);
         availableDock.setText(context.getString(R.string.bike_available_docks));

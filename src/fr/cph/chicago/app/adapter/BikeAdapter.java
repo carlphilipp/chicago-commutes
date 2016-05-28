@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.cph.chicago.R;
-import fr.cph.chicago.app.activity.MainActivity;
 import fr.cph.chicago.app.listener.BikeStationOnClickListener;
 import fr.cph.chicago.entity.BikeStation;
 
@@ -42,7 +41,6 @@ import fr.cph.chicago.entity.BikeStation;
  */
 public final class BikeAdapter extends BaseAdapter {
 
-    private final Activity activity;
     private List<BikeStation> bikeStations;
 
     /**
@@ -50,14 +48,12 @@ public final class BikeAdapter extends BaseAdapter {
      *
      * @param activity the main activity
      */
-    public BikeAdapter(@NonNull final MainActivity activity) {
-        this.activity = activity;
+    public BikeAdapter(@NonNull final Activity activity) {
         final Bundle bundle = activity.getIntent().getExtras();
         this.bikeStations = bundle.getParcelableArrayList(activity.getString(R.string.bundle_bike_stations));
         if (this.bikeStations == null) {
             this.bikeStations = new ArrayList<>();
         }
-
     }
 
     @Override
@@ -83,7 +79,7 @@ public final class BikeAdapter extends BaseAdapter {
         final ViewHolder holder;
 
         if (convertView == null) {
-            final LayoutInflater vi = (LayoutInflater) activity.getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final LayoutInflater vi = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = vi.inflate(R.layout.list_bike, parent, false);
 
             holder = new ViewHolder();

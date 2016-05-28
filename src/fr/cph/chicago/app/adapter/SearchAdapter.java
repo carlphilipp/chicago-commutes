@@ -61,7 +61,7 @@ public final class SearchAdapter extends BaseAdapter {
     private List<Station> trains;
     private List<BusRoute> busRoutes;
     private List<BikeStation> bikeStations;
-    private final SearchActivity searchActivity;
+    private final SearchActivity activity;
 
     /**
      * Constructor
@@ -70,7 +70,7 @@ public final class SearchAdapter extends BaseAdapter {
      */
     public SearchAdapter(@NonNull final SearchActivity activity) {
         this.context = activity.getApplicationContext();
-        this.searchActivity = activity;
+        this.activity = activity;
     }
 
     @Override
@@ -111,11 +111,11 @@ public final class SearchAdapter extends BaseAdapter {
 
             final Set<TrainLine> lines = station.getLines();
             for (final TrainLine tl : lines) {
-                final LinearLayout layout = LayoutUtil.createColoredRoundForMultiple(searchActivity.getApplicationContext(), tl);
+                final LinearLayout layout = LayoutUtil.createColoredRoundForMultiple(context, tl);
                 stationColorView.addView(layout);
             }
 
-            convertView.setOnClickListener(new TrainOnClickListener(searchActivity, station.getId(), lines));
+            convertView.setOnClickListener(new TrainOnClickListener(activity, station.getId(), lines));
         } else if (position < trains.size() + busRoutes.size()) {
             final BusRoute busRoute = (BusRoute) getItem(position);
 
@@ -131,13 +131,13 @@ public final class SearchAdapter extends BaseAdapter {
                 ObservableUtil.createBusDirectionsObservable(parent.getContext(), busRoute.getId())
                     .onErrorReturn(throwable -> {
                         if (throwable.getCause() instanceof ConnectException) {
-                            Util.showNetworkErrorMessage(searchActivity);
+                            Util.showNetworkErrorMessage(activity);
                         } else if (throwable.getCause() instanceof ParserException) {
                             Util.showOopsSomethingWentWrong(loadingTextView);
                         }
                         Log.e(TAG, throwable.getMessage(), throwable);
                         return null;
-                    }).subscribe(new BusDirectionSubscriber(searchActivity, parent, loadingTextView, busRoute));
+                    }).subscribe(new BusDirectionSubscriber(activity, parent, loadingTextView, busRoute));
             });
         } else {
             final BikeStation bikeStation = (BikeStation) getItem(position);
