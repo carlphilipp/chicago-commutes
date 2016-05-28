@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.cph.chicago.R;
-import fr.cph.chicago.activity.MainActivity;
+import fr.cph.chicago.app.activity.MainActivity;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
@@ -41,7 +41,7 @@ import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
-import fr.cph.chicago.fragment.NearbyFragment;
+import fr.cph.chicago.app.fragment.NearbyFragment;
 import fr.cph.chicago.util.GPSUtil;
 import fr.cph.chicago.util.Util;
 

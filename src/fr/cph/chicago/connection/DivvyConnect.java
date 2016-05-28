@@ -25,7 +25,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import fr.cph.chicago.App;
+import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.exception.ConnectException;
 

@@ -29,7 +29,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Map.Entry;
 
-import fr.cph.chicago.App;
+import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.exception.ConnectException;
 

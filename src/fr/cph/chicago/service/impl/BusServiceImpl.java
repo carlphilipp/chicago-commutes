@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import fr.cph.chicago.App;
+import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.data.BusData;
@@ -25,7 +25,7 @@ import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.service.BusService;
 import fr.cph.chicago.util.Util;
-import fr.cph.chicago.xml.XmlParser;
+import fr.cph.chicago.parser.XmlParser;
 import rx.exceptions.Exceptions;
 
 import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;

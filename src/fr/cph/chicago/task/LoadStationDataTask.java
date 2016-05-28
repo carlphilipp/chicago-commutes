@@ -11,14 +11,14 @@ import java.io.InputStream;
 import java.util.List;
 
 import fr.cph.chicago.R;
-import fr.cph.chicago.activity.BusActivity;
+import fr.cph.chicago.app.activity.BusActivity;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.util.Util;
-import fr.cph.chicago.xml.XmlParser;
+import fr.cph.chicago.parser.XmlParser;
 
 import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
 

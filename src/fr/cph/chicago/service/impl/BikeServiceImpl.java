@@ -6,7 +6,7 @@ import java.util.List;
 
 import fr.cph.chicago.connection.DivvyConnect;
 import fr.cph.chicago.entity.BikeStation;
-import fr.cph.chicago.json.JsonParser;
+import fr.cph.chicago.parser.JsonParser;
 import fr.cph.chicago.service.BikeService;
 import fr.cph.chicago.util.Util;
 import rx.exceptions.Exceptions;

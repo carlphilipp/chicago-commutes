@@ -34,7 +34,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
-        android:name=".App"
+        android:name=".app.App"
         android:allowBackup="true"
         android:fullBackupContent="true"
         android:icon="@drawable/ic_logo_1"
@@ -42,7 +42,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="fr.cph.chicago.activity.BaseActivity"
+            android:name=".app.activity.BaseActivity"
             android:alwaysRetainTaskState="true"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
@@ -57,7 +57,7 @@
                 android:value="false"/>
         </activity>
         <activity
-            android:name="fr.cph.chicago.activity.MainActivity"
+            android:name=".app.activity.MainActivity"
             android:alwaysRetainTaskState="true"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
@@ -66,34 +66,34 @@
                 android:value="fr.cph.chicago.activity.SearchActivity"/>
         </activity>
         <activity
-            android:name="fr.cph.chicago.activity.StationActivity"
+            android:name=".app.activity.StationActivity"
             android:label="@string/station_activity"
-            android:parentActivityName="fr.cph.chicago.activity.MainActivity"
+            android:parentActivityName=".app.activity.MainActivity"
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name=".activity.TrainListStationActivity"
+            android:name=".app.activity.TrainListStationActivity"
             android:label="@string/train_station_activity"
-            android:parentActivityName="fr.cph.chicago.activity.MainActivity"
+            android:parentActivityName=".app.activity.MainActivity"
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name="fr.cph.chicago.activity.BusBoundActivity"
+            android:name=".app.activity.BusBoundActivity"
             android:label="@string/train_station_activity"
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name="fr.cph.chicago.activity.BusActivity"
+            android:name=".app.activity.BusActivity"
             android:label="@string/bus_bound_activity"
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name="fr.cph.chicago.activity.ErrorActivity"
+            android:name=".app.activity.ErrorActivity"
             android:label="@string/bus_bound_activity"
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name=".activity.SearchActivity"
+            android:name=".app.activity.SearchActivity"
             android:label="@string/search_title"
             android:launchMode="singleTop"
             android:screenOrientation="portrait">
@@ -106,17 +106,17 @@
                 android:resource="@xml/searchable"/>
         </activity>
         <activity
-            android:name="fr.cph.chicago.activity.BikeStationActivity"
+            android:name=".app.activity.BikeStationActivity"
             android:label="@string/bike_activity"
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name="fr.cph.chicago.activity.BusMapActivity"
+            android:name=".app.activity.BusMapActivity"
             android:label="@string/map_activity"
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name="fr.cph.chicago.activity.TrainMapActivity"
+            android:name=".app.activity.TrainMapActivity"
             android:label="@string/map_activity"
             android:screenOrientation="portrait">
         </activity>

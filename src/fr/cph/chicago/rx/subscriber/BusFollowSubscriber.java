@@ -8,10 +8,10 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import fr.cph.chicago.App;
+import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
-import fr.cph.chicago.activity.BusMapActivity;
-import fr.cph.chicago.adapter.BusMapSnippetAdapter;
+import fr.cph.chicago.app.activity.BusMapActivity;
+import fr.cph.chicago.app.adapter.BusMapSnippetAdapter;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.util.Util;

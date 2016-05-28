@@ -9,7 +9,7 @@ import com.annimon.stream.Stream;
 import java.util.Collections;
 import java.util.List;
 
-import fr.cph.chicago.activity.StationActivity;
+import fr.cph.chicago.app.activity.StationActivity;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.util.Util;

@@ -27,7 +27,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import fr.cph.chicago.R;
-import fr.cph.chicago.activity.TrainMapActivity;
+import fr.cph.chicago.app.activity.TrainMapActivity;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
@@ -37,7 +37,7 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.util.Util;
-import fr.cph.chicago.xml.XmlParser;
+import fr.cph.chicago.parser.XmlParser;
 
 import static fr.cph.chicago.connection.CtaRequestType.TRAIN_LOCATION;
 

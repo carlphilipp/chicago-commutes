@@ -6,7 +6,7 @@ import android.widget.RelativeLayout;
 import java.util.List;
 
 import fr.cph.chicago.R;
-import fr.cph.chicago.activity.BusMapActivity;
+import fr.cph.chicago.app.activity.BusMapActivity;
 import fr.cph.chicago.entity.Bus;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.util.Util;
