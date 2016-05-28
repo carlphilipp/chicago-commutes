@@ -13,7 +13,7 @@ import android.support.v4.app.ActivityCompat;
 
 import fr.cph.chicago.entity.Position;
 
-public class GPSAccess {
+public class GPSUtil {
     // The minimum distance to change Updates in meters
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
     // The minimum time between updates in milliseconds
@@ -26,7 +26,7 @@ public class GPSAccess {
     private double latitude;
     private double longitude;
 
-    public GPSAccess(@NonNull final LocationListener locationListener, @NonNull final Activity activity, @NonNull final LocationManager locationManager) {
+    public GPSUtil(@NonNull final LocationListener locationListener, @NonNull final Activity activity, @NonNull final LocationManager locationManager) {
         this.locationListener = locationListener;
         this.locationManager = locationManager;
         this.activity = activity;
