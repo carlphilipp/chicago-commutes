@@ -19,10 +19,6 @@ package fr.cph.chicago.entity.enumeration;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-
-import fr.cph.chicago.app.App;
-import fr.cph.chicago.R;
 
 /**
  * Enumeration, train line
@@ -39,7 +35,7 @@ public enum TrainLine {
     PINK("Pink", "Pink", Color.rgb(204, 0, 102)),
     PURPLE("P", "Purple", Color.rgb(102, 0, 102)),
     RED("Red", "Red", Color.rgb(240, 0, 0)),
-    YELLOW("Y", "Yellow", ContextCompat.getColor(App.getContext(), R.color.yellowLine)),
+    YELLOW("Y", "Yellow", Color.rgb(253, 216, 53)),
     NA("N/A", "N/A", Color.BLACK);
 
     /**
@@ -58,9 +54,9 @@ public enum TrainLine {
     /**
      * Private constructor
      *
-     * @param text     the text
-     * @param name     the name
-     * @param color    the color
+     * @param text  the text
+     * @param name  the name
+     * @param color the color
      */
     TrainLine(final String text, final String name, final int color) {
         this.text = text;

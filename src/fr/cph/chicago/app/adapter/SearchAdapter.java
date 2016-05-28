@@ -111,7 +111,7 @@ public final class SearchAdapter extends BaseAdapter {
 
             final Set<TrainLine> lines = station.getLines();
             for (final TrainLine tl : lines) {
-                final LinearLayout layout = LayoutUtil.createColoredRoundForMultiple(tl);
+                final LinearLayout layout = LayoutUtil.createColoredRoundForMultiple(searchActivity.getApplicationContext(), tl);
                 stationColorView.addView(layout);
             }
 
@@ -128,7 +128,7 @@ public final class SearchAdapter extends BaseAdapter {
             final TextView loadingTextView = (TextView) convertView.findViewById(R.id.loading_text_view);
             convertView.setOnClickListener(v -> {
                 loadingTextView.setVisibility(LinearLayout.VISIBLE);
-                ObservableUtil.createBusDirectionsObservable(busRoute.getId())
+                ObservableUtil.createBusDirectionsObservable(parent.getContext(), busRoute.getId())
                     .onErrorReturn(throwable -> {
                         if (throwable.getCause() instanceof ConnectException) {
                             Util.showNetworkErrorMessage(searchActivity);

@@ -65,7 +65,7 @@ public class TrainOnClickListener implements OnClickListener {
 
     @Override
     public void onClick(final View view) {
-        if (!Util.isNetworkAvailable()) {
+        if (!Util.isNetworkAvailable(activity.getApplicationContext())) {
             Util.showNetworkErrorMessage(activity);
         } else {
             final List<String> values = new ArrayList<>();
@@ -102,7 +102,7 @@ public class TrainOnClickListener implements OnClickListener {
                 }
             });
 
-            final int[] screenSize = Util.getScreenSize();
+            final int[] screenSize = Util.getScreenSize(activity.getApplicationContext());
             final AlertDialog dialog = builder.create();
             dialog.show();
             dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);

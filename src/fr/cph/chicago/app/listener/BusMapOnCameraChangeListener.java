@@ -16,6 +16,7 @@
 
 package fr.cph.chicago.app.listener;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
@@ -29,7 +30,6 @@ import com.google.android.gms.maps.model.Marker;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
 
 /**
@@ -47,8 +47,8 @@ public class BusMapOnCameraChangeListener implements OnCameraChangeListener {
     private List<Marker> busMarkers;
     private List<Marker> busStationMarkers;
 
-    public BusMapOnCameraChangeListener() {
-        final Bitmap icon = BitmapFactory.decodeResource(App.getContext().getResources(), R.drawable.bus);
+    public BusMapOnCameraChangeListener(@NonNull final Context context) {
+        final Bitmap icon = BitmapFactory.decodeResource(context.getResources(), R.drawable.bus);
         final Bitmap bitmap1 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 9, icon.getHeight() / 9, true);
         final Bitmap bitmap2 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 5, icon.getHeight() / 5, true);
         final Bitmap bitmap3 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 3, icon.getHeight() / 3, true);

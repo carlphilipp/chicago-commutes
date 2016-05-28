@@ -74,10 +74,10 @@ public class LoadTrainFollowTask extends AsyncTask<String, Void, List<Eta>> {
         final String runNumber = params[0];
         List<Eta> etas = new ArrayList<>();
         try {
-            final CtaConnect connect = CtaConnect.getInstance();
+            final CtaConnect connect = CtaConnect.getInstance(activity.getApplicationContext());
             final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
             connectParam.put(activity.getString(R.string.request_runnumber), runNumber);
-            final InputStream content = connect.connect(TRAIN_FOLLOW, connectParam);
+            final InputStream content = connect.connect(activity.getApplicationContext(), TRAIN_FOLLOW, connectParam);
             final XmlParser xml = XmlParser.getInstance();
             etas = xml.parseTrainsFollow(content, trainData);
         } catch (final ConnectException | ParserException e) {

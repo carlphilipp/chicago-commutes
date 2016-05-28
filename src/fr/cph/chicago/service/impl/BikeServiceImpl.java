@@ -1,5 +1,8 @@
 package fr.cph.chicago.service.impl;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
+
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
@@ -20,10 +23,10 @@ public class BikeServiceImpl implements BikeService {
     }
 
     @Override
-    public List<BikeStation> loadAllBikes() {
+    public List<BikeStation> loadAllBikes(@NonNull final Context context) {
         try {
             final DivvyConnect divvyConnect = DivvyConnect.getInstance();
-            final InputStream bikeContent = divvyConnect.connect();
+            final InputStream bikeContent = divvyConnect.connect(context);
             final List<BikeStation> bikeStations = jsonParser.parseStations(bikeContent);
             Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
             return bikeStations;

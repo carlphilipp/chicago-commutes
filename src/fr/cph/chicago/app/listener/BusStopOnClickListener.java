@@ -66,7 +66,7 @@ public class BusStopOnClickListener implements View.OnClickListener {
                 loadBusDetails(busDetails);
                 Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_stop, 0);
             });
-            final int[] screenSize = Util.getScreenSize();
+            final int[] screenSize = Util.getScreenSize(activity.getApplicationContext());
             final AlertDialog dialog = builder.create();
             dialog.show();
             dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -74,7 +74,7 @@ public class BusStopOnClickListener implements View.OnClickListener {
     }
 
     private void loadBusDetails(final BusDetailsDTO busDetails) {
-        ObservableUtil.createBusStopBoundObservable(busDetails.getBusRouteId(), busDetails.getBoundTitle())
+        ObservableUtil.createBusStopBoundObservable(activity.getApplicationContext(), busDetails.getBusRouteId(), busDetails.getBoundTitle())
             .subscribe(onNext -> {
                     Observable.from(onNext)
                         .filter(busStop -> Integer.toString(busStop.getId()).equals(busDetails.getStopId()))

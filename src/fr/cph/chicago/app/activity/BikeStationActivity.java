@@ -69,7 +69,7 @@ public class BikeStationActivity extends AbstractStationActivity {
 
                 swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_station_swipe_refresh_layout);
                 swipeRefreshLayout.setOnRefreshListener(
-                    () -> ObservableUtil.createAllBikeStationsObservable()
+                    () -> ObservableUtil.createAllBikeStationsObservable(getApplicationContext())
                         .subscribe(new BikeAllBikeStationsSubscriber(BikeStationActivity.this, bikeStation.getId(), swipeRefreshLayout))
                 );
 
@@ -115,7 +115,7 @@ public class BikeStationActivity extends AbstractStationActivity {
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener((item -> {
             swipeRefreshLayout.setRefreshing(true);
-            ObservableUtil.createAllBikeStationsObservable()
+            ObservableUtil.createAllBikeStationsObservable(getApplicationContext())
                 .subscribe(new BikeAllBikeStationsSubscriber(BikeStationActivity.this, bikeStation.getId(), swipeRefreshLayout));
             return false;
         }));
@@ -190,7 +190,7 @@ public class BikeStationActivity extends AbstractStationActivity {
      */
     @Override
     protected boolean isFavorite() {
-        final List<String> favorites = Preferences.getBikeFavorites(App.PREFERENCE_FAVORITES_BIKE);
+        final List<String> favorites = Preferences.getBikeFavorites(getApplicationContext(), App.PREFERENCE_FAVORITES_BIKE);
         return Stream.of(favorites)
             .filter(favorite -> Integer.valueOf(favorite) == bikeStation.getId())
             .findFirst()
@@ -212,7 +212,7 @@ public class BikeStationActivity extends AbstractStationActivity {
             isFavorite = false;
         } else {
             Util.addToBikeFavorites(bikeStation.getId(), swipeRefreshLayout);
-            Preferences.addBikeRouteNameMapping(Integer.toString(bikeStation.getId()), bikeStation.getName());
+            Preferences.addBikeRouteNameMapping(getApplicationContext(), Integer.toString(bikeStation.getId()), bikeStation.getName());
             favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
             isFavorite = true;
         }

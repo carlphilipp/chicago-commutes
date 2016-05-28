@@ -1,5 +1,6 @@
 package fr.cph.chicago.parser;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -10,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
-import fr.cph.chicago.app.App;
 import fr.cph.chicago.entity.BusStop;
 
 public class BusStopCsvParser {
@@ -32,9 +32,9 @@ public class BusStopCsvParser {
 	}
 
     @NonNull
-	public List<BusStop> parse() {
+	public List<BusStop> parse(@NonNull final Context context) {
 		try {
-			parser.parse(new InputStreamReader(App.getContext().getAssets().open(STOP_FILE_PATH)));
+			parser.parse(new InputStreamReader(context.getAssets().open(STOP_FILE_PATH)));
 		} catch (final IOException e) {
 			Log.e(TAG, e.getMessage(), e);
 		}

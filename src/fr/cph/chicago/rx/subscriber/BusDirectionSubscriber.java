@@ -78,7 +78,7 @@ public class BusDirectionSubscriber extends Subscriber<BusDirections> {
                 }
             });
             builder.setOnCancelListener(dialog -> convertView.setVisibility(LinearLayout.GONE));
-            final int[] screenSize = Util.getScreenSize();
+            final int[] screenSize = Util.getScreenSize(activity.getApplicationContext());
             final AlertDialog dialog = builder.create();
             dialog.show();
             dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), ViewGroup.LayoutParams.WRAP_CONTENT);

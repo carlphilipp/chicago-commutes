@@ -112,7 +112,7 @@ public final class BusAdapter extends BaseAdapter {
 
         convertView.setOnClickListener(v -> {
             detailsLayout.setVisibility(LinearLayout.VISIBLE);
-            ObservableUtil.createBusDirectionsObservable(route.getId())
+            ObservableUtil.createBusDirectionsObservable(parent.getContext(), route.getId())
                 .onErrorReturn(throwable -> {
                     if (throwable.getCause() instanceof ConnectException) {
                         Util.showNetworkErrorMessage(activity);

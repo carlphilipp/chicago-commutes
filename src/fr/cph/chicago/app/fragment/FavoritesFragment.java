@@ -109,7 +109,7 @@ public class FavoritesFragment extends Fragment {
         if (bikeStations == null) {
             bikeStations = new ArrayList<>();
         }
-        Util.trackScreen(getString(R.string.analytics_favorites_fragment));
+        Util.trackScreen(getContext(), getString(R.string.analytics_favorites_fragment));
     }
 
     @Override
@@ -158,8 +158,8 @@ public class FavoritesFragment extends Fragment {
                 Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
                 Util.trackAction(activity, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
 
-                if (Util.isNetworkAvailable()) {
-                    final Observable<FavoritesDTO> zipped = ObservableUtil.createAllDataObservable();
+                if (Util.isNetworkAvailable(getContext())) {
+                    final Observable<FavoritesDTO> zipped = ObservableUtil.createAllDataObservable(getContext());
                     zipped.subscribe(
                         this::reloadData,
                         onError -> {
@@ -210,7 +210,7 @@ public class FavoritesFragment extends Fragment {
             startRefreshTask();
         }
         if (welcomeLayout != null) {
-            boolean hasFav = Preferences.hasFavorites(App.PREFERENCE_FAVORITES_TRAIN, App.PREFERENCE_FAVORITES_BUS, App.PREFERENCE_FAVORITES_BIKE);
+            boolean hasFav = Preferences.hasFavorites(getContext(), App.PREFERENCE_FAVORITES_TRAIN, App.PREFERENCE_FAVORITES_BUS, App.PREFERENCE_FAVORITES_BIKE);
             if (!hasFav) {
                 welcomeLayout.setVisibility(View.VISIBLE);
             } else {

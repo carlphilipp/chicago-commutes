@@ -141,7 +141,7 @@ public class BusBoundActivity extends ListActivity {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
             toolbar.setOnClickListener(v -> finish());
 
-            ObservableUtil.createBusStopBoundObservable(busRouteId, bound)
+            ObservableUtil.createBusStopBoundObservable(getApplicationContext(), busRouteId, bound)
                 .subscribe(onNext -> {
                         BusBoundActivity.this.setBusStops(onNext);
                         busBoundAdapter.update(onNext);
@@ -181,7 +181,7 @@ public class BusBoundActivity extends ListActivity {
             googleMap.getUiSettings().setMyLocationButtonEnabled(false);
             googleMap.getUiSettings().setZoomControlsEnabled(false);
             Util.trackAction(BusBoundActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_pattern, 0);
-            ObservableUtil.createBusPatternObservable(busRouteId, bound)
+            ObservableUtil.createBusPatternObservable(getApplicationContext(), busRouteId, bound)
                 .subscribe(
                     onNext -> {
                         if (onNext != null) {

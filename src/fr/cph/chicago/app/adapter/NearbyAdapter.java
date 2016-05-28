@@ -203,7 +203,7 @@ public final class NearbyAdapter extends BaseAdapter {
                             final RelativeLayout insideLayout = new RelativeLayout(context);
                             insideLayout.setLayoutParams(leftParam);
 
-                            final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(trainLine);
+                            final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(activity.getApplicationContext(), trainLine);
                             int lineId = Util.generateViewId();
                             lineIndication.setId(lineId);
 
@@ -275,7 +275,7 @@ public final class NearbyAdapter extends BaseAdapter {
                 insideLayout.setBackground(ContextCompat.getDrawable(parent.getContext(), R.drawable.any_selector));
             }
 
-            final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(TrainLine.NA);
+            final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(activity.getApplicationContext(), TrainLine.NA);
             int lineId = Util.generateViewId();
             lineIndication.setId(lineId);
 
@@ -351,7 +351,7 @@ public final class NearbyAdapter extends BaseAdapter {
         availableBikes.setLayoutParams(leftParam);
         availableBikes.setPadding(line1PaddingColor, 0, 0, 0);
 
-        final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(TrainLine.NA);
+        final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(activity.getApplicationContext(), TrainLine.NA);
         int lineId = Util.generateViewId();
         lineIndication.setId(lineId);
 
@@ -388,7 +388,7 @@ public final class NearbyAdapter extends BaseAdapter {
         availableDocks.setLayoutParams(leftParam2);
         availableDocks.setPadding(line1PaddingColor, 0, 0, 0);
 
-        final RelativeLayout lineIndication2 = LayoutUtil.createColoredRoundForFavorites(TrainLine.NA);
+        final RelativeLayout lineIndication2 = LayoutUtil.createColoredRoundForFavorites(activity.getApplicationContext(), TrainLine.NA);
         int lineId2 = Util.generateViewId();
         lineIndication2.setId(lineId2);
 

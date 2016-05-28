@@ -159,7 +159,7 @@ public class StationActivity extends AbstractStationActivity {
                 swipeRefreshLayout.setColorSchemeColors(randomTrainLine.getColor());
                 setToolBar(randomTrainLine);
 
-                Util.trackScreen(getString(R.string.analytics_train_details));
+                Util.trackScreen(getApplicationContext(), getString(R.string.analytics_train_details));
             }
         }
     }
@@ -187,13 +187,13 @@ public class StationActivity extends AbstractStationActivity {
                 linearLayout.setLayoutParams(paramsStop);
 
                 final AppCompatCheckBox checkBox = new AppCompatCheckBox(this);
-                checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> Preferences.saveTrainFilter(stationId, line, stop.getDirection(), isChecked));
+                checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> Preferences.saveTrainFilter(getApplicationContext(), stationId, line, stop.getDirection(), isChecked));
                 checkBox.setOnClickListener(v -> {
                     if (checkBox.isChecked()) {
                         trainArrivalObservable.subscribe(new SubscriberTrainArrival(this, swipeRefreshLayout));
                     }
                 });
-                checkBox.setChecked(Preferences.getTrainFilter(stationId, line, stop.getDirection()));
+                checkBox.setChecked(Preferences.getTrainFilter(getApplicationContext(), stationId, line, stop.getDirection()));
                 checkBox.setTypeface(checkBox.getTypeface(), Typeface.BOLD);
                 checkBox.setText(stop.getDirection().toString());
                 checkBox.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.grey));
@@ -267,7 +267,7 @@ public class StationActivity extends AbstractStationActivity {
      */
     @Override
     protected boolean isFavorite() {
-        final List<Integer> favorites = Preferences.getTrainFavorites(App.PREFERENCE_FAVORITES_TRAIN);
+        final List<Integer> favorites = Preferences.getTrainFavorites(getApplicationContext(), App.PREFERENCE_FAVORITES_TRAIN);
         return Stream.of(favorites)
             .filter(favorite -> favorite == stationId)
             .findFirst()
@@ -374,7 +374,7 @@ public class StationActivity extends AbstractStationActivity {
 
     private void createTrainArrivalObservableAndSubscribe() {
         trainArrivalObservable = Observable.create((Subscriber<? super TrainArrival> subscriber) -> {
-            subscriber.onNext(trainService.loadStationTrainArrival(station.getId()));
+            subscriber.onNext(trainService.loadStationTrainArrival(getApplicationContext(), station.getId()));
             subscriber.onCompleted();
         })
             .subscribeOn(Schedulers.io())

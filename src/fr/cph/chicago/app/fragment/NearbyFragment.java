@@ -120,7 +120,7 @@ public class NearbyFragment extends Fragment {
         super.onCreate(savedInstanceState);
         App.checkTrainData(activity);
         App.checkBusData(activity);
-        Util.trackScreen(getString(R.string.analytics_nearby_fragment));
+        Util.trackScreen(getContext(), getString(R.string.analytics_nearby_fragment));
     }
 
     @Override
@@ -133,13 +133,13 @@ public class NearbyFragment extends Fragment {
             loadLayout = rootView.findViewById(R.id.loading_layout);
             nearbyContainer = (RelativeLayout) rootView.findViewById(R.id.nearby_list_container);
 
-            hideStationsStops = Preferences.getHideShowNearby();
+            hideStationsStops = Preferences.getHideShowNearby(getContext());
             final CheckBox checkBox = (CheckBox) rootView.findViewById(R.id.hideEmptyStops);
             checkBox.setChecked(hideStationsStops);
             checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                Preferences.saveHideShowNearby(isChecked);
+                Preferences.saveHideShowNearby(getContext(), isChecked);
                 hideStationsStops = isChecked;
-                if (Util.isNetworkAvailable()) {
+                if (Util.isNetworkAvailable(getContext())) {
                     reloadData();
                 }
             });
@@ -165,7 +165,7 @@ public class NearbyFragment extends Fragment {
         super.onResume();
         mapFragment.getMapAsync(googleMap1 -> {
             NearbyFragment.this.googleMap = googleMap1;
-            if (Util.isNetworkAvailable()) {
+            if (Util.isNetworkAvailable(getContext())) {
                 new LoadNearbyTask(NearbyFragment.this, activity, mapFragment).execute();
                 nearbyContainer.setVisibility(View.GONE);
                 showProgress(true);
@@ -208,7 +208,7 @@ public class NearbyFragment extends Fragment {
         }
 
         private void loadAroundBusArrivals() {
-            final CtaConnect cta = CtaConnect.getInstance();
+            final CtaConnect cta = CtaConnect.getInstance(getContext());
             for (final BusStop busStop : busStops) {
                 int busId = busStop.getId();
                 // Create
@@ -221,7 +221,7 @@ public class NearbyFragment extends Fragment {
                     final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
                     if (NearbyFragment.this.isAdded()) {
                         reqParams.put(getString(R.string.request_stop_id), Integer.toString(busId));
-                        final InputStream is = cta.connect(BUS_ARRIVALS, reqParams);
+                        final InputStream is = cta.connect(getContext(), BUS_ARRIVALS, reqParams);
                         final XmlParser xml = XmlParser.getInstance();
                         final List<BusArrival> busArrivals = xml.parseBusArrivals(is);
                         for (final BusArrival busArrival : busArrivals) {
@@ -244,13 +244,13 @@ public class NearbyFragment extends Fragment {
         }
 
         private void loadAroundTrainArrivals() {
-            final CtaConnect cta = CtaConnect.getInstance();
+            final CtaConnect cta = CtaConnect.getInstance(getContext());
             for (final Station station : stations) {
                 try {
                     final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
                     if (NearbyFragment.this.isAdded()) {
                         reqParams.put(getString(R.string.request_map_id), Integer.toString(station.getId()));
-                        final InputStream xmlRes = cta.connect(TRAIN_ARRIVALS, reqParams);
+                        final InputStream xmlRes = cta.connect(getContext(), TRAIN_ARRIVALS, reqParams);
                         final XmlParser xml = XmlParser.getInstance();
                         final SparseArray<TrainArrival> temp = xml.parseArrivals(xmlRes, DataHolder.getInstance().getTrainData());
                         for (int j = 0; j < temp.size(); j++) {
@@ -271,7 +271,7 @@ public class NearbyFragment extends Fragment {
                 final DivvyConnect connect = DivvyConnect.getInstance();
                 try {
                     final JsonParser json = JsonParser.getInstance();
-                    final InputStream content = connect.connect();
+                    final InputStream content = connect.connect(getContext());
                     final List<BikeStation> bikeStationUpdated = json.parseStations(content);
                     bikeStationsRes.addAll(
                         Stream.of(bikeStationUpdated)
@@ -406,7 +406,7 @@ public class NearbyFragment extends Fragment {
     }
 
     public final void reloadData() {
-        if (Util.isNetworkAvailable()) {
+        if (Util.isNetworkAvailable(getContext())) {
             googleMap.clear();
             showProgress(true);
             nearbyContainer.setVisibility(View.GONE);

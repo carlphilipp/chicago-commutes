@@ -16,6 +16,7 @@
 
 package fr.cph.chicago.connection;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -26,7 +27,6 @@ import org.apache.commons.io.IOUtils;
 import java.io.InputStream;
 import java.net.URL;
 
-import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
 
 /**
@@ -41,31 +41,34 @@ public class GStreetViewConnect {
     private static final int WIDTH = 1000;
     private static final int HEIGHT = 300;
 
-    private final String googleKey;
+    private String googleKey;
 
     private static GStreetViewConnect INSTANCE = null;
+
+    private GStreetViewConnect() {
+    }
 
     /**
      * Private constructor, that get the API key from property file
      */
-    private GStreetViewConnect() {
-        googleKey = App.getContext().getString(R.string.google_maps_api_key);
+    private GStreetViewConnect(@NonNull final Context context) {
+        googleKey = context.getString(R.string.google_maps_api_key);
     }
 
     /**
      * Get INSTANCE of this class
      */
     @NonNull
-    public static GStreetViewConnect getInstance() {
+    public static GStreetViewConnect getInstance(@NonNull final Context context) {
         if (INSTANCE == null) {
-            INSTANCE = new GStreetViewConnect();
+            INSTANCE = new GStreetViewConnect(context);
         }
         return INSTANCE;
     }
 
     @Nullable
-    public final Drawable connect(final double latitude, final double longitude) {
-        final StringBuilder address = new StringBuilder(App.getContext().getString(R.string.url_street_view));
+    public final Drawable connect(@NonNull final Context context, final double latitude, final double longitude) {
+        final StringBuilder address = new StringBuilder(context.getString(R.string.url_street_view));
         address.append("?key=");
         address.append(googleKey);
         address.append("&sensor=false");

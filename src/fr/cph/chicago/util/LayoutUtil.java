@@ -16,12 +16,12 @@
 
 package fr.cph.chicago.util;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 
@@ -33,18 +33,15 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
  */
 public class LayoutUtil {
 
-    private static final int HEIGHT = App.getContext().getResources().getDimensionPixelSize(R.dimen.layout_round_height);
-    private static final int WIDTH = App.getContext().getResources().getDimensionPixelSize(R.dimen.layout_round_width);
-
     private LayoutUtil() {
     }
 
     @NonNull
-    public static RelativeLayout createColoredRoundForFavorites(@NonNull final TrainLine trainLine) {
-        final RelativeLayout lineIndication = new RelativeLayout(App.getContext());
+    public static RelativeLayout createColoredRoundForFavorites(@NonNull final Context context, @NonNull final TrainLine trainLine) {
+        final RelativeLayout lineIndication = new RelativeLayout(context);
         final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.height = HEIGHT;
-        params.width = WIDTH;
+        params.height = context.getResources().getDimensionPixelSize(R.dimen.layout_round_height);
+        params.width = context.getResources().getDimensionPixelSize(R.dimen.layout_round_width);
         params.addRule(RelativeLayout.CENTER_VERTICAL);
         lineIndication.setBackgroundColor(trainLine.getColor());
         lineIndication.setLayoutParams(params);
@@ -52,11 +49,11 @@ public class LayoutUtil {
     }
 
     @NonNull
-    public static LinearLayout createColoredRoundForMultiple(@NonNull final TrainLine trainLine) {
-        final LinearLayout lineIndication = new LinearLayout(App.getContext());
+    public static LinearLayout createColoredRoundForMultiple(@NonNull final Context context, @NonNull final TrainLine trainLine) {
+        final LinearLayout lineIndication = new LinearLayout(context);
         final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.height = HEIGHT;
-        params.width = WIDTH;
+        params.height = context.getResources().getDimensionPixelSize(R.dimen.layout_round_height);
+        params.width = context.getResources().getDimensionPixelSize(R.dimen.layout_round_width);
         params.setMargins(10, 0, 0, 0);
         lineIndication.setBackgroundColor(trainLine.getColor());
         lineIndication.setLayoutParams(params);

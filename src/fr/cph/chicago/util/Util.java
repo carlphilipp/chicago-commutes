@@ -99,10 +99,10 @@ public final class Util {
      * @param view      the view
      */
     public static void addToTrainFavorites(@NonNull final Integer stationId, @NonNull final View view) {
-        final List<Integer> favorites = Preferences.getTrainFavorites(App.PREFERENCE_FAVORITES_TRAIN);
+        final List<Integer> favorites = Preferences.getTrainFavorites(view.getContext(), App.PREFERENCE_FAVORITES_TRAIN);
         if (!favorites.contains(stationId)) {
             favorites.add(stationId);
-            Preferences.saveTrainFavorites(App.PREFERENCE_FAVORITES_TRAIN, favorites);
+            Preferences.saveTrainFavorites(view.getContext(), App.PREFERENCE_FAVORITES_TRAIN, favorites);
             showSnackBar(view, R.string.message_add_fav);
         }
     }
@@ -114,9 +114,9 @@ public final class Util {
      * @param view      the view
      */
     public static void removeFromTrainFavorites(@NonNull final Integer stationId, @NonNull final View view) {
-        final List<Integer> favorites = Preferences.getTrainFavorites(App.PREFERENCE_FAVORITES_TRAIN);
+        final List<Integer> favorites = Preferences.getTrainFavorites(view.getContext(), App.PREFERENCE_FAVORITES_TRAIN);
         favorites.remove(stationId);
-        Preferences.saveTrainFavorites(App.PREFERENCE_FAVORITES_TRAIN, favorites);
+        Preferences.saveTrainFavorites(view.getContext(), App.PREFERENCE_FAVORITES_TRAIN, favorites);
         showSnackBar(view, R.string.message_remove_fav);
     }
 
@@ -131,9 +131,9 @@ public final class Util {
     public static void removeFromBusFavorites(@NonNull final String busRouteId, @NonNull final String busStopId, @NonNull final String bound,
                                               @NonNull final View view) {
         final String id = busRouteId + "_" + busStopId + "_" + bound;
-        final List<String> favorites = Preferences.getBusFavorites(App.PREFERENCE_FAVORITES_BUS);
+        final List<String> favorites = Preferences.getBusFavorites(view.getContext(), App.PREFERENCE_FAVORITES_BUS);
         favorites.remove(id);
-        Preferences.saveBusFavorites(App.PREFERENCE_FAVORITES_BUS, favorites);
+        Preferences.saveBusFavorites(view.getContext(), App.PREFERENCE_FAVORITES_BUS, favorites);
         showSnackBar(view, R.string.message_remove_fav);
     }
 
@@ -147,27 +147,27 @@ public final class Util {
      */
     public static void addToBusFavorites(@NonNull final String busRouteId, @NonNull final String busStopId, @NonNull final String bound, @NonNull final View view) {
         final String id = busRouteId + "_" + busStopId + "_" + bound;
-        final List<String> favorites = Preferences.getBusFavorites(App.PREFERENCE_FAVORITES_BUS);
+        final List<String> favorites = Preferences.getBusFavorites(view.getContext(), App.PREFERENCE_FAVORITES_BUS);
         if (!favorites.contains(id)) {
             favorites.add(id);
-            Preferences.saveBusFavorites(App.PREFERENCE_FAVORITES_BUS, favorites);
+            Preferences.saveBusFavorites(view.getContext(), App.PREFERENCE_FAVORITES_BUS, favorites);
             showSnackBar(view, R.string.message_add_fav);
         }
     }
 
     public static void addToBikeFavorites(final int stationId, @NonNull final View view) {
-        final List<String> favorites = Preferences.getBikeFavorites(App.PREFERENCE_FAVORITES_BIKE);
+        final List<String> favorites = Preferences.getBikeFavorites(view.getContext(), App.PREFERENCE_FAVORITES_BIKE);
         if (!favorites.contains(Integer.toString(stationId))) {
             favorites.add(Integer.toString(stationId));
-            Preferences.saveBikeFavorites(App.PREFERENCE_FAVORITES_BIKE, favorites);
+            Preferences.saveBikeFavorites(view.getContext(), App.PREFERENCE_FAVORITES_BIKE, favorites);
             showSnackBar(view, R.string.message_add_fav);
         }
     }
 
     public static void removeFromBikeFavorites(final int stationId, @NonNull final View view) {
-        final List<String> favorites = Preferences.getBikeFavorites(App.PREFERENCE_FAVORITES_BIKE);
+        final List<String> favorites = Preferences.getBikeFavorites(view.getContext(), App.PREFERENCE_FAVORITES_BIKE);
         favorites.remove(Integer.toString(stationId));
-        Preferences.saveBikeFavorites(App.PREFERENCE_FAVORITES_BIKE, favorites);
+        Preferences.saveBikeFavorites(view.getContext(), App.PREFERENCE_FAVORITES_BIKE, favorites);
         showSnackBar(view, R.string.message_remove_fav);
     }
 
@@ -196,14 +196,14 @@ public final class Util {
         }
     }
 
-    public static boolean isNetworkAvailable() {
-        final ConnectivityManager connectivityManager = (ConnectivityManager) App.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+    public static boolean isNetworkAvailable(@NonNull final Context context) {
+        final ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         final NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    public static int[] getScreenSize() {
-        final WindowManager wm = (WindowManager) App.getContext().getSystemService(Context.WINDOW_SERVICE);
+    public static int[] getScreenSize(@NonNull final Context context) {
+        final WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         final Display display = wm.getDefaultDisplay();
         final Point size = new Point();
         display.getSize(size);
@@ -215,14 +215,14 @@ public final class Util {
      *
      * @param screen the screen name
      */
-    public static void trackScreen(final String screen) {
-        final Tracker t = App.getTracker();
+    public static void trackScreen(final Context context, final String screen) {
+        final Tracker t = App.getTracker(context);
         t.setScreenName(screen);
         t.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     public static void trackAction(@NonNull final Activity activity, final int category, final int action, final int label, final int value) {
-        final Tracker tracker = App.getTracker();
+        final Tracker tracker = App.getTracker(activity.getApplicationContext());
         tracker.send(new HitBuilders.EventBuilder()
             .setCategory(activity.getString(category))
             .setAction(activity.getString(action))
@@ -273,8 +273,8 @@ public final class Util {
                 statusBarColor = R.color.primaryColorDark;
                 break;
         }
-        toolbar.setBackgroundColor(ContextCompat.getColor(App.getContext(), backgroundColor));
-        toolbar.setTitleTextColor(ContextCompat.getColor(App.getContext(), textTitleColor));
+        toolbar.setBackgroundColor(ContextCompat.getColor(activity.getApplicationContext(), backgroundColor));
+        toolbar.setTitleTextColor(ContextCompat.getColor(activity.getApplicationContext(), textTitleColor));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             activity.getWindow().setStatusBarColor(ContextCompat.getColor(activity, statusBarColor));
             activity.getWindow().setNavigationBarColor(ContextCompat.getColor(activity, R.color.primaryColorDarker));
@@ -309,22 +309,22 @@ public final class Util {
     }
 
     @NonNull
-    public static MultiValuedMap<String, String> getFavoritesTrainParams() {
+    public static MultiValuedMap<String, String> getFavoritesTrainParams(@NonNull final Context context) {
         final MultiValuedMap<String, String> paramsTrain = new ArrayListValuedHashMap<>();
-        final List<Integer> favorites = Preferences.getTrainFavorites(App.PREFERENCE_FAVORITES_TRAIN);
-        Stream.of(favorites).forEach(favorite -> paramsTrain.put(App.getContext().getString(R.string.request_map_id), favorite.toString()));
+        final List<Integer> favorites = Preferences.getTrainFavorites(context, App.PREFERENCE_FAVORITES_TRAIN);
+        Stream.of(favorites).forEach(favorite -> paramsTrain.put(context.getString(R.string.request_map_id), favorite.toString()));
         return paramsTrain;
     }
 
     @NonNull
-    public static MultiValuedMap<String, String> getFavoritesBusParams() {
+    public static MultiValuedMap<String, String> getFavoritesBusParams(@NonNull final Context context) {
         final MultiValuedMap<String, String> paramsBus = new ArrayListValuedHashMap<>();
-        final List<String> busFavorites = Preferences.getBusFavorites(App.PREFERENCE_FAVORITES_BUS);
+        final List<String> busFavorites = Preferences.getBusFavorites(context, App.PREFERENCE_FAVORITES_BUS);
         Stream.of(busFavorites)
             .map(Util::decodeBusFavorite)
             .forEach(fav -> {
-                paramsBus.put(App.getContext().getString(R.string.request_rt), fav[0]);
-                paramsBus.put(App.getContext().getString(R.string.request_stop_id), fav[1]);
+                paramsBus.put(context.getString(R.string.request_rt), fav[0]);
+                paramsBus.put(context.getString(R.string.request_stop_id), fav[1]);
             });
         return paramsBus;
     }

@@ -78,7 +78,7 @@ public class BaseActivity extends Activity {
         // Train local data
         final Observable<TrainData> trainDataObservable = Observable.create(
             (Subscriber<? super TrainData> subscriber) -> {
-                subscriber.onNext(trainService.loadLocalTrainData());
+                subscriber.onNext(trainService.loadLocalTrainData(getApplicationContext()));
                 subscriber.onCompleted();
             })
             .doOnNext(onNextTrainData -> DataHolder.getInstance().setTrainData(onNextTrainData))
@@ -88,7 +88,7 @@ public class BaseActivity extends Activity {
         // Bus local data
         final Observable<BusData> busDataObservable = Observable.create(
             (Subscriber<? super BusData> subscriber) -> {
-                subscriber.onNext(busService.loadLocalBusData());
+                subscriber.onNext(busService.loadLocalBusData(getApplicationContext()));
                 subscriber.onCompleted();
             })
             .doOnNext(onNextBusData -> DataHolder.getInstance().setBusData(onNextBusData))
@@ -96,10 +96,10 @@ public class BaseActivity extends Activity {
             .observeOn(AndroidSchedulers.mainThread());
 
         // Train online favorites
-        final Observable<SparseArray<TrainArrival>> trainArrivalsObservable = ObservableUtil.createTrainArrivals();
+        final Observable<SparseArray<TrainArrival>> trainArrivalsObservable = ObservableUtil.createTrainArrivals(getApplicationContext());
 
         // Bus online favorites
-        final Observable<List<BusArrival>> busArrivalsObservable = ObservableUtil.createBusArrivals();
+        final Observable<List<BusArrival>> busArrivalsObservable = ObservableUtil.createBusArrivals(getApplicationContext());
 
         // Run local first and then online: Ensure that local data is loaded first
         Observable.zip(trainDataObservable, busDataObservable, (trainData, busData) -> true)

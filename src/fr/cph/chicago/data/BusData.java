@@ -16,6 +16,7 @@
 
 package fr.cph.chicago.data;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -43,6 +44,8 @@ public class BusData {
 
     private static BusData BUS_DATA;
 
+    private final Context context;
+
     @Getter
     @Setter
     private List<BusRoute> busRoutes;
@@ -50,7 +53,8 @@ public class BusData {
 
     private final BusStopCsvParser parser;
 
-    private BusData() {
+    private BusData(@NonNull final Context context) {
+        this.context = context.getApplicationContext();
         this.busRoutes = new ArrayList<>();
         this.busStops = new ArrayList<>();
         this.parser = new BusStopCsvParser();
@@ -62,9 +66,9 @@ public class BusData {
      * @return a bus data instance
      */
     @NonNull
-    public static BusData getInstance() {
+    public static BusData getInstance(@NonNull final Context context) {
         if (BUS_DATA == null) {
-            BUS_DATA = new BusData();
+            BUS_DATA = new BusData(context);
         }
         return BUS_DATA;
     }
@@ -74,7 +78,7 @@ public class BusData {
      */
     public final void readBusStops() {
         if (busStops.isEmpty()) {
-            busStops = parser.parse();
+            busStops = parser.parse(context);
         }
     }
 

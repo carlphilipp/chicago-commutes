@@ -1,5 +1,7 @@
 package fr.cph.chicago.service.impl;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
 
@@ -14,7 +16,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.data.DataHolder;
@@ -25,9 +26,9 @@ import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.TrainDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
+import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.service.TrainService;
 import fr.cph.chicago.util.Util;
-import fr.cph.chicago.parser.XmlParser;
 import rx.exceptions.Exceptions;
 
 import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
@@ -41,17 +42,17 @@ public class TrainServiceImpl implements TrainService {
     }
 
     @Override
-    public SparseArray<TrainArrival> loadFavoritesTrain() {
-        final MultiValuedMap<String, String> trainParams = Util.getFavoritesTrainParams();
+    public SparseArray<TrainArrival> loadFavoritesTrain(@NonNull final Context context) {
+        final MultiValuedMap<String, String> trainParams = Util.getFavoritesTrainParams(context);
         SparseArray<TrainArrival> trainArrivals = new SparseArray<>();
         try {
-            final CtaConnect ctaConnect = CtaConnect.getInstance();
+            final CtaConnect ctaConnect = CtaConnect.getInstance(context);
             for (final Map.Entry<String, Collection<String>> entry : trainParams.asMap().entrySet()) {
                 final String key = entry.getKey();
                 if ("mapid".equals(key)) {
                     final List<String> list = (List<String>) entry.getValue();
                     if (list.size() < 5) {
-                        final InputStream xmlResult = ctaConnect.connect(TRAIN_ARRIVALS, trainParams);
+                        final InputStream xmlResult = ctaConnect.connect(context, TRAIN_ARRIVALS, trainParams);
                         trainArrivals = xmlParser.parseArrivals(xmlResult, DataHolder.getInstance().getTrainData());
                     } else {
                         final int size = list.size();
@@ -63,7 +64,7 @@ public class TrainServiceImpl implements TrainService {
                             for (final String sub : subList) {
                                 paramsTemp.put(key, sub);
                             }
-                            final InputStream xmlResult = ctaConnect.connect(TRAIN_ARRIVALS, paramsTemp);
+                            final InputStream xmlResult = ctaConnect.connect(context, TRAIN_ARRIVALS, paramsTemp);
                             final SparseArray<TrainArrival> temp = xmlParser.parseArrivals(xmlResult, DataHolder.getInstance().getTrainData());
                             for (int j = 0; j < temp.size(); j++) {
                                 trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
@@ -89,7 +90,7 @@ public class TrainServiceImpl implements TrainService {
                         final Station station = eta.getStation();
                         final TrainLine line = eta.getRouteName();
                         final TrainDirection direction = eta.getStop().getDirection();
-                        return Preferences.getTrainFilter(station.getId(), line, direction);
+                        return Preferences.getTrainFilter(context, station.getId(), line, direction);
                     })
                     .sorted()
                     .collect(Collectors.toList()));
@@ -101,21 +102,21 @@ public class TrainServiceImpl implements TrainService {
     }
 
     @Override
-    public TrainData loadLocalTrainData() {
-        TrainData.getInstance().read();
-        return TrainData.getInstance();
+    public TrainData loadLocalTrainData(@NonNull final Context context) {
+        TrainData.getInstance(context).read();
+        return TrainData.getInstance(context);
     }
 
     @Nullable
     @Override
-    public TrainArrival loadStationTrainArrival(int stationId) {
+    public TrainArrival loadStationTrainArrival(@NonNull final Context context, int stationId) {
         try {
             final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
-            params.put(App.getContext().getString(R.string.request_map_id), Integer.toString(stationId));
+            params.put(context.getString(R.string.request_map_id), Integer.toString(stationId));
 
             final XmlParser xml = XmlParser.getInstance();
-            final InputStream xmlResult = CtaConnect.getInstance().connect(TRAIN_ARRIVALS, params);
-            final SparseArray<TrainArrival> arrivals = xml.parseArrivals(xmlResult, TrainData.getInstance());
+            final InputStream xmlResult = CtaConnect.getInstance(context).connect(context, TRAIN_ARRIVALS, params);
+            final SparseArray<TrainArrival> arrivals = xml.parseArrivals(xmlResult, TrainData.getInstance(context));
 
             if (arrivals.size() == 1) {
                 return arrivals.get(stationId);

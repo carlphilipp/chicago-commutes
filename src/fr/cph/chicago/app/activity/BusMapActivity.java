@@ -129,11 +129,11 @@ public class BusMapActivity extends Activity {
             busStationMarkers = new ArrayList<>();
             views = new HashMap<>();
             status = new HashMap<>();
-            busListener = new BusMapOnCameraChangeListener();
+            busListener = new BusMapOnCameraChangeListener(getApplicationContext());
 
             setToolbar();
 
-            Util.trackScreen(getString(R.string.analytics_bus_map));
+            Util.trackScreen(getApplicationContext(), getString(R.string.analytics_bus_map));
         }
     }
 
@@ -178,7 +178,7 @@ public class BusMapActivity extends Activity {
                             selectedMarker = marker;
                             final String busId = marker.getSnippet();
                             Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
-                            ObservableUtil.createFollowBusObservable(busId)
+                            ObservableUtil.createFollowBusObservable(getApplicationContext(), busId)
                                 .subscribe(new BusFollowSubscriber(BusMapActivity.this, mapFragment.getView(), view, false));
                             status.put(marker, false);
                         }
@@ -199,17 +199,17 @@ public class BusMapActivity extends Activity {
                             final String runNumber = marker.getSnippet();
                             final boolean current = status.get(marker);
                             Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
-                            ObservableUtil.createFollowBusObservable(runNumber)
+                            ObservableUtil.createFollowBusObservable(getApplicationContext(), runNumber)
                                 .subscribe(new BusFollowSubscriber(BusMapActivity.this, mapFragment.getView(), view, !current));
                             status.put(marker, !current);
                         }
                     }
                 }
             });
-            if (Util.isNetworkAvailable()) {
+            if (Util.isNetworkAvailable(getApplicationContext())) {
                 Util.setLocationOnMap(this, googleMap);
                 Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_vehicles, 0);
-                ObservableUtil.createBusListObservable(busId, busRouteId).subscribe(new BusSubscriber(BusMapActivity.this, centerMap, layout));
+                ObservableUtil.createBusListObservable(getApplicationContext(), busId, busRouteId).subscribe(new BusSubscriber(BusMapActivity.this, centerMap, layout));
                 if (loadPattern) {
                     new LoadPattern().execute();
                 }
@@ -241,7 +241,7 @@ public class BusMapActivity extends Activity {
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener((item -> {
             Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_vehicles, 0);
-            ObservableUtil.createBusListObservable(busId, busRouteId).subscribe(new BusSubscriber(BusMapActivity.this, centerMap, layout));
+            ObservableUtil.createBusListObservable(getApplicationContext(), busId, busRouteId).subscribe(new BusSubscriber(BusMapActivity.this, centerMap, layout));
             return false;
         }));
 
@@ -356,14 +356,14 @@ public class BusMapActivity extends Activity {
         protected final List<BusPattern> doInBackground(final Void... params) {
             this.patterns = new ArrayList<>();
             final XmlParser xml = XmlParser.getInstance();
-            final CtaConnect connect = CtaConnect.getInstance();
+            final CtaConnect connect = CtaConnect.getInstance(getApplicationContext());
             try {
                 if (busId == 0) {
                     // Search for directions
                     final MultiValuedMap<String, String> directionParams = new ArrayListValuedHashMap<>();
                     directionParams.put(getString(R.string.request_rt), busRouteId);
 
-                    final InputStream xmlResult = connect.connect(BUS_DIRECTION, directionParams);
+                    final InputStream xmlResult = connect.connect(getApplicationContext(), BUS_DIRECTION, directionParams);
                     final BusDirections busDirections = xml.parseBusDirections(xmlResult, busRouteId);
                     bounds = new String[busDirections.getLBusDirection().size()];
                     for (int i = 0; i < busDirections.getLBusDirection().size(); i++) {
@@ -374,7 +374,7 @@ public class BusMapActivity extends Activity {
 
                 final MultiValuedMap<String, String> routeIdParam = new ArrayListValuedHashMap<>();
                 routeIdParam.put(getResources().getString(R.string.request_rt), busRouteId);
-                final InputStream content = connect.connect(BUS_PATTERN, routeIdParam);
+                final InputStream content = connect.connect(getApplicationContext(), BUS_PATTERN, routeIdParam);
                 final List<BusPattern> patterns = xml.parsePatterns(content);
                 Stream.of(patterns)
                     .flatMap(pattern ->

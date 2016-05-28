@@ -16,6 +16,7 @@
 
 package fr.cph.chicago.connection;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -25,7 +26,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.exception.ConnectException;
 
@@ -47,10 +47,10 @@ public class DivvyConnect {
 	}
 
     @NonNull
-	public final InputStream connect() throws ConnectException {
+	public final InputStream connect(@NonNull final Context context) throws ConnectException {
 		final InputStream inputStream;
 		try {
-            final String urlDivvy = App.getContext().getString(R.string.url_divvy);
+            final String urlDivvy = context.getString(R.string.url_divvy);
             Log.v(TAG, "Address: " + urlDivvy);
 			final URL url = new URL(urlDivvy);
 			final HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();

@@ -98,7 +98,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         this.grey5 = ContextCompat.getColor(context, R.color.grey_5);
 
         this.activity = activity;
-        this.favorites = Favorites.getInstance();
+        this.favorites = Favorites.getInstance(activity.getApplicationContext());
 
         this.marginLeftPixel = Util.convertDpToPixel(this.activity, 10);
         this.pixels = Util.convertDpToPixel(this.activity, 16);
@@ -174,7 +174,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         holder.favoriteImage.setImageResource(R.drawable.ic_train_white_24dp);
         holder.stationNameTextView.setText(station.getName());
         holder.detailsButton.setOnClickListener(v -> {
-            if (!Util.isNetworkAvailable()) {
+            if (!Util.isNetworkAvailable(activity.getApplicationContext())) {
                 Util.showNetworkErrorMessage(activity);
             } else {
                 // Start station activity
@@ -188,7 +188,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
         holder.mapButton.setText(activity.getString(R.string.favorites_view_trains));
         holder.mapButton.setOnClickListener(v -> {
-            if (!Util.isNetworkAvailable()) {
+            if (!Util.isNetworkAvailable(activity.getApplicationContext())) {
                 Util.showNetworkErrorMessage(activity);
             } else {
                 if (trainLines.size() == 1) {
@@ -213,7 +213,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                     final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                     builder.setAdapter(ada, (dialog, position) -> startActivity(lines.get(position)));
 
-                    final int[] screenSize = Util.getScreenSize();
+                    final int[] screenSize = Util.getScreenSize(activity.getApplicationContext());
                     final AlertDialog dialog = builder.create();
                     dialog.show();
                     dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
@@ -236,7 +236,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 final RelativeLayout left = new RelativeLayout(context);
                 left.setLayoutParams(leftParam);
 
-                final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(trainLine);
+                final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(activity.getApplicationContext(), trainLine);
                 int lineId = Util.generateViewId();
                 lineIndication.setId(lineId);
 
@@ -346,7 +346,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 final RelativeLayout left = new RelativeLayout(context);
                 left.setLayoutParams(leftParams);
 
-                final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(TrainLine.NA);
+                final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(activity.getApplicationContext(), TrainLine.NA);
                 int lineId = Util.generateViewId();
                 lineIndication.setId(lineId);
 
@@ -402,7 +402,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         holder.mapButton.setText(activity.getString(R.string.favorites_view_buses));
         holder.detailsButton.setOnClickListener(new BusStopOnClickListener(activity, holder.parent, busDetailsDTOs));
         holder.mapButton.setOnClickListener(v -> {
-            if (!Util.isNetworkAvailable()) {
+            if (!Util.isNetworkAvailable(activity.getApplicationContext())) {
                 Util.showNetworkErrorMessage(activity);
             } else {
                 final Set<String> bounds = Stream.of(busDetailsDTOs).map(BusDetailsDTO::getBound).collect(Collectors.toSet());
@@ -421,7 +421,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         holder.favoriteImage.setImageResource(R.drawable.ic_directions_bike_white_24dp);
 
         holder.detailsButton.setOnClickListener(v -> {
-            if (!Util.isNetworkAvailable()) {
+            if (!Util.isNetworkAvailable(activity.getApplicationContext())) {
                 Util.showNetworkErrorMessage(activity);
             } else if (bikeStation.getLatitude() != 0 && bikeStation.getLongitude() != 0) {
                 final Intent intent = new Intent(activity.getApplicationContext(), BikeStationActivity.class);
@@ -473,7 +473,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         final RelativeLayout left = new RelativeLayout(context);
         left.setLayoutParams(leftParam);
 
-        final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(TrainLine.NA);
+        final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(activity.getApplicationContext(), TrainLine.NA);
         int lineId = Util.generateViewId();
         lineIndication.setId(lineId);
 

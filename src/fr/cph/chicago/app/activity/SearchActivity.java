@@ -55,7 +55,7 @@ public class SearchActivity extends AppCompatActivity {
         if (!this.isFinishing()) {
             setContentView(R.layout.activity_search);
             setupToolbar();
-            if (Util.isNetworkAvailable()) {
+            if (Util.isNetworkAvailable(getApplicationContext())) {
                 final FrameLayout container = (FrameLayout) findViewById(R.id.container);
                 container.getForeground().setAlpha(0);
 

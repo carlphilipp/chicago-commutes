@@ -124,7 +124,7 @@ public class BusActivity extends AbstractStationActivity {
             setToolBar();
 
             // Google analytics
-            Util.trackScreen(getString(R.string.analytics_bus_details));
+            Util.trackScreen(getApplicationContext(), getString(R.string.analytics_bus_details));
         }
     }
 
@@ -218,7 +218,7 @@ public class BusActivity extends AbstractStationActivity {
 
     @Override
     protected boolean isFavorite() {
-        final List<String> favorites = Preferences.getBusFavorites(App.PREFERENCE_FAVORITES_BUS);
+        final List<String> favorites = Preferences.getBusFavorites(getApplicationContext(), App.PREFERENCE_FAVORITES_BUS);
         return Stream.of(favorites)
             .filter(favorite -> favorite.equals(busRouteId + "_" + busStopId + "_" + boundTitle))
             .findFirst()
@@ -235,8 +235,8 @@ public class BusActivity extends AbstractStationActivity {
             isFavorite = false;
         } else {
             Util.addToBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, scrollView);
-            Preferences.addBusRouteNameMapping(String.valueOf(busStopId), busRouteName);
-            Preferences.addBusStopNameMapping(String.valueOf(busStopId), busStopName);
+            Preferences.addBusRouteNameMapping(getApplicationContext(), String.valueOf(busStopId), busRouteName);
+            Preferences.addBusStopNameMapping(getApplicationContext(), String.valueOf(busStopId), busStopName);
             favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
             isFavorite = true;
         }

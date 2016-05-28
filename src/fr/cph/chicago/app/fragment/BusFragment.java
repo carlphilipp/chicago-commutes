@@ -90,7 +90,7 @@ public class BusFragment extends Fragment {
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         App.checkBusData(activity);
-        Util.trackScreen(getString(R.string.analytics_bus_fragment));
+        Util.trackScreen(getContext(), getString(R.string.analytics_bus_fragment));
     }
 
     @Override

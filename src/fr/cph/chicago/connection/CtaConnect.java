@@ -16,12 +16,12 @@
 
 package fr.cph.chicago.connection;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
+
 import com.annimon.stream.Stream;
-import fr.cph.chicago.R;
-import fr.cph.chicago.app.App;
-import fr.cph.chicago.exception.ConnectException;
+
 import org.apache.commons.collections4.MultiValuedMap;
 
 import java.io.BufferedInputStream;
@@ -29,6 +29,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import fr.cph.chicago.R;
+import fr.cph.chicago.exception.ConnectException;
 
 /**
  * Class that build url and connect to CTA API
@@ -49,18 +52,18 @@ public class CtaConnect {
     /**
      * The cta bus API key
      **/
-    private static String CTA_BUS_KEY;
+    private String ctaBusKey;
     /**
      * The cta train API key
      **/
-    private static String CTA_TRAIN_KEY;
+    private String ctaTrainKey;
 
-    /**
-     * Private constructor
-     */
-    private CtaConnect() {
-        CTA_TRAIN_KEY = App.getContext().getString(R.string.cta_train_key);
-        CTA_BUS_KEY = App.getContext().getString(R.string.cta_bus_key);
+    private CtaConnect(){
+    }
+
+    private CtaConnect(@NonNull Context context) {
+        ctaTrainKey = context.getString(R.string.cta_train_key);
+        ctaBusKey = context.getString(R.string.cta_bus_key);
     }
 
     /**
@@ -69,9 +72,9 @@ public class CtaConnect {
      * @return a CtaConnect instance
      */
     @NonNull
-    public static CtaConnect getInstance() {
+    public static CtaConnect getInstance(@NonNull Context context) {
         if (instance == null) {
-            instance = new CtaConnect();
+            instance = new CtaConnect(context);
         }
         return instance;
     }
@@ -85,35 +88,35 @@ public class CtaConnect {
      * @throws ConnectException
      */
     @NonNull
-    public final InputStream connect(@NonNull final CtaRequestType requestType, @NonNull final MultiValuedMap<String, String> params) throws ConnectException {
+    public final InputStream connect(@NonNull Context context, @NonNull final CtaRequestType requestType, @NonNull final MultiValuedMap<String, String> params) throws ConnectException {
         final StringBuilder address;
         switch (requestType) {
         case TRAIN_ARRIVALS:
-            address = new StringBuilder(App.getContext().getString(R.string.url_train_arrivals) + "?key=" + CTA_TRAIN_KEY);
+            address = new StringBuilder(context.getString(R.string.url_train_arrivals) + "?key=" + ctaTrainKey);
             break;
         case TRAIN_FOLLOW:
-            address = new StringBuilder(App.getContext().getString(R.string.url_train_follow) + "?key=" + CTA_TRAIN_KEY);
+            address = new StringBuilder(context.getString(R.string.url_train_follow) + "?key=" + ctaTrainKey);
             break;
         case TRAIN_LOCATION:
-            address = new StringBuilder(App.getContext().getString(R.string.url_train_location) + "?key=" + CTA_TRAIN_KEY);
+            address = new StringBuilder(context.getString(R.string.url_train_location) + "?key=" + ctaTrainKey);
             break;
         case BUS_ROUTES:
-            address = new StringBuilder(App.getContext().getString(R.string.url_bus_routes) + "?key=" + CTA_BUS_KEY);
+            address = new StringBuilder(context.getString(R.string.url_bus_routes) + "?key=" + ctaBusKey);
             break;
         case BUS_DIRECTION:
-            address = new StringBuilder(App.getContext().getString(R.string.url_bus_direction) + "?key=" + CTA_BUS_KEY);
+            address = new StringBuilder(context.getString(R.string.url_bus_direction) + "?key=" + ctaBusKey);
             break;
         case BUS_STOP_LIST:
-            address = new StringBuilder(App.getContext().getString(R.string.url_bus_stop) + "?key=" + CTA_BUS_KEY);
+            address = new StringBuilder(context.getString(R.string.url_bus_stop) + "?key=" + ctaBusKey);
             break;
         case BUS_VEHICLES:
-            address = new StringBuilder(App.getContext().getString(R.string.url_bus_vehicles) + "?key=" + CTA_BUS_KEY);
+            address = new StringBuilder(context.getString(R.string.url_bus_vehicles) + "?key=" + ctaBusKey);
             break;
         case BUS_ARRIVALS:
-            address = new StringBuilder(App.getContext().getString(R.string.url_bus_arrival) + "?key=" + CTA_BUS_KEY);
+            address = new StringBuilder(context.getString(R.string.url_bus_arrival) + "?key=" + ctaBusKey);
             break;
         case BUS_PATTERN:
-            address = new StringBuilder(App.getContext().getString(R.string.url_bus_pattern) + "?key=" + CTA_BUS_KEY);
+            address = new StringBuilder(context.getString(R.string.url_bus_pattern) + "?key=" + ctaBusKey);
             break;
         default:
             address = new StringBuilder();
@@ -124,7 +127,7 @@ public class CtaConnect {
                 return Stream.of(entry.getValue()).map(value -> new StringBuilder().append("&").append(key).append("=").append(value));
             })
             .forEach(address::append);
-        
+
         return connectUrl(address.toString());
     }
 

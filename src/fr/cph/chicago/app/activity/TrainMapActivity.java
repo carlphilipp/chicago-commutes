@@ -104,7 +104,7 @@ public class TrainMapActivity extends Activity {
             setToolbar();
 
             // Google analytics
-            Util.trackScreen(getString(R.string.analytics_train_map));
+            Util.trackScreen(getApplicationContext(), getString(R.string.analytics_train_map));
         }
     }
 
@@ -114,7 +114,7 @@ public class TrainMapActivity extends Activity {
         trainData = dataHolder.getTrainData();
         markers = new ArrayList<>();
         status = new HashMap<>();
-        trainListener = new TrainMapOnCameraChangeListener();
+        trainListener = new TrainMapOnCameraChangeListener(getApplicationContext());
     }
 
     private void setToolbar() {
@@ -199,7 +199,7 @@ public class TrainMapActivity extends Activity {
                     }
                 }
             });
-            if (Util.isNetworkAvailable()) {
+            if (Util.isNetworkAvailable(getApplicationContext())) {
                 new LoadTrainPositionTask(TrainMapActivity.this, line, trainData).execute(centerMap, true);
             } else {
                 Util.showNetworkErrorMessage(layout);

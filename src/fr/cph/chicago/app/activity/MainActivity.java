@@ -35,19 +35,19 @@ import android.widget.FrameLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
-import fr.cph.chicago.data.BusData;
-import fr.cph.chicago.data.DataHolder;
-import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.app.fragment.BikeFragment;
 import fr.cph.chicago.app.fragment.BusFragment;
 import fr.cph.chicago.app.fragment.FavoritesFragment;
 import fr.cph.chicago.app.fragment.NearbyFragment;
 import fr.cph.chicago.app.fragment.TrainFragment;
+import fr.cph.chicago.data.BusData;
+import fr.cph.chicago.data.DataHolder;
+import fr.cph.chicago.data.TrainData;
+import fr.cph.chicago.entity.BikeStation;
+import fr.cph.chicago.entity.dto.FavoritesDTO;
 import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.util.Util;
-import fr.cph.chicago.entity.dto.FavoritesDTO;
 import rx.Observable;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -77,11 +77,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         if (!isFinishing()) {
             if (savedInstanceState != null) {
-                App.reloadData();
+                reloadData();
             }
             setContentView(R.layout.activity_main);
 
-            ObservableUtil.createOnFirstLoadObservable().subscribe(
+            ObservableUtil.createOnFirstLoadObservable(getApplicationContext()).subscribe(
                 onNext -> {
                     final DataHolder dataHolder = DataHolder.getInstance();
                     dataHolder.getBusData().setBusRoutes(onNext.getBusRoutes());
@@ -148,8 +148,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
                 Util.trackAction(MainActivity.this, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
 
-                if (Util.isNetworkAvailable()) {
-                    final Observable<FavoritesDTO> zipped = ObservableUtil.createAllDataObservable();
+                if (Util.isNetworkAvailable(getApplicationContext())) {
+                    final Observable<FavoritesDTO> zipped = ObservableUtil.createAllDataObservable(getApplicationContext());
                     zipped.subscribe(
                         favoritesResult -> MainActivity.this.favoritesFragment.reloadData(favoritesResult),
                         onError -> {
@@ -185,6 +185,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         if (currentPosition == POSITION_BUS && busFragment != null) {
             busFragment.update();
+        }
+    }
+
+    private void reloadData() {
+        final DataHolder dataHolder = DataHolder.getInstance();
+        final BusData busData = BusData.getInstance(getApplicationContext());
+        if (busData.readAllBusStops() == null || busData.readAllBusStops().size() == 0) {
+            busData.readBusStops();
+            dataHolder.setBusData(busData);
+        }
+        final TrainData trainData = TrainData.getInstance(getApplicationContext());
+        if (trainData.isStationNull() || trainData.isStopsNull()) {
+            trainData.read();
+            dataHolder.setTrainData(trainData);
         }
     }
 

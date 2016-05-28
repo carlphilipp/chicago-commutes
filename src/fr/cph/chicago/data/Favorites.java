@@ -16,6 +16,7 @@
 
 package fr.cph.chicago.data;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
@@ -52,6 +53,7 @@ public class Favorites {
 
     private static Favorites INSTANCE;
 
+    private final Context context;
     private final TrainData trainData;
     private final BusData busData;
 
@@ -63,7 +65,8 @@ public class Favorites {
     private final List<String> bikeFavorites;
     private List<String> fakeBusFavorites;
 
-    private Favorites() {
+    private Favorites(@NonNull final Context context) {
+        this.context = context;
         this.trainArrivals = new SparseArray<>();
         this.busArrivals = new ArrayList<>();
         this.bikeStations = new ArrayList<>();
@@ -76,9 +79,9 @@ public class Favorites {
         this.busData = DataHolder.getInstance().getBusData();
     }
 
-    public static Favorites getInstance() {
+    public static Favorites getInstance(@NonNull final Context context) {
         if (INSTANCE == null) {
-            INSTANCE = new Favorites();
+            INSTANCE = new Favorites(context.getApplicationContext());
         }
         return INSTANCE;
     }
@@ -110,7 +113,7 @@ public class Favorites {
                 return busData.getRoute(res[0]);
             } else {
                 // Get name in the preferences if null
-                final String routeName = Preferences.getBusRouteNameMapping(res[1]);
+                final String routeName = Preferences.getBusRouteNameMapping(context, res[1]);
                 final BusRoute busRoute = new BusRoute();
                 busRoute.setId(res[0]);
                 if (routeName == null) {
@@ -129,7 +132,7 @@ public class Favorites {
                 return found.get();
             } else {
                 final BikeStation bikeStation = new BikeStation();
-                final String stationName = Preferences.getBikeRouteNameMapping(bikeFavorites.get(index));
+                final String stationName = Preferences.getBikeRouteNameMapping(context, bikeFavorites.get(index));
                 bikeStation.setName(stationName);
                 return bikeStation;
             }
@@ -183,7 +186,7 @@ public class Favorites {
                     final Integer stopId = Integer.valueOf(fav[1]);
                     final String bound = fav[2];
 
-                    final String stopName = Preferences.getBusStopNameMapping(String.valueOf(stopId));
+                    final String stopName = Preferences.getBusStopNameMapping(context, String.valueOf(stopId));
 
                     final BusArrival busArrival = new BusArrival();
                     busArrival.setStopId(stopId);
@@ -251,7 +254,7 @@ public class Favorites {
                     final Integer stopId = Integer.valueOf(fav[1]);
                     final String bound = fav[2];
 
-                    final String stopName = Preferences.getBusStopNameMapping(String.valueOf(stopId));
+                    final String stopName = Preferences.getBusStopNameMapping(context, String.valueOf(stopId));
 
                     final BusArrival busArrival = new BusArrival();
                     busArrival.setStopId(stopId);
@@ -301,11 +304,11 @@ public class Favorites {
     }
 
     public final void setFavorites() {
-        trainFavorites = Preferences.getTrainFavorites(App.PREFERENCE_FAVORITES_TRAIN);
-        busFavorites = Preferences.getBusFavorites(App.PREFERENCE_FAVORITES_BUS);
+        trainFavorites = Preferences.getTrainFavorites(context, App.PREFERENCE_FAVORITES_TRAIN);
+        busFavorites = Preferences.getBusFavorites(context, App.PREFERENCE_FAVORITES_BUS);
         fakeBusFavorites = calculateActualRouteNumberBusFavorites();
         bikeFavorites.clear();
-        final List<String> bikeFavoritesTemp = Preferences.getBikeFavorites(App.PREFERENCE_FAVORITES_BIKE);
+        final List<String> bikeFavoritesTemp = Preferences.getBikeFavorites(context, App.PREFERENCE_FAVORITES_BIKE);
         final List<BikeStation> bikeStationsFavoritesTemp = new ArrayList<>(bikeFavoritesTemp.size());
         if (bikeStations != null && bikeStations.size() != 0) {
             Stream.of(bikeFavoritesTemp)

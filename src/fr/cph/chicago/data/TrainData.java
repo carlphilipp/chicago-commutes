@@ -16,6 +16,7 @@
 
 package fr.cph.chicago.data;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -35,7 +36,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import fr.cph.chicago.app.App;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.Stop;
@@ -61,8 +61,10 @@ public class TrainData {
     private final SparseArray<Stop> stops;
     private final CsvParser parser;
     private Map<TrainLine, List<Station>> stationsOrderByLineMap;
+    private final Context context;
 
-    private TrainData() {
+    private TrainData(@NonNull final Context context) {
+        this.context = context;
         this.stations = new SparseArray<>();
         this.stops = new SparseArray<>();
         final CsvParserSettings settings = new CsvParserSettings();
@@ -71,9 +73,9 @@ public class TrainData {
     }
 
     @NonNull
-    public static TrainData getInstance() {
+    public static TrainData getInstance(@NonNull final Context context) {
         if (TRAIN_DATA == null) {
-            TRAIN_DATA = new TrainData();
+            TRAIN_DATA = new TrainData(context.getApplicationContext());
         }
         return TRAIN_DATA;
     }
@@ -84,7 +86,7 @@ public class TrainData {
     public final void read() {
         if (stations.size() == 0 && stops.size() == 0) {
             try {
-                final List<String[]> allRows = parser.parseAll((new InputStreamReader(App.getContext().getAssets().open(TRAIN_FILE_PATH))));
+                final List<String[]> allRows = parser.parseAll((new InputStreamReader(context.getAssets().open(TRAIN_FILE_PATH))));
                 for (int i = 1; i < allRows.size(); i++) {
                     final String[] row = allRows.get(i);
                     final int stopId = Integer.parseInt(row[0]); // STOP_ID
@@ -260,7 +262,7 @@ public class TrainData {
     public final List<Position> readPattern(final TrainLine line) {
         final List<Position> positions = new ArrayList<>();
         try {
-            final List<String[]> allRows = parser.parseAll(new InputStreamReader(App.getContext().getAssets().open("train_pattern/" + line.toTextString() + "_pattern.csv")));
+            final List<String[]> allRows = parser.parseAll(new InputStreamReader(context.getAssets().open("train_pattern/" + line.toTextString() + "_pattern.csv")));
             Stream.of(allRows)
                 .map(row -> {
                     final double longitude = Double.parseDouble(row[0]);

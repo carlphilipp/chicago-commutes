@@ -57,18 +57,16 @@ public final class Preferences {
      * @param bus    the bus preference string
      * @return a boolean
      */
-    public static boolean hasFavorites(@NonNull final String trains, @NonNull final String bus, @NonNull final String bike) {
-        final Context context = App.getContext();
-        final SharedPreferences sharedPref = context.getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+    public static boolean hasFavorites(@NonNull final Context context, @NonNull final String trains, @NonNull final String bus, @NonNull final String bike) {
+        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
         final Set<String> setPref1 = sharedPref.getStringSet(trains, null);
         final Set<String> setPref2 = sharedPref.getStringSet(bus, null);
         final Set<String> setPref3 = sharedPref.getStringSet(bike, null);
         return !((setPref1 == null || setPref1.size() == 0) && (setPref2 == null || setPref2.size() == 0) && (setPref3 == null || setPref3.size() == 0));
     }
 
-    public static void saveBikeFavorites(@NonNull final String name, @NonNull final List<String> favorites) {
-        final Context context = App.getContext();
-        final SharedPreferences sharedPref = context.getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+    public static void saveBikeFavorites(@NonNull final Context context, @NonNull final String name, @NonNull final List<String> favorites) {
+        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = sharedPref.edit();
         final Set<String> set = Stream.of(favorites).collect(Collectors.toSet());
         Log.v(TAG, "Put bike favorites: " + set.toString());
@@ -77,17 +75,15 @@ public final class Preferences {
     }
 
     @NonNull
-    public static List<String> getBikeFavorites(@NonNull final String name) {
-        final Context context = App.getContext();
-        final SharedPreferences sharedPref = context.getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+    public static List<String> getBikeFavorites(@NonNull final Context context, @NonNull final String name) {
+        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
         final Set<String> setPref = sharedPref.getStringSet(name, new LinkedHashSet<>());
         Log.v(TAG, "Read bike favorites : " + setPref.toString());
         return Stream.of(setPref).sorted().collect(Collectors.toList());
     }
 
-    public static void addBikeRouteNameMapping(@NonNull final String bikeId, @NonNull final String bikeName) {
-        final Context context = App.getContext();
-        final SharedPreferences sharedPref = context.getSharedPreferences(App.PREFERENCE_FAVORITES_BIKE_NAME_MAPPING, Context.MODE_PRIVATE);
+    public static void addBikeRouteNameMapping(@NonNull final Context context, @NonNull final String bikeId, @NonNull final String bikeName) {
+        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES_BIKE_NAME_MAPPING, Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(bikeId, bikeName);
         Log.v(TAG, "Add bike name mapping : " + bikeId + " => " + bikeName);
@@ -95,9 +91,8 @@ public final class Preferences {
     }
 
     @Nullable
-    public static String getBikeRouteNameMapping(@NonNull final String bikeId) {
-        final Context context = App.getContext();
-        final SharedPreferences sharedPref = context.getSharedPreferences(App.PREFERENCE_FAVORITES_BIKE_NAME_MAPPING, Context.MODE_PRIVATE);
+    public static String getBikeRouteNameMapping(@NonNull final Context context, @NonNull final String bikeId) {
+        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES_BIKE_NAME_MAPPING, Context.MODE_PRIVATE);
         final String bikeName = sharedPref.getString(bikeId, null);
         Log.v(TAG, "Get bike name mapping : " + bikeId + " => " + bikeName);
         return bikeName;
@@ -109,9 +104,8 @@ public final class Preferences {
      * @param name      the name of the bus preference string
      * @param favorites the list of favorites to save
      */
-    public static void saveBusFavorites(@NonNull final String name, @NonNull final List<String> favorites) {
-        final Context context = App.getContext();
-        final SharedPreferences sharedPref = context.getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+    public static void saveBusFavorites(@NonNull final Context context, @NonNull final String name, @NonNull final List<String> favorites) {
+        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = sharedPref.edit();
         final Set<String> set = new LinkedHashSet<>();
         set.addAll(favorites);
@@ -127,9 +121,8 @@ public final class Preferences {
      * @return a list of favorites bus
      */
     @NonNull
-    public static List<String> getBusFavorites(@NonNull final String name) {
-        final Context context = App.getContext();
-        final SharedPreferences sharedPref = context.getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+    public static List<String> getBusFavorites(@NonNull final Context context, @NonNull final String name) {
+        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
         final Set<String> setPref = sharedPref.getStringSet(name, new LinkedHashSet<>());
         Log.v(TAG, "Read bus favorites : " + setPref.toString());
         return Stream.of(setPref).sorted(
@@ -149,9 +142,8 @@ public final class Preferences {
             }).collect(Collectors.toList());
     }
 
-    public static void addBusRouteNameMapping(@NonNull final String busStopId, @NonNull final String routeName) {
-        final Context context = App.getContext();
-        final SharedPreferences sharedPref = context.getSharedPreferences(App.PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING, Context.MODE_PRIVATE);
+    public static void addBusRouteNameMapping(@NonNull final Context context, @NonNull final String busStopId, @NonNull final String routeName) {
+        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING, Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(busStopId, routeName);
         Log.v(TAG, "Add bus route name mapping : " + busStopId + " => " + routeName);
@@ -159,17 +151,15 @@ public final class Preferences {
     }
 
     @Nullable
-    public static String getBusRouteNameMapping(@NonNull final String busStopId) {
-        final Context context = App.getContext();
-        final SharedPreferences sharedPref = context.getSharedPreferences(App.PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING, Context.MODE_PRIVATE);
+    public static String getBusRouteNameMapping(@NonNull final Context context, @NonNull final String busStopId) {
+        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING, Context.MODE_PRIVATE);
         final String routeName = sharedPref.getString(busStopId, null);
         Log.v(TAG, "Get bus route name mapping : " + busStopId + " => " + routeName);
         return routeName;
     }
 
-    public static void addBusStopNameMapping(@NonNull final String busStopId, @NonNull final String stopName) {
-        final Context context = App.getContext();
-        final SharedPreferences sharedPref = context.getSharedPreferences(App.PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING, Context.MODE_PRIVATE);
+    public static void addBusStopNameMapping(@NonNull final Context context, @NonNull final String busStopId, @NonNull final String stopName) {
+        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING, Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(busStopId, stopName);
         Log.v(TAG, "Add bus stop name mapping : " + busStopId + " => " + stopName);
@@ -177,9 +167,8 @@ public final class Preferences {
     }
 
     @Nullable
-    public static String getBusStopNameMapping(@NonNull final String busStopId) {
-        final Context context = App.getContext();
-        final SharedPreferences sharedPref = context.getSharedPreferences(App.PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING, Context.MODE_PRIVATE);
+    public static String getBusStopNameMapping(@NonNull final Context context, @NonNull final String busStopId) {
+        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING, Context.MODE_PRIVATE);
         final String stopName = sharedPref.getString(busStopId, null);
         Log.v(TAG, "Get bus stop name mapping : " + busStopId + " => " + stopName);
         return stopName;
@@ -191,9 +180,8 @@ public final class Preferences {
      * @param name      the name of the train preference string
      * @param favorites the favorites
      */
-    public static void saveTrainFavorites(@NonNull final String name, @NonNull final List<Integer> favorites) {
-        final Context context = App.getContext();
-        final SharedPreferences sharedPref = context.getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+    public static void saveTrainFavorites(@NonNull final Context context, @NonNull final String name, @NonNull final List<Integer> favorites) {
+        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = sharedPref.edit();
         final Set<String> set = Stream.of(favorites).map(Object::toString).collect(Collectors.toSet());
         Log.v(TAG, "Put train favorites: " + favorites.toString());
@@ -208,9 +196,8 @@ public final class Preferences {
      * @return the favorites
      */
     @NonNull
-    public static List<Integer> getTrainFavorites(@NonNull final String name) {
-        final Context context = App.getContext();
-        final SharedPreferences sharedPref = context.getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+    public static List<Integer> getTrainFavorites(@NonNull final Context context, @NonNull final String name) {
+        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
         final Set<String> setPref = sharedPref.getStringSet(name, new LinkedHashSet<>());
         Log.v(TAG, "Read train favorites : " + setPref);
         return Stream.of(setPref)
@@ -229,8 +216,8 @@ public final class Preferences {
      * @param direction the direction
      * @param value     the value
      */
-    public static void saveTrainFilter(@NonNull final Integer stationId, @NonNull final TrainLine line, @NonNull final TrainDirection direction, final boolean value) {
-        final SharedPreferences sharedPref = App.getContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+    public static void saveTrainFilter(@NonNull final Context context, @NonNull final Integer stationId, @NonNull final TrainLine line, @NonNull final TrainDirection direction, final boolean value) {
+        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = sharedPref.edit();
         editor.putBoolean(String.valueOf(stationId) + "_" + line + "_" + direction, value);
         editor.apply();
@@ -244,20 +231,20 @@ public final class Preferences {
      * @param direction the direction
      * @return if a train is filtered
      */
-    public static boolean getTrainFilter(@NonNull final Integer stationId, @NonNull final TrainLine line, @NonNull final TrainDirection direction) {
-        final SharedPreferences sharedPref = App.getContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+    public static boolean getTrainFilter(@NonNull final Context context, @NonNull final Integer stationId, @NonNull final TrainLine line, @NonNull final TrainDirection direction) {
+        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
         return sharedPref.getBoolean(String.valueOf(stationId) + "_" + line + "_" + direction, true);
     }
 
-    public static void saveHideShowNearby(boolean hide) {
-        final SharedPreferences sharedPref = App.getContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+    public static void saveHideShowNearby(@NonNull final Context context, boolean hide) {
+        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = sharedPref.edit();
         editor.putBoolean("hideNearby", hide);
         editor.apply();
     }
 
-    public static boolean getHideShowNearby() {
-        final SharedPreferences sharedPref = App.getContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+    public static boolean getHideShowNearby(@NonNull final Context context) {
+        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
         return sharedPref.getBoolean("hideNearby", true);
     }
 }

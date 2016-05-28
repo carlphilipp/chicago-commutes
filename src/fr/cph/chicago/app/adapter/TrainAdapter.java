@@ -31,13 +31,12 @@ import com.annimon.stream.Stream;
 import java.util.List;
 import java.util.Set;
 
-import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
+import fr.cph.chicago.app.listener.TrainOnClickListener;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.app.listener.TrainOnClickListener;
 import fr.cph.chicago.util.LayoutUtil;
 
 /**
@@ -102,7 +101,7 @@ public final class TrainAdapter extends BaseAdapter {
 
         holder.stationColorView.removeAllViews();
         Stream.of(lines)
-            .map(LayoutUtil::createColoredRoundForMultiple)
+            .map(line -> LayoutUtil.createColoredRoundForMultiple(activity.getApplicationContext(), line))
             .forEach(layout -> holder.stationColorView.addView(layout));
         convertView.setOnClickListener(new TrainOnClickListener(activity, station.getId(), lines));
         return convertView;

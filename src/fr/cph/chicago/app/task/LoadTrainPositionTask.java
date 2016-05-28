@@ -62,11 +62,11 @@ public class LoadTrainPositionTask extends AsyncTask<Boolean, Void, List<Train>>
     protected List<Train> doInBackground(Boolean... params) {
         centerMap = params[0];
         List<Train> trains = null;
-        final CtaConnect connect = CtaConnect.getInstance();
+        final CtaConnect connect = CtaConnect.getInstance(activity.getApplicationContext());
         final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
         connectParam.put(activity.getString(R.string.request_rt), line);
         try {
-            final InputStream content = connect.connect(TRAIN_LOCATION, connectParam);
+            final InputStream content = connect.connect(activity.getApplicationContext(), TRAIN_LOCATION, connectParam);
             final XmlParser xml = XmlParser.getInstance();
             trains = xml.parseTrainsLocation(content);
         } catch (final ConnectException | ParserException e) {

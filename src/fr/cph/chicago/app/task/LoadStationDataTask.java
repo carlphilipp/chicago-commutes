@@ -51,11 +51,11 @@ public class LoadStationDataTask extends AsyncTask<Void, Void, List<BusArrival>>
         final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
         reqParams.put(activity.getString(R.string.request_rt), busRouteId);
         reqParams.put(activity.getString(R.string.request_stop_id), Integer.toString(busStopId));
-        final CtaConnect connect = CtaConnect.getInstance();
+        final CtaConnect connect = CtaConnect.getInstance(activity.getApplicationContext());
         try {
             final XmlParser xml = XmlParser.getInstance();
             // Connect to CTA API bus to get XML result of inc buses
-            final InputStream xmlResult = connect.connect(BUS_ARRIVALS, reqParams);
+            final InputStream xmlResult = connect.connect(activity.getApplicationContext(), BUS_ARRIVALS, reqParams);
             // Parse and return arrival buses
             return xml.parseBusArrivals(xmlResult);
         } catch (final ParserException | ConnectException e) {

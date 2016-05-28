@@ -31,9 +31,7 @@ import java.util.Date;
 import fr.cph.chicago.R;
 import fr.cph.chicago.app.activity.BaseActivity;
 import fr.cph.chicago.app.activity.ErrorActivity;
-import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
-import fr.cph.chicago.data.TrainData;
 
 /**
  * Main class that extends Application. Mainly used to get the context from anywhere in the app.
@@ -71,11 +69,6 @@ public class App extends Application {
      **/
     public static final String PREFERENCE_FAVORITES_BIKE_NAME_MAPPING = "ChicagoTrackerFavoritesBikeNameMapping";
     /**
-     * Application context
-     **/
-    // FIXME do not put the context into a static field, it's "bad" (memory leak issue)
-    private static Context context;
-    /**
      * Last update of favorites
      **/
     private static Date lastUpdate;
@@ -87,16 +80,6 @@ public class App extends Application {
     @Override
     public final void onCreate() {
         super.onCreate();
-        App.context = getApplicationContext();
-    }
-
-    /**
-     * Get Application context
-     *
-     * @return the context
-     */
-    public static Context getContext() {
-        return App.context;
     }
 
     /**
@@ -147,20 +130,6 @@ public class App extends Application {
         }
     }
 
-    public static void reloadData() {
-        final DataHolder dataHolder = DataHolder.getInstance();
-        final BusData busData = BusData.getInstance();
-        if (busData.readAllBusStops() == null || busData.readAllBusStops().size() == 0) {
-            busData.readBusStops();
-            dataHolder.setBusData(busData);
-        }
-        final TrainData trainData = TrainData.getInstance();
-        if (trainData.isStationNull() || trainData.isStopsNull()) {
-            trainData.read();
-            dataHolder.setTrainData(trainData);
-        }
-    }
-
     private static void startErrorActivity(@NonNull final Activity activity) {
         final Intent intent = new Intent(activity, BaseActivity.class);
         intent.putExtra(activity.getString(R.string.bundle_error), true);
@@ -170,10 +139,10 @@ public class App extends Application {
     }
 
     @NonNull
-    public static Tracker getTracker() {
-        final GoogleAnalytics analytics = GoogleAnalytics.getInstance(App.getContext());
+    public static Tracker getTracker(final Context context) {
+        final GoogleAnalytics analytics = GoogleAnalytics.getInstance(context);
         if (tracker == null) {
-            final String key = App.getContext().getString(R.string.google_analytics_key);
+            final String key = context.getString(R.string.google_analytics_key);
             tracker = analytics.newTracker(key);
             tracker.enableAutoActivityTracking(true);
         }
