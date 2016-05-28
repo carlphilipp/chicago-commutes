@@ -43,7 +43,7 @@ public class GStreetViewConnect {
 
     private final String googleKey;
 
-    private static GStreetViewConnect instance = null;
+    private static GStreetViewConnect INSTANCE = null;
 
     /**
      * Private constructor, that get the API key from property file
@@ -53,14 +53,14 @@ public class GStreetViewConnect {
     }
 
     /**
-     * Get instance of this class
+     * Get INSTANCE of this class
      */
     @NonNull
     public static GStreetViewConnect getInstance() {
-        if (instance == null) {
-            instance = new GStreetViewConnect();
+        if (INSTANCE == null) {
+            INSTANCE = new GStreetViewConnect();
         }
-        return instance;
+        return INSTANCE;
     }
 
     @Nullable

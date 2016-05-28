@@ -53,8 +53,8 @@ import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Train;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.app.listener.TrainMapOnCameraChangeListener;
-import fr.cph.chicago.task.LoadTrainFollowTask;
-import fr.cph.chicago.task.LoadTrainPositionTask;
+import fr.cph.chicago.app.task.LoadTrainFollowTask;
+import fr.cph.chicago.app.task.LoadTrainPositionTask;
 import fr.cph.chicago.util.Util;
 
 /**

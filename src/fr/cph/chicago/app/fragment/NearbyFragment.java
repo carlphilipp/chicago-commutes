@@ -72,7 +72,7 @@ import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.parser.JsonParser;
-import fr.cph.chicago.task.LoadNearbyTask;
+import fr.cph.chicago.app.task.LoadNearbyTask;
 import fr.cph.chicago.util.Util;
 import fr.cph.chicago.parser.XmlParser;
 

@@ -20,8 +20,8 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.SparseArray;
 
-import fr.cph.chicago.xml.XmlArrivalBusTag;
-import fr.cph.chicago.xml.XmlArrivalTrainTag;
+import fr.cph.chicago.entity.enumeration.XmlArrivalBusTag;
+import fr.cph.chicago.entity.enumeration.XmlArrivalTrainTag;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.xmlpull.v1.XmlPullParser;

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.xml;
+package fr.cph.chicago.entity.enumeration;
 
 /**
- * Enum arrival train tag
+ * Enum arrival bus tag
  *
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public enum XmlArrivalTrainTag {
-    TMST, ERRCD, ERRNM, ETA, OTHER, POSITION
+public enum XmlArrivalBusTag {
+    ROUTE, RT, RTNM, ERROR, OTHER
 }

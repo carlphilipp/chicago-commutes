@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.task;
+package fr.cph.chicago.app.task;
 
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;

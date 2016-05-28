@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Carl-Philipp Harmant
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,7 +18,10 @@ package fr.cph.chicago.connection;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
-
+import com.annimon.stream.Stream;
+import fr.cph.chicago.R;
+import fr.cph.chicago.app.App;
+import fr.cph.chicago.exception.ConnectException;
 import org.apache.commons.collections4.MultiValuedMap;
 
 import java.io.BufferedInputStream;
@@ -26,12 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Collection;
-import java.util.Map.Entry;
-
-import fr.cph.chicago.app.App;
-import fr.cph.chicago.R;
-import fr.cph.chicago.exception.ConnectException;
 
 /**
  * Class that build url and connect to CTA API
@@ -91,43 +88,43 @@ public class CtaConnect {
     public final InputStream connect(@NonNull final CtaRequestType requestType, @NonNull final MultiValuedMap<String, String> params) throws ConnectException {
         final StringBuilder address;
         switch (requestType) {
-            case TRAIN_ARRIVALS:
-                address = new StringBuilder(App.getContext().getString(R.string.url_train_arrivals) + "?key=" + CTA_TRAIN_KEY);
-                break;
-            case TRAIN_FOLLOW:
-                address = new StringBuilder(App.getContext().getString(R.string.url_train_follow) + "?key=" + CTA_TRAIN_KEY);
-                break;
-            case TRAIN_LOCATION:
-                address = new StringBuilder(App.getContext().getString(R.string.url_train_location) + "?key=" + CTA_TRAIN_KEY);
-                break;
-            case BUS_ROUTES:
-                address = new StringBuilder(App.getContext().getString(R.string.url_bus_routes) + "?key=" + CTA_BUS_KEY);
-                break;
-            case BUS_DIRECTION:
-                address = new StringBuilder(App.getContext().getString(R.string.url_bus_direction) + "?key=" + CTA_BUS_KEY);
-                break;
-            case BUS_STOP_LIST:
-                address = new StringBuilder(App.getContext().getString(R.string.url_bus_stop) + "?key=" + CTA_BUS_KEY);
-                break;
-            case BUS_VEHICLES:
-                address = new StringBuilder(App.getContext().getString(R.string.url_bus_vehicles) + "?key=" + CTA_BUS_KEY);
-                break;
-            case BUS_ARRIVALS:
-                address = new StringBuilder(App.getContext().getString(R.string.url_bus_arrival) + "?key=" + CTA_BUS_KEY);
-                break;
-            case BUS_PATTERN:
-                address = new StringBuilder(App.getContext().getString(R.string.url_bus_pattern) + "?key=" + CTA_BUS_KEY);
-                break;
-            default:
-                address = new StringBuilder();
+        case TRAIN_ARRIVALS:
+            address = new StringBuilder(App.getContext().getString(R.string.url_train_arrivals) + "?key=" + CTA_TRAIN_KEY);
+            break;
+        case TRAIN_FOLLOW:
+            address = new StringBuilder(App.getContext().getString(R.string.url_train_follow) + "?key=" + CTA_TRAIN_KEY);
+            break;
+        case TRAIN_LOCATION:
+            address = new StringBuilder(App.getContext().getString(R.string.url_train_location) + "?key=" + CTA_TRAIN_KEY);
+            break;
+        case BUS_ROUTES:
+            address = new StringBuilder(App.getContext().getString(R.string.url_bus_routes) + "?key=" + CTA_BUS_KEY);
+            break;
+        case BUS_DIRECTION:
+            address = new StringBuilder(App.getContext().getString(R.string.url_bus_direction) + "?key=" + CTA_BUS_KEY);
+            break;
+        case BUS_STOP_LIST:
+            address = new StringBuilder(App.getContext().getString(R.string.url_bus_stop) + "?key=" + CTA_BUS_KEY);
+            break;
+        case BUS_VEHICLES:
+            address = new StringBuilder(App.getContext().getString(R.string.url_bus_vehicles) + "?key=" + CTA_BUS_KEY);
+            break;
+        case BUS_ARRIVALS:
+            address = new StringBuilder(App.getContext().getString(R.string.url_bus_arrival) + "?key=" + CTA_BUS_KEY);
+            break;
+        case BUS_PATTERN:
+            address = new StringBuilder(App.getContext().getString(R.string.url_bus_pattern) + "?key=" + CTA_BUS_KEY);
+            break;
+        default:
+            address = new StringBuilder();
         }
-        for (final Entry<String, Collection<String>> entry : params.asMap().entrySet()) {
-            final String key = entry.getKey();
-            final Collection<String> values = entry.getValue();
-            for (final String value : values) {
-                address.append("&").append(key).append("=").append(value);
-            }
-        }
+        Stream.of(params.asMap().entrySet())
+            .flatMap(entry -> {
+                final String key = entry.getKey();
+                return Stream.of(entry.getValue()).map(value -> new StringBuilder().append("&").append(key).append("=").append(value));
+            })
+            .forEach(address::append);
+        
         return connectUrl(address.toString());
     }
 

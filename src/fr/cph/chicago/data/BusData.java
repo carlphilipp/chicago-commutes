@@ -26,7 +26,7 @@ import com.annimon.stream.Stream;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.cph.chicago.csv.BusStopCsvParser;
+import fr.cph.chicago.parser.BusStopCsvParser;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Position;

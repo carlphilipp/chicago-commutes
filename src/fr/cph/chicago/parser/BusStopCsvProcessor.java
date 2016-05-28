@@ -1,4 +1,4 @@
-package fr.cph.chicago.csv;
+package fr.cph.chicago.parser;
 
 import android.support.annotation.NonNull;
 

@@ -41,7 +41,7 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.app.listener.GoogleMapDirectionOnClickListener;
 import fr.cph.chicago.app.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.app.listener.GoogleStreetOnClickListener;
-import fr.cph.chicago.task.LoadStationDataTask;
+import fr.cph.chicago.app.task.LoadStationDataTask;
 import fr.cph.chicago.util.Util;
 
 /**
