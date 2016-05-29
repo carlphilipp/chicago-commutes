@@ -57,11 +57,11 @@ public final class SearchAdapter extends BaseAdapter {
     private static final String TAG = SearchAdapter.class.getSimpleName();
 
     private final Context context;
+    private final SearchActivity activity;
 
     private List<Station> trains;
     private List<BusRoute> busRoutes;
     private List<BikeStation> bikeStations;
-    private final SearchActivity activity;
 
     /**
      * Constructor

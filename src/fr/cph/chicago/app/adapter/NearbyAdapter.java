@@ -42,7 +42,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import fr.cph.chicago.R;
-import fr.cph.chicago.app.activity.MainActivity;
 import fr.cph.chicago.app.listener.NearbyOnClickListener;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
@@ -64,7 +63,6 @@ import fr.cph.chicago.util.Util;
 // FIXME use one view holder for trains/buses and bikes. Tried already but did not work
 public final class NearbyAdapter extends BaseAdapter {
 
-    private final MainActivity activity;
     private final Context context;
 
     private final int line1PaddingColor;
@@ -78,9 +76,8 @@ public final class NearbyAdapter extends BaseAdapter {
     private List<Marker> markers;
     private List<BikeStation> bikeStations;
 
-    public NearbyAdapter(@NonNull final MainActivity activity) {
-        this.activity = activity;
-        this.context = activity.getApplicationContext();
+    public NearbyAdapter(@NonNull final Context context) {
+        this.context = context.getApplicationContext();
         this.line1PaddingColor = (int) context.getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
         this.stopsPaddingTop = (int) context.getResources().getDimension(R.dimen.activity_station_stops_padding_top);
         this.busStops = new ArrayList<>();
@@ -275,7 +272,7 @@ public final class NearbyAdapter extends BaseAdapter {
                 insideLayout.setBackground(ContextCompat.getDrawable(parent.getContext(), R.drawable.any_selector));
             }
 
-            final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(activity.getApplicationContext(), TrainLine.NA);
+            final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(context, TrainLine.NA);
             int lineId = Util.generateViewId();
             lineIndication.setId(lineId);
 
@@ -351,7 +348,7 @@ public final class NearbyAdapter extends BaseAdapter {
         availableBikes.setLayoutParams(leftParam);
         availableBikes.setPadding(line1PaddingColor, 0, 0, 0);
 
-        final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(activity.getApplicationContext(), TrainLine.NA);
+        final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(context, TrainLine.NA);
         int lineId = Util.generateViewId();
         lineIndication.setId(lineId);
 
@@ -388,7 +385,7 @@ public final class NearbyAdapter extends BaseAdapter {
         availableDocks.setLayoutParams(leftParam2);
         availableDocks.setPadding(line1PaddingColor, 0, 0, 0);
 
-        final RelativeLayout lineIndication2 = LayoutUtil.createColoredRoundForFavorites(activity.getApplicationContext(), TrainLine.NA);
+        final RelativeLayout lineIndication2 = LayoutUtil.createColoredRoundForFavorites(context, TrainLine.NA);
         int lineId2 = Util.generateViewId();
         lineIndication2.setId(lineId2);
 

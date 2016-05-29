@@ -61,7 +61,7 @@ public class BikeFragment extends Fragment {
     private TextView filterView;
     private ListView bikeListView;
 
-    private MainActivity mainActivity;
+    private MainActivity activity;
     private BikeAdapter bikeAdapter;
     private List<BikeStation> bikeStations;
 
@@ -83,7 +83,7 @@ public class BikeFragment extends Fragment {
     @Override
     public final void onAttach(final Context context) {
         super.onAttach(context);
-        mainActivity = context instanceof Activity ? (MainActivity) context : null;
+        activity = context instanceof Activity ? (MainActivity) context : null;
     }
 
     @Override
@@ -103,7 +103,7 @@ public class BikeFragment extends Fragment {
         if (savedInstanceState != null) {
             bikeStations = savedInstanceState.getParcelableArrayList(getString(R.string.bundle_bike_stations));
         } else {
-            final Bundle bundle = mainActivity.getIntent().getExtras();
+            final Bundle bundle = activity.getIntent().getExtras();
             bikeStations = bundle.getParcelableArrayList(getString(R.string.bundle_bike_stations));
         }
         if (bikeStations == null) {
@@ -115,7 +115,7 @@ public class BikeFragment extends Fragment {
     @Override
     public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_bike, container, false);
-        if (!mainActivity.isFinishing()) {
+        if (!activity.isFinishing()) {
             loadingLayout = (RelativeLayout) rootView.findViewById(R.id.loading_relativeLayout);
             bikeListView = (ListView) rootView.findViewById(R.id.bike_list);
             filterView = (TextView) rootView.findViewById(R.id.bike_filter);
@@ -131,7 +131,11 @@ public class BikeFragment extends Fragment {
     private void loadList() {
         final EditText filter = (EditText) rootView.findViewById(R.id.bike_filter);
         if (bikeAdapter == null) {
-            bikeAdapter = new BikeAdapter(mainActivity);
+            List<BikeStation> bikeStations = activity.getIntent().getExtras().getParcelableArrayList(activity.getString(R.string.bundle_bike_stations));
+            if (bikeStations == null) {
+                bikeStations = new ArrayList<>();
+            }
+            bikeAdapter = new BikeAdapter(bikeStations);
         }
         bikeListView.setAdapter(bikeAdapter);
         filter.addTextChangedListener(new TextWatcher() {

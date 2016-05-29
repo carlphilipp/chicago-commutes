@@ -48,12 +48,8 @@ public final class BikeAdapter extends BaseAdapter {
      *
      * @param activity the main activity
      */
-    public BikeAdapter(@NonNull final Activity activity) {
-        final Bundle bundle = activity.getIntent().getExtras();
-        this.bikeStations = bundle.getParcelableArrayList(activity.getString(R.string.bundle_bike_stations));
-        if (this.bikeStations == null) {
-            this.bikeStations = new ArrayList<>();
-        }
+    public BikeAdapter(@NonNull final List<BikeStation> bikeStations) {
+        this.bikeStations = bikeStations;
     }
 
     @Override

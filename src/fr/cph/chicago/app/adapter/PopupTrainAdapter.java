@@ -16,7 +16,7 @@
 
 package fr.cph.chicago.app.adapter;
 
-import android.app.Activity;
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,20 +35,18 @@ import fr.cph.chicago.R;
  */
 public class PopupTrainAdapter extends ArrayAdapter<String> {
 
-    private final Activity activity;
     private final List<String> values;
     private final List<Integer> colors;
 
-    public PopupTrainAdapter(@NonNull final Activity activity, @NonNull final List<String> values, @NonNull final List<Integer> colors) {
-        super(activity, R.layout.popup_train_cell, values);
-        this.activity = activity;
+    public PopupTrainAdapter(@NonNull final Context context, @NonNull final List<String> values, @NonNull final List<Integer> colors) {
+        super(context, R.layout.popup_train_cell, values);
         this.values = values;
         this.colors = colors;
     }
 
     @Override
     public final View getView(final int position, final View convertView, final ViewGroup parent) {
-        final LayoutInflater inflater = activity.getLayoutInflater();
+        final LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View rowView;
         if (position == 0) {
             rowView = inflater.inflate(R.layout.popup_train_cell_0, parent, false);

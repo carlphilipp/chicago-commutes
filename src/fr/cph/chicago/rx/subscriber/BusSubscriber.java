@@ -35,10 +35,10 @@ public class BusSubscriber extends Subscriber<List<Bus>> {
                     activity.centerMapOnBus(buses);
                 }
             } else {
-                Util.showMessage(activity, R.string.message_no_bus_found);
+                Util.showMessage(layout, R.string.message_no_bus_found);
             }
         } else {
-            Util.showMessage(activity, R.string.message_error_while_loading_data);
+            Util.showMessage(layout, R.string.message_error_while_loading_data);
         }
     }
 

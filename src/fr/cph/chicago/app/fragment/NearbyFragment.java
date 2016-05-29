@@ -127,7 +127,7 @@ public class NearbyFragment extends Fragment {
     public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_nearby, container, false);
         if (!activity.isFinishing()) {
-            nearbyAdapter = new NearbyAdapter(activity);
+            nearbyAdapter = new NearbyAdapter(getContext());
             listView = (ListView) rootView.findViewById(R.id.fragment_nearby_list);
             listView.setAdapter(nearbyAdapter);
             loadLayout = rootView.findViewById(R.id.loading_layout);

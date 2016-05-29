@@ -52,7 +52,7 @@ public class PopupBusAdapter extends ArrayAdapter<String> {
         } else {
             rowView = activity.getLayoutInflater().inflate(R.layout.popup_bus_cell, parent, false);
             final ImageView imageView = (ImageView) rowView.findViewById(R.id.popup_map_map);
-            imageView.setColorFilter(ContextCompat.getColor(activity, R.color.grey_5));
+            imageView.setColorFilter(ContextCompat.getColor(activity.getApplicationContext(), R.color.grey_5));
         }
         final TextView textView = (TextView) rowView.findViewById(R.id.label);
         textView.setText(values.get(position));

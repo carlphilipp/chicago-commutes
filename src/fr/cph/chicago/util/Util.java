@@ -363,8 +363,12 @@ public final class Util {
         showSnackBar(view, R.string.message_network_error);
     }
 
-    public static void showMessage(final Activity activity, final int message) {
+    public static void showMessage(@NonNull final Activity activity, final int message) {
         showSnackBar(activity, message);
+    }
+
+    public static void showMessage(@NonNull final View view, final int message) {
+        showSnackBar(view, message);
     }
 
     private static void showSnackBar(@NonNull final Activity activity, final int message) {
