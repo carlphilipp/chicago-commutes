@@ -16,15 +16,10 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ListView;
-
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
+import fr.cph.chicago.app.App;
 import fr.cph.chicago.app.adapter.SearchAdapter;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
@@ -34,6 +29,9 @@ import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.Util;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 
@@ -165,16 +163,19 @@ public class SearchActivity extends AppCompatActivity {
                 .flatMap(entry -> Stream.of(entry.getValue()))
                 .filter(station -> containsIgnoreCase(station.getName(), query))
                 .distinct()
+                .sorted()
                 .collect(Collectors.toList());
 
             final List<BusRoute> foundBusRoutes = Stream.of(busData.getBusRoutes())
                 .filter(busRoute -> containsIgnoreCase(busRoute.getId(), query) || containsIgnoreCase(busRoute.getName(), query))
                 .distinct()
+                .sorted(Util.BUS_STOP_COMPARATOR_NAME)
                 .collect(Collectors.toList());
 
             final List<BikeStation> foundBikeStations = Stream.of(bikeStations)
                 .filter(bikeStation -> containsIgnoreCase(bikeStation.getName(), query) || containsIgnoreCase(bikeStation.getStAddress1(), query))
                 .distinct()
+                .sorted(Util.BIKE_COMPARATOR_NAME)
                 .collect(Collectors.toList());
             searchAdapter.updateData(foundStations, foundBusRoutes, foundBikeStations);
             searchAdapter.notifyDataSetChanged();

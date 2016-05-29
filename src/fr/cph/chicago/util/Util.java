@@ -38,7 +38,6 @@ import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
-
 import com.annimon.stream.Stream;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -46,7 +45,13 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-
+import fr.cph.chicago.R;
+import fr.cph.chicago.app.App;
+import fr.cph.chicago.data.Preferences;
+import fr.cph.chicago.entity.BikeStation;
+import fr.cph.chicago.entity.BusRoute;
+import fr.cph.chicago.entity.Position;
+import fr.cph.chicago.entity.enumeration.TrainLine;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
@@ -56,13 +61,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import fr.cph.chicago.R;
-import fr.cph.chicago.app.App;
-import fr.cph.chicago.data.Preferences;
-import fr.cph.chicago.entity.BikeStation;
-import fr.cph.chicago.entity.Position;
-import fr.cph.chicago.entity.enumeration.TrainLine;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Util class
@@ -73,6 +73,8 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 public final class Util {
 
     public static final LatLng CHICAGO = new LatLng(41.8819, -87.6278);
+
+    private static final Pattern PATTERN = Pattern.compile("(\\d{1,3})");
 
     private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
 
@@ -193,6 +195,24 @@ public final class Util {
         @Override
         public int compare(final BikeStation station1, final BikeStation station2) {
             return station1.getName().compareTo(station2.getName());
+        }
+    }
+
+    public static final Comparator<BusRoute> BUS_STOP_COMPARATOR_NAME = new BusStopComparator();
+
+    private static final class BusStopComparator implements Comparator<BusRoute> {
+
+        @Override
+        public int compare(final BusRoute route1, final BusRoute route2) {
+            final Matcher matcher1 = PATTERN.matcher(route1.getId());
+            final Matcher matcher2 = PATTERN.matcher(route2.getId());
+            if (matcher1.find() && matcher2.find()) {
+                final int one = Integer.parseInt(matcher1.group(1));
+                final int two = Integer.parseInt(matcher2.group(1));
+                return one < two ? -1 : (one == two ? 0 : 1);
+            } else {
+                return route1.getId().compareTo(route2.getId());
+            }
         }
     }
 
