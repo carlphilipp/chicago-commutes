@@ -16,8 +16,13 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ListView;
+
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import fr.cph.chicago.R;
 import fr.cph.chicago.app.App;
 import fr.cph.chicago.app.adapter.SearchAdapter;
@@ -29,9 +34,6 @@ import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.Util;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 
@@ -53,20 +55,17 @@ public class SearchActivity extends AppCompatActivity {
         if (!this.isFinishing()) {
             setContentView(R.layout.activity_search);
             setupToolbar();
-            if (Util.isNetworkAvailable(getApplicationContext())) {
-                final FrameLayout container = (FrameLayout) findViewById(R.id.container);
-                container.getForeground().setAlpha(0);
 
-                searchAdapter = new SearchAdapter(this);
-                searchAdapter.updateData(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-                bikeStations = getIntent().getExtras().getParcelableArrayList(getString(R.string.bundle_bike_stations));
-                handleIntent(getIntent());
+            final FrameLayout container = (FrameLayout) findViewById(R.id.container);
+            container.getForeground().setAlpha(0);
 
-                final ListView listView = (ListView) findViewById(R.id.search_list);
-                listView.setAdapter(searchAdapter);
-            } else {
-                Util.showSettingsAlert(this);
-            }
+            searchAdapter = new SearchAdapter(this);
+            searchAdapter.updateData(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+            bikeStations = getIntent().getExtras().getParcelableArrayList(getString(R.string.bundle_bike_stations));
+            handleIntent(getIntent());
+
+            final ListView listView = (ListView) findViewById(R.id.search_list);
+            listView.setAdapter(searchAdapter);
 
             // Associate searchable configuration with the SearchView
             final SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
