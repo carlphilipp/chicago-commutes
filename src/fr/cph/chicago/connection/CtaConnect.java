@@ -58,10 +58,7 @@ public class CtaConnect {
      **/
     private String ctaTrainKey;
 
-    private CtaConnect(){
-    }
-
-    private CtaConnect(@NonNull Context context) {
+    private CtaConnect(@NonNull final Context context) {
         ctaTrainKey = context.getString(R.string.cta_train_key);
         ctaBusKey = context.getString(R.string.cta_bus_key);
     }
@@ -72,7 +69,7 @@ public class CtaConnect {
      * @return a CtaConnect instance
      */
     @NonNull
-    public static CtaConnect getInstance(@NonNull Context context) {
+    public static CtaConnect getInstance(@NonNull final Context context) {
         if (instance == null) {
             instance = new CtaConnect(context);
         }

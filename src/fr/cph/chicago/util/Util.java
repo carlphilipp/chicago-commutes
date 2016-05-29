@@ -38,6 +38,7 @@ import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
+
 import com.annimon.stream.Stream;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -45,13 +46,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import fr.cph.chicago.R;
-import fr.cph.chicago.app.App;
-import fr.cph.chicago.data.Preferences;
-import fr.cph.chicago.entity.BikeStation;
-import fr.cph.chicago.entity.BusRoute;
-import fr.cph.chicago.entity.Position;
-import fr.cph.chicago.entity.enumeration.TrainLine;
+
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
@@ -63,6 +58,14 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import fr.cph.chicago.R;
+import fr.cph.chicago.app.App;
+import fr.cph.chicago.data.Preferences;
+import fr.cph.chicago.entity.BikeStation;
+import fr.cph.chicago.entity.BusRoute;
+import fr.cph.chicago.entity.Position;
+import fr.cph.chicago.entity.enumeration.TrainLine;
 
 /**
  * Util class
@@ -241,12 +244,12 @@ public final class Util {
         t.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
-    public static void trackAction(@NonNull final Activity activity, final int category, final int action, final int label, final int value) {
-        final Tracker tracker = App.getTracker(activity.getApplicationContext());
+    public static void trackAction(@NonNull final Context context, final int category, final int action, final int label, final int value) {
+        final Tracker tracker = App.getTracker(context.getApplicationContext());
         tracker.send(new HitBuilders.EventBuilder()
-            .setCategory(activity.getString(category))
-            .setAction(activity.getString(action))
-            .setLabel(activity.getString(label))
+            .setCategory(context.getString(category))
+            .setAction(context.getString(action))
+            .setLabel(context.getString(label))
             .setValue(value).build());
     }
 

@@ -16,8 +16,9 @@
 
 package fr.cph.chicago.app.adapter;
 
-import android.app.Activity;
+import android.content.Context;
 import android.support.annotation.NonNull;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -36,18 +37,17 @@ import fr.cph.chicago.entity.BusDetailsDTO;
  */
 public class PopupBusDetailsFavoritesAdapter extends ArrayAdapter<BusDetailsDTO> {
 
-    private final Activity activity;
     private final List<BusDetailsDTO> values;
 
-    public PopupBusDetailsFavoritesAdapter(@NonNull final Activity activity, @NonNull final List<BusDetailsDTO> values) {
-        super(activity, R.layout.popup_bus_cell, values);
-        this.activity = activity;
+    public PopupBusDetailsFavoritesAdapter(@NonNull final Context context, @NonNull final List<BusDetailsDTO> values) {
+        super(context, R.layout.popup_bus_cell, values);
         this.values = values;
     }
 
     @Override
     public final View getView(final int position, final View convertView, final ViewGroup parent) {
-        final View rowView = activity.getLayoutInflater().inflate(R.layout.popup_bus_cell_0, parent, false);
+        final LayoutInflater vi = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View rowView = vi.inflate(R.layout.popup_bus_cell_0, parent, false);
         final TextView textView = (TextView) rowView.findViewById(R.id.label);
         final String toDisplay = values.get(position).getStopName() + " (" + WordUtils.capitalize(values.get(position).getBound().toLowerCase()) + ")";
         textView.setText(toDisplay);

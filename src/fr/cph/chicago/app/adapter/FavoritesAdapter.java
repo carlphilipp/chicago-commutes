@@ -435,7 +435,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         });
 
         holder.mapButton.setText(activity.getString(R.string.favorites_view_station));
-        holder.mapButton.setOnClickListener(new GoogleMapOnClickListener(activity, bikeStation.getLatitude(), bikeStation.getLongitude()));
+        holder.mapButton.setOnClickListener(new GoogleMapOnClickListener(bikeStation.getLatitude(), bikeStation.getLongitude()));
 
         final LinearLayout.LayoutParams containerParams = getInsideParams(true, true);
         final LinearLayout container = new LinearLayout(context);

@@ -135,7 +135,7 @@ public class StationActivity extends AbstractStationActivity {
                 subscribeToGoogleStreet(streetViewImage, streetViewText);
                 createTrainArrivalObservableAndSubscribe();
 
-                streetViewImage.setOnClickListener(new GoogleStreetOnClickListener(this, position.getLatitude(), position.getLongitude()));
+                streetViewImage.setOnClickListener(new GoogleStreetOnClickListener(position.getLatitude(), position.getLongitude()));
                 streetViewImage.setLayoutParams(params);
                 streetViewText.setTypeface(null, Typeface.BOLD);
                 swipeRefreshLayout.setOnRefreshListener(() -> trainArrivalObservable.subscribe(new SubscriberTrainArrival(this, swipeRefreshLayout)));
@@ -150,8 +150,8 @@ public class StationActivity extends AbstractStationActivity {
                 mapImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
                 directionImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
                 favoritesImageContainer.setOnClickListener(v -> StationActivity.this.switchFavorite());
-                mapContainer.setOnClickListener(new GoogleMapOnClickListener(this, position.getLatitude(), position.getLongitude()));
-                walkContainer.setOnClickListener(new GoogleMapDirectionOnClickListener(this, position.getLatitude(), position.getLongitude()));
+                mapContainer.setOnClickListener(new GoogleMapOnClickListener(position.getLatitude(), position.getLongitude()));
+                walkContainer.setOnClickListener(new GoogleMapDirectionOnClickListener(position.getLatitude(), position.getLongitude()));
 
                 final Map<TrainLine, List<Stop>> stopByLines = station.getStopByLines();
                 final TrainLine randomTrainLine = getRandomLine(stopByLines);

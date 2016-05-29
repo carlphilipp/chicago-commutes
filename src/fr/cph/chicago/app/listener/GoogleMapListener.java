@@ -16,19 +16,15 @@
 
 package fr.cph.chicago.app.listener;
 
-import android.app.Activity;
-import android.support.annotation.NonNull;
 import android.view.View;
 
 abstract class GoogleMapListener implements View.OnClickListener {
 
-	final Activity activity;
-	final double latitude;
-	final double longitude;
+    final double latitude;
+    final double longitude;
 
-	GoogleMapListener(@NonNull final Activity activity, final double latitude, final double longitude) {
-		this.activity = activity;
-		this.latitude = latitude;
-		this.longitude = longitude;
-	}
+    GoogleMapListener(final double latitude, final double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
 }

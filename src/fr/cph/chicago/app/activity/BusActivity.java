@@ -108,9 +108,9 @@ public class BusActivity extends AbstractStationActivity {
                 favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
             }
             scrollView.setOnRefreshListener(() -> new LoadStationDataTask(BusActivity.this, scrollView, busRouteId, busStopId).execute());
-            streetViewImage.setOnClickListener(new GoogleStreetOnClickListener(this, latitude, longitude));
-            mapContainer.setOnClickListener(new GoogleMapOnClickListener(this, latitude, longitude));
-            walkContainer.setOnClickListener(new GoogleMapDirectionOnClickListener(this, latitude, longitude));
+            streetViewImage.setOnClickListener(new GoogleStreetOnClickListener(latitude, longitude));
+            mapContainer.setOnClickListener(new GoogleMapOnClickListener(latitude, longitude));
+            walkContainer.setOnClickListener(new GoogleMapDirectionOnClickListener(latitude, longitude));
 
             final TextView busRouteNameView2 = (TextView) findViewById(R.id.activity_bus_station_value);
             final String title = busRouteName + " (" + boundTitle + ")";

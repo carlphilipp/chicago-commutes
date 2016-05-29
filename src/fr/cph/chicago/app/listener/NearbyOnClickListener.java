@@ -18,6 +18,7 @@ package fr.cph.chicago.app.listener;
 
 import android.view.View;
 
+import com.annimon.stream.Stream;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -47,11 +48,9 @@ public class NearbyOnClickListener implements View.OnClickListener {
         final LatLng latLng = new LatLng(latitude, longitude);
         final CameraPosition current = new CameraPosition.Builder().target(latLng).zoom(15.5f).bearing(0).tilt(0).build();
         googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(current), Math.max(1000, 1), null);
-        for (final Marker marker : markers) {
-            if (marker.getSnippet().equals(Integer.toString(id))) {
-                marker.showInfoWindow();
-                break;
-            }
-        }
+        Stream.of(markers)
+            .filter(marker -> marker.getSnippet().equals(Integer.toString(id)))
+            .findFirst()
+            .ifPresent(Marker::showInfoWindow);
     }
 }

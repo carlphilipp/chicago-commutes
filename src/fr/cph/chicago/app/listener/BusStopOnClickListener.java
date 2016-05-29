@@ -17,9 +17,11 @@
 package fr.cph.chicago.app.listener;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -28,7 +30,6 @@ import java.util.List;
 
 import fr.cph.chicago.R;
 import fr.cph.chicago.app.activity.BusActivity;
-import fr.cph.chicago.app.activity.MainActivity;
 import fr.cph.chicago.app.adapter.PopupBusDetailsFavoritesAdapter;
 import fr.cph.chicago.entity.BusDetailsDTO;
 import fr.cph.chicago.entity.BusStop;
@@ -40,60 +41,61 @@ public class BusStopOnClickListener implements View.OnClickListener {
 
     private static final String TAG = BusStopOnClickListener.class.getSimpleName();
 
-    private final MainActivity activity;
+    private final Context context;
     private final ViewGroup parent;
     private final List<BusDetailsDTO> busDetailsDTOs;
 
-    public BusStopOnClickListener(final MainActivity activity, final ViewGroup parent, final List<BusDetailsDTO> busDetailsDTOs) {
-        this.activity = activity;
+    public BusStopOnClickListener(final Context context, final ViewGroup parent, final List<BusDetailsDTO> busDetailsDTOs) {
+        this.context = context;
         this.parent = parent;
         this.busDetailsDTOs = busDetailsDTOs;
     }
 
     @Override
-    public void onClick(final View v) {
+    public void onClick(final View view) {
         if (busDetailsDTOs.size() == 1) {
             final BusDetailsDTO busDetails = busDetailsDTOs.get(0);
-            loadBusDetails(busDetails);
+            loadBusDetails(view, busDetails);
         } else {
-            final PopupBusDetailsFavoritesAdapter ada = new PopupBusDetailsFavoritesAdapter(activity, busDetailsDTOs);
-            final View popupView = activity.getLayoutInflater().inflate(R.layout.popup_bus, parent, false);
+            final PopupBusDetailsFavoritesAdapter ada = new PopupBusDetailsFavoritesAdapter(context, busDetailsDTOs);
+            final LayoutInflater vi = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final View popupView = vi.inflate(R.layout.popup_bus, parent, false);
             final ListView listView = (ListView) popupView.findViewById(R.id.details);
             listView.setAdapter(ada);
-            final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            final AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setAdapter(ada, (dialog, position) -> {
                 final BusDetailsDTO busDetails = busDetailsDTOs.get(position);
-                loadBusDetails(busDetails);
-                Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_stop, 0);
+                loadBusDetails(view, busDetails);
+                Util.trackAction(context, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_stop, 0);
             });
-            final int[] screenSize = Util.getScreenSize(activity.getApplicationContext());
+            final int[] screenSize = Util.getScreenSize(context.getApplicationContext());
             final AlertDialog dialog = builder.create();
             dialog.show();
             dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), ViewGroup.LayoutParams.WRAP_CONTENT);
         }
     }
 
-    private void loadBusDetails(final BusDetailsDTO busDetails) {
-        ObservableUtil.createBusStopBoundObservable(activity.getApplicationContext(), busDetails.getBusRouteId(), busDetails.getBoundTitle())
+    private void loadBusDetails(final View view, final BusDetailsDTO busDetails) {
+        ObservableUtil.createBusStopBoundObservable(context.getApplicationContext(), busDetails.getBusRouteId(), busDetails.getBoundTitle())
             .subscribe(onNext -> {
                     Observable.from(onNext)
                         .filter(busStop -> Integer.toString(busStop.getId()).equals(busDetails.getStopId()))
                         .first()
                         .subscribe((BusStop busStop) -> {
-                                final Intent intent = new Intent(activity.getApplicationContext(), BusActivity.class);
+                                final Intent intent = new Intent(context.getApplicationContext(), BusActivity.class);
                                 final Bundle extras = new Bundle();
-                                extras.putInt(activity.getString(R.string.bundle_bus_stop_id), busStop.getId());
-                                extras.putString(activity.getString(R.string.bundle_bus_stop_name), busStop.getName());
-                                extras.putString(activity.getString(R.string.bundle_bus_route_id), busDetails.getBusRouteId());
-                                extras.putString(activity.getString(R.string.bundle_bus_route_name), busDetails.getRouteName());
-                                extras.putString(activity.getString(R.string.bundle_bus_bound), busDetails.getBound());
-                                extras.putString(activity.getString(R.string.bundle_bus_bound_title), busDetails.getBoundTitle());
-                                extras.putDouble(activity.getString(R.string.bundle_bus_latitude), busStop.getPosition().getLatitude());
-                                extras.putDouble(activity.getString(R.string.bundle_bus_longitude), busStop.getPosition().getLongitude());
+                                extras.putInt(context.getString(R.string.bundle_bus_stop_id), busStop.getId());
+                                extras.putString(context.getString(R.string.bundle_bus_stop_name), busStop.getName());
+                                extras.putString(context.getString(R.string.bundle_bus_route_id), busDetails.getBusRouteId());
+                                extras.putString(context.getString(R.string.bundle_bus_route_name), busDetails.getRouteName());
+                                extras.putString(context.getString(R.string.bundle_bus_bound), busDetails.getBound());
+                                extras.putString(context.getString(R.string.bundle_bus_bound_title), busDetails.getBoundTitle());
+                                extras.putDouble(context.getString(R.string.bundle_bus_latitude), busStop.getPosition().getLatitude());
+                                extras.putDouble(context.getString(R.string.bundle_bus_longitude), busStop.getPosition().getLongitude());
 
                                 intent.putExtras(extras);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                activity.startActivity(intent);
+                                context.startActivity(intent);
                             },
                             onError -> {
                                 Log.e(TAG, onError.getMessage(), onError);
@@ -102,7 +104,7 @@ public class BusStopOnClickListener implements View.OnClickListener {
                 },
                 onError -> {
                     Log.e(TAG, onError.getMessage(), onError);
-                    Util.showNetworkErrorMessage(activity);
+                    Util.showNetworkErrorMessage(view);
                 }
             );
     }

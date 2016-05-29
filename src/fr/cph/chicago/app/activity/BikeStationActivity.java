@@ -100,9 +100,9 @@ public class BikeStationActivity extends AbstractStationActivity {
                 final TextView bikeStationValue = (TextView) findViewById(R.id.activity_bike_station_value);
                 bikeStationValue.setText(bikeStation.getStAddress1());
 
-                streetViewImage.setOnClickListener(new GoogleStreetOnClickListener(this, latitude, longitude));
-                mapContainer.setOnClickListener(new GoogleMapOnClickListener(this, latitude, longitude));
-                walkContainer.setOnClickListener(new GoogleMapDirectionOnClickListener(this, latitude, longitude));
+                streetViewImage.setOnClickListener(new GoogleStreetOnClickListener(latitude, longitude));
+                mapContainer.setOnClickListener(new GoogleMapOnClickListener(latitude, longitude));
+                walkContainer.setOnClickListener(new GoogleMapDirectionOnClickListener(latitude, longitude));
 
                 drawData();
             }

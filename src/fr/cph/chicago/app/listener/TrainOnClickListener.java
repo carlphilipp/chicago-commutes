@@ -16,11 +16,10 @@
 
 package fr.cph.chicago.app.listener;
 
-import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -44,10 +43,8 @@ import fr.cph.chicago.util.Util;
  * @version 1
  */
 public class TrainOnClickListener implements OnClickListener {
-    /**
-     * The main activity
-     **/
-    private final Activity activity;
+
+    private final Context context;
     /**
      * The station id
      **/
@@ -57,20 +54,20 @@ public class TrainOnClickListener implements OnClickListener {
      **/
     private final Set<TrainLine> trainLines;
 
-    public TrainOnClickListener(@NonNull final Activity activity, final int stationId, final Set<TrainLine> trainLines) {
-        this.activity = activity;
+    public TrainOnClickListener(final Context context, final int stationId, final Set<TrainLine> trainLines) {
+        this.context = context;
         this.stationId = stationId;
         this.trainLines = trainLines;
     }
 
     @Override
     public void onClick(final View view) {
-        if (!Util.isNetworkAvailable(activity.getApplicationContext())) {
-            Util.showNetworkErrorMessage(activity);
+        if (!Util.isNetworkAvailable(view.getContext())) {
+            Util.showNetworkErrorMessage(view);
         } else {
             final List<String> values = new ArrayList<>();
             final List<Integer> colors = new ArrayList<>();
-            values.add(activity.getString(R.string.message_open_details));
+            values.add(view.getContext().getString(R.string.message_open_details));
             for (final TrainLine line : trainLines) {
                 values.add(line.toString() + " line - See trains");
                 if (line != TrainLine.YELLOW) {
@@ -79,30 +76,32 @@ public class TrainOnClickListener implements OnClickListener {
                     colors.add(ContextCompat.getColor(view.getContext(), R.color.yellowLine));
                 }
             }
-            final PopupTrainAdapter ada = new PopupTrainAdapter(activity, values, colors);
+            final PopupTrainAdapter ada = new PopupTrainAdapter(view.getContext(), values, colors);
 
             final List<TrainLine> lines = new ArrayList<>();
             lines.addAll(trainLines);
 
-            final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            final AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setAdapter(ada, (dialog, position) -> {
                 final Bundle extras = new Bundle();
                 if (position == 0) {
                     // Start station activity
                     final Intent intent = new Intent(view.getContext(), StationActivity.class);
-                    extras.putInt(activity.getString(R.string.bundle_train_stationId), stationId);
+                    extras.putInt(view.getContext().getString(R.string.bundle_train_stationId), stationId);
                     intent.putExtras(extras);
-                    activity.startActivity(intent);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    view.getContext().startActivity(intent);
                 } else {
                     // Follow all trains from given line on google map view
                     final Intent intent = new Intent(view.getContext(), TrainMapActivity.class);
-                    extras.putString(activity.getString(R.string.bundle_train_line), lines.get(position - 1).toTextString());
+                    extras.putString(view.getContext().getString(R.string.bundle_train_line), lines.get(position - 1).toTextString());
                     intent.putExtras(extras);
-                    activity.startActivity(intent);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    view.getContext().startActivity(intent);
                 }
             });
 
-            final int[] screenSize = Util.getScreenSize(activity.getApplicationContext());
+            final int[] screenSize = Util.getScreenSize(view.getContext().getApplicationContext());
             final AlertDialog dialog = builder.create();
             dialog.show();
             dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
