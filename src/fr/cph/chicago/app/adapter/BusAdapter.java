@@ -16,7 +16,6 @@
 
 package fr.cph.chicago.app.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -26,9 +25,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import java.util.List;
-
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
@@ -38,6 +34,8 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.rx.subscriber.BusDirectionSubscriber;
 import fr.cph.chicago.util.Util;
+
+import java.util.List;
 
 /**
  * Adapter that will handle buses
@@ -49,7 +47,7 @@ public final class BusAdapter extends BaseAdapter {
 
     private static final String TAG = BusAdapter.class.getSimpleName();
 
-    private final Activity activity;
+    private final View view;
     private List<BusRoute> busRoutes;
 
     /**
@@ -57,8 +55,8 @@ public final class BusAdapter extends BaseAdapter {
      *
      * @param activity the main activity
      */
-    public BusAdapter(@NonNull final Activity activity) {
-        this.activity = activity;
+    public BusAdapter(@NonNull final View view) {
+        this.view = view;
         final BusData busData = DataHolder.getInstance().getBusData();
         this.busRoutes = busData.getBusRoutes();
     }
@@ -115,14 +113,14 @@ public final class BusAdapter extends BaseAdapter {
             ObservableUtil.createBusDirectionsObservable(parent.getContext(), route.getId())
                 .onErrorReturn(throwable -> {
                     if (throwable.getCause() instanceof ConnectException) {
-                        Util.showNetworkErrorMessage(activity);
+                        Util.showNetworkErrorMessage(view);
                     } else if (throwable.getCause() instanceof ParserException) {
                         Util.showOopsSomethingWentWrong(detailsLayout);
                     }
                     Log.e(TAG, throwable.getMessage(), throwable);
                     return null;
                 })
-                .subscribe(new BusDirectionSubscriber(activity, parent, detailsLayout, route));
+                .subscribe(new BusDirectionSubscriber(parent, detailsLayout, route));
         });
         return convertView;
     }

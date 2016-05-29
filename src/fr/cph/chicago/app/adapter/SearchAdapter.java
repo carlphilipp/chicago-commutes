@@ -27,10 +27,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import java.util.List;
-import java.util.Set;
-
 import fr.cph.chicago.R;
 import fr.cph.chicago.app.activity.SearchActivity;
 import fr.cph.chicago.app.listener.BikeStationOnClickListener;
@@ -45,6 +41,9 @@ import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.rx.subscriber.BusDirectionSubscriber;
 import fr.cph.chicago.util.LayoutUtil;
 import fr.cph.chicago.util.Util;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * Adapter that will handle search
@@ -137,7 +136,7 @@ public final class SearchAdapter extends BaseAdapter {
                         }
                         Log.e(TAG, throwable.getMessage(), throwable);
                         return null;
-                    }).subscribe(new BusDirectionSubscriber(activity, parent, loadingTextView, busRoute));
+                    }).subscribe(new BusDirectionSubscriber(parent, loadingTextView, busRoute));
             });
         } else {
             final BikeStation bikeStation = (BikeStation) getItem(position);

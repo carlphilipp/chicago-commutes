@@ -29,23 +29,20 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
-
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
+import fr.cph.chicago.app.App;
 import fr.cph.chicago.app.activity.MainActivity;
 import fr.cph.chicago.app.adapter.BusAdapter;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.util.Util;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Bus Fragment
@@ -54,6 +51,7 @@ import fr.cph.chicago.util.Util;
  * @version 1
  */
 public class BusFragment extends Fragment {
+
     /**
      * The fragment argument representing the section number for this fragment.
      **/
@@ -109,7 +107,7 @@ public class BusFragment extends Fragment {
     }
 
     private void addView() {
-        busAdapter = new BusAdapter(activity);
+        busAdapter = new BusAdapter(listView);
         listView.setAdapter(busAdapter);
         textFilter.setVisibility(TextView.VISIBLE);
         textFilter.addTextChangedListener(new TextWatcher() {
