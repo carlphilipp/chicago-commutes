@@ -66,7 +66,7 @@ public class BusDirectionSubscriber extends Subscriber<BusDirections> {
                     extras.putString(parent.getContext().getString(R.string.bundle_bus_bound), lBusDirections.get(pos).getBusTextReceived());
                     extras.putString(parent.getContext().getString(R.string.bundle_bus_bound_title), lBusDirections.get(pos).getBusDirectionEnum().toString());
                     intent.putExtras(extras);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     parent.getContext().getApplicationContext().startActivity(intent);
                 } else {
                     final String[] busDirectionArray = new String[lBusDirections.size()];
@@ -78,7 +78,7 @@ public class BusDirectionSubscriber extends Subscriber<BusDirections> {
                     extras.putString(parent.getContext().getString(R.string.bundle_bus_route_id), busDirections.getId());
                     extras.putStringArray(parent.getContext().getString(R.string.bundle_bus_bounds), busDirectionArray);
                     intent.putExtras(extras);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     parent.getContext().getApplicationContext().startActivity(intent);
                 }
             });

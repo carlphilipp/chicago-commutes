@@ -94,7 +94,7 @@ public class BusStopOnClickListener implements View.OnClickListener {
                                 extras.putDouble(context.getString(R.string.bundle_bus_longitude), busStop.getPosition().getLongitude());
 
                                 intent.putExtras(extras);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 context.startActivity(intent);
                             },
                             onError -> {
