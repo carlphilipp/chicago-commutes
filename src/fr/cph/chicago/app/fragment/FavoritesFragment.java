@@ -54,7 +54,7 @@ import fr.cph.chicago.entity.dto.FavoritesDTO;
 import rx.Observable;
 
 /**
- * Favorites Fragment
+ * FavoritesData Fragment
  *
  * @author Carl-Philipp Harmant
  * @version 1

@@ -1,7 +1,7 @@
 package fr.cph.chicago.rx.subscriber;
 
 import android.util.Log;
-import android.widget.RelativeLayout;
+import android.view.View;
 
 import java.util.List;
 
@@ -18,12 +18,12 @@ public class BusSubscriber extends Subscriber<List<Bus>> {
 
     private final BusMapActivity activity;
     private final boolean centerMap;
-    private final RelativeLayout layout;
+    private final View view;
 
-    public BusSubscriber(final BusMapActivity activity, final boolean centerMap, final RelativeLayout layout) {
+    public BusSubscriber(final BusMapActivity activity, final boolean centerMap, final View view) {
         this.activity = activity;
         this.centerMap = centerMap;
-        this.layout = layout;
+        this.view = view;
     }
 
     @Override
@@ -35,19 +35,19 @@ public class BusSubscriber extends Subscriber<List<Bus>> {
                     activity.centerMapOnBus(buses);
                 }
             } else {
-                Util.showMessage(layout, R.string.message_no_bus_found);
+                Util.showMessage(view, R.string.message_no_bus_found);
             }
         } else {
-            Util.showMessage(layout, R.string.message_error_while_loading_data);
+            Util.showMessage(view, R.string.message_error_while_loading_data);
         }
     }
 
     @Override
     public void onError(final Throwable throwable) {
         if (throwable.getCause() instanceof ConnectException) {
-            Util.showNetworkErrorMessage(layout);
+            Util.showNetworkErrorMessage(view);
         } else {
-            Util.showOopsSomethingWentWrong(layout);
+            Util.showOopsSomethingWentWrong(view);
         }
         Log.e(TAG, throwable.getMessage(), throwable);
     }

@@ -3,8 +3,10 @@ package fr.cph.chicago.service.impl;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
+
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.List;
 
 import fr.cph.chicago.connection.DivvyConnect;
@@ -28,8 +30,7 @@ public class BikeServiceImpl implements BikeService {
             final DivvyConnect divvyConnect = DivvyConnect.getInstance();
             final InputStream bikeContent = divvyConnect.connect(context);
             final List<BikeStation> bikeStations = jsonParser.parseStations(bikeContent);
-            Collections.sort(bikeStations, Util.BIKE_COMPARATOR_NAME);
-            return bikeStations;
+            return Stream.of(bikeStations).sorted(Util.BIKE_COMPARATOR_NAME).collect(Collectors.toList());
         } catch (final Throwable throwable) {
             throw Exceptions.propagate(throwable);
         }

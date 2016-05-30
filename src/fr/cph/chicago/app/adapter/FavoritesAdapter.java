@@ -59,7 +59,7 @@ import fr.cph.chicago.app.activity.StationActivity;
 import fr.cph.chicago.app.activity.TrainMapActivity;
 import fr.cph.chicago.app.listener.BusStopOnClickListener;
 import fr.cph.chicago.app.listener.GoogleMapOnClickListener;
-import fr.cph.chicago.data.Favorites;
+import fr.cph.chicago.data.FavoritesData;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusDetailsDTO;
@@ -74,7 +74,7 @@ import fr.cph.chicago.util.Util;
 import static java.util.Map.Entry;
 
 /**
- * Adapter that will handle favorites
+ * Adapter that will handle favoritesData
  *
  * @author Carl-Philipp Harmant
  * @version 1
@@ -85,7 +85,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     private final int grey5;
     private final Context context;
     private final MainActivity activity;
-    private final Favorites favorites;
+    private final FavoritesData favoritesData;
     private final int marginLeftPixel;
     private final int pixels;
     private final int pixelsHalf;
@@ -98,7 +98,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         this.grey5 = ContextCompat.getColor(context, R.color.grey_5);
 
         this.activity = activity;
-        this.favorites = Favorites.getInstance(context);
+        this.favoritesData = FavoritesData.getInstance(context);
 
         this.marginLeftPixel = Util.convertDpToPixel(context, 10);
         this.pixels = Util.convertDpToPixel(context, 16);
@@ -147,7 +147,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     @Override
     public void onBindViewHolder(final FavoritesViewHolder holder, final int position) {
         resetData(holder);
-        final Object object = favorites.getObject(position);
+        final Object object = favoritesData.getObject(position);
         holder.lastUpdateTextView.setText(lastUpdate);
         if (object != null) {
             if (object instanceof Station) {
@@ -224,7 +224,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         for (final TrainLine trainLine : trainLines) {
             boolean newLine = true;
             int i = 0;
-            final Map<String, StringBuilder> etas = favorites.getTrainArrivalByLine(stationId, trainLine);
+            final Map<String, StringBuilder> etas = favoritesData.getTrainArrivalByLine(stationId, trainLine);
             for (final Entry<String, StringBuilder> entry : etas.entrySet()) {
                 final LinearLayout.LayoutParams containParam = getInsideParams(newLine, i == etas.size() - 1);
                 final LinearLayout container = new LinearLayout(context);
@@ -311,7 +311,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
         final List<BusDetailsDTO> busDetailsDTOs = new ArrayList<>();
 
-        final Map<String, Map<String, List<BusArrival>>> busArrivals = favorites.getBusArrivalsMapped(busRoute.getId());
+        final Map<String, Map<String, List<BusArrival>>> busArrivals = favoritesData.getBusArrivalsMapped(busRoute.getId());
         for (final Entry<String, Map<String, List<BusArrival>>> entry : busArrivals.entrySet()) {
             // Build data for button outside of the loop
             final String stopName = entry.getKey();
@@ -531,26 +531,26 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
     @Override
     public final int getItemCount() {
-        return favorites.size();
+        return favoritesData.size();
     }
 
     public final void setTrainArrivals(@NonNull final SparseArray<TrainArrival> arrivals) {
-        favorites.setTrainArrivals(arrivals);
+        favoritesData.setTrainArrivals(arrivals);
     }
 
     public final void setBusArrivals(@NonNull final List<BusArrival> busArrivals) {
-        favorites.setBusArrivals(busArrivals);
+        favoritesData.setBusArrivals(busArrivals);
     }
 
     public final void setBikeStations(@NonNull final List<BikeStation> bikeStations) {
-        favorites.setBikeStations(bikeStations);
+        favoritesData.setBikeStations(bikeStations);
     }
 
     /**
-     * Set favorites
+     * Set favoritesData
      */
     public final void setFavorites() {
-        favorites.setFavorites();
+        favoritesData.setFavorites();
     }
 
     /**

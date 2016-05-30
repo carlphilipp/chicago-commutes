@@ -49,9 +49,9 @@ import fr.cph.chicago.util.Util;
  * @version 1
  */
 // TODO to analyze and refactor
-public class Favorites {
+public class FavoritesData {
 
-    private static Favorites INSTANCE;
+    private static FavoritesData INSTANCE;
 
     private final Context context;
     private final TrainData trainData;
@@ -65,7 +65,7 @@ public class Favorites {
     private final List<String> bikeFavorites;
     private List<String> fakeBusFavorites;
 
-    private Favorites(@NonNull final Context context) {
+    private FavoritesData(@NonNull final Context context) {
         this.context = context;
         this.trainArrivals = new SparseArray<>();
         this.busArrivals = new ArrayList<>();
@@ -79,9 +79,9 @@ public class Favorites {
         this.busData = DataHolder.getInstance().getBusData();
     }
 
-    public static Favorites getInstance(@NonNull final Context context) {
+    public static FavoritesData getInstance(@NonNull final Context context) {
         if (INSTANCE == null) {
-            INSTANCE = new Favorites(context.getApplicationContext());
+            INSTANCE = new FavoritesData(context.getApplicationContext());
         }
         return INSTANCE;
     }

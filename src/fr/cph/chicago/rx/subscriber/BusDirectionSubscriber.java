@@ -11,8 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
+
+import java.util.List;
+
 import fr.cph.chicago.R;
 import fr.cph.chicago.app.activity.BusBoundActivity;
 import fr.cph.chicago.app.activity.BusMapActivity;
@@ -22,8 +26,6 @@ import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.enumeration.BusDirection;
 import fr.cph.chicago.util.Util;
 import rx.Subscriber;
-
-import java.util.List;
 
 public class BusDirectionSubscriber extends Subscriber<BusDirections> {
 
@@ -40,13 +42,13 @@ public class BusDirectionSubscriber extends Subscriber<BusDirections> {
     }
 
     @Override
-    public void onNext(final BusDirections onNext) {
-        if (onNext != null) {
-            final List<BusDirection> busDirections = onNext.getLBusDirection();
-            final List<String> data = Stream.of(busDirections)
+    public void onNext(final BusDirections busDirections) {
+        if (busDirections != null) {
+            final List<BusDirection> lBusDirections = busDirections.getLBusDirection();
+            final List<String> data = Stream.of(lBusDirections)
                 .map(busDir -> busDir.getBusDirectionEnum().toString())
                 .collect(Collectors.toList());
-            data.add(parent.getContext().getString(R.string.message_see_all_buses_on_line) + onNext.getId());
+            data.add(parent.getContext().getString(R.string.message_see_all_buses_on_line) + busDirections.getId());
 
             final LayoutInflater vi = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             final View popupView = vi.inflate(R.layout.popup_bus, parent, false);
@@ -61,19 +63,19 @@ public class BusDirectionSubscriber extends Subscriber<BusDirections> {
                     final Intent intent = new Intent(parent.getContext(), BusBoundActivity.class);
                     extras.putString(parent.getContext().getString(R.string.bundle_bus_route_id), busRoute.getId());
                     extras.putString(parent.getContext().getString(R.string.bundle_bus_route_name), busRoute.getName());
-                    extras.putString(parent.getContext().getString(R.string.bundle_bus_bound), busDirections.get(pos).getBusTextReceived());
-                    extras.putString(parent.getContext().getString(R.string.bundle_bus_bound_title), busDirections.get(pos).getBusDirectionEnum().toString());
+                    extras.putString(parent.getContext().getString(R.string.bundle_bus_bound), lBusDirections.get(pos).getBusTextReceived());
+                    extras.putString(parent.getContext().getString(R.string.bundle_bus_bound_title), lBusDirections.get(pos).getBusDirectionEnum().toString());
                     intent.putExtras(extras);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     parent.getContext().getApplicationContext().startActivity(intent);
                 } else {
-                    final String[] busDirectionArray = new String[busDirections.size()];
+                    final String[] busDirectionArray = new String[lBusDirections.size()];
                     int i = 0;
-                    for (final BusDirection busDir : busDirections) {
+                    for (final BusDirection busDir : lBusDirections) {
                         busDirectionArray[i++] = busDir.getBusDirectionEnum().toString();
                     }
                     final Intent intent = new Intent(parent.getContext(), BusMapActivity.class);
-                    extras.putString(parent.getContext().getString(R.string.bundle_bus_route_id), onNext.getId());
+                    extras.putString(parent.getContext().getString(R.string.bundle_bus_route_id), busDirections.getId());
                     extras.putStringArray(parent.getContext().getString(R.string.bundle_bus_bounds), busDirectionArray);
                     intent.putExtras(extras);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

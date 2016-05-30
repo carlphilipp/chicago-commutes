@@ -362,10 +362,12 @@ public final class Util {
                     final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
                     alertDialogBuilder.setTitle("GPS settings");
                     alertDialogBuilder.setMessage("GPS is not enabled. Do you want to go to settings menu?");
-                    alertDialogBuilder.setCancelable(false).setPositiveButton("Yes", (dialog, id) -> {
-                        final Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                        activity.startActivity(intent);
-                    }).setNegativeButton("No", (dialog, id) -> dialog.cancel());
+                    alertDialogBuilder.setCancelable(false)
+                        .setPositiveButton("Yes", (dialog, id) -> {
+                            final Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                            activity.startActivity(intent);
+                        })
+                        .setNegativeButton("No", (dialog, id) -> dialog.cancel());
                     final AlertDialog alertDialog = alertDialogBuilder.create();
                     alertDialog.show();
                 });

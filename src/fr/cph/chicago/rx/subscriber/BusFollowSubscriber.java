@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.app.activity.BusMapActivity;
 import fr.cph.chicago.app.adapter.BusMapSnippetAdapter;
@@ -34,18 +33,18 @@ public class BusFollowSubscriber extends Subscriber<List<BusArrival>> {
     }
 
     @Override
-    public void onNext(List<BusArrival> onNext) {
-        if (!loadAll && onNext.size() > 7) {
-            onNext = onNext.subList(0, 6);
+    public void onNext(List<BusArrival> busArrivals) {
+        if (!loadAll && busArrivals.size() > 7) {
+            busArrivals = busArrivals.subList(0, 6);
             final BusArrival arrival = new BusArrival();
             arrival.setStopName(view.getContext().getString(R.string.bus_all_results));
             arrival.setDly(false);
-            onNext.add(arrival);
+            busArrivals.add(arrival);
         }
         final ListView arrivals = (ListView) view.findViewById(R.id.arrivals);
         final TextView error = (TextView) view.findViewById(R.id.error);
-        if (onNext.size() != 0) {
-            final BusMapSnippetAdapter ada = new BusMapSnippetAdapter(activity, onNext);
+        if (busArrivals.size() != 0) {
+            final BusMapSnippetAdapter ada = new BusMapSnippetAdapter(activity, busArrivals);
             arrivals.setAdapter(ada);
             arrivals.setVisibility(ListView.VISIBLE);
             error.setVisibility(TextView.GONE);

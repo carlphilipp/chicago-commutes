@@ -60,7 +60,7 @@ class BusStopCsvProcessor implements RowProcessor {
 	}
 
     @NonNull
-	public List<BusStop> getRows() {
+	List<BusStop> getRows() {
 		return rows == null ? Collections.emptyList() : rows;
 	}
 }

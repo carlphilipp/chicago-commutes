@@ -4,6 +4,9 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.annimon.stream.Optional;
+import com.annimon.stream.Stream;
+
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
@@ -163,16 +166,20 @@ public class BusServiceImpl implements BusService {
             final InputStream content = connect.connect(context, BUS_PATTERN, connectParam);
             final XmlParser xml = XmlParser.getInstance();
             final List<BusPattern> patterns = xml.parsePatterns(content);
-            for (final BusPattern pattern : patterns) {
-                final String directionIgnoreCase = pattern.getDirection().toLowerCase(Locale.US);
-                if (pattern.getDirection().equals(bound) || boundIgnoreCase.contains(directionIgnoreCase)) {
-                    return pattern;
-                }
+            final Optional<BusPattern> busPatternOptional = Stream.of(patterns)
+                .filter(pattern -> {
+                    final String directionIgnoreCase = pattern.getDirection().toLowerCase(Locale.US);
+                    return pattern.getDirection().equals(bound) || boundIgnoreCase.contains(directionIgnoreCase);
+                })
+                .findFirst();
+            if (busPatternOptional.isPresent()) {
+                return busPatternOptional.get();
+            } else {
+                return null;
             }
         } catch (final Throwable throwable) {
             throw Exceptions.propagate(throwable);
         }
-        return null;
     }
 
     @NonNull

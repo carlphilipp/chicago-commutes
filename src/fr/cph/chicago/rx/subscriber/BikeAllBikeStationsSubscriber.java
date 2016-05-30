@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 
+import com.annimon.stream.Stream;
+
 import java.util.List;
 
 import fr.cph.chicago.R;
@@ -25,16 +27,16 @@ public class BikeAllBikeStationsSubscriber extends Subscriber<List<BikeStation>>
     }
 
     @Override
-    public void onNext(final List<BikeStation> onNext) {
-        if (onNext != null) {
-            for (final BikeStation station : onNext) {
-                if (bikeStationId == station.getId()) {
+    public void onNext(final List<BikeStation> bikeStations) {
+        if (bikeStations != null) {
+            Stream.of(bikeStations)
+                .filter(station -> bikeStationId == station.getId())
+                .findFirst()
+                .ifPresent(station -> {
                     activity.refreshStation(station);
                     final Bundle bundle = activity.getIntent().getExtras();
                     bundle.putParcelable(activity.getString(R.string.bundle_bike_station), station);
-                    break;
-                }
-            }
+                });
         } else {
             Util.showOopsSomethingWentWrong(swipeRefreshLayout);
         }

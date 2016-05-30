@@ -93,7 +93,8 @@ public class TrainServiceImpl implements TrainService {
                         return Preferences.getTrainFilter(context, station.getId(), line, direction);
                     })
                     .sorted()
-                    .collect(Collectors.toList()));
+                    .collect(Collectors.toList())
+                );
             }
         } catch (final Throwable e) {
             throw Exceptions.propagate(e);

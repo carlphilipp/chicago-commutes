@@ -37,7 +37,7 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.Util;
 
 /**
- * Favorites train on click listener
+ * FavoritesData train on click listener
  *
  * @author Carl-Philipp Harmant
  * @version 1

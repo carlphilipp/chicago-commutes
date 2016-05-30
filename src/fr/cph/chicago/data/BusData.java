@@ -54,7 +54,7 @@ public class BusData {
     private final BusStopCsvParser parser;
 
     private BusData(@NonNull final Context context) {
-        this.context = context.getApplicationContext();
+        this.context = context;
         this.busRoutes = new ArrayList<>();
         this.busStops = new ArrayList<>();
         this.parser = new BusStopCsvParser();
@@ -68,7 +68,7 @@ public class BusData {
     @NonNull
     public static BusData getInstance(@NonNull final Context context) {
         if (BUS_DATA == null) {
-            BUS_DATA = new BusData(context);
+            BUS_DATA = new BusData(context.getApplicationContext());
         }
         return BUS_DATA;
     }
@@ -98,7 +98,7 @@ public class BusData {
 
     final boolean containsRoute(@NonNull final String routeId) {
         return Stream.of(busRoutes)
-            .filter(busR -> busR.getId().equals(routeId))
+            .filter(busRoute -> busRoute.getId().equals(routeId))
             .findFirst()
             .isPresent();
     }
