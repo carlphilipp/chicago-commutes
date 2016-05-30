@@ -58,6 +58,7 @@ public final class BusAdapter extends BaseAdapter {
     public BusAdapter(@NonNull final View view) {
         this.view = view;
         final BusData busData = DataHolder.getInstance().getBusData();
+        Log.e(TAG, "bus route loaded: " + busData.getBusRoutes());
         this.busRoutes = busData.getBusRoutes();
     }
 

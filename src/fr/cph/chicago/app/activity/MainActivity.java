@@ -81,21 +81,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
             setContentView(R.layout.activity_main);
 
-            ObservableUtil.createOnFirstLoadObservable(getApplicationContext()).subscribe(
-                onNext -> {
-                    final DataHolder dataHolder = DataHolder.getInstance();
-                    dataHolder.getBusData().setBusRoutes(onNext.getBusRoutes());
-                    MainActivity.this.refresh(dataHolder.getBusData(), onNext.getBikeStations());
-                    if (onNext.isBikeStationsError() || onNext.isBusRoutesError()) {
-                        Util.showOopsSomethingWentWrong(drawerLayout);
-                    }
-                },
-                onError -> Util.showOopsSomethingWentWrong(drawerLayout),
-                () -> {
-                    Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_routes, 0);
-                    Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
-                }
-            );
+            loadFirstData();
 
             final FrameLayout frameLayout = (FrameLayout) findViewById(R.id.container);
             frameLayout.getForeground().setAlpha(0);
@@ -143,22 +129,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 // Favorite fragment
                 favoritesFragment.startRefreshing();
 
-                Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
-                Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_arrivals, 0);
-                Util.trackAction(MainActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
-                Util.trackAction(MainActivity.this, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
+                Util.trackAction(getApplicationContext(), R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
+                Util.trackAction(getApplicationContext(), R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_arrivals, 0);
+                Util.trackAction(getApplicationContext(), R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
+                Util.trackAction(getApplicationContext(), R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
 
                 if (Util.isNetworkAvailable(getApplicationContext())) {
+                    final DataHolder dataHolder = DataHolder.getInstance();
+                    if (dataHolder.getBusData() == null
+                        || dataHolder.getBusData().getBusRoutes() == null
+                        || dataHolder.getBusData().getBusRoutes().size() == 0
+                        || getIntent().getParcelableArrayListExtra(getString(R.string.bundle_bike_stations)) == null
+                        || getIntent().getParcelableArrayListExtra(getString(R.string.bundle_bike_stations)).size() == 0) {
+                        loadFirstData();
+                    }
                     final Observable<FavoritesDTO> zipped = ObservableUtil.createAllDataObservable(getApplicationContext());
                     zipped.subscribe(
-                        favoritesResult -> MainActivity.this.favoritesFragment.reloadData(favoritesResult),
+                        favoritesResult -> favoritesFragment.reloadData(favoritesResult),
                         onError -> {
                             Log.e(TAG, onError.getMessage(), onError);
-                            MainActivity.this.favoritesFragment.displayError(R.string.message_something_went_wrong);
+                            favoritesFragment.displayError(R.string.message_something_went_wrong);
                         }
                     );
                 } else {
-                    MainActivity.this.favoritesFragment.displayError(R.string.message_network_error);
+                    favoritesFragment.displayError(R.string.message_network_error);
                 }
             }
             return true;
@@ -170,7 +164,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private void refresh(@NonNull final BusData busData, @NonNull final List<BikeStation> bikeStations) {
+    public void loadFirstData() {
+        ObservableUtil.createOnFirstLoadObservable(getApplicationContext()).subscribe(
+            onNext -> {
+                final DataHolder dataHolder = DataHolder.getInstance();
+                dataHolder.getBusData().setBusRoutes(onNext.getBusRoutes());
+                refreshFirstLoadData(dataHolder.getBusData(), onNext.getBikeStations());
+                if (onNext.isBikeStationsError() || onNext.isBusRoutesError()) {
+                    Util.showOopsSomethingWentWrong(drawerLayout);
+                }
+            },
+            onError -> Util.showOopsSomethingWentWrong(drawerLayout),
+            () -> {
+                Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_routes, 0);
+                Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
+            }
+        );
+    }
+
+    private void refreshFirstLoadData(@NonNull final BusData busData, @NonNull final List<BikeStation> bikeStations) {
         // Put data into data holder
         final DataHolder dataHolder = DataHolder.getInstance();
         dataHolder.setBusData(busData);

@@ -43,6 +43,7 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.app.activity.MainActivity;
 import fr.cph.chicago.app.activity.SearchActivity;
 import fr.cph.chicago.app.adapter.FavoritesAdapter;
+import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
@@ -158,6 +159,15 @@ public class FavoritesFragment extends Fragment {
                 Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
                 Util.trackAction(activity, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
 
+                final DataHolder dataHolder = DataHolder.getInstance();
+                if (dataHolder.getBusData() == null
+                    || dataHolder.getBusData().getBusRoutes() == null
+                    || dataHolder.getBusData().getBusRoutes().size() == 0
+                    || activity.getIntent().getParcelableArrayListExtra(getString(R.string.bundle_bike_stations)) == null
+                    || activity.getIntent().getParcelableArrayListExtra(getString(R.string.bundle_bike_stations)).size() == 0) {
+                    activity.loadFirstData();
+                }
+
                 if (Util.isNetworkAvailable(getContext())) {
                     final Observable<FavoritesDTO> zipped = ObservableUtil.createAllDataObservable(getContext());
                     zipped.subscribe(
@@ -238,7 +248,7 @@ public class FavoritesFragment extends Fragment {
         if (!favoritesDTO.isBikeError()) {
             // Put into intent new bike stations data
             activity.getIntent().putParcelableArrayListExtra(getString(R.string.bundle_bike_stations), (ArrayList<BikeStation>) favoritesDTO.getBikeStations());
-            this.bikeStations = favoritesDTO.getBikeStations();
+            bikeStations = favoritesDTO.getBikeStations();
         } else {
             error = true;
         }
