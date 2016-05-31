@@ -43,8 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import fr.cph.chicago.R;
 import fr.cph.chicago.app.App;
 import fr.cph.chicago.app.listener.GoogleMapDirectionOnClickListener;
@@ -77,9 +75,9 @@ import rx.schedulers.Schedulers;
  */
 public class StationActivity extends AbstractStationActivity {
 
-    @BindView(android.R.id.content) private ViewGroup viewGroup;
-    @BindView(R.id.scrollViewTrainStation) private ScrollView scrollView;
-    @BindView(R.id.activity_favorite_star) private ImageView favoritesImage;
+    private ViewGroup viewGroup;
+    private ScrollView scrollView;
+    private ImageView favoritesImage;
     private LinearLayout.LayoutParams paramsStop;
     private SwipeRefreshLayout swipeRefreshLayout;
 
@@ -108,11 +106,10 @@ public class StationActivity extends AbstractStationActivity {
 
                 // Layout setup
                 setContentView(R.layout.activity_station);
-                ButterKnife.bind(this);
-                //scrollView = (ScrollView) findViewById(R.id.scrollViewTrainStation);
-                //viewGroup = (ViewGroup) findViewById(android.R.id.content);
+                scrollView = (ScrollView) findViewById(R.id.scrollViewTrainStation);
+                viewGroup = (ViewGroup) findViewById(android.R.id.content);
                 swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_station_swipe_refresh_layout);
-                //favoritesImage = (ImageView) findViewById(R.id.activity_favorite_star);
+                favoritesImage = (ImageView) findViewById(R.id.activity_favorite_star);
                 paramsStop = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
                 // Get station
