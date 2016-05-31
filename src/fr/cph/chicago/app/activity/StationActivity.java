@@ -43,8 +43,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import fr.cph.chicago.app.App;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import fr.cph.chicago.R;
+import fr.cph.chicago.app.App;
+import fr.cph.chicago.app.listener.GoogleMapDirectionOnClickListener;
+import fr.cph.chicago.app.listener.GoogleMapOnClickListener;
+import fr.cph.chicago.app.listener.GoogleStreetOnClickListener;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.data.TrainData;
@@ -55,9 +60,6 @@ import fr.cph.chicago.entity.Stop;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.TrainDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.app.listener.GoogleMapDirectionOnClickListener;
-import fr.cph.chicago.app.listener.GoogleMapOnClickListener;
-import fr.cph.chicago.app.listener.GoogleStreetOnClickListener;
 import fr.cph.chicago.rx.subscriber.SubscriberTrainArrival;
 import fr.cph.chicago.service.TrainService;
 import fr.cph.chicago.service.impl.TrainServiceImpl;
@@ -75,9 +77,9 @@ import rx.schedulers.Schedulers;
  */
 public class StationActivity extends AbstractStationActivity {
 
-    private ViewGroup viewGroup;
-    private ScrollView scrollView;
-    private ImageView favoritesImage;
+    @BindView(android.R.id.content) private ViewGroup viewGroup;
+    @BindView(R.id.scrollViewTrainStation) private ScrollView scrollView;
+    @BindView(R.id.activity_favorite_star) private ImageView favoritesImage;
     private LinearLayout.LayoutParams paramsStop;
     private SwipeRefreshLayout swipeRefreshLayout;
 
@@ -106,10 +108,11 @@ public class StationActivity extends AbstractStationActivity {
 
                 // Layout setup
                 setContentView(R.layout.activity_station);
-                scrollView = (ScrollView) findViewById(R.id.scrollViewTrainStation);
-                viewGroup = (ViewGroup) findViewById(android.R.id.content);
+                ButterKnife.bind(this);
+                //scrollView = (ScrollView) findViewById(R.id.scrollViewTrainStation);
+                //viewGroup = (ViewGroup) findViewById(android.R.id.content);
                 swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_station_swipe_refresh_layout);
-                favoritesImage = (ImageView) findViewById(R.id.activity_favorite_star);
+                //favoritesImage = (ImageView) findViewById(R.id.activity_favorite_star);
                 paramsStop = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
                 // Get station
