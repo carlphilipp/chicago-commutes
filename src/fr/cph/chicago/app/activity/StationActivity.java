@@ -94,11 +94,14 @@ public class StationActivity extends AbstractStationActivity {
     @BindView(R.id.favorites_container) LinearLayout favoritesImageContainer;
     @BindView(R.id.activity_train_station_details) LinearLayout stopsView;
     @BindView(R.id.toolbar) Toolbar toolbar;
+
     @BindString(R.string.bundle_train_stationId) String bundleTrainStationId;
     @BindString(R.string.analytics_train_details) String trainDetails;
+
     @BindDimen(R.dimen.activity_station_street_map_height) int height;
     @BindDimen(R.dimen.activity_station_stops_line3_padding_left) int line3PaddingLeft;
     @BindDimen(R.dimen.activity_station_stops_line3_padding_top) int line3PaddingTop;
+
     @BindColor(R.color.grey_5) int grey_5;
     @BindColor(R.color.grey) int grey;
     @BindColor(R.color.yellowLineDark) int yellowLineDark;

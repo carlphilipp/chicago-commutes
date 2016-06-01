@@ -19,6 +19,7 @@ package fr.cph.chicago.app.activity;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
@@ -42,6 +43,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindDrawable;
+import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import fr.cph.chicago.app.App;
@@ -69,6 +72,17 @@ public class BusBoundActivity extends ListActivity {
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.bus_filter) EditText filter;
 
+    @BindString(R.string.bundle_bus_stop_id) String bundleBusStopId;
+    @BindString(R.string.bundle_bus_route_id) String bundleBusRouteId;
+    @BindString(R.string.bundle_bus_bound) String bundleBusBound;
+    @BindString(R.string.bundle_bus_bound_title) String bundleBusBoundTitle;
+    @BindString(R.string.bundle_bus_stop_name) String bundleBusStopName;
+    @BindString(R.string.bundle_bus_route_name) String bundleBusRouteName;
+    @BindString(R.string.bundle_bus_latitude) String bundleBusLatitude;
+    @BindString(R.string.bundle_bus_longitude) String bundleBusLongitude;
+
+    @BindDrawable(R.drawable.ic_arrow_back_white_24dp) Drawable arrowBackWhite;
+
     private MapFragment mapFragment;
     private String busRouteId;
     private String busRouteName;
@@ -87,10 +101,10 @@ public class BusBoundActivity extends ListActivity {
 
             if (busRouteId == null || busRouteName == null || bound == null || boundTitle == null) {
                 final Bundle extras = getIntent().getExtras();
-                busRouteId = extras.getString(getString(R.string.bundle_bus_route_id));
-                busRouteName = extras.getString(getString(R.string.bundle_bus_route_name));
-                bound = extras.getString(getString(R.string.bundle_bus_bound));
-                boundTitle = extras.getString(getString(R.string.bundle_bus_bound_title));
+                busRouteId = extras.getString(bundleBusRouteId);
+                busRouteName = extras.getString(bundleBusRouteName);
+                bound = extras.getString(bundleBusBound);
+                boundTitle = extras.getString(bundleBusBoundTitle);
             }
             busBoundAdapter = new BusBoundAdapter();
             setListAdapter(busBoundAdapter);
@@ -99,14 +113,14 @@ public class BusBoundActivity extends ListActivity {
                 final Intent intent = new Intent(getApplicationContext(), BusActivity.class);
 
                 final Bundle extras = new Bundle();
-                extras.putInt(getString(R.string.bundle_bus_stop_id), busStop.getId());
-                extras.putString(getString(R.string.bundle_bus_stop_name), busStop.getName());
-                extras.putString(getString(R.string.bundle_bus_route_id), busRouteId);
-                extras.putString(getString(R.string.bundle_bus_route_name), busRouteName);
-                extras.putString(getString(R.string.bundle_bus_bound), bound);
-                extras.putString(getString(R.string.bundle_bus_bound_title), boundTitle);
-                extras.putDouble(getString(R.string.bundle_bus_latitude), busStop.getPosition().getLatitude());
-                extras.putDouble(getString(R.string.bundle_bus_longitude), busStop.getPosition().getLongitude());
+                extras.putInt(bundleBusStopId, busStop.getId());
+                extras.putString(bundleBusStopName, busStop.getName());
+                extras.putString(bundleBusRouteId, busRouteId);
+                extras.putString(bundleBusRouteName, busRouteName);
+                extras.putString(bundleBusBound, bound);
+                extras.putString(bundleBusBoundTitle, boundTitle);
+                extras.putDouble(bundleBusLatitude, busStop.getPosition().getLatitude());
+                extras.putDouble(bundleBusLongitude, busStop.getPosition().getLongitude());
 
                 intent.putExtras(extras);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -141,18 +155,18 @@ public class BusBoundActivity extends ListActivity {
             Util.setWindowsColor(this, toolbar, TrainLine.NA);
             toolbar.setTitle(busRouteId + " - " + boundTitle);
 
-            toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+            toolbar.setNavigationIcon(arrowBackWhite);
             toolbar.setOnClickListener(v -> finish());
 
             ObservableUtil.createBusStopBoundObservable(getApplicationContext(), busRouteId, bound)
                 .subscribe(onNext -> {
-                        BusBoundActivity.this.setBusStops(onNext);
+                        setBusStops(onNext);
                         busBoundAdapter.update(onNext);
                         busBoundAdapter.notifyDataSetChanged();
                     },
                     onError -> {
                         Log.e(TAG, onError.getMessage(), onError);
-                        Util.showOopsSomethingWentWrong(BusBoundActivity.this.getListView());
+                        Util.showOopsSomethingWentWrong(getListView());
                     }
                 );
 
@@ -183,7 +197,7 @@ public class BusBoundActivity extends ListActivity {
         mapFragment.getMapAsync(googleMap -> {
             googleMap.getUiSettings().setMyLocationButtonEnabled(false);
             googleMap.getUiSettings().setZoomControlsEnabled(false);
-            Util.trackAction(BusBoundActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_pattern, 0);
+            Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_pattern, 0);
             ObservableUtil.createBusPatternObservable(getApplicationContext(), busRouteId, bound)
                 .subscribe(
                     onNext -> {
@@ -217,18 +231,18 @@ public class BusBoundActivity extends ListActivity {
     @Override
     public void onRestoreInstanceState(final Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        busRouteId = savedInstanceState.getString(getString(R.string.bundle_bus_route_id));
-        busRouteName = savedInstanceState.getString(getString(R.string.bundle_bus_route_name));
-        bound = savedInstanceState.getString(getString(R.string.bundle_bus_bound));
-        boundTitle = savedInstanceState.getString(getString(R.string.bundle_bus_bound_title));
+        busRouteId = savedInstanceState.getString(bundleBusRouteId);
+        busRouteName = savedInstanceState.getString(bundleBusRouteName);
+        bound = savedInstanceState.getString(bundleBusBound);
+        boundTitle = savedInstanceState.getString(bundleBusBoundTitle);
     }
 
     @Override
     public void onSaveInstanceState(final Bundle savedInstanceState) {
-        savedInstanceState.putString(getString(R.string.bundle_bus_route_id), busRouteId);
-        savedInstanceState.putString(getString(R.string.bundle_bus_route_name), busRouteName);
-        savedInstanceState.putString(getString(R.string.bundle_bus_bound), bound);
-        savedInstanceState.putString(getString(R.string.bundle_bus_bound_title), boundTitle);
+        savedInstanceState.putString(bundleBusRouteId, busRouteId);
+        savedInstanceState.putString(bundleBusRouteName, busRouteName);
+        savedInstanceState.putString(bundleBusBound, bound);
+        savedInstanceState.putString(bundleBusBoundTitle, boundTitle);
         super.onSaveInstanceState(savedInstanceState);
     }
 

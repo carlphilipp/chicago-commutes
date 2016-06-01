@@ -19,7 +19,6 @@ package fr.cph.chicago.app.activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
@@ -32,18 +31,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import butterknife.BindColor;
+import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
-import fr.cph.chicago.data.Preferences;
-import fr.cph.chicago.entity.BusArrival;
-import fr.cph.chicago.entity.Position;
-import fr.cph.chicago.entity.enumeration.TrainLine;
+import fr.cph.chicago.app.App;
 import fr.cph.chicago.app.listener.GoogleMapDirectionOnClickListener;
 import fr.cph.chicago.app.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.app.listener.GoogleStreetOnClickListener;
 import fr.cph.chicago.app.task.LoadStationDataTask;
+import fr.cph.chicago.data.Preferences;
+import fr.cph.chicago.entity.BusArrival;
+import fr.cph.chicago.entity.Position;
+import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.Util;
 
 /**
@@ -67,6 +68,21 @@ public class BusActivity extends AbstractStationActivity {
     @BindView(R.id.activity_bus_station_value) TextView busRouteNameView2;
     @BindView(R.id.toolbar) Toolbar toolbar;
 
+    @BindString(R.string.bundle_bus_stop_id) String bundleBusStopId;
+    @BindString(R.string.bundle_bus_route_id) String bundleBusRouteId;
+    @BindString(R.string.bundle_bus_bound) String bundleBusBound;
+    @BindString(R.string.bundle_bus_bound_title) String bundleBusBoundTitle;
+    @BindString(R.string.bundle_bus_stop_name) String bundleBusStopName;
+    @BindString(R.string.bundle_bus_route_name) String bundleBusRouteName;
+    @BindString(R.string.bundle_bus_latitude) String bundleBusLatitude;
+    @BindString(R.string.bundle_bus_longitude) String bundleBusLongitude;
+    @BindString(R.string.bus_activity_no_service) String busActivityNoService;
+    @BindString(R.string.analytics_bus_details) String analyticsBusDetails;
+
+    @BindColor(R.color.grey_5) int grey_5;
+    @BindColor(R.color.grey) int grey;
+    @BindColor(R.color.yellowLineDark) int yellowLineDark;
+
     private List<BusArrival> busArrivals;
     private String busRouteId, bound, boundTitle;
     private Integer busStopId;
@@ -84,14 +100,14 @@ public class BusActivity extends AbstractStationActivity {
 
             if (busStopId == null || busRouteId == null || bound == null || busStopName == null || busRouteName == null || boundTitle == null) {
                 final Bundle extras = getIntent().getExtras();
-                busStopId = extras.getInt(getString(R.string.bundle_bus_stop_id));
-                busRouteId = extras.getString(getString(R.string.bundle_bus_route_id));
-                bound = extras.getString(getString(R.string.bundle_bus_bound));
-                boundTitle = extras.getString(getString(R.string.bundle_bus_bound_title));
-                busStopName = extras.getString(getString(R.string.bundle_bus_stop_name));
-                busRouteName = extras.getString(getString(R.string.bundle_bus_route_name));
-                latitude = extras.getDouble(getString(R.string.bundle_bus_latitude));
-                longitude = extras.getDouble(getString(R.string.bundle_bus_longitude));
+                busStopId = extras.getInt(bundleBusStopId);
+                busRouteId = extras.getString(bundleBusRouteId);
+                bound = extras.getString(bundleBusBound);
+                boundTitle = extras.getString(bundleBusBoundTitle);
+                busStopName = extras.getString(bundleBusStopName);
+                busRouteName = extras.getString(bundleBusRouteName);
+                latitude = extras.getDouble(bundleBusLatitude);
+                longitude = extras.getDouble(bundleBusLongitude);
             }
 
             final Position position = new Position();
@@ -100,14 +116,14 @@ public class BusActivity extends AbstractStationActivity {
 
             isFavorite = isFavorite();
 
-            mapImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
-            directionImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
-            favoritesImageContainer.setOnClickListener(v -> BusActivity.this.switchFavorite());
+            mapImage.setColorFilter(grey_5);
+            directionImage.setColorFilter(grey_5);
+            favoritesImageContainer.setOnClickListener(v -> switchFavorite());
 
             if (isFavorite) {
-                favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
+                favoritesImage.setColorFilter(yellowLineDark);
             } else {
-                favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
+                favoritesImage.setColorFilter(grey_5);
             }
             scrollView.setOnRefreshListener(() -> new LoadStationDataTask(this, scrollView, busRouteId, busStopId).execute());
             streetViewImage.setOnClickListener(new GoogleStreetOnClickListener(latitude, longitude));
@@ -125,7 +141,7 @@ public class BusActivity extends AbstractStationActivity {
             setToolBar();
 
             // Google analytics
-            Util.trackScreen(getApplicationContext(), getString(R.string.analytics_bus_details));
+            Util.trackScreen(getApplicationContext(), analyticsBusDetails);
         }
     }
 
@@ -133,7 +149,7 @@ public class BusActivity extends AbstractStationActivity {
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener((item -> {
             scrollView.setRefreshing(true);
-            new LoadStationDataTask(BusActivity.this, scrollView, busRouteId, busStopId).execute();
+            new LoadStationDataTask(this, scrollView, busRouteId, busStopId).execute();
             return false;
         }));
         Util.setWindowsColor(this, toolbar, TrainLine.NA);
@@ -148,26 +164,26 @@ public class BusActivity extends AbstractStationActivity {
     @Override
     public void onRestoreInstanceState(final Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        busStopId = savedInstanceState.getInt(getString(R.string.bundle_bus_stop_id));
-        busRouteId = savedInstanceState.getString(getString(R.string.bundle_bus_route_id));
-        bound = savedInstanceState.getString(getString(R.string.bundle_bus_bound));
-        boundTitle = savedInstanceState.getString(getString(R.string.bundle_bus_bound_title));
-        busStopName = savedInstanceState.getString(getString(R.string.bundle_bus_stop_name));
-        busRouteName = savedInstanceState.getString(getString(R.string.bundle_bus_route_name));
-        latitude = savedInstanceState.getDouble(getString(R.string.bundle_bus_latitude));
-        longitude = savedInstanceState.getDouble(getString(R.string.bundle_bus_longitude));
+        busStopId = savedInstanceState.getInt(bundleBusStopId);
+        busRouteId = savedInstanceState.getString(bundleBusRouteId);
+        bound = savedInstanceState.getString(bundleBusBound);
+        boundTitle = savedInstanceState.getString(bundleBusBoundTitle);
+        busStopName = savedInstanceState.getString(bundleBusStopName);
+        busRouteName = savedInstanceState.getString(bundleBusRouteName);
+        latitude = savedInstanceState.getDouble(bundleBusLatitude);
+        longitude = savedInstanceState.getDouble(bundleBusLongitude);
     }
 
     @Override
     public void onSaveInstanceState(final Bundle savedInstanceState) {
-        savedInstanceState.putInt(getString(R.string.bundle_bus_stop_id), busStopId);
-        savedInstanceState.putString(getString(R.string.bundle_bus_route_id), busRouteId);
-        savedInstanceState.putString(getString(R.string.bundle_bus_bound), bound);
-        savedInstanceState.putString(getString(R.string.bundle_bus_bound_title), boundTitle);
-        savedInstanceState.putString(getString(R.string.bundle_bus_stop_name), busStopName);
-        savedInstanceState.putString(getString(R.string.bundle_bus_route_name), busRouteName);
-        savedInstanceState.putDouble(getString(R.string.bundle_bus_latitude), latitude);
-        savedInstanceState.putDouble(getString(R.string.bundle_bus_longitude), longitude);
+        savedInstanceState.putInt(bundleBusStopId, busStopId);
+        savedInstanceState.putString(bundleBusRouteId, busRouteId);
+        savedInstanceState.putString(bundleBusBound, bound);
+        savedInstanceState.putString(bundleBusBoundTitle, boundTitle);
+        savedInstanceState.putString(bundleBusStopName, busStopName);
+        savedInstanceState.putString(bundleBusRouteName, busRouteName);
+        savedInstanceState.putDouble(bundleBusLatitude, latitude);
+        savedInstanceState.putDouble(bundleBusLongitude, longitude);
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -202,14 +218,14 @@ public class BusActivity extends AbstractStationActivity {
                             arrivalText = arrival.getBusDestination() + ": " + arrival.getTimeLeft();
                         }
                         arrivalView.setText(arrivalText);
-                        arrivalView.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.grey));
+                        arrivalView.setTextColor(grey);
                         tempMap.put(destination, arrivalView);
                     }
                 });
         } else {
             final TextView arrivalView = new TextView(getApplicationContext());
-            arrivalView.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.grey));
-            arrivalView.setText(getString(R.string.bus_activity_no_service));
+            arrivalView.setTextColor(grey);
+            arrivalView.setText(busActivityNoService);
             tempMap.put("", arrivalView);
         }
         stopsView.removeAllViews();
@@ -231,13 +247,13 @@ public class BusActivity extends AbstractStationActivity {
     private void switchFavorite() {
         if (isFavorite) {
             Util.removeFromBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, scrollView);
-            favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
+            favoritesImage.setColorFilter(grey_5);
             isFavorite = false;
         } else {
             Util.addToBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, scrollView);
             Preferences.addBusRouteNameMapping(getApplicationContext(), String.valueOf(busStopId), busRouteName);
             Preferences.addBusStopNameMapping(getApplicationContext(), String.valueOf(busStopId), busStopName);
-            favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
+            favoritesImage.setColorFilter(yellowLineDark);
             isFavorite = true;
         }
     }

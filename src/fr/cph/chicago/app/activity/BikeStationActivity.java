@@ -20,7 +20,6 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
@@ -31,6 +30,8 @@ import com.annimon.stream.Stream;
 
 import java.util.List;
 
+import butterknife.BindColor;
+import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import fr.cph.chicago.R;
@@ -66,6 +67,15 @@ public class BikeStationActivity extends AbstractStationActivity {
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.favorites_bikes_list) LinearLayout container;
 
+    @BindString(R.string.bundle_bike_station) String bundleBikeStation;
+    @BindString(R.string.bike_available_bikes) String bikeAvailableBikes;
+    @BindString(R.string.bike_available_docks) String bikeAvailableDocks;
+
+    @BindColor(R.color.grey_5) int grey_5;
+    @BindColor(R.color.red) int red;
+    @BindColor(R.color.green) int green;
+    @BindColor(R.color.yellowLineDark) int yellowLineDark;
+
     private BikeStation bikeStation;
     private boolean isFavorite;
 
@@ -75,14 +85,14 @@ public class BikeStationActivity extends AbstractStationActivity {
         if (!this.isFinishing()) {
             setContentView(R.layout.activity_bike_station);
             ButterKnife.bind(this);
-            bikeStation = getIntent().getExtras().getParcelable(getString(R.string.bundle_bike_station));
+            bikeStation = getIntent().getExtras().getParcelable(bundleBikeStation);
             if (bikeStation != null) {
                 final double latitude = bikeStation.getLatitude();
                 final double longitude = bikeStation.getLongitude();
 
                 swipeRefreshLayout.setOnRefreshListener(
                     () -> ObservableUtil.createAllBikeStationsObservable(getApplicationContext())
-                        .subscribe(new BikeAllBikeStationsSubscriber(BikeStationActivity.this, bikeStation.getId(), swipeRefreshLayout))
+                        .subscribe(new BikeAllBikeStationsSubscriber(this, bikeStation.getId(), swipeRefreshLayout))
                 );
 
                 isFavorite = isFavorite();
@@ -91,16 +101,16 @@ public class BikeStationActivity extends AbstractStationActivity {
                 createGoogleStreetObservable(latitude, longitude);
                 subscribeToGoogleStreet(streetViewImage, streetViewText);
 
-                mapImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
-                directionImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
+                mapImage.setColorFilter(grey_5);
+                directionImage.setColorFilter(grey_5);
 
                 if (isFavorite) {
-                    favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
+                    favoritesImage.setColorFilter(yellowLineDark);
                 } else {
-                    favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
+                    favoritesImage.setColorFilter(grey_5);
                 }
 
-                favoritesImageContainer.setOnClickListener(view -> BikeStationActivity.this.switchFavorite());
+                favoritesImageContainer.setOnClickListener(view -> switchFavorite());
                 bikeStationValue.setText(bikeStation.getStAddress1());
                 streetViewImage.setOnClickListener(new GoogleStreetOnClickListener(latitude, longitude));
                 mapContainer.setOnClickListener(new GoogleMapOnClickListener(latitude, longitude));
@@ -145,26 +155,26 @@ public class BikeStationActivity extends AbstractStationActivity {
         container.setOrientation(LinearLayout.HORIZONTAL);
         availableLayout.setOrientation(LinearLayout.VERTICAL);
         availableBikes.setOrientation(LinearLayout.HORIZONTAL);
-        availableBike.setText(getResources().getText(R.string.bike_available_bikes));
-        availableBike.setTextColor(ContextCompat.getColor(context, R.color.grey_5));
+        availableBike.setText(bikeAvailableBikes);
+        availableBike.setTextColor(grey_5);
         availableBikes.addView(availableBike);
         amountBike.setText(String.valueOf(bikeStation.getAvailableBikes()));
         if (bikeStation.getAvailableBikes() == 0) {
-            amountBike.setTextColor(ContextCompat.getColor(context, R.color.red));
+            amountBike.setTextColor(red);
         } else {
-            amountBike.setTextColor(ContextCompat.getColor(context, R.color.green));
+            amountBike.setTextColor(green);
         }
         availableBikes.addView(amountBike);
         availableLayout.addView(availableBikes);
         availableDocks.setOrientation(LinearLayout.HORIZONTAL);
-        availableDock.setText(getResources().getText(R.string.bike_available_docks));
-        availableDock.setTextColor(ContextCompat.getColor(context, R.color.grey_5));
+        availableDock.setText(bikeAvailableDocks);
+        availableDock.setTextColor(grey_5);
         availableDocks.addView(availableDock);
         amountDock.setText(String.valueOf(bikeStation.getAvailableDocks()));
         if (bikeStation.getAvailableDocks() == 0) {
-            amountDock.setTextColor(ContextCompat.getColor(context, R.color.red));
+            amountDock.setTextColor(red);
         } else {
-            amountDock.setTextColor(ContextCompat.getColor(context, R.color.green));
+            amountDock.setTextColor(green);
         }
         availableDocks.addView(amountDock);
         availableLayout.addView(availableDocks);
@@ -174,12 +184,12 @@ public class BikeStationActivity extends AbstractStationActivity {
     @Override
     public void onRestoreInstanceState(final Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        bikeStation = savedInstanceState.getParcelable(getString(R.string.bundle_bike_station));
+        bikeStation = savedInstanceState.getParcelable(bundleBikeStation);
     }
 
     @Override
     public void onSaveInstanceState(final Bundle savedInstanceState) {
-        savedInstanceState.putParcelable(getString(R.string.bundle_bike_station), bikeStation);
+        savedInstanceState.putParcelable(bundleBikeStation, bikeStation);
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -208,12 +218,12 @@ public class BikeStationActivity extends AbstractStationActivity {
     private void switchFavorite() {
         if (isFavorite) {
             Util.removeFromBikeFavorites(bikeStation.getId(), swipeRefreshLayout);
-            favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
+            favoritesImage.setColorFilter(grey_5);
             isFavorite = false;
         } else {
             Util.addToBikeFavorites(bikeStation.getId(), swipeRefreshLayout);
             Preferences.addBikeRouteNameMapping(getApplicationContext(), Integer.toString(bikeStation.getId()), bikeStation.getName());
-            favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
+            favoritesImage.setColorFilter(yellowLineDark);
             isFavorite = true;
         }
     }
