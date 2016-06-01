@@ -7,12 +7,14 @@ buildscript {
         classpath group: 'com.android.tools.build', name: 'gradle', version: "$android_tools_build_version"
         classpath group: 'me.tatarka', name: 'gradle-retrolambda', version: "$retro_lambda_version"
         classpath group: 'me.tatarka.retrolambda.projectlombok', name: 'lombok.ast', version: "$retro_lambda_lombok_version"
+        classpath group: 'com.neenbedankt.gradle.plugins', name: 'android-apt', version: "$android_apt_version"
     }
     configurations.classpath.exclude group: 'com.android.tools.external.lombok'
 }
 
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'android-apt'
 
 dependencies {
     repositories {
@@ -34,6 +36,9 @@ dependencies {
     compile group: 'io.reactivex', name: 'rxandroid', version: "$reactivex_android_version"
     compile group: 'io.reactivex', name: 'rxjava', version: "$reactivex_java_version"
     compile group: 'com.annimon', name: 'stream', version: "$annimon_stream_version"
+
+    compile group: 'com.jakewharton', name: 'butterknife', version: "$butterknife_version"
+    apt group: 'com.jakewharton', name: 'butterknife-compiler', version: "$butterknife_version"
 
     provided group: 'org.projectlombok', name: 'lombok', version: "$lombok_version"
 }

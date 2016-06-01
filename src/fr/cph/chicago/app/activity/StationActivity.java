@@ -28,21 +28,14 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils.TruncateAt;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.annimon.stream.Stream;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
 import fr.cph.chicago.R;
 import fr.cph.chicago.app.App;
 import fr.cph.chicago.app.listener.GoogleMapDirectionOnClickListener;
@@ -67,6 +60,12 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
 /**
  * Activity that represents the train station
  *
@@ -75,11 +74,21 @@ import rx.schedulers.Schedulers;
  */
 public class StationActivity extends AbstractStationActivity {
 
-    private ViewGroup viewGroup;
-    private ScrollView scrollView;
-    private ImageView favoritesImage;
+    @BindView(android.R.id.content) ViewGroup viewGroup;
+    @BindView(R.id.activity_train_station_streetview_image) ImageView streetViewImage;
+    @BindView(R.id.scrollViewTrainStation) ScrollView scrollView;
+    @BindView(R.id.activity_station_swipe_refresh_layout) SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.activity_favorite_star) ImageView favoritesImage;
+    @BindView(R.id.activity_train_station_steetview_text) TextView streetViewText;
+    @BindView(R.id.activity_map_image) ImageView mapImage;
+    @BindView(R.id.map_container) LinearLayout mapContainer;
+    @BindView(R.id.activity_map_direction) ImageView directionImage;
+    @BindView(R.id.walk_container) LinearLayout walkContainer;
+    @BindView(R.id.favorites_container) LinearLayout favoritesImageContainer;
+    @BindView(R.id.activity_train_station_details) LinearLayout stopsView;
+    @BindView(R.id.toolbar) Toolbar toolbar;
+
     private LinearLayout.LayoutParams paramsStop;
-    private SwipeRefreshLayout swipeRefreshLayout;
 
     private boolean isFavorite;
     private int stationId;
@@ -97,32 +106,21 @@ public class StationActivity extends AbstractStationActivity {
     @Override
     protected final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         App.checkTrainData(this);
         if (!this.isFinishing()) {
             // Get station id from bundle
             stationId = getIntent().getExtras().getInt(getString(R.string.bundle_train_stationId), 0);
             if (stationId != 0) {
-
                 // Layout setup
                 setContentView(R.layout.activity_station);
-                scrollView = (ScrollView) findViewById(R.id.scrollViewTrainStation);
-                viewGroup = (ViewGroup) findViewById(android.R.id.content);
-                swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_station_swipe_refresh_layout);
-                favoritesImage = (ImageView) findViewById(R.id.activity_favorite_star);
-                paramsStop = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+                ButterKnife.bind(this);
+
+                paramsStop = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
                 // Get station
                 final TrainData trainData = DataHolder.getInstance().getTrainData();
                 station = trainData.getStation(stationId);
 
-                final ImageView streetViewImage = (ImageView) findViewById(R.id.activity_train_station_streetview_image);
-                final TextView streetViewText = (TextView) findViewById(R.id.activity_train_station_steetview_text);
-                final ImageView mapImage = (ImageView) findViewById(R.id.activity_map_image);
-                final LinearLayout mapContainer = (LinearLayout) findViewById(R.id.map_container);
-                final ImageView directionImage = (ImageView) findViewById(R.id.activity_map_direction);
-                final LinearLayout walkContainer = (LinearLayout) findViewById(R.id.walk_container);
-                final LinearLayout favoritesImageContainer = (LinearLayout) findViewById(R.id.favorites_container);
                 final int height = (int) getResources().getDimension(R.dimen.activity_station_street_map_height);
                 final RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) streetViewImage.getLayoutParams();
                 final Position position = station.getStops().get(0).getPosition();
@@ -164,9 +162,14 @@ public class StationActivity extends AbstractStationActivity {
         }
     }
 
+    @Override
+    public void onStart(){
+        super.onStart();
+
+    }
+
     @SuppressWarnings("unchecked")
     private void setUpStopLayouts(@NonNull final Map<TrainLine, List<Stop>> stopByLines) {
-        final LinearLayout stopsView = (LinearLayout) findViewById(R.id.activity_train_station_details);
         Stream.of(stopByLines.entrySet()).forEach(entry -> {
             final TrainLine line = entry.getKey();
             final List<Stop> stops = entry.getValue();
@@ -228,7 +231,6 @@ public class StationActivity extends AbstractStationActivity {
     }
 
     private void setToolBar(@NonNull final TrainLine randomTrainLine) {
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener(item -> {
             swipeRefreshLayout.setRefreshing(true);
