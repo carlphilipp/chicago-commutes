@@ -42,6 +42,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.app.adapter.BusBoundAdapter;
@@ -63,8 +65,11 @@ public class BusBoundActivity extends ListActivity {
 
     private static final String TAG = BusBoundActivity.class.getSimpleName();
 
+    @BindView(R.id.bellow) LinearLayout layout;
+    @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.bus_filter) EditText filter;
+
     private MapFragment mapFragment;
-    private LinearLayout layout;
     private String busRouteId;
     private String busRouteName;
     private String bound;
@@ -78,8 +83,7 @@ public class BusBoundActivity extends ListActivity {
         App.checkBusData(this);
         if (!this.isFinishing()) {
             setContentView(R.layout.activity_bus_bound);
-
-            layout = (LinearLayout) findViewById(R.id.bellow);
+            ButterKnife.bind(this);
 
             if (busRouteId == null || busRouteName == null || bound == null || boundTitle == null) {
                 final Bundle extras = getIntent().getExtras();
@@ -109,7 +113,6 @@ public class BusBoundActivity extends ListActivity {
                 startActivity(intent);
             });
 
-            final EditText filter = (EditText) findViewById(R.id.bus_filter);
             filter.addTextChangedListener(new TextWatcher() {
                 private List<BusStop> busStopsFiltered;
 
@@ -134,7 +137,7 @@ public class BusBoundActivity extends ListActivity {
                 }
             });
 
-            final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
             Util.setWindowsColor(this, toolbar, TrainLine.NA);
             toolbar.setTitle(busRouteId + " - " + boundTitle);
 
@@ -194,9 +197,9 @@ public class BusBoundActivity extends ListActivity {
                             } else {
                                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Util.CHICAGO, 10));
                             }
-                            BusBoundActivity.this.drawPattern(onNext);
+                            drawPattern(onNext);
                         } else {
-                            Util.showMessage(BusBoundActivity.this, R.string.message_error_could_not_load_path);
+                            Util.showMessage(this, R.string.message_error_could_not_load_path);
                         }
                     },
                     onError -> {

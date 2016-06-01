@@ -32,6 +32,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.Preferences;
@@ -52,6 +54,19 @@ import fr.cph.chicago.util.Util;
  */
 public class BusActivity extends AbstractStationActivity {
 
+    @BindView(R.id.activity_bus_stop_swipe_refresh_layout) SwipeRefreshLayout scrollView;
+    @BindView(R.id.activity_favorite_star) ImageView favoritesImage;
+    @BindView(R.id.activity_bus_stops) LinearLayout stopsView;
+    @BindView(R.id.activity_bus_streetview_image) ImageView streetViewImage;
+    @BindView(R.id.activity_bus_steetview_text) TextView streetViewText;
+    @BindView(R.id.activity_map_image) ImageView mapImage;
+    @BindView(R.id.activity_map_direction) ImageView directionImage;
+    @BindView(R.id.favorites_container) LinearLayout favoritesImageContainer;
+    @BindView(R.id.walk_container) LinearLayout walkContainer;
+    @BindView(R.id.map_container) LinearLayout mapContainer;
+    @BindView(R.id.activity_bus_station_value) TextView busRouteNameView2;
+    @BindView(R.id.toolbar) Toolbar toolbar;
+
     private List<BusArrival> busArrivals;
     private String busRouteId, bound, boundTitle;
     private Integer busStopId;
@@ -59,18 +74,13 @@ public class BusActivity extends AbstractStationActivity {
     private double latitude, longitude;
     private boolean isFavorite;
 
-    private SwipeRefreshLayout scrollView;
-    private ImageView favoritesImage;
-    private LinearLayout stopsView;
-
     @Override
     protected final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         App.checkBusData(this);
         if (!this.isFinishing()) {
             setContentView(R.layout.activity_bus);
-
-            scrollView = (SwipeRefreshLayout) findViewById(R.id.activity_bus_stop_swipe_refresh_layout);
+            ButterKnife.bind(this);
 
             if (busStopId == null || busRouteId == null || bound == null || busStopName == null || busRouteName == null || boundTitle == null) {
                 final Bundle extras = getIntent().getExtras();
@@ -90,29 +100,20 @@ public class BusActivity extends AbstractStationActivity {
 
             isFavorite = isFavorite();
 
-            stopsView = (LinearLayout) findViewById(R.id.activity_bus_stops);
-            final ImageView streetViewImage = (ImageView) findViewById(R.id.activity_bus_streetview_image);
-            final TextView streetViewText = (TextView) findViewById(R.id.activity_bus_steetview_text);
-            final ImageView mapImage = (ImageView) findViewById(R.id.activity_map_image);
             mapImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
-            final ImageView directionImage = (ImageView) findViewById(R.id.activity_map_direction);
             directionImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
-            final LinearLayout favoritesImageContainer = (LinearLayout) findViewById(R.id.favorites_container);
             favoritesImageContainer.setOnClickListener(v -> BusActivity.this.switchFavorite());
-            final LinearLayout walkContainer = (LinearLayout) findViewById(R.id.walk_container);
-            final LinearLayout mapContainer = (LinearLayout) findViewById(R.id.map_container);
-            favoritesImage = (ImageView) findViewById(R.id.activity_favorite_star);
+
             if (isFavorite) {
                 favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
             } else {
                 favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
             }
-            scrollView.setOnRefreshListener(() -> new LoadStationDataTask(BusActivity.this, scrollView, busRouteId, busStopId).execute());
+            scrollView.setOnRefreshListener(() -> new LoadStationDataTask(this, scrollView, busRouteId, busStopId).execute());
             streetViewImage.setOnClickListener(new GoogleStreetOnClickListener(latitude, longitude));
             mapContainer.setOnClickListener(new GoogleMapOnClickListener(latitude, longitude));
             walkContainer.setOnClickListener(new GoogleMapDirectionOnClickListener(latitude, longitude));
 
-            final TextView busRouteNameView2 = (TextView) findViewById(R.id.activity_bus_station_value);
             final String title = busRouteName + " (" + boundTitle + ")";
             busRouteNameView2.setText(title);
 
@@ -129,7 +130,6 @@ public class BusActivity extends AbstractStationActivity {
     }
 
     private void setToolBar() {
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener((item -> {
             scrollView.setRefreshing(true);

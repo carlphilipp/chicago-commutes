@@ -26,6 +26,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils.TruncateAt;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -33,9 +34,17 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
+import com.annimon.stream.Stream;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.annimon.stream.Stream;
 import fr.cph.chicago.R;
 import fr.cph.chicago.app.App;
 import fr.cph.chicago.app.listener.GoogleMapDirectionOnClickListener;
@@ -59,12 +68,6 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
 
 /**
  * Activity that represents the train station
@@ -115,11 +118,11 @@ public class StationActivity extends AbstractStationActivity {
                 setContentView(R.layout.activity_station);
                 ButterKnife.bind(this);
 
-                paramsStop = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
                 // Get station
                 final TrainData trainData = DataHolder.getInstance().getTrainData();
                 station = trainData.getStation(stationId);
+
+                paramsStop = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
                 final int height = (int) getResources().getDimension(R.dimen.activity_station_street_map_height);
                 final RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) streetViewImage.getLayoutParams();
@@ -160,12 +163,6 @@ public class StationActivity extends AbstractStationActivity {
                 Util.trackScreen(getApplicationContext(), getString(R.string.analytics_train_details));
             }
         }
-    }
-
-    @Override
-    public void onStart(){
-        super.onStart();
-
     }
 
     @SuppressWarnings("unchecked")
@@ -254,12 +251,14 @@ public class StationActivity extends AbstractStationActivity {
     public void onRestoreInstanceState(final Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         stationId = savedInstanceState.getInt(getString(R.string.bundle_train_stationId));
+        Log.d("StationActivity", "onRestoreInstanceState");
     }
 
     @Override
     public void onSaveInstanceState(final Bundle savedInstanceState) {
         savedInstanceState.putInt(getString(R.string.bundle_train_stationId), stationId);
         super.onSaveInstanceState(savedInstanceState);
+        Log.d("StationActivity", "onSaveInstanceState");
     }
 
     /**

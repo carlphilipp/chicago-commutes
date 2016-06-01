@@ -45,6 +45,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.DataHolder;
@@ -63,11 +65,14 @@ import fr.cph.chicago.util.Util;
  */
 public class TrainMapActivity extends Activity {
 
-    private ViewGroup viewGroup;
+    @BindView(android.R.id.content) ViewGroup viewGroup;
+    @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.map) RelativeLayout layout;
+
     private MapFragment mapFragment;
     private Marker selectedMarker;
     private Map<Marker, View> views;
-    private RelativeLayout layout;
+
     private String line;
     private Map<Marker, Boolean> status;
     private List<Marker> markers;
@@ -89,8 +94,8 @@ public class TrainMapActivity extends Activity {
         if (!this.isFinishing()) {
             MapsInitializer.initialize(getApplicationContext());
             setContentView(R.layout.activity_map);
-            layout = (RelativeLayout) findViewById(R.id.map);
-            viewGroup = (ViewGroup) findViewById(android.R.id.content);
+            ButterKnife.bind(this);
+
             if (savedInstanceState != null) {
                 line = savedInstanceState.getString(getString(R.string.bundle_train_line));
             } else {
@@ -118,7 +123,7 @@ public class TrainMapActivity extends Activity {
     }
 
     private void setToolbar() {
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener((item -> {
             new LoadTrainPositionTask(TrainMapActivity.this, line, trainData).execute(false, true);

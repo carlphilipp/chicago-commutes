@@ -57,6 +57,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
@@ -85,10 +87,12 @@ public class BusMapActivity extends Activity {
 
     private static final String TAG = BusMapActivity.class.getSimpleName();
 
-    private ViewGroup viewGroup;
+    @BindView(android.R.id.content) ViewGroup viewGroup;
+    @BindView(R.id.map) RelativeLayout layout;
+    @BindView(R.id.toolbar) Toolbar toolbar;
+
     private MapFragment mapFragment;
     private Marker selectedMarker;
-    private RelativeLayout layout;
 
     private List<Marker> busMarkers;
     private List<Marker> busStationMarkers;
@@ -112,8 +116,8 @@ public class BusMapActivity extends Activity {
         if (!this.isFinishing()) {
             MapsInitializer.initialize(getApplicationContext());
             setContentView(R.layout.activity_map);
-            layout = (RelativeLayout) findViewById(R.id.map);
-            viewGroup = (ViewGroup) findViewById(android.R.id.content);
+            ButterKnife.bind(this);
+
             if (savedInstanceState != null) {
                 busId = savedInstanceState.getInt(getString(R.string.bundle_bus_id));
                 busRouteId = savedInstanceState.getString(getString(R.string.bundle_bus_route_id));
@@ -236,8 +240,6 @@ public class BusMapActivity extends Activity {
     }
 
     private void setToolbar() {
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener((item -> {
             Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_vehicles, 0);

@@ -35,6 +35,8 @@ import android.widget.FrameLayout;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import fr.cph.chicago.R;
 import fr.cph.chicago.app.fragment.BikeFragment;
 import fr.cph.chicago.app.fragment.BusFragment;
@@ -54,13 +56,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.container) FrameLayout frameLayout;
+    @BindView(R.id.main_drawer) NavigationView drawer;
+    @BindView(R.id.drawer_layout) DrawerLayout drawerLayout;
+
     private static final String SELECTED_ID = "SELECTED_ID";
     private static final int POSITION_BUS = 2;
 
     private int currentPosition;
 
-    private Toolbar toolbar;
-    private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
     private MenuItem menuItem;
 
@@ -80,10 +85,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 reloadData();
             }
             setContentView(R.layout.activity_main);
+            ButterKnife.bind(this);
 
             loadFirstData();
 
-            final FrameLayout frameLayout = (FrameLayout) findViewById(R.id.container);
             frameLayout.getForeground().setAlpha(0);
 
             initView();
@@ -114,14 +119,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void initView() {
-        final NavigationView drawer = (NavigationView) findViewById(R.id.main_drawer);
         drawer.setNavigationItemSelectedListener(this);
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         menuItem = drawer.getMenu().getItem(0);
     }
 
     private void setToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setOnMenuItemClickListener(item -> {
             if (getString(R.string.nearby).equals(toolbar.getTitle())) {
                 nearbyFragment.reloadData();

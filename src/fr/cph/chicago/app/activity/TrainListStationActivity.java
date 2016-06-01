@@ -20,6 +20,8 @@ import android.app.ListActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import fr.cph.chicago.R;
 import fr.cph.chicago.app.adapter.TrainAdapter;
 import fr.cph.chicago.entity.enumeration.TrainLine;
@@ -33,6 +35,8 @@ import fr.cph.chicago.util.Util;
  */
 public class TrainListStationActivity extends ListActivity {
 
+    @BindView(R.id.toolbar) Toolbar toolbar;
+
     private TrainLine trainLine;
     private String lineParam;
 
@@ -40,6 +44,9 @@ public class TrainListStationActivity extends ListActivity {
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (!this.isFinishing()) {
+            setContentView(R.layout.activity_train_station);
+            ButterKnife.bind(this);
+
             // Load data
             if (savedInstanceState != null) {
                 lineParam = savedInstanceState.getString(getString(R.string.bundle_train_line));
@@ -49,9 +56,6 @@ public class TrainListStationActivity extends ListActivity {
             trainLine = TrainLine.fromString(lineParam);
             setTitle(trainLine.toStringWithLine());
 
-            setContentView(R.layout.activity_train_station);
-
-            final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             Util.setWindowsColor(this, toolbar, trainLine);
             toolbar.setTitle(trainLine.toStringWithLine());
 

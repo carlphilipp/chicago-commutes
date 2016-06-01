@@ -23,6 +23,8 @@ import com.annimon.stream.Stream;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import fr.cph.chicago.R;
 import fr.cph.chicago.app.App;
 import fr.cph.chicago.app.adapter.SearchAdapter;
@@ -39,6 +41,10 @@ import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 
 public class SearchActivity extends AppCompatActivity {
 
+    @BindView(R.id.container) FrameLayout container;
+    @BindView(R.id.search_list) ListView listView;
+    @BindView(R.id.toolbar) Toolbar toolbar;
+
     private SearchView searchView;
     private SearchAdapter searchAdapter;
     private List<BikeStation> bikeStations;
@@ -54,9 +60,10 @@ public class SearchActivity extends AppCompatActivity {
         App.checkBusData(this);
         if (!this.isFinishing()) {
             setContentView(R.layout.activity_search);
+            ButterKnife.bind(this);
+
             setupToolbar();
 
-            final FrameLayout container = (FrameLayout) findViewById(R.id.container);
             container.getForeground().setAlpha(0);
 
             searchAdapter = new SearchAdapter(this);
@@ -64,7 +71,6 @@ public class SearchActivity extends AppCompatActivity {
             bikeStations = getIntent().getExtras().getParcelableArrayList(getString(R.string.bundle_bike_stations));
             handleIntent(getIntent());
 
-            final ListView listView = (ListView) findViewById(R.id.search_list);
             listView.setAdapter(searchAdapter);
 
             // Associate searchable configuration with the SearchView
@@ -134,7 +140,6 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void setupToolbar() {
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         Util.setWindowsColor(this, toolbar, TrainLine.NA);
         setSupportActionBar(toolbar);
         final ActionBar actionBar = getSupportActionBarNotNull();

@@ -31,14 +31,16 @@ import com.annimon.stream.Stream;
 
 import java.util.List;
 
-import fr.cph.chicago.app.App;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import fr.cph.chicago.R;
-import fr.cph.chicago.data.Preferences;
-import fr.cph.chicago.entity.BikeStation;
-import fr.cph.chicago.entity.enumeration.TrainLine;
+import fr.cph.chicago.app.App;
 import fr.cph.chicago.app.listener.GoogleMapDirectionOnClickListener;
 import fr.cph.chicago.app.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.app.listener.GoogleStreetOnClickListener;
+import fr.cph.chicago.data.Preferences;
+import fr.cph.chicago.entity.BikeStation;
+import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.rx.subscriber.BikeAllBikeStationsSubscriber;
 import fr.cph.chicago.util.Util;
@@ -51,8 +53,18 @@ import fr.cph.chicago.util.Util;
  */
 public class BikeStationActivity extends AbstractStationActivity {
 
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private ImageView favoritesImage;
+    @BindView(R.id.activity_station_swipe_refresh_layout) SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.activity_favorite_star) ImageView favoritesImage;
+    @BindView(R.id.activity_bike_station_streetview_image) ImageView streetViewImage;
+    @BindView(R.id.activity_bike_station_steetview_text) TextView streetViewText;
+    @BindView(R.id.activity_map_image) ImageView mapImage;
+    @BindView(R.id.activity_map_direction) ImageView directionImage;
+    @BindView(R.id.map_container) LinearLayout mapContainer;
+    @BindView(R.id.walk_container) LinearLayout walkContainer;
+    @BindView(R.id.favorites_container) LinearLayout favoritesImageContainer;
+    @BindView(R.id.activity_bike_station_value) TextView bikeStationValue;
+    @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.favorites_bikes_list) LinearLayout container;
 
     private BikeStation bikeStation;
     private boolean isFavorite;
@@ -62,12 +74,12 @@ public class BikeStationActivity extends AbstractStationActivity {
         super.onCreate(savedInstanceState);
         if (!this.isFinishing()) {
             setContentView(R.layout.activity_bike_station);
+            ButterKnife.bind(this);
             bikeStation = getIntent().getExtras().getParcelable(getString(R.string.bundle_bike_station));
             if (bikeStation != null) {
                 final double latitude = bikeStation.getLatitude();
                 final double longitude = bikeStation.getLongitude();
 
-                swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_station_swipe_refresh_layout);
                 swipeRefreshLayout.setOnRefreshListener(
                     () -> ObservableUtil.createAllBikeStationsObservable(getApplicationContext())
                         .subscribe(new BikeAllBikeStationsSubscriber(BikeStationActivity.this, bikeStation.getId(), swipeRefreshLayout))
@@ -75,31 +87,21 @@ public class BikeStationActivity extends AbstractStationActivity {
 
                 isFavorite = isFavorite();
 
-                final ImageView streetViewImage = (ImageView) findViewById(R.id.activity_bike_station_streetview_image);
-                final TextView streetViewText = (TextView) findViewById(R.id.activity_bike_station_steetview_text);
-
                 // Call google street api to load image
                 createGoogleStreetObservable(latitude, longitude);
                 subscribeToGoogleStreet(streetViewImage, streetViewText);
 
-                final ImageView mapImage = (ImageView) findViewById(R.id.activity_map_image);
                 mapImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
-                final ImageView directionImage = (ImageView) findViewById(R.id.activity_map_direction);
                 directionImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
-                favoritesImage = (ImageView) findViewById(R.id.activity_favorite_star);
-                final LinearLayout mapContainer = (LinearLayout) findViewById(R.id.map_container);
-                final LinearLayout walkContainer = (LinearLayout) findViewById(R.id.walk_container);
+
                 if (isFavorite) {
                     favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
                 } else {
                     favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
                 }
-                final LinearLayout favoritesImageContainer = (LinearLayout) findViewById(R.id.favorites_container);
+
                 favoritesImageContainer.setOnClickListener(view -> BikeStationActivity.this.switchFavorite());
-
-                final TextView bikeStationValue = (TextView) findViewById(R.id.activity_bike_station_value);
                 bikeStationValue.setText(bikeStation.getStAddress1());
-
                 streetViewImage.setOnClickListener(new GoogleStreetOnClickListener(latitude, longitude));
                 mapContainer.setOnClickListener(new GoogleMapOnClickListener(latitude, longitude));
                 walkContainer.setOnClickListener(new GoogleMapDirectionOnClickListener(latitude, longitude));
@@ -111,7 +113,6 @@ public class BikeStationActivity extends AbstractStationActivity {
     }
 
     private void setToolBar() {
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener((item -> {
             swipeRefreshLayout.setRefreshing(true);
@@ -131,7 +132,6 @@ public class BikeStationActivity extends AbstractStationActivity {
     private void drawData() {
         final Context context = getApplicationContext();
 
-        final LinearLayout container = (LinearLayout) findViewById(R.id.favorites_bikes_list);
         final LinearLayout availableLayout = new LinearLayout(context);
         final LinearLayout availableBikes = new LinearLayout(context);
         final LinearLayout availableDocks = new LinearLayout(context);

@@ -23,6 +23,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import fr.cph.chicago.R;
 
 /**
@@ -32,24 +34,26 @@ import fr.cph.chicago.R;
  * @version 1
  */
 public class ErrorActivity extends Activity {
-    /**
-     * Error
-     **/
+
+    @BindView(R.id.loading_layout) View loadLayout;
+    @BindView(R.id.error_message) TextView errorText;
+    @BindView(R.id.retry_button) Button button;
+
     private String error;
 
     @Override
     protected final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.error);
+        ButterKnife.bind(this);
 
-        final View loadLayout = findViewById(R.id.loading_layout);
         loadLayout.setVisibility(View.GONE);
         if (error == null) {
             error = getIntent().getExtras().getString(getString(R.string.bundle_error));
         }
-        final TextView errorText = (TextView) findViewById(R.id.error_message);
+
         errorText.setText(error);
-        final Button button = (Button) findViewById(R.id.retry_button);
+
         button.setOnClickListener(v -> {
             final Intent intent = new Intent(ErrorActivity.this, BaseActivity.class);
             intent.putExtra(ErrorActivity.this.getString(R.string.bundle_error), true);
