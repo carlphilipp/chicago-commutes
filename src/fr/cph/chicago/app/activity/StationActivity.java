@@ -18,10 +18,10 @@ package fr.cph.chicago.app.activity;
 
 import android.content.res.ColorStateList;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.Toolbar;
@@ -43,6 +43,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import butterknife.BindColor;
+import butterknife.BindDimen;
+import butterknife.BindDrawable;
+import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import fr.cph.chicago.R;
@@ -90,16 +94,23 @@ public class StationActivity extends AbstractStationActivity {
     @BindView(R.id.favorites_container) LinearLayout favoritesImageContainer;
     @BindView(R.id.activity_train_station_details) LinearLayout stopsView;
     @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindString(R.string.bundle_train_stationId) String bundleTrainStationId;
+    @BindString(R.string.analytics_train_details) String trainDetails;
+    @BindDimen(R.dimen.activity_station_street_map_height) int height;
+    @BindDimen(R.dimen.activity_station_stops_line3_padding_left) int line3PaddingLeft;
+    @BindDimen(R.dimen.activity_station_stops_line3_padding_top) int line3PaddingTop;
+    @BindColor(R.color.grey_5) int grey_5;
+    @BindColor(R.color.grey) int grey;
+    @BindColor(R.color.yellowLineDark) int yellowLineDark;
+    @BindColor(R.color.yellowLine) int yellowLine;
+    @BindDrawable(R.drawable.ic_arrow_back_white_24dp) Drawable arrowBackWhite;
 
     private LinearLayout.LayoutParams paramsStop;
-
     private boolean isFavorite;
     private int stationId;
     private Station station;
     private Map<String, Integer> ids;
-
     private Observable<TrainArrival> trainArrivalObservable;
-
     private final TrainService trainService;
 
     public StationActivity() {
@@ -111,20 +122,18 @@ public class StationActivity extends AbstractStationActivity {
         super.onCreate(savedInstanceState);
         App.checkTrainData(this);
         if (!this.isFinishing()) {
+            // Layout setup
+            setContentView(R.layout.activity_station);
+            ButterKnife.bind(this);
             // Get station id from bundle
-            stationId = getIntent().getExtras().getInt(getString(R.string.bundle_train_stationId), 0);
+            stationId = getIntent().getExtras().getInt(bundleTrainStationId, 0);
             if (stationId != 0) {
-                // Layout setup
-                setContentView(R.layout.activity_station);
-                ButterKnife.bind(this);
-
                 // Get station
                 final TrainData trainData = DataHolder.getInstance().getTrainData();
                 station = trainData.getStation(stationId);
 
                 paramsStop = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-                final int height = (int) getResources().getDimension(R.dimen.activity_station_street_map_height);
                 final RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) streetViewImage.getLayoutParams();
                 final Position position = station.getStops().get(0).getPosition();
                 final ViewGroup.LayoutParams params = streetViewImage.getLayoutParams();
@@ -141,16 +150,16 @@ public class StationActivity extends AbstractStationActivity {
                 streetViewText.setTypeface(null, Typeface.BOLD);
                 swipeRefreshLayout.setOnRefreshListener(() -> trainArrivalObservable.subscribe(new SubscriberTrainArrival(this, swipeRefreshLayout)));
                 if (isFavorite) {
-                    favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
+                    favoritesImage.setColorFilter(yellowLineDark);
                 } else {
-                    favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
+                    favoritesImage.setColorFilter(grey_5);
                 }
 
                 params.height = height;
                 params.width = layoutParams.width;
-                mapImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
-                directionImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
-                favoritesImageContainer.setOnClickListener(v -> StationActivity.this.switchFavorite());
+                mapImage.setColorFilter(grey_5);
+                directionImage.setColorFilter(grey_5);
+                favoritesImageContainer.setOnClickListener(v -> switchFavorite());
                 mapContainer.setOnClickListener(new GoogleMapOnClickListener(position.getLatitude(), position.getLongitude()));
                 walkContainer.setOnClickListener(new GoogleMapDirectionOnClickListener(position.getLatitude(), position.getLongitude()));
 
@@ -160,7 +169,7 @@ public class StationActivity extends AbstractStationActivity {
                 swipeRefreshLayout.setColorSchemeColors(randomTrainLine.getColor());
                 setToolBar(randomTrainLine);
 
-                Util.trackScreen(getApplicationContext(), getString(R.string.analytics_train_details));
+                Util.trackScreen(getApplicationContext(), trainDetails);
             }
         }
     }
@@ -176,7 +185,7 @@ public class StationActivity extends AbstractStationActivity {
             testView.setText(line.toStringWithLine());
             testView.setBackgroundColor(line.getColor());
             if (line == TrainLine.YELLOW) {
-                testView.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.yellowLine));
+                testView.setBackgroundColor(yellowLine);
             }
 
             stopsView.addView(lineTitleView);
@@ -196,19 +205,19 @@ public class StationActivity extends AbstractStationActivity {
                 checkBox.setChecked(Preferences.getTrainFilter(getApplicationContext(), stationId, line, stop.getDirection()));
                 checkBox.setTypeface(checkBox.getTypeface(), Typeface.BOLD);
                 checkBox.setText(stop.getDirection().toString());
-                checkBox.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.grey));
+                checkBox.setTextColor(grey);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     checkBox.setBackgroundTintList(ColorStateList.valueOf(line.getColor()));
                     checkBox.setButtonTintList(ColorStateList.valueOf(line.getColor()));
                     if (line == TrainLine.YELLOW) {
-                        checkBox.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getApplicationContext(), R.color.yellowLine)));
-                        checkBox.setButtonTintList(ColorStateList.valueOf(ContextCompat.getColor(getApplicationContext(), R.color.yellowLine)));
+                        checkBox.setBackgroundTintList(ColorStateList.valueOf(yellowLine));
+                        checkBox.setButtonTintList(ColorStateList.valueOf(yellowLine));
                     }
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     checkBox.setForegroundTintList(ColorStateList.valueOf(line.getColor()));
                     if (line == TrainLine.YELLOW) {
-                        checkBox.setForegroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getApplicationContext(), R.color.yellowLine)));
+                        checkBox.setForegroundTintList(ColorStateList.valueOf(yellowLine));
                     }
                 }
 
@@ -242,7 +251,7 @@ public class StationActivity extends AbstractStationActivity {
         Util.setWindowsColor(this, toolbar, randomTrainLine);
 
         toolbar.setTitle(station.getName());
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationIcon(arrowBackWhite);
 
         toolbar.setOnClickListener(v -> finish());
     }
@@ -310,8 +319,6 @@ public class StationActivity extends AbstractStationActivity {
     public void drawAllArrivalsTrain(@NonNull final Eta eta) {
         final TrainLine line = eta.getRouteName();
         final Stop stop = eta.getStop();
-        final int line3PaddingLeft = (int) getResources().getDimension(R.dimen.activity_station_stops_line3_padding_left);
-        final int line3PaddingTop = (int) getResources().getDimension(R.dimen.activity_station_stops_line3_padding_top);
         final String key = line.toString() + "_" + stop.getDirection().toString();
         // viewId might be not there if CTA API provide wrong data
         if (ids.containsKey(key)) {
@@ -329,14 +336,14 @@ public class StationActivity extends AbstractStationActivity {
                 final TextView stopName = new TextView(this);
                 final String stopNameData = eta.getDestName() + ": ";
                 stopName.setText(stopNameData);
-                stopName.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.grey));
+                stopName.setTextColor(grey);
                 stopName.setPadding(line3PaddingLeft, line3PaddingTop, 0, 0);
                 insideLayout.addView(stopName);
 
                 final TextView timing = new TextView(this);
                 final String timingData = eta.getTimeLeftDueDelay() + " ";
                 timing.setText(timingData);
-                timing.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.grey));
+                timing.setTextColor(grey);
                 timing.setLines(1);
                 timing.setEllipsize(TruncateAt.END);
                 insideLayout.addView(timing);
@@ -359,11 +366,11 @@ public class StationActivity extends AbstractStationActivity {
         if (isFavorite) {
             Util.removeFromTrainFavorites(stationId, scrollView);
             isFavorite = false;
-            favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.grey_5));
+            favoritesImage.setColorFilter(grey);
         } else {
             Util.addToTrainFavorites(stationId, scrollView);
             isFavorite = true;
-            favoritesImage.setColorFilter(ContextCompat.getColor(this, R.color.yellowLineDark));
+            favoritesImage.setColorFilter(yellowLineDark);
         }
     }
 
