@@ -18,6 +18,7 @@ package fr.cph.chicago.app.activity;
 
 import android.app.Activity;
 import android.app.FragmentManager;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -45,18 +46,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import butterknife.BindDrawable;
+import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
+import fr.cph.chicago.app.App;
+import fr.cph.chicago.app.listener.TrainMapOnCameraChangeListener;
+import fr.cph.chicago.app.task.LoadTrainFollowTask;
+import fr.cph.chicago.app.task.LoadTrainPositionTask;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Train;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.app.listener.TrainMapOnCameraChangeListener;
-import fr.cph.chicago.app.task.LoadTrainFollowTask;
-import fr.cph.chicago.app.task.LoadTrainPositionTask;
 import fr.cph.chicago.util.Util;
 
 /**
@@ -68,6 +71,11 @@ public class TrainMapActivity extends Activity {
     @BindView(android.R.id.content) ViewGroup viewGroup;
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.map) RelativeLayout layout;
+
+    @BindString(R.string.bundle_train_line) String bundleTrainLine;
+    @BindString(R.string.analytics_train_map) String analyticsTrainMap;
+
+    @BindDrawable(R.drawable.ic_arrow_back_white_24dp) Drawable arrowBackWhite;
 
     private MapFragment mapFragment;
     private Marker selectedMarker;
@@ -97,9 +105,9 @@ public class TrainMapActivity extends Activity {
             ButterKnife.bind(this);
 
             if (savedInstanceState != null) {
-                line = savedInstanceState.getString(getString(R.string.bundle_train_line));
+                line = savedInstanceState.getString(bundleTrainLine);
             } else {
-                line = getIntent().getExtras().getString(getString(R.string.bundle_train_line));
+                line = getIntent().getExtras().getString(bundleTrainLine);
             }
 
             // Init data
@@ -109,7 +117,7 @@ public class TrainMapActivity extends Activity {
             setToolbar();
 
             // Google analytics
-            Util.trackScreen(getApplicationContext(), getString(R.string.analytics_train_map));
+            Util.trackScreen(getApplicationContext(), analyticsTrainMap);
         }
     }
 
@@ -134,7 +142,7 @@ public class TrainMapActivity extends Activity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.setElevation(4);
         }
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationIcon(arrowBackWhite);
         toolbar.setOnClickListener(v -> finish());
 
         toolbar.setTitle(trainLine.toStringWithLine());
@@ -215,12 +223,12 @@ public class TrainMapActivity extends Activity {
     @Override
     public void onRestoreInstanceState(final Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        line = savedInstanceState.getString(getString(R.string.bundle_train_line));
+        line = savedInstanceState.getString(bundleTrainLine);
     }
 
     @Override
     public void onSaveInstanceState(final Bundle savedInstanceState) {
-        savedInstanceState.putString(getString(R.string.bundle_train_line), line);
+        savedInstanceState.putString(bundleTrainLine, line);
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -256,9 +264,7 @@ public class TrainMapActivity extends Activity {
             } else {
                 views.clear();
             }
-            for (final Marker marker : markers) {
-                marker.remove();
-            }
+            Stream.of(markers).peek(Marker::remove);
             markers.clear();
             final BitmapDescriptor bitmapDescr = trainListener.getCurrentBitmapDescriptor();
             for (final Train train : trains) {
