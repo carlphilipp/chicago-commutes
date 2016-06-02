@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -57,6 +58,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import butterknife.BindDrawable;
+import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import fr.cph.chicago.app.App;
@@ -91,6 +94,14 @@ public class BusMapActivity extends Activity {
     @BindView(R.id.map) RelativeLayout layout;
     @BindView(R.id.toolbar) Toolbar toolbar;
 
+    @BindString(R.string.bundle_bus_id) String bundleBusId;
+    @BindString(R.string.bundle_bus_route_id) String bundleBusRouteId;
+    @BindString(R.string.bundle_bus_bounds) String bundleBusBounds;
+    @BindString(R.string.analytics_bus_map) String analyticsBusMap;
+    @BindString(R.string.request_rt) String requestRt;
+
+    @BindDrawable(R.drawable.ic_arrow_back_white_24dp) Drawable arrowBackWhite;
+
     private MapFragment mapFragment;
     private Marker selectedMarker;
 
@@ -119,14 +130,14 @@ public class BusMapActivity extends Activity {
             ButterKnife.bind(this);
 
             if (savedInstanceState != null) {
-                busId = savedInstanceState.getInt(getString(R.string.bundle_bus_id));
-                busRouteId = savedInstanceState.getString(getString(R.string.bundle_bus_route_id));
-                bounds = savedInstanceState.getStringArray(getString(R.string.bundle_bus_bounds));
+                busId = savedInstanceState.getInt(bundleBusId);
+                busRouteId = savedInstanceState.getString(bundleBusRouteId);
+                bounds = savedInstanceState.getStringArray(bundleBusBounds);
             } else {
                 final Bundle extras = getIntent().getExtras();
-                busId = extras.getInt(getString(R.string.bundle_bus_id));
-                busRouteId = extras.getString(getString(R.string.bundle_bus_route_id));
-                bounds = extras.getStringArray(getString(R.string.bundle_bus_bounds));
+                busId = extras.getInt(bundleBusId);
+                busRouteId = extras.getString(bundleBusRouteId);
+                bounds = extras.getStringArray(bundleBusBounds);
             }
 
             busMarkers = new ArrayList<>();
@@ -137,7 +148,7 @@ public class BusMapActivity extends Activity {
 
             setToolbar();
 
-            Util.trackScreen(getApplicationContext(), getString(R.string.analytics_bus_map));
+            Util.trackScreen(getApplicationContext(), analyticsBusMap);
         }
     }
 
@@ -226,23 +237,23 @@ public class BusMapActivity extends Activity {
     @Override
     public void onRestoreInstanceState(final Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        busId = savedInstanceState.getInt(getString(R.string.bundle_bus_id));
-        busRouteId = savedInstanceState.getString(getString(R.string.bundle_bus_route_id));
-        bounds = savedInstanceState.getStringArray(getString(R.string.bundle_bus_bounds));
+        busId = savedInstanceState.getInt(bundleBusId);
+        busRouteId = savedInstanceState.getString(bundleBusRouteId);
+        bounds = savedInstanceState.getStringArray(bundleBusBounds);
     }
 
     @Override
     public void onSaveInstanceState(final Bundle savedInstanceState) {
-        savedInstanceState.putInt(getString(R.string.bundle_bus_id), busId);
-        savedInstanceState.putString(getString(R.string.bundle_bus_route_id), busRouteId);
-        savedInstanceState.putStringArray(getString(R.string.bundle_bus_bounds), bounds);
+        savedInstanceState.putInt(bundleBusId, busId);
+        savedInstanceState.putString(bundleBusRouteId, busRouteId);
+        savedInstanceState.putStringArray(bundleBusBounds, bounds);
         super.onSaveInstanceState(savedInstanceState);
     }
 
     private void setToolbar() {
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener((item -> {
-            Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_vehicles, 0);
+            Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_vehicles, 0);
             ObservableUtil.createBusListObservable(getApplicationContext(), busId, busRouteId).subscribe(new BusSubscriber(BusMapActivity.this, centerMap, layout));
             return false;
         }));
@@ -254,7 +265,7 @@ public class BusMapActivity extends Activity {
         }
 
         toolbar.setTitle(busRouteId);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationIcon(arrowBackWhite);
         toolbar.setOnClickListener(v -> finish());
     }
 
@@ -285,9 +296,7 @@ public class BusMapActivity extends Activity {
 
     public void drawBuses(@NonNull final List<Bus> buses) {
         mapFragment.getMapAsync(googleMap -> {
-            for (final Marker marker : busMarkers) {
-                marker.remove();
-            }
+            Stream.of(busMarkers).peek(Marker::remove);
             busMarkers.clear();
             final BitmapDescriptor bitmapDescr = busListener.getCurrentBitmapDescriptor();
             Stream.of(buses).forEach(bus -> {
@@ -363,7 +372,7 @@ public class BusMapActivity extends Activity {
                 if (busId == 0) {
                     // Search for directions
                     final MultiValuedMap<String, String> directionParams = new ArrayListValuedHashMap<>();
-                    directionParams.put(getString(R.string.request_rt), busRouteId);
+                    directionParams.put(requestRt, busRouteId);
 
                     final InputStream xmlResult = connect.connect(getApplicationContext(), BUS_DIRECTION, directionParams);
                     final BusDirections busDirections = xml.parseBusDirections(xmlResult, busRouteId);
@@ -375,7 +384,7 @@ public class BusMapActivity extends Activity {
                 }
 
                 final MultiValuedMap<String, String> routeIdParam = new ArrayListValuedHashMap<>();
-                routeIdParam.put(getResources().getString(R.string.request_rt), busRouteId);
+                routeIdParam.put(requestRt, busRouteId);
                 final InputStream content = connect.connect(getApplicationContext(), BUS_PATTERN, routeIdParam);
                 final List<BusPattern> patterns = xml.parsePatterns(content);
                 Stream.of(patterns)
