@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import fr.cph.chicago.R;
@@ -39,6 +40,8 @@ public class ErrorActivity extends Activity {
     @BindView(R.id.error_message) TextView errorText;
     @BindView(R.id.retry_button) Button button;
 
+    @BindString(R.string.bundle_error) String bundleError;
+
     private String error;
 
     @Override
@@ -49,14 +52,14 @@ public class ErrorActivity extends Activity {
 
         loadLayout.setVisibility(View.GONE);
         if (error == null) {
-            error = getIntent().getExtras().getString(getString(R.string.bundle_error));
+            error = getIntent().getExtras().getString(bundleError);
         }
 
         errorText.setText(error);
 
         button.setOnClickListener(v -> {
             final Intent intent = new Intent(ErrorActivity.this, BaseActivity.class);
-            intent.putExtra(ErrorActivity.this.getString(R.string.bundle_error), true);
+            intent.putExtra(bundleError, true);
             finish();
             startActivity(intent);
         });
@@ -65,12 +68,12 @@ public class ErrorActivity extends Activity {
     @Override
     public void onRestoreInstanceState(final Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        error = savedInstanceState.getString(getString(R.string.bundle_error));
+        error = savedInstanceState.getString(bundleError);
     }
 
     @Override
     public void onSaveInstanceState(final Bundle savedInstanceState) {
-        savedInstanceState.putString(getString(R.string.bundle_error), error);
+        savedInstanceState.putString(bundleError, error);
         super.onSaveInstanceState(savedInstanceState);
     }
 }

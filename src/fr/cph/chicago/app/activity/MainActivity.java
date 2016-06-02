@@ -22,7 +22,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -35,6 +34,8 @@ import android.widget.FrameLayout;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindColor;
+import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import fr.cph.chicago.R;
@@ -60,6 +61,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @BindView(R.id.container) FrameLayout frameLayout;
     @BindView(R.id.main_drawer) NavigationView drawer;
     @BindView(R.id.drawer_layout) DrawerLayout drawerLayout;
+
+    @BindString(R.string.bundle_bike_stations) String bundleBikeStations;
+    @BindString(R.string.bundle_title) String bundleTitle;
+    @BindString(R.string.favorites) String favorites;
+    @BindString(R.string.train) String train;
+    @BindString(R.string.bus) String bus;
+    @BindString(R.string.divvy) String divvy;
+    @BindString(R.string.nearby) String nearby;
+
+    @BindColor(R.color.primaryColorDarker) int primaryColorDarker;
 
     private static final String SELECTED_ID = "SELECTED_ID";
     private static final int POSITION_BUS = 2;
@@ -125,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void setToolbar() {
         toolbar.setOnMenuItemClickListener(item -> {
-            if (getString(R.string.nearby).equals(toolbar.getTitle())) {
+            if (nearby.equals(toolbar.getTitle())) {
                 nearbyFragment.reloadData();
             } else {
                 // Favorite fragment
@@ -141,8 +152,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     if (dataHolder.getBusData() == null
                         || dataHolder.getBusData().getBusRoutes() == null
                         || dataHolder.getBusData().getBusRoutes().size() == 0
-                        || getIntent().getParcelableArrayListExtra(getString(R.string.bundle_bike_stations)) == null
-                        || getIntent().getParcelableArrayListExtra(getString(R.string.bundle_bike_stations)).size() == 0) {
+                        || getIntent().getParcelableArrayListExtra(bundleBikeStations) == null
+                        || getIntent().getParcelableArrayListExtra(bundleBikeStations).size() == 0) {
                         loadFirstData();
                     }
                     final Observable<FavoritesDTO> zipped = ObservableUtil.createAllDataObservable(getApplicationContext());
@@ -162,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toolbar.inflateMenu(R.menu.main);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.setElevation(4);
-            getWindow().setNavigationBarColor(ContextCompat.getColor(this, R.color.primaryColorDarker));
+            getWindow().setNavigationBarColor(primaryColorDarker);
         }
     }
 
@@ -189,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         final DataHolder dataHolder = DataHolder.getInstance();
         dataHolder.setBusData(busData);
 
-        getIntent().putParcelableArrayListExtra(getString(R.string.bundle_bike_stations), (ArrayList<BikeStation>) bikeStations);
+        getIntent().putParcelableArrayListExtra(bundleBikeStations, (ArrayList<BikeStation>) bikeStations);
         onNewIntent(getIntent());
         if (favoritesFragment != null) {
             favoritesFragment.setBikeStations(bikeStations);
@@ -228,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         currentPosition = position;
         switch (position) {
             case R.id.navigation_favorites:
-                setBarTitle(getString(R.string.favorites));
+                setBarTitle(favorites);
                 if (favoritesFragment == null) {
                     favoritesFragment = FavoritesFragment.newInstance(position + 1);
                 }
@@ -239,7 +250,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 showActionBarMenu();
                 break;
             case R.id.navigation_train:
-                setBarTitle(getString(R.string.train));
+                setBarTitle(train);
                 if (trainFragment == null) {
                     trainFragment = TrainFragment.newInstance(position + 1);
                 }
@@ -250,7 +261,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 hideActionBarMenu();
                 break;
             case R.id.navigation_bus:
-                setBarTitle(getString(R.string.bus));
+                setBarTitle(bus);
                 if (busFragment == null) {
                     busFragment = BusFragment.newInstance(position + 1);
                 }
@@ -261,7 +272,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 hideActionBarMenu();
                 break;
             case R.id.navigation_bike:
-                setBarTitle(getString(R.string.divvy));
+                setBarTitle(divvy);
                 if (bikeFragment == null) {
                     bikeFragment = BikeFragment.newInstance(position + 1);
                 }
@@ -272,7 +283,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 hideActionBarMenu();
                 break;
             case R.id.navigation_nearby:
-                setBarTitle(getString(R.string.nearby));
+                setBarTitle(nearby);
                 if (nearbyFragment == null) {
                     nearbyFragment = NearbyFragment.newInstance(position + 1);
                 }
@@ -303,13 +314,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onSaveInstanceState(final Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putInt(SELECTED_ID, currentPosition);
-        savedInstanceState.putString(getString(R.string.bundle_title), title);
+        savedInstanceState.putString(bundleTitle, title);
     }
 
     @Override
     public void onRestoreInstanceState(final Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        title = savedInstanceState.getString(getString(R.string.bundle_title));
+        title = savedInstanceState.getString(bundleTitle);
         currentPosition = savedInstanceState.getInt(SELECTED_ID);
     }
 
