@@ -29,8 +29,18 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
+
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import fr.cph.chicago.R;
 import fr.cph.chicago.app.App;
 import fr.cph.chicago.app.activity.MainActivity;
@@ -39,10 +49,6 @@ import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.util.Util;
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Bus Fragment
@@ -57,8 +63,10 @@ public class BusFragment extends Fragment {
      **/
     private static final String ARG_SECTION_NUMBER = "section_number";
 
-    private EditText textFilter;
-    private ListView listView;
+    @BindView(R.id.bus_filter) EditText textFilter;
+    @BindView(R.id.bus_list) ListView listView;
+
+    private Unbinder unbinder;
 
     private MainActivity activity;
     private BusAdapter busAdapter;
@@ -95,8 +103,7 @@ public class BusFragment extends Fragment {
     public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_bus, container, false);
         if (!activity.isFinishing()) {
-            textFilter = (EditText) rootView.findViewById(R.id.bus_filter);
-            listView = (ListView) rootView.findViewById(R.id.bus_list);
+            unbinder = ButterKnife.bind(this, rootView);
             addView();
         }
         return rootView;
@@ -137,5 +144,11 @@ public class BusFragment extends Fragment {
                 busAdapter.notifyDataSetChanged();
             }
         });
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 }

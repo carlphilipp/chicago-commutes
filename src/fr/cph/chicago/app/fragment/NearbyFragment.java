@@ -55,10 +55,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import fr.cph.chicago.app.App;
+import butterknife.BindString;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import fr.cph.chicago.R;
+import fr.cph.chicago.app.App;
 import fr.cph.chicago.app.activity.MainActivity;
 import fr.cph.chicago.app.adapter.NearbyAdapter;
+import fr.cph.chicago.app.task.LoadNearbyTask;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.DivvyConnect;
 import fr.cph.chicago.data.DataHolder;
@@ -72,9 +77,8 @@ import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.parser.JsonParser;
-import fr.cph.chicago.app.task.LoadNearbyTask;
-import fr.cph.chicago.util.Util;
 import fr.cph.chicago.parser.XmlParser;
+import fr.cph.chicago.util.Util;
 
 import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
 import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
@@ -90,10 +94,17 @@ public class NearbyFragment extends Fragment {
     private static final String TAG = NearbyFragment.class.getSimpleName();
     private static final String ARG_SECTION_NUMBER = "section_number";
 
+    @BindView(R.id.fragment_nearby_list) ListView listView;
+    @BindView(R.id.loading_layout) View loadLayout;
+    @BindView(R.id.nearby_list_container) RelativeLayout nearbyContainer;
+    @BindView(R.id.hideEmptyStops) CheckBox checkBox;
+
+    @BindString(R.string.request_stop_id) String requestStopId;
+    @BindString(R.string.request_map_id) String requestMapId;
+
+    private Unbinder unbinder;
+
     private SupportMapFragment mapFragment;
-    private View loadLayout;
-    private RelativeLayout nearbyContainer;
-    private ListView listView;
 
     private MainActivity activity;
     private GoogleMap googleMap;
@@ -127,14 +138,11 @@ public class NearbyFragment extends Fragment {
     public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_nearby, container, false);
         if (!activity.isFinishing()) {
+            unbinder = ButterKnife.bind(this, rootView);
             nearbyAdapter = new NearbyAdapter(getContext());
-            listView = (ListView) rootView.findViewById(R.id.fragment_nearby_list);
             listView.setAdapter(nearbyAdapter);
-            loadLayout = rootView.findViewById(R.id.loading_layout);
-            nearbyContainer = (RelativeLayout) rootView.findViewById(R.id.nearby_list_container);
 
             hideStationsStops = Preferences.getHideShowNearby(getContext());
-            final CheckBox checkBox = (CheckBox) rootView.findViewById(R.id.hideEmptyStops);
             checkBox.setChecked(hideStationsStops);
             checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 Preferences.saveHideShowNearby(getContext(), isChecked);
@@ -180,6 +188,12 @@ public class NearbyFragment extends Fragment {
         new LoadArrivals().execute(busStops, trainStations, bikeStations);
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
+    }
+
     private class LoadArrivals extends AsyncTask<List<?>, Void, Void> {
 
         private final SparseArray<Map<String, List<BusArrival>>> busArrivalsMap;
@@ -220,7 +234,7 @@ public class NearbyFragment extends Fragment {
                 try {
                     final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
                     if (NearbyFragment.this.isAdded()) {
-                        reqParams.put(getString(R.string.request_stop_id), Integer.toString(busId));
+                        reqParams.put(requestStopId, Integer.toString(busId));
                         final InputStream is = cta.connect(getContext(), BUS_ARRIVALS, reqParams);
                         final XmlParser xml = XmlParser.getInstance();
                         final List<BusArrival> busArrivals = xml.parseBusArrivals(is);
@@ -249,7 +263,7 @@ public class NearbyFragment extends Fragment {
                 try {
                     final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
                     if (NearbyFragment.this.isAdded()) {
-                        reqParams.put(getString(R.string.request_map_id), Integer.toString(station.getId()));
+                        reqParams.put(requestMapId, Integer.toString(station.getId()));
                         final InputStream xmlRes = cta.connect(getContext(), TRAIN_ARRIVALS, reqParams);
                         final XmlParser xml = XmlParser.getInstance();
                         final SparseArray<TrainArrival> temp = xml.parseArrivals(xmlRes, DataHolder.getInstance().getTrainData());

@@ -30,7 +30,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
@@ -40,6 +39,10 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindString;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import fr.cph.chicago.R;
 import fr.cph.chicago.app.activity.MainActivity;
 import fr.cph.chicago.app.adapter.BikeAdapter;
@@ -56,10 +59,14 @@ public class BikeFragment extends Fragment {
 
     private static final String ARG_SECTION_NUMBER = "section_number";
 
-    private View rootView;
-    private RelativeLayout loadingLayout;
-    private TextView filterView;
-    private ListView bikeListView;
+    @BindView(R.id.loading_relativeLayout) RelativeLayout loadingLayout;
+    @BindView(R.id.bike_list) ListView bikeListView;
+    @BindView(R.id.bike_filter) EditText filter;
+    @BindView(R.id.error_layout) RelativeLayout errorLayout;
+
+    @BindString(R.string.bundle_bike_stations) String bundleBikeStations;
+
+    private Unbinder unbinder;
 
     private MainActivity activity;
     private BikeAdapter bikeAdapter;
@@ -114,11 +121,9 @@ public class BikeFragment extends Fragment {
 
     @Override
     public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_bike, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_bike, container, false);
         if (!activity.isFinishing()) {
-            loadingLayout = (RelativeLayout) rootView.findViewById(R.id.loading_relativeLayout);
-            bikeListView = (ListView) rootView.findViewById(R.id.bike_list);
-            filterView = (TextView) rootView.findViewById(R.id.bike_filter);
+            unbinder = ButterKnife.bind(this, rootView);
             if (!bikeStations.isEmpty()) {
                 loadList();
             } else {
@@ -128,10 +133,15 @@ public class BikeFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
+    }
+
     private void loadList() {
-        final EditText filter = (EditText) rootView.findViewById(R.id.bike_filter);
         if (bikeAdapter == null) {
-            List<BikeStation> bikeStations = activity.getIntent().getExtras().getParcelableArrayList(activity.getString(R.string.bundle_bike_stations));
+            List<BikeStation> bikeStations = activity.getIntent().getExtras().getParcelableArrayList(bundleBikeStations);
             if (bikeStations == null) {
                 bikeStations = new ArrayList<>();
             }
@@ -163,15 +173,13 @@ public class BikeFragment extends Fragment {
             }
         });
         bikeListView.setVisibility(ListView.VISIBLE);
-        filterView.setVisibility(ListView.VISIBLE);
+        filter.setVisibility(ListView.VISIBLE);
         loadingLayout.setVisibility(RelativeLayout.INVISIBLE);
-        final RelativeLayout errorLayout = (RelativeLayout) rootView.findViewById(R.id.error_layout);
         errorLayout.setVisibility(RelativeLayout.INVISIBLE);
     }
 
     private void loadError() {
         loadingLayout.setVisibility(RelativeLayout.INVISIBLE);
-        final RelativeLayout errorLayout = (RelativeLayout) rootView.findViewById(R.id.error_layout);
         errorLayout.setVisibility(RelativeLayout.VISIBLE);
     }
 

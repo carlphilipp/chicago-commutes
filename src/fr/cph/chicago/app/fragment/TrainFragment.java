@@ -24,6 +24,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import butterknife.BindString;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import fr.cph.chicago.R;
 import fr.cph.chicago.app.activity.TrainListStationActivity;
 import fr.cph.chicago.app.adapter.TrainStationAdapter;
@@ -39,6 +43,11 @@ import fr.cph.chicago.util.Util;
 public final class TrainFragment extends Fragment {
 
     private static final String ARG_SECTION_NUMBER = "section_number";
+
+    @BindView(R.id.train_list) ListView listView;
+    @BindString(R.string.bundle_train_line) String bundleTrainLine;
+
+    private Unbinder unbinder;
 
     /**
      * Returns a new instance of this fragment for the given section number.
@@ -63,17 +72,23 @@ public final class TrainFragment extends Fragment {
     @Override
     public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_train, container, false);
+        unbinder = ButterKnife.bind(this, rootView);
         final TrainStationAdapter ada = new TrainStationAdapter();
-        final ListView listView = (ListView) rootView.findViewById(R.id.train_list);
         listView.setAdapter(ada);
         listView.setOnItemClickListener((parentView, childView, position, id) -> {
             final Intent intent = new Intent(getContext(), TrainListStationActivity.class);
             final Bundle extras = new Bundle();
             final String line = TrainLine.values()[position].toString();
-            extras.putString(getContext().getString(R.string.bundle_train_line), line);
+            extras.putString(bundleTrainLine, line);
             intent.putExtras(extras);
             startActivity(intent);
         });
         return rootView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 }

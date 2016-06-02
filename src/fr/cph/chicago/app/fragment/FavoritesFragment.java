@@ -38,8 +38,12 @@ import android.widget.RelativeLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.cph.chicago.app.App;
+import butterknife.BindString;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import fr.cph.chicago.R;
+import fr.cph.chicago.app.App;
 import fr.cph.chicago.app.activity.MainActivity;
 import fr.cph.chicago.app.activity.SearchActivity;
 import fr.cph.chicago.app.adapter.FavoritesAdapter;
@@ -48,9 +52,9 @@ import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
+import fr.cph.chicago.entity.dto.FavoritesDTO;
 import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.util.Util;
-import fr.cph.chicago.entity.dto.FavoritesDTO;
 import rx.Observable;
 
 /**
@@ -64,6 +68,17 @@ public class FavoritesFragment extends Fragment {
     private static final String TAG = FavoritesFragment.class.getSimpleName();
     private static final String ARG_SECTION_NUMBER = "section_number";
 
+    @BindView(R.id.welcome) RelativeLayout welcomeLayout;
+    @BindView(R.id.activity_main_swipe_refresh_layout) SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.favorites_list) RecyclerView listView;
+    @BindView(R.id.floating_button) FloatingActionButton floatingButton;
+
+    @BindString(R.string.bundle_bike_stations) String bundleBikeStation;
+    @BindString(R.string.bundle_bus_arrivals) String bundleBusArrivals;
+    @BindString(R.string.bundle_train_arrivals) String bundleTrainArrivals;
+
+    private Unbinder unbinder;
+
     private FavoritesAdapter favoritesAdapter;
     private List<BusArrival> busArrivals;
     private SparseArray<TrainArrival> trainArrivals;
@@ -71,9 +86,8 @@ public class FavoritesFragment extends Fragment {
     private RefreshTimingTask refreshTimingTask;
 
     private MainActivity activity;
-    private RelativeLayout welcomeLayout;
+
     private View rootView;
-    private SwipeRefreshLayout swipeRefreshLayout;
 
     /**
      * Returns a new instance of this fragment for the given section number.
@@ -117,8 +131,7 @@ public class FavoritesFragment extends Fragment {
     public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         if (!activity.isFinishing()) {
             rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            welcomeLayout = (RelativeLayout) rootView.findViewById(R.id.welcome);
-            swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.activity_main_swipe_refresh_layout);
+            unbinder = ButterKnife.bind(this, rootView);
             if (favoritesAdapter == null) {
                 favoritesAdapter = new FavoritesAdapter(activity);
                 favoritesAdapter.setTrainArrivals(trainArrivals);
@@ -126,10 +139,7 @@ public class FavoritesFragment extends Fragment {
                 favoritesAdapter.setBikeStations(bikeStations);
                 favoritesAdapter.setFavorites();
             }
-            final RecyclerView listView = (RecyclerView) rootView.findViewById(R.id.favorites_list);
             final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(activity);
-            final FloatingActionButton floatingButton = (FloatingActionButton) rootView.findViewById(R.id.floating_button);
-
             listView.setAdapter(favoritesAdapter);
             listView.setLayoutManager(mLayoutManager);
             floatingButton.setOnClickListener(v -> {
@@ -137,7 +147,7 @@ public class FavoritesFragment extends Fragment {
                     Util.showMessage(activity, R.string.message_too_fast);
                 } else {
                     final Intent intent = new Intent(activity, SearchActivity.class);
-                    intent.putParcelableArrayListExtra(getString(R.string.bundle_bike_stations), (ArrayList<BikeStation>) bikeStations);
+                    intent.putParcelableArrayListExtra(bundleBikeStation, (ArrayList<BikeStation>) bikeStations);
                     activity.startActivity(intent);
                 }
             });
@@ -163,8 +173,8 @@ public class FavoritesFragment extends Fragment {
                 if (dataHolder.getBusData() == null
                     || dataHolder.getBusData().getBusRoutes() == null
                     || dataHolder.getBusData().getBusRoutes().size() == 0
-                    || activity.getIntent().getParcelableArrayListExtra(getString(R.string.bundle_bike_stations)) == null
-                    || activity.getIntent().getParcelableArrayListExtra(getString(R.string.bundle_bike_stations)).size() == 0) {
+                    || activity.getIntent().getParcelableArrayListExtra(bundleBikeStation) == null
+                    || activity.getIntent().getParcelableArrayListExtra(bundleBikeStation).size() == 0) {
                     activity.loadFirstData();
                 }
 
@@ -238,16 +248,16 @@ public class FavoritesFragment extends Fragment {
     @Override
     public final void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(getString(R.string.bundle_bus_arrivals), (ArrayList<BusArrival>) busArrivals);
-        outState.putSparseParcelableArray(getString(R.string.bundle_train_arrivals), trainArrivals);
-        outState.putParcelableArrayList(getString(R.string.bundle_bike_stations), (ArrayList<BikeStation>) bikeStations);
+        outState.putParcelableArrayList(bundleBusArrivals, (ArrayList<BusArrival>) busArrivals);
+        outState.putSparseParcelableArray(bundleTrainArrivals, trainArrivals);
+        outState.putParcelableArrayList(bundleBikeStation, (ArrayList<BikeStation>) bikeStations);
     }
 
     public final void reloadData(final FavoritesDTO favoritesDTO) {
         boolean error = false;
         if (!favoritesDTO.isBikeError()) {
             // Put into intent new bike stations data
-            activity.getIntent().putParcelableArrayListExtra(getString(R.string.bundle_bike_stations), (ArrayList<BikeStation>) favoritesDTO.getBikeStations());
+            activity.getIntent().putParcelableArrayListExtra(bundleBikeStation, (ArrayList<BikeStation>) favoritesDTO.getBikeStations());
             bikeStations = favoritesDTO.getBikeStations();
         } else {
             error = true;
@@ -309,6 +319,12 @@ public class FavoritesFragment extends Fragment {
 
     private void stopRefreshing() {
         swipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 
     /**
