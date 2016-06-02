@@ -23,6 +23,7 @@ import com.annimon.stream.Stream;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import fr.cph.chicago.R;
@@ -44,6 +45,8 @@ public class SearchActivity extends AppCompatActivity {
     @BindView(R.id.container) FrameLayout container;
     @BindView(R.id.search_list) ListView listView;
     @BindView(R.id.toolbar) Toolbar toolbar;
+
+    @BindString(R.string.bundle_bike_stations) String bundleBikeStations;
 
     private SearchView searchView;
     private SearchAdapter searchAdapter;
@@ -68,7 +71,7 @@ public class SearchActivity extends AppCompatActivity {
 
             searchAdapter = new SearchAdapter(this);
             searchAdapter.updateData(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-            bikeStations = getIntent().getExtras().getParcelableArrayList(getString(R.string.bundle_bike_stations));
+            bikeStations = getIntent().getExtras().getParcelableArrayList(bundleBikeStations);
             handleIntent(getIntent());
 
             listView.setAdapter(searchAdapter);
@@ -110,8 +113,8 @@ public class SearchActivity extends AppCompatActivity {
     public void startActivity(final Intent intent) {
         // check if search intent
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            final ArrayList<BikeStation> bikeStations = getIntent().getExtras().getParcelableArrayList(getString(R.string.bundle_bike_stations));
-            intent.putParcelableArrayListExtra(getString(R.string.bundle_bike_stations), bikeStations);
+            final ArrayList<BikeStation> bikeStations = getIntent().getExtras().getParcelableArrayList(bundleBikeStations);
+            intent.putParcelableArrayListExtra(bundleBikeStations, bikeStations);
         }
         super.startActivity(intent);
     }
