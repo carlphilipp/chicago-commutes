@@ -17,9 +17,12 @@
 package fr.cph.chicago.app.activity;
 
 import android.app.ListActivity;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
+import butterknife.BindDrawable;
+import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import fr.cph.chicago.R;
@@ -36,6 +39,8 @@ import fr.cph.chicago.util.Util;
 public class TrainListStationActivity extends ListActivity {
 
     @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindString(R.string.bundle_train_line) String bundleTrainLine;
+    @BindDrawable(R.drawable.ic_arrow_back_white_24dp) Drawable arrowBackWhite;
 
     private TrainLine trainLine;
     private String lineParam;
@@ -49,9 +54,9 @@ public class TrainListStationActivity extends ListActivity {
 
             // Load data
             if (savedInstanceState != null) {
-                lineParam = savedInstanceState.getString(getString(R.string.bundle_train_line));
+                lineParam = savedInstanceState.getString(bundleTrainLine);
             } else {
-                lineParam = getIntent().getExtras().getString(getString(R.string.bundle_train_line));
+                lineParam = getIntent().getExtras().getString(bundleTrainLine);
             }
             trainLine = TrainLine.fromString(lineParam);
             setTitle(trainLine.toStringWithLine());
@@ -59,7 +64,7 @@ public class TrainListStationActivity extends ListActivity {
             Util.setWindowsColor(this, toolbar, trainLine);
             toolbar.setTitle(trainLine.toStringWithLine());
 
-            toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+            toolbar.setNavigationIcon(arrowBackWhite);
             toolbar.setOnClickListener(v -> finish());
 
             final TrainAdapter ada = new TrainAdapter(trainLine, this);
@@ -70,13 +75,13 @@ public class TrainListStationActivity extends ListActivity {
     @Override
     public void onRestoreInstanceState(final Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        lineParam = savedInstanceState.getString(getString(R.string.bundle_train_line));
+        lineParam = savedInstanceState.getString(bundleTrainLine);
         trainLine = TrainLine.fromString(lineParam);
     }
 
     @Override
     public void onSaveInstanceState(final Bundle savedInstanceState) {
-        savedInstanceState.putString(getString(R.string.bundle_train_line), lineParam);
+        savedInstanceState.putString(bundleTrainLine, lineParam);
         super.onSaveInstanceState(savedInstanceState);
     }
 }
