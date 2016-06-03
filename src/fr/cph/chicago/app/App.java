@@ -77,11 +77,6 @@ public class App extends Application {
      **/
     private static Tracker tracker;
 
-    @Override
-    public final void onCreate() {
-        super.onCreate();
-    }
-
     /**
      * Modify last update date.
      *
