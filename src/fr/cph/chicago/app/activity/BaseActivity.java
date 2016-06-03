@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import butterknife.BindString;
+import butterknife.ButterKnife;
 import fr.cph.chicago.app.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.data.BusData;
@@ -57,6 +59,8 @@ public class BaseActivity extends Activity {
 
     private static final String TAG = BaseActivity.class.getSimpleName();
 
+    @BindString(R.string.bundle_error) String bundleError;
+
     private final TrainService trainService;
     private final BusService busService;
 
@@ -69,6 +73,7 @@ public class BaseActivity extends Activity {
     protected final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.loading);
+        ButterKnife.bind(this);
         loadLocalAndFavoritesData();
         trackWithGoogleAnalytics();
     }
@@ -146,6 +151,15 @@ public class BaseActivity extends Activity {
     private void displayError(@NonNull final String message) {
         DataHolder.getInstance().setTrainData(null);
         DataHolder.getInstance().setBusData(null);
-        App.startErrorActivity(this, message);
+        startErrorActivity(message);
+    }
+
+    private void startErrorActivity(@NonNull final String message) {
+        final Intent intent = new Intent(this, ErrorActivity.class);
+        final Bundle extras = new Bundle();
+        extras.putString(bundleError, message);
+        intent.putExtras(extras);
+        finish();
+        startActivity(intent);
     }
 }

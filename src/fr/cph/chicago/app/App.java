@@ -20,7 +20,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -30,8 +29,8 @@ import java.util.Date;
 
 import fr.cph.chicago.R;
 import fr.cph.chicago.app.activity.BaseActivity;
-import fr.cph.chicago.app.activity.ErrorActivity;
 import fr.cph.chicago.data.DataHolder;
+import lombok.Getter;
 
 /**
  * Main class that extends Application. Mainly used to get the context from anywhere in the app.
@@ -71,6 +70,7 @@ public class App extends Application {
     /**
      * Last update of favorites
      **/
+    @Getter
     private static Date lastUpdate;
     /**
      * Analytics stuff
@@ -89,31 +89,6 @@ public class App extends Application {
      */
     public static void modifyLastUpdate(@NonNull final Date date) {
         lastUpdate = date;
-    }
-
-    /**
-     * Get last update
-     *
-     * @return the last update
-     */
-    @NonNull
-    public static Date getLastUpdate() {
-        return lastUpdate;
-    }
-
-    /**
-     * Function that is used all over the application. Display error message and provide a way to retry
-     *
-     * @param activity that is needed to lunch a new one
-     * @param message  the message to display
-     */
-    public static void startErrorActivity(@NonNull final Activity activity, @NonNull final String message) {
-        final Intent intent = new Intent(activity, ErrorActivity.class);
-        final Bundle extras = new Bundle();
-        extras.putString(activity.getString(R.string.bundle_error), message);
-        intent.putExtras(extras);
-        activity.finish();
-        activity.startActivity(intent);
     }
 
     public static boolean checkTrainData(@NonNull final Activity activity) {
