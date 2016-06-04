@@ -31,7 +31,7 @@ import java.util.List;
 import fr.cph.chicago.R;
 import fr.cph.chicago.app.activity.BusActivity;
 import fr.cph.chicago.app.adapter.PopupBusDetailsFavoritesAdapter;
-import fr.cph.chicago.entity.BusDetailsDTO;
+import fr.cph.chicago.entity.dto.BusDetailsDTO;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.util.Util;

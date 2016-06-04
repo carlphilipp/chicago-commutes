@@ -29,7 +29,7 @@ import org.apache.commons.lang3.text.WordUtils;
 import java.util.List;
 
 import fr.cph.chicago.R;
-import fr.cph.chicago.entity.BusDetailsDTO;
+import fr.cph.chicago.entity.dto.BusDetailsDTO;
 
 /**
  * @author Carl-Philipp Harmant

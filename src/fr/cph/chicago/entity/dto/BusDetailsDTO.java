@@ -1,4 +1,4 @@
-package fr.cph.chicago.entity;
+package fr.cph.chicago.entity.dto;
 
 import lombok.Data;
 

@@ -63,7 +63,7 @@ import fr.cph.chicago.app.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.data.FavoritesData;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
-import fr.cph.chicago.entity.BusDetailsDTO;
+import fr.cph.chicago.entity.dto.BusDetailsDTO;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.TrainArrival;
