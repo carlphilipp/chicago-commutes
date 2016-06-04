@@ -68,6 +68,7 @@ import fr.cph.chicago.rx.subscriber.SubscriberTrainArrival;
 import fr.cph.chicago.service.TrainService;
 import fr.cph.chicago.service.impl.TrainServiceImpl;
 import fr.cph.chicago.util.Util;
+import id.ridsatrio.optio.Optional;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -113,7 +114,7 @@ public class StationActivity extends AbstractStationActivity {
     private int stationId;
     private Station station;
     private Map<String, Integer> ids;
-    private Observable<TrainArrival> trainArrivalObservable;
+    private Observable<Optional<TrainArrival>> trainArrivalObservable;
     private final TrainService trainService;
 
     public StationActivity() {
@@ -133,7 +134,7 @@ public class StationActivity extends AbstractStationActivity {
             if (stationId != 0) {
                 // Get station
                 final TrainData trainData = DataHolder.getInstance().getTrainData();
-                station = trainData.getStation(stationId);
+                station = trainData.getStation(stationId).orElse(new Station());
 
                 paramsStop = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
@@ -384,7 +385,7 @@ public class StationActivity extends AbstractStationActivity {
     }
 
     private void createTrainArrivalObservableAndSubscribe() {
-        trainArrivalObservable = Observable.create((Subscriber<? super TrainArrival> subscriber) -> {
+        trainArrivalObservable = Observable.create((Subscriber<? super Optional<TrainArrival>> subscriber) -> {
             subscriber.onNext(trainService.loadStationTrainArrival(getApplicationContext(), station.getId()));
             subscriber.onCompleted();
         })

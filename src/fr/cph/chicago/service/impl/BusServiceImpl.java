@@ -2,7 +2,6 @@ package fr.cph.chicago.service.impl;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
@@ -155,9 +154,9 @@ public class BusServiceImpl implements BusService {
         }
     }
 
-    @Nullable
+    @NonNull
     @Override
-    public BusPattern loadBusPattern(@NonNull final Context context, @NonNull final String busRouteId, @NonNull final String bound) {
+    public id.ridsatrio.optio.Optional<BusPattern> loadBusPattern(@NonNull final Context context, @NonNull final String busRouteId, @NonNull final String bound) {
         final CtaConnect connect = CtaConnect.getInstance(context);
         final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
         connectParam.put(context.getString(R.string.request_rt), busRouteId);
@@ -173,9 +172,9 @@ public class BusServiceImpl implements BusService {
                 })
                 .findFirst();
             if (busPatternOptional.isPresent()) {
-                return busPatternOptional.get();
+                return id.ridsatrio.optio.Optional.of(busPatternOptional.get());
             } else {
-                return null;
+                return id.ridsatrio.optio.Optional.empty();
             }
         } catch (final Throwable throwable) {
             throw Exceptions.propagate(throwable);

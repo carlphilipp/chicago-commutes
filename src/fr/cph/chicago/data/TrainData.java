@@ -43,6 +43,7 @@ import fr.cph.chicago.entity.enumeration.TrainDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.entity.factory.StationFactory;
 import fr.cph.chicago.entity.factory.StopFactory;
+import id.ridsatrio.optio.Optional;
 
 /**
  * Class that handle train data
@@ -194,9 +195,14 @@ public class TrainData {
      * @param id the id of the station
      * @return the station
      */
-    @Nullable
-    public final Station getStation(final int id) {
-        return stations.get(id);
+    @NonNull
+    public final Optional<Station> getStation(final int id) {
+        final Station station = stations.get(id);
+        if (station == null) {
+            return Optional.empty();
+        } else {
+            return Optional.of(station);
+        }
     }
 
     public final boolean isStationNull() {

@@ -18,14 +18,15 @@ import fr.cph.chicago.entity.BusPattern;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.TrainArrival;
+import fr.cph.chicago.entity.dto.FavoritesDTO;
+import fr.cph.chicago.entity.dto.FirstLoadDTO;
 import fr.cph.chicago.service.BikeService;
 import fr.cph.chicago.service.BusService;
 import fr.cph.chicago.service.TrainService;
 import fr.cph.chicago.service.impl.BikeServiceImpl;
 import fr.cph.chicago.service.impl.BusServiceImpl;
 import fr.cph.chicago.service.impl.TrainServiceImpl;
-import fr.cph.chicago.entity.dto.FavoritesDTO;
-import fr.cph.chicago.entity.dto.FirstLoadDTO;
+import id.ridsatrio.optio.Optional;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -185,9 +186,9 @@ public class ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<BusPattern> createBusPatternObservable(@NonNull final Context context, @NonNull final String busRouteId, @NonNull final String bound) {
+    public static Observable<Optional<BusPattern>> createBusPatternObservable(@NonNull final Context context, @NonNull final String busRouteId, @NonNull final String bound) {
         return Observable.create(
-            (Subscriber<? super BusPattern> subscriber) -> {
+            (Subscriber<? super Optional<BusPattern>> subscriber) -> {
                 subscriber.onNext(BUS_SERVICE.loadBusPattern(context, busRouteId, bound));
                 subscriber.onCompleted();
             })

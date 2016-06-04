@@ -36,6 +36,7 @@ dependencies {
     compile group: 'io.reactivex', name: 'rxandroid', version: "$reactivex_android_version"
     compile group: 'io.reactivex', name: 'rxjava', version: "$reactivex_java_version"
     compile group: 'com.annimon', name: 'stream', version: "$annimon_stream_version"
+    compile group: 'id.ridsatrio', name: 'optio', version: '1.0.2'
 
     compile group: 'com.jakewharton', name: 'butterknife', version: "$butterknife_version"
     apt group: 'com.jakewharton', name: 'butterknife-compiler', version: "$butterknife_version"

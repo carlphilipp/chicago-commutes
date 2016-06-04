@@ -21,19 +21,21 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
-import fr.cph.chicago.app.App;
-import fr.cph.chicago.entity.Station;
-import fr.cph.chicago.entity.enumeration.TrainDirection;
-import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.util.Util;
 
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import fr.cph.chicago.app.App;
+import fr.cph.chicago.entity.Station;
+import fr.cph.chicago.entity.enumeration.TrainDirection;
+import fr.cph.chicago.entity.enumeration.TrainLine;
+import fr.cph.chicago.util.Util;
 
 /**
  * Class that store user preferences into phoneO
@@ -201,6 +203,7 @@ public final class Preferences {
         return Stream.of(setPref)
             .map(Integer::valueOf)
             .map(favorite -> DataHolder.getInstance().getTrainData().getStation(favorite))
+            .map(optional -> optional.orElse(new Station()))
             .sorted()
             .map(Station::getId)
             .collect(Collectors.toList());

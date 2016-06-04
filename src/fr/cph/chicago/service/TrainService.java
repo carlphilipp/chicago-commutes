@@ -6,6 +6,7 @@ import android.util.SparseArray;
 
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.TrainArrival;
+import id.ridsatrio.optio.Optional;
 
 public interface TrainService {
 
@@ -13,5 +14,5 @@ public interface TrainService {
 
     TrainData loadLocalTrainData(@NonNull final Context context);
 
-    TrainArrival loadStationTrainArrival(@NonNull final Context context, int stationId);
+    Optional<TrainArrival> loadStationTrainArrival(@NonNull final Context context, int stationId);
 }

@@ -18,7 +18,6 @@ package fr.cph.chicago.data;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Optional;
@@ -27,10 +26,10 @@ import com.annimon.stream.Stream;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.cph.chicago.parser.BusStopCsvParser;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Position;
+import fr.cph.chicago.parser.BusStopCsvParser;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -88,12 +87,12 @@ public class BusData {
      * @param routeId the id of the bus route
      * @return a bus route
      */
-    @Nullable
-    final BusRoute getRoute(@NonNull final String routeId) {
+    @NonNull
+    final id.ridsatrio.optio.Optional<BusRoute> getRoute(@NonNull final String routeId) {
         final Optional<BusRoute> busRoute = Stream.of(busRoutes)
             .filter(busR -> busR.getId().equals(routeId))
             .findFirst();
-        return busRoute.isPresent() ? busRoute.get() : null;
+        return busRoute.isPresent() ? id.ridsatrio.optio.Optional.of(busRoute.get()) : id.ridsatrio.optio.Optional.empty();
     }
 
     final boolean containsRoute(@NonNull final String routeId) {

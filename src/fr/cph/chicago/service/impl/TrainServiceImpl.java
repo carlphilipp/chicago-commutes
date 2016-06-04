@@ -2,7 +2,6 @@ package fr.cph.chicago.service.impl;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.SparseArray;
 
 import com.annimon.stream.Collectors;
@@ -22,13 +21,13 @@ import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.Eta;
-import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.TrainDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.service.TrainService;
 import fr.cph.chicago.util.Util;
+import id.ridsatrio.optio.Optional;
 import rx.exceptions.Exceptions;
 
 import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
@@ -41,6 +40,7 @@ public class TrainServiceImpl implements TrainService {
         this.xmlParser = XmlParser.getInstance();
     }
 
+    @NonNull
     @Override
     public SparseArray<TrainArrival> loadFavoritesTrain(@NonNull final Context context) {
         final MultiValuedMap<String, String> trainParams = Util.getFavoritesTrainParams(context);
@@ -87,10 +87,9 @@ public class TrainServiceImpl implements TrainService {
                 final List<Eta> etas = trainArrival.getEtas();
                 trainArrival.setEtas(Stream.of(etas)
                     .filter(eta -> {
-                        final Station station = eta.getStation();
                         final TrainLine line = eta.getRouteName();
                         final TrainDirection direction = eta.getStop().getDirection();
-                        return Preferences.getTrainFilter(context, station.getId(), line, direction);
+                        return Preferences.getTrainFilter(context, eta.getStation().getId(), line, direction);
                     })
                     .sorted()
                     .collect(Collectors.toList())
@@ -102,15 +101,16 @@ public class TrainServiceImpl implements TrainService {
         return trainArrivals;
     }
 
+    @NonNull
     @Override
     public TrainData loadLocalTrainData(@NonNull final Context context) {
         TrainData.getInstance(context).read();
         return TrainData.getInstance(context);
     }
 
-    @Nullable
+    @NonNull
     @Override
-    public TrainArrival loadStationTrainArrival(@NonNull final Context context, int stationId) {
+    public Optional<TrainArrival> loadStationTrainArrival(@NonNull final Context context, int stationId) {
         try {
             final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
             params.put(context.getString(R.string.request_map_id), Integer.toString(stationId));
@@ -118,11 +118,10 @@ public class TrainServiceImpl implements TrainService {
             final XmlParser xml = XmlParser.getInstance();
             final InputStream xmlResult = CtaConnect.getInstance(context).connect(context, TRAIN_ARRIVALS, params);
             final SparseArray<TrainArrival> arrivals = xml.parseArrivals(xmlResult, TrainData.getInstance(context));
-
             if (arrivals.size() == 1) {
-                return arrivals.get(stationId);
+                return Optional.of(arrivals.get(stationId));
             } else {
-                return null;
+                return Optional.empty();
             }
         } catch (final Throwable e) {
             throw Exceptions.propagate(e);

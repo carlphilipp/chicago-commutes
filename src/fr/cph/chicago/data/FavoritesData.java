@@ -18,7 +18,6 @@ package fr.cph.chicago.data;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.SparseArray;
 
 import com.annimon.stream.Collectors;
@@ -101,8 +100,8 @@ public class FavoritesData {
      * @param position the position
      * @return an object, station or bus route
      */
-    @Nullable
-    public final Object getObject(final int position) {
+    @NonNull
+    public final id.ridsatrio.optio.Optional<?> getObject(final int position) {
         if (position < trainFavorites.size()) {
             final Integer stationId = trainFavorites.get(position);
             return trainData.getStation(stationId);
@@ -121,7 +120,7 @@ public class FavoritesData {
                 } else {
                     busRoute.setName(routeName);
                 }
-                return busRoute;
+                return id.ridsatrio.optio.Optional.of(busRoute);
             }
         } else {
             final int index = position - (trainFavorites.size() + fakeBusFavorites.size());
@@ -129,12 +128,12 @@ public class FavoritesData {
                 .filter(bikeStation -> Integer.toString(bikeStation.getId()).equals(bikeFavorites.get(index)))
                 .findFirst();
             if (found.isPresent()) {
-                return found.get();
+                return id.ridsatrio.optio.Optional.of(found.get());
             } else {
                 final BikeStation bikeStation = new BikeStation();
                 final String stationName = Preferences.getBikeRouteNameMapping(context, bikeFavorites.get(index));
                 bikeStation.setName(stationName);
-                return bikeStation;
+                return id.ridsatrio.optio.Optional.of(bikeStation);
             }
         }
     }

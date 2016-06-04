@@ -70,6 +70,7 @@ import fr.cph.chicago.entity.enumeration.BusDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.LayoutUtil;
 import fr.cph.chicago.util.Util;
+import id.ridsatrio.optio.Optional;
 
 import static java.util.Map.Entry;
 
@@ -147,9 +148,10 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     @Override
     public void onBindViewHolder(final FavoritesViewHolder holder, final int position) {
         resetData(holder);
-        final Object object = favoritesData.getObject(position);
+        final Optional<?> optional = favoritesData.getObject(position);
         holder.lastUpdateTextView.setText(lastUpdate);
-        if (object != null) {
+        if (optional.isPresent()) {
+            final Object object = optional.get();
             if (object instanceof Station) {
                 final Station station = (Station) object;
                 handleStation(holder, station);

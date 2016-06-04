@@ -19,7 +19,6 @@ package fr.cph.chicago.connection;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.apache.commons.io.IOUtils;
@@ -28,6 +27,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 import fr.cph.chicago.R;
+import id.ridsatrio.optio.Optional;
 
 /**
  * Class that access google street api. Singleton
@@ -66,8 +66,8 @@ public class GStreetViewConnect {
         return INSTANCE;
     }
 
-    @Nullable
-    public final Drawable connect(@NonNull final Context context, final double latitude, final double longitude) {
+    @NonNull
+    public final Optional<Drawable> connect(@NonNull final Context context, final double latitude, final double longitude) {
         final StringBuilder address = new StringBuilder(context.getString(R.string.url_street_view));
         address.append("?key=");
         address.append(googleKey);
@@ -86,17 +86,17 @@ public class GStreetViewConnect {
      * @param address the address to connect to
      * @return a drawable map
      */
-    @Nullable
-    private Drawable connectUrl(@NonNull final String address) {
+    @NonNull
+    private Optional<Drawable> connectUrl(@NonNull final String address) {
         Log.v(TAG, "Address: " + address);
         InputStream is = null;
         try {
             is = (InputStream) new URL(address).getContent();
-            return Drawable.createFromStream(is, "src name");
+            return Optional.of(Drawable.createFromStream(is, "src name"));
         } catch (final Exception e) {
             Log.e(TAG, e.getMessage(), e);
             // TODO add a temporary image here
-            return null;
+            return Optional.empty();
         } finally {
             IOUtils.closeQuietly(is);
         }

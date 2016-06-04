@@ -13,9 +13,10 @@ import fr.cph.chicago.app.activity.StationActivity;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.util.Util;
+import id.ridsatrio.optio.Optional;
 import rx.Subscriber;
 
-public class SubscriberTrainArrival extends Subscriber<TrainArrival> {
+public class SubscriberTrainArrival extends Subscriber<Optional<TrainArrival>> {
 
     private static final String TAG = SubscriberTrainArrival.class.getSimpleName();
 
@@ -28,11 +29,11 @@ public class SubscriberTrainArrival extends Subscriber<TrainArrival> {
     }
 
     @Override
-    public void onNext(final TrainArrival trainArrival) {
+    public void onNext(final Optional<TrainArrival> trainArrival) {
         Log.d(TAG, "Found train arrival: " + trainArrival);
         final List<Eta> etas;
-        if (trainArrival != null) {
-            etas = trainArrival.getEtas();
+        if (trainArrival.isPresent()) {
+            etas = trainArrival.get().getEtas();
         } else {
             etas = Collections.emptyList();
         }

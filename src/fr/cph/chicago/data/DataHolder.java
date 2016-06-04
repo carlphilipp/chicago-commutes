@@ -17,7 +17,8 @@
 package fr.cph.chicago.data;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import lombok.Data;
 
 /**
  * Class that hold bus and train data. Singleton
@@ -25,6 +26,7 @@ import android.support.annotation.Nullable;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@Data
 public class DataHolder {
 
     private static DataHolder DATA_HOLDER;
@@ -46,43 +48,5 @@ public class DataHolder {
             DATA_HOLDER = new DataHolder();
         }
         return DATA_HOLDER;
-    }
-
-    /**
-     * Get Train data
-     *
-     * @return train data
-     */
-    @NonNull
-    public final TrainData getTrainData() {
-        return trainData;
-    }
-
-    /**
-     * Set train data
-     *
-     * @param data train data
-     */
-    public final void setTrainData(@Nullable final TrainData data) {
-        this.trainData = data;
-    }
-
-    /**
-     * Get bus data
-     *
-     * @return bus data
-     */
-    @NonNull
-    public final BusData getBusData() {
-        return busData;
-    }
-
-    /**
-     * Set bus data
-     *
-     * @param busData bus data
-     */
-    public final void setBusData(@Nullable final BusData busData) {
-        this.busData = busData;
     }
 }

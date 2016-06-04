@@ -12,6 +12,7 @@ import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusPattern;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
+import id.ridsatrio.optio.Optional;
 
 public interface BusService {
 
@@ -27,7 +28,7 @@ public interface BusService {
 
     List<BusArrival> loadFollowBus(@NonNull final Context context, @NonNull final String busId);
 
-    BusPattern loadBusPattern(@NonNull final Context context, @NonNull final String busRouteId, @NonNull final String bound);
+    Optional<BusPattern> loadBusPattern(@NonNull final Context context, @NonNull final String busRouteId, @NonNull final String bound);
 
     List<Bus> loadBus(@NonNull final Context context, final int busId, @NonNull final String busRouteId);
 }

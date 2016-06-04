@@ -20,8 +20,6 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.SparseArray;
 
-import fr.cph.chicago.entity.enumeration.XmlArrivalBusTag;
-import fr.cph.chicago.entity.enumeration.XmlArrivalTrainTag;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.xmlpull.v1.XmlPullParser;
@@ -53,6 +51,8 @@ import fr.cph.chicago.entity.Train;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.BusDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
+import fr.cph.chicago.entity.enumeration.XmlArrivalBusTag;
+import fr.cph.chicago.entity.enumeration.XmlArrivalTrainTag;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.util.Util;
@@ -152,8 +152,8 @@ public final class XmlParser {
                                         arri.setEtas(etas);
                                     }
                                     final Eta eta = new Eta();
-                                    final Station station = trainData.getStation(staId);
-                                    eta.setStation(station);
+                                    final id.ridsatrio.optio.Optional<Station> station = trainData.getStation(staId);
+                                    eta.setStation(station.orElse(new Station()));
                                     etas.add(eta);
 
                                     arrivals.append(staId, arri);
@@ -870,8 +870,8 @@ public final class XmlParser {
                                         arri.setEtas(etas);
                                     }
                                     final Eta eta = new Eta();
-                                    final Station station = data.getStation(Integer.parseInt(text));
-                                    eta.setStation(station);
+                                    final id.ridsatrio.optio.Optional<Station> station = data.getStation(Integer.parseInt(text));
+                                    eta.setStation(station.orElse(new Station()));
                                     etas.add(eta);
 
                                     arrivals.append(staId, arri);

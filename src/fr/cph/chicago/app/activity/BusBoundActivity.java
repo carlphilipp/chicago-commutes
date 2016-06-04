@@ -200,10 +200,10 @@ public class BusBoundActivity extends ListActivity {
             Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_pattern, 0);
             ObservableUtil.createBusPatternObservable(getApplicationContext(), busRouteId, bound)
                 .subscribe(
-                    onNext -> {
-                        if (onNext != null) {
-                            final int center = onNext.getPoints().size() / 2;
-                            final Position position = onNext.getPoints().get(center).getPosition();
+                    busPattern -> {
+                        if (busPattern.isPresent()) {
+                            final int center = busPattern.get().getPoints().size() / 2;
+                            final Position position = busPattern.get().getPoints().get(center).getPosition();
                             if (position != null) {
                                 final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
                                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
@@ -211,7 +211,7 @@ public class BusBoundActivity extends ListActivity {
                             } else {
                                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Util.CHICAGO, 10));
                             }
-                            drawPattern(onNext);
+                            drawPattern(busPattern.get());
                         } else {
                             Util.showMessage(this, R.string.message_error_could_not_load_path);
                         }
