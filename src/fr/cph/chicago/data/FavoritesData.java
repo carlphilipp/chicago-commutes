@@ -101,7 +101,7 @@ public class FavoritesData {
      * @return an object, station or bus route
      */
     @NonNull
-    public final id.ridsatrio.optio.Optional<?> getObject(final int position) {
+    public final Optional<?> getObject(final int position) {
         if (position < trainFavorites.size()) {
             final Integer stationId = trainFavorites.get(position);
             return trainData.getStation(stationId);
@@ -120,7 +120,7 @@ public class FavoritesData {
                 } else {
                     busRoute.setName(routeName);
                 }
-                return id.ridsatrio.optio.Optional.of(busRoute);
+                return Optional.of(busRoute);
             }
         } else {
             final int index = position - (trainFavorites.size() + fakeBusFavorites.size());
@@ -128,12 +128,12 @@ public class FavoritesData {
                 .filter(bikeStation -> Integer.toString(bikeStation.getId()).equals(bikeFavorites.get(index)))
                 .findFirst();
             if (found.isPresent()) {
-                return id.ridsatrio.optio.Optional.of(found.get());
+                return Optional.of(found.get());
             } else {
                 final BikeStation bikeStation = new BikeStation();
                 final String stationName = Preferences.getBikeRouteNameMapping(context, bikeFavorites.get(index));
                 bikeStation.setName(stationName);
-                return id.ridsatrio.optio.Optional.of(bikeStation);
+                return Optional.of(bikeStation);
             }
         }
     }

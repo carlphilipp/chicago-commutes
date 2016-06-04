@@ -5,9 +5,10 @@ import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.annimon.stream.Optional;
+
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.GStreetViewConnect;
-import id.ridsatrio.optio.Optional;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;

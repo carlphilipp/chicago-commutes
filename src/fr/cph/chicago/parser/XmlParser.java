@@ -20,6 +20,8 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.SparseArray;
 
+import com.annimon.stream.Optional;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.xmlpull.v1.XmlPullParser;
@@ -152,7 +154,7 @@ public final class XmlParser {
                                         arri.setEtas(etas);
                                     }
                                     final Eta eta = new Eta();
-                                    final id.ridsatrio.optio.Optional<Station> station = trainData.getStation(staId);
+                                    final Optional<Station> station = trainData.getStation(staId);
                                     eta.setStation(station.orElse(new Station()));
                                     etas.add(eta);
 
@@ -870,7 +872,7 @@ public final class XmlParser {
                                         arri.setEtas(etas);
                                     }
                                     final Eta eta = new Eta();
-                                    final id.ridsatrio.optio.Optional<Station> station = data.getStation(Integer.parseInt(text));
+                                    final Optional<Station> station = data.getStation(Integer.parseInt(text));
                                     eta.setStation(station.orElse(new Station()));
                                     etas.add(eta);
 

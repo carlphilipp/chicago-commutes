@@ -3,6 +3,8 @@ package fr.cph.chicago.service;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.annimon.stream.Optional;
+
 import java.util.List;
 
 import fr.cph.chicago.data.BusData;
@@ -12,7 +14,6 @@ import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusPattern;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
-import id.ridsatrio.optio.Optional;
 
 public interface BusService {
 

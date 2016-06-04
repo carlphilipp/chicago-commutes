@@ -35,6 +35,7 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 
 import java.util.ArrayList;
@@ -68,7 +69,6 @@ import fr.cph.chicago.rx.subscriber.SubscriberTrainArrival;
 import fr.cph.chicago.service.TrainService;
 import fr.cph.chicago.service.impl.TrainServiceImpl;
 import fr.cph.chicago.util.Util;
-import id.ridsatrio.optio.Optional;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;

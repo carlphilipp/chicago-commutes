@@ -88,11 +88,11 @@ public class BusData {
      * @return a bus route
      */
     @NonNull
-    final id.ridsatrio.optio.Optional<BusRoute> getRoute(@NonNull final String routeId) {
+    final Optional<BusRoute> getRoute(@NonNull final String routeId) {
         final Optional<BusRoute> busRoute = Stream.of(busRoutes)
             .filter(busR -> busR.getId().equals(routeId))
             .findFirst();
-        return busRoute.isPresent() ? id.ridsatrio.optio.Optional.of(busRoute.get()) : id.ridsatrio.optio.Optional.empty();
+        return busRoute.isPresent() ? Optional.of(busRoute.get()) : Optional.empty();
     }
 
     final boolean containsRoute(@NonNull final String routeId) {

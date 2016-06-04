@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 
+import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 
 import java.util.Collections;
@@ -13,7 +14,6 @@ import fr.cph.chicago.app.activity.StationActivity;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.util.Util;
-import id.ridsatrio.optio.Optional;
 import rx.Subscriber;
 
 public class SubscriberTrainArrival extends Subscriber<Optional<TrainArrival>> {

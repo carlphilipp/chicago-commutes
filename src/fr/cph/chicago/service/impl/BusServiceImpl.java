@@ -156,7 +156,7 @@ public class BusServiceImpl implements BusService {
 
     @NonNull
     @Override
-    public id.ridsatrio.optio.Optional<BusPattern> loadBusPattern(@NonNull final Context context, @NonNull final String busRouteId, @NonNull final String bound) {
+    public Optional<BusPattern> loadBusPattern(@NonNull final Context context, @NonNull final String busRouteId, @NonNull final String bound) {
         final CtaConnect connect = CtaConnect.getInstance(context);
         final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
         connectParam.put(context.getString(R.string.request_rt), busRouteId);
@@ -172,9 +172,9 @@ public class BusServiceImpl implements BusService {
                 })
                 .findFirst();
             if (busPatternOptional.isPresent()) {
-                return id.ridsatrio.optio.Optional.of(busPatternOptional.get());
+                return Optional.of(busPatternOptional.get());
             } else {
-                return id.ridsatrio.optio.Optional.empty();
+                return Optional.empty();
             }
         } catch (final Throwable throwable) {
             throw Exceptions.propagate(throwable);

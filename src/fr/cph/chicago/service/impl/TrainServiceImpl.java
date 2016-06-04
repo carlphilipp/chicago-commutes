@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.util.SparseArray;
 
 import com.annimon.stream.Collectors;
+import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 
 import org.apache.commons.collections4.MultiValuedMap;
@@ -27,7 +28,6 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.service.TrainService;
 import fr.cph.chicago.util.Util;
-import id.ridsatrio.optio.Optional;
 import rx.exceptions.Exceptions;
 
 import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;

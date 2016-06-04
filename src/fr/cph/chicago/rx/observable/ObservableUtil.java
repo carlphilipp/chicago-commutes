@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.SparseArray;
 
+import com.annimon.stream.Optional;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -26,7 +28,6 @@ import fr.cph.chicago.service.TrainService;
 import fr.cph.chicago.service.impl.BikeServiceImpl;
 import fr.cph.chicago.service.impl.BusServiceImpl;
 import fr.cph.chicago.service.impl.TrainServiceImpl;
-import id.ridsatrio.optio.Optional;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;

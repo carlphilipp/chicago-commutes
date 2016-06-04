@@ -21,13 +21,14 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.annimon.stream.Optional;
+
 import org.apache.commons.io.IOUtils;
 
 import java.io.InputStream;
 import java.net.URL;
 
 import fr.cph.chicago.R;
-import id.ridsatrio.optio.Optional;
 
 /**
  * Class that access google street api. Singleton

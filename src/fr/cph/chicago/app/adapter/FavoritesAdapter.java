@@ -41,6 +41,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.annimon.stream.Collectors;
+import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 
 import java.util.ArrayList;
@@ -70,7 +71,6 @@ import fr.cph.chicago.entity.enumeration.BusDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.LayoutUtil;
 import fr.cph.chicago.util.Util;
-import id.ridsatrio.optio.Optional;
 
 import static java.util.Map.Entry;
 

@@ -23,6 +23,7 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.annimon.stream.Collectors;
+import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
@@ -43,7 +44,6 @@ import fr.cph.chicago.entity.enumeration.TrainDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.entity.factory.StationFactory;
 import fr.cph.chicago.entity.factory.StopFactory;
-import id.ridsatrio.optio.Optional;
 
 /**
  * Class that handle train data

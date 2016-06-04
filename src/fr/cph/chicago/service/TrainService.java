@@ -4,9 +4,10 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.SparseArray;
 
+import com.annimon.stream.Optional;
+
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.TrainArrival;
-import id.ridsatrio.optio.Optional;
 
 public interface TrainService {
 
