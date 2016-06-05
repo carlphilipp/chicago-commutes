@@ -16,6 +16,7 @@
 
 package fr.cph.chicago.app.activity;
 
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -24,28 +25,35 @@ import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.annimon.stream.Stream;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import butterknife.BindColor;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.annimon.stream.Stream;
 import fr.cph.chicago.R;
 import fr.cph.chicago.app.App;
 import fr.cph.chicago.app.listener.GoogleMapDirectionOnClickListener;
 import fr.cph.chicago.app.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.app.listener.GoogleStreetOnClickListener;
-import fr.cph.chicago.app.task.LoadStationDataTask;
+import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.enumeration.TrainLine;
+import fr.cph.chicago.exception.ConnectException;
+import fr.cph.chicago.exception.ParserException;
+import fr.cph.chicago.exception.TrackerException;
+import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.util.Util;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
 
 /**
  * Activity that represents the bus stop
@@ -78,6 +86,8 @@ public class BusActivity extends AbstractStationActivity {
     @BindString(R.string.bundle_bus_longitude) String bundleBusLongitude;
     @BindString(R.string.bus_activity_no_service) String busActivityNoService;
     @BindString(R.string.analytics_bus_details) String analyticsBusDetails;
+    @BindString(R.string.request_rt) String requestRt;
+    @BindString(R.string.request_stop_id) String requestStopId;
 
     @BindColor(R.color.grey_5) int grey_5;
     @BindColor(R.color.grey) int grey;
@@ -125,7 +135,7 @@ public class BusActivity extends AbstractStationActivity {
             } else {
                 favoritesImage.setColorFilter(grey_5);
             }
-            scrollView.setOnRefreshListener(() -> new LoadStationDataTask(this, scrollView, busRouteId, busStopId).execute());
+            scrollView.setOnRefreshListener(() -> new LoadStationDataTask().execute());
             streetViewImage.setOnClickListener(new GoogleStreetOnClickListener(latitude, longitude));
             mapContainer.setOnClickListener(new GoogleMapOnClickListener(latitude, longitude));
             walkContainer.setOnClickListener(new GoogleMapDirectionOnClickListener(latitude, longitude));
@@ -136,7 +146,7 @@ public class BusActivity extends AbstractStationActivity {
             // Load google street picture and data
             createGoogleStreetObservable(position.getLatitude(), position.getLongitude());
             subscribeToGoogleStreet(streetViewImage, streetViewText);
-            new LoadStationDataTask(this, scrollView, busRouteId, busStopId).execute();
+            new LoadStationDataTask().execute();
 
             setToolBar();
 
@@ -149,7 +159,7 @@ public class BusActivity extends AbstractStationActivity {
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener((item -> {
             scrollView.setRefreshing(true);
-            new LoadStationDataTask(this, scrollView, busRouteId, busStopId).execute();
+            new LoadStationDataTask().execute();
             return false;
         }));
         Util.setWindowsColor(this, toolbar, TrainLine.NA);
@@ -255,6 +265,48 @@ public class BusActivity extends AbstractStationActivity {
             Preferences.addBusStopNameMapping(getApplicationContext(), String.valueOf(busStopId), busStopName);
             favoritesImage.setColorFilter(yellowLineDark);
             isFavorite = true;
+        }
+    }
+
+    private class LoadStationDataTask extends AsyncTask<Void, Void, List<BusArrival>> {
+
+        private TrackerException trackerException;
+
+        public LoadStationDataTask() {
+        }
+
+        @Override
+        protected List<BusArrival> doInBackground(final Void... params) {
+            final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
+            reqParams.put(requestRt, busRouteId);
+            reqParams.put(requestStopId, Integer.toString(busStopId));
+            final CtaConnect connect = CtaConnect.getInstance(getApplicationContext());
+            try {
+                final XmlParser xml = XmlParser.getInstance();
+                // Connect to CTA API bus to get XML result of inc buses
+                final InputStream xmlResult = connect.connect(getApplicationContext(), BUS_ARRIVALS, reqParams);
+                // Parse and return arrival buses
+                return xml.parseBusArrivals(xmlResult);
+            } catch (final ParserException | ConnectException e) {
+                this.trackerException = e;
+            }
+            Util.trackAction(BusActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
+            return null;
+        }
+
+        @Override
+        protected final void onProgressUpdate(final Void... values) {
+        }
+
+        @Override
+        protected final void onPostExecute(final List<BusArrival> result) {
+            if (trackerException == null) {
+                setBusArrivals(result);
+                drawArrivals();
+            } else {
+                Util.showNetworkErrorMessage(scrollView);
+            }
+            scrollView.setRefreshing(false);
         }
     }
 }

@@ -19,15 +19,21 @@ package fr.cph.chicago.app.activity;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
+import butterknife.BindDrawable;
+import butterknife.BindString;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.annimon.stream.Stream;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -40,27 +46,36 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import fr.cph.chicago.R;
+import fr.cph.chicago.app.App;
+import fr.cph.chicago.app.adapter.TrainMapSnippetAdapter;
+import fr.cph.chicago.app.listener.TrainMapOnCameraChangeListener;
+import fr.cph.chicago.connection.CtaConnect;
+import fr.cph.chicago.data.DataHolder;
+import fr.cph.chicago.data.TrainData;
+import fr.cph.chicago.entity.Eta;
+import fr.cph.chicago.entity.Position;
+import fr.cph.chicago.entity.Station;
+import fr.cph.chicago.entity.Train;
+import fr.cph.chicago.entity.enumeration.TrainLine;
+import fr.cph.chicago.entity.factory.StationFactory;
+import fr.cph.chicago.exception.ConnectException;
+import fr.cph.chicago.exception.ParserException;
+import fr.cph.chicago.parser.XmlParser;
+import fr.cph.chicago.util.Util;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.BindDrawable;
-import butterknife.BindString;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import fr.cph.chicago.R;
-import fr.cph.chicago.app.App;
-import fr.cph.chicago.app.listener.TrainMapOnCameraChangeListener;
-import fr.cph.chicago.app.task.LoadTrainFollowTask;
-import fr.cph.chicago.app.task.LoadTrainPositionTask;
-import fr.cph.chicago.data.DataHolder;
-import fr.cph.chicago.data.TrainData;
-import fr.cph.chicago.entity.Position;
-import fr.cph.chicago.entity.Train;
-import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.util.Util;
+import static fr.cph.chicago.connection.CtaRequestType.TRAIN_FOLLOW;
+import static fr.cph.chicago.connection.CtaRequestType.TRAIN_LOCATION;
 
 /**
  * @author Carl-Philipp Harmant
@@ -74,6 +89,9 @@ public class TrainMapActivity extends Activity {
 
     @BindString(R.string.bundle_train_line) String bundleTrainLine;
     @BindString(R.string.analytics_train_map) String analyticsTrainMap;
+    @BindString(R.string.request_runnumber) String requestRunNumber;
+    @BindString(R.string.bus_all_results) String busAllResults;
+    @BindString(R.string.request_rt) String requestRt;
 
     @BindDrawable(R.drawable.ic_arrow_back_white_24dp) Drawable arrowBackWhite;
 
@@ -134,7 +152,7 @@ public class TrainMapActivity extends Activity {
 
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener((item -> {
-            new LoadTrainPositionTask(TrainMapActivity.this, line, trainData).execute(false, true);
+            new LoadTrainPositionTask(line, trainData).execute(false, true);
             return false;
         }));
         final TrainLine trainLine = TrainLine.fromXmlString(line);
@@ -187,7 +205,7 @@ public class TrainMapActivity extends Activity {
                         if (!refreshingInfoWindow) {
                             selectedMarker = marker;
                             final String runNumber = marker.getSnippet();
-                            new LoadTrainFollowTask(TrainMapActivity.this, view, false, trainData).execute(runNumber);
+                            new LoadTrainFollowTask(view, false, trainData).execute(runNumber);
                             status.put(marker, false);
                         }
                         return view;
@@ -206,14 +224,14 @@ public class TrainMapActivity extends Activity {
                             selectedMarker = marker;
                             final String runNumber = marker.getSnippet();
                             final Boolean current = status.get(marker);
-                            new LoadTrainFollowTask(TrainMapActivity.this, view, !current, trainData).execute(runNumber);
+                            new LoadTrainFollowTask(view, !current, trainData).execute(runNumber);
                             status.put(marker, !current);
                         }
                     }
                 }
             });
             if (Util.isNetworkAvailable(getApplicationContext())) {
-                new LoadTrainPositionTask(TrainMapActivity.this, line, trainData).execute(centerMap, true);
+                new LoadTrainPositionTask(line, trainData).execute(centerMap, true);
             } else {
                 Util.showNetworkErrorMessage(layout);
             }
@@ -304,6 +322,131 @@ public class TrainMapActivity extends Activity {
                 googleMap.addPolyline(poly);
             });
             drawLine = false;
+        }
+    }
+
+    private class LoadTrainFollowTask extends AsyncTask<String, Void, List<Eta>> {
+
+        private final String TAG = LoadTrainFollowTask.class.getSimpleName();
+
+        private final TrainData trainData;
+        private final View view;
+        private final boolean loadAll;
+
+        /**
+         * Constructor
+         *
+         * @param view    the view
+         * @param loadAll a boolean to load everything
+         */
+        public LoadTrainFollowTask(@NonNull final View view, final boolean loadAll, @NonNull final TrainData trainData) {
+            this.trainData = trainData;
+            this.view = view;
+            this.loadAll = loadAll;
+        }
+
+        @Override
+        protected final List<Eta> doInBackground(final String... params) {
+            final String runNumber = params[0];
+            List<Eta> etas = new ArrayList<>();
+            try {
+                final CtaConnect connect = CtaConnect.getInstance(getApplicationContext());
+                final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
+                connectParam.put(requestRunNumber, runNumber);
+                final InputStream content = connect.connect(getApplicationContext(), TRAIN_FOLLOW, connectParam);
+                final XmlParser xml = XmlParser.getInstance();
+                etas = xml.parseTrainsFollow(content, trainData);
+            } catch (final ConnectException | ParserException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+            Util.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_follow, 0);
+            if (!loadAll && etas.size() > 7) {
+                etas = etas.subList(0, 6);
+
+                // Add a fake Eta cell to alert the user about the fact that only a part of the result is displayed
+                final Eta eta = new Eta();
+                eta.setDly(false);
+                eta.setApp(false);
+                final Date currentDate = Calendar.getInstance().getTime();
+                eta.setArrivalDepartureDate(currentDate);
+                eta.setPredictionDate(currentDate);
+                final Station fakeStation = StationFactory.buildStation(0, busAllResults, new ArrayList<>());
+                eta.setStation(fakeStation);
+                etas.add(eta);
+            }
+            return etas;
+        }
+
+        @Override
+        protected final void onPostExecute(final List<Eta> result) {
+            final ListView arrivals = (ListView) view.findViewById(R.id.arrivals);
+            final TextView error = (TextView) view.findViewById(R.id.error);
+            if (result.size() != 0) {
+                final TrainMapSnippetAdapter ada = new TrainMapSnippetAdapter(result);
+                arrivals.setAdapter(ada);
+                arrivals.setVisibility(ListView.VISIBLE);
+                error.setVisibility(TextView.GONE);
+            } else {
+                arrivals.setVisibility(ListView.GONE);
+                error.setVisibility(TextView.VISIBLE);
+            }
+            refreshInfoWindow();
+        }
+    }
+
+    private class LoadTrainPositionTask extends AsyncTask<Boolean, Void, List<Train>> {
+
+        private final String TAG = LoadTrainPositionTask.class.getSimpleName();
+
+        private final String line;
+        private TrainData trainData;
+
+        private boolean centerMap;
+        private List<Position> positions;
+
+        public LoadTrainPositionTask(@NonNull final String line, @NonNull final TrainData trainData) {
+            this.line = line;
+            this.trainData = trainData;
+        }
+
+        @Override
+        protected List<Train> doInBackground(Boolean... params) {
+            centerMap = params[0];
+            List<Train> trains = null;
+            final CtaConnect connect = CtaConnect.getInstance(getApplicationContext());
+            final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
+            connectParam.put(requestRt, line);
+            try {
+                final InputStream content = connect.connect(getApplicationContext(), TRAIN_LOCATION, connectParam);
+                final XmlParser xml = XmlParser.getInstance();
+                trains = xml.parseTrainsLocation(content);
+            } catch (final ConnectException | ParserException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+            Util.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_location, 0);
+            if (trainData == null) {
+                final DataHolder dataHolder = DataHolder.getInstance();
+                trainData = dataHolder.getTrainData();
+            }
+            positions = trainData.readPattern(TrainLine.fromXmlString(line));
+            return trains;
+        }
+
+        @Override
+        protected final void onPostExecute(final List<Train> trains) {
+            if (trains != null) {
+                drawTrains(trains);
+                drawLine(positions);
+                if (trains.size() != 0) {
+                    if (centerMap) {
+                        centerMapOnTrain(trains);
+                    }
+                } else {
+                    Util.showMessage(TrainMapActivity.this, R.string.message_no_train_found);
+                }
+            } else {
+                Util.showMessage(TrainMapActivity.this, R.string.message_error_while_loading_data);
+            }
         }
     }
 }
