@@ -4,13 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.SparseArray;
-
 import com.annimon.stream.Optional;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
 import fr.cph.chicago.app.App;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.Bus;
@@ -32,6 +26,10 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 public class ObservableUtil {
 
