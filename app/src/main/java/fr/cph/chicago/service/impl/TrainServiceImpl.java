@@ -104,8 +104,8 @@ public class TrainServiceImpl implements TrainService {
     @NonNull
     @Override
     public TrainData loadLocalTrainData(@NonNull final Context context) {
-        TrainData.getInstance(context).read();
-        return TrainData.getInstance(context);
+        TrainData.getInstance().read(context);
+        return TrainData.getInstance();
     }
 
     @NonNull
@@ -117,7 +117,7 @@ public class TrainServiceImpl implements TrainService {
 
             final XmlParser xml = XmlParser.getInstance();
             final InputStream xmlResult = CtaConnect.getInstance(context).connect(context, TRAIN_ARRIVALS, params);
-            final SparseArray<TrainArrival> arrivals = xml.parseArrivals(xmlResult, TrainData.getInstance(context));
+            final SparseArray<TrainArrival> arrivals = xml.parseArrivals(xmlResult, TrainData.getInstance());
             if (arrivals.size() == 1) {
                 return Optional.of(arrivals.get(stationId));
             } else {

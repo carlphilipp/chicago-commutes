@@ -62,10 +62,8 @@ public class TrainData {
     private final SparseArray<Stop> stops;
     private final CsvParser parser;
     private Map<TrainLine, List<Station>> stationsOrderByLineMap;
-    private final Context context;
 
-    private TrainData(@NonNull final Context context) {
-        this.context = context;
+    private TrainData() {
         this.stations = new SparseArray<>();
         this.stops = new SparseArray<>();
         final CsvParserSettings settings = new CsvParserSettings();
@@ -74,9 +72,9 @@ public class TrainData {
     }
 
     @NonNull
-    public static TrainData getInstance(@NonNull final Context context) {
+    public static TrainData getInstance() {
         if (TRAIN_DATA == null) {
-            TRAIN_DATA = new TrainData(context.getApplicationContext());
+            TRAIN_DATA = new TrainData();
         }
         return TRAIN_DATA;
     }
@@ -84,7 +82,7 @@ public class TrainData {
     /**
      * Read train data from CSV file.
      */
-    public final void read() {
+    public final void read(@NonNull final Context context) {
         if (stations.size() == 0 && stops.size() == 0) {
             try {
                 final List<String[]> allRows = parser.parseAll((new InputStreamReader(context.getAssets().open(TRAIN_FILE_PATH))));
@@ -265,7 +263,7 @@ public class TrainData {
     }
 
     @NonNull
-    public final List<Position> readPattern(final TrainLine line) {
+    public final List<Position> readPattern(@NonNull final Context context, @NonNull final TrainLine line) {
         final List<Position> positions = new ArrayList<>();
         try {
             final List<String[]> allRows = parser.parseAll(new InputStreamReader(context.getAssets().open("train_pattern/" + line.toTextString() + "_pattern.csv")));

@@ -220,9 +220,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             busData.readBusStopsIfNeeded(getApplicationContext());
             dataHolder.setBusData(busData);
         }
-        final TrainData trainData = TrainData.getInstance(getApplicationContext());
+        final TrainData trainData = TrainData.getInstance();
         if (trainData.isStationNull() || trainData.isStopsNull()) {
-            trainData.read();
+            trainData.read(getApplicationContext());
             dataHolder.setTrainData(trainData);
         }
     }

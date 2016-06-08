@@ -30,10 +30,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import butterknife.BindDrawable;
-import butterknife.BindString;
-import butterknife.BindView;
-import butterknife.ButterKnife;
+
 import com.annimon.stream.Stream;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -46,11 +43,27 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import butterknife.BindDrawable;
+import butterknife.BindString;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import fr.cph.chicago.R;
+import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.adapter.TrainMapSnippetAdapter;
 import fr.cph.chicago.core.listener.TrainMapOnCameraChangeListener;
-import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.Eta;
@@ -63,16 +76,6 @@ import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.util.Util;
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static fr.cph.chicago.connection.CtaRequestType.TRAIN_FOLLOW;
 import static fr.cph.chicago.connection.CtaRequestType.TRAIN_LOCATION;
@@ -428,7 +431,7 @@ public class TrainMapActivity extends Activity {
                 final DataHolder dataHolder = DataHolder.getInstance();
                 trainData = dataHolder.getTrainData();
             }
-            positions = trainData.readPattern(TrainLine.fromXmlString(line));
+            positions = trainData.readPattern(getApplicationContext(), TrainLine.fromXmlString(line));
             return trains;
         }
 
