@@ -9,9 +9,6 @@ import com.univocity.parsers.csv.CsvParserSettings;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.List;
-
-import fr.cph.chicago.entity.BusStop;
 
 public class BusStopCsvParser {
 
@@ -32,12 +29,12 @@ public class BusStopCsvParser {
 	}
 
     @NonNull
-	public List<BusStop> parse(@NonNull final Context context) {
+	public void parse(@NonNull final Context context) {
 		try {
 			parser.parse(new InputStreamReader(context.getAssets().open(STOP_FILE_PATH)));
 		} catch (final IOException e) {
 			Log.e(TAG, e.getMessage(), e);
 		}
-		return rowProcessor.getRows();
+		//return rowProcessor.getRows();
 	}
 }

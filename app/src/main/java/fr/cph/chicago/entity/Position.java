@@ -22,6 +22,7 @@ import android.support.annotation.NonNull;
 
 import java.io.Serializable;
 
+import io.realm.RealmObject;
 import lombok.Data;
 
 /**
@@ -31,7 +32,7 @@ import lombok.Data;
  * @version 1
  */
 @Data
-public class Position implements Parcelable, Serializable {
+public class Position extends RealmObject implements Parcelable, Serializable {
 	/**
 	 * Serializable
 	 **/

@@ -8,6 +8,7 @@ buildscript {
         classpath group: 'me.tatarka', name: 'gradle-retrolambda', version: "$retro_lambda_version"
         classpath group: 'me.tatarka.retrolambda.projectlombok', name: 'lombok.ast', version: "$retro_lambda_lombok_version"
         classpath group: 'com.neenbedankt.gradle.plugins', name: 'android-apt', version: "$android_apt_version"
+        classpath "io.realm:realm-gradle-plugin:1.0.0"
     }
     configurations.classpath.exclude group: 'com.android.tools.external.lombok'
 }

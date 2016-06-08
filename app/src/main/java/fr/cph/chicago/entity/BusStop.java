@@ -22,6 +22,8 @@ import android.support.annotation.NonNull;
 
 import java.io.Serializable;
 
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 import lombok.Data;
 
 /**
@@ -31,7 +33,7 @@ import lombok.Data;
  * @version 1
  */
 @Data
-public final class BusStop implements Comparable<BusStop>, Parcelable, Serializable {
+public class BusStop extends RealmObject implements Comparable<BusStop>, Parcelable, Serializable {
     /**
      *
      */
@@ -39,6 +41,7 @@ public final class BusStop implements Comparable<BusStop>, Parcelable, Serializa
     /**
      * The id
      **/
+    @PrimaryKey
     private int id;
     /**
      * The name

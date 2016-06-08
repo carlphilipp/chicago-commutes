@@ -215,9 +215,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void reloadData() {
         final DataHolder dataHolder = DataHolder.getInstance();
-        final BusData busData = BusData.getInstance(getApplicationContext());
+        final BusData busData = BusData.getInstance();
         if (busData.readAllBusStops() == null || busData.readAllBusStops().size() == 0) {
-            busData.readBusStops();
+            busData.readBusStopsIfNeeded(getApplicationContext());
             dataHolder.setBusData(busData);
         }
         final TrainData trainData = TrainData.getInstance(getApplicationContext());

@@ -106,8 +106,8 @@ public class BusServiceImpl implements BusService {
     @NonNull
     @Override
     public BusData loadLocalBusData(@NonNull final Context context) {
-        BusData.getInstance(context).readBusStops();
-        return BusData.getInstance(context);
+        BusData.getInstance().readBusStopsIfNeeded(context);
+        return BusData.getInstance();
     }
 
     @NonNull

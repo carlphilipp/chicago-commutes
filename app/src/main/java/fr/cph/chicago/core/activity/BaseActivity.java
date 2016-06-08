@@ -18,6 +18,7 @@ package fr.cph.chicago.core.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -29,20 +30,23 @@ import java.util.List;
 
 import butterknife.BindString;
 import butterknife.ButterKnife;
-import fr.cph.chicago.core.App;
 import fr.cph.chicago.R;
+import fr.cph.chicago.core.App;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
+import fr.cph.chicago.entity.dto.FavoritesDTO;
 import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.service.BusService;
 import fr.cph.chicago.service.TrainService;
 import fr.cph.chicago.service.impl.BusServiceImpl;
 import fr.cph.chicago.service.impl.TrainServiceImpl;
 import fr.cph.chicago.util.Util;
-import fr.cph.chicago.entity.dto.FavoritesDTO;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+import lombok.SneakyThrows;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -74,8 +78,21 @@ public class BaseActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.loading);
         ButterKnife.bind(this);
+
+        setUpRealm();
         loadLocalAndFavoritesData();
         trackWithGoogleAnalytics();
+    }
+
+    @SneakyThrows
+    private void setUpRealm() {
+        final PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+        RealmConfiguration realmConfig = new RealmConfiguration
+            .Builder(getApplicationContext())
+            .schemaVersion(packageInfo.versionCode)
+            .deleteRealmIfMigrationNeeded()
+            .build();
+        Realm.setDefaultConfiguration(realmConfig);
     }
 
     private void loadLocalAndFavoritesData() {

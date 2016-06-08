@@ -18,6 +18,7 @@ package fr.cph.chicago.data;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Optional;
@@ -30,8 +31,10 @@ import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.parser.BusStopCsvParser;
+import io.realm.Realm;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 
 /**
  * Class that handle bus data. Singleton
@@ -41,22 +44,19 @@ import lombok.Setter;
  */
 public class BusData {
 
-    private static BusData BUS_DATA;
+    private static final String TAG = BusData.class.getSimpleName();
 
-    private final Context context;
+    private static BusData BUS_DATA;
 
     @Getter
     @Setter
     private List<BusRoute> busRoutes;
-    private List<BusStop> busStops;
 
-    private final BusStopCsvParser parser;
+    private final BusStopCsvParser busStopCsvParser;
 
-    private BusData(@NonNull final Context context) {
-        this.context = context;
+    private BusData() {
         this.busRoutes = new ArrayList<>();
-        this.busStops = new ArrayList<>();
-        this.parser = new BusStopCsvParser();
+        this.busStopCsvParser = new BusStopCsvParser();
     }
 
     /**
@@ -65,9 +65,9 @@ public class BusData {
      * @return a bus data instance
      */
     @NonNull
-    public static BusData getInstance(@NonNull final Context context) {
+    public static BusData getInstance() {
         if (BUS_DATA == null) {
-            BUS_DATA = new BusData(context.getApplicationContext());
+            BUS_DATA = new BusData();
         }
         return BUS_DATA;
     }
@@ -75,9 +75,12 @@ public class BusData {
     /**
      * Method that read bus stops from CSV
      */
-    public final void readBusStops() {
-        if (busStops.isEmpty()) {
-            busStops = parser.parse(context);
+    @SneakyThrows
+    public final void readBusStopsIfNeeded(@NonNull final Context context) {
+        final Realm realm = Realm.getDefaultInstance();
+        if (realm.where(BusStop.class).findFirst() == null) {
+            Log.d(TAG, "Load bus stop from CSV");
+            busStopCsvParser.parse(context);
         }
     }
 
@@ -95,6 +98,7 @@ public class BusData {
         return busRoute.isPresent() ? Optional.of(busRoute.get()) : Optional.empty();
     }
 
+    // TODO to delete, and only use the method above
     final boolean containsRoute(@NonNull final String routeId) {
         return Stream.of(busRoutes)
             .filter(busRoute -> busRoute.getId().equals(routeId))
@@ -109,7 +113,10 @@ public class BusData {
      */
     @NonNull
     public final List<BusStop> readAllBusStops() {
-        return busStops;
+        final Realm realm = Realm.getDefaultInstance();
+        final List<BusStop> result = realm.where(BusStop.class).findAll();
+        realm.close();
+        return result;
     }
 
     /**
@@ -130,7 +137,8 @@ public class BusData {
         final double lonMax = longitude + dist;
         final double lonMin = longitude - dist;
 
-        return Stream.of(busStops)
+        // create a realm request for that
+        return Stream.of(readAllBusStops())
             .filter(busStop -> {
                 final double busLatitude = busStop.getPosition().getLatitude();
                 final double busLongitude = busStop.getPosition().getLongitude();
