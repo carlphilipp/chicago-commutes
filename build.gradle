@@ -12,124 +12,12 @@ buildscript {
     configurations.classpath.exclude group: 'com.android.tools.external.lombok'
 }
 
-apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
-apply plugin: 'android-apt'
-
-dependencies {
+allprojects {
     repositories {
         jcenter()
     }
-    compile group: 'com.google.android.gms', name: 'play-services-maps', version: "$google_play_version"
-    compile group: 'com.google.android.gms', name: 'play-services-analytics', version: "$google_play_version"
-    compile group: 'org.apache.commons', name: 'commons-collections4', version: "$commons_collections4_version"
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: "$commons_lang3_version"
-    compile group: 'commons-io', name: 'commons-io', version: "$commons_io_version"
-    compile group: 'com.univocity', name: 'univocity-parsers', version: "$univocity_parsers_version"
-    compile group: 'com.android.support', name: 'appcompat-v7', version: "$google_support_version"
-    compile group: 'com.android.support', name: 'design', version: "$google_support_version"
-    compile group: 'com.android.support', name: 'support-v4', version: "$google_support_version"
-    compile group: 'com.android.support', name: 'cardview-v7', version: "$google_support_version"
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: "$jackson_version_version"
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "$jackson_version_version"
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: "$jackson_version_version"
-    compile group: 'io.reactivex', name: 'rxandroid', version: "$reactivex_android_version"
-    compile group: 'io.reactivex', name: 'rxjava', version: "$reactivex_java_version"
-    compile group: 'com.annimon', name: 'stream', version: "$annimon_stream_version"
-
-    compile group: 'com.jakewharton', name: 'butterknife', version: "$butterknife_version"
-    apt group: 'com.jakewharton', name: 'butterknife-compiler', version: "$butterknife_version"
-
-    provided group: 'org.projectlombok', name: 'lombok', version: "$lombok_version"
 }
 
-android {
-    compileSdkVersion 23
-    buildToolsVersion '24.0.0 rc1'
-
-    defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 23
-
-        def appProperties = rootProject.file('app.properties')
-        def props = new Properties()
-        props.load(new FileInputStream(appProperties))
-
-        resValue "string", "google_maps_api_key", props['google.streetmap.key']
-        resValue "string", "google_analytics_key", props['google.analytics']
-        resValue "string", "cta_train_key", props['cta.train.key']
-        resValue "string", "cta_bus_key", props['cta.bus.key']
-
-        // For futur integration with Java 8. To try with the next build tool version
-        //jackOptions {
-        //    enabled true
-        //}
-    }
-
-    compileOptions {
-        def javaVersion = JavaVersion.VERSION_1_8
-        sourceCompatibility = javaVersion
-        targetCompatibility = javaVersion
-    }
-
-    sourceSets {
-        main {
-            manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs = ['src']
-            res.srcDirs = ['res']
-            assets.srcDirs = ['assets']
-        }
-    }
-
-    signingConfigs {
-        release {
-            def propsFile = rootProject.file('keystore.properties')
-            if (propsFile.exists() && gradle.startParameter.taskNames.any { it.contains('Release') || it.contains('build') }) {
-                def props = new Properties()
-                props.load(new FileInputStream(propsFile))
-                File storeF = new File(props['storeFile'].toString())
-
-                storeFile = storeF
-                storePassword new String(System.console().readPassword("\n\$ Enter keystore password: "))
-                keyAlias = props['keyAlias']
-                keyPassword new String(System.console().readPassword("\n\$ Enter alias password: "))
-            } else {
-                storeFile file('default')
-                storePassword 'default'
-                keyAlias 'default'
-                keyPassword 'default'
-            }
-        }
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled true
-            shrinkResources true // Must be set to false for now with Java 8
-            proguardFile 'proguard-android-optimize.txt'
-            signingConfig signingConfigs.release
-        }
-    }
-
-    lintOptions {
-        checkReleaseBuilds true
-        abortOnError false
-    }
-
-    packagingOptions {
-        exclude 'META-INF/DEPENDENCIES.txt'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/NOTICE.txt'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/notice.txt'
-        exclude 'META-INF/license.txt'
-        exclude 'META-INF/dependencies.txt'
-        exclude 'META-INF/LGPL2.1'
-    }
-}
-
-retrolambda {
-    jvmArgs '-noverify'
+task clean(type: Delete) {
+    delete rootProject.buildDir
 }
