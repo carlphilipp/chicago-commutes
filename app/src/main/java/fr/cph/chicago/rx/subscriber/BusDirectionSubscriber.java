@@ -18,9 +18,9 @@ import com.annimon.stream.Stream;
 import java.util.List;
 
 import fr.cph.chicago.R;
-import fr.cph.chicago.app.activity.BusBoundActivity;
-import fr.cph.chicago.app.activity.BusMapActivity;
-import fr.cph.chicago.app.adapter.PopupBusAdapter;
+import fr.cph.chicago.core.activity.BusBoundActivity;
+import fr.cph.chicago.core.activity.BusMapActivity;
+import fr.cph.chicago.core.adapter.PopupBusAdapter;
 import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.enumeration.BusDirection;

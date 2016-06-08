@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import fr.cph.chicago.app.App;
+import fr.cph.chicago.core.App;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusRoute;

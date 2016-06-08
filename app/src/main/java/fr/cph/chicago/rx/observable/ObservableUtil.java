@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import fr.cph.chicago.app.App;
+import fr.cph.chicago.core.App;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.Bus;
 import fr.cph.chicago.entity.BusArrival;

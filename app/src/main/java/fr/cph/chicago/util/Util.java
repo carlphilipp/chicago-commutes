@@ -33,7 +33,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
@@ -61,7 +60,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import fr.cph.chicago.R;
-import fr.cph.chicago.app.App;
+import fr.cph.chicago.core.App;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusRoute;
@@ -336,7 +335,6 @@ public final class Util {
     public static MultiValuedMap<String, String> getFavoritesTrainParams(@NonNull final Context context) {
         final MultiValuedMap<String, String> paramsTrain = new ArrayListValuedHashMap<>();
         final List<Integer> favorites = Preferences.getTrainFavorites(context, App.PREFERENCE_FAVORITES_TRAIN);
-        Log.e("Util", "" + favorites);
         Stream.of(favorites).forEach(favorite -> paramsTrain.put(context.getString(R.string.request_map_id), favorite.toString()));
         return paramsTrain;
     }

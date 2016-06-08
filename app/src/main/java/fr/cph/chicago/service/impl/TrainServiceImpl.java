@@ -2,7 +2,6 @@ package fr.cph.chicago.service.impl;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.util.SparseArray;
 
 import com.annimon.stream.Collectors;
@@ -45,7 +44,6 @@ public class TrainServiceImpl implements TrainService {
     @Override
     public SparseArray<TrainArrival> loadFavoritesTrain(@NonNull final Context context) {
         final MultiValuedMap<String, String> trainParams = Util.getFavoritesTrainParams(context);
-        Log.e("TrainSerImpl", "" + trainParams);
         SparseArray<TrainArrival> trainArrivals = new SparseArray<>();
         try {
             final CtaConnect ctaConnect = CtaConnect.getInstance(context);
