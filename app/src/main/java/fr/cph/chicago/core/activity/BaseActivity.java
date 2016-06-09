@@ -133,7 +133,7 @@ public class BaseActivity extends Activity {
                     return favoritesDTO;
                 }
             ).subscribe(
-                BaseActivity.this::startMainActivity,
+                this::startMainActivity,
                 onError -> {
                     Log.e(TAG, onError.getMessage(), onError);
                     displayError("Oops, something went wrong!");
