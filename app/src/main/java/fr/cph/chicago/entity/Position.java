@@ -19,11 +19,11 @@ package fr.cph.chicago.entity;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-
-import java.io.Serializable;
-
 import io.realm.RealmObject;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
 
 /**
  * The position
@@ -31,6 +31,7 @@ import lombok.Data;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class Position extends RealmObject implements Parcelable, Serializable {
 	/**
