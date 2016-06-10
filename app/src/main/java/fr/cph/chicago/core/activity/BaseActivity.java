@@ -23,11 +23,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.SparseArray;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
 import butterknife.BindString;
 import butterknife.ButterKnife;
 import fr.cph.chicago.R;
@@ -51,6 +46,10 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 /**
  * This class represents the base activity of the application It will load the loading screen and/or the main
@@ -79,9 +78,18 @@ public class BaseActivity extends Activity {
         setContentView(R.layout.loading);
         ButterKnife.bind(this);
 
+        long startTime = System.currentTimeMillis();
         setUpRealm();
+        long stopTime = System.currentTimeMillis();
+        Log.e(TAG, "Realm " + (stopTime - startTime) + " ms");
+        startTime = System.currentTimeMillis();
         loadLocalAndFavoritesData();
+        stopTime = System.currentTimeMillis();
+        Log.e(TAG, "Local and favorites " + (stopTime - startTime) + " ms");
+        startTime = System.currentTimeMillis();
         trackWithGoogleAnalytics();
+        stopTime = System.currentTimeMillis();
+        Log.e(TAG, "Track google " + (stopTime - startTime) + " ms");
     }
 
     @SneakyThrows
@@ -142,8 +150,10 @@ public class BaseActivity extends Activity {
     }
 
     private void trackWithGoogleAnalytics() {
-        Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_arrivals, 0);
-        Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
+        new Thread(() -> {
+			Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_arrivals, 0);
+			Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
+		}).start();
     }
 
     /**
