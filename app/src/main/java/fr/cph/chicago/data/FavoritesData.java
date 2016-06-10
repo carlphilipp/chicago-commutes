@@ -108,8 +108,9 @@ public class FavoritesData {
         } else if (position < trainFavorites.size() + fakeBusFavorites.size() && (position - trainFavorites.size() < fakeBusFavorites.size())) {
             final int index = position - trainFavorites.size();
             final String res[] = Util.decodeBusFavorite(fakeBusFavorites.get(index));
-            if (busData.containsRoute(res[0])) {
-                return busData.getRoute(res[0]);
+            final Optional<BusRoute> busRouteOptional = busData.getRoute(res[0]);
+            if (busRouteOptional.isPresent()) {
+                return busRouteOptional;
             } else {
                 // Get name in the preferences if null
                 final String routeName = Preferences.getBusRouteNameMapping(context, res[1]);

@@ -97,15 +97,6 @@ public class BusData {
         return busRoute.isPresent() ? Optional.of(busRoute.get()) : Optional.empty();
     }
 
-    // TODO to delete, and only use the method above
-    @Deprecated
-    final boolean containsRoute(@NonNull final String routeId) {
-        return Stream.of(busRoutes)
-            .filter(busRoute -> busRoute.getId().equals(routeId))
-            .findFirst()
-            .isPresent();
-    }
-
     /**
      * Get a list of bus stop within a a distance and position
      *
