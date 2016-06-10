@@ -290,7 +290,7 @@ public class NearbyFragment extends Fragment {
 
         private void loadAroundBikeData() {
             // TODO: modify the check
-            if (bikeStationsTemp != null) {
+            if (bikeStationsTemp != null && NearbyFragment.this.isAdded()) {
                 // Bike
                 final DivvyConnect connect = DivvyConnect.getInstance();
                 try {
@@ -345,43 +345,43 @@ public class NearbyFragment extends Fragment {
                       @NonNull final List<Station> stations,
                       @NonNull final SparseArray<TrainArrival> trainArrivals,
                       @NonNull final List<BikeStation> bikeStations) {
-        final List<Marker> markers = new ArrayList<>();
-        final BitmapDescriptor azure = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE);
-        final BitmapDescriptor violet = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
-        final BitmapDescriptor yellow = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
-        MarkerOptions options;
-        Marker marker;
-        LatLng point;
-        for (final BusStop busStop : buses) {
-            point = new LatLng(busStop.getPosition().getLatitude(), busStop.getPosition().getLongitude());
-            options = new MarkerOptions().position(point).title(busStop.getName()).snippet(Integer.toString(busStop.getId()));
-            options.icon(azure);
-            marker = googleMap.addMarker(options);
-            markers.add(marker);
-
-        }
-        for (final Station station : stations) {
-            for (final Position position : station.getStopsPosition()) {
-                point = new LatLng(position.getLatitude(), position.getLongitude());
-                options = new MarkerOptions().position(point).title(station.getName()).snippet(Integer.toString(station.getId()));
-                options.icon(violet);
+        if (NearbyFragment.this.isAdded()) {
+            final List<Marker> markers = new ArrayList<>();
+            final BitmapDescriptor azure = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE);
+            final BitmapDescriptor violet = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
+            final BitmapDescriptor yellow = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
+            MarkerOptions options;
+            Marker marker;
+            LatLng point;
+            for (final BusStop busStop : buses) {
+                point = new LatLng(busStop.getPosition().getLatitude(), busStop.getPosition().getLongitude());
+                options = new MarkerOptions().position(point).title(busStop.getName()).snippet(Integer.toString(busStop.getId()));
+                options.icon(azure);
                 marker = googleMap.addMarker(options);
                 markers.add(marker);
             }
+            for (final Station station : stations) {
+                for (final Position position : station.getStopsPosition()) {
+                    point = new LatLng(position.getLatitude(), position.getLongitude());
+                    options = new MarkerOptions().position(point).title(station.getName()).snippet(Integer.toString(station.getId()));
+                    options.icon(violet);
+                    marker = googleMap.addMarker(options);
+                    markers.add(marker);
+                }
+            }
+            for (final BikeStation station : bikeStations) {
+                point = new LatLng(station.getLatitude(), station.getLongitude());
+                options = new MarkerOptions().position(point).title(station.getName()).snippet(station.getId() + "");
+                options.icon(yellow);
+                marker = googleMap.addMarker(options);
+                markers.add(marker);
+            }
+            addClickEventsToMarkers(buses, stations, bikeStations);
+            nearbyAdapter.updateData(buses, busArrivals, stations, trainArrivals, bikeStations, googleMap, markers);
+            nearbyAdapter.notifyDataSetChanged();
+            showProgress(false);
+            nearbyContainer.setVisibility(View.VISIBLE);
         }
-        for (final BikeStation station : bikeStations) {
-            point = new LatLng(station.getLatitude(), station.getLongitude());
-            options = new MarkerOptions().position(point).title(station.getName()).snippet(station.getId() + "");
-            options.icon(yellow);
-            marker = googleMap.addMarker(options);
-            markers.add(marker);
-        }
-        addClickEventsToMarkers(buses, stations, bikeStations);
-        nearbyAdapter.updateData(buses, busArrivals, stations, trainArrivals, bikeStations, googleMap, markers);
-        nearbyAdapter.notifyDataSetChanged();
-        showProgress(false);
-        nearbyContainer.setVisibility(View.VISIBLE);
-
     }
 
     private void addClickEventsToMarkers(@NonNull final List<BusStop> busStops, @NonNull final List<Station> stations, @NonNull final List<BikeStation> bikeStations) {
@@ -415,17 +415,19 @@ public class NearbyFragment extends Fragment {
     }
 
     private void showProgress(final boolean show) {
-        try {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-            loadLayout.setVisibility(View.VISIBLE);
-            loadLayout.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    loadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } catch (final IllegalStateException e) {
-            Log.w(TAG, e.getMessage(), e);
+        if (NearbyFragment.this.isAdded()) {
+            try {
+                int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+                loadLayout.setVisibility(View.VISIBLE);
+                loadLayout.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        loadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+                    }
+                });
+            } catch (final IllegalStateException e) {
+                Log.w(TAG, e.getMessage(), e);
+            }
         }
     }
 
