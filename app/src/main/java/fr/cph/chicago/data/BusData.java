@@ -34,7 +34,6 @@ import fr.cph.chicago.parser.BusStopCsvParser;
 import io.realm.Realm;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.SneakyThrows;
 
 /**
  * Class that handle bus data. Singleton
@@ -75,13 +74,13 @@ public class BusData {
     /**
      * Method that read bus stops from CSV
      */
-    @SneakyThrows
     public final void readBusStopsIfNeeded(@NonNull final Context context) {
         final Realm realm = Realm.getDefaultInstance();
         if (realm.where(BusStop.class).findFirst() == null) {
             Log.d(TAG, "Load bus stop from CSV");
             busStopCsvParser.parse(context);
         }
+        realm.close();
     }
 
     /**
@@ -99,24 +98,12 @@ public class BusData {
     }
 
     // TODO to delete, and only use the method above
+    @Deprecated
     final boolean containsRoute(@NonNull final String routeId) {
         return Stream.of(busRoutes)
             .filter(busRoute -> busRoute.getId().equals(routeId))
             .findFirst()
             .isPresent();
-    }
-
-    /**
-     * Get all bus stops from CSV
-     *
-     * @return a list of bus stops
-     */
-    @NonNull
-    public final List<BusStop> readAllBusStops() {
-        final Realm realm = Realm.getDefaultInstance();
-        final List<BusStop> result = realm.where(BusStop.class).findAll();
-        realm.close();
-        return result;
     }
 
     /**
@@ -126,7 +113,7 @@ public class BusData {
      * @return a list of bus stop
      */
     @NonNull
-    public final List<BusStop> readNearbyStops(@NonNull final Position position) {
+    public final List<BusStop> readNearbyStops(@NonNull final Realm realm, @NonNull final Position position) {
         final double dist = 0.004472;
 
         final double latitude = position.getLatitude();
@@ -137,14 +124,23 @@ public class BusData {
         final double lonMax = longitude + dist;
         final double lonMin = longitude - dist;
 
-        // create a realm request for that
-        return Stream.of(readAllBusStops())
-            .filter(busStop -> {
-                final double busLatitude = busStop.getPosition().getLatitude();
-                final double busLongitude = busStop.getPosition().getLongitude();
-                return busLatitude <= latMax && busLatitude >= latMin && busLongitude <= lonMax && busLongitude >= lonMin;
+        return Stream.of(realm.where(BusStop.class)
+            // TODO use between when supported by Realm
+            .greaterThan("position.latitude", latMin)
+            .lessThan("position.latitude", latMax)
+            .greaterThan("position.longitude", lonMin)
+            .lessThan("position.longitude", lonMax)
+            .findAllSorted("name"))
+            .map(currentBusStop -> {
+                final BusStop busStop = new BusStop();
+                busStop.setName(currentBusStop.getName());
+                final Position pos = new Position();
+                pos.setLatitude(currentBusStop.getPosition().getLatitude());
+                pos.setLongitude(currentBusStop.getPosition().getLongitude());
+                busStop.setPosition(pos);
+                busStop.setId(currentBusStop.getId());
+                return busStop;
             })
-            .sorted((left, right) -> left.getName().compareTo(right.getName()))
             .collect(Collectors.toList());
     }
 }

@@ -39,10 +39,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import butterknife.BindString;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
+
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.google.android.gms.maps.GoogleMap;
@@ -54,12 +51,26 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import butterknife.BindString;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import fr.cph.chicago.R;
+import fr.cph.chicago.connection.CtaConnect;
+import fr.cph.chicago.connection.DivvyConnect;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.activity.MainActivity;
 import fr.cph.chicago.core.adapter.NearbyAdapter;
-import fr.cph.chicago.connection.CtaConnect;
-import fr.cph.chicago.connection.DivvyConnect;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.Preferences;
@@ -76,14 +87,7 @@ import fr.cph.chicago.parser.JsonParser;
 import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.util.GPSUtil;
 import fr.cph.chicago.util.Util;
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import io.realm.Realm;
 
 import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
 import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
@@ -478,7 +482,10 @@ public class NearbyFragment extends Fragment {
             final GPSUtil gpsUtil = new GPSUtil(this, activity, locationManager);
             position = gpsUtil.getLocation();
             if (position != null) {
-                busStops = busData.readNearbyStops(position);
+                final Realm realm = Realm.getDefaultInstance();
+                busStops = busData.readNearbyStops(realm, position);
+                realm.close();
+                Log.i(TAG, "" + busStops);
                 trainStations = trainData.readNearbyStation(position);
                 // TODO: wait bikeStations is loaded
                 if (bikeStations != null) {
