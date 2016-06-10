@@ -77,19 +77,10 @@ public class BaseActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.loading);
         ButterKnife.bind(this);
-
-        long startTime = System.currentTimeMillis();
+        
         setUpRealm();
-        long stopTime = System.currentTimeMillis();
-        Log.e(TAG, "Realm " + (stopTime - startTime) + " ms");
-        startTime = System.currentTimeMillis();
         loadLocalAndFavoritesData();
-        stopTime = System.currentTimeMillis();
-        Log.e(TAG, "Local and favorites " + (stopTime - startTime) + " ms");
-        startTime = System.currentTimeMillis();
         trackWithGoogleAnalytics();
-        stopTime = System.currentTimeMillis();
-        Log.e(TAG, "Track google " + (stopTime - startTime) + " ms");
     }
 
     @SneakyThrows
