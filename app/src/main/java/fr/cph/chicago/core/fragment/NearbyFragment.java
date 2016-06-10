@@ -39,10 +39,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import butterknife.BindString;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
+
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.google.android.gms.maps.GoogleMap;
@@ -54,6 +51,20 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import butterknife.BindString;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.DivvyConnect;
@@ -77,14 +88,6 @@ import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.util.GPSUtil;
 import fr.cph.chicago.util.Util;
 import io.realm.Realm;
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
 import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
@@ -222,7 +225,7 @@ public class NearbyFragment extends Fragment {
             busStops = (List<BusStop>) params[0];
             stations = (List<Station>) params[1];
             bikeStationsTemp = (List<BikeStation>) params[2];
-            //loadAroundBusArrivals();
+            loadAroundBusArrivals();
             loadAroundTrainArrivals();
             loadAroundBikeData();
             return null;
