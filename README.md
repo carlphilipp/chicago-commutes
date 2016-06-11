@@ -16,7 +16,7 @@ Download on [play store](https://play.google.com/store/apps/details?id=fr.cph.ch
 
 ## Build
 
-* Duplicate, rename `keystore.properties.template` to `keystore.properties` and update file with correct information
+* Duplicate `keystore.properties.template` and rename the copy to `keystore.properties`. Update the new file with correct information.
 * Do the same thing for `keystore.properties.template`.
 * You are ready to build it!
 
