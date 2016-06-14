@@ -39,7 +39,10 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-
+import butterknife.BindString;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.google.android.gms.maps.GoogleMap;
@@ -51,20 +54,6 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import butterknife.BindString;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.DivvyConnect;
@@ -87,9 +76,17 @@ import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.util.GPSUtil;
 import fr.cph.chicago.util.Util;
 import io.realm.Realm;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import rx.Observable;
 import rx.exceptions.Exceptions;
 import rx.schedulers.Schedulers;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
 import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
@@ -198,9 +195,6 @@ public class NearbyFragment extends Fragment {
 
     private void loadAllArrivals(@NonNull final List<BusStop> busStops, @NonNull final List<Station> trainStations, @NonNull final List<BikeStation> bikeStations) {
         final SparseArray<Map<String, List<BusArrival>>> busArrivalsMap = new SparseArray<>();
-        final SparseArray<TrainArrival> trainArrivals = new SparseArray<>();
-        final List<BikeStation> bikeStationsRes = new ArrayList<>();
-
         // Execute in parallel all requests to bus arrivals
         // To be able to wait that all the threads ended we transform to list (it enforces it)
         // And then process train and bikes
@@ -223,8 +217,8 @@ public class NearbyFragment extends Fragment {
             .toList()
             .subscribe(
                 val -> {
-                    loadAroundTrainArrivals(trainStations, trainArrivals);
-                    loadAroundBikeArrivals(bikeStations, bikeStationsRes);
+                    final SparseArray<TrainArrival> trainArrivals = loadAroundTrainArrivals(trainStations);
+                    final List<BikeStation> bikeStationsRes = loadAroundBikeArrivals(bikeStations);
                     hideStationsAndStopsIfNeeded(busStops, busArrivalsMap, trainStations, trainArrivals);
 
                     activity.runOnUiThread(() -> updateMarkersAndModel(busStops, busArrivalsMap, trainStations, trainArrivals, bikeStationsRes));
@@ -275,53 +269,54 @@ public class NearbyFragment extends Fragment {
         }
     }
 
-    private void loadAroundTrainArrivals(@NonNull final List<Station> trainStations, @NonNull final SparseArray<TrainArrival> trainArrivals) {
+    private SparseArray<TrainArrival> loadAroundTrainArrivals(@NonNull final List<Station> trainStations) {
         try {
+            final SparseArray<TrainArrival> trainArrivals = new SparseArray<>();
             if (isAdded()) {
                 final CtaConnect cta = CtaConnect.getInstance(getContext());
                 for (final Station station : trainStations) {
-                    final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-                    if (NearbyFragment.this.isAdded()) {
-                        reqParams.put(requestMapId, Integer.toString(station.getId()));
-                        final InputStream xmlRes = cta.connect(getContext(), TRAIN_ARRIVALS, reqParams);
-                        final XmlParser xml = XmlParser.getInstance();
-                        final SparseArray<TrainArrival> temp = xml.parseArrivals(xmlRes, DataHolder.getInstance().getTrainData());
-                        for (int j = 0; j < temp.size(); j++) {
-                            trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
-                        }
-                        trackWithGoogleAnalytics(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_arrivals, 0);
+                    final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>(1, 1);
+                    reqParams.put(requestMapId, Integer.toString(station.getId()));
+                    final InputStream xmlRes = cta.connect(getContext(), TRAIN_ARRIVALS, reqParams);
+                    final XmlParser xml = XmlParser.getInstance();
+                    final SparseArray<TrainArrival> temp = xml.parseArrivals(xmlRes, DataHolder.getInstance().getTrainData());
+                    for (int j = 0; j < temp.size(); j++) {
+                        trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
                     }
+                    trackWithGoogleAnalytics(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_arrivals, 0);
                 }
             }
+            return trainArrivals;
         } catch (final Throwable throwable) {
             throw Exceptions.propagate(throwable);
         }
     }
 
-    private void loadAroundBikeArrivals(@NonNull final List<BikeStation> bikeStations, @NonNull final List<BikeStation> bikeStationsRes) {
+    private List<BikeStation> loadAroundBikeArrivals(@NonNull final List<BikeStation> bikeStations) {
         try {
+            List<BikeStation> bikeStationsRes = new ArrayList<>();
             if (isAdded()) {
                 final DivvyConnect connect = DivvyConnect.getInstance();
                 final JsonParser json = JsonParser.getInstance();
                 final InputStream content = connect.connect(getContext());
                 final List<BikeStation> bikeStationUpdated = json.parseStations(content);
-                bikeStationsRes.addAll(
-                    Stream.of(bikeStationUpdated)
-                        .filter(bikeStations::contains)
-                        .sorted(Util.BIKE_COMPARATOR_NAME)
-                        .collect(Collectors.toList())
-                );
+                bikeStationsRes = Stream.of(bikeStationUpdated)
+                    .filter(bikeStations::contains)
+                    .sorted(Util.BIKE_COMPARATOR_NAME)
+                    .collect(Collectors.toList());
                 trackWithGoogleAnalytics(activity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
             }
+            return bikeStationsRes;
         } catch (final Throwable throwable) {
             throw Exceptions.propagate(throwable);
         }
     }
 
-    private void hideStationsAndStopsIfNeeded(@NonNull final List<BusStop> busStops,
-                                              @NonNull final SparseArray<Map<String, List<BusArrival>>> busArrivalsMap,
-                                              @NonNull final List<Station> trainStations,
-                                              @NonNull final SparseArray<TrainArrival> trainArrivals) {
+    private void hideStationsAndStopsIfNeeded(
+        @NonNull final List<BusStop> busStops,
+        @NonNull final SparseArray<Map<String, List<BusArrival>>> busArrivalsMap,
+        @NonNull final List<Station> trainStations,
+        @NonNull final SparseArray<TrainArrival> trainArrivals) {
         if (hideStationsStops && isAdded()) {
             final List<BusStop> busStopTmp = new ArrayList<>();
             for (final BusStop busStop : busStops) {
@@ -357,11 +352,12 @@ public class NearbyFragment extends Fragment {
         unbinder.unbind();
     }
 
-    private void updateMarkersAndModel(@NonNull final List<BusStop> busStops,
-                                       @NonNull final SparseArray<Map<String, List<BusArrival>>> busArrivals,
-                                       @NonNull final List<Station> trainStation,
-                                       @NonNull final SparseArray<TrainArrival> trainArrivals,
-                                       @NonNull final List<BikeStation> bikeStations) {
+    private void updateMarkersAndModel(
+        @NonNull final List<BusStop> busStops,
+        @NonNull final SparseArray<Map<String, List<BusArrival>>> busArrivals,
+        @NonNull final List<Station> trainStation,
+        @NonNull final SparseArray<TrainArrival> trainArrivals,
+        @NonNull final List<BikeStation> bikeStations) {
         if (isAdded()) {
             final List<Marker> markers = new ArrayList<>();
             final BitmapDescriptor azure = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE);
@@ -398,7 +394,10 @@ public class NearbyFragment extends Fragment {
         }
     }
 
-    private void addClickEventsToMarkers(@NonNull final List<BusStop> busStops, @NonNull final List<Station> stations, @NonNull final List<BikeStation> bikeStations) {
+    private void addClickEventsToMarkers(
+        @NonNull final List<BusStop> busStops,
+        @NonNull final List<Station> stations,
+        @NonNull final List<BikeStation> bikeStations) {
         googleMap.setOnMarkerClickListener(marker -> {
             boolean found = false;
             for (int i = 0; i < stations.size(); i++) {
@@ -429,8 +428,8 @@ public class NearbyFragment extends Fragment {
     }
 
     private void showProgress(final boolean show) {
-        if (isAdded()) {
-            try {
+        try {
+            if (isAdded()) {
                 int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
                 loadLayout.setVisibility(View.VISIBLE);
                 loadLayout.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
@@ -439,9 +438,9 @@ public class NearbyFragment extends Fragment {
                         loadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
                     }
                 });
-            } catch (final IllegalStateException e) {
-                Log.w(TAG, e.getMessage(), e);
             }
+        } catch (final IllegalStateException e) {
+            Log.w(TAG, e.getMessage(), e);
         }
     }
 
@@ -459,28 +458,13 @@ public class NearbyFragment extends Fragment {
 
     private class LoadNearbyTask extends AsyncTask<Void, Void, Void> implements LocationListener {
 
-        /**
-         * The position
-         **/
         private Position position;
-        /**
-         * The list of bus stops
-         **/
         private List<BusStop> busStops;
-        /**
-         * The list of train stations
-         **/
         private List<Station> trainStations;
-        /**
-         * List of bike stations
-         **/
         private List<BikeStation> bikeStations;
-        /**
-         * The location manager
-         **/
         private LocationManager locationManager;
 
-        public LoadNearbyTask() {
+        private LoadNearbyTask() {
             this.busStops = new ArrayList<>();
             this.trainStations = new ArrayList<>();
         }
@@ -514,7 +498,7 @@ public class NearbyFragment extends Fragment {
         protected final void onPostExecute(final Void result) {
             if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+                ActivityCompat.requestPermissions(activity, new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
                 return;
             }
             Util.centerMap(mapFragment, activity, position);
