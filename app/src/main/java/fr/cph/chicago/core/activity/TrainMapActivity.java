@@ -204,6 +204,7 @@ public class TrainMapActivity extends Activity {
                 @Override
                 public View getInfoContents(final Marker marker) {
                     if (!"".equals(marker.getSnippet())) {
+                        // View can be null
                         final View view = views.get(marker);
                         if (!refreshingInfoWindow) {
                             selectedMarker = marker;
@@ -280,12 +281,13 @@ public class TrainMapActivity extends Activity {
 
     public void drawTrains(@NonNull final List<Train> trains) {
         mapFragment.getMapAsync(googleMap -> {
+            // TODO see if views can actually be null.
             if (views == null) {
                 views = new HashMap<>();
             } else {
                 views.clear();
             }
-            Stream.of(markers).peek(Marker::remove);
+            Stream.of(markers).forEach(Marker::remove);
             markers.clear();
             final BitmapDescriptor bitmapDescr = trainListener.getCurrentBitmapDescriptor();
             for (final Train train : trains) {
@@ -382,6 +384,7 @@ public class TrainMapActivity extends Activity {
 
         @Override
         protected final void onPostExecute(final List<Eta> result) {
+            // View can be null
             final ListView arrivals = (ListView) view.findViewById(R.id.arrivals);
             final TextView error = (TextView) view.findViewById(R.id.error);
             if (result.size() != 0) {

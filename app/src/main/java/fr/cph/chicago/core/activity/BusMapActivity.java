@@ -296,7 +296,7 @@ public class BusMapActivity extends Activity {
 
     public void drawBuses(@NonNull final List<Bus> buses) {
         mapFragment.getMapAsync(googleMap -> {
-            Stream.of(busMarkers).peek(Marker::remove);
+            Stream.of(busMarkers).forEach(Marker::remove);
             busMarkers.clear();
             final BitmapDescriptor bitmapDescr = busListener.getCurrentBitmapDescriptor();
             Stream.of(buses).forEach(bus -> {
