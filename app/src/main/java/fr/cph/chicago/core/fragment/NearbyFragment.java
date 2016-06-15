@@ -218,6 +218,7 @@ public class NearbyFragment extends Fragment {
                 activity.runOnUiThread(() -> showProgress(false));
             })
             .toList()
+            .subscribeOn(Schedulers.io())
             .subscribe(
                 val -> {
                     final SparseArray<TrainArrival> trainArrivals = loadAroundTrainArrivals(trainStations);
