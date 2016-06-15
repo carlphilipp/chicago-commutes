@@ -324,7 +324,9 @@ public class FavoritesFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        unbinder.unbind();
+        if (unbinder != null) {
+            unbinder.unbind();
+        }
     }
 
     /**
