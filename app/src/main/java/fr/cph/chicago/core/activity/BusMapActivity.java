@@ -62,9 +62,10 @@ import butterknife.BindDrawable;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import fr.cph.chicago.core.App;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
+import fr.cph.chicago.core.App;
+import fr.cph.chicago.core.listener.BusMapOnCameraChangeListener;
 import fr.cph.chicago.entity.Bus;
 import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusPattern;
@@ -72,12 +73,11 @@ import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
-import fr.cph.chicago.core.listener.BusMapOnCameraChangeListener;
+import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.rx.subscriber.BusFollowSubscriber;
 import fr.cph.chicago.rx.subscriber.BusSubscriber;
 import fr.cph.chicago.util.Util;
-import fr.cph.chicago.parser.XmlParser;
 
 import static fr.cph.chicago.connection.CtaRequestType.BUS_DIRECTION;
 import static fr.cph.chicago.connection.CtaRequestType.BUS_PATTERN;
@@ -117,7 +117,6 @@ public class BusMapActivity extends Activity {
     private BusMapOnCameraChangeListener busListener;
 
     private boolean refreshingInfoWindow = false;
-    private boolean centerMap = true;
     private boolean loadPattern = true;
 
     @Override
@@ -170,7 +169,6 @@ public class BusMapActivity extends Activity {
     @Override
     public final void onStop() {
         super.onStop();
-        centerMap = false;
         loadPattern = false;
     }
 
@@ -222,9 +220,8 @@ public class BusMapActivity extends Activity {
                 }
             });
             if (Util.isNetworkAvailable(getApplicationContext())) {
-                Util.setLocationOnMap(this, googleMap);
                 Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_vehicles, 0);
-                ObservableUtil.createBusListObservable(getApplicationContext(), busId, busRouteId).subscribe(new BusSubscriber(BusMapActivity.this, centerMap, layout));
+                ObservableUtil.createBusListObservable(getApplicationContext(), busId, busRouteId).subscribe(new BusSubscriber(BusMapActivity.this, true, layout));
                 if (loadPattern) {
                     new LoadPattern().execute();
                 }
@@ -254,7 +251,7 @@ public class BusMapActivity extends Activity {
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener((item -> {
             Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_vehicles, 0);
-            ObservableUtil.createBusListObservable(getApplicationContext(), busId, busRouteId).subscribe(new BusSubscriber(BusMapActivity.this, centerMap, layout));
+            ObservableUtil.createBusListObservable(getApplicationContext(), busId, busRouteId).subscribe(new BusSubscriber(BusMapActivity.this, false, layout));
             return false;
         }));
 
