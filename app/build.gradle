@@ -31,12 +31,12 @@ dependencies {
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '24.0.0 rc2'
+    compileSdkVersion 24
+    buildToolsVersion '24.0.0'
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 23
+        targetSdkVersion 24
 
         def appProperties = this.file('app.properties')
         def props = new Properties()
@@ -92,7 +92,7 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            shrinkResources true // Must be set to false for now with Java 8
+            shrinkResources true
             proguardFile 'proguard-android-optimize.txt'
             signingConfig signingConfigs.release
         }

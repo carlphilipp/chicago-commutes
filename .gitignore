@@ -1,9 +1,9 @@
 gen
 bin
-/.idea
+.idea
 build
 .gradle
 local.properties
-app/app.properties
-app/keystore.properties
+app.properties
+keystore.properties
 *.iml
