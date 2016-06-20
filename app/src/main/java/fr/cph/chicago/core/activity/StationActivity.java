@@ -26,7 +26,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils.TruncateAt;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -264,14 +263,12 @@ public class StationActivity extends AbstractStationActivity {
     public void onRestoreInstanceState(final Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         stationId = savedInstanceState.getInt(getString(R.string.bundle_train_stationId));
-        Log.d("StationActivity", "onRestoreInstanceState");
     }
 
     @Override
     public void onSaveInstanceState(final Bundle savedInstanceState) {
         savedInstanceState.putInt(getString(R.string.bundle_train_stationId), stationId);
         super.onSaveInstanceState(savedInstanceState);
-        Log.d("StationActivity", "onSaveInstanceState");
     }
 
     /**
