@@ -55,6 +55,7 @@ public class TrainData {
 
     private static final String TAG = TrainData.class.getSimpleName();
 
+    // https://data.cityofchicago.org/Transportation/CTA-System-Information-List-of-L-Stops/8pix-ypme
     private static final String TRAIN_FILE_PATH = "cta_L_stops_cph.csv";
     private static TrainData TRAIN_DATA;
 

@@ -1,5 +1,6 @@
 package fr.cph.chicago.parser;
 
+import com.annimon.stream.Stream;
 import com.univocity.parsers.common.CommonSettings;
 import com.univocity.parsers.common.Format;
 import com.univocity.parsers.common.ParsingContext;
@@ -20,7 +21,7 @@ class BusStopCsvProcessor implements RowProcessor {
 
     @Override
     public void processStarted(final ParsingContext context) {
-        rows = new ArrayList<>(11232);
+        rows = new ArrayList<>(11469);
         realm = Realm.getDefaultInstance();
     }
 
@@ -59,9 +60,7 @@ class BusStopCsvProcessor implements RowProcessor {
     @Override
     public void processEnded(final ParsingContext context) {
         realm.beginTransaction();
-        for (final BusStop busStop : rows) {
-            realm.copyToRealm(busStop);
-        }
+        Stream.of(rows).forEach(busStop -> realm.copyToRealm(busStop));
         realm.commitTransaction();
         realm.close();
     }
