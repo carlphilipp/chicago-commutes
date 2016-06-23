@@ -48,7 +48,7 @@ android {
         resValue "string", "cta_train_key", props['cta.train.key']
         resValue "string", "cta_bus_key", props['cta.bus.key']
 
-        // For futur integration with Java 8. To try with the next build tool version
+        // For future integration with Java 8. To try with the next build tool version
         //jackOptions {
         //    enabled true
         //}
