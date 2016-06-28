@@ -126,7 +126,7 @@ public final class BikeStation implements Parcelable {
      * Land mark
      **/
     @JsonProperty("landMark")
-    private int landMark;
+    private String landMark;
 
     public BikeStation() {
 
@@ -165,7 +165,7 @@ public final class BikeStation implements Parcelable {
         dest.writeString(altitude);
         dest.writeString(String.valueOf(testStation));
         dest.writeString(lastCommunicationTime);
-        dest.writeInt(landMark);
+        dest.writeString(landMark);
     }
 
     private void readFromParcel(@NonNull final Parcel in) {
@@ -186,7 +186,7 @@ public final class BikeStation implements Parcelable {
         altitude = in.readString();
         testStation = Boolean.valueOf(in.readString());
         lastCommunicationTime = in.readString();
-        landMark = in.readInt();
+        landMark = in.readString();
     }
 
     @Override
@@ -224,7 +224,7 @@ public final class BikeStation implements Parcelable {
         result = 31 * result + (altitude != null ? altitude.hashCode() : 0);
         result = 31 * result + (testStation ? 1 : 0);
         result = 31 * result + (lastCommunicationTime != null ? lastCommunicationTime.hashCode() : 0);
-        result = 31 * result + landMark;
+        result = 31 * result + (landMark != null ? landMark.hashCode() : 0);
         return result;
     }
 
