@@ -4,11 +4,11 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'com.android.tools.build', name: 'gradle', version: "$android_tools_build_version"
-        classpath group: 'me.tatarka', name: 'gradle-retrolambda', version: "$retro_lambda_version"
-        classpath group: 'me.tatarka.retrolambda.projectlombok', name: 'lombok.ast', version: "$retro_lambda_lombok_version"
-        classpath group: 'com.neenbedankt.gradle.plugins', name: 'android-apt', version: "$android_apt_version"
-        classpath group: 'io.realm', name: 'realm-gradle-plugin', version: "$realm_version"
+        classpath group: 'com.android.tools.build', name: 'gradle', version: android_tools_build_version
+        classpath group: 'me.tatarka', name: 'gradle-retrolambda', version: retro_lambda_version
+        classpath group: 'me.tatarka.retrolambda.projectlombok', name: 'lombok.ast', version: retro_lambda_lombok_version
+        classpath group: 'com.neenbedankt.gradle.plugins', name: 'android-apt', version: android_apt_version
+        classpath group: 'io.realm', name: 'realm-gradle-plugin', version: realm_version
     }
     configurations.classpath.exclude group: 'com.android.tools.external.lombok'
 }
