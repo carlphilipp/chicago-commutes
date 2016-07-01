@@ -7,27 +7,34 @@ dependencies {
     repositories {
         jcenter()
     }
-    compile group: 'com.google.android.gms', name: 'play-services-maps', version: google_play_version
-    compile group: 'com.google.android.gms', name: 'play-services-analytics', version: google_play_version
-    compile group: 'org.apache.commons', name: 'commons-collections4', version: commons_collections4_version
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: commons_lang3_version
-    compile group: 'commons-io', name: 'commons-io', version: commons_io_version
-    compile group: 'com.univocity', name: 'univocity-parsers', version: univocity_parsers_version
-    compile group: 'com.android.support', name: 'appcompat-v7', version: google_support_version
-    compile group: 'com.android.support', name: 'design', version: google_support_version
-    compile group: 'com.android.support', name: 'support-v4', version: google_support_version
-    compile group: 'com.android.support', name  : 'cardview-v7', version: google_support_version
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jackson_version
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jackson_version
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: jackson_version
-    compile group: 'io.reactivex', name: 'rxandroid', version: reactivex_android_version
-    compile group: 'io.reactivex', name: 'rxjava', version: reactivex_java_version
-    compile group: 'com.annimon', name: 'stream', version: annimon_stream_version
 
-    compile group: 'com.jakewharton', name: 'butterknife', version: butterknife_version
-    apt group: 'com.jakewharton', name: 'butterknife-compiler', version: butterknife_version
+    compile(
+        [group: 'com.google.android.gms', name: 'play-services-maps', version: google_play_version],
+        [group: 'com.google.android.gms', name: 'play-services-analytics', version: google_play_version],
+        [group: 'org.apache.commons', name: 'commons-collections4', version: commons_collections4_version],
+        [group: 'org.apache.commons', name: 'commons-lang3', version: commons_lang3_version],
+        [group: 'commons-io', name: 'commons-io', version: commons_io_version],
+        [group: 'com.univocity', name: 'univocity-parsers', version: univocity_parsers_version],
+        [group: 'com.android.support', name: 'appcompat-v7', version: google_support_version],
+        [group: 'com.android.support', name: 'design', version: google_support_version],
+        [group: 'com.android.support', name: 'support-v4', version: google_support_version],
+        [group: 'com.android.support', name: 'cardview-v7', version: google_support_version],
+        [group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jackson_version],
+        [group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jackson_version],
+        [group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: jackson_version],
+        [group: 'io.reactivex', name: 'rxandroid', version: reactivex_android_version],
+        [group: 'io.reactivex', name: 'rxjava', version: reactivex_java_version],
+        [group: 'com.annimon', name: 'stream', version: annimon_stream_version],
+        [group: 'com.jakewharton', name: 'butterknife', version: butterknife_version]
+    )
 
-    provided group: 'org.projectlombok', name: 'lombok', version: lombok_version
+    apt(
+        [group: 'com.jakewharton', name: 'butterknife-compiler', version: butterknife_version]
+    )
+
+    provided(
+        [group: 'org.projectlombok', name: 'lombok', version: lombok_version]
+    )
 }
 
 android {
