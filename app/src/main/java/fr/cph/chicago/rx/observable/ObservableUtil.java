@@ -72,10 +72,10 @@ public class ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<List<BikeStation>> createAllBikeStationsObservable(@NonNull final Context context) {
+    public static Observable<List<BikeStation>> createAllBikeStationsObservable() {
         return Observable.create(
             (Subscriber<? super List<BikeStation>> subscriber) -> {
-                subscriber.onNext(BIKE_SERVICE.loadAllBikes(context));
+                subscriber.onNext(BIKE_SERVICE.loadAllBikes());
                 subscriber.onCompleted();
             })
             .onErrorReturn(throwable -> {
@@ -92,7 +92,7 @@ public class ObservableUtil {
         // Bus online favorites
         final Observable<List<BusArrival>> busArrivalsObservable = ObservableUtil.createBusArrivals(context);
         // Bikes online all stations
-        final Observable<List<BikeStation>> bikeStationsObservable = ObservableUtil.createAllBikeStationsObservable(context);
+        final Observable<List<BikeStation>> bikeStationsObservable = ObservableUtil.createAllBikeStationsObservable();
         return Observable.zip(trainArrivalsObservable, busArrivalsObservable, bikeStationsObservable,
             (trainArrivals, busArrivals, bikeStations) -> {
                 App.modifyLastUpdate(Calendar.getInstance().getTime());
@@ -151,7 +151,7 @@ public class ObservableUtil {
 
         final Observable<List<BikeStation>> bikeStationsObs = Observable.create(
             (Subscriber<? super List<BikeStation>> subscriber) -> {
-                subscriber.onNext(BIKE_SERVICE.loadAllBikes(context));
+                subscriber.onNext(BIKE_SERVICE.loadAllBikes());
                 subscriber.onCompleted();
             })
             .onErrorReturn(throwable -> {

@@ -16,7 +16,6 @@
 
 package fr.cph.chicago.connection;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -26,41 +25,47 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import fr.cph.chicago.R;
 import fr.cph.chicago.exception.ConnectException;
 
+import static fr.cph.chicago.Constants.DIVYY_URL;
+
+/**
+ * Class that build url and connect to Divvy API.
+ *
+ * @author Carl-Philipp Harmant
+ * @version 1
+ */
 public class DivvyConnect {
 
-	private static final String TAG = DivvyConnect.class.getSimpleName();
+    private static final String TAG = DivvyConnect.class.getSimpleName();
 
-	private static DivvyConnect instance = null;
+    private static DivvyConnect instance = null;
 
-	private DivvyConnect() {
-	}
-
-    @NonNull
-	public static DivvyConnect getInstance() {
-		if (instance == null) {
-			instance = new DivvyConnect();
-		}
-		return instance;
-	}
+    private DivvyConnect() {
+    }
 
     @NonNull
-	public final InputStream connect(@NonNull final Context context) throws ConnectException {
-		final InputStream inputStream;
-		try {
-            final String urlDivvy = context.getString(R.string.url_divvy);
-            Log.v(TAG, "Address: " + urlDivvy);
-			final URL url = new URL(urlDivvy);
-			final HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-			urlConnection.setConnectTimeout(5000);
-			urlConnection.setReadTimeout(5000);
-			inputStream = new BufferedInputStream(urlConnection.getInputStream());
-		} catch (final IOException e) {
-			Log.e(TAG, e.getMessage(), e);
-			throw new ConnectException(ConnectException.ERROR, e);
-		}
-		return inputStream;
-	}
+    public static DivvyConnect getInstance() {
+        if (instance == null) {
+            instance = new DivvyConnect();
+        }
+        return instance;
+    }
+
+    @NonNull
+    public final InputStream connect() throws ConnectException {
+        final InputStream inputStream;
+        try {
+            Log.v(TAG, "Address: " + DIVYY_URL);
+            final URL url = new URL(DIVYY_URL);
+            final HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setConnectTimeout(5000);
+            urlConnection.setReadTimeout(5000);
+            inputStream = new BufferedInputStream(urlConnection.getInputStream());
+        } catch (final IOException e) {
+            Log.e(TAG, e.getMessage(), e);
+            throw new ConnectException(ConnectException.ERROR, e);
+        }
+        return inputStream;
+    }
 }

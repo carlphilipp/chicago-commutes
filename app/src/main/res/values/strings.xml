@@ -30,8 +30,6 @@
     <string name="url_bus_arrival">http://www.ctabustracker.com/bustime/api/v1/getpredictions</string>
     <string name="url_bus_pattern">http://www.ctabustracker.com/bustime/api/v1/getpatterns</string>
 
-    <string name="url_divvy">http://www.divvybikes.com/stations/json</string>
-
     <string name="url_street_view">http://maps.googleapis.com/maps/api/streetview</string>
 
     <!-- Drawer Menu -->

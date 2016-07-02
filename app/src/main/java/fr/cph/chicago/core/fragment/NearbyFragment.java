@@ -302,7 +302,7 @@ public class NearbyFragment extends Fragment {
             if (isAdded()) {
                 final DivvyConnect connect = DivvyConnect.getInstance();
                 final JsonParser json = JsonParser.getInstance();
-                final InputStream content = connect.connect(getContext());
+                final InputStream content = connect.connect();
                 final List<BikeStation> bikeStationUpdated = json.parseStations(content);
                 bikeStationsRes = Stream.of(bikeStationUpdated)
                     .filter(bikeStations::contains)
