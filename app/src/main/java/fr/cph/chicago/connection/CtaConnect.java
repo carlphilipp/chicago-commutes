@@ -33,6 +33,16 @@ import java.net.URL;
 import fr.cph.chicago.R;
 import fr.cph.chicago.exception.ConnectException;
 
+import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;
+import static fr.cph.chicago.Constants.BUSES_DIRECTION_URL;
+import static fr.cph.chicago.Constants.BUSES_PATTERN_URL;
+import static fr.cph.chicago.Constants.BUSES_ROUTES_URL;
+import static fr.cph.chicago.Constants.BUSES_STOP_URL;
+import static fr.cph.chicago.Constants.BUSES_VEHICLES_URL;
+import static fr.cph.chicago.Constants.TRAINS_ARRIVALS_URL;
+import static fr.cph.chicago.Constants.TRAINS_FOLLOW_URL;
+import static fr.cph.chicago.Constants.TRAINS_LOCATION_URL;
+
 /**
  * Class that build url and connect to CTA API
  *
@@ -85,38 +95,38 @@ public class CtaConnect {
      * @throws ConnectException
      */
     @NonNull
-    public final InputStream connect(@NonNull Context context, @NonNull final CtaRequestType requestType, @NonNull final MultiValuedMap<String, String> params) throws ConnectException {
+    public final InputStream connect(@NonNull final CtaRequestType requestType, @NonNull final MultiValuedMap<String, String> params) throws ConnectException {
         final StringBuilder address;
         switch (requestType) {
-        case TRAIN_ARRIVALS:
-            address = new StringBuilder(context.getString(R.string.url_train_arrivals) + "?key=" + ctaTrainKey);
-            break;
-        case TRAIN_FOLLOW:
-            address = new StringBuilder(context.getString(R.string.url_train_follow) + "?key=" + ctaTrainKey);
-            break;
-        case TRAIN_LOCATION:
-            address = new StringBuilder(context.getString(R.string.url_train_location) + "?key=" + ctaTrainKey);
-            break;
-        case BUS_ROUTES:
-            address = new StringBuilder(context.getString(R.string.url_bus_routes) + "?key=" + ctaBusKey);
-            break;
-        case BUS_DIRECTION:
-            address = new StringBuilder(context.getString(R.string.url_bus_direction) + "?key=" + ctaBusKey);
-            break;
-        case BUS_STOP_LIST:
-            address = new StringBuilder(context.getString(R.string.url_bus_stop) + "?key=" + ctaBusKey);
-            break;
-        case BUS_VEHICLES:
-            address = new StringBuilder(context.getString(R.string.url_bus_vehicles) + "?key=" + ctaBusKey);
-            break;
-        case BUS_ARRIVALS:
-            address = new StringBuilder(context.getString(R.string.url_bus_arrival) + "?key=" + ctaBusKey);
-            break;
-        case BUS_PATTERN:
-            address = new StringBuilder(context.getString(R.string.url_bus_pattern) + "?key=" + ctaBusKey);
-            break;
-        default:
-            address = new StringBuilder();
+            case TRAIN_ARRIVALS:
+                address = new StringBuilder(TRAINS_ARRIVALS_URL + "?key=" + ctaTrainKey);
+                break;
+            case TRAIN_FOLLOW:
+                address = new StringBuilder(TRAINS_FOLLOW_URL + "?key=" + ctaTrainKey);
+                break;
+            case TRAIN_LOCATION:
+                address = new StringBuilder(TRAINS_LOCATION_URL + "?key=" + ctaTrainKey);
+                break;
+            case BUS_ROUTES:
+                address = new StringBuilder(BUSES_ROUTES_URL + "?key=" + ctaBusKey);
+                break;
+            case BUS_DIRECTION:
+                address = new StringBuilder(BUSES_DIRECTION_URL + "?key=" + ctaBusKey);
+                break;
+            case BUS_STOP_LIST:
+                address = new StringBuilder(BUSES_STOP_URL + "?key=" + ctaBusKey);
+                break;
+            case BUS_VEHICLES:
+                address = new StringBuilder(BUSES_VEHICLES_URL + "?key=" + ctaBusKey);
+                break;
+            case BUS_ARRIVALS:
+                address = new StringBuilder(BUSES_ARRIVAL_URL + "?key=" + ctaBusKey);
+                break;
+            case BUS_PATTERN:
+                address = new StringBuilder(BUSES_PATTERN_URL + "?key=" + ctaBusKey);
+                break;
+            default:
+                address = new StringBuilder();
         }
         Stream.of(params.asMap().entrySet())
             .flatMap(entry -> {

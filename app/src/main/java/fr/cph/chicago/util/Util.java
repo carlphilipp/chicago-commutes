@@ -244,12 +244,12 @@ public final class Util {
         t.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
-    public static void trackAction(@NonNull final Context context, final int category, final int action, final int label, final int value) {
+    public static void trackAction(@NonNull final Context context, final int category, final int action, final String label, final int value) {
         final Tracker tracker = App.getTracker(context.getApplicationContext());
         tracker.send(new HitBuilders.EventBuilder()
             .setCategory(context.getString(category))
             .setAction(context.getString(action))
-            .setLabel(context.getString(label))
+            .setLabel(label)
             .setValue(value).build());
     }
 

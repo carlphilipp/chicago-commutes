@@ -58,6 +58,9 @@ import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.util.Util;
 
+import static fr.cph.chicago.Constants.BUSES_PATTERN_URL;
+import static fr.cph.chicago.Constants.BUSES_STOP_URL;
+
 /**
  * Activity that represents the bus bound activity
  *
@@ -170,7 +173,7 @@ public class BusBoundActivity extends ListActivity {
                     }
                 );
 
-            Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_stop, 0);
+            Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_STOP_URL, 0);
 
             // Preventing keyboard from moving background when showing up
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
@@ -197,7 +200,7 @@ public class BusBoundActivity extends ListActivity {
         mapFragment.getMapAsync(googleMap -> {
             googleMap.getUiSettings().setMyLocationButtonEnabled(false);
             googleMap.getUiSettings().setZoomControlsEnabled(false);
-            Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_pattern, 0);
+            Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL, 0);
             ObservableUtil.createBusPatternObservable(getApplicationContext(), busRouteId, bound)
                 .subscribe(
                     busPattern -> {

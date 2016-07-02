@@ -25,17 +25,27 @@ import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.annimon.stream.Stream;
+
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import butterknife.BindColor;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.annimon.stream.Stream;
 import fr.cph.chicago.R;
+import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener;
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener;
-import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.Position;
@@ -45,14 +55,8 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.util.Util;
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import static fr.cph.chicago.Constants.BUSES_PATTERN_URL;
 import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
 
 /**
@@ -284,13 +288,13 @@ public class BusActivity extends AbstractStationActivity {
             try {
                 final XmlParser xml = XmlParser.getInstance();
                 // Connect to CTA API bus to get XML result of inc buses
-                final InputStream xmlResult = connect.connect(getApplicationContext(), BUS_ARRIVALS, reqParams);
+                final InputStream xmlResult = connect.connect(BUS_ARRIVALS, reqParams);
                 // Parse and return arrival buses
                 return xml.parseBusArrivals(xmlResult);
             } catch (final ParserException | ConnectException e) {
                 this.trackerException = e;
             }
-            Util.trackAction(BusActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
+            Util.trackAction(BusActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL, 0);
             return null;
         }
 

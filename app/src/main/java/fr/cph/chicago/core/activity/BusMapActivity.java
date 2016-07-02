@@ -79,6 +79,10 @@ import fr.cph.chicago.rx.subscriber.BusFollowSubscriber;
 import fr.cph.chicago.rx.subscriber.BusSubscriber;
 import fr.cph.chicago.util.Util;
 
+import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;
+import static fr.cph.chicago.Constants.BUSES_DIRECTION_URL;
+import static fr.cph.chicago.Constants.BUSES_PATTERN_URL;
+import static fr.cph.chicago.Constants.BUSES_VEHICLES_URL;
 import static fr.cph.chicago.connection.CtaRequestType.BUS_DIRECTION;
 import static fr.cph.chicago.connection.CtaRequestType.BUS_PATTERN;
 
@@ -190,7 +194,7 @@ public class BusMapActivity extends Activity {
                         if (!refreshingInfoWindow) {
                             selectedMarker = marker;
                             final String busId = marker.getSnippet();
-                            Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
+                            Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL, 0);
                             ObservableUtil.createFollowBusObservable(getApplicationContext(), busId)
                                 .subscribe(new BusFollowSubscriber(BusMapActivity.this, mapFragment.getView(), view, false));
                             status.put(marker, false);
@@ -211,7 +215,7 @@ public class BusMapActivity extends Activity {
                             selectedMarker = marker;
                             final String runNumber = marker.getSnippet();
                             final boolean current = status.get(marker);
-                            Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
+                            Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL, 0);
                             ObservableUtil.createFollowBusObservable(getApplicationContext(), runNumber)
                                 .subscribe(new BusFollowSubscriber(BusMapActivity.this, mapFragment.getView(), view, !current));
                             status.put(marker, !current);
@@ -220,7 +224,7 @@ public class BusMapActivity extends Activity {
                 }
             });
             if (Util.isNetworkAvailable(getApplicationContext())) {
-                Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_vehicles, 0);
+                Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_VEHICLES_URL, 0);
                 ObservableUtil.createBusListObservable(getApplicationContext(), busId, busRouteId).subscribe(new BusSubscriber(BusMapActivity.this, true, layout));
                 if (loadPattern) {
                     new LoadPattern().execute();
@@ -250,7 +254,7 @@ public class BusMapActivity extends Activity {
     private void setToolbar() {
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener((item -> {
-            Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_vehicles, 0);
+            Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_VEHICLES_URL, 0);
             ObservableUtil.createBusListObservable(getApplicationContext(), busId, busRouteId).subscribe(new BusSubscriber(BusMapActivity.this, false, layout));
             return false;
         }));
@@ -371,18 +375,18 @@ public class BusMapActivity extends Activity {
                     final MultiValuedMap<String, String> directionParams = new ArrayListValuedHashMap<>();
                     directionParams.put(requestRt, busRouteId);
 
-                    final InputStream xmlResult = connect.connect(getApplicationContext(), BUS_DIRECTION, directionParams);
+                    final InputStream xmlResult = connect.connect(BUS_DIRECTION, directionParams);
                     final BusDirections busDirections = xml.parseBusDirections(xmlResult, busRouteId);
                     bounds = new String[busDirections.getLBusDirection().size()];
                     for (int i = 0; i < busDirections.getLBusDirection().size(); i++) {
                         bounds[i] = busDirections.getLBusDirection().get(i).getBusDirectionEnum().toString();
                     }
-                    Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_direction, 0);
+                    Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_DIRECTION_URL, 0);
                 }
 
                 final MultiValuedMap<String, String> routeIdParam = new ArrayListValuedHashMap<>();
                 routeIdParam.put(requestRt, busRouteId);
-                final InputStream content = connect.connect(getApplicationContext(), BUS_PATTERN, routeIdParam);
+                final InputStream content = connect.connect(BUS_PATTERN, routeIdParam);
                 final List<BusPattern> patterns = xml.parsePatterns(content);
                 Stream.of(patterns)
                     .flatMap(pattern ->
@@ -394,7 +398,7 @@ public class BusMapActivity extends Activity {
             } catch (final ConnectException | ParserException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
-            Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_pattern, 0);
+            Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL, 0);
             return this.patterns;
         }
 

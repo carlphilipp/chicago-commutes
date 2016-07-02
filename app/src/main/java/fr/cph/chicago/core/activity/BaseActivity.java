@@ -23,6 +23,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.SparseArray;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
 import butterknife.BindString;
 import butterknife.ButterKnife;
 import fr.cph.chicago.R;
@@ -47,9 +52,8 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;
+import static fr.cph.chicago.Constants.TRAINS_ARRIVALS_URL;
 
 /**
  * This class represents the base activity of the application It will load the loading screen and/or the main
@@ -77,7 +81,7 @@ public class BaseActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.loading);
         ButterKnife.bind(this);
-        
+
         setUpRealm();
         loadLocalAndFavoritesData();
         trackWithGoogleAnalytics();
@@ -142,8 +146,8 @@ public class BaseActivity extends Activity {
 
     private void trackWithGoogleAnalytics() {
         new Thread(() -> {
-			Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_arrivals, 0);
-			Util.trackAction(BaseActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
+			Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL, 0);
+			Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL, 0);
 		}).start();
     }
 

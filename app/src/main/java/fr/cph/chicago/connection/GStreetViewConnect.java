@@ -30,6 +30,8 @@ import java.net.URL;
 
 import fr.cph.chicago.R;
 
+import static fr.cph.chicago.Constants.GOOGLE_STREET_VIEW_URL;
+
 /**
  * Class that access google street api. Singleton
  *
@@ -68,8 +70,8 @@ public class GStreetViewConnect {
     }
 
     @NonNull
-    public final Optional<Drawable> connect(@NonNull final Context context, final double latitude, final double longitude) {
-        final StringBuilder address = new StringBuilder(context.getString(R.string.url_street_view));
+    public final Optional<Drawable> connect(final double latitude, final double longitude) {
+        final StringBuilder address = new StringBuilder(GOOGLE_STREET_VIEW_URL);
         address.append("?key=");
         address.append(googleKey);
         address.append("&sensor=false");

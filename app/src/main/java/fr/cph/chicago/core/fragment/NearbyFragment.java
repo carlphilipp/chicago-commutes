@@ -91,6 +91,8 @@ import rx.Observable;
 import rx.exceptions.Exceptions;
 import rx.schedulers.Schedulers;
 
+import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;
+import static fr.cph.chicago.Constants.TRAINS_ARRIVALS_URL;
 import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
 import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
 
@@ -252,7 +254,7 @@ public class NearbyFragment extends Fragment {
 
                 final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>(1, 1);
                 reqParams.put(requestStopId, Integer.toString(busStopId));
-                final InputStream is = cta.connect(getContext(), BUS_ARRIVALS, reqParams);
+                final InputStream is = cta.connect(BUS_ARRIVALS, reqParams);
                 final XmlParser xml = XmlParser.getInstance();
                 final List<BusArrival> busArrivals = xml.parseBusArrivals(is);
                 for (final BusArrival busArrival : busArrivals) {
@@ -266,7 +268,7 @@ public class NearbyFragment extends Fragment {
                         tempMap.put(direction, temp);
                     }
                 }
-                trackWithGoogleAnalytics(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
+                trackWithGoogleAnalytics(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL, 0);
             }
         } catch (final Throwable throwable) {
             throw Exceptions.propagate(throwable);
@@ -281,13 +283,13 @@ public class NearbyFragment extends Fragment {
                 for (final Station station : trainStations) {
                     final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>(1, 1);
                     reqParams.put(requestMapId, Integer.toString(station.getId()));
-                    final InputStream xmlRes = cta.connect(getContext(), TRAIN_ARRIVALS, reqParams);
+                    final InputStream xmlRes = cta.connect(TRAIN_ARRIVALS, reqParams);
                     final XmlParser xml = XmlParser.getInstance();
                     final SparseArray<TrainArrival> temp = xml.parseArrivals(xmlRes, DataHolder.getInstance().getTrainData());
                     for (int j = 0; j < temp.size(); j++) {
                         trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
                     }
-                    trackWithGoogleAnalytics(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_arrivals, 0);
+                    trackWithGoogleAnalytics(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL, 0);
                 }
             }
             return trainArrivals;
@@ -308,7 +310,7 @@ public class NearbyFragment extends Fragment {
                     .filter(bikeStations::contains)
                     .sorted(Util.BIKE_COMPARATOR_NAME)
                     .collect(Collectors.toList());
-                trackWithGoogleAnalytics(activity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
+                trackWithGoogleAnalytics(activity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, getContext().getString(R.string.analytics_action_get_divvy_all), 0);
             }
             return bikeStationsRes;
         } catch (final Throwable throwable) {
@@ -346,7 +348,7 @@ public class NearbyFragment extends Fragment {
         }
     }
 
-    private void trackWithGoogleAnalytics(@NonNull final Context context, final int category, final int action, final int label, final int value) {
+    private void trackWithGoogleAnalytics(@NonNull final Context context, final int category, final int action, final String label, final int value) {
         new Thread(() -> Util.trackAction(context, category, action, label, value)).start();
     }
 

@@ -78,7 +78,7 @@ public class BusServiceImpl implements BusService {
                 final MultiValuedMap<String, String> para = new ArrayListValuedHashMap<>();
                 para.put(context.getString(R.string.request_rt), rts.get(i));
                 para.put(context.getString(R.string.request_stop_id), stpids.get(i));
-                final InputStream xmlResult = ctaConnect.connect(context, BUS_ARRIVALS, para);
+                final InputStream xmlResult = ctaConnect.connect(BUS_ARRIVALS, para);
                 busArrivals.addAll(xmlParser.parseBusArrivals(xmlResult));
             }
         } catch (final Throwable e) {
@@ -95,7 +95,7 @@ public class BusServiceImpl implements BusService {
             final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
             params.put(context.getString(R.string.request_rt), stopId);
             params.put(context.getString(R.string.request_dir), bound);
-            final InputStream xmlResult = connect.connect(context, BUS_STOP_LIST, params);
+            final InputStream xmlResult = connect.connect(BUS_STOP_LIST, params);
             final XmlParser xml = XmlParser.getInstance();
             return xml.parseBusBounds(xmlResult);
         } catch (final Throwable throwable) {
@@ -118,7 +118,7 @@ public class BusServiceImpl implements BusService {
             final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
             reqParams.put(context.getString(R.string.request_rt), busRouteId);
             final XmlParser xml = XmlParser.getInstance();
-            final InputStream xmlResult = connect.connect(context, BUS_DIRECTION, reqParams);
+            final InputStream xmlResult = connect.connect(BUS_DIRECTION, reqParams);
             return xml.parseBusDirections(xmlResult, busRouteId);
         } catch (final Throwable throwable) {
             throw Exceptions.propagate(throwable);
@@ -132,7 +132,7 @@ public class BusServiceImpl implements BusService {
             final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
             final CtaConnect connect = CtaConnect.getInstance(context);
             final XmlParser xml = XmlParser.getInstance();
-            final InputStream xmlResult = connect.connect(context, BUS_ROUTES, params);
+            final InputStream xmlResult = connect.connect(BUS_ROUTES, params);
             return xml.parseBusRoutes(xmlResult);
         } catch (final Throwable throwable) {
             throw Exceptions.propagate(throwable);
@@ -146,7 +146,7 @@ public class BusServiceImpl implements BusService {
             CtaConnect connect = CtaConnect.getInstance(context);
             MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
             connectParam.put(context.getString(R.string.request_vid), busId);
-            InputStream content = connect.connect(context, BUS_ARRIVALS, connectParam);
+            InputStream content = connect.connect(BUS_ARRIVALS, connectParam);
             final XmlParser xml = XmlParser.getInstance();
             return xml.parseBusArrivals(content);
         } catch (final Throwable throwable) {
@@ -162,7 +162,7 @@ public class BusServiceImpl implements BusService {
         connectParam.put(context.getString(R.string.request_rt), busRouteId);
         final String boundIgnoreCase = bound.toLowerCase(Locale.US);
         try {
-            final InputStream content = connect.connect(context, BUS_PATTERN, connectParam);
+            final InputStream content = connect.connect(BUS_PATTERN, connectParam);
             final XmlParser xml = XmlParser.getInstance();
             final List<BusPattern> patterns = xml.parsePatterns(content);
             final Optional<BusPattern> busPatternOptional = Stream.of(patterns)
@@ -192,7 +192,7 @@ public class BusServiceImpl implements BusService {
             connectParam.put(context.getString(R.string.request_rt), busRouteId);
         }
         try {
-            final InputStream content = connect.connect(context, BUS_VEHICLES, connectParam);
+            final InputStream content = connect.connect(BUS_VEHICLES, connectParam);
             final XmlParser xml = XmlParser.getInstance();
             return xml.parseVehicles(content);
         } catch (final Throwable throwable) {

@@ -53,6 +53,10 @@ import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.util.Util;
 import rx.Observable;
 
+import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;
+import static fr.cph.chicago.Constants.BUSES_ROUTES_URL;
+import static fr.cph.chicago.Constants.TRAINS_ARRIVALS_URL;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -142,10 +146,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 // Favorite fragment
                 favoritesFragment.startRefreshing();
 
-                Util.trackAction(getApplicationContext(), R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
-                Util.trackAction(getApplicationContext(), R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_arrivals, 0);
-                Util.trackAction(getApplicationContext(), R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
-                Util.trackAction(getApplicationContext(), R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
+                Util.trackAction(getApplicationContext(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL, 0);
+                Util.trackAction(getApplicationContext(), R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL, 0);
+                Util.trackAction(getApplicationContext(), R.string.analytics_category_req, R.string.analytics_action_get_divvy, getApplicationContext().getString(R.string.analytics_action_get_divvy_all), 0);
+                Util.trackAction(getApplicationContext(), R.string.analytics_category_ui, R.string.analytics_action_press, getApplicationContext().getString(R.string.analytics_action_refresh_fav), 0);
 
                 if (Util.isNetworkAvailable(getApplicationContext())) {
                     final DataHolder dataHolder = DataHolder.getInstance();
@@ -189,8 +193,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             },
             onError -> Util.showOopsSomethingWentWrong(drawerLayout),
             () -> {
-                Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_routes, 0);
-                Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
+                Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ROUTES_URL, 0);
+                Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, getApplicationContext().getString(R.string.analytics_action_get_divvy_all), 0);
             }
         );
     }

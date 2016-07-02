@@ -57,6 +57,9 @@ import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.util.Util;
 import rx.Observable;
 
+import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;
+import static fr.cph.chicago.Constants.TRAINS_ARRIVALS_URL;
+
 /**
  * FavoritesData Fragment
  *
@@ -164,10 +167,10 @@ public class FavoritesFragment extends Fragment {
 
             swipeRefreshLayout.setOnRefreshListener(() -> {
                 swipeRefreshLayout.setColorSchemeColors(Util.getRandomColor());
-                Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_arrival, 0);
-                Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, R.string.url_train_arrivals, 0);
-                Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, R.string.analytics_action_get_divvy_all, 0);
-                Util.trackAction(activity, R.string.analytics_category_ui, R.string.analytics_action_press, R.string.analytics_action_refresh_fav, 0);
+                Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL, 0);
+                Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL, 0);
+                Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, getContext().getString(R.string.analytics_action_get_divvy_all), 0);
+                Util.trackAction(activity, R.string.analytics_category_ui, R.string.analytics_action_press, getContext().getString(R.string.analytics_action_refresh_fav), 0);
 
                 final DataHolder dataHolder = DataHolder.getInstance();
                 if (dataHolder.getBusData() == null

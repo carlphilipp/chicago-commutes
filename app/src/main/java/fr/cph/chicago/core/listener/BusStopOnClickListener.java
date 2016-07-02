@@ -37,6 +37,8 @@ import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.util.Util;
 import rx.Observable;
 
+import static fr.cph.chicago.Constants.BUSES_STOP_URL;
+
 public class BusStopOnClickListener implements View.OnClickListener {
 
     private static final String TAG = BusStopOnClickListener.class.getSimpleName();
@@ -66,7 +68,7 @@ public class BusStopOnClickListener implements View.OnClickListener {
             builder.setAdapter(ada, (dialog, position) -> {
                 final BusDetailsDTO busDetails = busDetailsDTOs.get(position);
                 loadBusDetails(view, busDetails);
-                Util.trackAction(context, R.string.analytics_category_req, R.string.analytics_action_get_bus, R.string.url_bus_stop, 0);
+                Util.trackAction(context, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_STOP_URL, 0);
             });
             final int[] screenSize = Util.getScreenSize(context.getApplicationContext());
             final AlertDialog dialog = builder.create();

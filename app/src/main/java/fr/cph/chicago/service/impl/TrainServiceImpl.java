@@ -52,7 +52,7 @@ public class TrainServiceImpl implements TrainService {
                 if ("mapid".equals(key)) {
                     final List<String> list = (List<String>) entry.getValue();
                     if (list.size() < 5) {
-                        final InputStream xmlResult = ctaConnect.connect(context, TRAIN_ARRIVALS, trainParams);
+                        final InputStream xmlResult = ctaConnect.connect(TRAIN_ARRIVALS, trainParams);
                         trainArrivals = xmlParser.parseArrivals(xmlResult, DataHolder.getInstance().getTrainData());
                     } else {
                         final int size = list.size();
@@ -64,7 +64,7 @@ public class TrainServiceImpl implements TrainService {
                             for (final String sub : subList) {
                                 paramsTemp.put(key, sub);
                             }
-                            final InputStream xmlResult = ctaConnect.connect(context, TRAIN_ARRIVALS, paramsTemp);
+                            final InputStream xmlResult = ctaConnect.connect(TRAIN_ARRIVALS, paramsTemp);
                             final SparseArray<TrainArrival> temp = xmlParser.parseArrivals(xmlResult, DataHolder.getInstance().getTrainData());
                             for (int j = 0; j < temp.size(); j++) {
                                 trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
@@ -116,7 +116,7 @@ public class TrainServiceImpl implements TrainService {
             params.put(context.getString(R.string.request_map_id), Integer.toString(stationId));
 
             final XmlParser xml = XmlParser.getInstance();
-            final InputStream xmlResult = CtaConnect.getInstance(context).connect(context, TRAIN_ARRIVALS, params);
+            final InputStream xmlResult = CtaConnect.getInstance(context).connect(TRAIN_ARRIVALS, params);
             final SparseArray<TrainArrival> arrivals = xml.parseArrivals(xmlResult, TrainData.getInstance());
             if (arrivals.size() == 1) {
                 return Optional.of(arrivals.get(stationId));
