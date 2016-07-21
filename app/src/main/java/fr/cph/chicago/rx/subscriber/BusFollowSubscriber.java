@@ -12,7 +12,6 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.core.activity.BusMapActivity;
 import fr.cph.chicago.core.adapter.BusMapSnippetAdapter;
 import fr.cph.chicago.entity.BusArrival;
-import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.util.Util;
 import rx.Subscriber;
 
@@ -57,11 +56,7 @@ public class BusFollowSubscriber extends Subscriber<List<BusArrival>> {
 
     @Override
     public void onError(@NonNull final Throwable throwable) {
-        if (throwable.getCause() instanceof ConnectException) {
-            Util.showNetworkErrorMessage(layout);
-        } else {
-            Util.showOopsSomethingWentWrong(layout);
-        }
+        Util.handleConnectOrParserException(throwable, null, layout, layout);
         Log.e(TAG, throwable.getMessage(), throwable);
     }
 

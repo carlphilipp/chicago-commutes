@@ -39,8 +39,6 @@ import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.exception.ConnectException;
-import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.rx.subscriber.BusDirectionSubscriber;
 import fr.cph.chicago.util.LayoutUtil;
@@ -130,11 +128,7 @@ public final class SearchAdapter extends BaseAdapter {
                 loadingTextView.setVisibility(LinearLayout.VISIBLE);
                 ObservableUtil.createBusDirectionsObservable(parent.getContext(), busRoute.getId())
                     .onErrorReturn(throwable -> {
-                        if (throwable.getCause() instanceof ConnectException) {
-                            Util.showNetworkErrorMessage(activity);
-                        } else if (throwable.getCause() instanceof ParserException) {
-                            Util.showOopsSomethingWentWrong(loadingTextView);
-                        }
+                        Util.handleConnectOrParserException(throwable, activity, null, loadingTextView);
                         Log.e(TAG, throwable.getMessage(), throwable);
                         return null;
                     }).subscribe(new BusDirectionSubscriber(parent, loadingTextView, busRoute));

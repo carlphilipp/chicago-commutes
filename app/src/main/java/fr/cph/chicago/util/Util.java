@@ -66,6 +66,8 @@ import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.enumeration.TrainLine;
+import fr.cph.chicago.exception.ConnectException;
+import fr.cph.chicago.exception.ParserException;
 
 /**
  * Util class
@@ -245,12 +247,14 @@ public final class Util {
     }
 
     public static void trackAction(@NonNull final Context context, final int category, final int action, final String label, final int value) {
-        final Tracker tracker = App.getTracker(context.getApplicationContext());
-        tracker.send(new HitBuilders.EventBuilder()
-            .setCategory(context.getString(category))
-            .setAction(context.getString(action))
-            .setLabel(label)
-            .setValue(value).build());
+        new Thread(() -> {
+            final Tracker tracker = App.getTracker(context.getApplicationContext());
+            tracker.send(new HitBuilders.EventBuilder()
+                .setCategory(context.getString(category))
+                .setAction(context.getString(action))
+                .setLabel(label)
+                .setValue(value).build());
+        }).start();
     }
 
     public static void setWindowsColor(@NonNull final Activity activity, @NonNull final Toolbar toolbar, @NonNull final TrainLine trainLine) {
@@ -355,7 +359,7 @@ public final class Util {
     /**
      * Function to show settings alert dialog
      */
-    public static void showSettingsAlert(@NonNull final Activity activity) {
+    static void showSettingsAlert(@NonNull final Activity activity) {
         new Thread() {
             public void run() {
                 activity.runOnUiThread(() -> {
@@ -410,6 +414,18 @@ public final class Util {
 
     public static void showOopsSomethingWentWrong(@NonNull final View view) {
         Snackbar.make(view, view.getContext().getString(R.string.message_something_went_wrong), Snackbar.LENGTH_SHORT).show();
+    }
+
+    public static void handleConnectOrParserException(@NonNull final Throwable throwable, @Nullable final Activity activity, @Nullable final View connectView, @NonNull final View parserView) {
+        if (throwable.getCause() instanceof ConnectException) {
+            if (activity != null) {
+                showNetworkErrorMessage(activity);
+            } else if (connectView != null) {
+                showNetworkErrorMessage(connectView);
+            }
+        } else if (throwable.getCause() instanceof ParserException) {
+            showOopsSomethingWentWrong(parserView);
+        }
     }
 
     @NonNull

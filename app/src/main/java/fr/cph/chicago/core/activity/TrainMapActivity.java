@@ -221,18 +221,15 @@ public class TrainMapActivity extends Activity {
                 }
             });
 
-            googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                @Override
-                public void onInfoWindowClick(final Marker marker) {
-                    if (!"".equals(marker.getSnippet())) {
-                        final View view = views.get(marker);
-                        if (!refreshingInfoWindow) {
-                            selectedMarker = marker;
-                            final String runNumber = marker.getSnippet();
-                            final Boolean current = status.get(marker);
-                            new LoadTrainFollowTask(view, !current, trainData).execute(runNumber);
-                            status.put(marker, !current);
-                        }
+            googleMap.setOnInfoWindowClickListener(marker -> {
+                if (!"".equals(marker.getSnippet())) {
+                    final View view = views.get(marker);
+                    if (!refreshingInfoWindow) {
+                        selectedMarker = marker;
+                        final String runNumber = marker.getSnippet();
+                        final Boolean current = status.get(marker);
+                        new LoadTrainFollowTask(view, !current, trainData).execute(runNumber);
+                        status.put(marker, !current);
                     }
                 }
             });
@@ -256,7 +253,7 @@ public class TrainMapActivity extends Activity {
         super.onSaveInstanceState(savedInstanceState);
     }
 
-    public void refreshInfoWindow() {
+    private void refreshInfoWindow() {
         if (selectedMarker == null) {
             return;
         }
@@ -265,7 +262,7 @@ public class TrainMapActivity extends Activity {
         refreshingInfoWindow = false;
     }
 
-    public void centerMapOnTrain(@NonNull final List<Train> result) {
+    private void centerMapOnTrain(@NonNull final List<Train> result) {
         mapFragment.getMapAsync(googleMap -> {
             final Position position;
             final int zoom;
@@ -281,7 +278,7 @@ public class TrainMapActivity extends Activity {
         });
     }
 
-    public void drawTrains(@NonNull final List<Train> trains) {
+    private void drawTrains(@NonNull final List<Train> trains) {
         mapFragment.getMapAsync(googleMap -> {
             // TODO see if views can actually be null.
             if (views == null) {
@@ -292,7 +289,7 @@ public class TrainMapActivity extends Activity {
             Stream.of(markers).forEach(Marker::remove);
             markers.clear();
             final BitmapDescriptor bitmapDescr = trainListener.getCurrentBitmapDescriptor();
-            for (final Train train : trains) {
+            Stream.of(trains).forEach(train -> {
                 final LatLng point = new LatLng(train.getPosition().getLatitude(), train.getPosition().getLongitude());
                 final String title = "To " + train.getDestName();
                 final String snippet = Integer.toString(train.getRouteNumber());
@@ -300,7 +297,7 @@ public class TrainMapActivity extends Activity {
                 final Marker marker = googleMap.addMarker(new MarkerOptions().position(point).title(title).snippet(snippet).icon(bitmapDescr).anchor(0.5f, 0.5f).rotation(train.getHeading()).flat(true));
                 markers.add(marker);
 
-                final View view = TrainMapActivity.this.getLayoutInflater().inflate(R.layout.marker_train, viewGroup, false);
+                final View view = getLayoutInflater().inflate(R.layout.marker_train, viewGroup, false);
                 final TextView title2 = (TextView) view.findViewById(R.id.title);
                 title2.setText(title);
 
@@ -308,15 +305,14 @@ public class TrainMapActivity extends Activity {
                 color.setBackgroundColor(TrainLine.fromXmlString(line).getColor());
 
                 views.put(marker, view);
-            }
-
+            });
             trainListener.setTrainMarkers(markers);
 
             googleMap.setOnCameraChangeListener(trainListener);
         });
     }
 
-    public void drawLine(@NonNull final List<Position> positions) {
+    private void drawLine(@NonNull final List<Position> positions) {
         if (drawLine) {
             mapFragment.getMapAsync(googleMap -> {
                 final PolylineOptions poly = new PolylineOptions();
@@ -346,7 +342,7 @@ public class TrainMapActivity extends Activity {
          * @param view    the view
          * @param loadAll a boolean to load everything
          */
-        public LoadTrainFollowTask(@NonNull final View view, final boolean loadAll, @NonNull final TrainData trainData) {
+        private LoadTrainFollowTask(@NonNull final View view, final boolean loadAll, @NonNull final TrainData trainData) {
             this.trainData = trainData;
             this.view = view;
             this.loadAll = loadAll;
@@ -412,30 +408,22 @@ public class TrainMapActivity extends Activity {
         private boolean centerMap;
         private List<Position> positions;
 
-        public LoadTrainPositionTask(@NonNull final String line, @NonNull final TrainData trainData) {
+        private LoadTrainPositionTask(@NonNull final String line, @NonNull final TrainData trainData) {
             this.line = line;
             this.trainData = trainData;
         }
 
         @Override
-        protected List<Train> doInBackground(Boolean... params) {
-            centerMap = params[0];
-            List<Train> trains = null;
-            final CtaConnect connect = CtaConnect.getInstance(getApplicationContext());
-            final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
-            connectParam.put(requestRt, line);
-            try {
-                final InputStream content = connect.connect(TRAIN_LOCATION, connectParam);
-                final XmlParser xml = XmlParser.getInstance();
-                trains = xml.parseTrainsLocation(content);
-            } catch (final ConnectException | ParserException e) {
-                Log.e(TAG, e.getMessage(), e);
-            }
-            Util.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_LOCATION_URL, 0);
+        protected List<Train> doInBackground(final Boolean... params) {
+            // Make sure that trainData is not null
             if (trainData == null) {
                 final DataHolder dataHolder = DataHolder.getInstance();
                 trainData = dataHolder.getTrainData();
             }
+            centerMap = params[0];
+
+
+            final List<Train> trains = getTrainData();
             positions = trainData.readPattern(getApplicationContext(), TrainLine.fromXmlString(line));
             return trains;
         }
@@ -455,6 +443,22 @@ public class TrainMapActivity extends Activity {
             } else {
                 Util.showMessage(TrainMapActivity.this, R.string.message_error_while_loading_data);
             }
+        }
+
+        private List<Train> getTrainData() {
+            List<Train> trains = null;
+            try {
+                final CtaConnect connect = CtaConnect.getInstance(getApplicationContext());
+                final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
+                connectParam.put(requestRt, line);
+                final InputStream content = connect.connect(TRAIN_LOCATION, connectParam);
+                final XmlParser xml = XmlParser.getInstance();
+                trains = xml.parseTrainsLocation(content);
+                Util.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_LOCATION_URL, 0);
+            } catch (final ConnectException | ParserException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+            return trains;
         }
     }
 }

@@ -123,14 +123,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (currentPosition == R.id.navigation_favorites) {
             finish();
         } else {
-            this.onNavigationItemSelected(menuItem);
+            onNavigationItemSelected(menuItem);
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        setBarTitle(this.title);
+        setBarTitle(title);
     }
 
     private void initView() {

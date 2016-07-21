@@ -47,14 +47,13 @@ import butterknife.BindDrawable;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import fr.cph.chicago.core.App;
 import fr.cph.chicago.R;
+import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.adapter.BusBoundAdapter;
 import fr.cph.chicago.entity.BusPattern;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.util.Util;
 
@@ -163,7 +162,7 @@ public class BusBoundActivity extends ListActivity {
 
             ObservableUtil.createBusStopBoundObservable(getApplicationContext(), busRouteId, bound)
                 .subscribe(onNext -> {
-                        setBusStops(onNext);
+                        busStops = onNext;
                         busBoundAdapter.update(onNext);
                         busBoundAdapter.notifyDataSetChanged();
                     },
@@ -220,14 +219,22 @@ public class BusBoundActivity extends ListActivity {
                         }
                     },
                     onError -> {
-                        if (onError.getCause() instanceof ConnectException) {
-                            Util.showNetworkErrorMessage(layout);
-                        } else {
-                            Util.showOopsSomethingWentWrong(layout);
-                        }
+                        Util.handleConnectOrParserException(onError, null, layout, layout);
                         Log.e(TAG, onError.getMessage(), onError);
                     }
                 );
+        });
+    }
+
+    private void drawPattern(@NonNull final BusPattern pattern) {
+        mapFragment.getMapAsync(googleMap -> {
+            final PolylineOptions poly = new PolylineOptions();
+            poly.geodesic(true).color(Color.BLACK);
+            poly.width(7f);
+            Stream.of(pattern.getPoints())
+                .map(patternPoint -> new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude()))
+                .forEach(poly::add);
+            googleMap.addPolyline(poly);
         });
     }
 
@@ -247,21 +254,5 @@ public class BusBoundActivity extends ListActivity {
         savedInstanceState.putString(bundleBusBound, bound);
         savedInstanceState.putString(bundleBusBoundTitle, boundTitle);
         super.onSaveInstanceState(savedInstanceState);
-    }
-
-    private void setBusStops(@NonNull final List<BusStop> busStops) {
-        this.busStops = busStops;
-    }
-
-    private void drawPattern(@NonNull final BusPattern pattern) {
-        mapFragment.getMapAsync(googleMap -> {
-            final PolylineOptions poly = new PolylineOptions();
-            poly.geodesic(true).color(Color.BLACK);
-            poly.width(7f);
-            Stream.of(pattern.getPoints())
-                .map(patternPoint -> new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude()))
-                .forEach(poly::add);
-            googleMap.addPolyline(poly);
-        });
     }
 }

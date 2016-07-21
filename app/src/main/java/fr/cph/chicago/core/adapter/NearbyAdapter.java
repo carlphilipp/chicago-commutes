@@ -31,6 +31,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.annimon.stream.Stream;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 
@@ -38,7 +39,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import fr.cph.chicago.R;
@@ -262,7 +262,7 @@ public final class NearbyAdapter extends BaseAdapter {
 
         final Map<String, List<BusArrival>> arrivalsForStop = busArrivals.get(busStop.getId(), new HashMap<>());
 
-        for (final Entry<String, List<BusArrival>> entry : arrivalsForStop.entrySet()) {
+        Stream.of(arrivalsForStop.entrySet()).forEach(entry -> {
             final LinearLayout.LayoutParams leftParam = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             final RelativeLayout insideLayout = new RelativeLayout(context);
             insideLayout.setLayoutParams(leftParam);
@@ -302,7 +302,7 @@ public final class NearbyAdapter extends BaseAdapter {
             bound.setTextColor(ContextCompat.getColor(context, R.color.grey_5));
             boundLayout.addView(bound);
 
-            for (final BusArrival busArrival : busArrivals) {
+            Stream.of(busArrivals).forEach(busArrival -> {
                 final TextView timeView = new TextView(context);
                 final String timeLeftDueDelay = busArrival.getTimeLeftDueDelay() + " ";
                 timeView.setText(timeLeftDueDelay);
@@ -310,13 +310,15 @@ public final class NearbyAdapter extends BaseAdapter {
                 timeView.setLines(1);
                 timeView.setEllipsize(TruncateAt.END);
                 boundLayout.addView(timeView);
-            }
+            });
+
             stopLayout.addView(boundLayout);
 
             insideLayout.addView(lineIndication);
             insideLayout.addView(stopLayout);
             resultLayout.addView(insideLayout);
-        }
+        });
+
         convertView.setOnClickListener(new NearbyOnClickListener(googleMap, markers, busStop.getId(), busStop.getPosition().getLatitude(), busStop.getPosition().getLongitude()));
         return convertView;
     }
@@ -369,11 +371,8 @@ public final class NearbyAdapter extends BaseAdapter {
         final TextView amountBike = new TextView(context);
         final String amountBikeText = String.valueOf(bikeStation.getAvailableBikes());
         amountBike.setText(amountBikeText);
-        if (bikeStation.getAvailableBikes() == 0) {
-            amountBike.setTextColor(ContextCompat.getColor(context, R.color.red));
-        } else {
-            amountBike.setTextColor(ContextCompat.getColor(context, R.color.green));
-        }
+        int color = bikeStation.getAvailableBikes() == 0 ? R.color.red : R.color.green;
+        amountBike.setTextColor(ContextCompat.getColor(context, color));
         amountBike.setLayoutParams(amountParam);
 
         availableBikes.addView(lineIndication);
@@ -406,11 +405,9 @@ public final class NearbyAdapter extends BaseAdapter {
         final TextView amountDock = new TextView(context);
         final String amountDockText = String.valueOf(bikeStation.getAvailableDocks());
         amountDock.setText(amountDockText);
-        if (bikeStation.getAvailableDocks() == 0) {
-            amountDock.setTextColor(ContextCompat.getColor(context, R.color.red));
-        } else {
-            amountDock.setTextColor(ContextCompat.getColor(context, R.color.green));
-        }
+        color = bikeStation.getAvailableDocks() == 0 ? R.color.red : R.color.green;
+        amountDock.setTextColor(ContextCompat.getColor(context, color));
+
         amountDock.setLayoutParams(amountParam2);
 
         availableDocks.addView(lineIndication2);

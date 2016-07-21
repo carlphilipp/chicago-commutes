@@ -8,7 +8,6 @@ import java.util.List;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.activity.BusMapActivity;
 import fr.cph.chicago.entity.Bus;
-import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.util.Util;
 import rx.Subscriber;
 
@@ -44,11 +43,7 @@ public class BusSubscriber extends Subscriber<List<Bus>> {
 
     @Override
     public void onError(final Throwable throwable) {
-        if (throwable.getCause() instanceof ConnectException) {
-            Util.showNetworkErrorMessage(view);
-        } else {
-            Util.showOopsSomethingWentWrong(view);
-        }
+        Util.handleConnectOrParserException(throwable, null, view, view);
         Log.e(TAG, throwable.getMessage(), throwable);
     }
 

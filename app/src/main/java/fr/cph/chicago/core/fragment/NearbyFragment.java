@@ -81,7 +81,6 @@ import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.parser.JsonParser;
 import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.util.GPSUtil;
@@ -212,11 +211,7 @@ public class NearbyFragment extends Fragment {
             )
             .doOnError(throwable -> {
                 Log.e(TAG, throwable.getMessage(), throwable);
-                if (throwable instanceof ConnectException) {
-                    Util.showNetworkErrorMessage(listView);
-                } else {
-                    Util.showOopsSomethingWentWrong(listView);
-                }
+                Util.handleConnectOrParserException(throwable, null, listView, listView);
                 activity.runOnUiThread(() -> showProgress(false));
             })
             .toList()
@@ -230,12 +225,8 @@ public class NearbyFragment extends Fragment {
                     activity.runOnUiThread(() -> updateMarkersAndModel(busStops, busArrivalsMap, trainStations, trainArrivals, bikeStationsRes));
                 },
                 throwable -> {
+                    Util.handleConnectOrParserException(throwable, null, listView, listView);
                     Log.e(TAG, throwable.getMessage(), throwable);
-                    if (throwable instanceof ConnectException) {
-                        Util.showNetworkErrorMessage(listView);
-                    } else {
-                        Util.showOopsSomethingWentWrong(listView);
-                    }
                     activity.runOnUiThread(() -> showProgress(false));
                 }
             );
@@ -349,7 +340,7 @@ public class NearbyFragment extends Fragment {
     }
 
     private void trackWithGoogleAnalytics(@NonNull final Context context, final int category, final int action, final String label, final int value) {
-        new Thread(() -> Util.trackAction(context, category, action, label, value)).start();
+        Util.trackAction(context, category, action, label, value);
     }
 
     @Override
@@ -506,7 +497,7 @@ public class NearbyFragment extends Fragment {
         protected final void onPostExecute(final Void result) {
             if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(activity, new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
+                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
                 return;
             }
             Util.centerMap(mapFragment, activity, position);

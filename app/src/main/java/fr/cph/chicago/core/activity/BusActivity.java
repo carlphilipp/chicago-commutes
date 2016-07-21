@@ -144,8 +144,7 @@ public class BusActivity extends AbstractStationActivity {
             mapContainer.setOnClickListener(new GoogleMapOnClickListener(latitude, longitude));
             walkContainer.setOnClickListener(new GoogleMapDirectionOnClickListener(latitude, longitude));
 
-            final String title = busRouteName + " (" + boundTitle + ")";
-            busRouteNameView2.setText(title);
+            busRouteNameView2.setText(busRouteName + " (" + boundTitle + ")");
 
             // Load google street picture and data
             createGoogleStreetObservable(position.getLatitude(), position.getLongitude());
@@ -218,19 +217,11 @@ public class BusActivity extends AbstractStationActivity {
                     final String arrivalText;
                     if (tempMap.containsKey(destination)) {
                         final TextView arrivalView = tempMap.get(destination);
-                        if (arrival.isDly()) {
-                            arrivalText = arrivalView.getText() + " Delay";
-                        } else {
-                            arrivalText = arrivalView.getText() + " " + arrival.getTimeLeft();
-                        }
+                        arrivalText = arrival.isDly() ? arrivalView.getText() + " Delay" : arrivalView.getText() + " " + arrival.getTimeLeft();
                         arrivalView.setText(arrivalText);
                     } else {
                         final TextView arrivalView = new TextView(getApplicationContext());
-                        if (arrival.isDly()) {
-                            arrivalText = arrival.getBusDestination() + ": Delay";
-                        } else {
-                            arrivalText = arrival.getBusDestination() + ": " + arrival.getTimeLeft();
-                        }
+                        arrivalText = arrival.isDly() ? arrival.getBusDestination() + " Delay" : arrival.getBusDestination() + " " + arrival.getTimeLeft();
                         arrivalView.setText(arrivalText);
                         arrivalView.setTextColor(grey);
                         tempMap.put(destination, arrivalView);
@@ -276,7 +267,7 @@ public class BusActivity extends AbstractStationActivity {
 
         private TrackerException trackerException;
 
-        public LoadStationDataTask() {
+        private LoadStationDataTask() {
         }
 
         @Override

@@ -65,7 +65,6 @@ public final class BikeAdapter extends BaseAdapter {
 
     @Override
     public final View getView(final int position, View convertView, final ViewGroup parent) {
-
         final BikeStation station = (BikeStation) getItem(position);
 
         final ViewHolder holder;

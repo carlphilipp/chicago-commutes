@@ -63,10 +63,10 @@ import fr.cph.chicago.core.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.data.FavoritesData;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
-import fr.cph.chicago.entity.dto.BusDetailsDTO;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.TrainArrival;
+import fr.cph.chicago.entity.dto.BusDetailsDTO;
 import fr.cph.chicago.entity.enumeration.BusDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.LayoutUtil;
@@ -108,16 +108,16 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     }
 
     static class FavoritesViewHolder extends RecyclerView.ViewHolder {
-        public final ViewGroup parent;
-        public final LinearLayout mainLayout;
-        public final RelativeLayout buttonsLayout;
-        public final TextView lastUpdateTextView;
-        public final TextView stationNameTextView;
-        public final ImageView favoriteImage;
-        public final Button detailsButton;
-        public final Button mapButton;
+        final ViewGroup parent;
+        final LinearLayout mainLayout;
+        final RelativeLayout buttonsLayout;
+        final TextView lastUpdateTextView;
+        final TextView stationNameTextView;
+        final ImageView favoriteImage;
+        final Button detailsButton;
+        final Button mapButton;
 
-        public FavoritesViewHolder(final View view, final ViewGroup parent) {
+        private FavoritesViewHolder(final View view, final ViewGroup parent) {
             super(view);
             this.parent = parent;
             this.mainLayout = (LinearLayout) view.findViewById(R.id.favorites_arrival_layout);
@@ -199,11 +199,8 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                     final List<Integer> colors = new ArrayList<>();
                     final List<String> values = Stream.of(trainLines)
                         .flatMap(line -> {
-                            if (line != TrainLine.YELLOW) {
-                                colors.add(line.getColor());
-                            } else {
-                                colors.add(ContextCompat.getColor(context, R.color.yellowLine));
-                            }
+                            final int color = line != TrainLine.YELLOW ? line.getColor() : ContextCompat.getColor(context, R.color.yellowLine);
+                            colors.add(color);
                             return Stream.of(line.toStringWithLine());
                         }).collect(Collectors.toList());
 
@@ -218,12 +215,14 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                     final int[] screenSize = Util.getScreenSize(context);
                     final AlertDialog dialog = builder.create();
                     dialog.show();
-                    dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
+                    if (dialog.getWindow() != null) {
+                        dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
+                    }
                 }
             }
         });
 
-        for (final TrainLine trainLine : trainLines) {
+        Stream.of(trainLines).forEach(trainLine -> {
             boolean newLine = true;
             int i = 0;
             final Map<String, StringBuilder> etas = favoritesData.getTrainArrivalByLine(stationId, trainLine);
@@ -281,7 +280,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 newLine = false;
                 i++;
             }
-        }
+        });
     }
 
     private void startActivity(final TrainLine trainLine) {
@@ -496,26 +495,16 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         availableValueParam.setMargins(pixelsHalf, 0, 0, 0);
 
         final TextView amountBike = new TextView(context);
-
-        final Integer data;
-        if (firstLine) {
-            boundCustomTextView.setText(activity.getString(R.string.bike_available_bikes));
-            data = bikeStation.getAvailableBikes();
-        } else {
-            boundCustomTextView.setText(activity.getString(R.string.bike_available_docks));
-            data = bikeStation.getAvailableDocks();
-        }
+        final String text = firstLine ? activity.getString(R.string.bike_available_bikes) : activity.getString(R.string.bike_available_docks);
+        boundCustomTextView.setText(text);
+        final Integer data = firstLine ? bikeStation.getAvailableBikes() : bikeStation.getAvailableDocks();
         if (data == null) {
             amountBike.setText("?");
             amountBike.setTextColor(ContextCompat.getColor(context, R.color.orange));
         } else {
-            final String availableBikesText = String.valueOf(data);
-            amountBike.setText(availableBikesText);
-            if (data == 0) {
-                amountBike.setTextColor(ContextCompat.getColor(context, R.color.red));
-            } else {
-                amountBike.setTextColor(ContextCompat.getColor(context, R.color.green));
-            }
+            amountBike.setText(String.valueOf(data));
+            final int color = data == 0 ? R.color.red : R.color.green;
+            amountBike.setTextColor(ContextCompat.getColor(context, color));
         }
         amountBike.setLayoutParams(availableValueParam);
 

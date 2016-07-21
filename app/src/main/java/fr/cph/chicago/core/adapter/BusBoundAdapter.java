@@ -61,7 +61,6 @@ public class BusBoundAdapter extends BaseAdapter {
 
     @Override
     public final View getView(final int position, View convertView, final ViewGroup parent) {
-
         final BusStop busStop = busStops.get(position);
 
         final TextView routNameView;
@@ -91,7 +90,7 @@ public class BusBoundAdapter extends BaseAdapter {
      * @author Carl-Philipp Harmant
      * @version 1
      */
-    static class ViewHolder {
+    private static class ViewHolder {
         TextView routNameView;
     }
 
@@ -99,7 +98,6 @@ public class BusBoundAdapter extends BaseAdapter {
      * Update of the bus stops
      */
     public final void update(@NonNull final List<BusStop> busStops) {
-        this.busStops = null;
         this.busStops = busStops;
     }
 }

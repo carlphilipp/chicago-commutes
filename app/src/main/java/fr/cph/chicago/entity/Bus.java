@@ -36,7 +36,7 @@ public class Bus {
     private Boolean delay;
 
     @NonNull
-    public static Position getBestPosition(@NonNull List<Bus> buses) {
+    public static Position getBestPosition(@NonNull final List<Bus> buses) {
         final Position position = new Position();
         double maxLatitude = 0.0;
         double minLatitude = 0.0;

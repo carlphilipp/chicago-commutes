@@ -36,7 +36,6 @@ import android.widget.TextView;
 import com.annimon.stream.Stream;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
-import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapsInitializer;
@@ -206,20 +205,17 @@ public class BusMapActivity extends Activity {
                 }
             });
 
-            googleMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
-                @Override
-                public void onInfoWindowClick(Marker marker) {
-                    if (!"".equals(marker.getSnippet())) {
-                        final View view = views.get(marker);
-                        if (!refreshingInfoWindow) {
-                            selectedMarker = marker;
-                            final String runNumber = marker.getSnippet();
-                            final boolean current = status.get(marker);
-                            Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL, 0);
-                            ObservableUtil.createFollowBusObservable(getApplicationContext(), runNumber)
-                                .subscribe(new BusFollowSubscriber(BusMapActivity.this, mapFragment.getView(), view, !current));
-                            status.put(marker, !current);
-                        }
+            googleMap.setOnInfoWindowClickListener(marker -> {
+                if (!"".equals(marker.getSnippet())) {
+                    final View view = views.get(marker);
+                    if (!refreshingInfoWindow) {
+                        selectedMarker = marker;
+                        final String runNumber = marker.getSnippet();
+                        final boolean current = status.get(marker);
+                        Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL, 0);
+                        ObservableUtil.createFollowBusObservable(getApplicationContext(), runNumber)
+                            .subscribe(new BusFollowSubscriber(BusMapActivity.this, mapFragment.getView(), view, !current));
+                        status.put(marker, !current);
                     }
                 }
             });
@@ -233,22 +229,6 @@ public class BusMapActivity extends Activity {
                 Util.showNetworkErrorMessage(layout);
             }
         });
-    }
-
-    @Override
-    public void onRestoreInstanceState(final Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        busId = savedInstanceState.getInt(bundleBusId);
-        busRouteId = savedInstanceState.getString(bundleBusRouteId);
-        bounds = savedInstanceState.getStringArray(bundleBusBounds);
-    }
-
-    @Override
-    public void onSaveInstanceState(final Bundle savedInstanceState) {
-        savedInstanceState.putInt(bundleBusId, busId);
-        savedInstanceState.putString(bundleBusRouteId, busRouteId);
-        savedInstanceState.putStringArray(bundleBusBounds, bounds);
-        super.onSaveInstanceState(savedInstanceState);
     }
 
     private void setToolbar() {
@@ -326,13 +306,13 @@ public class BusMapActivity extends Activity {
             Stream.of(patterns).forEach(pattern -> {
                 final PolylineOptions poly = new PolylineOptions();
                 if (j == 0) {
-                    poly.geodesic(true).color(Color.RED);
+                    poly.color(Color.RED);
                 } else if (j == 1) {
-                    poly.geodesic(true).color(Color.BLUE);
+                    poly.color(Color.BLUE);
                 } else {
-                    poly.geodesic(true).color(Color.YELLOW);
+                    poly.color(Color.YELLOW);
                 }
-                poly.width(7f);
+                poly.width(7f).geodesic(true);
                 Stream.of(pattern.getPoints())
                     .map(patternPoint -> {
                         final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
@@ -410,5 +390,21 @@ public class BusMapActivity extends Activity {
                 Util.showNetworkErrorMessage(layout);
             }
         }
+    }
+
+    @Override
+    public void onRestoreInstanceState(final Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        busId = savedInstanceState.getInt(bundleBusId);
+        busRouteId = savedInstanceState.getString(bundleBusRouteId);
+        bounds = savedInstanceState.getStringArray(bundleBusBounds);
+    }
+
+    @Override
+    public void onSaveInstanceState(final Bundle savedInstanceState) {
+        savedInstanceState.putInt(bundleBusId, busId);
+        savedInstanceState.putString(bundleBusRouteId, busRouteId);
+        savedInstanceState.putStringArray(bundleBusBounds, bounds);
+        super.onSaveInstanceState(savedInstanceState);
     }
 }

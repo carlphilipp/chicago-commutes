@@ -53,11 +53,8 @@ public class TrainListStationActivity extends ListActivity {
             ButterKnife.bind(this);
 
             // Load data
-            if (savedInstanceState != null) {
-                lineParam = savedInstanceState.getString(bundleTrainLine);
-            } else {
-                lineParam = getIntent().getExtras().getString(bundleTrainLine);
-            }
+            lineParam = savedInstanceState != null ? savedInstanceState.getString(bundleTrainLine) : getIntent().getExtras().getString(bundleTrainLine);
+
             trainLine = TrainLine.fromString(lineParam);
             setTitle(trainLine.toStringWithLine());
 

@@ -145,10 +145,8 @@ public class BaseActivity extends Activity {
     }
 
     private void trackWithGoogleAnalytics() {
-        new Thread(() -> {
-			Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL, 0);
-			Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL, 0);
-		}).start();
+        Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL, 0);
+        Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL, 0);
     }
 
     /**
@@ -164,7 +162,7 @@ public class BaseActivity extends Activity {
         bundle.putParcelableArrayList(getString(R.string.bundle_bus_arrivals), (ArrayList<BusArrival>) busArrivals);
         bundle.putSparseParcelableArray(getString(R.string.bundle_train_arrivals), trainArrival);
         intent.putExtras(bundle);
-        // TODO add her some stuff in bundle to handle errors from observable
+        // TODO add here some stuff in bundle to handle errors from observable
 
         finish();
         startActivity(intent);
