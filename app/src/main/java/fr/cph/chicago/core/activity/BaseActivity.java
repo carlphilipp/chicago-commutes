@@ -66,7 +66,8 @@ public class BaseActivity extends Activity {
 
     private static final String TAG = BaseActivity.class.getSimpleName();
 
-    @BindString(R.string.bundle_error) String bundleError;
+    @BindString(R.string.bundle_error)
+    String bundleError;
 
     private final TrainService trainService;
     private final BusService busService;
@@ -130,10 +131,9 @@ public class BaseActivity extends Activity {
         Observable.zip(trainDataObservable, busDataObservable, (trainData, busData) -> true)
             .doOnCompleted(() -> Observable.zip(trainArrivalsObservable, busArrivalsObservable, (trainArrivals, busArrivals) -> {
                     App.modifyLastUpdate(Calendar.getInstance().getTime());
-                    final FavoritesDTO favoritesDTO = new FavoritesDTO();
-                    favoritesDTO.setTrainArrivals(trainArrivals);
-                    favoritesDTO.setBusArrivals(busArrivals);
-                    return favoritesDTO;
+                    return FavoritesDTO.builder()
+                        .trainArrivals(trainArrivals)
+                        .busArrivals(busArrivals).build();
                 }
             ).subscribe(
                 this::startMainActivity,

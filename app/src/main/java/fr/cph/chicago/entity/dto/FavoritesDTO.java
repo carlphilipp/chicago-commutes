@@ -7,8 +7,10 @@ import java.util.List;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
+import lombok.Builder;
 import lombok.Data;
 
+@Builder
 @Data
 public class FavoritesDTO {
     private boolean trainError;

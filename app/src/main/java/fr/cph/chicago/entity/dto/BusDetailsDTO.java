@@ -1,7 +1,9 @@
 package fr.cph.chicago.entity.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
+@Builder
 @Data
 public class BusDetailsDTO {
     private String busRouteId;

@@ -7,6 +7,7 @@ import java.util.List;
 import fr.cph.chicago.entity.BikeStation;
 import lombok.Data;
 
+
 @Data
 public class DivvyDTO {
 

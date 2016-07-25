@@ -96,10 +96,10 @@ public class ObservableUtil {
         return Observable.zip(trainArrivalsObservable, busArrivalsObservable, bikeStationsObservable,
             (trainArrivals, busArrivals, bikeStations) -> {
                 App.modifyLastUpdate(Calendar.getInstance().getTime());
-                final FavoritesDTO favoritesDTO = new FavoritesDTO();
-                favoritesDTO.setTrainArrivals(trainArrivals);
-                favoritesDTO.setBusArrivals(busArrivals);
-                favoritesDTO.setBikeStations(bikeStations);
+                final FavoritesDTO favoritesDTO = FavoritesDTO.builder()
+                    .trainArrivals(trainArrivals)
+                    .busArrivals(busArrivals)
+                    .bikeStations(bikeStations).build();
                 if (trainArrivals == null) {
                     favoritesDTO.setTrainError(true);
                     favoritesDTO.setTrainArrivals(new SparseArray<>());
@@ -162,7 +162,9 @@ public class ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread());
 
         return Observable.zip(busRoutesObs, bikeStationsObs, (busRoutes, bikeStations) -> {
-            final FirstLoadDTO result = new FirstLoadDTO();
+            final FirstLoadDTO result = FirstLoadDTO.builder()
+                .busRoutes(busRoutes)
+                .bikeStations(bikeStations).build();
             if (busRoutes == null) {
                 busRoutes = new ArrayList<>();
                 result.setBusRoutesError(true);
@@ -171,8 +173,6 @@ public class ObservableUtil {
                 bikeStations = new ArrayList<>();
                 result.setBikeStationsError(true);
             }
-            result.setBusRoutes(busRoutes);
-            result.setBikeStations(bikeStations);
             return result;
         });
     }

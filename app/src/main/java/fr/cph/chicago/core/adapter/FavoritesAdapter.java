@@ -320,16 +320,15 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
             final Map<String, List<BusArrival>> value = entry.getValue();
             for (final String key2 : value.keySet()) {
                 final BusArrival busArrival = value.get(key2).get(0);
-
                 final String boundTitle = busArrival.getRouteDirection();
                 final BusDirection.BusDirectionEnum busDirectionEnum = BusDirection.BusDirectionEnum.fromString(boundTitle);
-                final BusDetailsDTO busDetails = new BusDetailsDTO();
-                busDetails.setBusRouteId(busArrival.getRouteId());
-                busDetails.setBound(busDirectionEnum.getShortUpperCase());
-                busDetails.setBoundTitle(boundTitle);
-                busDetails.setStopId(Integer.toString(busArrival.getStopId()));
-                busDetails.setRouteName(busRoute.getName());
-                busDetails.setStopName(stopName);
+                final BusDetailsDTO busDetails = BusDetailsDTO.builder()
+                    .busRouteId(busArrival.getRouteId())
+                    .bound(busDirectionEnum.getShortUpperCase())
+                    .boundTitle(boundTitle)
+                    .stopId(Integer.toString(busArrival.getStopId()))
+                    .routeName(busRoute.getName())
+                    .stopName(stopName).build();
                 busDetailsDTOs.add(busDetails);
             }
 

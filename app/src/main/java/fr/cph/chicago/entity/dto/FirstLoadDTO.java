@@ -4,8 +4,10 @@ import java.util.List;
 
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusRoute;
+import lombok.Builder;
 import lombok.Data;
 
+@Builder
 @Data
 public class FirstLoadDTO {
     private boolean busRoutesError;
