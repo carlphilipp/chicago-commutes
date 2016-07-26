@@ -20,10 +20,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Data;
@@ -37,94 +38,41 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public final class BikeStation implements Parcelable {
-    /**
-     * Station id
-     **/
+
     @JsonProperty("id")
     private int id;
-    /**
-     * Station name
-     **/
     @JsonProperty("stationName")
     private String name;
-    /**
-     * Available docks
-     **/
     @JsonProperty("availableDocks")
     private Integer availableDocks;
-    /**
-     * Total docks
-     **/
     @JsonProperty("totalDocks")
     private Integer totalDocks;
-    /**
-     * The latitude
-     **/
     @JsonProperty("latitude")
     private double latitude;
-    /**
-     * The longitude
-     **/
     @JsonProperty("longitude")
     private double longitude;
-    /**
-     * Status value
-     **/
     @JsonProperty("statusValue")
     private String statusValue;
-    /**
-     * Status key
-     **/
     @JsonProperty("statusKey")
     private String statusKey;
-    /**
-     * Available bikes
-     **/
     @JsonProperty("availableBikes")
     private Integer availableBikes;
-    /**
-     * Street address 1
-     **/
     @JsonProperty("stAddress1")
     private String stAddress1;
-    /**
-     * Street address 2
-     **/
     @JsonProperty("stAddress2")
     private String stAddress2;
-    /**
-     * City
-     **/
     @JsonProperty("city")
     private String city;
-    /**
-     * Postal code
-     **/
     @JsonProperty("postalCode")
     private String postalCode;
-    /**
-     * Location
-     **/
     @JsonProperty("location")
     private String location;
-    /**
-     * Altitude
-     **/
     @JsonProperty("altitude")
     private String altitude;
-    /**
-     * Test station
-     **/
     @JsonProperty("testStation")
     private boolean testStation;
-    /**
-     * Last communication time
-     **/
     @JsonProperty("lastCommunicationTime")
     private String lastCommunicationTime;
-    /**
-     * Land mark
-     **/
     @JsonProperty("landMark")
     private String landMark;
 
@@ -248,14 +196,11 @@ public final class BikeStation implements Parcelable {
         final double lonMax = longitude + dist;
         final double lonMin = longitude - dist;
 
-        final List<BikeStation> bikeStationsRes = new ArrayList<>();
-        for (final BikeStation station : bikeStations) {
-            final double bikeLatitude = station.getLatitude();
-            final double bikeLongitude = station.getLongitude();
-            if (bikeLatitude <= latMax && bikeLatitude >= latMin && bikeLongitude <= lonMax && bikeLongitude >= lonMin) {
-                bikeStationsRes.add(station);
-            }
-        }
-        return bikeStationsRes;
+        return Stream.of(bikeStations)
+            .filter(station -> station.getLatitude() <= latMax)
+            .filter(station -> station.getLatitude() >= latMin)
+            .filter(station -> station.getLongitude() <= lonMax)
+            .filter(station -> station.getLongitude() >= lonMin)
+            .collect(Collectors.toList());
     }
 }

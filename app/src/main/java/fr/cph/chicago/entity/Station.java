@@ -64,7 +64,7 @@ public class Station implements Comparable<Station>, Parcelable {
 
     @Override
     public final String toString() {
-        StringBuilder stb = new StringBuilder();
+        final StringBuilder stb = new StringBuilder();
         stb.append("[Id=").append(id);
         stb.append(";name=").append(name);
         if (stops != null) {
@@ -81,9 +81,7 @@ public class Station implements Comparable<Station>, Parcelable {
     public final Set<TrainLine> getLines() {
         if (stops != null) {
             final Set<TrainLine> lines = new TreeSet<>();
-            for (final Stop stop : stops) {
-                lines.addAll(stop.getLines());
-            }
+            Stream.of(stops).map(Stop::getLines).forEach(lines::addAll);
             return lines;
         } else {
             return Collections.emptySet();
@@ -92,10 +90,10 @@ public class Station implements Comparable<Station>, Parcelable {
 
     @NonNull
     public final Map<TrainLine, List<Stop>> getStopByLines() {
-        Map<TrainLine, List<Stop>> result = new TreeMap<>();
-        List<Stop> stops = getStops();
+        final Map<TrainLine, List<Stop>> result = new TreeMap<>();
+        final List<Stop> stops = getStops();
         for (final Stop stop : stops) {
-            List<TrainLine> lines = stop.getLines();
+            final List<TrainLine> lines = stop.getLines();
             for (TrainLine tl : lines) {
                 List<Stop> stopss;
                 if (result.containsKey(tl)) {
@@ -149,5 +147,4 @@ public class Station implements Comparable<Station>, Parcelable {
             return new Station[size];
         }
     };
-
 }
