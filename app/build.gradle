@@ -45,6 +45,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 24
         applicationId "fr.cph.chicago"
+        multiDexEnabled true
 
         def appProperties = this.file('app.properties')
         def props = new Properties()
