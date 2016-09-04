@@ -77,10 +77,10 @@ import fr.cph.chicago.exception.ParserException;
  */
 public final class Util {
 
+    public static final Comparator<BikeStation> BIKE_COMPARATOR_NAME = new BikeStationComparator();
+    public static final Comparator<BusRoute> BUS_STOP_COMPARATOR_NAME = new BusStopComparator();
     public static final LatLng CHICAGO = new LatLng(41.8819, -87.6278);
-
     private static final Pattern PATTERN = Pattern.compile("(\\d{1,3})");
-
     private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
 
     private Util() {
@@ -194,16 +194,12 @@ public final class Util {
         return new String[]{routeId, stopId, bound};
     }
 
-    public static final Comparator<BikeStation> BIKE_COMPARATOR_NAME = new BikeStationComparator();
-
     private static final class BikeStationComparator implements Comparator<BikeStation> {
         @Override
         public int compare(final BikeStation station1, final BikeStation station2) {
             return station1.getName().compareTo(station2.getName());
         }
     }
-
-    public static final Comparator<BusRoute> BUS_STOP_COMPARATOR_NAME = new BusStopComparator();
 
     private static final class BusStopComparator implements Comparator<BusRoute> {
 
@@ -329,10 +325,6 @@ public final class Util {
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CHICAGO, 10));
             }
         });
-    }
-
-    public static boolean textNumberToBoolean(@NonNull final String number) {
-        return Boolean.parseBoolean(number);
     }
 
     @NonNull

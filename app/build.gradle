@@ -32,6 +32,10 @@ dependencies {
         [group: 'com.jakewharton', name: 'butterknife-compiler', version: butterknife_version]
     )
 
+    testCompile(
+        [group: 'junit', name: 'junit', version: junit_version],
+    )
+
     provided(
         [group: 'org.projectlombok', name: 'lombok', version: lombok_version]
     )
@@ -80,7 +84,9 @@ android {
     signingConfigs {
         release {
             def propsFile = this.file('keystore.properties')
-            if (propsFile.exists() && gradle.startParameter.taskNames.any { it.contains('Release') || it.contains('build') }) {
+            if (propsFile.exists() && gradle.startParameter.taskNames.any {
+                it.contains('Release') || it.contains('build')
+            }) {
                 def props = new Properties()
                 props.load(new FileInputStream(propsFile))
                 File storeF = new File(props['storeFile'].toString())

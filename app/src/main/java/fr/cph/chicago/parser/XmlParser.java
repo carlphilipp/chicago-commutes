@@ -968,7 +968,7 @@ public final class XmlParser {
                                     final TrainArrival arri = arrivals.get(staId, null);
                                     if (arri != null) {
                                         final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-                                        currentEta.setApp(Util.textNumberToBoolean(text));
+                                        currentEta.setApp(Boolean.parseBoolean(text));
                                     }
                                     break;
                                 }
@@ -984,7 +984,7 @@ public final class XmlParser {
                                     final TrainArrival arri = arrivals.get(staId, null);
                                     if (arri != null) {
                                         final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-                                        currentEta.setDly(Util.textNumberToBoolean(text));
+                                        currentEta.setDly(Boolean.parseBoolean(text));
                                     }
                                     break;
                                 }
