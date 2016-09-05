@@ -24,6 +24,7 @@
     <string name="menu_bus">Bus</string>
     <string name="menu_divvy">Divvy</string>
     <string name="menu_nearby">Nearby</string>
+    <string name="menu_rate">Rate this app</string>
 
     <!-- Bundle -->
     <string name="bundle_train_arrivals">trainArrivals</string>

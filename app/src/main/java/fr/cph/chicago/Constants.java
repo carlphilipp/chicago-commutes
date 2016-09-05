@@ -6,7 +6,8 @@ package fr.cph.chicago;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class Constants {
+public enum Constants {
+    ;
 
     // CTA - Trains
     public static final String TRAINS_ARRIVALS_URL = "http://lapi.transitchicago.com/api/1.0/ttarrivals.aspx";

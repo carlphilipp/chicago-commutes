@@ -20,5 +20,9 @@
             android:id="@+id/navigation_nearby"
             android:icon="@drawable/ic_near_me_white_24dp"
             android:title="@string/menu_nearby"/>
+        <item
+            android:id="@+id/rate_this_app"
+            android:icon="@drawable/ic_star_white_24dp"
+            android:title="@string/menu_rate"/>
     </group>
 </menu>

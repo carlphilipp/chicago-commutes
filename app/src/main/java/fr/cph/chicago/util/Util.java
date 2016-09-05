@@ -25,7 +25,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -33,6 +35,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
@@ -53,6 +56,7 @@ import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -77,6 +81,7 @@ import fr.cph.chicago.exception.ParserException;
  */
 public final class Util {
 
+    private static final String TAG = Util.class.getSimpleName();
     public static final Comparator<BikeStation> BIKE_COMPARATOR_NAME = new BikeStationComparator();
     public static final Comparator<BusRoute> BUS_STOP_COMPARATOR_NAME = new BusStopComparator();
     public static final LatLng CHICAGO = new LatLng(41.8819, -87.6278);
@@ -406,6 +411,41 @@ public final class Util {
 
     public static void showOopsSomethingWentWrong(@NonNull final View view) {
         Snackbar.make(view, view.getContext().getString(R.string.message_something_went_wrong), Snackbar.LENGTH_SHORT).show();
+    }
+
+    public static void showRateSnackBar(@NonNull final View view, @NonNull final Activity activity) {
+        final int textColor = ContextCompat.getColor(view.getContext(), R.color.greenLineDark);
+        final Snackbar snackBar1 = Snackbar.make(view, "Do you like this app?", Snackbar.LENGTH_LONG)
+            .setAction("YES", view1 -> {
+                final Snackbar snackBar2 = Snackbar.make(view1, "Rate this app on the market", Snackbar.LENGTH_LONG)
+                    .setAction("OK", view2 -> rateThisApp(activity))
+                    .setActionTextColor(textColor)
+                    .setDuration(10000);
+                snackBar2.show();
+                Preferences.setRateLastSeen(view.getContext());
+            })
+            .setActionTextColor(textColor)
+            .setDuration(10000);
+        snackBar1.show();
+    }
+
+    public static void displayRateSnackBarIfNeeded(@NonNull final View view, @NonNull final Activity activity) {
+        Handler handler = new Handler();
+        Runnable r = () -> {
+            final Date now = new Date();
+            final Date lastSeen = Preferences.getRateLastSeen(view.getContext());
+            // if it has been more than 30 days or if it's the first time
+            if (now.getTime() - lastSeen.getTime() > 2592000000L || now.getTime() - lastSeen.getTime() < 1000L) {
+                showRateSnackBar(view, activity);
+            }
+        };
+        handler.postDelayed(r, 2500L);
+    }
+
+    public static void rateThisApp(final Activity activity) {
+        final Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse("market://details?id=fr.cph.chicago"));
+        activity.startActivity(intent);
     }
 
     public static void handleConnectOrParserException(@NonNull final Throwable throwable, @Nullable final Activity activity, @Nullable final View connectView, @NonNull final View parserView) {

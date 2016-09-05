@@ -196,6 +196,7 @@ public class FavoritesFragment extends Fragment {
             });
 
             startRefreshTask();
+            Util.displayRateSnackBarIfNeeded(swipeRefreshLayout, activity);
         }
         return rootView;
     }

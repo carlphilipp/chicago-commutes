@@ -61,20 +61,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.container) FrameLayout frameLayout;
-    @BindView(R.id.main_drawer) NavigationView drawer;
-    @BindView(R.id.drawer_layout) DrawerLayout drawerLayout;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.container)
+    FrameLayout frameLayout;
+    @BindView(R.id.main_drawer)
+    NavigationView drawer;
+    @BindView(R.id.drawer_layout)
+    DrawerLayout drawerLayout;
 
-    @BindString(R.string.bundle_bike_stations) String bundleBikeStations;
-    @BindString(R.string.bundle_title) String bundleTitle;
-    @BindString(R.string.favorites) String favorites;
-    @BindString(R.string.train) String train;
-    @BindString(R.string.bus) String bus;
-    @BindString(R.string.divvy) String divvy;
-    @BindString(R.string.nearby) String nearby;
+    @BindString(R.string.bundle_bike_stations)
+    String bundleBikeStations;
+    @BindString(R.string.bundle_title)
+    String bundleTitle;
+    @BindString(R.string.favorites)
+    String favorites;
+    @BindString(R.string.train)
+    String train;
+    @BindString(R.string.bus)
+    String bus;
+    @BindString(R.string.divvy)
+    String divvy;
+    @BindString(R.string.nearby)
+    String nearby;
 
-    @BindColor(R.color.primaryColorDarker) int primaryColorDarker;
+    @BindColor(R.color.primaryColorDarker)
+    int primaryColorDarker;
 
     private static final String SELECTED_ID = "SELECTED_ID";
     private static final int POSITION_BUS = 2;
@@ -291,6 +303,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 drawerLayout.closeDrawer(GravityCompat.START);
                 showActionBarMenu();
+                break;
+            case R.id.rate_this_app:
+                Util.rateThisApp(this);
                 break;
         }
     }

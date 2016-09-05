@@ -25,8 +25,12 @@ import android.util.Log;
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,6 +53,7 @@ public final class Preferences {
     private static final String TAG = Preferences.class.getSimpleName();
 
     private static final Pattern PATTERN = Pattern.compile("(\\d{1,3})");
+    private static final SimpleDateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
 
     /**
      * Check if the user has favorites already
@@ -247,5 +252,22 @@ public final class Preferences {
     public static boolean getHideShowNearby(@NonNull final Context context) {
         final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
         return sharedPref.getBoolean("hideNearby", true);
+    }
+
+    public static Date getRateLastSeen(@NonNull final Context context) {
+        try {
+            final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+            final String defaultDate = FORMAT.format(new Date());
+            return FORMAT.parse(sharedPref.getString("rateLastSeen", defaultDate));
+        } catch (final ParseException e) {
+            return new Date();
+        }
+    }
+
+    public static void setRateLastSeen(@NonNull final Context context) {
+        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+        final SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("rateLastSeen", FORMAT.format(new Date()));
+        editor.apply();
     }
 }
