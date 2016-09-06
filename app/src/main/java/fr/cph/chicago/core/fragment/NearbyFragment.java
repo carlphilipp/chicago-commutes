@@ -106,14 +106,21 @@ public class NearbyFragment extends Fragment {
     private static final String TAG = NearbyFragment.class.getSimpleName();
     private static final String ARG_SECTION_NUMBER = "section_number";
 
-    @BindView(R.id.fragment_nearby_list) ListView listView;
-    @BindView(R.id.loading_layout) View loadLayout;
-    @BindView(R.id.nearby_list_container) RelativeLayout nearbyContainer;
-    @BindView(R.id.hideEmptyStops) CheckBox checkBox;
+    @BindView(R.id.fragment_nearby_list)
+    ListView listView;
+    @BindView(R.id.loading_layout)
+    View loadLayout;
+    @BindView(R.id.nearby_list_container)
+    RelativeLayout nearbyContainer;
+    @BindView(R.id.hideEmptyStops)
+    CheckBox checkBox;
 
-    @BindString(R.string.request_stop_id) String requestStopId;
-    @BindString(R.string.request_map_id) String requestMapId;
-    @BindString(R.string.bundle_bike_stations) String bundleBikeStations;
+    @BindString(R.string.request_stop_id)
+    String requestStopId;
+    @BindString(R.string.request_map_id)
+    String requestMapId;
+    @BindString(R.string.bundle_bike_stations)
+    String bundleBikeStations;
 
     private Unbinder unbinder;
 
@@ -293,10 +300,8 @@ public class NearbyFragment extends Fragment {
         try {
             List<BikeStation> bikeStationsRes = new ArrayList<>();
             if (isAdded()) {
-                final DivvyConnect connect = DivvyConnect.getInstance();
-                final JsonParser json = JsonParser.getInstance();
-                final InputStream content = connect.connect();
-                final List<BikeStation> bikeStationUpdated = json.parseStations(content);
+                final InputStream content = DivvyConnect.INSTANCE.connect();
+                final List<BikeStation> bikeStationUpdated = JsonParser.INSTANCE.parseStations(content);
                 bikeStationsRes = Stream.of(bikeStationUpdated)
                     .filter(bikeStations::contains)
                     .sorted(Util.BIKE_COMPARATOR_NAME)

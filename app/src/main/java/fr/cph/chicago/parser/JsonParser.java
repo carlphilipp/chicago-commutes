@@ -38,24 +38,15 @@ import fr.cph.chicago.exception.TrackerException;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public final class JsonParser {
+public enum JsonParser {
+    INSTANCE;
 
-    private static ObjectMapper MAPPER;
-    private static JsonParser INSTANCE;
-
-    @NonNull
-    public static JsonParser getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new JsonParser();
-            MAPPER = new ObjectMapper();
-        }
-        return INSTANCE;
-    }
+    private ObjectMapper mapper = new ObjectMapper();
 
     @NonNull
     public List<BikeStation> parseStations(@NonNull final InputStream stream) throws ParserException {
         try {
-            final DivvyDTO divvyJson = MAPPER.readValue(stream, new TypeReference<DivvyDTO>() {
+            final DivvyDTO divvyJson = mapper.readValue(stream, new TypeReference<DivvyDTO>() {
             });
             return divvyJson.getStations();
         } catch (final IOException e) {
@@ -63,8 +54,5 @@ public final class JsonParser {
         } finally {
             IOUtils.closeQuietly(stream);
         }
-    }
-
-    private JsonParser() {
     }
 }

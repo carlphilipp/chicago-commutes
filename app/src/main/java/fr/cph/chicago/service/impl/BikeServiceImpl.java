@@ -15,18 +15,11 @@ import rx.exceptions.Exceptions;
 
 public class BikeServiceImpl implements BikeService {
 
-    private final JsonParser jsonParser;
-
-    public BikeServiceImpl() {
-        this.jsonParser = JsonParser.getInstance();
-    }
-
     @Override
     public List<BikeStation> loadAllBikes() {
         try {
-            final DivvyConnect divvyConnect = DivvyConnect.getInstance();
-            final InputStream bikeContent = divvyConnect.connect();
-            final List<BikeStation> bikeStations = jsonParser.parseStations(bikeContent);
+            final InputStream bikeContent = DivvyConnect.INSTANCE.connect();
+            final List<BikeStation> bikeStations = JsonParser.INSTANCE.parseStations(bikeContent);
             return Stream.of(bikeStations).sorted(Util.BIKE_COMPARATOR_NAME).collect(Collectors.toList());
         } catch (final Throwable throwable) {
             throw Exceptions.propagate(throwable);

@@ -35,22 +35,10 @@ import static fr.cph.chicago.Constants.DIVYY_URL;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class DivvyConnect {
+public enum DivvyConnect {
+    INSTANCE;
 
     private static final String TAG = DivvyConnect.class.getSimpleName();
-
-    private static DivvyConnect instance = null;
-
-    private DivvyConnect() {
-    }
-
-    @NonNull
-    public static DivvyConnect getInstance() {
-        if (instance == null) {
-            instance = new DivvyConnect();
-        }
-        return instance;
-    }
 
     @NonNull
     public final InputStream connect() throws ConnectException {
