@@ -35,7 +35,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
@@ -413,7 +412,7 @@ public final class Util {
         Snackbar.make(view, view.getContext().getString(R.string.message_something_went_wrong), Snackbar.LENGTH_SHORT).show();
     }
 
-    public static void showRateSnackBar(@NonNull final View view, @NonNull final Activity activity) {
+    private static void showRateSnackBar(@NonNull final View view, @NonNull final Activity activity) {
         final int textColor = ContextCompat.getColor(view.getContext(), R.color.greenLineDark);
         final Snackbar snackBar1 = Snackbar.make(view, "Do you like this app?", Snackbar.LENGTH_LONG)
             .setAction("YES", view1 -> {
@@ -422,7 +421,6 @@ public final class Util {
                     .setActionTextColor(textColor)
                     .setDuration(10000);
                 snackBar2.show();
-                Preferences.setRateLastSeen(view.getContext());
             })
             .setActionTextColor(textColor)
             .setDuration(10000);
@@ -437,6 +435,7 @@ public final class Util {
             // if it has been more than 30 days or if it's the first time
             if (now.getTime() - lastSeen.getTime() > 2592000000L || now.getTime() - lastSeen.getTime() < 1000L) {
                 showRateSnackBar(view, activity);
+                Preferences.setRateLastSeen(view.getContext());
             }
         };
         handler.postDelayed(r, 2500L);
