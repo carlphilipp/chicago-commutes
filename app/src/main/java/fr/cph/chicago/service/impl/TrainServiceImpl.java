@@ -32,13 +32,8 @@ import rx.exceptions.Exceptions;
 
 import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
 
-public class TrainServiceImpl implements TrainService {
-
-    private final XmlParser xmlParser;
-
-    public TrainServiceImpl() {
-        this.xmlParser = XmlParser.getInstance();
-    }
+public enum TrainServiceImpl implements TrainService {
+    INSTANCE;
 
     @NonNull
     @Override
@@ -46,14 +41,13 @@ public class TrainServiceImpl implements TrainService {
         final MultiValuedMap<String, String> trainParams = Util.getFavoritesTrainParams(context);
         SparseArray<TrainArrival> trainArrivals = new SparseArray<>();
         try {
-            final CtaConnect ctaConnect = CtaConnect.getInstance(context);
             for (final Map.Entry<String, Collection<String>> entry : trainParams.asMap().entrySet()) {
                 final String key = entry.getKey();
                 if ("mapid".equals(key)) {
                     final List<String> list = (List<String>) entry.getValue();
                     if (list.size() < 5) {
-                        final InputStream xmlResult = ctaConnect.connect(TRAIN_ARRIVALS, trainParams);
-                        trainArrivals = xmlParser.parseArrivals(xmlResult, DataHolder.getInstance().getTrainData());
+                        final InputStream xmlResult = CtaConnect.INSTANCE.connect(TRAIN_ARRIVALS, trainParams, context);
+                        trainArrivals = XmlParser.INSTANCE.parseArrivals(xmlResult, DataHolder.INSTANCE.getTrainData());
                     } else {
                         final int size = list.size();
                         int start = 0;
@@ -64,8 +58,8 @@ public class TrainServiceImpl implements TrainService {
                             for (final String sub : subList) {
                                 paramsTemp.put(key, sub);
                             }
-                            final InputStream xmlResult = ctaConnect.connect(TRAIN_ARRIVALS, paramsTemp);
-                            final SparseArray<TrainArrival> temp = xmlParser.parseArrivals(xmlResult, DataHolder.getInstance().getTrainData());
+                            final InputStream xmlResult = CtaConnect.INSTANCE.connect(TRAIN_ARRIVALS, paramsTemp, context);
+                            final SparseArray<TrainArrival> temp = XmlParser.INSTANCE.parseArrivals(xmlResult, DataHolder.INSTANCE.getTrainData());
                             for (int j = 0; j < temp.size(); j++) {
                                 trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
                             }
@@ -104,8 +98,8 @@ public class TrainServiceImpl implements TrainService {
     @NonNull
     @Override
     public TrainData loadLocalTrainData(@NonNull final Context context) {
-        TrainData.getInstance().read(context);
-        return TrainData.getInstance();
+        TrainData.INSTANCE.read(context);
+        return TrainData.INSTANCE;
     }
 
     @NonNull
@@ -115,14 +109,11 @@ public class TrainServiceImpl implements TrainService {
             final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
             params.put(context.getString(R.string.request_map_id), Integer.toString(stationId));
 
-            final XmlParser xml = XmlParser.getInstance();
-            final InputStream xmlResult = CtaConnect.getInstance(context).connect(TRAIN_ARRIVALS, params);
-            final SparseArray<TrainArrival> arrivals = xml.parseArrivals(xmlResult, TrainData.getInstance());
-            if (arrivals.size() == 1) {
-                return Optional.of(arrivals.get(stationId));
-            } else {
-                return Optional.empty();
-            }
+            final InputStream xmlResult = CtaConnect.INSTANCE.connect(TRAIN_ARRIVALS, params, context);
+            final SparseArray<TrainArrival> arrivals = XmlParser.INSTANCE.parseArrivals(xmlResult, TrainData.INSTANCE);
+            return arrivals.size() == 1
+                ? Optional.of(arrivals.get(stationId))
+                : Optional.empty();
         } catch (final Throwable e) {
             throw Exceptions.propagate(e);
         }

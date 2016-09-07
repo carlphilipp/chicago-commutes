@@ -172,7 +172,7 @@ public class FavoritesFragment extends Fragment {
                 Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, getContext().getString(R.string.analytics_action_get_divvy_all), 0);
                 Util.trackAction(activity, R.string.analytics_category_ui, R.string.analytics_action_press, getContext().getString(R.string.analytics_action_refresh_fav), 0);
 
-                final DataHolder dataHolder = DataHolder.getInstance();
+                final DataHolder dataHolder = DataHolder.INSTANCE;
                 if (dataHolder.getBusData() == null
                     || dataHolder.getBusData().getBusRoutes() == null
                     || dataHolder.getBusData().getBusRoutes().size() == 0

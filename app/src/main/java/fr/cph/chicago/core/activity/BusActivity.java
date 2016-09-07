@@ -67,35 +67,62 @@ import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
  */
 public class BusActivity extends AbstractStationActivity {
 
-    @BindView(R.id.activity_bus_stop_swipe_refresh_layout) SwipeRefreshLayout scrollView;
-    @BindView(R.id.activity_favorite_star) ImageView favoritesImage;
-    @BindView(R.id.activity_bus_stops) LinearLayout stopsView;
-    @BindView(R.id.activity_bus_streetview_image) ImageView streetViewImage;
-    @BindView(R.id.activity_bus_steetview_text) TextView streetViewText;
-    @BindView(R.id.activity_map_image) ImageView mapImage;
-    @BindView(R.id.activity_map_direction) ImageView directionImage;
-    @BindView(R.id.favorites_container) LinearLayout favoritesImageContainer;
-    @BindView(R.id.walk_container) LinearLayout walkContainer;
-    @BindView(R.id.map_container) LinearLayout mapContainer;
-    @BindView(R.id.activity_bus_station_value) TextView busRouteNameView2;
-    @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.activity_bus_stop_swipe_refresh_layout)
+    SwipeRefreshLayout scrollView;
+    @BindView(R.id.activity_favorite_star)
+    ImageView favoritesImage;
+    @BindView(R.id.activity_bus_stops)
+    LinearLayout stopsView;
+    @BindView(R.id.activity_bus_streetview_image)
+    ImageView streetViewImage;
+    @BindView(R.id.activity_bus_steetview_text)
+    TextView streetViewText;
+    @BindView(R.id.activity_map_image)
+    ImageView mapImage;
+    @BindView(R.id.activity_map_direction)
+    ImageView directionImage;
+    @BindView(R.id.favorites_container)
+    LinearLayout favoritesImageContainer;
+    @BindView(R.id.walk_container)
+    LinearLayout walkContainer;
+    @BindView(R.id.map_container)
+    LinearLayout mapContainer;
+    @BindView(R.id.activity_bus_station_value)
+    TextView busRouteNameView2;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
-    @BindString(R.string.bundle_bus_stop_id) String bundleBusStopId;
-    @BindString(R.string.bundle_bus_route_id) String bundleBusRouteId;
-    @BindString(R.string.bundle_bus_bound) String bundleBusBound;
-    @BindString(R.string.bundle_bus_bound_title) String bundleBusBoundTitle;
-    @BindString(R.string.bundle_bus_stop_name) String bundleBusStopName;
-    @BindString(R.string.bundle_bus_route_name) String bundleBusRouteName;
-    @BindString(R.string.bundle_bus_latitude) String bundleBusLatitude;
-    @BindString(R.string.bundle_bus_longitude) String bundleBusLongitude;
-    @BindString(R.string.bus_activity_no_service) String busActivityNoService;
-    @BindString(R.string.analytics_bus_details) String analyticsBusDetails;
-    @BindString(R.string.request_rt) String requestRt;
-    @BindString(R.string.request_stop_id) String requestStopId;
+    @BindString(R.string.bundle_bus_stop_id)
+    String bundleBusStopId;
+    @BindString(R.string.bundle_bus_route_id)
+    String bundleBusRouteId;
+    @BindString(R.string.bundle_bus_bound)
+    String bundleBusBound;
+    @BindString(R.string.bundle_bus_bound_title)
+    String bundleBusBoundTitle;
+    @BindString(R.string.bundle_bus_stop_name)
+    String bundleBusStopName;
+    @BindString(R.string.bundle_bus_route_name)
+    String bundleBusRouteName;
+    @BindString(R.string.bundle_bus_latitude)
+    String bundleBusLatitude;
+    @BindString(R.string.bundle_bus_longitude)
+    String bundleBusLongitude;
+    @BindString(R.string.bus_activity_no_service)
+    String busActivityNoService;
+    @BindString(R.string.analytics_bus_details)
+    String analyticsBusDetails;
+    @BindString(R.string.request_rt)
+    String requestRt;
+    @BindString(R.string.request_stop_id)
+    String requestStopId;
 
-    @BindColor(R.color.grey_5) int grey_5;
-    @BindColor(R.color.grey) int grey;
-    @BindColor(R.color.yellowLineDark) int yellowLineDark;
+    @BindColor(R.color.grey_5)
+    int grey_5;
+    @BindColor(R.color.grey)
+    int grey;
+    @BindColor(R.color.yellowLineDark)
+    int yellowLineDark;
 
     private List<BusArrival> busArrivals;
     private String busRouteId, bound, boundTitle;
@@ -275,13 +302,11 @@ public class BusActivity extends AbstractStationActivity {
             final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
             reqParams.put(requestRt, busRouteId);
             reqParams.put(requestStopId, Integer.toString(busStopId));
-            final CtaConnect connect = CtaConnect.getInstance(getApplicationContext());
             try {
-                final XmlParser xml = XmlParser.getInstance();
                 // Connect to CTA API bus to get XML result of inc buses
-                final InputStream xmlResult = connect.connect(BUS_ARRIVALS, reqParams);
+                final InputStream xmlResult = CtaConnect.INSTANCE.connect(BUS_ARRIVALS, reqParams, getApplicationContext());
                 // Parse and return arrival buses
-                return xml.parseBusArrivals(xmlResult);
+                return XmlParser.INSTANCE.parseBusArrivals(xmlResult);
             } catch (final ParserException | ConnectException e) {
                 this.trackerException = e;
             }

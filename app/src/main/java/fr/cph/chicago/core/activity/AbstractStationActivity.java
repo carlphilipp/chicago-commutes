@@ -21,8 +21,7 @@ public abstract class AbstractStationActivity extends Activity {
     final void createGoogleStreetObservable(final double latitude, final double longitude) {
         googleMapImageObservable = Observable.create(
             (Subscriber<? super Optional<Drawable>> subscriber) -> {
-                final GStreetViewConnect connect = GStreetViewConnect.getInstance(getApplicationContext());
-                subscriber.onNext(connect.connect(latitude, longitude));
+                subscriber.onNext(GStreetViewConnect.INSTANCE.connect(latitude, longitude, getApplicationContext()));
                 subscriber.onCompleted();
             })
             .subscribeOn(Schedulers.io())

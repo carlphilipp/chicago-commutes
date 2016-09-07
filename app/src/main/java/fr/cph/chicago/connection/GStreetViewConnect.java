@@ -38,42 +38,18 @@ import static fr.cph.chicago.Constants.GOOGLE_STREET_VIEW_URL;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class GStreetViewConnect {
+public enum GStreetViewConnect {
+    INSTANCE;
 
     private static final String TAG = GStreetViewConnect.class.getSimpleName();
     private static final int WIDTH = 1000;
     private static final int HEIGHT = 300;
 
-    private String googleKey;
-
-    private static GStreetViewConnect INSTANCE = null;
-
-    private GStreetViewConnect() {
-    }
-
-    /**
-     * Private constructor, that get the API key from property file
-     */
-    private GStreetViewConnect(@NonNull final Context context) {
-        googleKey = context.getString(R.string.google_maps_api_key);
-    }
-
-    /**
-     * Get INSTANCE of this class
-     */
     @NonNull
-    public static GStreetViewConnect getInstance(@NonNull final Context context) {
-        if (INSTANCE == null) {
-            INSTANCE = new GStreetViewConnect(context);
-        }
-        return INSTANCE;
-    }
-
-    @NonNull
-    public final Optional<Drawable> connect(final double latitude, final double longitude) {
+    public final Optional<Drawable> connect(final double latitude, final double longitude, @NonNull final Context context) {
         final StringBuilder address = new StringBuilder(GOOGLE_STREET_VIEW_URL);
         address.append("?key=");
-        address.append(googleKey);
+        address.append(context.getString(R.string.google_maps_api_key));
         address.append("&sensor=false");
         address.append("&size=").append(WIDTH).append("x").append(HEIGHT);
         address.append("&fov=120");

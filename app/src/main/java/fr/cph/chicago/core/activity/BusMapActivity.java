@@ -347,16 +347,14 @@ public class BusMapActivity extends Activity {
         @Override
         protected final List<BusPattern> doInBackground(final Void... params) {
             this.patterns = new ArrayList<>();
-            final XmlParser xml = XmlParser.getInstance();
-            final CtaConnect connect = CtaConnect.getInstance(getApplicationContext());
             try {
                 if (busId == 0) {
                     // Search for directions
                     final MultiValuedMap<String, String> directionParams = new ArrayListValuedHashMap<>();
                     directionParams.put(requestRt, busRouteId);
 
-                    final InputStream xmlResult = connect.connect(BUS_DIRECTION, directionParams);
-                    final BusDirections busDirections = xml.parseBusDirections(xmlResult, busRouteId);
+                    final InputStream xmlResult = CtaConnect.INSTANCE.connect(BUS_DIRECTION, directionParams, getApplicationContext());
+                    final BusDirections busDirections = XmlParser.INSTANCE.parseBusDirections(xmlResult, busRouteId);
                     bounds = new String[busDirections.getLBusDirection().size()];
                     for (int i = 0; i < busDirections.getLBusDirection().size(); i++) {
                         bounds[i] = busDirections.getLBusDirection().get(i).getBusDirectionEnum().toString();
@@ -366,8 +364,8 @@ public class BusMapActivity extends Activity {
 
                 final MultiValuedMap<String, String> routeIdParam = new ArrayListValuedHashMap<>();
                 routeIdParam.put(requestRt, busRouteId);
-                final InputStream content = connect.connect(BUS_PATTERN, routeIdParam);
-                final List<BusPattern> patterns = xml.parsePatterns(content);
+                final InputStream content = CtaConnect.INSTANCE.connect(BUS_PATTERN, routeIdParam, getApplicationContext());
+                final List<BusPattern> patterns = XmlParser.INSTANCE.parsePatterns(content);
                 Stream.of(patterns)
                     .flatMap(pattern ->
                         Stream.of(bounds)

@@ -117,7 +117,7 @@ public class StationActivity extends AbstractStationActivity {
     private final TrainService trainService;
 
     public StationActivity() {
-        trainService = new TrainServiceImpl();
+        trainService = TrainServiceImpl.INSTANCE;
     }
 
     @Override
@@ -132,7 +132,7 @@ public class StationActivity extends AbstractStationActivity {
             stationId = getIntent().getExtras().getInt(bundleTrainStationId, 0);
             if (stationId != 0) {
                 // Get station
-                final TrainData trainData = DataHolder.getInstance().getTrainData();
+                final TrainData trainData = DataHolder.INSTANCE.getTrainData();
                 station = trainData.getStation(stationId).orElse(new Station());
 
                 paramsStop = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);

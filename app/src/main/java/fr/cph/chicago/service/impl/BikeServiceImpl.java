@@ -13,7 +13,8 @@ import fr.cph.chicago.service.BikeService;
 import fr.cph.chicago.util.Util;
 import rx.exceptions.Exceptions;
 
-public class BikeServiceImpl implements BikeService {
+public enum BikeServiceImpl implements BikeService {
+    INSTANCE;
 
     @Override
     public List<BikeStation> loadAllBikes() {

@@ -57,8 +57,7 @@ public final class TrainAdapter extends BaseAdapter {
      */
     public TrainAdapter(@NonNull final TrainLine line, @NonNull final Activity activity) {
         // Load data
-        final DataHolder dataHolder = DataHolder.getInstance();
-        final TrainData data = dataHolder.getTrainData();
+        final TrainData data = DataHolder.INSTANCE.getTrainData();
         this.stations = data.getStationsForLine(line);
         this.activity = activity;
     }

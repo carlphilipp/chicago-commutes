@@ -20,6 +20,8 @@ import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.annimon.stream.Stream;
+
 /**
  * Enumeration, train line
  *
@@ -72,12 +74,10 @@ public enum TrainLine {
      */
     @NonNull
     public static TrainLine fromXmlString(@NonNull final String text) {
-        for (final TrainLine b : TrainLine.values()) {
-            if (text.equalsIgnoreCase(b.text)) {
-                return b;
-            }
-        }
-        return NA;
+        return Stream.of(TrainLine.values())
+            .filter(trainLine -> text.equalsIgnoreCase(trainLine.text))
+            .findFirst()
+            .orElse(NA);
     }
 
     /**
@@ -88,12 +88,10 @@ public enum TrainLine {
      */
     @NonNull
     public static TrainLine fromString(@Nullable final String text) {
-        for (final TrainLine b : TrainLine.values()) {
-            if (b.name.equalsIgnoreCase(text)) {
-                return b;
-            }
-        }
-        return NA;
+        return Stream.of(TrainLine.values())
+            .filter(trainLine -> trainLine.name.equalsIgnoreCase(text))
+            .findFirst()
+            .orElse(NA);
     }
 
     /**

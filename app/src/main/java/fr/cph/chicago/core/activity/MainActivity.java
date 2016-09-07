@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Util.trackAction(getApplicationContext(), R.string.analytics_category_ui, R.string.analytics_action_press, getApplicationContext().getString(R.string.analytics_action_refresh_fav), 0);
 
                 if (Util.isNetworkAvailable(getApplicationContext())) {
-                    final DataHolder dataHolder = DataHolder.getInstance();
+                    final DataHolder dataHolder = DataHolder.INSTANCE;
                     if (dataHolder.getBusData() == null
                         || dataHolder.getBusData().getBusRoutes() == null
                         || dataHolder.getBusData().getBusRoutes().size() == 0
@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void loadFirstData() {
         ObservableUtil.createOnFirstLoadObservable(getApplicationContext()).subscribe(
             onNext -> {
-                final DataHolder dataHolder = DataHolder.getInstance();
+                final DataHolder dataHolder = DataHolder.INSTANCE;
                 dataHolder.getBusData().setBusRoutes(onNext.getBusRoutes());
                 refreshFirstLoadData(dataHolder.getBusData(), onNext.getBikeStations());
                 if (onNext.isBikeStationsError() || onNext.isBusRoutesError()) {
@@ -213,7 +213,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void refreshFirstLoadData(@NonNull final BusData busData, @NonNull final List<BikeStation> bikeStations) {
         // Put data into data holder
-        final DataHolder dataHolder = DataHolder.getInstance();
+        final DataHolder dataHolder = DataHolder.INSTANCE;
         dataHolder.setBusData(busData);
 
         getIntent().putParcelableArrayListExtra(bundleBikeStations, (ArrayList<BikeStation>) bikeStations);
@@ -230,8 +230,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void reloadData() {
-        final DataHolder dataHolder = DataHolder.getInstance();
-        final TrainData trainData = TrainData.getInstance();
+        final DataHolder dataHolder = DataHolder.INSTANCE;
+        final TrainData trainData = TrainData.INSTANCE;
         if (trainData.isStationNull() || trainData.isStopsNull()) {
             trainData.read(getApplicationContext());
             dataHolder.setTrainData(trainData);

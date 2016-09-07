@@ -242,7 +242,6 @@ public class NearbyFragment extends Fragment {
     private void loadAroundBusArrivals(@NonNull final BusStop busStop, @NonNull final SparseArray<Map<String, List<BusArrival>>> busArrivalsMap) {
         try {
             if (isAdded()) {
-                final CtaConnect cta = CtaConnect.getInstance(getContext());
                 int busStopId = busStop.getId();
                 // Create
                 final Map<String, List<BusArrival>> tempMap = busArrivalsMap.get(busStopId, new ConcurrentHashMap<>());
@@ -252,9 +251,8 @@ public class NearbyFragment extends Fragment {
 
                 final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>(1, 1);
                 reqParams.put(requestStopId, Integer.toString(busStopId));
-                final InputStream is = cta.connect(BUS_ARRIVALS, reqParams);
-                final XmlParser xml = XmlParser.getInstance();
-                final List<BusArrival> busArrivals = xml.parseBusArrivals(is);
+                final InputStream is = CtaConnect.INSTANCE.connect(BUS_ARRIVALS, reqParams, getContext());
+                final List<BusArrival> busArrivals = XmlParser.INSTANCE.parseBusArrivals(is);
                 for (final BusArrival busArrival : busArrivals) {
                     final String direction = busArrival.getRouteDirection();
                     if (tempMap.containsKey(direction)) {
@@ -277,13 +275,11 @@ public class NearbyFragment extends Fragment {
         try {
             final SparseArray<TrainArrival> trainArrivals = new SparseArray<>();
             if (isAdded()) {
-                final CtaConnect cta = CtaConnect.getInstance(getContext());
                 for (final Station station : trainStations) {
                     final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>(1, 1);
                     reqParams.put(requestMapId, Integer.toString(station.getId()));
-                    final InputStream xmlRes = cta.connect(TRAIN_ARRIVALS, reqParams);
-                    final XmlParser xml = XmlParser.getInstance();
-                    final SparseArray<TrainArrival> temp = xml.parseArrivals(xmlRes, DataHolder.getInstance().getTrainData());
+                    final InputStream xmlRes = CtaConnect.INSTANCE.connect(TRAIN_ARRIVALS, reqParams, getContext());
+                    final SparseArray<TrainArrival> temp = XmlParser.INSTANCE.parseArrivals(xmlRes, DataHolder.INSTANCE.getTrainData());
                     for (int j = 0; j < temp.size(); j++) {
                         trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
                     }
@@ -477,9 +473,8 @@ public class NearbyFragment extends Fragment {
         protected final Void doInBackground(final Void... params) {
             bikeStations = activity.getIntent().getExtras().getParcelableArrayList(bundleBikeStations);
 
-            final DataHolder dataHolder = DataHolder.getInstance();
-            final BusData busData = dataHolder.getBusData();
-            final TrainData trainData = dataHolder.getTrainData();
+            final BusData busData = DataHolder.INSTANCE.getBusData();
+            final TrainData trainData = DataHolder.INSTANCE.getTrainData();
 
             locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
 

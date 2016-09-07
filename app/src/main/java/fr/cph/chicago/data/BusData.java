@@ -41,34 +41,17 @@ import lombok.Setter;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class BusData {
+public enum BusData {
+    INSTANCE;
 
     private static final String TAG = BusData.class.getSimpleName();
-
-    private static BusData BUS_DATA;
 
     @Getter
     @Setter
     private List<BusRoute> busRoutes;
 
-    private final BusStopCsvParser busStopCsvParser;
-
-    private BusData() {
+    BusData() {
         this.busRoutes = new ArrayList<>();
-        this.busStopCsvParser = new BusStopCsvParser();
-    }
-
-    /**
-     * Get instance of the class
-     *
-     * @return a bus data instance
-     */
-    @NonNull
-    public static BusData getInstance() {
-        if (BUS_DATA == null) {
-            BUS_DATA = new BusData();
-        }
-        return BUS_DATA;
     }
 
     /**
@@ -78,7 +61,7 @@ public class BusData {
         final Realm realm = Realm.getDefaultInstance();
         if (realm.where(BusStop.class).findFirst() == null) {
             Log.d(TAG, "Load bus stop from CSV");
-            busStopCsvParser.parse(context);
+            BusStopCsvParser.INSTANCE.parse(context);
         }
         realm.close();
     }
@@ -91,10 +74,10 @@ public class BusData {
      */
     @NonNull
     final Optional<BusRoute> getRoute(@NonNull final String routeId) {
-        final Optional<BusRoute> busRoute = Stream.of(busRoutes)
+        return Stream.of(busRoutes)
             .filter(busR -> busR.getId().equals(routeId))
-            .findFirst();
-        return busRoute.isPresent() ? Optional.of(busRoute.get()) : Optional.empty();
+            .findFirst()
+            .or(Optional::empty);
     }
 
     /**

@@ -19,6 +19,10 @@ package fr.cph.chicago.entity.enumeration;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.annimon.stream.Stream;
+
+import java.util.Arrays;
+
 /**
  * Enumeration, prediction type
  *
@@ -48,12 +52,10 @@ public enum PredictionType {
      */
     @Nullable
     public static PredictionType fromString(@NonNull final String text) {
-        for (final PredictionType b : PredictionType.values()) {
-            if (text.equalsIgnoreCase(b.message)) {
-                return b;
-            }
-        }
-        return null;
+        return Stream.of(PredictionType.values())
+            .filter(predictionType -> text.equalsIgnoreCase(predictionType.message))
+            .findFirst()
+            .orElse(null);
     }
 
     @Override

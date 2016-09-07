@@ -87,7 +87,7 @@ public class App extends Application {
     }
 
     public static boolean checkTrainData(@NonNull final Activity activity) {
-        if (DataHolder.getInstance().getTrainData() == null) {
+        if (DataHolder.INSTANCE.getTrainData() == null) {
             startErrorActivity(activity);
             return false;
         }
@@ -95,7 +95,7 @@ public class App extends Application {
     }
 
     public static void checkBusData(@NonNull final Activity mActivity) {
-        if (DataHolder.getInstance().getBusData() == null) {
+        if (DataHolder.INSTANCE.getBusData() == null) {
             startErrorActivity(mActivity);
         }
     }

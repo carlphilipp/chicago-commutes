@@ -16,9 +16,8 @@
 
 package fr.cph.chicago.data;
 
-import android.support.annotation.NonNull;
-
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Class that hold bus and train data. Singleton
@@ -26,27 +25,13 @@ import lombok.Data;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-@Data
-public class DataHolder {
+public enum DataHolder {
+    INSTANCE;
 
-    private static DataHolder DATA_HOLDER;
+    @Getter
+    @Setter
     private TrainData trainData;
+    @Getter
+    @Setter
     private BusData busData;
-
-    /**
-     * Private constructor
-     */
-    private DataHolder() {
-    }
-
-    /**
-     * Get instance of the class. Singleton
-     */
-    @NonNull
-    public static DataHolder getInstance() {
-        if (DATA_HOLDER == null) {
-            DATA_HOLDER = new DataHolder();
-        }
-        return DATA_HOLDER;
-    }
 }

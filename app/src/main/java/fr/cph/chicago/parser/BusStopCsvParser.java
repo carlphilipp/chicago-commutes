@@ -10,28 +10,29 @@ import com.univocity.parsers.csv.CsvParserSettings;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class BusStopCsvParser {
+public enum BusStopCsvParser {
 
-	private static final String TAG = BusStopCsvParser.class.getSimpleName();
+    INSTANCE;
 
-	private static final String STOP_FILE_PATH = "stops.txt";
+    private static final String TAG = BusStopCsvParser.class.getSimpleName();
 
-	private final CsvParser parser;
+    private static final String STOP_FILE_PATH = "stops.txt";
 
-	public BusStopCsvParser() {
-		final CsvParserSettings settings = new CsvParserSettings();
-		settings.getFormat().setLineSeparator("\n");
-		settings.setHeaderExtractionEnabled(true);
-        final BusStopCsvProcessor rowProcessor = new BusStopCsvProcessor();
-		settings.setProcessor(rowProcessor);
-		this.parser = new CsvParser(settings);
-	}
+    private final CsvParser parser;
 
-	public void parse(@NonNull final Context context) {
-		try {
-			parser.parse(new InputStreamReader(context.getAssets().open(STOP_FILE_PATH)));
-		} catch (final IOException e) {
-			Log.e(TAG, e.getMessage(), e);
-		}
-	}
+    BusStopCsvParser() {
+        final CsvParserSettings settings = new CsvParserSettings();
+        settings.getFormat().setLineSeparator("\n");
+        settings.setHeaderExtractionEnabled(true);
+        settings.setProcessor(new BusStopCsvProcessor());
+        this.parser = new CsvParser(settings);
+    }
+
+    public void parse(@NonNull final Context context) {
+        try {
+            parser.parse(new InputStreamReader(context.getAssets().open(STOP_FILE_PATH)));
+        } catch (final IOException e) {
+            Log.e(TAG, e.getMessage(), e);
+        }
+    }
 }

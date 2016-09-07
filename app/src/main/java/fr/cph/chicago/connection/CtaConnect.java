@@ -49,42 +49,13 @@ import static fr.cph.chicago.Constants.TRAINS_LOCATION_URL;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class CtaConnect {
+public enum CtaConnect {
+    INSTANCE;
 
     /**
      * Tag
      **/
     private static final String TAG = CtaConnect.class.getSimpleName();
-    /**
-     * Singleton
-     **/
-    private static CtaConnect instance = null;
-    /**
-     * The cta bus API key
-     **/
-    private String ctaBusKey;
-    /**
-     * The cta train API key
-     **/
-    private String ctaTrainKey;
-
-    private CtaConnect(@NonNull final Context context) {
-        ctaTrainKey = context.getString(R.string.cta_train_key);
-        ctaBusKey = context.getString(R.string.cta_bus_key);
-    }
-
-    /**
-     * Get a singleton access to this class
-     *
-     * @return a CtaConnect instance
-     */
-    @NonNull
-    public static CtaConnect getInstance(@NonNull final Context context) {
-        if (instance == null) {
-            instance = new CtaConnect(context);
-        }
-        return instance;
-    }
 
     /**
      * Connect
@@ -95,7 +66,9 @@ public class CtaConnect {
      * @throws ConnectException
      */
     @NonNull
-    public final InputStream connect(@NonNull final CtaRequestType requestType, @NonNull final MultiValuedMap<String, String> params) throws ConnectException {
+    public final InputStream connect(@NonNull final CtaRequestType requestType, @NonNull final MultiValuedMap<String, String> params, @NonNull final Context context) throws ConnectException {
+        final String ctaTrainKey = context.getString(R.string.cta_train_key);
+        final String ctaBusKey = context.getString(R.string.cta_bus_key);
         final StringBuilder address;
         switch (requestType) {
             case TRAIN_ARRIVALS:

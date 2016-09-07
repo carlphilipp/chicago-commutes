@@ -51,7 +51,8 @@ import fr.cph.chicago.entity.factory.StopFactory;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class TrainData {
+public enum TrainData {
+    INSTANCE;
 
     private static final String TAG = TrainData.class.getSimpleName();
 
@@ -64,20 +65,12 @@ public class TrainData {
     private final CsvParser parser;
     private Map<TrainLine, List<Station>> stationsOrderByLineMap;
 
-    private TrainData() {
+    TrainData() {
         this.stations = new SparseArray<>();
         this.stops = new SparseArray<>();
         final CsvParserSettings settings = new CsvParserSettings();
         settings.getFormat().setLineSeparator("\n");
         this.parser = new CsvParser(settings);
-    }
-
-    @NonNull
-    public static TrainData getInstance() {
-        if (TRAIN_DATA == null) {
-            TRAIN_DATA = new TrainData();
-        }
-        return TRAIN_DATA;
     }
 
     /**

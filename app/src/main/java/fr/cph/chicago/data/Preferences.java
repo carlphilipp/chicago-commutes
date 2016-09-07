@@ -207,7 +207,7 @@ public final class Preferences {
         Log.v(TAG, "Read train favorites : " + setPref);
         return Stream.of(setPref)
             .map(Integer::valueOf)
-            .map(favorite -> DataHolder.getInstance().getTrainData().getStation(favorite))
+            .map(favorite -> DataHolder.INSTANCE.getTrainData().getStation(favorite))
             .map(optional -> optional.orElse(new Station()))
             .sorted()
             .map(Station::getId)

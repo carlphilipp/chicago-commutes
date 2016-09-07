@@ -119,7 +119,7 @@ public class BusFragment extends Fragment {
         textFilter.setVisibility(TextView.VISIBLE);
         textFilter.addTextChangedListener(new TextWatcher() {
 
-            final BusData busData = DataHolder.getInstance().getBusData();
+            final BusData busData = DataHolder.INSTANCE.getBusData();
             List<BusRoute> busRoutes = null;
 
             @Override

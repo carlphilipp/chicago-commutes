@@ -65,23 +65,17 @@ import fr.cph.chicago.exception.TrackerException;
  * @version 1
  */
 // TODO to refactor and optimize
-public final class XmlParser {
+public enum XmlParser {
+
+    INSTANCE;
 
     private static final String TAG = XmlParser.class.getSimpleName();
 
-    private static XmlParser INSTANCE;
     private XmlPullParser parser;
     private SimpleDateFormat simpleDateFormatTrain;
     private SimpleDateFormat simpleDateFormatBus;
 
-    public static XmlParser getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new XmlParser();
-        }
-        return INSTANCE;
-    }
-
-    private XmlParser() {
+    private void setUp() {
         try {
             final XmlPullParserFactory pullParserFactory = XmlPullParserFactory.newInstance();
             parser = pullParserFactory.newPullParser();
@@ -90,6 +84,10 @@ public final class XmlParser {
         } catch (final XmlPullParserException e) {
             Log.e(TAG, TrackerException.ERROR, e);
         }
+    }
+
+    XmlParser() {
+        setUp();
     }
 
     /**

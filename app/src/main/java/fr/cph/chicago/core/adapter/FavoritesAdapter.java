@@ -86,7 +86,6 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     private final int grey5;
     private final Context context;
     private final MainActivity activity;
-    private final FavoritesData favoritesData;
     private final int marginLeftPixel;
     private final int pixels;
     private final int pixelsHalf;
@@ -99,7 +98,6 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         this.grey5 = ContextCompat.getColor(context, R.color.grey_5);
 
         this.activity = activity;
-        this.favoritesData = FavoritesData.getInstance(context);
 
         this.marginLeftPixel = Util.convertDpToPixel(context, 10);
         this.pixels = Util.convertDpToPixel(context, 16);
@@ -148,7 +146,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     @Override
     public void onBindViewHolder(final FavoritesViewHolder holder, final int position) {
         resetData(holder);
-        final Optional<?> optional = favoritesData.getObject(position);
+        final Optional<?> optional = FavoritesData.INSTANCE.getObject(position, context);
         holder.lastUpdateTextView.setText(lastUpdate);
         if (optional.isPresent()) {
             final Object object = optional.get();
@@ -225,7 +223,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         Stream.of(trainLines).forEach(trainLine -> {
             boolean newLine = true;
             int i = 0;
-            final Map<String, StringBuilder> etas = favoritesData.getTrainArrivalByLine(stationId, trainLine);
+            final Map<String, StringBuilder> etas = FavoritesData.INSTANCE.getTrainArrivalByLine(stationId, trainLine);
             for (final Entry<String, StringBuilder> entry : etas.entrySet()) {
                 final LinearLayout.LayoutParams containParam = getInsideParams(newLine, i == etas.size() - 1);
                 final LinearLayout container = new LinearLayout(context);
@@ -312,7 +310,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
         final List<BusDetailsDTO> busDetailsDTOs = new ArrayList<>();
 
-        final Map<String, Map<String, List<BusArrival>>> busArrivals = favoritesData.getBusArrivalsMapped(busRoute.getId());
+        final Map<String, Map<String, List<BusArrival>>> busArrivals = FavoritesData.INSTANCE.getBusArrivalsMapped(busRoute.getId(), context);
         for (final Entry<String, Map<String, List<BusArrival>>> entry : busArrivals.entrySet()) {
             // Build data for button outside of the loop
             final String stopName = entry.getKey();
@@ -521,26 +519,26 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
     @Override
     public final int getItemCount() {
-        return favoritesData.size();
+        return FavoritesData.INSTANCE.size();
     }
 
     public final void setTrainArrivals(@NonNull final SparseArray<TrainArrival> arrivals) {
-        favoritesData.setTrainArrivals(arrivals);
+        FavoritesData.INSTANCE.setTrainArrivals(arrivals);
     }
 
     public final void setBusArrivals(@NonNull final List<BusArrival> busArrivals) {
-        favoritesData.setBusArrivals(busArrivals);
+        FavoritesData.INSTANCE.setBusArrivals(busArrivals);
     }
 
     public final void setBikeStations(@NonNull final List<BikeStation> bikeStations) {
-        favoritesData.setBikeStations(bikeStations);
+        FavoritesData.INSTANCE.setBikeStations(bikeStations);
     }
 
     /**
      * Set favoritesData
      */
     public final void setFavorites() {
-        favoritesData.setFavorites();
+        FavoritesData.INSTANCE.setFavorites(context);
     }
 
     /**

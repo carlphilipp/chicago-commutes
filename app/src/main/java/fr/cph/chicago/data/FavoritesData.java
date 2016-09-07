@@ -48,11 +48,9 @@ import fr.cph.chicago.util.Util;
  * @version 1
  */
 // TODO to analyze and refactor
-public class FavoritesData {
+public enum FavoritesData {
+    INSTANCE;
 
-    private static FavoritesData INSTANCE;
-
-    private final Context context;
     private final TrainData trainData;
     private final BusData busData;
 
@@ -64,8 +62,7 @@ public class FavoritesData {
     private final List<String> bikeFavorites;
     private List<String> fakeBusFavorites;
 
-    private FavoritesData(@NonNull final Context context) {
-        this.context = context;
+    FavoritesData() {
         this.trainArrivals = new SparseArray<>();
         this.busArrivals = new ArrayList<>();
         this.bikeStations = new ArrayList<>();
@@ -74,15 +71,8 @@ public class FavoritesData {
         this.fakeBusFavorites = new ArrayList<>();
         this.bikeFavorites = new ArrayList<>();
 
-        this.trainData = DataHolder.getInstance().getTrainData();
-        this.busData = DataHolder.getInstance().getBusData();
-    }
-
-    public static FavoritesData getInstance(@NonNull final Context context) {
-        if (INSTANCE == null) {
-            INSTANCE = new FavoritesData(context.getApplicationContext());
-        }
-        return INSTANCE;
+        this.trainData = DataHolder.INSTANCE.getTrainData();
+        this.busData = DataHolder.INSTANCE.getBusData();
     }
 
     /**
@@ -101,7 +91,7 @@ public class FavoritesData {
      * @return an object, station or bus route
      */
     @NonNull
-    public final Optional<?> getObject(final int position) {
+    public final Optional<?> getObject(final int position, @NonNull final Context context) {
         if (position < trainFavorites.size()) {
             final Integer stationId = trainFavorites.get(position);
             return trainData.getStation(stationId);
@@ -175,7 +165,7 @@ public class FavoritesData {
      * @return a nice map
      */
     @NonNull
-    public final Map<String, Map<String, List<BusArrival>>> getBusArrivalsMapped(@NonNull final String routeId) {
+    public final Map<String, Map<String, List<BusArrival>>> getBusArrivalsMapped(@NonNull final String routeId, @NonNull final Context context) {
         final Map<String, Map<String, List<BusArrival>>> res = new TreeMap<>(String::compareTo);
         if (busArrivals != null) {
             if (busArrivals.size() == 0) {
@@ -303,7 +293,7 @@ public class FavoritesData {
             .isPresent();
     }
 
-    public final void setFavorites() {
+    public final void setFavorites(@NonNull final Context context) {
         trainFavorites = Preferences.getTrainFavorites(context, App.PREFERENCE_FAVORITES_TRAIN);
         busFavorites = Preferences.getBusFavorites(context, App.PREFERENCE_FAVORITES_BUS);
         fakeBusFavorites = calculateActualRouteNumberBusFavorites();

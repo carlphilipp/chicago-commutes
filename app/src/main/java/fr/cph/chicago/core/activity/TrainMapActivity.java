@@ -88,17 +88,26 @@ import static fr.cph.chicago.connection.CtaRequestType.TRAIN_LOCATION;
  */
 public class TrainMapActivity extends Activity {
 
-    @BindView(android.R.id.content) ViewGroup viewGroup;
-    @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.map) RelativeLayout layout;
+    @BindView(android.R.id.content)
+    ViewGroup viewGroup;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.map)
+    RelativeLayout layout;
 
-    @BindString(R.string.bundle_train_line) String bundleTrainLine;
-    @BindString(R.string.analytics_train_map) String analyticsTrainMap;
-    @BindString(R.string.request_runnumber) String requestRunNumber;
-    @BindString(R.string.bus_all_results) String busAllResults;
-    @BindString(R.string.request_rt) String requestRt;
+    @BindString(R.string.bundle_train_line)
+    String bundleTrainLine;
+    @BindString(R.string.analytics_train_map)
+    String analyticsTrainMap;
+    @BindString(R.string.request_runnumber)
+    String requestRunNumber;
+    @BindString(R.string.bus_all_results)
+    String busAllResults;
+    @BindString(R.string.request_rt)
+    String requestRt;
 
-    @BindDrawable(R.drawable.ic_arrow_back_white_24dp) Drawable arrowBackWhite;
+    @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
+    Drawable arrowBackWhite;
 
     private MapFragment mapFragment;
     private Marker selectedMarker;
@@ -146,8 +155,7 @@ public class TrainMapActivity extends Activity {
 
     private void initData() {
         // Load data
-        final DataHolder dataHolder = DataHolder.getInstance();
-        trainData = dataHolder.getTrainData();
+        trainData = DataHolder.INSTANCE.getTrainData();
         markers = new ArrayList<>();
         status = new HashMap<>();
         trainListener = new TrainMapOnCameraChangeListener(getApplicationContext());
@@ -353,12 +361,10 @@ public class TrainMapActivity extends Activity {
             final String runNumber = params[0];
             List<Eta> etas = new ArrayList<>();
             try {
-                final CtaConnect connect = CtaConnect.getInstance(getApplicationContext());
                 final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
                 connectParam.put(requestRunNumber, runNumber);
-                final InputStream content = connect.connect(TRAIN_FOLLOW, connectParam);
-                final XmlParser xml = XmlParser.getInstance();
-                etas = xml.parseTrainsFollow(content, trainData);
+                final InputStream content = CtaConnect.INSTANCE.connect(TRAIN_FOLLOW, connectParam, getApplicationContext());
+                etas = XmlParser.INSTANCE.parseTrainsFollow(content, trainData);
             } catch (final ConnectException | ParserException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
@@ -417,8 +423,7 @@ public class TrainMapActivity extends Activity {
         protected List<Train> doInBackground(final Boolean... params) {
             // Make sure that trainData is not null
             if (trainData == null) {
-                final DataHolder dataHolder = DataHolder.getInstance();
-                trainData = dataHolder.getTrainData();
+                trainData = DataHolder.INSTANCE.getTrainData();
             }
             centerMap = params[0];
 
@@ -448,12 +453,10 @@ public class TrainMapActivity extends Activity {
         private List<Train> getTrainData() {
             List<Train> trains = null;
             try {
-                final CtaConnect connect = CtaConnect.getInstance(getApplicationContext());
                 final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
                 connectParam.put(requestRt, line);
-                final InputStream content = connect.connect(TRAIN_LOCATION, connectParam);
-                final XmlParser xml = XmlParser.getInstance();
-                trains = xml.parseTrainsLocation(content);
+                final InputStream content = CtaConnect.INSTANCE.connect(TRAIN_LOCATION, connectParam, getApplicationContext());
+                trains = XmlParser.INSTANCE.parseTrainsLocation(content);
                 Util.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_LOCATION_URL, 0);
             } catch (final ConnectException | ParserException e) {
                 Log.e(TAG, e.getMessage(), e);

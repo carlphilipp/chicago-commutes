@@ -73,8 +73,8 @@ public class BaseActivity extends Activity {
     private final BusService busService;
 
     public BaseActivity() {
-        trainService = new TrainServiceImpl();
-        busService = new BusServiceImpl();
+        trainService = TrainServiceImpl.INSTANCE;
+        busService = BusServiceImpl.INSTANCE;
     }
 
     @Override
@@ -107,7 +107,7 @@ public class BaseActivity extends Activity {
                 subscriber.onNext(trainService.loadLocalTrainData(getApplicationContext()));
                 subscriber.onCompleted();
             })
-            .doOnNext(onNextTrainData -> DataHolder.getInstance().setTrainData(onNextTrainData))
+            .doOnNext(DataHolder.INSTANCE::setTrainData)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
 
@@ -117,7 +117,7 @@ public class BaseActivity extends Activity {
                 subscriber.onNext(busService.loadLocalBusData(getApplicationContext()));
                 subscriber.onCompleted();
             })
-            .doOnNext(onNextBusData -> DataHolder.getInstance().setBusData(onNextBusData))
+            .doOnNext(DataHolder.INSTANCE::setBusData)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
 
@@ -169,8 +169,8 @@ public class BaseActivity extends Activity {
     }
 
     private void displayError(@NonNull final String message) {
-        DataHolder.getInstance().setTrainData(null);
-        DataHolder.getInstance().setBusData(null);
+        DataHolder.INSTANCE.setTrainData(null);
+        DataHolder.INSTANCE.setBusData(null);
         startErrorActivity(message);
     }
 

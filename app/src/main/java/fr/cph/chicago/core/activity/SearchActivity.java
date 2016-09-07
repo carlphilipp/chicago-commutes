@@ -161,8 +161,8 @@ public class SearchActivity extends AppCompatActivity {
 
     private void handleIntent(@NonNull final Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            final BusData busData = DataHolder.getInstance().getBusData();
-            final TrainData trainData = DataHolder.getInstance().getTrainData();
+            final BusData busData = DataHolder.INSTANCE.getBusData();
+            final TrainData trainData = DataHolder.INSTANCE.getTrainData();
 
             final String query = intent.getStringExtra(SearchManager.QUERY).trim();
 

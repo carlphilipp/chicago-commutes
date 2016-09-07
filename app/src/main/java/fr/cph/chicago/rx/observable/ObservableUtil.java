@@ -37,9 +37,9 @@ public class ObservableUtil {
 
     private static final String TAG = ObservableUtil.class.getSimpleName();
 
-    private static final TrainService TRAIN_SERVICE = new TrainServiceImpl();
-    private static final BusService BUS_SERVICE = new BusServiceImpl();
-    private static final BikeService BIKE_SERVICE = new BikeServiceImpl();
+    private static final TrainService TRAIN_SERVICE = TrainServiceImpl.INSTANCE;
+    private static final BusService BUS_SERVICE = BusServiceImpl.INSTANCE;
+    private static final BikeService BIKE_SERVICE = BikeServiceImpl.INSTANCE;
 
     private ObservableUtil() {
     }

@@ -18,6 +18,8 @@ package fr.cph.chicago.entity.enumeration;
 
 import android.support.annotation.NonNull;
 
+import com.annimon.stream.Stream;
+
 /**
  * Enumeration, train direction
  *
@@ -56,12 +58,10 @@ public enum TrainDirection {
      */
     @NonNull
     public static TrainDirection fromString(@NonNull final String text) {
-        for (final TrainDirection b : TrainDirection.values()) {
-            if (text.equalsIgnoreCase(b.text)) {
-                return b;
-            }
-        }
-        return TrainDirection.UNKNOWN;
+        return Stream.of(TrainDirection.values())
+            .filter(trainDirection -> text.equalsIgnoreCase(trainDirection.text))
+            .findFirst()
+            .orElse(TrainDirection.UNKNOWN);
     }
 
     @Override

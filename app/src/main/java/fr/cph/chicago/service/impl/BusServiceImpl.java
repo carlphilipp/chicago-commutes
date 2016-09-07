@@ -37,13 +37,8 @@ import static fr.cph.chicago.connection.CtaRequestType.BUS_ROUTES;
 import static fr.cph.chicago.connection.CtaRequestType.BUS_STOP_LIST;
 import static fr.cph.chicago.connection.CtaRequestType.BUS_VEHICLES;
 
-public class BusServiceImpl implements BusService {
-
-    private final XmlParser xmlParser;
-
-    public BusServiceImpl() {
-        this.xmlParser = XmlParser.getInstance();
-    }
+public enum BusServiceImpl implements BusService {
+    INSTANCE;
 
     @NonNull
     @Override
@@ -52,7 +47,6 @@ public class BusServiceImpl implements BusService {
         final MultiValuedMap<String, String> paramBus = Util.getFavoritesBusParams(context);
         // Load bus
         try {
-            final CtaConnect ctaConnect = CtaConnect.getInstance(context);
             final List<String> rts = new ArrayList<>();
             final List<String> stpids = new ArrayList<>();
             for (final Map.Entry<String, Collection<String>> entry : paramBus.asMap().entrySet()) {
@@ -78,8 +72,8 @@ public class BusServiceImpl implements BusService {
                 final MultiValuedMap<String, String> para = new ArrayListValuedHashMap<>();
                 para.put(context.getString(R.string.request_rt), rts.get(i));
                 para.put(context.getString(R.string.request_stop_id), stpids.get(i));
-                final InputStream xmlResult = ctaConnect.connect(BUS_ARRIVALS, para);
-                busArrivals.addAll(xmlParser.parseBusArrivals(xmlResult));
+                final InputStream xmlResult = CtaConnect.INSTANCE.connect(BUS_ARRIVALS, para, context);
+                busArrivals.addAll(XmlParser.INSTANCE.parseBusArrivals(xmlResult));
             }
         } catch (final Throwable e) {
             throw Exceptions.propagate(e);
@@ -91,13 +85,11 @@ public class BusServiceImpl implements BusService {
     @Override
     public List<BusStop> loadOneBusStop(@NonNull final Context context, @NonNull final String stopId, @NonNull final String bound) {
         try {
-            final CtaConnect connect = CtaConnect.getInstance(context);
             final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
             params.put(context.getString(R.string.request_rt), stopId);
             params.put(context.getString(R.string.request_dir), bound);
-            final InputStream xmlResult = connect.connect(BUS_STOP_LIST, params);
-            final XmlParser xml = XmlParser.getInstance();
-            return xml.parseBusBounds(xmlResult);
+            final InputStream xmlResult = CtaConnect.INSTANCE.connect(BUS_STOP_LIST, params, context);
+            return XmlParser.INSTANCE.parseBusBounds(xmlResult);
         } catch (final Throwable throwable) {
             throw Exceptions.propagate(throwable);
         }
@@ -106,20 +98,18 @@ public class BusServiceImpl implements BusService {
     @NonNull
     @Override
     public BusData loadLocalBusData(@NonNull final Context context) {
-        BusData.getInstance().readBusStopsIfNeeded(context);
-        return BusData.getInstance();
+        BusData.INSTANCE.readBusStopsIfNeeded(context);
+        return BusData.INSTANCE;
     }
 
     @NonNull
     @Override
     public BusDirections loadBusDirections(@NonNull final Context context, @NonNull final String busRouteId) {
         try {
-            final CtaConnect connect = CtaConnect.getInstance(context);
             final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
             reqParams.put(context.getString(R.string.request_rt), busRouteId);
-            final XmlParser xml = XmlParser.getInstance();
-            final InputStream xmlResult = connect.connect(BUS_DIRECTION, reqParams);
-            return xml.parseBusDirections(xmlResult, busRouteId);
+            final InputStream xmlResult = CtaConnect.INSTANCE.connect(BUS_DIRECTION, reqParams, context);
+            return XmlParser.INSTANCE.parseBusDirections(xmlResult, busRouteId);
         } catch (final Throwable throwable) {
             throw Exceptions.propagate(throwable);
         }
@@ -130,10 +120,8 @@ public class BusServiceImpl implements BusService {
     public List<BusRoute> loadBusRoutes(@NonNull final Context context) {
         try {
             final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
-            final CtaConnect connect = CtaConnect.getInstance(context);
-            final XmlParser xml = XmlParser.getInstance();
-            final InputStream xmlResult = connect.connect(BUS_ROUTES, params);
-            return xml.parseBusRoutes(xmlResult);
+            final InputStream xmlResult = CtaConnect.INSTANCE.connect(BUS_ROUTES, params, context);
+            return XmlParser.INSTANCE.parseBusRoutes(xmlResult);
         } catch (final Throwable throwable) {
             throw Exceptions.propagate(throwable);
         }
@@ -143,12 +131,10 @@ public class BusServiceImpl implements BusService {
     @Override
     public List<BusArrival> loadFollowBus(@NonNull final Context context, @NonNull final String busId) {
         try {
-            CtaConnect connect = CtaConnect.getInstance(context);
-            MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
+            final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
             connectParam.put(context.getString(R.string.request_vid), busId);
-            InputStream content = connect.connect(BUS_ARRIVALS, connectParam);
-            final XmlParser xml = XmlParser.getInstance();
-            return xml.parseBusArrivals(content);
+            final InputStream content = CtaConnect.INSTANCE.connect(BUS_ARRIVALS, connectParam, context);
+            return XmlParser.INSTANCE.parseBusArrivals(content);
         } catch (final Throwable throwable) {
             throw Exceptions.propagate(throwable);
         }
@@ -157,25 +143,19 @@ public class BusServiceImpl implements BusService {
     @NonNull
     @Override
     public Optional<BusPattern> loadBusPattern(@NonNull final Context context, @NonNull final String busRouteId, @NonNull final String bound) {
-        final CtaConnect connect = CtaConnect.getInstance(context);
         final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
         connectParam.put(context.getString(R.string.request_rt), busRouteId);
         final String boundIgnoreCase = bound.toLowerCase(Locale.US);
         try {
-            final InputStream content = connect.connect(BUS_PATTERN, connectParam);
-            final XmlParser xml = XmlParser.getInstance();
-            final List<BusPattern> patterns = xml.parsePatterns(content);
-            final Optional<BusPattern> busPatternOptional = Stream.of(patterns)
+            final InputStream content = CtaConnect.INSTANCE.connect(BUS_PATTERN, connectParam, context);
+            final List<BusPattern> patterns = XmlParser.INSTANCE.parsePatterns(content);
+            return Stream.of(patterns)
                 .filter(pattern -> {
                     final String directionIgnoreCase = pattern.getDirection().toLowerCase(Locale.US);
                     return pattern.getDirection().equals(bound) || boundIgnoreCase.contains(directionIgnoreCase);
                 })
-                .findFirst();
-            if (busPatternOptional.isPresent()) {
-                return Optional.of(busPatternOptional.get());
-            } else {
-                return Optional.empty();
-            }
+                .findFirst()
+                .or(Optional::empty);
         } catch (final Throwable throwable) {
             throw Exceptions.propagate(throwable);
         }
@@ -184,7 +164,6 @@ public class BusServiceImpl implements BusService {
     @NonNull
     @Override
     public List<Bus> loadBus(@NonNull final Context context, final int busId, @NonNull final String busRouteId) {
-        final CtaConnect connect = CtaConnect.getInstance(context);
         final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
         if (busId != 0) {
             connectParam.put(context.getString(R.string.request_vid), Integer.toString(busId));
@@ -192,9 +171,8 @@ public class BusServiceImpl implements BusService {
             connectParam.put(context.getString(R.string.request_rt), busRouteId);
         }
         try {
-            final InputStream content = connect.connect(BUS_VEHICLES, connectParam);
-            final XmlParser xml = XmlParser.getInstance();
-            return xml.parseVehicles(content);
+            final InputStream content = CtaConnect.INSTANCE.connect(BUS_VEHICLES, connectParam, context);
+            return XmlParser.INSTANCE.parseVehicles(content);
         } catch (final Throwable throwable) {
             throw Exceptions.propagate(throwable);
         }
