@@ -57,7 +57,6 @@ import fr.cph.chicago.entity.enumeration.XmlArrivalBusTag;
 import fr.cph.chicago.entity.enumeration.XmlArrivalTrainTag;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
-import fr.cph.chicago.util.Util;
 
 /**
  * XML parser

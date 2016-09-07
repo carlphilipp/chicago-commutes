@@ -23,7 +23,7 @@ public class BusStopCsvParser {
 		settings.getFormat().setLineSeparator("\n");
 		settings.setHeaderExtractionEnabled(true);
         final BusStopCsvProcessor rowProcessor = new BusStopCsvProcessor();
-		settings.setRowProcessor(rowProcessor);
+		settings.setProcessor(rowProcessor);
 		this.parser = new CsvParser(settings);
 	}
 
