@@ -16,19 +16,15 @@
 
 package fr.cph.chicago.core.fragment;
 
-import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -41,6 +37,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 
 import com.annimon.stream.Collectors;
+import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
@@ -86,11 +83,16 @@ import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.util.GPSUtil;
 import fr.cph.chicago.util.Util;
 import io.realm.Realm;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
 import rx.Observable;
 import rx.exceptions.Exceptions;
 import rx.schedulers.Schedulers;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;
+import static fr.cph.chicago.Constants.GPS_ACCESS;
 import static fr.cph.chicago.Constants.TRAINS_ARRIVALS_URL;
 import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
 import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
@@ -101,7 +103,7 @@ import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class NearbyFragment extends Fragment {
+public class NearbyFragment extends Fragment implements EasyPermissions.PermissionCallbacks {
 
     private static final String TAG = NearbyFragment.class.getSimpleName();
     private static final String ARG_SECTION_NUMBER = "section_number";
@@ -191,17 +193,8 @@ public class NearbyFragment extends Fragment {
     @Override
     public final void onResume() {
         super.onResume();
-        mapFragment.getMapAsync(googleMap1 -> {
-            NearbyFragment.this.googleMap = googleMap1;
-            if (Util.isNetworkAvailable(getContext())) {
-                new LoadNearbyTask().execute();
-                nearbyContainer.setVisibility(View.GONE);
-                showProgress(true);
-            } else {
-                Util.showNetworkErrorMessage(activity);
-                showProgress(false);
-            }
-        });
+        loadNearbyIfAllowed();
+        mapFragment.getMapAsync(googleMap1 -> NearbyFragment.this.googleMap = googleMap1);
     }
 
     private void loadAllArrivals(@NonNull final List<BusStop> busStops, @NonNull final List<Station> trainStations, @NonNull final List<BikeStation> bikeStations) {
@@ -445,24 +438,14 @@ public class NearbyFragment extends Fragment {
     }
 
     public final void reloadData() {
-        if (Util.isNetworkAvailable(getContext())) {
-            googleMap.clear();
-            showProgress(true);
-            nearbyContainer.setVisibility(View.GONE);
-            new LoadNearbyTask().execute();
-        } else {
-            Util.showNetworkErrorMessage(activity);
-            showProgress(false);
-        }
+        loadNearbyIfAllowed();
     }
 
-    private class LoadNearbyTask extends AsyncTask<Void, Void, Void> implements LocationListener {
+    private class LoadNearbyTask extends AsyncTask<Void, Void, Optional<Position>> implements LocationListener {
 
-        private Position position;
         private List<BusStop> busStops;
         private List<Station> trainStations;
         private List<BikeStation> bikeStations;
-        private LocationManager locationManager;
 
         private LoadNearbyTask() {
             this.busStops = new ArrayList<>();
@@ -470,38 +453,30 @@ public class NearbyFragment extends Fragment {
         }
 
         @Override
-        protected final Void doInBackground(final Void... params) {
+        protected final Optional<Position> doInBackground(final Void... params) {
             bikeStations = activity.getIntent().getExtras().getParcelableArrayList(bundleBikeStations);
 
             final BusData busData = DataHolder.INSTANCE.getBusData();
             final TrainData trainData = DataHolder.INSTANCE.getTrainData();
 
-            locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
-
-            final GPSUtil gpsUtil = new GPSUtil(this, activity, locationManager);
-            position = gpsUtil.getLocation();
-            if (position != null) {
+            final GPSUtil gpsUtil = new GPSUtil(this, activity);
+            final Optional<Position> position = gpsUtil.getLocation();
+            if (position.isPresent()) {
                 final Realm realm = Realm.getDefaultInstance();
-                busStops = busData.readNearbyStops(realm, position);
+                busStops = busData.readNearbyStops(realm, position.get());
                 realm.close();
-                trainStations = trainData.readNearbyStation(position);
+                trainStations = trainData.readNearbyStation(position.get());
                 // TODO: wait bikeStations is loaded
                 if (bikeStations != null) {
-                    bikeStations = BikeStation.readNearbyStation(bikeStations, position);
+                    bikeStations = BikeStation.readNearbyStation(bikeStations, position.get());
                 }
             }
-            return null;
+            return position;
         }
 
         @Override
-        protected final void onPostExecute(final Void result) {
-            if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-                return;
-            }
-            Util.centerMap(mapFragment, activity, position);
-            locationManager.removeUpdates(this);
+        protected final void onPostExecute(final Optional<Position> result) {
+            Util.centerMap(mapFragment, result);
             loadAllArrivals(busStops, trainStations, bikeStations);
         }
 
@@ -519,6 +494,41 @@ public class NearbyFragment extends Fragment {
 
         @Override
         public final void onStatusChanged(final String provider, final int status, final Bundle extras) {
+        }
+    }
+
+    @AfterPermissionGranted(GPS_ACCESS)
+    private void loadNearbyIfAllowed() {
+        if (EasyPermissions.hasPermissions(getContext(), ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)) {
+            startLoadingNearby();
+        } else {
+            EasyPermissions.requestPermissions(this, "To access that feature, we need to access your current location", GPS_ACCESS, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> perms) {
+        startLoadingNearby();
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> perms) {
+        showProgress(false);
+    }
+
+    private void startLoadingNearby() {
+        if (Util.isNetworkAvailable(getContext())) {
+            nearbyContainer.setVisibility(View.GONE);
+            showProgress(true);
+            new LoadNearbyTask().execute();
+        } else {
+            Util.showNetworkErrorMessage(activity);
+            showProgress(false);
         }
     }
 }

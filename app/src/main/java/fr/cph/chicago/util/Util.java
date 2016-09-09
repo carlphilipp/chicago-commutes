@@ -41,6 +41,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -314,16 +315,11 @@ public final class Util {
         return keys.get(random.nextInt(keys.size())).getColor();
     }
 
-    public static void centerMap(@NonNull final SupportMapFragment mapFragment, @NonNull final Activity activity, @Nullable final Position position) {
+    public static void centerMap(@NonNull final SupportMapFragment mapFragment, @NonNull final Optional<Position> position) throws SecurityException {
         mapFragment.getMapAsync(googleMap -> {
-            if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-                return;
-            }
             googleMap.setMyLocationEnabled(true);
-            if (position != null) {
-                final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
+            if (position.isPresent()) {
+                final LatLng latLng = new LatLng(position.get().getLatitude(), position.get().getLongitude());
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
             } else {
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CHICAGO, 10));
@@ -466,14 +462,5 @@ public final class Util {
         } else {
             return name;
         }
-    }
-
-    public static void setLocationOnMap(@NonNull final Activity activity, @NonNull final GoogleMap googleMap) {
-        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-            return;
-        }
-        googleMap.setMyLocationEnabled(true);
     }
 }

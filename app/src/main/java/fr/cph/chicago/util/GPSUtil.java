@@ -1,17 +1,20 @@
 package fr.cph.chicago.util;
 
-import android.Manifest;
 import android.app.Activity;
-import android.content.pm.PackageManager;
+import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
+
+import com.annimon.stream.Optional;
 
 import fr.cph.chicago.entity.Position;
+
+import static android.location.LocationManager.GPS_PROVIDER;
+import static android.location.LocationManager.NETWORK_PROVIDER;
 
 public class GPSUtil {
     // The minimum distance to change Updates in meters
@@ -23,56 +26,47 @@ public class GPSUtil {
     private final LocationManager locationManager;
     private final Activity activity;
 
-    public GPSUtil(@NonNull final LocationListener locationListener, @NonNull final Activity activity, @NonNull final LocationManager locationManager) {
+    public GPSUtil(@NonNull final LocationListener locationListener, @NonNull final Activity activity) {
         this.locationListener = locationListener;
-        this.locationManager = locationManager;
         this.activity = activity;
+        this.locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
     }
 
-    @Nullable
-    public Position getLocation() {
-        double latitude = 0;
-        double longitude = 0;
+    @NonNull
+    public Optional<Position> getLocation() throws SecurityException {
         // getting GPS status
-        boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        boolean isGPSEnabled = locationManager.isProviderEnabled(GPS_PROVIDER);
 
         // getting network status
-        boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        boolean isNetworkEnabled = locationManager.isProviderEnabled(NETWORK_PROVIDER);
 
         if (!isGPSEnabled && !isNetworkEnabled) {
             // no network provider is enabled
             Util.showSettingsAlert(activity);
+            return Optional.empty();
         } else {
-            Location location = null;
+            Position position = null;
             if (isNetworkEnabled) {
-                if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-                    return null;
-                }
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener, Looper.getMainLooper());
-                location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                locationManager.requestLocationUpdates(NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener, Looper.getMainLooper());
+                Location location = locationManager.getLastKnownLocation(NETWORK_PROVIDER);
                 if (location != null) {
-                    latitude = location.getLatitude();
-                    longitude = location.getLongitude();
+                    position = new Position();
+                    position.setLatitude(location.getLatitude());
+                    position.setLongitude(location.getLongitude());
                 }
             }
             // if GPS Enabled get lat/long using GPS Services
-            if (isGPSEnabled && location == null) {
-                if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-                    return null;
-                }
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener, Looper.getMainLooper());
-                location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if (isGPSEnabled) {
+                locationManager.requestLocationUpdates(GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener, Looper.getMainLooper());
+                Location location = locationManager.getLastKnownLocation(GPS_PROVIDER);
                 if (location != null) {
-                    latitude = location.getLatitude();
-                    longitude = location.getLongitude();
+                    position = new Position();
+                    position.setLatitude(location.getLatitude());
+                    position.setLongitude(location.getLongitude());
                 }
             }
+            locationManager.removeUpdates(locationListener);
+            return Optional.ofNullable(position);
         }
-        final Position position = new Position();
-        position.setLatitude(latitude);
-        position.setLongitude(longitude);
-        return position;
     }
 }

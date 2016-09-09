@@ -76,7 +76,12 @@ import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.util.Util;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static fr.cph.chicago.Constants.GPS_ACCESS;
 import static fr.cph.chicago.Constants.TRAINS_FOLLOW_URL;
 import static fr.cph.chicago.Constants.TRAINS_LOCATION_URL;
 import static fr.cph.chicago.connection.CtaRequestType.TRAIN_FOLLOW;
@@ -86,7 +91,7 @@ import static fr.cph.chicago.connection.CtaRequestType.TRAIN_LOCATION;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class TrainMapActivity extends Activity {
+public class TrainMapActivity extends Activity implements EasyPermissions.PermissionCallbacks {
 
     @BindView(android.R.id.content)
     ViewGroup viewGroup;
@@ -203,8 +208,8 @@ public class TrainMapActivity extends Activity {
     @Override
     public final void onResume() {
         super.onResume();
+        enableMyLocationOnMapIfAllowed();
         mapFragment.getMapAsync(googleMap -> {
-            Util.setLocationOnMap(this, googleMap);
             googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                 @Override
                 public View getInfoWindow(final Marker marker) {
@@ -334,6 +339,39 @@ public class TrainMapActivity extends Activity {
             });
             drawLine = false;
         }
+    }
+
+    @AfterPermissionGranted(GPS_ACCESS)
+    private void enableMyLocationOnMapIfAllowed() {
+        Log.e("DRP", "enableMyLocationOnMapIfAllowed");
+        if (EasyPermissions.hasPermissions(getApplicationContext(), ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)) {
+            setLocationOnMap();
+        } else {
+            EasyPermissions.requestPermissions(this, "Would you like to see your current location on the map?", GPS_ACCESS, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        Log.e("DRP", "onRequestPermissionsResult");
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> perms) {
+        Log.e("DRP", "onPermissionsGranted");
+        setLocationOnMap();
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> perms) {
+        Log.e("DRP", "onPermissionsDenied");
+    }
+
+    public void setLocationOnMap() throws SecurityException {
+        mapFragment.getMapAsync(googleMap -> {
+            googleMap.setMyLocationEnabled(true);
+        });
     }
 
     private class LoadTrainFollowTask extends AsyncTask<String, Void, List<Eta>> {

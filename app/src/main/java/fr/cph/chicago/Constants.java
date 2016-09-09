@@ -8,6 +8,7 @@ package fr.cph.chicago;
  */
 public enum Constants {
     ;
+    public static final int GPS_ACCESS = 1;
 
     // CTA - Trains
     public static final String TRAINS_ARRIVALS_URL = "http://lapi.transitchicago.com/api/1.0/ttarrivals.aspx";

@@ -35,6 +35,7 @@ import android.widget.TextView;
 
 import com.annimon.stream.Stream;
 import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
@@ -77,11 +78,16 @@ import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.rx.subscriber.BusFollowSubscriber;
 import fr.cph.chicago.rx.subscriber.BusSubscriber;
 import fr.cph.chicago.util.Util;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;
 import static fr.cph.chicago.Constants.BUSES_DIRECTION_URL;
 import static fr.cph.chicago.Constants.BUSES_PATTERN_URL;
 import static fr.cph.chicago.Constants.BUSES_VEHICLES_URL;
+import static fr.cph.chicago.Constants.GPS_ACCESS;
 import static fr.cph.chicago.connection.CtaRequestType.BUS_DIRECTION;
 import static fr.cph.chicago.connection.CtaRequestType.BUS_PATTERN;
 
@@ -89,21 +95,30 @@ import static fr.cph.chicago.connection.CtaRequestType.BUS_PATTERN;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class BusMapActivity extends Activity {
+public class BusMapActivity extends Activity implements EasyPermissions.PermissionCallbacks {
 
     private static final String TAG = BusMapActivity.class.getSimpleName();
 
-    @BindView(android.R.id.content) ViewGroup viewGroup;
-    @BindView(R.id.map) RelativeLayout layout;
-    @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(android.R.id.content)
+    ViewGroup viewGroup;
+    @BindView(R.id.map)
+    RelativeLayout layout;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
-    @BindString(R.string.bundle_bus_id) String bundleBusId;
-    @BindString(R.string.bundle_bus_route_id) String bundleBusRouteId;
-    @BindString(R.string.bundle_bus_bounds) String bundleBusBounds;
-    @BindString(R.string.analytics_bus_map) String analyticsBusMap;
-    @BindString(R.string.request_rt) String requestRt;
+    @BindString(R.string.bundle_bus_id)
+    String bundleBusId;
+    @BindString(R.string.bundle_bus_route_id)
+    String bundleBusRouteId;
+    @BindString(R.string.bundle_bus_bounds)
+    String bundleBusBounds;
+    @BindString(R.string.analytics_bus_map)
+    String analyticsBusMap;
+    @BindString(R.string.request_rt)
+    String requestRt;
 
-    @BindDrawable(R.drawable.ic_arrow_back_white_24dp) Drawable arrowBackWhite;
+    @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
+    Drawable arrowBackWhite;
 
     private MapFragment mapFragment;
     private Marker selectedMarker;
@@ -178,8 +193,8 @@ public class BusMapActivity extends Activity {
     @Override
     public final void onResume() {
         super.onResume();
+        enableMyLocationOnMapIfAllowed();
         mapFragment.getMapAsync(googleMap -> {
-            Util.setLocationOnMap(this, googleMap);
             googleMap.setInfoWindowAdapter(new InfoWindowAdapter() {
                 @Override
                 public View getInfoWindow(final Marker marker) {
@@ -335,6 +350,36 @@ public class BusMapActivity extends Activity {
             });
             busListener.setBusStationMarkers(busStationMarkers);
             googleMap.setOnCameraChangeListener(busListener);
+        });
+    }
+
+    @AfterPermissionGranted(GPS_ACCESS)
+    private void enableMyLocationOnMapIfAllowed() {
+        if (EasyPermissions.hasPermissions(getApplicationContext(), ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)) {
+            setLocationOnMap();
+        } else {
+            EasyPermissions.requestPermissions(this, "Would you like to see your current location on the map?", GPS_ACCESS, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> perms) {
+        setLocationOnMap();
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> perms) {
+
+    }
+
+    public void setLocationOnMap() throws SecurityException {
+        mapFragment.getMapAsync(googleMap -> {
+            googleMap.setMyLocationEnabled(true);
         });
     }
 
