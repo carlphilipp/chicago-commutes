@@ -27,6 +27,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -35,6 +37,8 @@ import lombok.Data;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@AllArgsConstructor
+@Builder
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public final class BikeStation implements Parcelable {
@@ -77,7 +81,6 @@ public final class BikeStation implements Parcelable {
     private String landMark;
 
     public BikeStation() {
-
     }
 
     private BikeStation(@NonNull final Parcel in) {

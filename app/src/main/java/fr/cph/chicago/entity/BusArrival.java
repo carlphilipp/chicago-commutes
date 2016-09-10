@@ -29,6 +29,8 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import fr.cph.chicago.entity.enumeration.PredictionType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -37,6 +39,8 @@ import lombok.Data;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@AllArgsConstructor
+@Builder
 @Data
 public final class BusArrival implements Parcelable {
     /** **/
@@ -89,13 +93,6 @@ public final class BusArrival implements Parcelable {
      * Is delayed
      **/
     private boolean isDly;
-
-    /**
-     *
-     */
-    public BusArrival() {
-
-    }
 
     private BusArrival(final Parcel in) {
         readFromParcel(in);

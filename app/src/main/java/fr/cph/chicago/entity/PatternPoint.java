@@ -20,8 +20,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
+@AllArgsConstructor
+@Builder
 @Data
 public class PatternPoint implements Parcelable {
     /**
@@ -48,12 +52,6 @@ public class PatternPoint implements Parcelable {
      * The distance
      **/
     private double distance;
-
-    /**
-     *
-     */
-    public PatternPoint() {
-    }
 
     private PatternPoint(@NonNull final Parcel in) {
         readFromParcel(in);

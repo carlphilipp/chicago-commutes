@@ -141,7 +141,7 @@ public enum XmlParser {
                             switch (tagName) {
                                 case "staId": {
                                     staId = Integer.parseInt(text);
-                                    final TrainArrival arri = arrivals.get(staId, new TrainArrival());
+                                    final TrainArrival arri = arrivals.get(staId, TrainArrival.builder().build());
                                     //arri.setErrorCode(errCd);
                                     //arri.setErrorMessage(errNum);
                                     //arri.setTimeStamp(tmst);
@@ -150,9 +150,8 @@ public enum XmlParser {
                                         etas = new ArrayList<>();
                                         arri.setEtas(etas);
                                     }
-                                    final Eta eta = new Eta();
                                     final Optional<Station> station = trainData.getStation(staId);
-                                    eta.setStation(station.orElse(Station.builder().build()));
+                                    final Eta eta =Eta.builder().station(station.orElse(Station.builder().build())).build();
                                     etas.add(eta);
 
                                     arrivals.append(staId, arri);
@@ -379,7 +378,7 @@ public enum XmlParser {
                     if (tag != null) {
                         switch (tag) {
                             case ROUTE:
-                                busRoute = new BusRoute();
+                                busRoute = BusRoute.builder().build();
                                 routes.add(busRoute);
                                 break;
                             case RT:
@@ -417,8 +416,7 @@ public enum XmlParser {
      */
     @NonNull
     public final synchronized BusDirections parseBusDirections(@NonNull final InputStream xml, @NonNull final String id) throws ParserException {
-        final BusDirections directions = new BusDirections();
-        directions.setId(id);
+        final BusDirections directions = BusDirections.builder().id(id).build();
         try {
             parser.setInput(xml, "UTF-8");
             int eventType = parser.getEventType();
@@ -523,8 +521,7 @@ public enum XmlParser {
                     if (tagName != null) {
                         switch (tagName) {
                             case "tmstmp":
-                                busArrival = new BusArrival();
-                                busArrival.setTimeStamp(simpleDateFormatBus.parse(text));
+                                busArrival = BusArrival.builder().timeStamp(simpleDateFormatBus.parse(text)).build();
                                 busArrivals.add(busArrival);
                                 break;
                             case "typ":
@@ -607,7 +604,7 @@ public enum XmlParser {
                 if (eventType == XmlPullParser.START_TAG) {
                     tagName = parser.getName();
                     if ("ptr".equals(tagName)) {
-                        pattern = new BusPattern();
+                        pattern = BusPattern.builder().build();
                     }
                 } else if (eventType == XmlPullParser.END_TAG) {
                     tagName = null;
@@ -631,7 +628,7 @@ public enum XmlParser {
                                 break;
                             case "pt":
                                 assert pattern != null;
-                                patternPoint = new PatternPoint();
+                                patternPoint = PatternPoint.builder().build();
                                 pattern.addPoint(patternPoint);
                                 break;
                             case "seq":
@@ -760,7 +757,7 @@ public enum XmlParser {
                 if (eventType == XmlPullParser.START_TAG) {
                     tagName = parser.getName();
                     if ("train".equals(tagName)) {
-                        train = new Train();
+                        train = Train.builder().build();
                     }
                 } else if (eventType == XmlPullParser.END_TAG) {
                     tagName = null;
@@ -859,7 +856,7 @@ public enum XmlParser {
                             switch (tagName) {
                                 case "staId": {
                                     staId = Integer.parseInt(text);
-                                    final TrainArrival arri = arrivals.get(staId, new TrainArrival());
+                                    final TrainArrival arri = arrivals.get(staId, TrainArrival.builder().build());
                                     //arri.setErrorCode(errCd);
                                     //arri.setErrorMessage(errNum);
                                     //arri.setTimeStamp(tmst);
@@ -868,9 +865,8 @@ public enum XmlParser {
                                         etas = new ArrayList<>();
                                         arri.setEtas(etas);
                                     }
-                                    final Eta eta = new Eta();
                                     final Optional<Station> station = data.getStation(Integer.parseInt(text));
-                                    eta.setStation(station.orElse(Station.builder().build()));
+                                    final Eta eta = Eta.builder().station(station.orElse(Station.builder().build())).build();
                                     etas.add(eta);
 
                                     arrivals.append(staId, arri);

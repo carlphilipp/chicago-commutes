@@ -22,6 +22,8 @@ import android.support.annotation.NonNull;
 
 import java.io.Serializable;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -30,6 +32,8 @@ import lombok.Data;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@AllArgsConstructor
+@Builder
 @Data
 public final class BusRoute implements Parcelable, Serializable {
     /**
@@ -44,12 +48,6 @@ public final class BusRoute implements Parcelable, Serializable {
      * The name
      **/
     private String name;
-
-    /**
-     *
-     */
-    public BusRoute() {
-    }
 
     private BusRoute(@NonNull final Parcel in) {
         readFromParcel(in);

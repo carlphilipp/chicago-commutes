@@ -19,12 +19,13 @@ package fr.cph.chicago.entity;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+
+import java.io.Serializable;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.io.Serializable;
 
 /**
  * Bus stop entity
@@ -53,9 +54,6 @@ public class BusStop extends RealmObject implements Comparable<BusStop>, Parcela
      **/
     private Position position;
 
-    /**
-     *
-     */
     public BusStop() {
     }
 

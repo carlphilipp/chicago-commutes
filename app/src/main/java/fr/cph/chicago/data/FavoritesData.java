@@ -104,13 +104,11 @@ public enum FavoritesData {
             } else {
                 // Get name in the preferences if null
                 final String routeName = Preferences.getBusRouteNameMapping(context, res[1]);
-                final BusRoute busRoute = new BusRoute();
+                final BusRoute busRoute = BusRoute.builder()
+                    .id(res[0])
+                    .name(routeName == null ? "": routeName)
+                    .build();
                 busRoute.setId(res[0]);
-                if (routeName == null) {
-                    busRoute.setName("");
-                } else {
-                    busRoute.setName(routeName);
-                }
                 return Optional.of(busRoute);
             }
         } else {
@@ -121,7 +119,7 @@ public enum FavoritesData {
             if (found.isPresent()) {
                 return Optional.of(found.get());
             } else {
-                final BikeStation bikeStation = new BikeStation();
+                final BikeStation bikeStation = BikeStation.builder().build();
                 final String stationName = Preferences.getBikeRouteNameMapping(context, bikeFavorites.get(index));
                 bikeStation.setName(stationName);
                 return Optional.of(bikeStation);
@@ -137,7 +135,7 @@ public enum FavoritesData {
      */
     @NonNull
     private TrainArrival getTrainArrival(final int stationId) {
-        return trainArrivals.get(stationId, new TrainArrival());
+        return trainArrivals.get(stationId, TrainArrival.builder().build());
     }
 
     @NonNull
@@ -178,15 +176,12 @@ public enum FavoritesData {
 
                     final String stopName = Preferences.getBusStopNameMapping(context, String.valueOf(stopId));
 
-                    final BusArrival busArrival = new BusArrival();
-                    busArrival.setStopId(stopId);
-                    busArrival.setRouteDirection(bound);
-                    if (stopName != null) {
-                        busArrival.setStopName(stopName);
-                    } else {
-                        busArrival.setStopName(stopId.toString());
-                    }
-                    busArrival.setRouteId(routeIdFav);
+                    final BusArrival busArrival = BusArrival.builder()
+                        .stopId(stopId)
+                        .routeDirection(bound)
+                        .stopName(stopName != null ? stopName : stopId.toString())
+                        .routeId(routeIdFav)
+                        .build();
 
                     if (routeIdFav.equals(routeId)) {
                         if (res.containsKey(stopId.toString())) {
@@ -246,15 +241,12 @@ public enum FavoritesData {
 
                     final String stopName = Preferences.getBusStopNameMapping(context, String.valueOf(stopId));
 
-                    final BusArrival busArrival = new BusArrival();
-                    busArrival.setStopId(stopId);
-                    busArrival.setRouteDirection(bound);
-                    if (stopName != null) {
-                        busArrival.setStopName(stopName);
-                    } else {
-                        busArrival.setStopName(stopId.toString());
-                    }
-                    busArrival.setRouteId(routeIdFav);
+                    final BusArrival busArrival = BusArrival.builder()
+                        .stopId(stopId)
+                        .routeDirection(bound)
+                        .stopName(stopName != null ? stopName : stopId.toString())
+                        .routeId(routeIdFav)
+                        .build();
 
                     if (!res.containsKey(busArrival.getStopName())) {
                         final Map<String, List<BusArrival>> tempMap = new TreeMap<>();

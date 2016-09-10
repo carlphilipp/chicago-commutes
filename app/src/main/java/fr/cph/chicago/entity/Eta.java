@@ -25,6 +25,8 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import fr.cph.chicago.entity.enumeration.TrainLine;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -33,6 +35,8 @@ import lombok.Data;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@AllArgsConstructor
+@Builder
 @Data
 public final class Eta implements Comparable<Eta>, Parcelable {
 	/**
@@ -97,12 +101,6 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	 * Heading
 	 **/
 	private int heading;
-
-	/**
-	 *
-	 */
-	public Eta() {
-	}
 
 	private Eta(@NonNull final Parcel in) {
 		readFromParcel(in);

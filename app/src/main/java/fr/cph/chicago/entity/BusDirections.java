@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.cph.chicago.entity.enumeration.BusDirection;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -30,19 +32,17 @@ import lombok.Data;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@AllArgsConstructor
+@Builder
 @Data
 public final class BusDirections {
     private String id;
-    private final List<BusDirection> lBusDirection;
-
-    /**
-     * Constructor
-     */
-    public BusDirections() {
-        lBusDirection = new ArrayList<>();
-    }
+    private List<BusDirection> lBusDirection;
 
     public final void addBusDirection(@NonNull final BusDirection dir) {
+        if (lBusDirection == null) {
+            lBusDirection = new ArrayList<>();
+        }
         if (!lBusDirection.contains(dir)) {
             lBusDirection.add(dir);
         }

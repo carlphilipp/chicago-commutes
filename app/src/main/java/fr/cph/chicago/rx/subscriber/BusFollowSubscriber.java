@@ -35,9 +35,10 @@ public class BusFollowSubscriber extends Subscriber<List<BusArrival>> {
     public void onNext(List<BusArrival> busArrivals) {
         if (!loadAll && busArrivals.size() > 7) {
             busArrivals = busArrivals.subList(0, 6);
-            final BusArrival arrival = new BusArrival();
-            arrival.setStopName(view.getContext().getString(R.string.bus_all_results));
-            arrival.setDly(false);
+            final BusArrival arrival = BusArrival.builder()
+                .stopName(view.getContext().getString(R.string.bus_all_results))
+                .isDly(false)
+                .build();
             busArrivals.add(arrival);
         }
         final ListView arrivals = (ListView) view.findViewById(R.id.arrivals);

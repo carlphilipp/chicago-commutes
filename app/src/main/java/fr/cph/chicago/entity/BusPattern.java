@@ -23,38 +23,27 @@ import android.support.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 /**
  * @author carl
  */
+@AllArgsConstructor
+@Builder
 @Data
 public final class BusPattern implements Parcelable {
-    /**
-     * The pattern id
-     **/
+
     private int id;
-    /**
-     * The length in feet
-     **/
     private double length;
-    /**
-     * The direction
-     **/
     private String direction;
-    /**
-     * The list of points
-     **/
     private List<PatternPoint> points;
 
-    /**
-     *
-     */
-    public BusPattern() {
-        this.points = new ArrayList<>();
-    }
-
-    public final void addPoint(@NonNull PatternPoint patternPoint) {
+    public final void addPoint(@NonNull final PatternPoint patternPoint) {
+        if (points == null) {
+            points = new ArrayList<>();
+        }
         this.points.add(patternPoint);
     }
 

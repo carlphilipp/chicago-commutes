@@ -28,6 +28,8 @@ import java.util.List;
 
 import fr.cph.chicago.entity.enumeration.TrainDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -36,6 +38,8 @@ import lombok.Data;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@AllArgsConstructor
+@Builder
 @Data
 public class Stop implements Comparable<Stop>, Parcelable {
     /**
@@ -63,35 +67,8 @@ public class Stop implements Comparable<Stop>, Parcelable {
      **/
     private List<TrainLine> lines;
 
-    /**
-     *
-     */
-    public Stop() {
-    }
-
     private Stop(@NonNull final Parcel in) {
         readFromParcel(in);
-    }
-
-    @Override
-    public final String toString() {
-        StringBuilder stb = new StringBuilder();
-        stb.append("[Id=").append(id);
-        if (description != null) {
-            stb.append(";description=").append(description);
-        }
-        if (direction != null) {
-            stb.append(";direction=").append(direction);
-        }
-        if (position != null) {
-            stb.append(";position=").append(position);
-        }
-        stb.append(";ada=").append(ada);
-        if (lines != null) {
-            stb.append(";lines=").append(lines);
-        }
-        stb.append("]");
-        return stb.toString();
     }
 
     @Override

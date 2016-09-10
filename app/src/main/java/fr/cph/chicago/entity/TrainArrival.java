@@ -28,6 +28,8 @@ import java.util.Date;
 import java.util.List;
 
 import fr.cph.chicago.entity.enumeration.TrainLine;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -36,6 +38,8 @@ import lombok.Data;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@AllArgsConstructor
+@Builder
 @Data
 public class TrainArrival implements Parcelable {
     /**
@@ -54,12 +58,6 @@ public class TrainArrival implements Parcelable {
      * A list of Eta
      **/
     private List<Eta> etas;
-
-    /**
-     *
-     */
-    public TrainArrival() {
-    }
 
     private TrainArrival(@NonNull final Parcel in) {
         readFromParcel(in);

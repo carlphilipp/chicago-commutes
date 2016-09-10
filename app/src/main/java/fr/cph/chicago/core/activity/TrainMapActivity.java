@@ -410,14 +410,17 @@ public class TrainMapActivity extends Activity implements EasyPermissions.Permis
             if (!loadAll && etas.size() > 7) {
                 etas = etas.subList(0, 6);
 
-                // Add a fake Eta cell to alert the user about the fact that only a part of the result is displayed
-                final Eta eta = new Eta();
-                eta.setDly(false);
-                eta.setApp(false);
                 final Date currentDate = Calendar.getInstance().getTime();
-                eta.setArrivalDepartureDate(currentDate);
-                eta.setPredictionDate(currentDate);
                 final Station fakeStation = Station.builder().id(0).name(busAllResults).stops(Collections.emptyList()).build();
+                // Add a fake Eta cell to alert the user about the fact that only a part of the result is displayed
+                final Eta eta = Eta.builder()
+                    .isDly(false)
+                    .isApp(false)
+                    .arrivalDepartureDate(currentDate)
+                    .predictionDate(currentDate)
+                    .station(fakeStation)
+                    .build();
+
                 eta.setStation(fakeStation);
                 etas.add(eta);
             }
