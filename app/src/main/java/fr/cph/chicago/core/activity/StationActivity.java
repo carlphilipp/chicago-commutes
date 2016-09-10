@@ -133,7 +133,7 @@ public class StationActivity extends AbstractStationActivity {
             if (stationId != 0) {
                 // Get station
                 final TrainData trainData = DataHolder.INSTANCE.getTrainData();
-                station = trainData.getStation(stationId).orElse(new Station());
+                station = trainData.getStation(stationId).orElse(Station.builder().build());
 
                 paramsStop = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 

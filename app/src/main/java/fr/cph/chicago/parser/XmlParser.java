@@ -152,7 +152,7 @@ public enum XmlParser {
                                     }
                                     final Eta eta = new Eta();
                                     final Optional<Station> station = trainData.getStation(staId);
-                                    eta.setStation(station.orElse(new Station()));
+                                    eta.setStation(station.orElse(Station.builder().build()));
                                     etas.add(eta);
 
                                     arrivals.append(staId, arri);
@@ -690,7 +690,7 @@ public enum XmlParser {
                 if (eventType == XmlPullParser.START_TAG) {
                     tagName = parser.getName();
                     if ("vehicle".equals(tagName)) {
-                        bus = new Bus();
+                        bus = Bus.builder().build();
                     } else if ("error".equals(tagName)) {
                         eventType = XmlPullParser.END_DOCUMENT;
                         break;
@@ -870,7 +870,7 @@ public enum XmlParser {
                                     }
                                     final Eta eta = new Eta();
                                     final Optional<Station> station = data.getStation(Integer.parseInt(text));
-                                    eta.setStation(station.orElse(new Station()));
+                                    eta.setStation(station.orElse(Station.builder().build()));
                                     etas.add(eta);
 
                                     arrivals.append(staId, arri);

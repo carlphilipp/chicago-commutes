@@ -75,7 +75,7 @@ public enum BusData {
     @NonNull
     final Optional<BusRoute> getRoute(@NonNull final String routeId) {
         return Stream.of(busRoutes)
-            .filter(busR -> busR.getId().equals(routeId))
+            .filter(busRoute -> busRoute.getId().equals(routeId))
             .findFirst()
             .or(Optional::empty);
     }

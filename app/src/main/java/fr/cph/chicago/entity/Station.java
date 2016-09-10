@@ -55,7 +55,10 @@ public class Station implements Comparable<Station>, Parcelable {
      **/
     private List<Stop> stops;
 
-    public Station() {
+    public Station(final StationBuilder stationBuilder) {
+        id = stationBuilder.id;
+        name = stationBuilder.name;
+        stops = stationBuilder.stops;
     }
 
     private Station(@NonNull final Parcel in) {
@@ -147,4 +150,48 @@ public class Station implements Comparable<Station>, Parcelable {
             return new Station[size];
         }
     };
+
+    public static StationBuilder builder() {
+        return new StationBuilder();
+    }
+
+    public static class StationBuilder {
+
+        private int id;
+        private String name;
+        private List<Stop> stops;
+
+        StationBuilder() {
+        }
+
+        public StationBuilder id(final int id) {
+            this.id = id;
+            return this;
+        }
+
+        public StationBuilder name(final String name) {
+            this.name = name;
+            return this;
+        }
+
+        public StationBuilder stop(final Stop stop) {
+            if (stops == null) {
+                stops = new ArrayList<>();
+            }
+            stops.add(stop);
+            return this;
+        }
+
+        public StationBuilder stops(final List<Stop> stops) {
+            if (this.stops == null) {
+                this.stops = new ArrayList<>();
+            }
+            this.stops.addAll(stops);
+            return this;
+        }
+
+        public Station build() {
+            return new Station(this);
+        }
+    }
 }

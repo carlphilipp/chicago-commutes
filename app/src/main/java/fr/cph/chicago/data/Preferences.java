@@ -208,7 +208,7 @@ public final class Preferences {
         return Stream.of(setPref)
             .map(Integer::valueOf)
             .map(favorite -> DataHolder.INSTANCE.getTrainData().getStation(favorite))
-            .map(optional -> optional.orElse(new Station()))
+            .map(optional -> optional.orElse(Station.builder().build()))
             .sorted()
             .map(Station::getId)
             .collect(Collectors.toList());

@@ -42,7 +42,6 @@ import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.Stop;
 import fr.cph.chicago.entity.enumeration.TrainDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.entity.factory.StationFactory;
 import fr.cph.chicago.entity.factory.StopFactory;
 
 /**
@@ -140,7 +139,8 @@ public enum TrainData {
 
                     final Stop stop = StopFactory.buildStop(stopId, stopName, direction);
                     stop.setPosition(new Position(longitude, latitude));
-                    final Station station = StationFactory.buildStation(parentStopId, stationName, new ArrayList<>());
+                    //final Station station = StationFactory.buildStation(parentStopId, stationName, new ArrayList<>());
+                    final Station station = Station.builder().id(parentStopId).name(stationName).stops(Collections.emptyList()).build();
                     stop.setAda(ada);
                     stop.setLines(lines);
                     stops.append(stopId, stop);

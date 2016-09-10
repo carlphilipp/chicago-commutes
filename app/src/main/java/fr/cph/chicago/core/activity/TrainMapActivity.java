@@ -50,6 +50,7 @@ import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -71,7 +72,6 @@ import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.Train;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.entity.factory.StationFactory;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.parser.XmlParser;
@@ -417,7 +417,7 @@ public class TrainMapActivity extends Activity implements EasyPermissions.Permis
                 final Date currentDate = Calendar.getInstance().getTime();
                 eta.setArrivalDepartureDate(currentDate);
                 eta.setPredictionDate(currentDate);
-                final Station fakeStation = StationFactory.buildStation(0, busAllResults, new ArrayList<>());
+                final Station fakeStation = Station.builder().id(0).name(busAllResults).stops(Collections.emptyList()).build();
                 eta.setStation(fakeStation);
                 etas.add(eta);
             }
