@@ -16,12 +16,10 @@
 
 package fr.cph.chicago.util;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -32,7 +30,6 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
@@ -46,7 +43,6 @@ import com.annimon.stream.Stream;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -81,9 +77,9 @@ import fr.cph.chicago.exception.ParserException;
  */
 public final class Util {
 
-    private static final String TAG = Util.class.getSimpleName();
     public static final Comparator<BikeStation> BIKE_COMPARATOR_NAME = new BikeStationComparator();
     public static final Comparator<BusRoute> BUS_STOP_COMPARATOR_NAME = new BusStopComparator();
+
     public static final LatLng CHICAGO = new LatLng(41.8819, -87.6278);
     private static final Pattern PATTERN = Pattern.compile("(\\d{1,3})");
     private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
@@ -311,7 +307,7 @@ public final class Util {
 
     public static int getRandomColor() {
         final Random random = new Random();
-        final List<TrainLine> keys = Collections.unmodifiableList(Arrays.asList(TrainLine.values()));
+        final List<TrainLine> keys = Arrays.asList(TrainLine.values());
         return keys.get(random.nextInt(keys.size())).getColor();
     }
 
@@ -457,10 +453,8 @@ public final class Util {
 
     @NonNull
     public static String trimBusStopNameIfNeeded(@NonNull final String name) {
-        if (name.length() > 25) {
-            return name.substring(0, 24).trim() + "...";
-        } else {
-            return name;
-        }
+        return name.length() > 25
+            ? name.substring(0, 24).trim() + "..."
+            : name;
     }
 }

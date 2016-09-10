@@ -17,13 +17,8 @@
 package fr.cph.chicago.connection;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 import fr.cph.chicago.exception.ConnectException;
 
@@ -38,22 +33,8 @@ import static fr.cph.chicago.Constants.DIVYY_URL;
 public enum DivvyConnect {
     INSTANCE;
 
-    private static final String TAG = DivvyConnect.class.getSimpleName();
-
     @NonNull
     public final InputStream connect() throws ConnectException {
-        final InputStream inputStream;
-        try {
-            Log.v(TAG, "Address: " + DIVYY_URL);
-            final URL url = new URL(DIVYY_URL);
-            final HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setConnectTimeout(5000);
-            urlConnection.setReadTimeout(5000);
-            inputStream = new BufferedInputStream(urlConnection.getInputStream());
-        } catch (final IOException e) {
-            Log.e(TAG, e.getMessage(), e);
-            throw new ConnectException(ConnectException.ERROR, e);
-        }
-        return inputStream;
+        return Connect.INSTANCE.connect(DIVYY_URL);
     }
 }

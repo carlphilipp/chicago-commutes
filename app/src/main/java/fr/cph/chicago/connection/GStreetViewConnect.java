@@ -47,16 +47,15 @@ public enum GStreetViewConnect {
 
     @NonNull
     public final Optional<Drawable> connect(final double latitude, final double longitude, @NonNull final Context context) {
-        final StringBuilder address = new StringBuilder(GOOGLE_STREET_VIEW_URL);
-        address.append("?key=");
-        address.append(context.getString(R.string.google_maps_api_key));
-        address.append("&sensor=false");
-        address.append("&size=").append(WIDTH).append("x").append(HEIGHT);
-        address.append("&fov=120");
-        address.append("&location=");
-        address.append(latitude);
-        address.append(",").append(longitude);
-        return connectUrl(address.toString());
+        final String address = GOOGLE_STREET_VIEW_URL + "?key=" +
+            context.getString(R.string.google_maps_api_key) +
+            "&sensor=false" +
+            "&size=" + WIDTH + "x" + HEIGHT +
+            "&fov=120" +
+            "&location=" +
+            latitude +
+            "," + longitude;
+        return connectUrl(address);
     }
 
     /**

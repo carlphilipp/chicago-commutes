@@ -18,17 +18,12 @@ package fr.cph.chicago.connection;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.annimon.stream.Stream;
 
 import org.apache.commons.collections4.MultiValuedMap;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 import fr.cph.chicago.R;
 import fr.cph.chicago.exception.ConnectException;
@@ -52,10 +47,7 @@ import static fr.cph.chicago.Constants.TRAINS_LOCATION_URL;
 public enum CtaConnect {
     INSTANCE;
 
-    /**
-     * Tag
-     **/
-    private static final String TAG = CtaConnect.class.getSimpleName();
+    private static final String QUERY_PARAM_KEY = "?key=";
 
     /**
      * Connect
@@ -72,67 +64,38 @@ public enum CtaConnect {
         final StringBuilder address;
         switch (requestType) {
             case TRAIN_ARRIVALS:
-                address = new StringBuilder(TRAINS_ARRIVALS_URL + "?key=" + ctaTrainKey);
+                address = new StringBuilder(TRAINS_ARRIVALS_URL + QUERY_PARAM_KEY + ctaTrainKey);
                 break;
             case TRAIN_FOLLOW:
-                address = new StringBuilder(TRAINS_FOLLOW_URL + "?key=" + ctaTrainKey);
+                address = new StringBuilder(TRAINS_FOLLOW_URL + QUERY_PARAM_KEY + ctaTrainKey);
                 break;
             case TRAIN_LOCATION:
-                address = new StringBuilder(TRAINS_LOCATION_URL + "?key=" + ctaTrainKey);
+                address = new StringBuilder(TRAINS_LOCATION_URL + QUERY_PARAM_KEY + ctaTrainKey);
                 break;
             case BUS_ROUTES:
-                address = new StringBuilder(BUSES_ROUTES_URL + "?key=" + ctaBusKey);
+                address = new StringBuilder(BUSES_ROUTES_URL + QUERY_PARAM_KEY + ctaBusKey);
                 break;
             case BUS_DIRECTION:
-                address = new StringBuilder(BUSES_DIRECTION_URL + "?key=" + ctaBusKey);
+                address = new StringBuilder(BUSES_DIRECTION_URL + QUERY_PARAM_KEY + ctaBusKey);
                 break;
             case BUS_STOP_LIST:
-                address = new StringBuilder(BUSES_STOP_URL + "?key=" + ctaBusKey);
+                address = new StringBuilder(BUSES_STOP_URL + QUERY_PARAM_KEY + ctaBusKey);
                 break;
             case BUS_VEHICLES:
-                address = new StringBuilder(BUSES_VEHICLES_URL + "?key=" + ctaBusKey);
+                address = new StringBuilder(BUSES_VEHICLES_URL + QUERY_PARAM_KEY + ctaBusKey);
                 break;
             case BUS_ARRIVALS:
-                address = new StringBuilder(BUSES_ARRIVAL_URL + "?key=" + ctaBusKey);
+                address = new StringBuilder(BUSES_ARRIVAL_URL + QUERY_PARAM_KEY + ctaBusKey);
                 break;
             case BUS_PATTERN:
-                address = new StringBuilder(BUSES_PATTERN_URL + "?key=" + ctaBusKey);
+                address = new StringBuilder(BUSES_PATTERN_URL + QUERY_PARAM_KEY + ctaBusKey);
                 break;
             default:
                 address = new StringBuilder();
         }
         Stream.of(params.asMap().entrySet())
-            .flatMap(entry -> {
-                final String key = entry.getKey();
-                return Stream.of(entry.getValue()).map(value -> new StringBuilder().append("&").append(key).append("=").append(value));
-            })
+            .flatMap(entry -> Stream.of(entry.getValue()).map(value -> new StringBuilder().append("&").append(entry.getKey()).append("=").append(value)))
             .forEach(address::append);
-
-        return connectUrl(address.toString());
-    }
-
-    /**
-     * Connect url
-     *
-     * @param address the address
-     * @return the answer
-     * @throws ConnectException
-     */
-    @NonNull
-    private InputStream connectUrl(@NonNull final String address) throws ConnectException {
-        final HttpURLConnection urlConnection;
-        final InputStream inputStream;
-        try {
-            Log.v(TAG, "Address: " + address);
-            final URL url = new URL(address);
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setConnectTimeout(5000);
-            urlConnection.setReadTimeout(5000);
-            inputStream = new BufferedInputStream(urlConnection.getInputStream());
-        } catch (final IOException e) {
-            Log.e(TAG, e.getMessage(), e);
-            throw new ConnectException(ConnectException.ERROR, e);
-        }
-        return inputStream;
+        return Connect.INSTANCE.connect(address.toString());
     }
 }
