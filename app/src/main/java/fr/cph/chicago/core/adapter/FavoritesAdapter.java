@@ -312,13 +312,19 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         final List<BusDetailsDTO> busDetailsDTOs = new ArrayList<>();
 
         final BusArrivalDTO busArrivalDTO = FavoritesData.INSTANCE.getBusArrivalsMapped(busRoute.getId(), context);
+
         for (final Entry<String, Map<String, List<BusArrival>>> entry : busArrivalDTO.entrySet()) {
-            // Build data for button outside of the loop
             final String stopName = entry.getKey();
             final String stopNameTrimmed = Util.trimBusStopNameIfNeeded(stopName);
-            final Map<String, List<BusArrival>> value = entry.getValue();
-            for (final String key2 : value.keySet()) {
-                final BusArrival busArrival = value.get(key2).get(0);
+            final Map<String, List<BusArrival>> boundMap = entry.getValue();
+
+            boolean newLine = true;
+            int i = 0;
+
+            for (final Entry<String, List<BusArrival>> entry2 : boundMap.entrySet()) {
+
+                // Build data for button outside of the loop
+                final BusArrival busArrival = entry2.getValue().get(0);
                 final String boundTitle = busArrival.getRouteDirection();
                 final BusDirection.BusDirectionEnum busDirectionEnum = BusDirection.BusDirectionEnum.fromString(boundTitle);
                 final BusDetailsDTO busDetails = BusDetailsDTO.builder()
@@ -327,15 +333,12 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                     .boundTitle(boundTitle)
                     .stopId(Integer.toString(busArrival.getStopId()))
                     .routeName(busRoute.getName())
-                    .stopName(stopName).build();
+                    .stopName(stopName)
+                    .build();
                 busDetailsDTOs.add(busDetails);
-            }
 
-            boolean newLine = true;
-            int i = 0;
-
-            for (final Entry<String, List<BusArrival>> entry2 : value.entrySet()) {
-                final LinearLayout.LayoutParams containParams = getInsideParams(newLine, i == value.size() - 1);
+                // Build UI
+                final LinearLayout.LayoutParams containParams = getInsideParams(newLine, i == boundMap.size() - 1);
                 final LinearLayout container = new LinearLayout(context);
                 container.setOrientation(LinearLayout.HORIZONTAL);
                 container.setLayoutParams(containParams);
@@ -376,9 +379,8 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
                 final List<BusArrival> buses = entry2.getValue();
                 final StringBuilder currentEtas = new StringBuilder();
-                for (final BusArrival arri : buses) {
-                    currentEtas.append(" ").append(arri.getTimeLeftDueDelay());
-                }
+                Stream.of(buses).forEach(arri -> currentEtas.append(" ").append(arri.getTimeLeftDueDelay()));
+
                 final TextView arrivalText = new TextView(context);
                 arrivalText.setText(currentEtas);
                 arrivalText.setGravity(Gravity.END);
