@@ -50,7 +50,6 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -65,6 +64,7 @@ import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.Position;
+import fr.cph.chicago.entity.dto.BusFavoriteDTO;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
@@ -186,13 +186,13 @@ public final class Util {
      * @return a tab containing the route id, the stop id and the bound
      */
     @NonNull
-    public static String[] decodeBusFavorite(@NonNull final String favorite) {
+    public static BusFavoriteDTO decodeBusFavorite(@NonNull final String favorite) {
         final int first = favorite.indexOf('_');
         final String routeId = favorite.substring(0, first);
         final int sec = favorite.indexOf('_', first + 1);
         final String stopId = favorite.substring(first + 1, sec);
         final String bound = favorite.substring(sec + 1, favorite.length());
-        return new String[]{routeId, stopId, bound};
+        return BusFavoriteDTO.builder().routeId(routeId).stopId(stopId).bound(bound).build();
     }
 
     private static final class BikeStationComparator implements Comparator<BikeStation> {
@@ -337,9 +337,9 @@ public final class Util {
         final List<String> busFavorites = Preferences.getBusFavorites(context, App.PREFERENCE_FAVORITES_BUS);
         Stream.of(busFavorites)
             .map(Util::decodeBusFavorite)
-            .forEach(fav -> {
-                paramsBus.put(context.getString(R.string.request_rt), fav[0]);
-                paramsBus.put(context.getString(R.string.request_stop_id), fav[1]);
+            .forEach(busFavoriteDTO -> {
+                paramsBus.put(context.getString(R.string.request_rt), busFavoriteDTO.getRouteId());
+                paramsBus.put(context.getString(R.string.request_stop_id), busFavoriteDTO.getStopId());
             });
         return paramsBus;
     }

@@ -38,6 +38,7 @@ import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.TrainArrival;
+import fr.cph.chicago.entity.dto.BusFavoriteDTO;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.Util;
 
@@ -97,18 +98,18 @@ public enum FavoritesData {
             return trainData.getStation(stationId);
         } else if (position < trainFavorites.size() + fakeBusFavorites.size() && (position - trainFavorites.size() < fakeBusFavorites.size())) {
             final int index = position - trainFavorites.size();
-            final String res[] = Util.decodeBusFavorite(fakeBusFavorites.get(index));
-            final Optional<BusRoute> busRouteOptional = busData.getRoute(res[0]);
+            final BusFavoriteDTO res = Util.decodeBusFavorite(fakeBusFavorites.get(index));
+            final Optional<BusRoute> busRouteOptional = busData.getRoute(res.getRouteId());
             if (busRouteOptional.isPresent()) {
                 return busRouteOptional;
             } else {
                 // Get name in the preferences if null
-                final String routeName = Preferences.getBusRouteNameMapping(context, res[1]);
+                final String routeName = Preferences.getBusRouteNameMapping(context, res.getStopId());
                 final BusRoute busRoute = BusRoute.builder()
-                    .id(res[0])
+                    .id(res.getRouteId())
                     .name(routeName == null ? "": routeName)
                     .build();
-                busRoute.setId(res[0]);
+                busRoute.setId(res.getRouteId());
                 return Optional.of(busRoute);
             }
         } else {
@@ -169,10 +170,10 @@ public enum FavoritesData {
             if (busArrivals.size() == 0) {
                 // Handle the case where no arrival train are there
                 for (final String bus : busFavorites) {
-                    final String fav[] = Util.decodeBusFavorite(bus);
-                    final String routeIdFav = fav[0];
-                    final Integer stopId = Integer.valueOf(fav[1]);
-                    final String bound = fav[2];
+                    final BusFavoriteDTO fav = Util.decodeBusFavorite(bus);
+                    final String routeIdFav = fav.getRouteId();
+                    final Integer stopId = Integer.valueOf(fav.getStopId());
+                    final String bound = fav.getBound();
 
                     final String stopName = Preferences.getBusStopNameMapping(context, String.valueOf(stopId));
 
@@ -233,11 +234,11 @@ public enum FavoritesData {
 
             // Put empty buses if one of the stop is missing from the answer
             for (final String bus : busFavorites) {
-                final String fav[] = Util.decodeBusFavorite(bus);
-                final String routeIdFav = fav[0];
+                final BusFavoriteDTO fav = Util.decodeBusFavorite(bus);
+                final String routeIdFav = fav.getRouteId();
                 if (routeIdFav.equals(routeId)) {
-                    final Integer stopId = Integer.valueOf(fav[1]);
-                    final String bound = fav[2];
+                    final Integer stopId = Integer.valueOf(fav.getStopId());
+                    final String bound = fav.getBound();
 
                     final String stopName = Preferences.getBusStopNameMapping(context, String.valueOf(stopId));
 
@@ -280,7 +281,7 @@ public enum FavoritesData {
         return Stream.of(busFavorites)
             .map(Util::decodeBusFavorite)
             // TODO: Is that correct ? maybe remove stopId
-            .filter(decoded -> routeId.equals(decoded[0]) && Integer.toString(stopId).equals(decoded[1]) && bound.equals(decoded[2]))
+            .filter(decoded -> routeId.equals(decoded.getRouteId()) && Integer.toString(stopId).equals(decoded.getStopId()) && bound.equals(decoded.getBound()))
             .findFirst()
             .isPresent();
     }
@@ -317,9 +318,9 @@ public enum FavoritesData {
         final List<String> found = new ArrayList<>(busFavorites.size());
         final List<String> favorites = new ArrayList<>(busFavorites.size());
         for (final String fav : busFavorites) {
-            final String[] decoded = Util.decodeBusFavorite(fav);
-            if (!found.contains(decoded[0])) {
-                found.add(decoded[0]);
+            final BusFavoriteDTO decoded = Util.decodeBusFavorite(fav);
+            if (!found.contains(decoded.getRouteId())) {
+                found.add(decoded.getRouteId());
                 favorites.add(fav);
             }
         }
