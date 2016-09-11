@@ -55,7 +55,7 @@ import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener;
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener;
 import fr.cph.chicago.data.DataHolder;
-import fr.cph.chicago.data.Preferences;
+import fr.cph.chicago.data.PreferencesImpl;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Position;
@@ -199,13 +199,13 @@ public class StationActivity extends AbstractStationActivity {
                 linearLayout.setLayoutParams(paramsStop);
 
                 final AppCompatCheckBox checkBox = new AppCompatCheckBox(this);
-                checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> Preferences.saveTrainFilter(getApplicationContext(), stationId, line, stop.getDirection(), isChecked));
+                checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> PreferencesImpl.INSTANCE.saveTrainFilter(getApplicationContext(), stationId, line, stop.getDirection(), isChecked));
                 checkBox.setOnClickListener(v -> {
                     if (checkBox.isChecked()) {
                         trainArrivalObservable.subscribe(new SubscriberTrainArrival(this, swipeRefreshLayout));
                     }
                 });
-                checkBox.setChecked(Preferences.getTrainFilter(getApplicationContext(), stationId, line, stop.getDirection()));
+                checkBox.setChecked(PreferencesImpl.INSTANCE.getTrainFilter(getApplicationContext(), stationId, line, stop.getDirection()));
                 checkBox.setTypeface(checkBox.getTypeface(), Typeface.BOLD);
                 checkBox.setText(stop.getDirection().toString());
                 checkBox.setTextColor(grey);
@@ -278,7 +278,7 @@ public class StationActivity extends AbstractStationActivity {
      */
     @Override
     protected boolean isFavorite() {
-        final List<Integer> favorites = Preferences.getTrainFavorites(getApplicationContext(), App.PREFERENCE_FAVORITES_TRAIN);
+        final List<Integer> favorites = PreferencesImpl.INSTANCE.getTrainFavorites(getApplicationContext(), App.PREFERENCE_FAVORITES_TRAIN);
         return Stream.of(favorites)
             .filter(favorite -> favorite == stationId)
             .findFirst()

@@ -70,7 +70,7 @@ import fr.cph.chicago.core.activity.MainActivity;
 import fr.cph.chicago.core.adapter.NearbyAdapter;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
-import fr.cph.chicago.data.Preferences;
+import fr.cph.chicago.data.PreferencesImpl;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
@@ -164,10 +164,10 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
             nearbyAdapter = new NearbyAdapter(getContext());
             listView.setAdapter(nearbyAdapter);
 
-            hideStationsStops = Preferences.getHideShowNearby(getContext());
+            hideStationsStops = PreferencesImpl.INSTANCE.getHideShowNearby(getContext());
             checkBox.setChecked(hideStationsStops);
             checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                Preferences.saveHideShowNearby(getContext(), isChecked);
+                PreferencesImpl.INSTANCE.saveHideShowNearby(getContext(), isChecked);
                 hideStationsStops = isChecked;
                 if (Util.isNetworkAvailable(getContext())) {
                     reloadData();

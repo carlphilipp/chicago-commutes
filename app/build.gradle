@@ -34,7 +34,13 @@ dependencies {
     )
 
     testCompile(
-        [group: 'junit', name: 'junit', version: junit_version],
+        testCompile(group: 'junit', name: 'junit', version: junit_version) {
+            exclude group: 'org.hamcrest', module: 'hamcrest-core'
+        },
+        testCompile(group: 'org.mockito', name: 'mockito-core', version: mockito_version){
+            exclude group: 'org.hamcrest', module: 'hamcrest-core'
+        },
+        [group: 'org.hamcrest', name: 'hamcrest-all', version: hamcrect_version]
     )
 
     provided(

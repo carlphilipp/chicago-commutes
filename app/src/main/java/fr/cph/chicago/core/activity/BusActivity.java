@@ -46,7 +46,7 @@ import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener;
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener;
-import fr.cph.chicago.data.Preferences;
+import fr.cph.chicago.data.PreferencesImpl;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.enumeration.TrainLine;
@@ -266,7 +266,7 @@ public class BusActivity extends AbstractStationActivity {
 
     @Override
     protected boolean isFavorite() {
-        final List<String> favorites = Preferences.getBusFavorites(getApplicationContext(), App.PREFERENCE_FAVORITES_BUS);
+        final List<String> favorites = PreferencesImpl.INSTANCE.getBusFavorites(getApplicationContext(), App.PREFERENCE_FAVORITES_BUS);
         return Stream.of(favorites)
             .filter(favorite -> favorite.equals(busRouteId + "_" + busStopId + "_" + boundTitle))
             .findFirst()
@@ -283,8 +283,8 @@ public class BusActivity extends AbstractStationActivity {
             isFavorite = false;
         } else {
             Util.addToBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, scrollView);
-            Preferences.addBusRouteNameMapping(getApplicationContext(), String.valueOf(busStopId), busRouteName);
-            Preferences.addBusStopNameMapping(getApplicationContext(), String.valueOf(busStopId), busStopName);
+            PreferencesImpl.INSTANCE.addBusRouteNameMapping(getApplicationContext(), String.valueOf(busStopId), busRouteName);
+            PreferencesImpl.INSTANCE.addBusStopNameMapping(getApplicationContext(), String.valueOf(busStopId), busStopName);
             favoritesImage.setColorFilter(yellowLineDark);
             isFavorite = true;
         }

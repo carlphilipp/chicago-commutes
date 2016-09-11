@@ -19,7 +19,7 @@ import java.util.Map;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.data.DataHolder;
-import fr.cph.chicago.data.Preferences;
+import fr.cph.chicago.data.PreferencesImpl;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.TrainArrival;
@@ -83,7 +83,7 @@ public enum TrainServiceImpl implements TrainService {
                     .filter(eta -> {
                         final TrainLine line = eta.getRouteName();
                         final TrainDirection direction = eta.getStop().getDirection();
-                        return Preferences.getTrainFilter(context, eta.getStation().getId(), line, direction);
+                        return PreferencesImpl.INSTANCE.getTrainFilter(context, eta.getStation().getId(), line, direction);
                     })
                     .sorted()
                     .collect(Collectors.toList())

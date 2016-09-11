@@ -66,6 +66,7 @@ import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.TrainArrival;
+import fr.cph.chicago.entity.dto.BusArrivalDTO;
 import fr.cph.chicago.entity.dto.BusDetailsDTO;
 import fr.cph.chicago.entity.enumeration.BusDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
@@ -310,8 +311,8 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
         final List<BusDetailsDTO> busDetailsDTOs = new ArrayList<>();
 
-        final Map<String, Map<String, List<BusArrival>>> busArrivals = FavoritesData.INSTANCE.getBusArrivalsMapped(busRoute.getId(), context);
-        for (final Entry<String, Map<String, List<BusArrival>>> entry : busArrivals.entrySet()) {
+        final BusArrivalDTO busArrivalDTO = FavoritesData.INSTANCE.getBusArrivalsMapped(busRoute.getId(), context);
+        for (final Entry<String, Map<String, List<BusArrival>>> entry : busArrivalDTO.entrySet()) {
             // Build data for button outside of the loop
             final String stopName = entry.getKey();
             final String stopNameTrimmed = Util.trimBusStopNameIfNeeded(stopName);
