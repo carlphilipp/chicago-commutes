@@ -3,6 +3,7 @@ package fr.cph.chicago.service.impl;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.annimon.stream.Collectors;
 import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 
@@ -12,9 +13,11 @@ import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
@@ -43,7 +46,7 @@ public enum BusServiceImpl implements BusService {
     @NonNull
     @Override
     public List<BusArrival> loadFavoritesBuses(@NonNull final Context context) {
-        final List<BusArrival> busArrivals = new ArrayList<>();
+        final Set<BusArrival> busArrivals = new HashSet<>();
         final MultiValuedMap<String, String> paramBus = Util.getFavoritesBusParams(context);
         // Load bus
         try {
@@ -78,7 +81,7 @@ public enum BusServiceImpl implements BusService {
         } catch (final Throwable e) {
             throw Exceptions.propagate(e);
         }
-        return busArrivals;
+        return Stream.of(busArrivals).collect(Collectors.toList());
     }
 
     @NonNull

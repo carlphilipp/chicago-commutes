@@ -259,13 +259,6 @@ public enum FavoritesData {
             .collect(Collectors.toList());
     }
 
-    // TODO Do that when populating the list
-    private void removeDuplicates(@NonNull final List<BusArrival> busArrivals) {
-        final Set<BusArrival> stBusArrivals = new LinkedHashSet<>(busArrivals);
-        busArrivals.clear();
-        busArrivals.addAll(stBusArrivals);
-    }
-
     public final void setBikeStations(@NonNull final List<BikeStation> bikeStations) {
         this.bikeStations.clear();
         this.bikeStations = bikeStations;
@@ -274,7 +267,6 @@ public enum FavoritesData {
 
     public final void setBusArrivals(@NonNull final List<BusArrival> busArrivals) {
         this.busArrivals.clear();
-        removeDuplicates(busArrivals);
         this.busArrivals = busArrivals;
     }
 
