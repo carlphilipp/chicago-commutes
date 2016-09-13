@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -46,7 +47,7 @@ public enum BusServiceImpl implements BusService {
     @NonNull
     @Override
     public List<BusArrival> loadFavoritesBuses(@NonNull final Context context) {
-        final Set<BusArrival> busArrivals = new HashSet<>();
+        final Set<BusArrival> busArrivals = new LinkedHashSet<>();
         final MultiValuedMap<String, String> paramBus = Util.getFavoritesBusParams(context);
         // Load bus
         try {
