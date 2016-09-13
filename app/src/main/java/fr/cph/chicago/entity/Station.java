@@ -20,8 +20,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+import com.annimon.stream.Collector;
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
+import com.annimon.stream.function.BiConsumer;
+import com.annimon.stream.function.Function;
+import com.annimon.stream.function.Supplier;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,27 +67,12 @@ public class Station implements Comparable<Station>, Parcelable {
         readFromParcel(in);
     }
 
-    @Override
-    public final String toString() {
-        final StringBuilder stb = new StringBuilder();
-        stb.append("[Id=").append(id);
-        stb.append(";name=").append(name);
-        if (stops != null) {
-            stb.append(";stops=").append(stops);
-        }
-        if (getLines().size() > 0) {
-            stb.append(";lines=").append(getLines());
-        }
-        stb.append("]");
-        return stb.toString();
-    }
-
     @NonNull
     public final Set<TrainLine> getLines() {
         if (stops != null) {
-            final Set<TrainLine> lines = new TreeSet<>();
-            Stream.of(stops).map(Stop::getLines).forEach(lines::addAll);
-            return lines;
+            return Stream.of(stops)
+                .map(Stop::getLines)
+                .collect(new LineCollector());
         } else {
             return Collections.emptySet();
         }
@@ -148,4 +137,21 @@ public class Station implements Comparable<Station>, Parcelable {
             return new Station[size];
         }
     };
+
+    private class LineCollector implements Collector<List<TrainLine>, Set<TrainLine>, Set<TrainLine>> {
+        @Override
+        public Supplier<Set<TrainLine>> supplier() {
+            return TreeSet::new;
+        }
+
+        @Override
+        public BiConsumer<Set<TrainLine>, List<TrainLine>> accumulator() {
+            return Set::addAll;
+        }
+
+        @Override
+        public Function<Set<TrainLine>, Set<TrainLine>> finisher() {
+            return null;
+        }
+    }
 }

@@ -104,18 +104,18 @@ public enum FavoritesData {
             return trainData.getStation(stationId);
         } else if (position < trainFavorites.size() + fakeBusFavorites.size() && (position - trainFavorites.size() < fakeBusFavorites.size())) {
             final int index = position - trainFavorites.size();
-            final BusFavoriteDTO res = Util.decodeBusFavorite(fakeBusFavorites.get(index));
-            final Optional<BusRoute> busRouteOptional = busData.getRoute(res.getRouteId());
+            final String routeId = fakeBusFavorites.get(index);
+            final Optional<BusRoute> busRouteOptional = busData.getRoute(routeId);
             if (busRouteOptional.isPresent()) {
                 return busRouteOptional;
             } else {
                 // Get name in the preferences if null
-                final String routeName = preferences.getBusRouteNameMapping(context, res.getStopId());
+                final String routeName = preferences.getBusRouteNameMapping(context, routeId);
                 final BusRoute busRoute = BusRoute.builder()
-                    .id(res.getRouteId())
+                    .id(routeId)
                     .name(routeName == null ? "" : routeName)
                     .build();
-                busRoute.setId(res.getRouteId());
+                busRoute.setId(routeId);
                 return Optional.of(busRoute);
             }
         } else {
@@ -198,7 +198,7 @@ public enum FavoritesData {
                     final BusArrival busArrival = BusArrival.builder()
                         .stopId(stopId)
                         .routeDirection(bound)
-                        .stopName(stopName != null ? stopName : stopId.toString())
+                        .stopName(stopName)
                         .routeId(routeIdFav)
                         .build();
                     busArrivalDTO.addBusArrival(busArrival);
@@ -252,17 +252,11 @@ public enum FavoritesData {
 
     @NonNull
     private List<String> calculateActualRouteNumberBusFavorites() {
-        // TODO find a good way to refactor with stream
-        final List<String> found = new ArrayList<>(busFavorites.size());
-        final List<String> favorites = new ArrayList<>(busFavorites.size());
-        for (final String fav : busFavorites) {
-            final BusFavoriteDTO decoded = Util.decodeBusFavorite(fav);
-            if (!found.contains(decoded.getRouteId())) {
-                found.add(decoded.getRouteId());
-                favorites.add(fav);
-            }
-        }
-        return favorites;
+        return Stream.of(busFavorites)
+            .map(Util::decodeBusFavorite)
+            .map(BusFavoriteDTO::getRouteId)
+            .distinct()
+            .collect(Collectors.toList());
     }
 
     // TODO Do that when populating the list
