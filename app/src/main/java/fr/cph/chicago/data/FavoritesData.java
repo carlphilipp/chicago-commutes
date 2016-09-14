@@ -26,10 +26,8 @@ import com.annimon.stream.Stream;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.entity.BikeStation;
@@ -230,21 +228,12 @@ public enum FavoritesData {
         fakeBusFavorites = calculateActualRouteNumberBusFavorites();
         bikeFavorites.clear();
         final List<String> bikeFavoritesTemp = preferences.getBikeFavorites(context, App.PREFERENCE_FAVORITES_BIKE);
-        final List<BikeStation> bikeStationsFavoritesTemp = new ArrayList<>(bikeFavoritesTemp.size());
         if (bikeStations != null && bikeStations.size() != 0) {
             Stream.of(bikeFavoritesTemp)
-                .flatMap(bikeStationId -> Stream.of(bikeStations)
-                    .filter(station -> Integer.toString(station.getId()).equals(bikeStationId))
-                )
-                .findFirst()
-                .map(bikeStationsFavoritesTemp::add);
-
-            bikeFavorites.addAll(
-                Stream.of(bikeStationsFavoritesTemp)
-                    .sorted(Util.BIKE_COMPARATOR_NAME)
-                    .map(station -> Integer.toString(station.getId()))
-                    .collect(Collectors.toList())
-            );
+                .flatMap(bikeStationId -> Stream.of(bikeStations).filter(station -> Integer.toString(station.getId()).equals(bikeStationId)))
+                .sorted(Util.BIKE_COMPARATOR_NAME)
+                .map(station -> Integer.toString(station.getId()))
+                .forEach(bikeFavorites::add);
         } else {
             bikeFavorites.addAll(bikeFavoritesTemp);
         }
@@ -259,10 +248,10 @@ public enum FavoritesData {
             .collect(Collectors.toList());
     }
 
+    // TODO delete those 3 methods and use lombok instead
     public final void setBikeStations(@NonNull final List<BikeStation> bikeStations) {
         this.bikeStations.clear();
         this.bikeStations = bikeStations;
-        Stream.of(this.bikeStations).sorted(Util.BIKE_COMPARATOR_NAME);
     }
 
     public final void setBusArrivals(@NonNull final List<BusArrival> busArrivals) {

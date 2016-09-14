@@ -103,7 +103,7 @@ public enum PreferencesImpl implements Preferences {
     public List<String> getBikeFavorites(@NonNull final Context context, @NonNull final String name) {
         final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
         final Set<String> setPref = sharedPref.getStringSet(name, new LinkedHashSet<>());
-        Log.v(TAG, "Read bike favorites : " + setPref.toString());
+        Log.i(TAG, "Read bike favorites : " + setPref.toString());
         return Stream.of(setPref).sorted().collect(Collectors.toList());
     }
 
