@@ -43,41 +43,41 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public final class BikeStation implements Parcelable {
 
-    @JsonProperty
+    @JsonProperty("id")
     private int id;
     @JsonProperty("stationName")
     private String name;
-    @JsonProperty
+    @JsonProperty("availableDocks")
     private Integer availableDocks;
-    @JsonProperty
+    @JsonProperty("totalDocks")
     private Integer totalDocks;
-    @JsonProperty
+    @JsonProperty("latitude")
     private double latitude;
-    @JsonProperty
+    @JsonProperty("longitude")
     private double longitude;
-    @JsonProperty
+    @JsonProperty("statusValue")
     private String statusValue;
-    @JsonProperty
+    @JsonProperty("statusKey")
     private String statusKey;
-    @JsonProperty
+    @JsonProperty("availableBikes")
     private Integer availableBikes;
-    @JsonProperty
+    @JsonProperty("stAddress1")
     private String stAddress1;
-    @JsonProperty
+    @JsonProperty("stAddress2")
     private String stAddress2;
-    @JsonProperty
+    @JsonProperty("city")
     private String city;
-    @JsonProperty
+    @JsonProperty("postalCode")
     private String postalCode;
-    @JsonProperty
+    @JsonProperty("location")
     private String location;
-    @JsonProperty
+    @JsonProperty("altitude")
     private String altitude;
-    @JsonProperty
+    @JsonProperty("testStation")
     private boolean testStation;
-    @JsonProperty
+    @JsonProperty("lastCommunicationTime")
     private String lastCommunicationTime;
-    @JsonProperty
+    @JsonProperty("landMark")
     private String landMark;
 
     public BikeStation() {
