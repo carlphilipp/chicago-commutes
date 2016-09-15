@@ -161,7 +161,7 @@ public enum XmlParser {
                                     final TrainArrival arri = arrivals.get(staId, null);
                                     if (arri != null) {
                                         final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-                                        final Stop stop = trainData.getStop(Integer.parseInt(text));
+                                        final Stop stop = trainData.getStop(Integer.parseInt(text)).orElse(null);
                                         currentEta.setStop(stop);
                                     }
                                     break;
@@ -876,7 +876,7 @@ public enum XmlParser {
                                     final TrainArrival arri = arrivals.get(staId, null);
                                     if (arri != null) {
                                         final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-                                        final Stop stop = data.getStop(Integer.parseInt(text));
+                                        final Stop stop = data.getStop(Integer.parseInt(text)).orElse(null);
                                         currentEta.setStop(stop);
                                     }
                                     break;

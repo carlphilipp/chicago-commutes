@@ -47,7 +47,7 @@ public class GPSUtil {
             Position position = null;
             if (isNetworkEnabled) {
                 locationManager.requestLocationUpdates(NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener, Looper.getMainLooper());
-                Location location = locationManager.getLastKnownLocation(NETWORK_PROVIDER);
+                final Location location = locationManager.getLastKnownLocation(NETWORK_PROVIDER);
                 if (location != null) {
                     position = new Position();
                     position.setLatitude(location.getLatitude());
@@ -57,14 +57,13 @@ public class GPSUtil {
             // if GPS Enabled get lat/long using GPS Services
             if (isGPSEnabled) {
                 locationManager.requestLocationUpdates(GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener, Looper.getMainLooper());
-                Location location = locationManager.getLastKnownLocation(GPS_PROVIDER);
+                final Location location = locationManager.getLastKnownLocation(GPS_PROVIDER);
                 if (location != null) {
                     position = new Position();
                     position.setLatitude(location.getLatitude());
                     position.setLongitude(location.getLongitude());
                 }
             }
-            locationManager.removeUpdates(locationListener);
             return Optional.ofNullable(position);
         }
     }

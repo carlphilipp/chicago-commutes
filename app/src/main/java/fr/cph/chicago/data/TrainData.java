@@ -209,13 +209,12 @@ public enum TrainData {
      * @param id the id of the stop
      * @return a stop
      */
-    @Nullable
-    public final Stop getStop(final Integer id) {
+    @NonNull
+    public final Optional<Stop> getStop(final Integer id) {
         if (stops.size() != 0) {
-            return stops.get(id);
+            return Optional.ofNullable(stops.get(id));
         }
-        return null;
-
+        return Optional.empty();
     }
 
     /**
@@ -247,19 +246,17 @@ public enum TrainData {
                     return trainLatitude <= latMax && trainLatitude >= latMin && trainLongitude <= lonMax && trainLongitude >= lonMin;
                 })
                 .map(stopPosition -> station)
-                // TODO understand why we limit to one here.
-                .limit(1)
-                .forEach(nearByStations::add);
+                .findFirst()
+                .ifPresent(nearByStations::add);
         }
         return nearByStations;
     }
 
     @NonNull
     public final List<Position> readPattern(@NonNull final Context context, @NonNull final TrainLine line) {
-        final List<Position> positions = new ArrayList<>();
         try {
             final List<String[]> allRows = parser.parseAll(new InputStreamReader(context.getAssets().open("train_pattern/" + line.toTextString() + "_pattern.csv")));
-            Stream.of(allRows)
+            return Stream.of(allRows)
                 .map(row -> {
                     final double longitude = Double.parseDouble(row[0]);
                     final double latitude = Double.parseDouble(row[1]);
@@ -268,11 +265,11 @@ public enum TrainData {
                     position.setLongitude(longitude);
                     return position;
                 })
-                .forEach(positions::add);
+                .collect(Collectors.toList());
         } catch (final IOException e) {
             Log.e(TAG, e.getMessage(), e);
+            return new ArrayList<>();
         }
-        return positions;
     }
 
     /**

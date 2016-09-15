@@ -194,7 +194,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
     public final void onResume() {
         super.onResume();
         loadNearbyIfAllowed();
-        mapFragment.getMapAsync(googleMap1 -> NearbyFragment.this.googleMap = googleMap1);
+        mapFragment.getMapAsync(googleMap -> NearbyFragment.this.googleMap = googleMap);
     }
 
     private void loadAllArrivals(@NonNull final List<BusStop> busStops, @NonNull final List<Station> trainStations, @NonNull final List<BikeStation> bikeStations) {

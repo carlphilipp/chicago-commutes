@@ -44,20 +44,6 @@ public enum PredictionType {
         this.message = message;
     }
 
-    /**
-     * Get Prediction type from string
-     *
-     * @param text the text
-     * @return a prediction type
-     */
-    @Nullable
-    public static PredictionType fromString(@NonNull final String text) {
-        return Stream.of(PredictionType.values())
-            .filter(predictionType -> text.equalsIgnoreCase(predictionType.message))
-            .findFirst()
-            .orElse(null);
-    }
-
     @Override
     public final String toString() {
         return this.message;
