@@ -31,6 +31,7 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.core.activity.BaseActivity;
 import fr.cph.chicago.data.DataHolder;
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Main class that extends Application. Mainly used to get the context from anywhere in the app.
@@ -70,21 +71,13 @@ public class App extends Application {
     /**
      * Last update of favorites
      **/
+    @Setter
     @Getter
     private static Date lastUpdate;
     /**
      * Analytics stuff
      **/
     private static Tracker tracker;
-
-    /**
-     * Modify last update date.
-     *
-     * @param date the last update of favorites
-     */
-    public static void modifyLastUpdate(@NonNull final Date date) {
-        lastUpdate = date;
-    }
 
     public static boolean checkTrainData(@NonNull final Activity activity) {
         if (DataHolder.INSTANCE.getTrainData() == null) {
@@ -94,9 +87,9 @@ public class App extends Application {
         return true;
     }
 
-    public static void checkBusData(@NonNull final Activity mActivity) {
+    public static void checkBusData(@NonNull final Activity activity) {
         if (DataHolder.INSTANCE.getBusData() == null) {
-            startErrorActivity(mActivity);
+            startErrorActivity(activity);
         }
     }
 

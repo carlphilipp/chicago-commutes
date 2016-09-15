@@ -224,8 +224,8 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         Stream.of(trainLines).forEach(trainLine -> {
             boolean newLine = true;
             int i = 0;
-            final Map<String, StringBuilder> etas = FavoritesData.INSTANCE.getTrainArrivalByLine(stationId, trainLine);
-            for (final Entry<String, StringBuilder> entry : etas.entrySet()) {
+            final Map<String, String> etas = FavoritesData.INSTANCE.getTrainArrivalByLine(stationId, trainLine);
+            for (final Entry<String, String> entry : etas.entrySet()) {
                 final LinearLayout.LayoutParams containParam = getInsideParams(newLine, i == etas.size() - 1);
                 final LinearLayout container = new LinearLayout(context);
                 container.setOrientation(LinearLayout.HORIZONTAL);
@@ -261,7 +261,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 right.setOrientation(LinearLayout.VERTICAL);
                 right.setLayoutParams(rightParams);
 
-                final StringBuilder currentEtas = entry.getValue();
+                final String currentEtas = entry.getValue();
                 final TextView arrivalText = new TextView(context);
                 arrivalText.setText(currentEtas);
                 arrivalText.setGravity(Gravity.END);
@@ -525,22 +525,11 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         return FavoritesData.INSTANCE.size();
     }
 
-    public final void setTrainArrivals(@NonNull final SparseArray<TrainArrival> arrivals) {
-        FavoritesData.INSTANCE.setTrainArrivals(arrivals);
-    }
-
-    public final void setBusArrivals(@NonNull final List<BusArrival> busArrivals) {
-        FavoritesData.INSTANCE.setBusArrivals(busArrivals);
-    }
-
-    public final void setBikeStations(@NonNull final List<BikeStation> bikeStations) {
-        FavoritesData.INSTANCE.setBikeStations(bikeStations);
-    }
-
     /**
      * Set favoritesData
      */
     public final void setFavorites() {
+        // TODO delete that method but see if we can pass context properly
         FavoritesData.INSTANCE.setFavorites(context);
     }
 
@@ -548,7 +537,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
      * Refresh date update
      */
     public final void refreshUpdated() {
-        App.modifyLastUpdate(Calendar.getInstance().getTime());
+        App.setLastUpdate(Calendar.getInstance().getTime());
     }
 
     /**

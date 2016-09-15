@@ -95,7 +95,7 @@ public class ObservableUtil {
         final Observable<List<BikeStation>> bikeStationsObservable = ObservableUtil.createAllBikeStationsObservable();
         return Observable.zip(trainArrivalsObservable, busArrivalsObservable, bikeStationsObservable,
             (trainArrivals, busArrivals, bikeStations) -> {
-                App.modifyLastUpdate(Calendar.getInstance().getTime());
+                App.setLastUpdate(Calendar.getInstance().getTime());
                 final FavoritesDTO favoritesDTO = FavoritesDTO.builder()
                     .trainArrivals(trainArrivals)
                     .busArrivals(busArrivals)

@@ -48,6 +48,7 @@ import fr.cph.chicago.core.activity.MainActivity;
 import fr.cph.chicago.core.activity.SearchActivity;
 import fr.cph.chicago.core.adapter.FavoritesAdapter;
 import fr.cph.chicago.data.DataHolder;
+import fr.cph.chicago.data.FavoritesData;
 import fr.cph.chicago.data.PreferencesImpl;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
@@ -59,6 +60,9 @@ import rx.Observable;
 
 import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;
 import static fr.cph.chicago.Constants.TRAINS_ARRIVALS_URL;
+import static fr.cph.chicago.core.App.PREFERENCE_FAVORITES_BIKE;
+import static fr.cph.chicago.core.App.PREFERENCE_FAVORITES_BUS;
+import static fr.cph.chicago.core.App.PREFERENCE_FAVORITES_TRAIN;
 
 /**
  * FavoritesData Fragment
@@ -71,14 +75,21 @@ public class FavoritesFragment extends Fragment {
     private static final String TAG = FavoritesFragment.class.getSimpleName();
     private static final String ARG_SECTION_NUMBER = "section_number";
 
-    @BindView(R.id.welcome) RelativeLayout welcomeLayout;
-    @BindView(R.id.activity_main_swipe_refresh_layout) SwipeRefreshLayout swipeRefreshLayout;
-    @BindView(R.id.favorites_list) RecyclerView listView;
-    @BindView(R.id.floating_button) FloatingActionButton floatingButton;
+    @BindView(R.id.welcome)
+    RelativeLayout welcomeLayout;
+    @BindView(R.id.activity_main_swipe_refresh_layout)
+    SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.favorites_list)
+    RecyclerView listView;
+    @BindView(R.id.floating_button)
+    FloatingActionButton floatingButton;
 
-    @BindString(R.string.bundle_bike_stations) String bundleBikeStation;
-    @BindString(R.string.bundle_bus_arrivals) String bundleBusArrivals;
-    @BindString(R.string.bundle_train_arrivals) String bundleTrainArrivals;
+    @BindString(R.string.bundle_bike_stations)
+    String bundleBikeStation;
+    @BindString(R.string.bundle_bus_arrivals)
+    String bundleBusArrivals;
+    @BindString(R.string.bundle_train_arrivals)
+    String bundleTrainArrivals;
 
     private Unbinder unbinder;
 
@@ -137,9 +148,9 @@ public class FavoritesFragment extends Fragment {
             unbinder = ButterKnife.bind(this, rootView);
             if (favoritesAdapter == null) {
                 favoritesAdapter = new FavoritesAdapter(activity);
-                favoritesAdapter.setTrainArrivals(trainArrivals);
-                favoritesAdapter.setBusArrivals(busArrivals);
-                favoritesAdapter.setBikeStations(bikeStations);
+                FavoritesData.INSTANCE.setTrainArrivals(trainArrivals);
+                FavoritesData.INSTANCE.setBusArrivals(busArrivals);
+                FavoritesData.INSTANCE.setBikeStations(bikeStations);
                 favoritesAdapter.setFavorites();
             }
             final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(activity);
@@ -234,12 +245,8 @@ public class FavoritesFragment extends Fragment {
             startRefreshTask();
         }
         if (welcomeLayout != null) {
-            boolean hasFav = PreferencesImpl.INSTANCE.hasFavorites(getContext(), App.PREFERENCE_FAVORITES_TRAIN, App.PREFERENCE_FAVORITES_BUS, App.PREFERENCE_FAVORITES_BIKE);
-            if (!hasFav) {
-                welcomeLayout.setVisibility(View.VISIBLE);
-            } else {
-                welcomeLayout.setVisibility(View.GONE);
-            }
+            boolean hasFav = PreferencesImpl.INSTANCE.hasFavorites(getContext(), PREFERENCE_FAVORITES_TRAIN, PREFERENCE_FAVORITES_BUS, PREFERENCE_FAVORITES_BIKE);
+            welcomeLayout.setVisibility(hasFav ? View.GONE : View.VISIBLE);
         }
     }
 
@@ -268,13 +275,13 @@ public class FavoritesFragment extends Fragment {
         }
 
         if (!favoritesDTO.isBusError()) {
-            favoritesAdapter.setBusArrivals(favoritesDTO.getBusArrivals());
+            FavoritesData.INSTANCE.setBusArrivals(favoritesDTO.getBusArrivals());
         } else {
             error = true;
         }
 
         if (!favoritesDTO.isTrainError()) {
-            favoritesAdapter.setTrainArrivals(favoritesDTO.getTrainArrivals());
+            FavoritesData.INSTANCE.setTrainArrivals(favoritesDTO.getTrainArrivals());
         } else {
             error = true;
         }
@@ -304,7 +311,7 @@ public class FavoritesFragment extends Fragment {
 
     public final void setBikeStations(final List<BikeStation> bikeStations) {
         this.bikeStations = bikeStations;
-        favoritesAdapter.setBikeStations(bikeStations);
+        FavoritesData.INSTANCE.setBikeStations(bikeStations);
         favoritesAdapter.notifyDataSetChanged();
     }
 

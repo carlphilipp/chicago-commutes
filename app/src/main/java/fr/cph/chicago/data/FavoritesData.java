@@ -20,9 +20,13 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.SparseArray;
 
+import com.annimon.stream.Collector;
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
+import com.annimon.stream.function.BiConsumer;
+import com.annimon.stream.function.Function;
+import com.annimon.stream.function.Supplier;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,8 +59,11 @@ public enum FavoritesData {
     private final TrainData trainData;
     private final BusData busData;
 
+    @Setter
     private SparseArray<TrainArrival> trainArrivals;
+    @Setter
     private List<BusArrival> busArrivals;
+    @Setter
     private List<BikeStation> bikeStations;
     private List<Integer> trainFavorites;
     @Setter(AccessLevel.PACKAGE)
@@ -144,21 +151,31 @@ public enum FavoritesData {
     }
 
     @NonNull
-    public final Map<String, StringBuilder> getTrainArrivalByLine(final int stationId, @NonNull final TrainLine trainLine) {
+    public final Map<String, String> getTrainArrivalByLine(final int stationId, @NonNull final TrainLine trainLine) {
         final List<Eta> etas = getTrainArrival(stationId).getEtas(trainLine);
-        final Map<String, StringBuilder> result = new HashMap<>();
-        for (final Eta eta : etas) {
-            final String stopNameData = eta.getDestName();
-            final String timingData = eta.getTimeLeftDueDelay();
-            if (!result.containsKey(stopNameData)) {
-                final StringBuilder list = new StringBuilder();
-                list.append(timingData);
-                result.put(stopNameData, list);
-            } else {
-                result.get(stopNameData).append(" ").append(timingData);
+        return Stream.of(etas).collect(new Collector<Eta, Map<String,String>, Map<String,String>>() {
+            @Override
+            public Supplier<Map<String,String>> supplier() {
+                return HashMap::new;
             }
-        }
-        return result;
+
+            @Override
+            public BiConsumer<Map<String,String>, Eta> accumulator() {
+                return (map, eta) -> {
+                    final String stopNameData = eta.getDestName();
+                    final String timingData = eta.getTimeLeftDueDelay();
+                    final String value = map.containsKey(stopNameData)
+                        ? map.get(stopNameData) + " " + timingData
+                        : timingData;
+                    map.put(stopNameData, value);
+                };
+            }
+
+            @Override
+            public Function<Map<String, String>, Map<String, String>> finisher() {
+                return null;
+            }
+        });
     }
 
     /**
@@ -246,21 +263,5 @@ public enum FavoritesData {
             .map(BusFavoriteDTO::getRouteId)
             .distinct()
             .collect(Collectors.toList());
-    }
-
-    // TODO delete those 3 methods and use lombok instead
-    public final void setBikeStations(@NonNull final List<BikeStation> bikeStations) {
-        this.bikeStations.clear();
-        this.bikeStations = bikeStations;
-    }
-
-    public final void setBusArrivals(@NonNull final List<BusArrival> busArrivals) {
-        this.busArrivals.clear();
-        this.busArrivals = busArrivals;
-    }
-
-    public void setTrainArrivals(@NonNull final SparseArray<TrainArrival> trainArrivals) {
-        this.trainArrivals.clear();
-        this.trainArrivals = trainArrivals;
     }
 }

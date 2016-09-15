@@ -130,7 +130,7 @@ public class BaseActivity extends Activity {
         // Run local first and then online: Ensure that local data is loaded first
         Observable.zip(trainDataObservable, busDataObservable, (trainData, busData) -> true)
             .doOnCompleted(() -> Observable.zip(trainArrivalsObservable, busArrivalsObservable, (trainArrivals, busArrivals) -> {
-                    App.modifyLastUpdate(Calendar.getInstance().getTime());
+                    App.setLastUpdate(Calendar.getInstance().getTime());
                     return FavoritesDTO.builder()
                         .trainArrivals(trainArrivals)
                         .busArrivals(busArrivals).build();

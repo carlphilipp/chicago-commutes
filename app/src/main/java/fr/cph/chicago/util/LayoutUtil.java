@@ -18,12 +18,13 @@ package fr.cph.chicago.util;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import fr.cph.chicago.R;
 import fr.cph.chicago.entity.enumeration.TrainLine;
+
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 /**
  * Layout util class
@@ -31,15 +32,13 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class LayoutUtil {
-
-    private LayoutUtil() {
-    }
+public enum LayoutUtil {
+    ;
 
     @NonNull
     public static RelativeLayout createColoredRoundForFavorites(@NonNull final Context context, @NonNull final TrainLine trainLine) {
         final RelativeLayout lineIndication = new RelativeLayout(context);
-        final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
         params.height = context.getResources().getDimensionPixelSize(R.dimen.layout_round_height);
         params.width = context.getResources().getDimensionPixelSize(R.dimen.layout_round_width);
         params.addRule(RelativeLayout.CENTER_VERTICAL);
@@ -51,7 +50,7 @@ public class LayoutUtil {
     @NonNull
     public static LinearLayout createColoredRoundForMultiple(@NonNull final Context context, @NonNull final TrainLine trainLine) {
         final LinearLayout lineIndication = new LinearLayout(context);
-        final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
         params.height = context.getResources().getDimensionPixelSize(R.dimen.layout_round_height);
         params.width = context.getResources().getDimensionPixelSize(R.dimen.layout_round_width);
         params.setMargins(10, 0, 0, 0);

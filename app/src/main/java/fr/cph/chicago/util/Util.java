@@ -49,12 +49,10 @@ import com.google.android.gms.maps.model.LatLng;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
@@ -64,7 +62,6 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.data.PreferencesImpl;
 import fr.cph.chicago.entity.BikeStation;
-import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.dto.BusFavoriteDTO;
@@ -78,7 +75,8 @@ import fr.cph.chicago.exception.ParserException;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public final class Util {
+public enum Util {
+    ;
 
     public static final Comparator<BikeStation> BIKE_COMPARATOR_NAME = new BikeStationComparator();
     public static final Comparator<BusRoute> BUS_STOP_COMPARATOR_NAME = new BusStopComparator();
@@ -86,9 +84,6 @@ public final class Util {
     public static final LatLng CHICAGO = new LatLng(41.8819, -87.6278);
     private static final Pattern PATTERN = Pattern.compile("(\\d{1,3})");
     private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
-
-    private Util() {
-    }
 
     public static int generateViewId() {
         for (; ; ) {
