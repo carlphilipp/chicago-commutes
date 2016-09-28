@@ -21,6 +21,7 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils.TruncateAt;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +32,12 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.annimon.stream.Collector;
+import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
+import com.annimon.stream.function.BiConsumer;
+import com.annimon.stream.function.Function;
+import com.annimon.stream.function.Supplier;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 
@@ -39,7 +45,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.listener.NearbyOnClickListener;
@@ -53,6 +58,8 @@ import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.LayoutUtil;
 import fr.cph.chicago.util.Util;
+
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 /**
  * Adapter that will handle nearby
@@ -136,7 +143,6 @@ public final class NearbyAdapter extends BaseAdapter {
     private View handleTrains(final int position, View convertView, @NonNull final ViewGroup parent) {
         // Train
         final Station station = stations.get(position);
-        final Set<TrainLine> trainLines = station.getLines();
 
         TrainViewHolder viewHolder;
         if (convertView == null || convertView.getTag() == null) {
@@ -153,32 +159,35 @@ public final class NearbyAdapter extends BaseAdapter {
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (TrainViewHolder) convertView.getTag();
+            viewHolder.details = new HashMap<>();
+            viewHolder.arrivalTime = new HashMap<>();
+            viewHolder.resultLayout.removeAllViews();
         }
 
         viewHolder.stationNameView.setText(station.getName());
         viewHolder.imageView.setImageDrawable(ContextCompat.getDrawable(parent.getContext(), R.drawable.ic_train_white_24dp));
 
-        for (final TrainLine trainLine : trainLines) {
-            if (trainArrivals.indexOfKey(station.getId()) != -1) {
+        if (trainArrivals.indexOfKey(station.getId()) != -1) {
+            for (final TrainLine trainLine : station.getLines()) {
                 final List<Eta> etas = trainArrivals.get(station.getId()).getEtas(trainLine);
-                if (etas.size() != 0) {
-                    final LinearLayout llv;
+                if (!etas.isEmpty()) {
+                    final LinearLayout mainLayout;
                     boolean cleanBeforeAdd = false;
-                    if (viewHolder.details.containsKey(trainLine)) {
-                        llv = viewHolder.details.get(trainLine);
+                    if (viewHolder.details.containsKey(station.getName() + trainLine)) {
+                        mainLayout = viewHolder.details.get(station.getName() + trainLine);
                         cleanBeforeAdd = true;
                     } else {
-                        final LinearLayout llh = new LinearLayout(context);
-                        llh.setOrientation(LinearLayout.HORIZONTAL);
-                        llh.setPadding(line1PaddingColor, stopsPaddingTop, 0, 0);
+                        mainLayout = new LinearLayout(context);
+                        mainLayout.setOrientation(LinearLayout.VERTICAL);
+                        mainLayout.setPadding(line1PaddingColor, 0, 0, 0);
 
-                        llv = new LinearLayout(context);
-                        llv.setOrientation(LinearLayout.VERTICAL);
-                        llv.setPadding(line1PaddingColor, 0, 0, 0);
+                        final LinearLayout linearLayout = new LinearLayout(context);
+                        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+                        linearLayout.setPadding(line1PaddingColor, stopsPaddingTop, 0, 0);
 
-                        llh.addView(llv);
-                        viewHolder.resultLayout.addView(llh);
-                        viewHolder.details.put(trainLine, llv);
+                        linearLayout.addView(mainLayout);
+                        viewHolder.resultLayout.addView(linearLayout);
+                        viewHolder.details.put(station.getName() + trainLine, mainLayout);
                     }
 
                     final List<String> keysCleaned = new ArrayList<>();
@@ -196,7 +205,7 @@ public final class NearbyAdapter extends BaseAdapter {
                             final String timingText = timing.getText() + eta.getTimeLeftDueDelay() + " ";
                             timing.setText(timingText);
                         } else {
-                            final LinearLayout.LayoutParams leftParam = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            final LinearLayout.LayoutParams leftParam = new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
                             final RelativeLayout insideLayout = new RelativeLayout(context);
                             insideLayout.setLayoutParams(leftParam);
 
@@ -204,7 +213,7 @@ public final class NearbyAdapter extends BaseAdapter {
                             int lineId = Util.generateViewId();
                             lineIndication.setId(lineId);
 
-                            final RelativeLayout.LayoutParams availableParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            final RelativeLayout.LayoutParams availableParam = new RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
                             availableParam.addRule(RelativeLayout.RIGHT_OF, lineId);
                             availableParam.setMargins(Util.convertDpToPixel(context, 10), 0, 0, 0);
 
@@ -216,7 +225,7 @@ public final class NearbyAdapter extends BaseAdapter {
                             int availableId = Util.generateViewId();
                             stopName.setId(availableId);
 
-                            final RelativeLayout.LayoutParams availableValueParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            final RelativeLayout.LayoutParams availableValueParam = new RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
                             availableValueParam.addRule(RelativeLayout.RIGHT_OF, availableId);
                             availableValueParam.setMargins(0, 0, 0, 0);
 
@@ -228,14 +237,14 @@ public final class NearbyAdapter extends BaseAdapter {
                             timing.setEllipsize(TruncateAt.END);
                             timing.setLayoutParams(availableValueParam);
 
-
                             insideLayout.addView(lineIndication);
                             insideLayout.addView(stopName);
                             insideLayout.addView(timing);
 
-                            llv.addView(insideLayout);
+                            mainLayout.addView(insideLayout);
                             viewHolder.arrivalTime.put(key, insideLayout);
                         }
+
                     }
                 }
             }
@@ -263,7 +272,7 @@ public final class NearbyAdapter extends BaseAdapter {
         final Map<String, List<BusArrival>> arrivalsForStop = busArrivals.get(busStop.getId(), new HashMap<>());
 
         Stream.of(arrivalsForStop.entrySet()).forEach(entry -> {
-            final LinearLayout.LayoutParams leftParam = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            final LinearLayout.LayoutParams leftParam = new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
             final RelativeLayout insideLayout = new RelativeLayout(context);
             insideLayout.setLayoutParams(leftParam);
             insideLayout.setPadding(line1PaddingColor * 2, stopsPaddingTop, 0, 0);
@@ -276,7 +285,7 @@ public final class NearbyAdapter extends BaseAdapter {
             int lineId = Util.generateViewId();
             lineIndication.setId(lineId);
 
-            final RelativeLayout.LayoutParams stopParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            final RelativeLayout.LayoutParams stopParam = new RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
             stopParam.addRule(RelativeLayout.RIGHT_OF, lineId);
             stopParam.setMargins(Util.convertDpToPixel(context, 10), 0, 0, 0);
 
@@ -286,7 +295,7 @@ public final class NearbyAdapter extends BaseAdapter {
             int stopId = Util.generateViewId();
             stopLayout.setId(stopId);
 
-            final RelativeLayout.LayoutParams boundParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            final RelativeLayout.LayoutParams boundParam = new RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
             boundParam.addRule(RelativeLayout.RIGHT_OF, stopId);
 
             final LinearLayout boundLayout = new LinearLayout(context);
@@ -345,7 +354,7 @@ public final class NearbyAdapter extends BaseAdapter {
         final LinearLayout availableLayout = new LinearLayout(context);
         availableLayout.setOrientation(LinearLayout.VERTICAL);
 
-        final LinearLayout.LayoutParams leftParam = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        final LinearLayout.LayoutParams leftParam = new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
         final RelativeLayout availableBikes = new RelativeLayout(context);
         availableBikes.setLayoutParams(leftParam);
         availableBikes.setPadding(line1PaddingColor, 0, 0, 0);
@@ -354,7 +363,7 @@ public final class NearbyAdapter extends BaseAdapter {
         int lineId = Util.generateViewId();
         lineIndication.setId(lineId);
 
-        final RelativeLayout.LayoutParams availableParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        final RelativeLayout.LayoutParams availableParam = new RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
         availableParam.addRule(RelativeLayout.RIGHT_OF, lineId);
         availableParam.setMargins(Util.convertDpToPixel(context, 10), 0, 0, 0);
 
@@ -365,7 +374,7 @@ public final class NearbyAdapter extends BaseAdapter {
         int availableBikeId = Util.generateViewId();
         availableBike.setId(availableBikeId);
 
-        final RelativeLayout.LayoutParams amountParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        final RelativeLayout.LayoutParams amountParam = new RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
         amountParam.addRule(RelativeLayout.RIGHT_OF, availableBikeId);
 
         final TextView amountBike = new TextView(context);
@@ -379,7 +388,7 @@ public final class NearbyAdapter extends BaseAdapter {
         availableBikes.addView(availableBike);
         availableBikes.addView(amountBike);
 
-        final LinearLayout.LayoutParams leftParam2 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        final LinearLayout.LayoutParams leftParam2 = new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
         final RelativeLayout availableDocks = new RelativeLayout(context);
         availableDocks.setLayoutParams(leftParam2);
         availableDocks.setPadding(line1PaddingColor, 0, 0, 0);
@@ -388,7 +397,7 @@ public final class NearbyAdapter extends BaseAdapter {
         int lineId2 = Util.generateViewId();
         lineIndication2.setId(lineId2);
 
-        final RelativeLayout.LayoutParams availableDockParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        final RelativeLayout.LayoutParams availableDockParam = new RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
         availableDockParam.addRule(RelativeLayout.RIGHT_OF, lineId2);
         availableDockParam.setMargins(Util.convertDpToPixel(context, 10), 0, 0, 0);
 
@@ -399,7 +408,7 @@ public final class NearbyAdapter extends BaseAdapter {
         int availableDockBikeId = Util.generateViewId();
         availableDock.setId(availableDockBikeId);
 
-        final RelativeLayout.LayoutParams amountParam2 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        final RelativeLayout.LayoutParams amountParam2 = new RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
         amountParam2.addRule(RelativeLayout.RIGHT_OF, availableDockBikeId);
 
         final TextView amountDock = new TextView(context);
@@ -445,7 +454,7 @@ public final class NearbyAdapter extends BaseAdapter {
         TextView stationNameView;
         ImageView imageView;
         LinearLayout resultLayout;
-        Map<TrainLine, LinearLayout> details;
+        Map<String, LinearLayout> details;
         Map<String, RelativeLayout> arrivalTime;
     }
 }

@@ -30,7 +30,7 @@ import fr.cph.chicago.exception.ConnectException;
 public enum Connect {
     INSTANCE;
 
-    private static final String TAG = DivvyConnect.class.getSimpleName();
+    private static final String TAG = Connect.class.getSimpleName();
 
     /**
      * Generic connect URL.

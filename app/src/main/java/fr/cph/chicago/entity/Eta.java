@@ -152,28 +152,6 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 	}
 
 	@Override
-	public final String toString() {
-		StringBuilder res = new StringBuilder();
-		res.append("[Eta: [Station ").append(station.getName()).append("]");
-		res.append("[Stop ").append(stop.getId()).append("]");
-		res.append("[runNumber ").append(runNumber).append("]");
-		res.append("[routeName ").append(routeName).append("]");
-		res.append("[destSt ").append(destSt).append("]");
-		res.append("[destName ").append(destName).append("]");
-		res.append("[trainRouteDirectionCode ").append(trainRouteDirectionCode).append("]");
-		res.append("[predictionDate ").append(predictionDate).append("]");
-		res.append("[arrivalDepartureDate ").append(arrivalDepartureDate).append("]");
-		// res.append("[isApp " + isApp + "]");
-		// res.append("[isFlt " + isFlt + "]");
-		// res.append("[isDly " + isDly + "]");
-		// res.append("[flags " + flags + "]");
-		// res.append("[position " + position + "]");
-		// res.append("[heading " + heading + "]");
-		res.append("]");
-		return res.toString();
-	}
-
-	@Override
 	public int describeContents() {
 		return 0;
 	}
