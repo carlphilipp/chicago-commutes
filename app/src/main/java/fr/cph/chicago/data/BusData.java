@@ -99,7 +99,7 @@ public enum BusData {
         final double lonMin = longitude - dist;
 
         return Stream.of(realm.where(BusStop.class)
-            // TODO use between when supported by Realm
+            // TODO use between when child object is supported by Realm
             .greaterThan("position.latitude", latMin)
             .lessThan("position.latitude", latMax)
             .greaterThan("position.longitude", lonMin)

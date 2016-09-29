@@ -91,8 +91,9 @@ public class BaseActivity extends Activity {
     @SneakyThrows
     private void setUpRealm() {
         final PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+        Realm.init(getApplicationContext());
         RealmConfiguration realmConfig = new RealmConfiguration
-            .Builder(getApplicationContext())
+            .Builder()
             .schemaVersion(packageInfo.versionCode)
             .deleteRealmIfMigrationNeeded()
             .build();
