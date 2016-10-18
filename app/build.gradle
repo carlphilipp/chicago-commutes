@@ -29,6 +29,7 @@ dependencies {
         [group: 'pub.devrel', name: 'easypermissions', version: easypermissions_version]
     )
 
+    // TODO Migrate to annotationProcessor when java 8 works https://bitbucket.org/hvisser/android-apt/wiki/Migration
     apt(
         [group: 'com.jakewharton', name: 'butterknife-compiler', version: butterknife_version]
     )
