@@ -17,6 +17,7 @@
 package fr.cph.chicago.parser;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,6 +26,7 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import fr.cph.chicago.entity.BikeStation;

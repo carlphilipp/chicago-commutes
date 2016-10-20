@@ -24,7 +24,7 @@ public enum Constants {
     public static final String BUSES_PATTERN_URL = "http://www.ctabustracker.com/bustime/api/v1/getpatterns";
 
     // Divvy
-    public static final String DIVYY_URL = "http://www.divvybikes.com/stations/json";
+    public static final String DIVYY_URL = "https://feeds.divvybikes.com/stations/stations.json";
 
     // Google
     public static final String GOOGLE_STREET_VIEW_URL = "http://maps.googleapis.com/maps/api/streetview";
