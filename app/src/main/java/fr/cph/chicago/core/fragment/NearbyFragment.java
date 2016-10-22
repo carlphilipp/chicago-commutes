@@ -78,6 +78,7 @@ import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.TrainArrival;
+import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.parser.JsonParser;
 import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.util.GPSUtil;
@@ -225,8 +226,8 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                     activity.runOnUiThread(() -> updateMarkersAndModel(busStops, busArrivalsMap, trainStations, trainArrivals, bikeStationsRes));
                 },
                 throwable -> {
-                    Util.handleConnectOrParserException(throwable, null, listView, listView);
                     Log.e(TAG, throwable.getMessage(), throwable);
+                    Util.handleConnectOrParserException(throwable, null, listView, listView);
                     activity.runOnUiThread(() -> showProgress(false));
                 }
             );
@@ -260,13 +261,15 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                 trackWithGoogleAnalytics(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL, 0);
             }
         } catch (final Throwable throwable) {
+            Log.e(TAG, throwable.getMessage(), throwable);
             throw Exceptions.propagate(throwable);
         }
     }
 
     private SparseArray<TrainArrival> loadAroundTrainArrivals(@NonNull final List<Station> trainStations) {
+        final SparseArray<TrainArrival> trainArrivals = new SparseArray<>();
         try {
-            final SparseArray<TrainArrival> trainArrivals = new SparseArray<>();
+
             if (isAdded()) {
                 for (final Station station : trainStations) {
                     final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>(1, 1);
@@ -280,14 +283,18 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                 }
             }
             return trainArrivals;
+        } catch (final ConnectException exception) {
+            Log.e(TAG, exception.getMessage(), exception);
+            return trainArrivals;
         } catch (final Throwable throwable) {
+            Log.e(TAG, throwable.getMessage(), throwable);
             throw Exceptions.propagate(throwable);
         }
     }
 
     private List<BikeStation> loadAroundBikeArrivals(@NonNull final List<BikeStation> bikeStations) {
+        List<BikeStation> bikeStationsRes = new ArrayList<>();
         try {
-            List<BikeStation> bikeStationsRes = new ArrayList<>();
             if (isAdded()) {
                 final InputStream content = DivvyConnect.INSTANCE.connect();
                 final List<BikeStation> bikeStationUpdated = JsonParser.INSTANCE.parseStations(content);
@@ -298,7 +305,11 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                 trackWithGoogleAnalytics(activity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, getContext().getString(R.string.analytics_action_get_divvy_all), 0);
             }
             return bikeStationsRes;
+        } catch (final ConnectException exception) {
+            Log.e(TAG, exception.getMessage(), exception);
+            return bikeStationsRes;
         } catch (final Throwable throwable) {
+            Log.e(TAG, throwable.getMessage(), throwable);
             throw Exceptions.propagate(throwable);
         }
     }
