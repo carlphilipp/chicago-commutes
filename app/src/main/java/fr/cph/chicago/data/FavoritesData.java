@@ -125,18 +125,23 @@ public enum FavoritesData {
             }
         } else {
             final int index = position - (trainFavorites.size() + fakeBusFavorites.size());
-            final Optional<BikeStation> found = Stream.of(bikeStations)
-                .filter(bikeStation -> Integer.toString(bikeStation.getId()).equals(bikeFavorites.get(index)))
-                .findFirst();
-            if (found.isPresent()) {
-                return Optional.of(found.get());
+            if (bikeStations != null) {
+                final Optional<BikeStation> found = Stream.of(bikeStations)
+                    .filter(bikeStation -> Integer.toString(bikeStation.getId()).equals(bikeFavorites.get(index)))
+                    .findFirst();
+                return found.isPresent() ? found : createEmptyBikeStation(index, context);
             } else {
-                final BikeStation bikeStation = BikeStation.builder().build();
-                final String stationName = preferences.getBikeRouteNameMapping(context, bikeFavorites.get(index));
-                bikeStation.setName(stationName);
-                return Optional.of(bikeStation);
+                return createEmptyBikeStation(index, context);
             }
         }
+    }
+
+    @NonNull
+    private Optional<BikeStation> createEmptyBikeStation(final int index, @NonNull final Context context) {
+        final BikeStation bikeStation = BikeStation.builder().build();
+        final String stationName = preferences.getBikeRouteNameMapping(context, bikeFavorites.get(index));
+        bikeStation.setName(stationName);
+        return Optional.of(bikeStation);
     }
 
     /**
@@ -153,14 +158,14 @@ public enum FavoritesData {
     @NonNull
     public final Map<String, String> getTrainArrivalByLine(final int stationId, @NonNull final TrainLine trainLine) {
         final List<Eta> etas = getTrainArrival(stationId).getEtas(trainLine);
-        return Stream.of(etas).collect(new Collector<Eta, Map<String,String>, Map<String,String>>() {
+        return Stream.of(etas).collect(new Collector<Eta, Map<String, String>, Map<String, String>>() {
             @Override
-            public Supplier<Map<String,String>> supplier() {
+            public Supplier<Map<String, String>> supplier() {
                 return HashMap::new;
             }
 
             @Override
-            public BiConsumer<Map<String,String>, Eta> accumulator() {
+            public BiConsumer<Map<String, String>, Eta> accumulator() {
                 return (map, eta) -> {
                     final String stopNameData = eta.getDestName();
                     final String timingData = eta.getTimeLeftDueDelay();
