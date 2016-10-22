@@ -19,8 +19,8 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="fr.cph.chicago"
-          android:versionCode="90"
-          android:versionName="4.4.6">
+          android:versionCode="91"
+          android:versionName="4.4.7">
 
     <uses-feature
         android:glEsVersion="0x00020000"
