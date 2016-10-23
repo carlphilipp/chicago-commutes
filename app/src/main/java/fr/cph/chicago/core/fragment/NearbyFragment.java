@@ -269,7 +269,6 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
     private SparseArray<TrainArrival> loadAroundTrainArrivals(@NonNull final List<Station> trainStations) {
         final SparseArray<TrainArrival> trainArrivals = new SparseArray<>();
         try {
-
             if (isAdded()) {
                 for (final Station station : trainStations) {
                     final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>(1, 1);

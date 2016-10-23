@@ -50,12 +50,12 @@ dependencies {
 }
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion '24.0.2'
+    compileSdkVersion 25
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 24
+        targetSdkVersion 25
         applicationId "fr.cph.chicago"
         multiDexEnabled true
 
@@ -65,7 +65,7 @@ android {
 
         resValue "string", "google_maps_api_key", props['google.streetmap.key']
         resValue "string", "google_analytics_key", props['google.analytics']
-        resValue "string", "cta_train_key", props['cta.train.key']
+        resValue "string", "cta_train_key", props['cta.train.key']  
         resValue "string", "cta_bus_key", props['cta.bus.key']
 
         // For future integration with Java 8. Need Realm and android-apt support first too.
