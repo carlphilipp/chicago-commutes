@@ -374,12 +374,17 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                 .map(options -> googleMap.addMarker(options))
                 .forEach(markers::add);
 
+
             Stream.of(trainStation)
-                .map(station -> Stream.of(station.getStopsPosition()).map(position -> {
-                    final LatLng point = new LatLng(position.getLatitude(), position.getLongitude());
-                    return new MarkerOptions().position(point).title(station.getName()).snippet(Integer.toString(station.getId())).icon(violet);
-                }).map(options -> googleMap.addMarker(options)))
-                .peek(markerStream -> markerStream.forEach(markers::add));
+                .forEach(station ->
+                    Stream.of(station.getStopsPosition())
+                        .map(position -> {
+                            final LatLng point = new LatLng(position.getLatitude(), position.getLongitude());
+                            return new MarkerOptions().position(point).title(station.getName()).snippet(Integer.toString(station.getId())).icon(violet);
+                        })
+                        .map(options -> googleMap.addMarker(options))
+                        .forEach(markers::add)
+                );
 
             Stream.of(bikeStations)
                 .map(station -> {
