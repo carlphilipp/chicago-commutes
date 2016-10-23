@@ -317,7 +317,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public boolean onNavigationItemSelected(final MenuItem menuItem) {
+    public boolean onNavigationItemSelected(@NonNull final MenuItem menuItem) {
         menuItem.setChecked(true);
         currentPosition = menuItem.getItemId();
         itemSelection(currentPosition);

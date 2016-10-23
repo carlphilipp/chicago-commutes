@@ -73,7 +73,9 @@ public class BusStopOnClickListener implements View.OnClickListener {
             final int[] screenSize = Util.getScreenSize(context.getApplicationContext());
             final AlertDialog dialog = builder.create();
             dialog.show();
-            dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), ViewGroup.LayoutParams.WRAP_CONTENT);
+            if (dialog.getWindow() != null) {
+                dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), ViewGroup.LayoutParams.WRAP_CONTENT);
+            }
         }
     }
 

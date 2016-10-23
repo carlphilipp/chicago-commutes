@@ -18,7 +18,6 @@ package fr.cph.chicago.data;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -56,7 +55,6 @@ public enum TrainData {
 
     // https://data.cityofchicago.org/Transportation/CTA-System-Information-List-of-L-Stops/8pix-ypme
     private static final String TRAIN_FILE_PATH = "cta_L_stops_cph.csv";
-    private static TrainData TRAIN_DATA;
 
     private final SparseArray<Station> stations;
     private final SparseArray<Stop> stops;

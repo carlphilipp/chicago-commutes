@@ -16,13 +16,6 @@
 
 package fr.cph.chicago.entity.enumeration;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
-import com.annimon.stream.Stream;
-
-import java.util.Arrays;
-
 /**
  * Enumeration, prediction type
  *

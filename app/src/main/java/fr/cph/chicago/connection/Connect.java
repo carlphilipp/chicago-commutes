@@ -27,18 +27,11 @@ import java.net.URL;
 
 import fr.cph.chicago.exception.ConnectException;
 
-public enum Connect {
+enum Connect {
     INSTANCE;
 
     private static final String TAG = Connect.class.getSimpleName();
 
-    /**
-     * Generic connect URL.
-     *
-     * @param address
-     * @return
-     * @throws ConnectException
-     */
     @NonNull
     public final InputStream connect(@NonNull final String address) throws ConnectException {
         final InputStream inputStream;

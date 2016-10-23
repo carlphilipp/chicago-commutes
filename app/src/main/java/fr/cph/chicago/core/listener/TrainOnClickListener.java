@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 
 import java.util.ArrayList;
@@ -104,7 +105,9 @@ public class TrainOnClickListener implements OnClickListener {
             final int[] screenSize = Util.getScreenSize(view.getContext().getApplicationContext());
             final AlertDialog dialog = builder.create();
             dialog.show();
-            dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
+            if (dialog.getWindow() != null) {
+                dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), ViewGroup.LayoutParams.WRAP_CONTENT);
+            }
         }
     }
 }

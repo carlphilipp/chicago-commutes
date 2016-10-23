@@ -258,7 +258,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                         tempMap.put(direction, temp);
                     }
                 }
-                trackWithGoogleAnalytics(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL, 0);
+                trackWithGoogleAnalytics(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
             }
         } catch (final Throwable throwable) {
             Log.e(TAG, throwable.getMessage(), throwable);
@@ -278,7 +278,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                     for (int j = 0; j < temp.size(); j++) {
                         trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
                     }
-                    trackWithGoogleAnalytics(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL, 0);
+                    trackWithGoogleAnalytics(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
                 }
             }
             return trainArrivals;
@@ -301,7 +301,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                     .filter(bikeStations::contains)
                     .sorted(Util.BIKE_COMPARATOR_NAME)
                     .collect(Collectors.toList());
-                trackWithGoogleAnalytics(activity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, getContext().getString(R.string.analytics_action_get_divvy_all), 0);
+                trackWithGoogleAnalytics(activity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, getContext().getString(R.string.analytics_action_get_divvy_all));
             }
             return bikeStationsRes;
         } catch (final ConnectException exception) {
@@ -343,8 +343,8 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         }
     }
 
-    private void trackWithGoogleAnalytics(@NonNull final Context context, final int category, final int action, final String label, final int value) {
-        Util.trackAction(context, category, action, label, value);
+    private void trackWithGoogleAnalytics(@NonNull final Context context, final int category, final int action, final String label) {
+        Util.trackAction(context, category, action, label, 0);
     }
 
     @Override

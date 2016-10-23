@@ -369,9 +369,7 @@ public class TrainMapActivity extends Activity implements EasyPermissions.Permis
     }
 
     public void setLocationOnMap() throws SecurityException {
-        mapFragment.getMapAsync(googleMap -> {
-            googleMap.setMyLocationEnabled(true);
-        });
+        mapFragment.getMapAsync(googleMap -> googleMap.setMyLocationEnabled(true));
     }
 
     private class LoadTrainFollowTask extends AsyncTask<String, Void, List<Eta>> {

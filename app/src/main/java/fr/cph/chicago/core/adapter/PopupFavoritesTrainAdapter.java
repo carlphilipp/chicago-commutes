@@ -45,8 +45,9 @@ class PopupFavoritesTrainAdapter extends ArrayAdapter<String> {
         this.colors = colors;
     }
 
+    @NonNull
     @Override
-    public final View getView(final int position, final View convertView, final ViewGroup parent) {
+    public final View getView(final int position, final View convertView, @NonNull final ViewGroup parent) {
         final View rowView = activity.getLayoutInflater().inflate(R.layout.popup_train_cell, parent, false);
         final ImageView imageView = (ImageView) rowView.findViewById(R.id.popup_train_map);
         imageView.setColorFilter(colors.get(position));

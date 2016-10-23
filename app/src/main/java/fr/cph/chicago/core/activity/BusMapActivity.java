@@ -35,7 +35,6 @@ import android.widget.TextView;
 
 import com.annimon.stream.Stream;
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
@@ -378,9 +377,7 @@ public class BusMapActivity extends Activity implements EasyPermissions.Permissi
     }
 
     public void setLocationOnMap() throws SecurityException {
-        mapFragment.getMapAsync(googleMap -> {
-            googleMap.setMyLocationEnabled(true);
-        });
+        mapFragment.getMapAsync(googleMap -> googleMap.setMyLocationEnabled(true));
     }
 
     private class LoadPattern extends AsyncTask<Void, Void, List<BusPattern>> {

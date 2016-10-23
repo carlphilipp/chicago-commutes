@@ -23,11 +23,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import java.util.List;
+
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.listener.BikeStationOnClickListener;
 import fr.cph.chicago.entity.BikeStation;
-
-import java.util.List;
 
 /**
  * Adapter that will handle bikes
@@ -39,11 +40,6 @@ public final class BikeAdapter extends BaseAdapter {
 
     private List<BikeStation> bikeStations;
 
-    /**
-     * Constructor
-     *
-     * @param activity the main activity
-     */
     public BikeAdapter(@NonNull final List<BikeStation> bikeStations) {
         this.bikeStations = bikeStations;
     }

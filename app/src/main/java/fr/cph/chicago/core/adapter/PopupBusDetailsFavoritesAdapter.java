@@ -44,8 +44,9 @@ public class PopupBusDetailsFavoritesAdapter extends ArrayAdapter<BusDetailsDTO>
         this.values = values;
     }
 
+    @NonNull
     @Override
-    public final View getView(final int position, final View convertView, final ViewGroup parent) {
+    public final View getView(final int position, final View convertView, @NonNull final ViewGroup parent) {
         final LayoutInflater vi = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View rowView = vi.inflate(R.layout.popup_bus_cell_0, parent, false);
         final TextView textView = (TextView) rowView.findViewById(R.id.label);

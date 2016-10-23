@@ -44,8 +44,9 @@ public class PopupTrainAdapter extends ArrayAdapter<String> {
         this.colors = colors;
     }
 
+    @NonNull
     @Override
-    public final View getView(final int position, final View convertView, final ViewGroup parent) {
+    public final View getView(final int position, final View convertView, @NonNull final ViewGroup parent) {
         final LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View rowView;
         if (position == 0) {
