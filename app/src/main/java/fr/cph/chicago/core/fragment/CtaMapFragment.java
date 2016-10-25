@@ -45,10 +45,18 @@ public class CtaMapFragment extends Fragment {
 
     @Override
     public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_bus, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_cta_map, container, false);
         if (!activity.isFinishing()) {
             unbinder = ButterKnife.bind(this, rootView);
         }
         return rootView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (unbinder != null) {
+            unbinder.unbind();
+        }
     }
 }
