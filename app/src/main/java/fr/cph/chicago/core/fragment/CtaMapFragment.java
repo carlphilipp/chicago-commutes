@@ -1,0 +1,54 @@
+package fr.cph.chicago.core.fragment;
+
+import android.app.Activity;
+import android.content.Context;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+import fr.cph.chicago.R;
+import fr.cph.chicago.core.activity.MainActivity;
+import fr.cph.chicago.util.Util;
+
+public class CtaMapFragment extends Fragment {
+
+    private static final String ARG_SECTION_NUMBER = "section_number";
+
+    private MainActivity activity;
+    private Unbinder unbinder;
+
+    @NonNull
+    public static CtaMapFragment newInstance(final int sectionNumber) {
+        final CtaMapFragment fragment = new CtaMapFragment();
+        final Bundle args = new Bundle();
+        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public final void onAttach(final Context context) {
+        super.onAttach(context);
+        activity = context instanceof Activity ? (MainActivity) context : null;
+    }
+
+    @Override
+    public final void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Util.trackScreen(getContext(), getString(R.string.analytics_cta_map_fragment));
+    }
+
+    @Override
+    public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+        final View rootView = inflater.inflate(R.layout.fragment_bus, container, false);
+        if (!activity.isFinishing()) {
+            unbinder = ButterKnife.bind(this, rootView);
+        }
+        return rootView;
+    }
+}

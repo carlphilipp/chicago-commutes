@@ -24,6 +24,7 @@
     <string name="menu_bus">Bus</string>
     <string name="menu_divvy">Divvy</string>
     <string name="menu_nearby">Nearby</string>
+    <string name="menu_cta_map">CTA map</string>
     <string name="menu_rate">Rate this app</string>
 
     <!-- Bundle -->
@@ -53,6 +54,7 @@
     <string name="bus">Bus</string>
     <string name="divvy">Divvy</string>
     <string name="nearby">Nearby</string>
+    <string name="cta_map">CTA map</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_refresh">Refresh</string>
@@ -119,6 +121,7 @@
     <string name="analytics_favorites_fragment">Favorites fragment</string>
     <string name="analytics_nearby_fragment">Nearby fragment</string>
     <string name="analytics_train_fragment">Train fragment</string>
+    <string name="analytics_cta_map_fragment">CTA map fragment</string>
 
     <string name="analytics_bus_details">Bus details</string>
     <string name="analytics_train_details">Train details</string>
