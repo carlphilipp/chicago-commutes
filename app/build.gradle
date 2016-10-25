@@ -55,9 +55,12 @@ android {
     buildToolsVersion '25.0.0'
 
     defaultConfig {
+        applicationId 'fr.cph.chicago'
+        versionCode 93
+        versionName '4.5.0'
+
         minSdkVersion 14
         targetSdkVersion 25
-        applicationId "fr.cph.chicago"
         multiDexEnabled true
 
         def appProperties = this.file('app.properties')
@@ -69,7 +72,10 @@ android {
         resValue "string", "cta_train_key", props['cta.train.key']
         resValue "string", "cta_bus_key", props['cta.bus.key']
 
-        // For future integration with Java 8. Need Realm and android-apt support first too.
+        // FIXME To enable Jack compiler, need to:
+        // _ Wait for Realm fix issue: https://github.com/realm/realm-java/issues/3038
+        // _ Do not use Retrolambda
+        // _ Switch to annotation processing gradle task https://bitbucket.org/hvisser/android-apt/wiki/Migration
         //jackOptions {
         //    enabled true
         //}

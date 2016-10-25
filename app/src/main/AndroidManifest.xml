@@ -18,20 +18,18 @@
 -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="fr.cph.chicago"
-          android:versionCode="93"
-          android:versionName="4.5.0">
+    package="fr.cph.chicago">
 
     <uses-feature
         android:glEsVersion="0x00020000"
-        android:required="true"/>
+        android:required="true" />
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name=".core.App"
@@ -47,13 +45,13 @@
             android:label="@string/app_name"
             android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
             <meta-data
                 android:name="error"
-                android:value="false"/>
+                android:value="false" />
         </activity>
         <activity
             android:name=".core.activity.MainActivity"
@@ -62,70 +60,60 @@
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.app.default_searchable"
-                android:value="fr.cph.chicago.activity.SearchActivity"/>
+                android:value="fr.cph.chicago.activity.SearchActivity" />
         </activity>
         <activity
             android:name=".core.activity.StationActivity"
             android:label="@string/station_activity"
-            android:parentActivityName="fr.cph.chicago.core.activity.MainActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".core.activity.TrainListStationActivity"
             android:label="@string/train_station_activity"
-            android:parentActivityName="fr.cph.chicago.core.activity.MainActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".core.activity.BusBoundActivity"
             android:label="@string/train_station_activity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".core.activity.BusActivity"
             android:label="@string/bus_bound_activity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".core.activity.ErrorActivity"
             android:label="@string/bus_bound_activity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".core.activity.SearchActivity"
             android:label="@string/search_title"
             android:launchMode="singleTop"
             android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.SEARCH"/>
+                <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
 
             <meta-data
                 android:name="android.app.searchable"
-                android:resource="@xml/searchable"/>
+                android:resource="@xml/searchable" />
         </activity>
         <activity
             android:name=".core.activity.BikeStationActivity"
             android:label="@string/bike_activity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".core.activity.BusMapActivity"
             android:label="@string/map_activity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".core.activity.TrainMapActivity"
             android:label="@string/map_activity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait" />
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="@string/google_maps_api_key"/>
+            android:value="@string/google_maps_api_key" />
         <meta-data
             android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version"/>
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>
