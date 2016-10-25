@@ -443,7 +443,9 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                 loadLayout.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(final Animator animation) {
-                        loadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+                        if (loadLayout != null) {
+                            loadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+                        }
                     }
                 });
             }
