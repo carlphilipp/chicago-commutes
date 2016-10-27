@@ -39,7 +39,6 @@ import android.widget.RelativeLayout;
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -130,7 +129,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
     private SupportMapFragment mapFragment;
 
     private MainActivity activity;
-    private GoogleMap googleMap;
+    //private GoogleMap googleMap;
     private NearbyAdapter nearbyAdapter;
     private boolean hideStationsStops;
 
@@ -182,20 +181,22 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
     @Override
     public final void onStart() {
         super.onStart();
+
         final GoogleMapOptions options = new GoogleMapOptions();
         final CameraPosition camera = new CameraPosition(Util.CHICAGO, 7, 0, 0);
-        final FragmentManager fm = activity.getSupportFragmentManager();
         options.camera(camera);
         mapFragment = SupportMapFragment.newInstance(options);
         mapFragment.setRetainInstance(true);
-        fm.beginTransaction().replace(R.id.map, mapFragment).commit();
+        final FragmentManager fm = activity.getSupportFragmentManager();
+        new Thread(() -> {
+            fm.beginTransaction().replace(R.id.map, mapFragment).commit();
+        }).start();
     }
 
     @Override
     public final void onResume() {
         super.onResume();
         loadNearbyIfAllowed();
-        mapFragment.getMapAsync(googleMap -> NearbyFragment.this.googleMap = googleMap);
     }
 
     private void loadAllArrivals(@NonNull final List<BusStop> busStops, @NonNull final List<Station> trainStations, @NonNull final List<BikeStation> bikeStations) {
@@ -362,43 +363,45 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         @NonNull final SparseArray<TrainArrival> trainArrivals,
         @NonNull final List<BikeStation> bikeStations) {
         if (isAdded()) {
-            final List<Marker> markers = new ArrayList<>();
-            final BitmapDescriptor azure = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE);
-            final BitmapDescriptor violet = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
-            final BitmapDescriptor yellow = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
-            Stream.of(busStops)
-                .map(busStop -> {
-                    final LatLng point = new LatLng(busStop.getPosition().getLatitude(), busStop.getPosition().getLongitude());
-                    return new MarkerOptions().position(point).title(busStop.getName()).snippet(Integer.toString(busStop.getId())).icon(azure);
-                })
-                .map(options -> googleMap.addMarker(options))
-                .forEach(markers::add);
+            mapFragment.getMapAsync(googleMap -> {
+                final List<Marker> markers = new ArrayList<>();
+                final BitmapDescriptor azure = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE);
+                final BitmapDescriptor violet = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
+                final BitmapDescriptor yellow = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
+                Stream.of(busStops)
+                    .map(busStop -> {
+                        final LatLng point = new LatLng(busStop.getPosition().getLatitude(), busStop.getPosition().getLongitude());
+                        return new MarkerOptions().position(point).title(busStop.getName()).snippet(Integer.toString(busStop.getId())).icon(azure);
+                    })
+                    .map(googleMap::addMarker)
+                    .forEach(markers::add);
 
 
-            Stream.of(trainStation)
-                .forEach(station ->
-                    Stream.of(station.getStopsPosition())
-                        .map(position -> {
-                            final LatLng point = new LatLng(position.getLatitude(), position.getLongitude());
-                            return new MarkerOptions().position(point).title(station.getName()).snippet(Integer.toString(station.getId())).icon(violet);
-                        })
-                        .map(options -> googleMap.addMarker(options))
-                        .forEach(markers::add)
-                );
+                Stream.of(trainStation)
+                    .forEach(station ->
+                        Stream.of(station.getStopsPosition())
+                            .map(position -> {
+                                final LatLng point = new LatLng(position.getLatitude(), position.getLongitude());
+                                return new MarkerOptions().position(point).title(station.getName()).snippet(Integer.toString(station.getId())).icon(violet);
+                            })
+                            .map(googleMap::addMarker)
+                            .forEach(markers::add)
+                    );
 
-            Stream.of(bikeStations)
-                .map(station -> {
-                    final LatLng point = new LatLng(station.getLatitude(), station.getLongitude());
-                    return new MarkerOptions().position(point).title(station.getName()).snippet(station.getId() + "").icon(yellow);
-                })
-                .map(options -> googleMap.addMarker(options))
-                .forEach(markers::add);
+                Stream.of(bikeStations)
+                    .map(station -> {
+                        final LatLng point = new LatLng(station.getLatitude(), station.getLongitude());
+                        return new MarkerOptions().position(point).title(station.getName()).snippet(station.getId() + "").icon(yellow);
+                    })
+                    .map(googleMap::addMarker)
+                    .forEach(markers::add);
 
-            addClickEventsToMarkers(busStops, trainStation, bikeStations);
-            nearbyAdapter.updateData(busStops, busArrivals, trainStation, trainArrivals, bikeStations, googleMap, markers);
-            nearbyAdapter.notifyDataSetChanged();
-            showProgress(false);
-            nearbyContainer.setVisibility(View.VISIBLE);
+                addClickEventsToMarkers(busStops, trainStation, bikeStations);
+                nearbyAdapter.updateData(busStops, busArrivals, trainStation, trainArrivals, bikeStations, googleMap, markers);
+                nearbyAdapter.notifyDataSetChanged();
+                showProgress(false);
+                nearbyContainer.setVisibility(View.VISIBLE);
+            });
         }
     }
 
@@ -406,33 +409,35 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         @NonNull final List<BusStop> busStops,
         @NonNull final List<Station> stations,
         @NonNull final List<BikeStation> bikeStations) {
-        googleMap.setOnMarkerClickListener(marker -> {
-            boolean found = false;
-            for (int i = 0; i < stations.size(); i++) {
-                if (marker.getSnippet().equals(Integer.toString(stations.get(i).getId()))) {
-                    listView.smoothScrollToPosition(i);
-                    found = true;
-                    break;
+        mapFragment.getMapAsync(googleMap ->
+            googleMap.setOnMarkerClickListener(marker -> {
+                boolean found = false;
+                for (int i = 0; i < stations.size(); i++) {
+                    if (marker.getSnippet().equals(Integer.toString(stations.get(i).getId()))) {
+                        listView.smoothScrollToPosition(i);
+                        found = true;
+                        break;
+                    }
                 }
-            }
-            if (!found) {
-                for (int i = 0; i < busStops.size(); i++) {
-                    int index = i + stations.size();
-                    if (marker.getSnippet().equals(Integer.toString(busStops.get(i).getId()))) {
+                if (!found) {
+                    for (int i = 0; i < busStops.size(); i++) {
+                        int index = i + stations.size();
+                        if (marker.getSnippet().equals(Integer.toString(busStops.get(i).getId()))) {
+                            listView.smoothScrollToPosition(index);
+                            break;
+                        }
+                    }
+                }
+                for (int i = 0; i < bikeStations.size(); i++) {
+                    int index = i + stations.size() + busStops.size();
+                    if (marker.getSnippet().equals(Integer.toString(bikeStations.get(i).getId()))) {
                         listView.smoothScrollToPosition(index);
                         break;
                     }
                 }
-            }
-            for (int i = 0; i < bikeStations.size(); i++) {
-                int index = i + stations.size() + busStops.size();
-                if (marker.getSnippet().equals(Integer.toString(bikeStations.get(i).getId()))) {
-                    listView.smoothScrollToPosition(index);
-                    break;
-                }
-            }
-            return false;
-        });
+                return false;
+            })
+        );
     }
 
     private void showProgress(final boolean show) {
