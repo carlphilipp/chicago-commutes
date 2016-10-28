@@ -129,7 +129,6 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
     private SupportMapFragment mapFragment;
 
     private MainActivity activity;
-    //private GoogleMap googleMap;
     private NearbyAdapter nearbyAdapter;
     private boolean hideStationsStops;
 

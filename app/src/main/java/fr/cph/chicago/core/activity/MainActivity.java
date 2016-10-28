@@ -33,6 +33,7 @@ import android.widget.FrameLayout;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindColor;
 import butterknife.BindString;
@@ -53,6 +54,7 @@ import fr.cph.chicago.entity.dto.FavoritesDTO;
 import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.util.Util;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 
 import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;
 import static fr.cph.chicago.Constants.BUSES_ROUTES_URL;
@@ -303,9 +305,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     nearbyFragment = NearbyFragment.newInstance(position + 1);
                 }
                 if (!this.isFinishing()) {
-                    fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
+                    Observable.create(
+                        subscriber -> {
+                            drawerLayout.closeDrawer(GravityCompat.START);
+                            subscriber.onNext(null);
+                            subscriber.onCompleted();
+                        })
+                        .delay(320, TimeUnit.MILLISECONDS)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnError(throwable -> Log.e(TAG, throwable.getMessage(), throwable))
+                        .subscribe(o -> {
+                            fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit();
+                        });
                 }
-                drawerLayout.closeDrawer(GravityCompat.START);
                 showActionBarMenu();
                 break;
             case R.id.navigation_cta_map:
