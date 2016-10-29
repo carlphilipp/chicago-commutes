@@ -41,7 +41,7 @@
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/error_desc"
                 android:padding="10dp"
-                android:src="@drawable/ic_logo_1_xxxhdpi"/>
+                android:src="@drawable/ic_launcher"/>
 
             <TextView
                 android:id="@+id/error_message"

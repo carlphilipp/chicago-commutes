@@ -35,7 +35,7 @@
         android:name=".core.App"
         android:allowBackup="true"
         android:fullBackupContent="true"
-        android:icon="@drawable/ic_logo_1"
+        android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
