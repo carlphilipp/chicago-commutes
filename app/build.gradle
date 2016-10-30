@@ -39,7 +39,7 @@ dependencies {
         testCompile(group: 'junit', name: 'junit', version: junit_version) {
             exclude group: 'org.hamcrest', module: 'hamcrest-core'
         },
-        testCompile(group: 'org.mockito', name: 'mockito-core', version: mockito_version){
+        testCompile(group: 'org.mockito', name: 'mockito-core', version: mockito_version) {
             exclude group: 'org.hamcrest', module: 'hamcrest-core'
         },
         [group: 'org.hamcrest', name: 'hamcrest-all', version: hamcrect_version]
@@ -56,8 +56,8 @@ android {
 
     defaultConfig {
         applicationId 'fr.cph.chicago'
-        versionCode 96
-        versionName '4.5.3'
+        versionCode 97
+        versionName '4.6.0'
 
         minSdkVersion 14
         targetSdkVersion 25
@@ -79,6 +79,13 @@ android {
         //jackOptions {
         //    enabled true
         //}
+    }
+
+    // Change output apk name
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            output.outputFile = new File(output.outputFile.parent, "${parent.name}-${output.baseName}-${variant.versionName}.apk")
+        }
     }
 
     compileOptions {
