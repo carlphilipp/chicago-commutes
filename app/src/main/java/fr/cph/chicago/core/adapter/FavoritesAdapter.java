@@ -539,7 +539,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     }
 
     /**
-     * Refresh udpdated view
+     * Refresh updated view
      */
     public final void refreshUpdatedView() {
         lastUpdate = getLastUpdateInMinutes();

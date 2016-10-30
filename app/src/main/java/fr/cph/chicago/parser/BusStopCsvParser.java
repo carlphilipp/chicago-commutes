@@ -16,6 +16,8 @@ public enum BusStopCsvParser {
 
     private static final String TAG = BusStopCsvParser.class.getSimpleName();
 
+    // http://www.transitchicago.com/developers/gtfs.aspx
+    // http://www.transitchicago.com/downloads/sch_data/
     private static final String STOP_FILE_PATH = "stops.txt";
 
     private final CsvParser parser;
