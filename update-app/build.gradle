@@ -1,0 +1,12 @@
+apply plugin: 'java'
+
+dependencies {
+    repositories {
+        jcenter()
+    }
+
+    compile(
+        [group: 'commons-io', name: 'commons-io', version: commons_io_version],
+        [group: 'com.annimon', name: 'stream', version: annimon_stream_version],
+    )
+}
