@@ -22,3 +22,5 @@ task updateTrainStops(type: JavaExec) {
     main = "fr.cph.chicago.update.UpdateTrainStops"
     args "$buildDir/tmp/", "$parent.projectDir/android-app/src/main/assets/"
 }
+
+task update (dependsOn: [updateBusStops, updateTrainStops])
