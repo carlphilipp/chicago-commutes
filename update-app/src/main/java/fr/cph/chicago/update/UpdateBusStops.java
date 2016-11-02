@@ -7,7 +7,6 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Collections;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -18,45 +17,28 @@ import java.util.zip.ZipFile;
  *
  * @author cpharmant
  */
-public class UpdateBusStops {
+public class UpdateBusStops extends Update {
 
     public static void main(String[] args) {
-        Stream.of(args).forEach(System.out::println);
         new UpdateBusStops(args[0], args[1]).run();
     }
 
     private static String STOP_FILE_NAME = "stops.txt";
 
-    private String tempDirectory;
-    private String destinationDirectory;
-
     private UpdateBusStops(final String tempDirectory, final String destinationDirectory) {
-        this.tempDirectory = tempDirectory;
-        this.destinationDirectory = destinationDirectory;
+        super(tempDirectory, destinationDirectory);
     }
 
-    private void run() {
-        final Optional<File> fileOptional = downloadFile();
+    @Override
+    protected void run() {
+        final String url = "http://www.transitchicago.com/downloads/sch_data/google_transit.zip";
+        final Optional<File> fileOptional = downloadFile(url, tempDirectory + "google_transit.zip");
         fileOptional.ifPresent(downloadedFile ->
-            extractFile(downloadedFile).ifPresent(this::moveFile)
+            extractFile(downloadedFile).ifPresent(file -> moveFile(file, "bus_stops.txt"))
         );
     }
 
-    private Optional<File> downloadFile() {
-        try {
-            final URL url = new URL("http://www.transitchicago.com/downloads/sch_data/google_transit.zip");
-            final File file = new File(tempDirectory + "google_transit.zip");
-            System.out.println("Start downloading file...");
-            FileUtils.copyInputStreamToFile(url.openStream(), file);
-            System.out.println("Done downloading file! " + file.getAbsolutePath());
-            return Optional.ofNullable(file);
-        } catch (final IOException e) {
-            e.printStackTrace();
-            return Optional.empty();
-        }
-    }
-
-    private Optional<File> extractFile(File file) {
+    private Optional<File> extractFile(final File file) {
         ZipFile zf = null;
         try {
             zf = new ZipFile(file);
@@ -82,15 +64,5 @@ public class UpdateBusStops {
             }
         }
         return Optional.empty();
-    }
-
-    private void moveFile(final File file) {
-        try {
-            final String stopFileNameDest = "bus_stops.txt";
-            System.out.println("Move file to " + destinationDirectory + stopFileNameDest);
-            FileUtils.copyFile(file, new File(destinationDirectory + stopFileNameDest));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }
