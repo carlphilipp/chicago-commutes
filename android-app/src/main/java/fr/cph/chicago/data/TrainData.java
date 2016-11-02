@@ -54,7 +54,7 @@ public enum TrainData {
     private static final String TAG = TrainData.class.getSimpleName();
 
     // https://data.cityofchicago.org/Transportation/CTA-System-Information-List-of-L-Stops/8pix-ypme
-    private static final String TRAIN_FILE_PATH = "cta_L_stops_cph.csv";
+    private static final String TRAIN_FILE_PATH = "train_stops.csv";
 
     private final SparseArray<Station> stations;
     private final SparseArray<Stop> stops;

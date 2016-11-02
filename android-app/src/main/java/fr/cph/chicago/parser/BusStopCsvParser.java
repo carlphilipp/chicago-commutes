@@ -18,7 +18,7 @@ public enum BusStopCsvParser {
 
     // http://www.transitchicago.com/developers/gtfs.aspx
     // http://www.transitchicago.com/downloads/sch_data/
-    private static final String STOP_FILE_PATH = "stops.txt";
+    private static final String STOP_FILE_PATH = "bus_stops.txt";
 
     private final CsvParser parser;
 

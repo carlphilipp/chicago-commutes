@@ -13,16 +13,16 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 /**
- * Download the last google_transit archive for Chicago and update stops.txt used in
+ * Download the last google_transit archive for Chicago and update bus_stops.txt used in
  * the android app.
  *
  * @author cpharmant
  */
-public class UpdateStops {
+public class UpdateBusStops {
 
     public static void main(String[] args) {
         Stream.of(args).forEach(System.out::println);
-        new UpdateStops(args[0], args[1]).run();
+        new UpdateBusStops(args[0], args[1]).run();
     }
 
     private static String STOP_FILE_NAME = "stops.txt";
@@ -30,7 +30,7 @@ public class UpdateStops {
     private String tempDirectory;
     private String destinationDirectory;
 
-    private UpdateStops(final String tempDirectory, final String destinationDirectory) {
+    private UpdateBusStops(final String tempDirectory, final String destinationDirectory) {
         this.tempDirectory = tempDirectory;
         this.destinationDirectory = destinationDirectory;
     }
@@ -84,10 +84,11 @@ public class UpdateStops {
         return Optional.empty();
     }
 
-    private void moveFile(File file) {
+    private void moveFile(final File file) {
         try {
-            System.out.println("Move file to " + destinationDirectory + STOP_FILE_NAME);
-            FileUtils.copyFile(file, new File(destinationDirectory + STOP_FILE_NAME));
+            final String stopFileNameDest = "bus_stops.txt";
+            System.out.println("Move file to " + destinationDirectory + stopFileNameDest);
+            FileUtils.copyFile(file, new File(destinationDirectory + stopFileNameDest));
         } catch (IOException e) {
             e.printStackTrace();
         }
