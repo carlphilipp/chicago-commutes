@@ -8,8 +8,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +19,7 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FavoritesDataTest {
@@ -37,41 +36,51 @@ public class FavoritesDataTest {
 
     @Before
     public void setUp() {
+        // Given
         favoritesData = FavoritesData.INSTANCE;
         favoritesData.setBusArrivals(createBusArrivals());
         favoritesData.setBusFavorites(createListFavorites());
         favoritesData.setPreferences(preferences);
-
-        when(preferences.getBusStopNameMapping(context, "2893")).thenReturn("111th Street & Vernon");
+        given(preferences.getBusStopNameMapping(context, "2893")).willReturn("111th Street & Vernon");
     }
 
     @Test
     public void testGetBusArrivalsMappedEmptyNoFavorites() {
-        favoritesData.setBusArrivals(new ArrayList<>());
-        favoritesData.setBusFavorites(new ArrayList<>());
+        // Given
+        favoritesData.setBusArrivals(Collections.emptyList());
+        favoritesData.setBusFavorites(Collections.emptyList());
 
+        // When
         Map<String, Map<String, List<BusArrival>>> actual = favoritesData.getBusArrivalsMapped(ROUTE_ID, context);
+
+        // Then
         assertNotNull(actual);
         assertThat(actual.size(), is(0));
     }
 
     @Test
     public void testGetBusArrivalsMappedEmptyFavorites() {
-        favoritesData.setBusArrivals(new ArrayList<>());
+        // Given
+        favoritesData.setBusArrivals(Collections.emptyList());
 
+        // When
         Map<String, Map<String, List<BusArrival>>> actual = favoritesData.getBusArrivalsMapped(ROUTE_ID, context);
+
+        // Then
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
     }
 
     @Test
     public void testGetBusArrivalsMappedWithResult() {
+        // When
         Map<String, Map<String, List<BusArrival>>> actual = favoritesData.getBusArrivalsMapped(ROUTE_ID, context);
+
+        // Then
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
         assertThat(actual, hasKey("111th Street & Vernon"));
     }
-
 
     private List<BusArrival> createBusArrivals() {
         final BusArrival busArrival = BusArrival.builder()
@@ -85,14 +94,10 @@ public class FavoritesDataTest {
             .predictionTime(new Date())
             .isDly(false)
             .build();
-        final List<BusArrival> busArrivals = new ArrayList<>();
-        busArrivals.add(busArrival);
-        return busArrivals;
+        return Collections.singletonList(busArrival);
     }
 
-    //4_2893_Northbound
-
     private List<String> createListFavorites() {
-        return Arrays.asList("4_2893_Northbound");
+        return Collections.singletonList("4_2893_Northbound");
     }
 }
