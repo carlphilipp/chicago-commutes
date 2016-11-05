@@ -45,6 +45,20 @@ dependencies {
         [group: 'org.hamcrest', name: 'hamcrest-all', version: hamcrect_version]
     )
 
+    androidTestCompile(
+        [group: 'com.android.support', name: 'support-annotations', version: '25.0.0'],
+        [group: 'com.android.support.test', name: 'runner', version: '0.5'],
+        [group: 'com.android.support.test', name: 'rules', version: '0.5'],
+        // Optional -- Hamcrest library
+        //[group: 'org.hamcrest', name: 'hamcrest-all', version: hamcrect_version],
+        // Optional -- UI testing with Espresso
+        androidTestCompile(group: 'com.android.support.test.espresso', name: 'espresso-core', version: '2.2.2') {
+            exclude group: 'com.android.support', module: 'support-annotations'
+        },
+        // Optional -- UI testing with UI Automator
+        [group: 'com.android.support.test.uiautomator', name: 'uiautomator-v18', version: '2.1.2']
+    )
+
     provided(
         [group: 'org.projectlombok', name: 'lombok', version: lombok_version]
     )
@@ -62,6 +76,8 @@ android {
         minSdkVersion 14
         targetSdkVersion 25
         multiDexEnabled true
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         def appProperties = this.file('app.properties')
         def props = new Properties()
