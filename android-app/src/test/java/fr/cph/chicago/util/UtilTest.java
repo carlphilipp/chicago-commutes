@@ -8,7 +8,20 @@ public class UtilTest {
 
     @Test
     public void testGenerateViewId() {
+        // When
         int actual = Util.generateViewId();
+
+        // Then
         assertNotEquals(0, actual);
+    }
+
+    @Test
+    public void testGenerateViewIdUnique() {
+        // When
+        int actual1 = Util.generateViewId();
+        int actual2 = Util.generateViewId();
+
+        // Then
+        assertNotEquals(actual1, actual2);
     }
 }
