@@ -31,7 +31,7 @@ import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.service.BusService;
 import fr.cph.chicago.util.Util;
-import rx.exceptions.Exceptions;
+import io.reactivex.exceptions.Exceptions;
 
 import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
 import static fr.cph.chicago.connection.CtaRequestType.BUS_DIRECTION;

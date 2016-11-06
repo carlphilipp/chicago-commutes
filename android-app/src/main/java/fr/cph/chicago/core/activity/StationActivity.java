@@ -64,14 +64,14 @@ import fr.cph.chicago.entity.Stop;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.TrainDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.rx.subscriber.SubscriberTrainArrival;
+import fr.cph.chicago.rx.observer.TrainArrivalObserver;
 import fr.cph.chicago.service.TrainService;
 import fr.cph.chicago.service.impl.TrainServiceImpl;
 import fr.cph.chicago.util.Util;
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Activity that represents the train station
@@ -81,32 +81,55 @@ import rx.schedulers.Schedulers;
  */
 public class StationActivity extends AbstractStationActivity {
 
-    @BindView(android.R.id.content) ViewGroup viewGroup;
-    @BindView(R.id.activity_train_station_streetview_image) ImageView streetViewImage;
-    @BindView(R.id.scrollViewTrainStation) ScrollView scrollView;
-    @BindView(R.id.activity_station_swipe_refresh_layout) SwipeRefreshLayout swipeRefreshLayout;
-    @BindView(R.id.activity_favorite_star) ImageView favoritesImage;
-    @BindView(R.id.activity_train_station_steetview_text) TextView streetViewText;
-    @BindView(R.id.activity_map_image) ImageView mapImage;
-    @BindView(R.id.map_container) LinearLayout mapContainer;
-    @BindView(R.id.activity_map_direction) ImageView directionImage;
-    @BindView(R.id.walk_container) LinearLayout walkContainer;
-    @BindView(R.id.favorites_container) LinearLayout favoritesImageContainer;
-    @BindView(R.id.activity_train_station_details) LinearLayout stopsView;
-    @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(android.R.id.content)
+    ViewGroup viewGroup;
+    @BindView(R.id.activity_train_station_streetview_image)
+    ImageView streetViewImage;
+    @BindView(R.id.scrollViewTrainStation)
+    ScrollView scrollView;
+    @BindView(R.id.activity_station_swipe_refresh_layout)
+    SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.activity_favorite_star)
+    ImageView favoritesImage;
+    @BindView(R.id.activity_train_station_steetview_text)
+    TextView streetViewText;
+    @BindView(R.id.activity_map_image)
+    ImageView mapImage;
+    @BindView(R.id.map_container)
+    LinearLayout mapContainer;
+    @BindView(R.id.activity_map_direction)
+    ImageView directionImage;
+    @BindView(R.id.walk_container)
+    LinearLayout walkContainer;
+    @BindView(R.id.favorites_container)
+    LinearLayout favoritesImageContainer;
+    @BindView(R.id.activity_train_station_details)
+    LinearLayout stopsView;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
-    @BindString(R.string.bundle_train_stationId) String bundleTrainStationId;
-    @BindString(R.string.analytics_train_details) String trainDetails;
+    @BindString(R.string.bundle_train_stationId)
+    String bundleTrainStationId;
+    @BindString(R.string.analytics_train_details)
+    String trainDetails;
 
-    @BindDimen(R.dimen.activity_station_street_map_height) int height;
-    @BindDimen(R.dimen.activity_station_stops_line3_padding_left) int line3PaddingLeft;
-    @BindDimen(R.dimen.activity_station_stops_line3_padding_top) int line3PaddingTop;
+    @BindDimen(R.dimen.activity_station_street_map_height)
+    int height;
+    @BindDimen(R.dimen.activity_station_stops_line3_padding_left)
+    int line3PaddingLeft;
+    @BindDimen(R.dimen.activity_station_stops_line3_padding_top)
+    int line3PaddingTop;
 
-    @BindColor(R.color.grey_5) int grey_5;
-    @BindColor(R.color.grey) int grey;
-    @BindColor(R.color.yellowLineDark) int yellowLineDark;
-    @BindColor(R.color.yellowLine) int yellowLine;
-    @BindDrawable(R.drawable.ic_arrow_back_white_24dp) Drawable arrowBackWhite;
+    @BindColor(R.color.grey_5)
+    int grey_5;
+    @BindColor(R.color.grey)
+    int grey;
+    @BindColor(R.color.yellowLineDark)
+    int yellowLineDark;
+    @BindColor(R.color.yellowLine)
+    int yellowLine;
+    @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
+    Drawable arrowBackWhite;
 
     private LinearLayout.LayoutParams paramsStop;
     private boolean isFavorite;
@@ -151,7 +174,7 @@ public class StationActivity extends AbstractStationActivity {
                 streetViewImage.setOnClickListener(new GoogleStreetOnClickListener(position.getLatitude(), position.getLongitude()));
                 streetViewImage.setLayoutParams(params);
                 streetViewText.setTypeface(null, Typeface.BOLD);
-                swipeRefreshLayout.setOnRefreshListener(() -> trainArrivalObservable.subscribe(new SubscriberTrainArrival(this, swipeRefreshLayout)));
+                swipeRefreshLayout.setOnRefreshListener(() -> trainArrivalObservable.subscribe(new TrainArrivalObserver(this, swipeRefreshLayout)));
                 if (isFavorite) {
                     favoritesImage.setColorFilter(yellowLineDark);
                 } else {
@@ -202,7 +225,7 @@ public class StationActivity extends AbstractStationActivity {
                 checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> PreferencesImpl.INSTANCE.saveTrainFilter(getApplicationContext(), stationId, line, stop.getDirection(), isChecked));
                 checkBox.setOnClickListener(v -> {
                     if (checkBox.isChecked()) {
-                        trainArrivalObservable.subscribe(new SubscriberTrainArrival(this, swipeRefreshLayout));
+                        trainArrivalObservable.subscribe(new TrainArrivalObserver(this, swipeRefreshLayout));
                     }
                 });
                 checkBox.setChecked(PreferencesImpl.INSTANCE.getTrainFilter(getApplicationContext(), stationId, line, stop.getDirection()));
@@ -243,7 +266,7 @@ public class StationActivity extends AbstractStationActivity {
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener(item -> {
             swipeRefreshLayout.setRefreshing(true);
-            trainArrivalObservable.subscribe(new SubscriberTrainArrival(this, swipeRefreshLayout));
+            trainArrivalObservable.subscribe(new TrainArrivalObserver(this, swipeRefreshLayout));
             return false;
         });
 
@@ -382,12 +405,15 @@ public class StationActivity extends AbstractStationActivity {
     }
 
     private void createTrainArrivalObservableAndSubscribe() {
-        trainArrivalObservable = Observable.create((Subscriber<? super Optional<TrainArrival>> subscriber) -> {
-            subscriber.onNext(trainService.loadStationTrainArrival(getApplicationContext(), station.getId()));
-            subscriber.onCompleted();
-        })
+        trainArrivalObservable = Observable.create(
+            (ObservableEmitter<Optional<TrainArrival>> observableOnSubscribe) -> {
+                if (!observableOnSubscribe.isDisposed()) {
+                    observableOnSubscribe.onNext(trainService.loadStationTrainArrival(getApplicationContext(), station.getId()));
+                    observableOnSubscribe.onComplete();
+                }
+            })
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
-        trainArrivalObservable.subscribe(new SubscriberTrainArrival(this, swipeRefreshLayout));
+        trainArrivalObservable.subscribe(new TrainArrivalObserver(this, swipeRefreshLayout));
     }
 }

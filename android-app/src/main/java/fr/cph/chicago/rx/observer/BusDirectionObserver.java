@@ -1,4 +1,4 @@
-package fr.cph.chicago.rx.subscriber;
+package fr.cph.chicago.rx.observer;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -25,20 +25,25 @@ import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.enumeration.BusDirection;
 import fr.cph.chicago.util.Util;
-import rx.Subscriber;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
-public class BusDirectionSubscriber extends Subscriber<BusDirections> {
+public class BusDirectionObserver implements Observer<BusDirections> {
 
-    private static final String TAG = BusDirectionSubscriber.class.getSimpleName();
+    private static final String TAG = BusDirectionObserver.class.getSimpleName();
 
     private final ViewGroup parent;
     private final BusRoute busRoute;
     private final View convertView;
 
-    public BusDirectionSubscriber(@NonNull final ViewGroup parent, @NonNull final View convertView, @NonNull final BusRoute busRoute) {
+    public BusDirectionObserver(@NonNull final ViewGroup parent, @NonNull final View convertView, @NonNull final BusRoute busRoute) {
         this.busRoute = busRoute;
         this.convertView = convertView;
         this.parent = parent;
+    }
+
+    @Override
+    public void onSubscribe(Disposable d) {
     }
 
     @Override
@@ -100,7 +105,7 @@ public class BusDirectionSubscriber extends Subscriber<BusDirections> {
     }
 
     @Override
-    public void onCompleted() {
+    public void onComplete() {
         convertView.setVisibility(LinearLayout.GONE);
     }
 }

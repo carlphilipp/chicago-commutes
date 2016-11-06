@@ -1,4 +1,4 @@
-package fr.cph.chicago.rx.subscriber;
+package fr.cph.chicago.rx.observer;
 
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -14,18 +14,23 @@ import fr.cph.chicago.core.activity.StationActivity;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.util.Util;
-import rx.Subscriber;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
-public class SubscriberTrainArrival extends Subscriber<Optional<TrainArrival>> {
+public class TrainArrivalObserver implements Observer<Optional<TrainArrival>> {
 
-    private static final String TAG = SubscriberTrainArrival.class.getSimpleName();
+    private static final String TAG = TrainArrivalObserver.class.getSimpleName();
 
     private final StationActivity activity;
     private final SwipeRefreshLayout swipeRefreshLayout;
 
-    public SubscriberTrainArrival(@NonNull final StationActivity activity, @NonNull final SwipeRefreshLayout swipeRefreshLayout) {
+    public TrainArrivalObserver(@NonNull final StationActivity activity, @NonNull final SwipeRefreshLayout swipeRefreshLayout) {
         this.activity = activity;
         this.swipeRefreshLayout = swipeRefreshLayout;
+    }
+
+    @Override
+    public void onSubscribe(Disposable d) {
     }
 
     @Override
@@ -51,7 +56,7 @@ public class SubscriberTrainArrival extends Subscriber<Optional<TrainArrival>> {
     }
 
     @Override
-    public void onCompleted() {
+    public void onComplete() {
         if (swipeRefreshLayout.isRefreshing()) {
             swipeRefreshLayout.setRefreshing(false);
         }

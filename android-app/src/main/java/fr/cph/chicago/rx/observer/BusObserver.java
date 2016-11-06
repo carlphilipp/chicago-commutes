@@ -1,4 +1,4 @@
-package fr.cph.chicago.rx.subscriber;
+package fr.cph.chicago.rx.observer;
 
 import android.util.Log;
 import android.view.View;
@@ -9,20 +9,25 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.core.activity.BusMapActivity;
 import fr.cph.chicago.entity.Bus;
 import fr.cph.chicago.util.Util;
-import rx.Subscriber;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
-public class BusSubscriber extends Subscriber<List<Bus>> {
+public class BusObserver implements Observer<List<Bus>> {
 
-    private static final String TAG = BusSubscriber.class.getSimpleName();
+    private static final String TAG = BusObserver.class.getSimpleName();
 
     private final BusMapActivity activity;
     private final boolean centerMap;
     private final View view;
 
-    public BusSubscriber(final BusMapActivity activity, final boolean centerMap, final View view) {
+    public BusObserver(final BusMapActivity activity, final boolean centerMap, final View view) {
         this.activity = activity;
         this.centerMap = centerMap;
         this.view = view;
+    }
+
+    @Override
+    public void onSubscribe(Disposable d) {
     }
 
     @Override
@@ -48,6 +53,6 @@ public class BusSubscriber extends Subscriber<List<Bus>> {
     }
 
     @Override
-    public void onCompleted() {
+    public void onComplete() {
     }
 }

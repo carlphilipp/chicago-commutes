@@ -40,7 +40,7 @@ import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.rx.observable.ObservableUtil;
-import fr.cph.chicago.rx.subscriber.BusDirectionSubscriber;
+import fr.cph.chicago.rx.observer.BusDirectionObserver;
 import fr.cph.chicago.util.LayoutUtil;
 import fr.cph.chicago.util.Util;
 
@@ -131,7 +131,7 @@ public final class SearchAdapter extends BaseAdapter {
                         Util.handleConnectOrParserException(throwable, activity, null, loadingTextView);
                         Log.e(TAG, throwable.getMessage(), throwable);
                         return null;
-                    }).subscribe(new BusDirectionSubscriber(parent, loadingTextView, busRoute));
+                    }).subscribe(new BusDirectionObserver(parent, loadingTextView, busRoute));
             });
         } else {
             final BikeStation bikeStation = (BikeStation) getItem(position);

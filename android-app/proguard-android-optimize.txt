@@ -84,7 +84,6 @@
 -dontwarn com.fasterxml.jackson.**
 -dontwarn android.support.design.**
 -dontwarn com.univocity.parsers.**
--dontwarn rx.internal.util.unsafe.**
 
 -dontnote android.net.http.**
 -dontnote org.apache.http.**
@@ -97,7 +96,6 @@
 -dontnote com.fasterxml.jackson.**
 -dontnote com.univocity.parsers.common.beans.**
 
--keepnames class rx.** { *; }
 -keep class uk.co.senab.photoview.** { *; }
 -keep public class fr.cph.chicago.exception.TrackerException
 -keep @interface *

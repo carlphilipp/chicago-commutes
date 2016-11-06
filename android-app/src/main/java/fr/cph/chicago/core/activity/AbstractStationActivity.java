@@ -9,10 +9,10 @@ import com.annimon.stream.Optional;
 
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.GStreetViewConnect;
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public abstract class AbstractStationActivity extends Activity {
 
@@ -20,9 +20,11 @@ public abstract class AbstractStationActivity extends Activity {
 
     final void createGoogleStreetObservable(final double latitude, final double longitude) {
         googleMapImageObservable = Observable.create(
-            (Subscriber<? super Optional<Drawable>> subscriber) -> {
-                subscriber.onNext(GStreetViewConnect.INSTANCE.connect(latitude, longitude, getApplicationContext()));
-                subscriber.onCompleted();
+            (ObservableEmitter<Optional<Drawable>> observableOnSubscribe) -> {
+                if (!observableOnSubscribe.isDisposed()) {
+                    observableOnSubscribe.onNext(GStreetViewConnect.INSTANCE.connect(latitude, longitude, getApplicationContext()));
+                    observableOnSubscribe.onComplete();
+                }
             })
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());

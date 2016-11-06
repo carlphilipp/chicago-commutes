@@ -1,4 +1,4 @@
-package fr.cph.chicago.rx.subscriber;
+package fr.cph.chicago.rx.observer;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,18 +12,23 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.core.activity.BikeStationActivity;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.util.Util;
-import rx.Subscriber;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
-public class BikeAllBikeStationsSubscriber extends Subscriber<List<BikeStation>> {
+public class BikeAllBikeStationsObserver implements Observer<List<BikeStation>> {
 
     private final BikeStationActivity activity;
     private final int bikeStationId;
     private final SwipeRefreshLayout swipeRefreshLayout;
 
-    public BikeAllBikeStationsSubscriber(@NonNull final BikeStationActivity activity, final int bikeStationId, @NonNull final SwipeRefreshLayout swipeRefreshLayout){
+    public BikeAllBikeStationsObserver(@NonNull final BikeStationActivity activity, final int bikeStationId, @NonNull final SwipeRefreshLayout swipeRefreshLayout) {
         this.activity = activity;
         this.bikeStationId = bikeStationId;
         this.swipeRefreshLayout = swipeRefreshLayout;
+    }
+
+    @Override
+    public void onSubscribe(Disposable d) {
     }
 
     @Override
@@ -48,7 +53,7 @@ public class BikeAllBikeStationsSubscriber extends Subscriber<List<BikeStation>>
     }
 
     @Override
-    public void onCompleted() {
+    public void onComplete() {
         swipeRefreshLayout.setRefreshing(false);
     }
 }

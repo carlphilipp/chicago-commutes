@@ -28,10 +28,10 @@ import fr.cph.chicago.service.TrainService;
 import fr.cph.chicago.service.impl.BikeServiceImpl;
 import fr.cph.chicago.service.impl.BusServiceImpl;
 import fr.cph.chicago.service.impl.TrainServiceImpl;
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class ObservableUtil {
 
@@ -46,9 +46,11 @@ public class ObservableUtil {
 
     public static Observable<SparseArray<TrainArrival>> createTrainArrivals(@NonNull final Context context) {
         return Observable.create(
-            (Subscriber<? super SparseArray<TrainArrival>> subscriber) -> {
-                subscriber.onNext(TRAIN_SERVICE.loadFavoritesTrain(context));
-                subscriber.onCompleted();
+            (ObservableEmitter<SparseArray<TrainArrival>> observableOnSubscribe) -> {
+                if (!observableOnSubscribe.isDisposed()) {
+                    observableOnSubscribe.onNext(TRAIN_SERVICE.loadFavoritesTrain(context));
+                    observableOnSubscribe.onComplete();
+                }
             })
             .onErrorReturn(throwable -> {
                 Log.e(TAG, throwable.getMessage(), throwable);
@@ -60,9 +62,11 @@ public class ObservableUtil {
 
     public static Observable<List<BusArrival>> createBusArrivals(@NonNull final Context context) {
         return Observable.create(
-            (Subscriber<? super List<BusArrival>> subscriber) -> {
-                subscriber.onNext(BUS_SERVICE.loadFavoritesBuses(context));
-                subscriber.onCompleted();
+            (ObservableEmitter<List<BusArrival>> observableOnSubscribe) -> {
+                if (!observableOnSubscribe.isDisposed()) {
+                    observableOnSubscribe.onNext(BUS_SERVICE.loadFavoritesBuses(context));
+                    observableOnSubscribe.onComplete();
+                }
             })
             .onErrorReturn(throwable -> {
                 Log.e(TAG, throwable.getMessage(), throwable);
@@ -74,9 +78,11 @@ public class ObservableUtil {
 
     public static Observable<List<BikeStation>> createAllBikeStationsObservable() {
         return Observable.create(
-            (Subscriber<? super List<BikeStation>> subscriber) -> {
-                subscriber.onNext(BIKE_SERVICE.loadAllBikes());
-                subscriber.onCompleted();
+            (ObservableEmitter<List<BikeStation>> observableOnSubscribe) -> {
+                if (!observableOnSubscribe.isDisposed()) {
+                    observableOnSubscribe.onNext(BIKE_SERVICE.loadAllBikes());
+                    observableOnSubscribe.onComplete();
+                }
             })
             .onErrorReturn(throwable -> {
                 Log.e(TAG, throwable.getMessage(), throwable);
@@ -118,9 +124,11 @@ public class ObservableUtil {
 
     public static Observable<List<BusStop>> createBusStopBoundObservable(@NonNull final Context context, @NonNull final String stopId, @NonNull final String bound) {
         return Observable.create(
-            (Subscriber<? super List<BusStop>> subscriber) -> {
-                subscriber.onNext(BUS_SERVICE.loadOneBusStop(context, stopId, bound));
-                subscriber.onCompleted();
+            (ObservableEmitter<List<BusStop>> observableOnSubscribe) -> {
+                if (!observableOnSubscribe.isDisposed()) {
+                    observableOnSubscribe.onNext(BUS_SERVICE.loadOneBusStop(context, stopId, bound));
+                    observableOnSubscribe.onComplete();
+                }
             })
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
@@ -128,9 +136,11 @@ public class ObservableUtil {
 
     public static Observable<BusDirections> createBusDirectionsObservable(@NonNull final Context context, @NonNull final String busRouteId) {
         return Observable.create(
-            (Subscriber<? super BusDirections> subscriber) -> {
-                subscriber.onNext(BUS_SERVICE.loadBusDirections(context, busRouteId));
-                subscriber.onCompleted();
+            (ObservableEmitter<BusDirections> observableOnSubscribe) -> {
+                if (!observableOnSubscribe.isDisposed()) {
+                    observableOnSubscribe.onNext(BUS_SERVICE.loadBusDirections(context, busRouteId));
+                    observableOnSubscribe.onComplete();
+                }
             })
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
@@ -138,9 +148,11 @@ public class ObservableUtil {
 
     public static Observable<FirstLoadDTO> createOnFirstLoadObservable(@NonNull final Context context) {
         final Observable<List<BusRoute>> busRoutesObs = Observable.create(
-            (Subscriber<? super List<BusRoute>> subscriber) -> {
-                subscriber.onNext(BUS_SERVICE.loadBusRoutes(context));
-                subscriber.onCompleted();
+            (ObservableEmitter<List<BusRoute>> observableOnSubscribe) -> {
+                if (!observableOnSubscribe.isDisposed()) {
+                    observableOnSubscribe.onNext(BUS_SERVICE.loadBusRoutes(context));
+                    observableOnSubscribe.onComplete();
+                }
             })
             .onErrorReturn(throwable -> {
                 Log.e(TAG, throwable.getMessage(), throwable);
@@ -150,9 +162,11 @@ public class ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread());
 
         final Observable<List<BikeStation>> bikeStationsObs = Observable.create(
-            (Subscriber<? super List<BikeStation>> subscriber) -> {
-                subscriber.onNext(BIKE_SERVICE.loadAllBikes());
-                subscriber.onCompleted();
+            (ObservableEmitter<List<BikeStation>> observableOnSubscribe) -> {
+                if (!observableOnSubscribe.isDisposed()) {
+                    observableOnSubscribe.onNext(BIKE_SERVICE.loadAllBikes());
+                    observableOnSubscribe.onComplete();
+                }
             })
             .onErrorReturn(throwable -> {
                 Log.e(TAG, throwable.getMessage(), throwable);
@@ -179,9 +193,11 @@ public class ObservableUtil {
 
     public static Observable<List<BusArrival>> createFollowBusObservable(@NonNull final Context context, @NonNull final String busId) {
         return Observable.create(
-            (Subscriber<? super List<BusArrival>> subscriber) -> {
-                subscriber.onNext(BUS_SERVICE.loadFollowBus(context, busId));
-                subscriber.onCompleted();
+            (ObservableEmitter<List<BusArrival>> observableOnSubscribe) -> {
+                if (!observableOnSubscribe.isDisposed()) {
+                    observableOnSubscribe.onNext(BUS_SERVICE.loadFollowBus(context, busId));
+                    observableOnSubscribe.onComplete();
+                }
             })
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
@@ -189,9 +205,11 @@ public class ObservableUtil {
 
     public static Observable<Optional<BusPattern>> createBusPatternObservable(@NonNull final Context context, @NonNull final String busRouteId, @NonNull final String bound) {
         return Observable.create(
-            (Subscriber<? super Optional<BusPattern>> subscriber) -> {
-                subscriber.onNext(BUS_SERVICE.loadBusPattern(context, busRouteId, bound));
-                subscriber.onCompleted();
+            (ObservableEmitter<Optional<BusPattern>> observableOnSubscribe) -> {
+                if (!observableOnSubscribe.isDisposed()) {
+                    observableOnSubscribe.onNext(BUS_SERVICE.loadBusPattern(context, busRouteId, bound));
+                    observableOnSubscribe.onComplete();
+                }
             })
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
@@ -199,9 +217,11 @@ public class ObservableUtil {
 
     public static Observable<List<Bus>> createBusListObservable(@NonNull final Context context, final int busId, @NonNull final String busRouteId) {
         return Observable.create(
-            (Subscriber<? super List<Bus>> subscriber) -> {
-                subscriber.onNext(BUS_SERVICE.loadBus(context, busId, busRouteId));
-                subscriber.onCompleted();
+            (ObservableEmitter<List<Bus>> observableOnSubscribe) -> {
+                if (!observableOnSubscribe.isDisposed()) {
+                    observableOnSubscribe.onNext(BUS_SERVICE.loadBus(context, busId, busRouteId));
+                    observableOnSubscribe.onComplete();
+                }
             })
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());

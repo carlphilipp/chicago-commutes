@@ -74,8 +74,8 @@ import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.rx.observable.ObservableUtil;
-import fr.cph.chicago.rx.subscriber.BusFollowSubscriber;
-import fr.cph.chicago.rx.subscriber.BusSubscriber;
+import fr.cph.chicago.rx.observer.BusFollowObserver;
+import fr.cph.chicago.rx.observer.BusObserver;
 import fr.cph.chicago.util.Util;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -209,7 +209,7 @@ public class BusMapActivity extends Activity implements EasyPermissions.Permissi
                             final String busId = marker.getSnippet();
                             Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL, 0);
                             ObservableUtil.createFollowBusObservable(getApplicationContext(), busId)
-                                .subscribe(new BusFollowSubscriber(BusMapActivity.this, mapFragment.getView(), view, false));
+                                .subscribe(new BusFollowObserver(BusMapActivity.this, mapFragment.getView(), view, false));
                             status.put(marker, false);
                         }
                         return view;
@@ -228,14 +228,14 @@ public class BusMapActivity extends Activity implements EasyPermissions.Permissi
                         final boolean current = status.get(marker);
                         Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL, 0);
                         ObservableUtil.createFollowBusObservable(getApplicationContext(), runNumber)
-                            .subscribe(new BusFollowSubscriber(BusMapActivity.this, mapFragment.getView(), view, !current));
+                            .subscribe(new BusFollowObserver(BusMapActivity.this, mapFragment.getView(), view, !current));
                         status.put(marker, !current);
                     }
                 }
             });
             if (Util.isNetworkAvailable(getApplicationContext())) {
                 Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_VEHICLES_URL, 0);
-                ObservableUtil.createBusListObservable(getApplicationContext(), busId, busRouteId).subscribe(new BusSubscriber(BusMapActivity.this, true, layout));
+                ObservableUtil.createBusListObservable(getApplicationContext(), busId, busRouteId).subscribe(new BusObserver(BusMapActivity.this, true, layout));
                 if (loadPattern) {
                     new LoadPattern().execute();
                 }
@@ -249,7 +249,7 @@ public class BusMapActivity extends Activity implements EasyPermissions.Permissi
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener((item -> {
             Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_VEHICLES_URL, 0);
-            ObservableUtil.createBusListObservable(getApplicationContext(), busId, busRouteId).subscribe(new BusSubscriber(BusMapActivity.this, false, layout));
+            ObservableUtil.createBusListObservable(getApplicationContext(), busId, busRouteId).subscribe(new BusObserver(BusMapActivity.this, false, layout));
             return false;
         }));
 

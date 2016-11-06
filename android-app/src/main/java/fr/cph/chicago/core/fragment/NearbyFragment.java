@@ -82,12 +82,12 @@ import fr.cph.chicago.parser.JsonParser;
 import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.util.GPSUtil;
 import fr.cph.chicago.util.Util;
+import io.reactivex.Observable;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
-import rx.Observable;
-import rx.exceptions.Exceptions;
-import rx.schedulers.Schedulers;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
@@ -203,11 +203,11 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         // Execute in parallel all requests to bus arrivals
         // To be able to wait that all the threads ended we transform to list (it enforces it)
         // And then process train and bikes
-        Observable.from(busStops)
+        Observable.fromIterable(busStops)
             .flatMap(busStop -> Observable.just(busStop).subscribeOn(Schedulers.computation())
                 .map(currentBusStop -> {
                     loadAroundBusArrivals(currentBusStop, busArrivalsMap);
-                    return null;
+                    return new Object();
                 })
             )
             .doOnError(throwable -> {

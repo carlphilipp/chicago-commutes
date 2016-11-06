@@ -11,7 +11,7 @@ import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.parser.JsonParser;
 import fr.cph.chicago.service.BikeService;
 import fr.cph.chicago.util.Util;
-import rx.exceptions.Exceptions;
+import io.reactivex.exceptions.Exceptions;
 
 public enum BikeServiceImpl implements BikeService {
     INSTANCE;

@@ -28,7 +28,7 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.service.TrainService;
 import fr.cph.chicago.util.Util;
-import rx.exceptions.Exceptions;
+import io.reactivex.exceptions.Exceptions;
 
 import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
 

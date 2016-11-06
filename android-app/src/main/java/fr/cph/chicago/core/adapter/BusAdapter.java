@@ -33,7 +33,7 @@ import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.rx.observable.ObservableUtil;
-import fr.cph.chicago.rx.subscriber.BusDirectionSubscriber;
+import fr.cph.chicago.rx.observer.BusDirectionObserver;
 import fr.cph.chicago.util.Util;
 
 /**
@@ -115,7 +115,7 @@ public final class BusAdapter extends BaseAdapter {
                     Log.e(TAG, throwable.getMessage(), throwable);
                     return null;
                 })
-                .subscribe(new BusDirectionSubscriber(parent, detailsLayout, route));
+                .subscribe(new BusDirectionObserver(parent, detailsLayout, route));
         });
         return convertView;
     }

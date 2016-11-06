@@ -44,13 +44,13 @@ import fr.cph.chicago.service.TrainService;
 import fr.cph.chicago.service.impl.BusServiceImpl;
 import fr.cph.chicago.service.impl.TrainServiceImpl;
 import fr.cph.chicago.util.Util;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import lombok.SneakyThrows;
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;
 import static fr.cph.chicago.Constants.TRAINS_ARRIVALS_URL;
@@ -104,19 +104,23 @@ public class BaseActivity extends Activity {
 
         // Train local data
         final Observable<TrainData> trainDataObservable = Observable.create(
-            (Subscriber<? super TrainData> subscriber) -> {
-                subscriber.onNext(trainService.loadLocalTrainData(getApplicationContext()));
-                subscriber.onCompleted();
-            })
+        (ObservableEmitter<TrainData> observableOnSubscribe) -> {
+            if (!observableOnSubscribe.isDisposed()) {
+                observableOnSubscribe.onNext(trainService.loadLocalTrainData(getApplicationContext()));
+                observableOnSubscribe.onComplete();
+            }
+        })
             .doOnNext(DataHolder.INSTANCE::setTrainData)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
 
         // Bus local data
         final Observable<BusData> busDataObservable = Observable.create(
-            (Subscriber<? super BusData> subscriber) -> {
-                subscriber.onNext(busService.loadLocalBusData(getApplicationContext()));
-                subscriber.onCompleted();
+            (ObservableEmitter<BusData> observableOnSubscribe) -> {
+                if (!observableOnSubscribe.isDisposed()) {
+                    observableOnSubscribe.onNext(busService.loadLocalBusData(getApplicationContext()));
+                    observableOnSubscribe.onComplete();
+                }
             })
             .doOnNext(DataHolder.INSTANCE::setBusData)
             .subscribeOn(Schedulers.io())
@@ -130,7 +134,7 @@ public class BaseActivity extends Activity {
 
         // Run local first and then online: Ensure that local data is loaded first
         Observable.zip(trainDataObservable, busDataObservable, (trainData, busData) -> true)
-            .doOnCompleted(() -> Observable.zip(trainArrivalsObservable, busArrivalsObservable, (trainArrivals, busArrivals) -> {
+            .doOnComplete(() -> Observable.zip(trainArrivalsObservable, busArrivalsObservable, (trainArrivals, busArrivals) -> {
                     App.setLastUpdate(Calendar.getInstance().getTime());
                     return FavoritesDTO.builder()
                         .trainArrivals(trainArrivals)

@@ -43,7 +43,7 @@ import fr.cph.chicago.data.PreferencesImpl;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.rx.observable.ObservableUtil;
-import fr.cph.chicago.rx.subscriber.BikeAllBikeStationsSubscriber;
+import fr.cph.chicago.rx.observer.BikeAllBikeStationsObserver;
 import fr.cph.chicago.util.Util;
 
 /**
@@ -92,7 +92,7 @@ public class BikeStationActivity extends AbstractStationActivity {
 
                 swipeRefreshLayout.setOnRefreshListener(
                     () -> ObservableUtil.createAllBikeStationsObservable()
-                        .subscribe(new BikeAllBikeStationsSubscriber(this, bikeStation.getId(), swipeRefreshLayout))
+                        .subscribe(new BikeAllBikeStationsObserver(this, bikeStation.getId(), swipeRefreshLayout))
                 );
 
                 isFavorite = isFavorite();
@@ -127,7 +127,7 @@ public class BikeStationActivity extends AbstractStationActivity {
         toolbar.setOnMenuItemClickListener((item -> {
             swipeRefreshLayout.setRefreshing(true);
             ObservableUtil.createAllBikeStationsObservable()
-                .subscribe(new BikeAllBikeStationsSubscriber(BikeStationActivity.this, bikeStation.getId(), swipeRefreshLayout));
+                .subscribe(new BikeAllBikeStationsObserver(BikeStationActivity.this, bikeStation.getId(), swipeRefreshLayout));
             return false;
         }));
         Util.setWindowsColor(this, toolbar, TrainLine.NA);

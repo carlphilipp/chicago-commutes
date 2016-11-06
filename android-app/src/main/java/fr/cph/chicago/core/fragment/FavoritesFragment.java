@@ -56,7 +56,7 @@ import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.dto.FavoritesDTO;
 import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.util.Util;
-import rx.Observable;
+import io.reactivex.Observable;
 
 import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;
 import static fr.cph.chicago.Constants.TRAINS_ARRIVALS_URL;
