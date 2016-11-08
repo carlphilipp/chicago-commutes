@@ -33,7 +33,6 @@ import android.widget.FrameLayout;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindColor;

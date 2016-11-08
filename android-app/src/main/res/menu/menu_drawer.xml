@@ -1,32 +1,38 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:checkableBehavior="single">
+    <group android:checkableBehavior="single" android:id="@+id/group_feature">
         <item
             android:id="@+id/navigation_favorites"
             android:icon="@drawable/ic_favorite_white_24dp"
-            android:title="@string/menu_favorites"/>
+            android:title="@string/menu_favorites" />
         <item
             android:id="@+id/navigation_train"
             android:icon="@drawable/ic_train_white_24dp"
-            android:title="@string/menu_train"/>
+            android:title="@string/menu_train" />
         <item
             android:id="@+id/navigation_bus"
             android:icon="@drawable/ic_directions_bus_white_24dp"
-            android:title="@string/menu_bus"/>
+            android:title="@string/menu_bus" />
         <item
             android:id="@+id/navigation_bike"
             android:icon="@drawable/ic_directions_bike_white_24dp"
-            android:title="@string/menu_divvy"/>
+            android:title="@string/menu_divvy" />
         <item
             android:id="@+id/navigation_nearby"
             android:icon="@drawable/ic_near_me_white_24dp"
-            android:title="@string/menu_nearby"/>
+            android:title="@string/menu_nearby" />
         <item
             android:id="@+id/navigation_cta_map"
             android:icon="@drawable/ic_map_white_24dp"
-            android:title="@string/menu_cta_map"/>
+            android:title="@string/menu_cta_map" />
+    </group>
+    <group android:checkableBehavior="single" android:id="@+id/group_more">
         <item
             android:id="@+id/rate_this_app"
             android:icon="@drawable/ic_star_white_24dp"
-            android:title="@string/menu_rate"/>
+            android:title="@string/menu_rate" />
+        <item
+            android:id="@+id/settings"
+            android:icon="@drawable/ic_settings_white_24dp"
+            android:title="@string/menu_settings" />
     </group>
 </menu>

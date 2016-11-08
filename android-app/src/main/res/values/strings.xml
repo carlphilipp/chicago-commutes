@@ -26,6 +26,7 @@
     <string name="menu_nearby">Nearby</string>
     <string name="menu_cta_map">CTA map</string>
     <string name="menu_rate">Rate this app</string>
+    <string name="menu_settings">Settings</string>
 
     <!-- Bundle -->
     <string name="bundle_train_arrivals">trainArrivals</string>
