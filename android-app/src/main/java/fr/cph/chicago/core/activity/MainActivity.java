@@ -45,6 +45,7 @@ import fr.cph.chicago.core.fragment.BusFragment;
 import fr.cph.chicago.core.fragment.CtaMapFragment;
 import fr.cph.chicago.core.fragment.FavoritesFragment;
 import fr.cph.chicago.core.fragment.NearbyFragment;
+import fr.cph.chicago.core.fragment.SettingsFragment;
 import fr.cph.chicago.core.fragment.TrainFragment;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
@@ -89,6 +90,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     String nearby;
     @BindString(R.string.cta_map)
     String ctaMap;
+    @BindString(R.string.settings)
+    String settings;
 
     @BindColor(R.color.primaryColorDarker)
     int primaryColorDarker;
@@ -107,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private BikeFragment bikeFragment;
     private NearbyFragment nearbyFragment;
     private CtaMapFragment ctaMapFragment;
+    private SettingsFragment settingsFragment;
 
     private String title;
 
@@ -331,6 +335,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.rate_this_app:
                 Util.rateThisApp(this);
+                break;
+            case R.id.settings:
+                setBarTitle(settings);
+                if (settingsFragment == null) {
+                    settingsFragment = SettingsFragment.newInstance(position + 1);
+                }
+                if (!this.isFinishing()) {
+                    fragmentManager.beginTransaction().replace(R.id.container, settingsFragment).commit();
+                }
+                drawerLayout.closeDrawer(GravityCompat.START);
+                hideActionBarMenu();
                 break;
         }
     }

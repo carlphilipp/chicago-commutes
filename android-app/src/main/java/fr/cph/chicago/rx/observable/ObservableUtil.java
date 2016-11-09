@@ -9,6 +9,7 @@ import com.annimon.stream.Optional;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 import fr.cph.chicago.core.App;
@@ -156,7 +157,7 @@ public class ObservableUtil {
             })
             .onErrorReturn(throwable -> {
                 Log.e(TAG, throwable.getMessage(), throwable);
-                return null;
+                return Collections.emptyList();
             })
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
@@ -170,7 +171,7 @@ public class ObservableUtil {
             })
             .onErrorReturn(throwable -> {
                 Log.e(TAG, throwable.getMessage(), throwable);
-                return null;
+                return Collections.emptyList();
             })
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
@@ -179,12 +180,10 @@ public class ObservableUtil {
             final FirstLoadDTO result = FirstLoadDTO.builder()
                 .busRoutes(busRoutes)
                 .bikeStations(bikeStations).build();
-            if (busRoutes == null) {
-                busRoutes = new ArrayList<>();
+            if (busRoutes.isEmpty()) {
                 result.setBusRoutesError(true);
             }
-            if (bikeStations == null) {
-                bikeStations = new ArrayList<>();
+            if (bikeStations.isEmpty()) {
                 result.setBikeStationsError(true);
             }
             return result;

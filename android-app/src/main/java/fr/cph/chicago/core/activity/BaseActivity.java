@@ -103,19 +103,19 @@ public class BaseActivity extends Activity {
     private void loadLocalAndFavoritesData() {
 
         // Train local data
-        final Observable<TrainData> trainDataObservable = Observable.create(
-        (ObservableEmitter<TrainData> observableOnSubscribe) -> {
-            if (!observableOnSubscribe.isDisposed()) {
-                observableOnSubscribe.onNext(trainService.loadLocalTrainData(getApplicationContext()));
-                observableOnSubscribe.onComplete();
-            }
-        })
+        final Observable<TrainData> trainLocalData = Observable.create(
+            (ObservableEmitter<TrainData> observableOnSubscribe) -> {
+                if (!observableOnSubscribe.isDisposed()) {
+                    observableOnSubscribe.onNext(trainService.loadLocalTrainData(getApplicationContext()));
+                    observableOnSubscribe.onComplete();
+                }
+            })
             .doOnNext(DataHolder.INSTANCE::setTrainData)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
 
         // Bus local data
-        final Observable<BusData> busDataObservable = Observable.create(
+        final Observable<BusData> busLocalData = Observable.create(
             (ObservableEmitter<BusData> observableOnSubscribe) -> {
                 if (!observableOnSubscribe.isDisposed()) {
                     observableOnSubscribe.onNext(busService.loadLocalBusData(getApplicationContext()));
@@ -127,26 +127,26 @@ public class BaseActivity extends Activity {
             .observeOn(AndroidSchedulers.mainThread());
 
         // Train online favorites
-        final Observable<SparseArray<TrainArrival>> trainArrivalsObservable = ObservableUtil.createTrainArrivals(getApplicationContext());
+        final Observable<SparseArray<TrainArrival>> trainOnlineFavorites = ObservableUtil.createTrainArrivals(getApplicationContext());
 
         // Bus online favorites
-        final Observable<List<BusArrival>> busArrivalsObservable = ObservableUtil.createBusArrivals(getApplicationContext());
+        final Observable<List<BusArrival>> busOnlineFavorites = ObservableUtil.createBusArrivals(getApplicationContext());
 
         // Run local first and then online: Ensure that local data is loaded first
-        Observable.zip(trainDataObservable, busDataObservable, (trainData, busData) -> true)
-            .doOnComplete(() -> Observable.zip(trainArrivalsObservable, busArrivalsObservable, (trainArrivals, busArrivals) -> {
-                    App.setLastUpdate(Calendar.getInstance().getTime());
-                    return FavoritesDTO.builder()
-                        .trainArrivals(trainArrivals)
-                        .busArrivals(busArrivals).build();
-                }
-            ).subscribe(
-                this::startMainActivity,
-                onError -> {
-                    Log.e(TAG, onError.getMessage(), onError);
-                    displayError("Oops, something went wrong!");
-                }
-            )).subscribe();
+        Observable.zip(trainLocalData, busLocalData, (trainData, busData) -> true)
+            .doOnComplete(() ->
+                Observable.zip(trainOnlineFavorites, busOnlineFavorites, (trainArrivals, busArrivals) -> {
+                        App.setLastUpdate(Calendar.getInstance().getTime());
+                        return FavoritesDTO.builder()
+                            .trainArrivals(trainArrivals)
+                            .busArrivals(busArrivals).build();
+                    }
+                ).subscribe(this::startMainActivity, onError -> {
+                        Log.e(TAG, onError.getMessage(), onError);
+                        displayError("Oops, something went wrong!");
+                    }
+                )
+            ).subscribe();
     }
 
     private void trackWithGoogleAnalytics() {
