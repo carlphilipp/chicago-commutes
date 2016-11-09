@@ -54,5 +54,4 @@ public class ConnectException extends TrackerException {
     public ConnectException(@NonNull final String message, @NonNull final Exception e) {
         super(message, e);
     }
-
 }

@@ -13,6 +13,7 @@ import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusPattern;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
+import fr.cph.chicago.entity.dto.BusArrivalDTO;
 import fr.cph.chicago.entity.dto.FavoritesDTO;
 import fr.cph.chicago.entity.dto.FirstLoadDTO;
 import fr.cph.chicago.entity.dto.TrainArrivalDTO;
@@ -45,7 +46,7 @@ public enum ObservableUtil {
         return Observable.create(
             (ObservableEmitter<TrainArrivalDTO> observableOnSubscribe) -> {
                 if (!observableOnSubscribe.isDisposed()) {
-                    TrainArrivalDTO trainArrivalDTO = TrainArrivalDTO.builder()
+                    final TrainArrivalDTO trainArrivalDTO = TrainArrivalDTO.builder()
                         .trainArrivalSparseArray(TRAIN_SERVICE.loadFavoritesTrain(context))
                         .error(false)
                         .build();
@@ -64,17 +65,24 @@ public enum ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<List<BusArrival>> createBusArrivals(@NonNull final Context context) {
+    public static Observable<BusArrivalDTO> createBusArrivals(@NonNull final Context context) {
         return Observable.create(
-            (ObservableEmitter<List<BusArrival>> observableOnSubscribe) -> {
+            (ObservableEmitter<BusArrivalDTO> observableOnSubscribe) -> {
                 if (!observableOnSubscribe.isDisposed()) {
-                    observableOnSubscribe.onNext(BUS_SERVICE.loadFavoritesBuses(context));
+                    final BusArrivalDTO busArrivalDTO = BusArrivalDTO.builder()
+                        .busArrivals(BUS_SERVICE.loadFavoritesBuses(context))
+                        .error(false)
+                        .build();
+                    observableOnSubscribe.onNext(busArrivalDTO);
                     observableOnSubscribe.onComplete();
                 }
             })
             .onErrorReturn(throwable -> {
                 Log.e(TAG, throwable.getMessage(), throwable);
-                return null;
+                return BusArrivalDTO.builder()
+                    .busArrivals(new ArrayList<>())
+                    .error(true)
+                    .build();
             })
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
@@ -100,24 +108,20 @@ public enum ObservableUtil {
         // Train online favorites
         final Observable<TrainArrivalDTO> trainArrivalsObservable = ObservableUtil.createTrainArrivals(context);
         // Bus online favorites
-        final Observable<List<BusArrival>> busArrivalsObservable = ObservableUtil.createBusArrivals(context);
+        final Observable<BusArrivalDTO> busArrivalsObservable = ObservableUtil.createBusArrivals(context);
         // Bikes online all stations
         final Observable<List<BikeStation>> bikeStationsObservable = ObservableUtil.createAllBikeStationsObservable();
         return Observable.zip(trainArrivalsObservable, busArrivalsObservable, bikeStationsObservable,
-            (trainArrivals, busArrivals, bikeStations) -> {
+            (trainArrivalsDTO, busArrivalsDTO, bikeStations) -> {
                 App.setLastUpdate(Calendar.getInstance().getTime());
                 final FavoritesDTO favoritesDTO = FavoritesDTO.builder()
-                    .trainArrivals(trainArrivals.getTrainArrivalSparseArray())
-                    .busArrivals(busArrivals)
-                    .bikeStations(bikeStations).build();
-                if (trainArrivals.isError()) {
-                    favoritesDTO.setTrainError(true);
-                    favoritesDTO.setTrainArrivals(new SparseArray<>());
-                }
-                if (busArrivals == null) {
-                    favoritesDTO.setBusError(true);
-                    favoritesDTO.setBusArrivals(new ArrayList<>());
-                }
+                    .trainArrivals(trainArrivalsDTO.getTrainArrivalSparseArray())
+                    .trainError(trainArrivalsDTO.isError())
+                    .busArrivals(busArrivalsDTO.getBusArrivals())
+                    .busError(busArrivalsDTO.isError())
+                    .bikeStations(bikeStations)
+                    .build();
+                // TODO see how should handle that last case
                 if (bikeStations == null) {
                     favoritesDTO.setBikeError(true);
                     favoritesDTO.setBikeStations(new ArrayList<>());

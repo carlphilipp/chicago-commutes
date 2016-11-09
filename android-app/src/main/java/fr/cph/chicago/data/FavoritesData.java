@@ -39,7 +39,7 @@ import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.entity.dto.BusArrivalDTO;
+import fr.cph.chicago.entity.dto.BusArrivalMappedDTO;
 import fr.cph.chicago.entity.dto.BusFavoriteDTO;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.Util;
@@ -190,9 +190,9 @@ public enum FavoritesData {
      * @return a nice map
      */
     @NonNull
-    public final BusArrivalDTO getBusArrivalsMapped(@NonNull final String routeId, @NonNull final Context context) {
+    public final BusArrivalMappedDTO getBusArrivalsMapped(@NonNull final String routeId, @NonNull final Context context) {
         // TODO check why (and if?) this method is called several time
-        final BusArrivalDTO busArrivalDTO = new BusArrivalDTO();
+        final BusArrivalMappedDTO busArrivalDTO = new BusArrivalMappedDTO();
         Stream.of(busArrivals)
             .filter(busArrival -> busArrival.getRouteId().equals(routeId))
             .filter(busArrival -> isInFavorites(routeId, busArrival.getStopId(), busArrival.getRouteDirection()))
@@ -203,7 +203,7 @@ public enum FavoritesData {
         return busArrivalDTO;
     }
 
-    private void addNoServiceBusIfNeeded(@NonNull final BusArrivalDTO busArrivalDTO, @NonNull final String routeId, @NonNull final Context context) {
+    private void addNoServiceBusIfNeeded(@NonNull final BusArrivalMappedDTO busArrivalDTO, @NonNull final String routeId, @NonNull final Context context) {
         for (final String bus : busFavorites) {
             final BusFavoriteDTO busFavorite = Util.decodeBusFavorite(bus);
             final String routeIdFav = busFavorite.getRouteId();
