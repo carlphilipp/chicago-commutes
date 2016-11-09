@@ -301,7 +301,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                     .filter(bikeStations::contains)
                     .sorted(Util.BIKE_COMPARATOR_NAME)
                     .collect(Collectors.toList());
-                trackWithGoogleAnalytics(activity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, getContext().getString(R.string.analytics_action_get_divvy_all));
+                trackWithGoogleAnalytics(activity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, activity.getString(R.string.analytics_action_get_divvy_all));
             }
             return bikeStationsRes;
         } catch (final ConnectException exception) {

@@ -98,7 +98,7 @@ public enum ObservableUtil {
             })
             .onErrorReturn(throwable -> {
                 Log.e(TAG, throwable.getMessage(), throwable);
-                return null;
+                return new ArrayList<>();
             })
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
@@ -114,19 +114,14 @@ public enum ObservableUtil {
         return Observable.zip(trainArrivalsObservable, busArrivalsObservable, bikeStationsObservable,
             (trainArrivalsDTO, busArrivalsDTO, bikeStations) -> {
                 App.setLastUpdate(Calendar.getInstance().getTime());
-                final FavoritesDTO favoritesDTO = FavoritesDTO.builder()
+                return FavoritesDTO.builder()
                     .trainArrivals(trainArrivalsDTO.getTrainArrivalSparseArray())
                     .trainError(trainArrivalsDTO.isError())
                     .busArrivals(busArrivalsDTO.getBusArrivals())
                     .busError(busArrivalsDTO.isError())
                     .bikeStations(bikeStations)
+                    .bikeError(bikeStations.isEmpty())
                     .build();
-                // TODO see how should handle that last case
-                if (bikeStations == null) {
-                    favoritesDTO.setBikeError(true);
-                    favoritesDTO.setBikeStations(new ArrayList<>());
-                }
-                return favoritesDTO;
             });
     }
 
