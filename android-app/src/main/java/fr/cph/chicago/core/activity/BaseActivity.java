@@ -38,6 +38,7 @@ import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.dto.FavoritesDTO;
+import fr.cph.chicago.entity.dto.TrainArrivalDTO;
 import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.service.BusService;
 import fr.cph.chicago.service.TrainService;
@@ -127,7 +128,7 @@ public class BaseActivity extends Activity {
             .observeOn(AndroidSchedulers.mainThread());
 
         // Train online favorites
-        final Observable<SparseArray<TrainArrival>> trainOnlineFavorites = ObservableUtil.createTrainArrivals(getApplicationContext());
+        final Observable<TrainArrivalDTO> trainOnlineFavorites = ObservableUtil.createTrainArrivals(getApplicationContext());
 
         // Bus online favorites
         final Observable<List<BusArrival>> busOnlineFavorites = ObservableUtil.createBusArrivals(getApplicationContext());
@@ -135,10 +136,11 @@ public class BaseActivity extends Activity {
         // Run local first and then online: Ensure that local data is loaded first
         Observable.zip(trainLocalData, busLocalData, (trainData, busData) -> true)
             .doOnComplete(() ->
-                Observable.zip(trainOnlineFavorites, busOnlineFavorites, (trainArrivals, busArrivals) -> {
+                Observable.zip(trainOnlineFavorites, busOnlineFavorites, (trainArrivalsDTO, busArrivals) -> {
+                    // TODO handle when error is set into DTO
                         App.setLastUpdate(Calendar.getInstance().getTime());
                         return FavoritesDTO.builder()
-                            .trainArrivals(trainArrivals)
+                            .trainArrivals(trainArrivalsDTO.getTrainArrivalSparseArray())
                             .busArrivals(busArrivals).build();
                     }
                 ).subscribe(this::startMainActivity, onError -> {
