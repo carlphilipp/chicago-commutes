@@ -115,10 +115,8 @@ public enum ObservableUtil {
             (trainArrivalsDTO, busArrivalsDTO, bikeStations) -> {
                 App.setLastUpdate(Calendar.getInstance().getTime());
                 return FavoritesDTO.builder()
-                    .trainArrivals(trainArrivalsDTO.getTrainArrivalSparseArray())
-                    .trainError(trainArrivalsDTO.isError())
-                    .busArrivals(busArrivalsDTO.getBusArrivals())
-                    .busError(busArrivalsDTO.isError())
+                    .trainArrivalDTO(trainArrivalsDTO)
+                    .busArrivalDTO(busArrivalsDTO)
                     .bikeStations(bikeStations)
                     .bikeError(bikeStations.isEmpty())
                     .build();
@@ -173,7 +171,7 @@ public enum ObservableUtil {
             })
             .onErrorReturn(throwable -> {
                 Log.e(TAG, throwable.getMessage(), throwable);
-                return Collections.emptyList();
+                return new ArrayList<>();
             })
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());

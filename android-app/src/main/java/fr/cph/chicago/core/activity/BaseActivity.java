@@ -22,7 +22,10 @@ import android.content.pm.PackageInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.util.SparseArray;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+
 import butterknife.BindString;
 import butterknife.ButterKnife;
 import fr.cph.chicago.R;
@@ -31,7 +34,6 @@ import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BusArrival;
-import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.dto.BusArrivalDTO;
 import fr.cph.chicago.entity.dto.FavoritesDTO;
 import fr.cph.chicago.entity.dto.TrainArrivalDTO;
@@ -48,10 +50,6 @@ import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import lombok.SneakyThrows;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
 
 import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;
 import static fr.cph.chicago.Constants.TRAINS_ARRIVALS_URL;
@@ -137,11 +135,10 @@ public class BaseActivity extends Activity {
         Observable.zip(trainLocalData, busLocalData, (trainData, busData) -> true)
             .doOnComplete(() ->
                 Observable.zip(trainOnlineFavorites, busOnlineFavorites, (trainArrivalsDTO, busArrivalsDTO) -> {
-                        // TODO handle when error is set into DTO
                         App.setLastUpdate(Calendar.getInstance().getTime());
                         return FavoritesDTO.builder()
-                            .trainArrivals(trainArrivalsDTO.getTrainArrivalSparseArray())
-                            .busArrivals(busArrivalsDTO.getBusArrivals())
+                            .trainArrivalDTO(trainArrivalsDTO)
+                            .busArrivalDTO(busArrivalsDTO)
                             .build();
                     }
                 ).subscribe(this::startMainActivity, onError -> {
@@ -165,10 +162,11 @@ public class BaseActivity extends Activity {
     private void startMainActivity(@NonNull final FavoritesDTO result) {
         final Intent intent = new Intent(this, MainActivity.class);
         final Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(getString(R.string.bundle_bus_arrivals), (ArrayList<BusArrival>) result.getBusArrivals());
-        bundle.putSparseParcelableArray(getString(R.string.bundle_train_arrivals), result.getTrainArrivals());
+        bundle.putParcelableArrayList(getString(R.string.bundle_bus_arrivals), (ArrayList<BusArrival>) result.getBusArrivalDTO().getBusArrivals());
+        bundle.putSparseParcelableArray(getString(R.string.bundle_train_arrivals), result.getTrainArrivalDTO().getTrainArrivalSparseArray());
+        bundle.putBoolean(getString(R.string.bundle_train_error), result.getTrainArrivalDTO().isError());
+        bundle.putBoolean(getString(R.string.bundle_bus_error), result.getBusArrivalDTO().isError());
         intent.putExtras(bundle);
-        // TODO add here some stuff in bundle to handle errors from observable
 
         finish();
         startActivity(intent);

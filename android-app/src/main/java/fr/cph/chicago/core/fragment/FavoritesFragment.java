@@ -265,37 +265,27 @@ public class FavoritesFragment extends Fragment {
     }
 
     public final void reloadData(final FavoritesDTO favoritesDTO) {
-        boolean error = false;
-        if (!favoritesDTO.isBikeError()) {
-            // Put into intent new bike stations data
-            activity.getIntent().putParcelableArrayListExtra(bundleBikeStation, (ArrayList<BikeStation>) favoritesDTO.getBikeStations());
-            bikeStations = favoritesDTO.getBikeStations();
-        } else {
-            error = true;
-        }
+        activity.getIntent().putParcelableArrayListExtra(bundleBikeStation, (ArrayList<BikeStation>) favoritesDTO.getBikeStations());
+        bikeStations = favoritesDTO.getBikeStations();
+        FavoritesData.INSTANCE.setBusArrivals(favoritesDTO.getBusArrivalDTO().getBusArrivals());
+        FavoritesData.INSTANCE.setTrainArrivals(favoritesDTO.getTrainArrivalDTO().getTrainArrivalSparseArray());
 
-        if (!favoritesDTO.isBusError()) {
-            FavoritesData.INSTANCE.setBusArrivals(favoritesDTO.getBusArrivals());
-        } else {
-            error = true;
-        }
-
-        if (!favoritesDTO.isTrainError()) {
-            FavoritesData.INSTANCE.setTrainArrivals(favoritesDTO.getTrainArrivals());
-        } else {
-            error = true;
-        }
         favoritesAdapter.setFavorites();
         favoritesAdapter.refreshUpdated();
         favoritesAdapter.refreshUpdatedView();
         favoritesAdapter.notifyDataSetChanged();
 
-        // Highlight background
         rootView.setBackgroundResource(R.drawable.highlight_selector);
         rootView.postDelayed(() -> rootView.setBackgroundResource(R.drawable.bg_selector), 100);
         stopRefreshing();
-        if (error) {
+        if (Util.isAtLeastTwoErrors(favoritesDTO.getTrainArrivalDTO().isError(), favoritesDTO.getBusArrivalDTO().isError(), favoritesDTO.isBikeError())) {
             Util.showMessage(activity, R.string.message_something_went_wrong);
+        } else if (favoritesDTO.getTrainArrivalDTO().isError()) {
+            Util.showMessage(activity, R.string.message_error_train_favorites);
+        } else if (favoritesDTO.getBusArrivalDTO().isError()) {
+            Util.showMessage(activity, R.string.message_error_bus_favorites);
+        } else if (favoritesDTO.isBikeError()) {
+            Util.showMessage(activity, R.string.message_error_bike_favorites);
         }
     }
 

@@ -137,6 +137,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             currentPosition = savedInstanceState == null ? R.id.navigation_favorites : savedInstanceState.getInt(SELECTED_ID);
             itemSelection(currentPosition);
+
+            checkForErrorInBundle();
+        }
+    }
+
+    private void checkForErrorInBundle() {
+        final boolean isTrainError = getIntent().getBooleanExtra(getString(R.string.bundle_train_error), false);
+        final boolean isBusError = getIntent().getBooleanExtra(getString(R.string.bundle_bus_error), false);
+        // FIXME The snackbar does not move up the search button
+        if (isTrainError && isBusError) {
+            Util.showSnackBar(this, R.string.message_something_went_wrong);
+        } else {
+            if (isTrainError) {
+                Util.showSnackBar(this, R.string.message_error_train_favorites);
+            } else if (isBusError) {
+                Util.showSnackBar(this, R.string.message_error_bus_favorites);
+            }
         }
     }
 
@@ -210,10 +227,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 dataHolder.getBusData().setBusRoutes(onNext.getBusRoutes());
                 refreshFirstLoadData(dataHolder.getBusData(), onNext.getBikeStations());
                 if (onNext.isBikeStationsError() || onNext.isBusRoutesError()) {
-                    Util.showOopsSomethingWentWrong(drawerLayout);
+                    Util.showSnackBar(this, R.string.message_something_went_wrong);
                 }
             },
-            onError -> Util.showOopsSomethingWentWrong(drawerLayout),
+            onError -> Util.showSnackBar(this, R.string.message_something_went_wrong),
             () -> {
                 Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ROUTES_URL, 0);
                 Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, getApplicationContext().getString(R.string.analytics_action_get_divvy_all), 0);

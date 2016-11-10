@@ -47,6 +47,9 @@
     <string name="bundle_bike_stations">bikeStations</string>
     <string name="bundle_train_stationId">stationId</string>
     <string name="bundle_title">title</string>
+    <string name="bundle_train_error">trainError</string>
+    <string name="bundle_bus_error">busError</string>
+    <string name="bundle_bike_error">bikeError</string>
 
     <string name="empty_string">&#160;</string>
     <string name="app_name">Chicago Commutes</string>
@@ -175,6 +178,9 @@
     <string name="message_error">Error!</string>
     <string name="message_error_could_not_load_path">Sorry, could not load the path!</string>
     <string name="message_error_divvy">Error while connecting or parsing divvy data</string>
+    <string name="message_error_train_favorites">Could not load trains :(</string>
+    <string name="message_error_bus_favorites">Could not load buses :(</string>
+    <string name="message_error_bike_favorites">Could not load bikes :(</string>
     <string name="message_open_details">Open details</string>
 
     <!-- Description -->

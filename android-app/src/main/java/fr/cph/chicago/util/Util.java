@@ -98,6 +98,10 @@ public enum Util {
         }
     }
 
+    public static boolean isAtLeastTwoErrors(final boolean isTrainError, final boolean isBusError, final boolean isBikeError) {
+        return (isTrainError && (isBusError || isBikeError)) || (isBusError && isBikeError);
+    }
+
     /**
      * Add to train favorites
      *
@@ -386,7 +390,7 @@ public enum Util {
         showSnackBar(view, message);
     }
 
-    private static void showSnackBar(@NonNull final Activity activity, final int message) {
+    public static void showSnackBar(@NonNull final Activity activity, final int message) {
         if (activity.getCurrentFocus() != null) {
             Snackbar.make(activity.getCurrentFocus(), activity.getString(message), Snackbar.LENGTH_SHORT).show();
         } else {
