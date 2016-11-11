@@ -343,7 +343,6 @@ public class TrainMapActivity extends Activity implements EasyPermissions.Permis
 
     @AfterPermissionGranted(GPS_ACCESS)
     private void enableMyLocationOnMapIfAllowed() {
-        Log.e("DRP", "enableMyLocationOnMapIfAllowed");
         if (EasyPermissions.hasPermissions(getApplicationContext(), ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)) {
             setLocationOnMap();
         } else {
@@ -353,19 +352,16 @@ public class TrainMapActivity extends Activity implements EasyPermissions.Permis
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-        Log.e("DRP", "onRequestPermissionsResult");
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 
     @Override
     public void onPermissionsGranted(int requestCode, List<String> perms) {
-        Log.e("DRP", "onPermissionsGranted");
         setLocationOnMap();
     }
 
     @Override
     public void onPermissionsDenied(int requestCode, List<String> perms) {
-        Log.e("DRP", "onPermissionsDenied");
     }
 
     public void setLocationOnMap() throws SecurityException {
