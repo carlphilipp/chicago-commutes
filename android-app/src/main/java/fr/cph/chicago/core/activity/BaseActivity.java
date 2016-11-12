@@ -18,7 +18,6 @@ package fr.cph.chicago.core.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -42,13 +41,12 @@ import fr.cph.chicago.service.BusService;
 import fr.cph.chicago.service.TrainService;
 import fr.cph.chicago.service.impl.BusServiceImpl;
 import fr.cph.chicago.service.impl.TrainServiceImpl;
+import fr.cph.chicago.util.RealmUtil;
 import fr.cph.chicago.util.Util;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
 import lombok.SneakyThrows;
 
 import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;
@@ -89,14 +87,7 @@ public class BaseActivity extends Activity {
 
     @SneakyThrows
     private void setUpRealm() {
-        final PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-        Realm.init(getApplicationContext());
-        RealmConfiguration realmConfig = new RealmConfiguration
-            .Builder()
-            .schemaVersion(packageInfo.versionCode)
-            .deleteRealmIfMigrationNeeded()
-            .build();
-        Realm.setDefaultConfiguration(realmConfig);
+        RealmUtil.setUpRealm(getApplicationContext());
     }
 
     private void loadLocalAndFavoritesData() {

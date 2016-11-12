@@ -35,11 +35,16 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import fr.cph.chicago.core.App;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.enumeration.TrainDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.Util;
+
+import static android.content.Context.MODE_PRIVATE;
+import static fr.cph.chicago.core.App.PREFERENCE_FAVORITES;
+import static fr.cph.chicago.core.App.PREFERENCE_FAVORITES_BIKE_NAME_MAPPING;
+import static fr.cph.chicago.core.App.PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING;
+import static fr.cph.chicago.core.App.PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING;
 
 /**
  * Class that store user preferences into phoneO
@@ -64,10 +69,10 @@ public enum PreferencesImpl implements Preferences {
      */
     @Override
     public void saveTrainFavorites(@NonNull final Context context, @NonNull final String name, @NonNull final List<Integer> favorites) {
-        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+        final SharedPreferences sharedPref = getPrivatePreferences(context);
         final SharedPreferences.Editor editor = sharedPref.edit();
         final Set<String> set = Stream.of(favorites).map(Object::toString).collect(Collectors.toSet());
-        Log.v(PreferencesImpl.TAG, "Put train favorites: " + favorites.toString());
+        Log.v(TAG, "Put train favorites: " + favorites.toString());
         editor.putStringSet(name, set);
         editor.apply();
     }
@@ -81,7 +86,7 @@ public enum PreferencesImpl implements Preferences {
      */
     @Override
     public boolean hasFavorites(@NonNull final Context context, @NonNull final String trains, @NonNull final String bus, @NonNull final String bike) {
-        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+        final SharedPreferences sharedPref = getPrivatePreferences(context);
         final Set<String> setPref1 = sharedPref.getStringSet(trains, null);
         final Set<String> setPref2 = sharedPref.getStringSet(bus, null);
         final Set<String> setPref3 = sharedPref.getStringSet(bike, null);
@@ -90,7 +95,7 @@ public enum PreferencesImpl implements Preferences {
 
     @Override
     public void saveBikeFavorites(@NonNull final Context context, @NonNull final String name, @NonNull final List<String> favorites) {
-        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+        final SharedPreferences sharedPref = getPrivatePreferences(context);
         final SharedPreferences.Editor editor = sharedPref.edit();
         final Set<String> set = Stream.of(favorites).collect(Collectors.toSet());
         Log.v(TAG, "Put bike favorites: " + set.toString());
@@ -101,15 +106,15 @@ public enum PreferencesImpl implements Preferences {
     @Override
     @NonNull
     public List<String> getBikeFavorites(@NonNull final Context context, @NonNull final String name) {
-        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+        final SharedPreferences sharedPref = getPrivatePreferences(context);
         final Set<String> setPref = sharedPref.getStringSet(name, new LinkedHashSet<>());
-        Log.i(TAG, "Read bike favorites : " + setPref.toString());
+        Log.v(TAG, "Read bike favorites : " + setPref.toString());
         return Stream.of(setPref).sorted().collect(Collectors.toList());
     }
 
     @Override
     public void addBikeRouteNameMapping(@NonNull final Context context, @NonNull final String bikeId, @NonNull final String bikeName) {
-        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES_BIKE_NAME_MAPPING, Context.MODE_PRIVATE);
+        final SharedPreferences sharedPref = getPrivatePreferencesBikeMapping(context);
         final SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(bikeId, bikeName);
         Log.v(TAG, "Add bike name mapping : " + bikeId + " => " + bikeName);
@@ -119,7 +124,7 @@ public enum PreferencesImpl implements Preferences {
     @Override
     @Nullable
     public String getBikeRouteNameMapping(@NonNull final Context context, @NonNull final String bikeId) {
-        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES_BIKE_NAME_MAPPING, Context.MODE_PRIVATE);
+        final SharedPreferences sharedPref = getPrivatePreferencesBikeMapping(context);
         final String bikeName = sharedPref.getString(bikeId, null);
         Log.v(TAG, "Get bike name mapping : " + bikeId + " => " + bikeName);
         return bikeName;
@@ -133,7 +138,7 @@ public enum PreferencesImpl implements Preferences {
      */
     @Override
     public void saveBusFavorites(@NonNull final Context context, @NonNull final String name, @NonNull final List<String> favorites) {
-        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+        final SharedPreferences sharedPref = getPrivatePreferences(context);
         final SharedPreferences.Editor editor = sharedPref.edit();
         final Set<String> set = new LinkedHashSet<>();
         set.addAll(favorites);
@@ -151,7 +156,7 @@ public enum PreferencesImpl implements Preferences {
     @Override
     @NonNull
     public List<String> getBusFavorites(@NonNull final Context context, @NonNull final String name) {
-        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+        final SharedPreferences sharedPref = getPrivatePreferences(context);
         final Set<String> setPref = sharedPref.getStringSet(name, new LinkedHashSet<>());
         Log.v(TAG, "Read bus favorites : " + setPref.toString());
         return Stream.of(setPref).sorted(
@@ -173,7 +178,7 @@ public enum PreferencesImpl implements Preferences {
 
     @Override
     public void addBusRouteNameMapping(@NonNull final Context context, @NonNull final String busStopId, @NonNull final String routeName) {
-        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING, Context.MODE_PRIVATE);
+        final SharedPreferences sharedPref = getPrivatePreferencesBusRouteMapping(context);
         final SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(busStopId, routeName);
         Log.v(TAG, "Add bus route name mapping : " + busStopId + " => " + routeName);
@@ -183,7 +188,7 @@ public enum PreferencesImpl implements Preferences {
     @Override
     @Nullable
     public String getBusRouteNameMapping(@NonNull final Context context, @NonNull final String busStopId) {
-        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING, Context.MODE_PRIVATE);
+        final SharedPreferences sharedPref = getPrivatePreferencesBusRouteMapping(context);
         final String routeName = sharedPref.getString(busStopId, null);
         Log.v(TAG, "Get bus route name mapping : " + busStopId + " => " + routeName);
         return routeName;
@@ -191,7 +196,7 @@ public enum PreferencesImpl implements Preferences {
 
     @Override
     public void addBusStopNameMapping(@NonNull final Context context, @NonNull final String busStopId, @NonNull final String stopName) {
-        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING, Context.MODE_PRIVATE);
+        final SharedPreferences sharedPref = getPrivatePreferencesBusStopMapping(context);
         final SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(busStopId, stopName);
         Log.v(TAG, "Add bus stop name mapping : " + busStopId + " => " + stopName);
@@ -201,7 +206,7 @@ public enum PreferencesImpl implements Preferences {
     @Override
     @Nullable
     public String getBusStopNameMapping(@NonNull final Context context, @NonNull final String busStopId) {
-        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING, Context.MODE_PRIVATE);
+        final SharedPreferences sharedPref = getPrivatePreferencesBusStopMapping(context);
         final String stopName = sharedPref.getString(busStopId, null);
         Log.v(TAG, "Get bus stop name mapping : " + busStopId + " => " + stopName);
         return stopName;
@@ -216,7 +221,7 @@ public enum PreferencesImpl implements Preferences {
     @Override
     @NonNull
     public List<Integer> getTrainFavorites(@NonNull final Context context, @NonNull final String name) {
-        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+        final SharedPreferences sharedPref = getPrivatePreferences(context);
         final Set<String> setPref = sharedPref.getStringSet(name, new LinkedHashSet<>());
         Log.v(TAG, "Read train favorites : " + setPref);
         return Stream.of(setPref)
@@ -238,7 +243,7 @@ public enum PreferencesImpl implements Preferences {
      */
     @Override
     public void saveTrainFilter(@NonNull final Context context, @NonNull final Integer stationId, @NonNull final TrainLine line, @NonNull final TrainDirection direction, final boolean value) {
-        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+        final SharedPreferences sharedPref = getPrivatePreferences(context);
         final SharedPreferences.Editor editor = sharedPref.edit();
         editor.putBoolean(String.valueOf(stationId) + "_" + line + "_" + direction, value);
         editor.apply();
@@ -254,13 +259,13 @@ public enum PreferencesImpl implements Preferences {
      */
     @Override
     public boolean getTrainFilter(@NonNull final Context context, @NonNull final Integer stationId, @NonNull final TrainLine line, @NonNull final TrainDirection direction) {
-        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+        final SharedPreferences sharedPref = getPrivatePreferences(context);
         return sharedPref.getBoolean(String.valueOf(stationId) + "_" + line + "_" + direction, true);
     }
 
     @Override
     public void saveHideShowNearby(@NonNull final Context context, boolean hide) {
-        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+        final SharedPreferences sharedPref = getPrivatePreferences(context);
         final SharedPreferences.Editor editor = sharedPref.edit();
         editor.putBoolean("hideNearby", hide);
         editor.apply();
@@ -268,14 +273,14 @@ public enum PreferencesImpl implements Preferences {
 
     @Override
     public boolean getHideShowNearby(@NonNull final Context context) {
-        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+        final SharedPreferences sharedPref = getPrivatePreferences(context);
         return sharedPref.getBoolean("hideNearby", true);
     }
 
     @Override
     public Date getRateLastSeen(@NonNull final Context context) {
         try {
-            final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+            final SharedPreferences sharedPref = getPrivatePreferences(context);
             final String defaultDate = FORMAT.format(new Date());
             return FORMAT.parse(sharedPref.getString("rateLastSeen", defaultDate));
         } catch (final ParseException e) {
@@ -285,9 +290,30 @@ public enum PreferencesImpl implements Preferences {
 
     @Override
     public void setRateLastSeen(@NonNull final Context context) {
-        final SharedPreferences sharedPref = context.getApplicationContext().getSharedPreferences(App.PREFERENCE_FAVORITES, Context.MODE_PRIVATE);
+        final SharedPreferences sharedPref = getPrivatePreferences(context);
         final SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("rateLastSeen", FORMAT.format(new Date()));
         editor.apply();
+    }
+
+    @Override
+    public void clearPreferences(@NonNull final Context context) {
+        getPrivatePreferences(context).edit().clear().apply();
+    }
+
+    private SharedPreferences getPrivatePreferences(@NonNull final Context context) {
+        return context.getSharedPreferences(PREFERENCE_FAVORITES, MODE_PRIVATE);
+    }
+
+    private SharedPreferences getPrivatePreferencesBusStopMapping(@NonNull final Context context) {
+        return context.getSharedPreferences(PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING, MODE_PRIVATE);
+    }
+
+    private SharedPreferences getPrivatePreferencesBusRouteMapping(@NonNull final Context context) {
+        return context.getSharedPreferences(PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING, MODE_PRIVATE);
+    }
+
+    private SharedPreferences getPrivatePreferencesBikeMapping(@NonNull final Context context) {
+        return context.getSharedPreferences(PREFERENCE_FAVORITES_BIKE_NAME_MAPPING, MODE_PRIVATE);
     }
 }

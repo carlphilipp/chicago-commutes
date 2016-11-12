@@ -55,4 +55,6 @@ public interface Preferences {
     Date getRateLastSeen(@NonNull Context context);
 
     void setRateLastSeen(@NonNull Context context);
+
+    void clearPreferences(@NonNull final Context context);
 }

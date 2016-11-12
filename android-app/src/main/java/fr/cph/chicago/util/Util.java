@@ -20,6 +20,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -68,6 +70,7 @@ import fr.cph.chicago.entity.dto.BusFavoriteDTO;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
+import lombok.SneakyThrows;
 
 /**
  * Util class
@@ -458,5 +461,11 @@ public enum Util {
         return name.length() > 25
             ? name.substring(0, 24).trim() + "..."
             : name;
+    }
+
+    @SneakyThrows(PackageManager.NameNotFoundException.class)
+    public static String getCurrentVersion(final Context context){
+        final PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+        return packageInfo.versionName;
     }
 }

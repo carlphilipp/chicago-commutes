@@ -185,4 +185,10 @@
 
     <!-- Description -->
     <string name="description">Description</string>
+
+    <!-- Preferences -->
+    <string name="preferences_data_cache_title">Data cache</string>
+    <string name="preferences_clear_cache_title">Clear cache</string>
+    <string name="preferences_clear_cache_desc">Remove all cache data</string>
+    <string name="preferences_about_title">About</string>
 </resources>
