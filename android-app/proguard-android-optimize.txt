@@ -102,6 +102,7 @@
 -keepnames class com.fasterxml.jackson.** { *; }
 -keep class org.apache.http.** { *; }
 -keep class android.net.http.** { *; }
+-keep class io.realm.internal.async.QueryUpdateTask$Result
 
 -keep class android.os.Build$VERSION { int SDK_INT; }
 -dontnote android.os.Build$VERSION
