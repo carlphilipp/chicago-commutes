@@ -21,7 +21,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 
-import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -37,31 +36,27 @@ import fr.cph.chicago.R;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class TrainMapOnCameraChangeListener implements OnCameraChangeListener {
+public class RefreshTrainMarkers {
 
-    private final BitmapDescriptor bitmapDescriptor1;
-    private final BitmapDescriptor bitmapDescriptor2;
-    private final BitmapDescriptor bitmapDescriptor3;
-    private BitmapDescriptor currentBitmapDescriptor;
-    private List<Marker> trainMarkers;
+    private final BitmapDescriptor bitmapDescrSmall;
+    private final BitmapDescriptor bitmapDescrMedium;
+    private final BitmapDescriptor bitmapDescrLarge;
+    private BitmapDescriptor currentDescriptor;
 
-    public TrainMapOnCameraChangeListener(@NonNull final Context context) {
+    public RefreshTrainMarkers(@NonNull final Context context) {
         final Bitmap icon = BitmapFactory.decodeResource(context.getResources(), R.drawable.train);
-        final Bitmap bitmap1 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 9, icon.getHeight() / 9, true);
-        final Bitmap bitmap2 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 5, icon.getHeight() / 5, true);
-        final Bitmap bitmap3 = Bitmap.createScaledBitmap(icon, icon.getWidth() / 3, icon.getHeight() / 3, true);
-        this.bitmapDescriptor1 = BitmapDescriptorFactory.fromBitmap(bitmap1);
-        this.bitmapDescriptor2 = BitmapDescriptorFactory.fromBitmap(bitmap2);
-        this.bitmapDescriptor3 = BitmapDescriptorFactory.fromBitmap(bitmap3);
-        this.setCurrentBitmapDescriptor(bitmapDescriptor2);
+        bitmapDescrSmall = createBitMapDescriptor(icon, 9);
+        bitmapDescrMedium = createBitMapDescriptor(icon, 5);
+        bitmapDescrLarge = createBitMapDescriptor(icon, 3);
+        currentDescriptor = bitmapDescrSmall;
     }
 
-    public void setTrainMarkers(@NonNull final List<Marker> trainMarkers) {
-        this.trainMarkers = trainMarkers;
+    private BitmapDescriptor createBitMapDescriptor(final Bitmap icon, final int size) {
+        final Bitmap bitmap = Bitmap.createScaledBitmap(icon, icon.getWidth() / size, icon.getHeight() / size, true);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
-    @Override
-    public void onCameraChange(final CameraPosition position) {
+    public void refresh(@NonNull final CameraPosition position, @NonNull final List<Marker> trainMarkers) {
         float currentZoom = -1;
         if (position.zoom != currentZoom) {
             float oldZoom = currentZoom;
@@ -69,19 +64,19 @@ public class TrainMapOnCameraChangeListener implements OnCameraChangeListener {
 
             if (isIn(currentZoom, 12.9f, 11f) && !isIn(oldZoom, 12.9f, 11f)) {
                 for (final Marker marker : trainMarkers) {
-                    marker.setIcon(bitmapDescriptor1);
+                    marker.setIcon(bitmapDescrSmall);
                 }
-                setCurrentBitmapDescriptor(bitmapDescriptor1);
+                currentDescriptor = bitmapDescrSmall;
             } else if (isIn(currentZoom, 14.9f, 13f) && !isIn(oldZoom, 14.9f, 13f)) {
                 for (final Marker marker : trainMarkers) {
-                    marker.setIcon(bitmapDescriptor2);
+                    marker.setIcon(bitmapDescrMedium);
                 }
-                setCurrentBitmapDescriptor(bitmapDescriptor2);
+                currentDescriptor = bitmapDescrMedium;
             } else if (isIn(currentZoom, 21f, 15f) && !isIn(oldZoom, 21f, 15f)) {
                 for (final Marker marker : trainMarkers) {
-                    marker.setIcon(bitmapDescriptor3);
+                    marker.setIcon(bitmapDescrLarge);
                 }
-                setCurrentBitmapDescriptor(bitmapDescriptor3);
+                currentDescriptor = bitmapDescrLarge;
             }
         }
     }
@@ -90,12 +85,7 @@ public class TrainMapOnCameraChangeListener implements OnCameraChangeListener {
         return num >= inf && num <= sup;
     }
 
-    @NonNull
-    public final BitmapDescriptor getCurrentBitmapDescriptor() {
-        return currentBitmapDescriptor;
-    }
-
-    private void setCurrentBitmapDescriptor(@NonNull final BitmapDescriptor currentBitmapDescriptor) {
-        this.currentBitmapDescriptor = currentBitmapDescriptor;
+    public BitmapDescriptor getCurrentBitmapDescriptor() {
+        return currentDescriptor;
     }
 }

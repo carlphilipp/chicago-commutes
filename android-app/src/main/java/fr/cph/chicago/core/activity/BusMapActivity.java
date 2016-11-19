@@ -63,7 +63,7 @@ import butterknife.ButterKnife;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.core.App;
-import fr.cph.chicago.core.listener.RefreshMarkers;
+import fr.cph.chicago.core.listener.RefreshBusMarkers;
 import fr.cph.chicago.entity.Bus;
 import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusPattern;
@@ -131,7 +131,7 @@ public class BusMapActivity extends FragmentActivity implements EasyPermissions.
     private String busRouteId;
     private String[] bounds;
     private int j;
-    private RefreshMarkers refreshBusesBitmap;
+    private RefreshBusMarkers refreshBusesBitmap;
 
     private boolean refreshingInfoWindow = false;
     private boolean loadPattern = true;
@@ -162,14 +162,16 @@ public class BusMapActivity extends FragmentActivity implements EasyPermissions.
             busStationMarkers = new ArrayList<>();
             views = new HashMap<>();
             status = new HashMap<>();
-            refreshBusesBitmap = new RefreshMarkers(getApplicationContext());
-
-            setToolbar();
-
-            Util.trackScreen(getApplicationContext(), analyticsBusMap);
+            refreshBusesBitmap = new RefreshBusMarkers(getApplicationContext());
 
             final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
+
+            // Init toolbar
+            setToolbar();
+
+            // Google analytics
+            Util.trackScreen(getApplicationContext(), analyticsBusMap);
         }
     }
 

@@ -37,14 +37,14 @@ import fr.cph.chicago.R;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class RefreshMarkers {
+public class RefreshBusMarkers {
 
     private final BitmapDescriptor bitmapDescrSmall;
     private final BitmapDescriptor bitmapDescrMedium;
     private final BitmapDescriptor bitmapDescrLarge;
     private BitmapDescriptor currentDescriptor;
 
-    public RefreshMarkers(@NonNull final Context context) {
+    public RefreshBusMarkers(@NonNull final Context context) {
         final Bitmap icon = BitmapFactory.decodeResource(context.getResources(), R.drawable.bus);
         bitmapDescrSmall = createBitMapDescriptor(icon, 9);
         bitmapDescrMedium = createBitMapDescriptor(icon, 5);

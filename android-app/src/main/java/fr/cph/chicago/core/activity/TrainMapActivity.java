@@ -16,29 +16,27 @@
 
 package fr.cph.chicago.core.activity;
 
-import android.app.Activity;
-import android.app.FragmentManager;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.annimon.stream.Stream;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMapOptions;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -64,7 +62,7 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.adapter.TrainMapSnippetAdapter;
-import fr.cph.chicago.core.listener.TrainMapOnCameraChangeListener;
+import fr.cph.chicago.core.listener.RefreshTrainMarkers;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.Eta;
@@ -91,14 +89,16 @@ import static fr.cph.chicago.connection.CtaRequestType.TRAIN_LOCATION;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class TrainMapActivity extends Activity implements EasyPermissions.PermissionCallbacks {
+public class TrainMapActivity extends FragmentActivity implements EasyPermissions.PermissionCallbacks,
+    GoogleMap.OnCameraIdleListener,
+    OnMapReadyCallback {
 
     @BindView(android.R.id.content)
     ViewGroup viewGroup;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @BindView(R.id.map)
-    RelativeLayout layout;
+    @BindView(R.id.map_container)
+    LinearLayout layout;
 
     @BindString(R.string.bundle_train_line)
     String bundleTrainLine;
@@ -114,7 +114,6 @@ public class TrainMapActivity extends Activity implements EasyPermissions.Permis
     @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
     Drawable arrowBackWhite;
 
-    private MapFragment mapFragment;
     private Marker selectedMarker;
     private Map<Marker, View> views;
 
@@ -122,7 +121,9 @@ public class TrainMapActivity extends Activity implements EasyPermissions.Permis
     private Map<Marker, Boolean> status;
     private List<Marker> markers;
     private TrainData trainData;
-    private TrainMapOnCameraChangeListener trainListener;
+    private RefreshTrainMarkers trainListener;
+    private GoogleMap googleMap;
+    private RefreshTrainMarkers refreshTrainMarkers;
 
     private boolean centerMap = true;
     private boolean refreshingInfoWindow = false;
@@ -147,6 +148,11 @@ public class TrainMapActivity extends Activity implements EasyPermissions.Permis
                 line = getIntent().getExtras().getString(bundleTrainLine);
             }
 
+            refreshTrainMarkers = new RefreshTrainMarkers(getApplicationContext());
+
+            final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+
             // Init data
             initData();
 
@@ -163,11 +169,10 @@ public class TrainMapActivity extends Activity implements EasyPermissions.Permis
         trainData = DataHolder.INSTANCE.getTrainData();
         markers = new ArrayList<>();
         status = new HashMap<>();
-        trainListener = new TrainMapOnCameraChangeListener(getApplicationContext());
+        trainListener = new RefreshTrainMarkers(getApplicationContext());
     }
 
     private void setToolbar() {
-
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener((item -> {
             new LoadTrainPositionTask(line, trainData).execute(false, true);
@@ -185,73 +190,9 @@ public class TrainMapActivity extends Activity implements EasyPermissions.Permis
     }
 
     @Override
-    public final void onStart() {
-        super.onStart();
-        if (mapFragment == null) {
-            final FragmentManager fm = getFragmentManager();
-            mapFragment = (MapFragment) fm.findFragmentById(R.id.map);
-            final GoogleMapOptions options = new GoogleMapOptions();
-            final CameraPosition camera = new CameraPosition(Util.CHICAGO, 10, 0, 0);
-            options.camera(camera);
-            mapFragment = MapFragment.newInstance(options);
-            mapFragment.setRetainInstance(true);
-            fm.beginTransaction().replace(R.id.map, mapFragment).commit();
-        }
-    }
-
-    @Override
     public final void onStop() {
         super.onStop();
         centerMap = false;
-    }
-
-    @Override
-    public final void onResume() {
-        super.onResume();
-        enableMyLocationOnMapIfAllowed();
-        mapFragment.getMapAsync(googleMap -> {
-            googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-                @Override
-                public View getInfoWindow(final Marker marker) {
-                    return null;
-                }
-
-                @Override
-                public View getInfoContents(final Marker marker) {
-                    if (!"".equals(marker.getSnippet())) {
-                        // View can be null
-                        final View view = views.get(marker);
-                        if (!refreshingInfoWindow) {
-                            selectedMarker = marker;
-                            final String runNumber = marker.getSnippet();
-                            new LoadTrainFollowTask(view, false, trainData).execute(runNumber);
-                            status.put(marker, false);
-                        }
-                        return view;
-                    } else {
-                        return null;
-                    }
-                }
-            });
-
-            googleMap.setOnInfoWindowClickListener(marker -> {
-                if (!"".equals(marker.getSnippet())) {
-                    final View view = views.get(marker);
-                    if (!refreshingInfoWindow) {
-                        selectedMarker = marker;
-                        final String runNumber = marker.getSnippet();
-                        final Boolean current = status.get(marker);
-                        new LoadTrainFollowTask(view, !current, trainData).execute(runNumber);
-                        status.put(marker, !current);
-                    }
-                }
-            });
-            if (Util.isNetworkAvailable(getApplicationContext())) {
-                new LoadTrainPositionTask(line, trainData).execute(centerMap, true);
-            } else {
-                Util.showNetworkErrorMessage(layout);
-            }
-        });
     }
 
     @Override
@@ -276,67 +217,58 @@ public class TrainMapActivity extends Activity implements EasyPermissions.Permis
     }
 
     private void centerMapOnTrain(@NonNull final List<Train> result) {
-        mapFragment.getMapAsync(googleMap -> {
-            final Position position;
-            final int zoom;
-            if (result.size() == 1) {
-                position = result.get(0).getPosition();
-                zoom = 15;
-            } else {
-                position = Train.getBestPosition(result);
-                zoom = 11;
-            }
-            final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
-        });
+        final Position position;
+        final int zoom;
+        if (result.size() == 1) {
+            position = result.get(0).getPosition();
+            zoom = 15;
+        } else {
+            position = Train.getBestPosition(result);
+            zoom = 11;
+        }
+        final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
     }
 
     private void drawTrains(@NonNull final List<Train> trains) {
-        mapFragment.getMapAsync(googleMap -> {
-            // TODO see if views can actually be null.
-            if (views == null) {
-                views = new HashMap<>();
-            } else {
-                views.clear();
-            }
-            Stream.of(markers).forEach(Marker::remove);
-            markers.clear();
-            final BitmapDescriptor bitmapDescr = trainListener.getCurrentBitmapDescriptor();
-            Stream.of(trains).forEach(train -> {
-                final LatLng point = new LatLng(train.getPosition().getLatitude(), train.getPosition().getLongitude());
-                final String title = "To " + train.getDestName();
-                final String snippet = Integer.toString(train.getRouteNumber());
+        // TODO see if views can actually be null.
+        if (views == null) {
+            views = new HashMap<>();
+        } else {
+            views.clear();
+        }
+        Stream.of(markers).forEach(Marker::remove);
+        markers.clear();
+        final BitmapDescriptor bitmapDescr = trainListener.getCurrentBitmapDescriptor();
+        Stream.of(trains).forEach(train -> {
+            final LatLng point = new LatLng(train.getPosition().getLatitude(), train.getPosition().getLongitude());
+            final String title = "To " + train.getDestName();
+            final String snippet = Integer.toString(train.getRouteNumber());
 
-                final Marker marker = googleMap.addMarker(new MarkerOptions().position(point).title(title).snippet(snippet).icon(bitmapDescr).anchor(0.5f, 0.5f).rotation(train.getHeading()).flat(true));
-                markers.add(marker);
+            final Marker marker = googleMap.addMarker(new MarkerOptions().position(point).title(title).snippet(snippet).icon(bitmapDescr).anchor(0.5f, 0.5f).rotation(train.getHeading()).flat(true));
+            markers.add(marker);
 
-                final View view = getLayoutInflater().inflate(R.layout.marker_train, viewGroup, false);
-                final TextView title2 = (TextView) view.findViewById(R.id.title);
-                title2.setText(title);
+            final View view = getLayoutInflater().inflate(R.layout.marker_train, viewGroup, false);
+            final TextView title2 = (TextView) view.findViewById(R.id.title);
+            title2.setText(title);
 
-                final TextView color = (TextView) view.findViewById(R.id.route_color_value);
-                color.setBackgroundColor(TrainLine.fromXmlString(line).getColor());
+            final TextView color = (TextView) view.findViewById(R.id.route_color_value);
+            color.setBackgroundColor(TrainLine.fromXmlString(line).getColor());
 
-                views.put(marker, view);
-            });
-            trainListener.setTrainMarkers(markers);
-
-            googleMap.setOnCameraChangeListener(trainListener);
+            views.put(marker, view);
         });
     }
 
     private void drawLine(@NonNull final List<Position> positions) {
         if (drawLine) {
-            mapFragment.getMapAsync(googleMap -> {
-                final PolylineOptions poly = new PolylineOptions();
-                poly.width(7f);
-                poly.geodesic(true).color(TrainLine.fromXmlString(line).getColor());
-                Stream.of(positions)
-                    .map(position -> new LatLng(position.getLatitude(), position.getLongitude()))
-                    .forEach(poly::add);
+            final PolylineOptions poly = new PolylineOptions();
+            poly.width(7f);
+            poly.geodesic(true).color(TrainLine.fromXmlString(line).getColor());
+            Stream.of(positions)
+                .map(position -> new LatLng(position.getLatitude(), position.getLongitude()))
+                .forEach(poly::add);
 
-                googleMap.addPolyline(poly);
-            });
+            googleMap.addPolyline(poly);
             drawLine = false;
         }
     }
@@ -365,7 +297,65 @@ public class TrainMapActivity extends Activity implements EasyPermissions.Permis
     }
 
     public void setLocationOnMap() throws SecurityException {
-        mapFragment.getMapAsync(googleMap -> googleMap.setMyLocationEnabled(true));
+        googleMap.setMyLocationEnabled(true);
+    }
+
+    @Override
+    public void onCameraIdle() {
+        refreshTrainMarkers.refresh(googleMap.getCameraPosition(), markers);
+    }
+
+    @Override
+    public void onMapReady(final GoogleMap googleMap) {
+        this.googleMap = googleMap;
+        this.googleMap.setOnCameraIdleListener(this);
+        this.googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Util.CHICAGO, 10));
+
+        enableMyLocationOnMapIfAllowed();
+        this.googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+            @Override
+            public View getInfoWindow(final Marker marker) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(final Marker marker) {
+                if (!"".equals(marker.getSnippet())) {
+                    // View can be null
+                    final View view = views.get(marker);
+                    if (!refreshingInfoWindow) {
+                        selectedMarker = marker;
+                        final String runNumber = marker.getSnippet();
+                        new LoadTrainFollowTask(view, false, trainData).execute(runNumber);
+                        status.put(marker, false);
+                    }
+                    return view;
+                } else {
+                    return null;
+                }
+            }
+        });
+        this.googleMap.setOnInfoWindowClickListener(marker -> {
+            if (!"".equals(marker.getSnippet())) {
+                final View view = views.get(marker);
+                if (!refreshingInfoWindow) {
+                    selectedMarker = marker;
+                    final String runNumber = marker.getSnippet();
+                    final Boolean current = status.get(marker);
+                    new LoadTrainFollowTask(view, !current, trainData).execute(runNumber);
+                    status.put(marker, !current);
+                }
+            }
+        });
+        loadActivityData();
+    }
+
+    private void loadActivityData() {
+        if (Util.isNetworkAvailable(getApplicationContext())) {
+            new LoadTrainPositionTask(line, trainData).execute(centerMap, true);
+        } else {
+            Util.showNetworkErrorMessage(layout);
+        }
     }
 
     private class LoadTrainFollowTask extends AsyncTask<String, Void, List<Eta>> {
