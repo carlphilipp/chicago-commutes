@@ -306,7 +306,7 @@ public class FavoritesFragment extends Fragment {
     }
 
     /**
-     * Start refresh task
+     * Start refreshBusAndStation task
      */
     private void startRefreshTask() {
         refreshTimingTask = (RefreshTimingTask) new RefreshTimingTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

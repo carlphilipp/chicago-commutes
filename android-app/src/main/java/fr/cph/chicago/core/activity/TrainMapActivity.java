@@ -62,7 +62,7 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.adapter.TrainMapSnippetAdapter;
-import fr.cph.chicago.core.listener.RefreshTrainMarkers;
+import fr.cph.chicago.map.RefreshTrainMarkers;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.Eta;
@@ -239,7 +239,7 @@ public class TrainMapActivity extends FragmentActivity implements EasyPermission
         }
         Stream.of(markers).forEach(Marker::remove);
         markers.clear();
-        final BitmapDescriptor bitmapDescr = trainListener.getCurrentBitmapDescriptor();
+        final BitmapDescriptor bitmapDescr = trainListener.getCurrentDescriptor();
         Stream.of(trains).forEach(train -> {
             final LatLng point = new LatLng(train.getPosition().getLatitude(), train.getPosition().getLongitude());
             final String title = "To " + train.getDestName();

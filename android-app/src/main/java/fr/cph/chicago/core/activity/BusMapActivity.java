@@ -63,7 +63,7 @@ import butterknife.ButterKnife;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.core.App;
-import fr.cph.chicago.core.listener.RefreshBusMarkers;
+import fr.cph.chicago.map.RefreshBusMarkers;
 import fr.cph.chicago.entity.Bus;
 import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusPattern;
@@ -225,7 +225,7 @@ public class BusMapActivity extends FragmentActivity implements EasyPermissions.
 
     public void drawBuses(@NonNull final List<Bus> buses) {
         cleanAllMarkers();
-        final BitmapDescriptor bitmapDescr = refreshBusesBitmap.getCurrentBitmapDescriptor();
+        final BitmapDescriptor bitmapDescr = refreshBusesBitmap.getCurrentDescriptor();
         Stream.of(buses).forEach(bus -> {
             final LatLng point = new LatLng(bus.getPosition().getLatitude(), bus.getPosition().getLongitude());
             final Marker marker = googleMap.addMarker(new MarkerOptions().position(point).title("To " + bus.getDestination()).snippet(bus.getId() + "").icon(bitmapDescr).anchor(0.5f, 0.5f).rotation(bus.getHeading()).flat(true));
@@ -318,7 +318,7 @@ public class BusMapActivity extends FragmentActivity implements EasyPermissions.
 
     @Override
     public void onCameraIdle() {
-        refreshBusesBitmap.refresh(googleMap.getCameraPosition(), busMarkers, busStationMarkers);
+        refreshBusesBitmap.refreshBusAndStation(googleMap.getCameraPosition(), busMarkers, busStationMarkers);
     }
 
     @Override
