@@ -71,7 +71,7 @@ public class CtaMapFragment extends Fragment {
     }
 
     private class BitmapWorkerTask extends AsyncTask<Void, Void, Bitmap> {
-        private PhotoView imageView;
+        private final PhotoView imageView;
 
         BitmapWorkerTask(final PhotoView imageView) {
             this.imageView = imageView;

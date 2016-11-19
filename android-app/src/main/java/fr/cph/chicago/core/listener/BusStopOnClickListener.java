@@ -31,8 +31,8 @@ import java.util.List;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.activity.BusActivity;
 import fr.cph.chicago.core.adapter.PopupBusDetailsFavoritesAdapter;
-import fr.cph.chicago.entity.dto.BusDetailsDTO;
 import fr.cph.chicago.entity.BusStop;
+import fr.cph.chicago.entity.dto.BusDetailsDTO;
 import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.util.Util;
 import io.reactivex.Observable;
@@ -81,7 +81,7 @@ public class BusStopOnClickListener implements View.OnClickListener {
 
     private void loadBusDetails(final View view, final BusDetailsDTO busDetails) {
         ObservableUtil.createBusStopBoundObservable(context.getApplicationContext(), busDetails.getBusRouteId(), busDetails.getBoundTitle())
-            .subscribe(onNext -> {
+            .subscribe(onNext ->
                     Observable.fromIterable(onNext)
                         .filter(busStop -> Integer.toString(busStop.getId()).equals(busDetails.getStopId()))
                         .firstElement()
@@ -104,8 +104,7 @@ public class BusStopOnClickListener implements View.OnClickListener {
                             onError -> {
                                 Log.e(TAG, onError.getMessage(), onError);
                                 Util.showOopsSomethingWentWrong(parent);
-                            });
-                },
+                            }),
                 onError -> {
                     Log.e(TAG, onError.getMessage(), onError);
                     Util.showNetworkErrorMessage(view);

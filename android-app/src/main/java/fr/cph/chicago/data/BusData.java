@@ -47,8 +47,7 @@ public enum BusData {
     private static final String TAG = BusData.class.getSimpleName();
 
     @Getter
-    @Setter
-    private List<BusRoute> busRoutes;
+    private final List<BusRoute> busRoutes;
 
     BusData() {
         this.busRoutes = new ArrayList<>();
