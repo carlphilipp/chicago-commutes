@@ -18,27 +18,18 @@ package fr.cph.chicago.core.activity;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.annimon.stream.Stream;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -56,14 +47,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import butterknife.BindDrawable;
 import butterknife.BindString;
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.core.App;
-import fr.cph.chicago.map.RefreshBusMarkers;
 import fr.cph.chicago.entity.Bus;
 import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusPattern;
@@ -71,21 +59,17 @@ import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
+import fr.cph.chicago.map.RefreshBusMarkers;
 import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.rx.observer.BusFollowObserver;
 import fr.cph.chicago.rx.observer.BusObserver;
 import fr.cph.chicago.util.Util;
-import pub.devrel.easypermissions.AfterPermissionGranted;
-import pub.devrel.easypermissions.EasyPermissions;
 
-import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
-import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;
 import static fr.cph.chicago.Constants.BUSES_DIRECTION_URL;
 import static fr.cph.chicago.Constants.BUSES_PATTERN_URL;
 import static fr.cph.chicago.Constants.BUSES_VEHICLES_URL;
-import static fr.cph.chicago.Constants.GPS_ACCESS;
 import static fr.cph.chicago.connection.CtaRequestType.BUS_DIRECTION;
 import static fr.cph.chicago.connection.CtaRequestType.BUS_PATTERN;
 
@@ -93,18 +77,9 @@ import static fr.cph.chicago.connection.CtaRequestType.BUS_PATTERN;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class BusMapActivity extends FragmentActivity implements EasyPermissions.PermissionCallbacks,
-    GoogleMap.OnCameraIdleListener,
-    OnMapReadyCallback {
+public class BusMapActivity extends AbstractMapActivity {
 
     private static final String TAG = BusMapActivity.class.getSimpleName();
-
-    @BindView(android.R.id.content)
-    ViewGroup viewGroup;
-    @BindView(R.id.map_container)
-    LinearLayout layout;
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
 
     @BindString(R.string.bundle_bus_id)
     String bundleBusId;
@@ -117,11 +92,6 @@ public class BusMapActivity extends FragmentActivity implements EasyPermissions.
     @BindString(R.string.request_rt)
     String requestRt;
 
-    @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
-    Drawable arrowBackWhite;
-
-    private Marker selectedMarker;
-
     private List<Marker> busMarkers;
     private List<Marker> busStationMarkers;
     private Map<Marker, View> views;
@@ -133,10 +103,7 @@ public class BusMapActivity extends FragmentActivity implements EasyPermissions.
     private int j;
     private RefreshBusMarkers refreshBusesBitmap;
 
-    private boolean refreshingInfoWindow = false;
     private boolean loadPattern = true;
-
-    private GoogleMap googleMap;
 
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
@@ -158,14 +125,8 @@ public class BusMapActivity extends FragmentActivity implements EasyPermissions.
                 bounds = extras.getStringArray(bundleBusBounds);
             }
 
-            busMarkers = new ArrayList<>();
-            busStationMarkers = new ArrayList<>();
-            views = new HashMap<>();
-            status = new HashMap<>();
-            refreshBusesBitmap = new RefreshBusMarkers(getApplicationContext());
-
-            final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-            mapFragment.getMapAsync(this);
+            // Init data
+            initData();
 
             // Init toolbar
             setToolbar();
@@ -181,8 +142,19 @@ public class BusMapActivity extends FragmentActivity implements EasyPermissions.
         loadPattern = false;
     }
 
-    private void setToolbar() {
-        toolbar.inflateMenu(R.menu.main);
+    @Override
+    protected void initData() {
+        super.initData();
+        busMarkers = new ArrayList<>();
+        busStationMarkers = new ArrayList<>();
+        views = new HashMap<>();
+        status = new HashMap<>();
+        refreshBusesBitmap = new RefreshBusMarkers(getApplicationContext());
+    }
+
+    @Override
+    protected void setToolbar() {
+        super.setToolbar();
         toolbar.setOnMenuItemClickListener((item -> {
             Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_VEHICLES_URL, 0);
             ObservableUtil.createBusListObservable(getApplicationContext(), busId, busRouteId).subscribe(new BusObserver(BusMapActivity.this, false, layout));
@@ -190,23 +162,7 @@ public class BusMapActivity extends FragmentActivity implements EasyPermissions.
         }));
 
         Util.setWindowsColor(this, toolbar, TrainLine.NA);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            toolbar.setElevation(4);
-        }
-
         toolbar.setTitle(busRouteId);
-        toolbar.setNavigationIcon(arrowBackWhite);
-        toolbar.setOnClickListener(v -> finish());
-    }
-
-    public void refreshInfoWindow() {
-        if (selectedMarker == null) {
-            return;
-        }
-        refreshingInfoWindow = true;
-        selectedMarker.showInfoWindow();
-        refreshingInfoWindow = false;
     }
 
     public void centerMapOnBus(@NonNull final List<Bus> result) {
@@ -219,8 +175,7 @@ public class BusMapActivity extends FragmentActivity implements EasyPermissions.
             position = Bus.getBestPosition(result);
             zoom = 11;
         }
-        final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+        centerMapOn(position.getLatitude(), position.getLongitude(), zoom);
     }
 
     public void drawBuses(@NonNull final List<Bus> buses) {
@@ -228,7 +183,7 @@ public class BusMapActivity extends FragmentActivity implements EasyPermissions.
         final BitmapDescriptor bitmapDescr = refreshBusesBitmap.getCurrentDescriptor();
         Stream.of(buses).forEach(bus -> {
             final LatLng point = new LatLng(bus.getPosition().getLatitude(), bus.getPosition().getLongitude());
-            final Marker marker = googleMap.addMarker(new MarkerOptions().position(point).title("To " + bus.getDestination()).snippet(bus.getId() + "").icon(bitmapDescr).anchor(0.5f, 0.5f).rotation(bus.getHeading()).flat(true));
+            final Marker marker = getGoogleMap().addMarker(new MarkerOptions().position(point).title("To " + bus.getDestination()).snippet(bus.getId() + "").icon(bitmapDescr).anchor(0.5f, 0.5f).rotation(bus.getHeading()).flat(true));
             busMarkers.add(marker);
 
             final LayoutInflater layoutInflater = (LayoutInflater) BusMapActivity.this.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -257,7 +212,7 @@ public class BusMapActivity extends FragmentActivity implements EasyPermissions.
                 .map(patternPoint -> {
                     final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
                     poly.add(point);
-                    final Marker marker = googleMap.addMarker(new MarkerOptions()
+                    final Marker marker = getGoogleMap().addMarker(new MarkerOptions()
                         .position(point)
                         .title(patternPoint.getStopName() + " (" + pattern.getDirection() + ")")
                         .snippet("")
@@ -267,37 +222,9 @@ public class BusMapActivity extends FragmentActivity implements EasyPermissions.
                     return marker;
                 })
                 .forEach(busStationMarkers::add);
-            googleMap.addPolyline(poly);
+            getGoogleMap().addPolyline(poly);
             j++;
         });
-    }
-
-    @AfterPermissionGranted(GPS_ACCESS)
-    private void enableMyLocationOnMapIfAllowed() {
-        if (EasyPermissions.hasPermissions(getApplicationContext(), ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)) {
-            setLocationOnMap();
-        } else {
-            EasyPermissions.requestPermissions(this, "Would you like to see your current location on the map?", GPS_ACCESS, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
-
-    @Override
-    public void onPermissionsGranted(int requestCode, List<String> perms) {
-        setLocationOnMap();
-    }
-
-    @Override
-    public void onPermissionsDenied(int requestCode, List<String> perms) {
-
-    }
-
-    public void setLocationOnMap() throws SecurityException {
-        googleMap.setMyLocationEnabled(true);
     }
 
     @Override
@@ -318,17 +245,14 @@ public class BusMapActivity extends FragmentActivity implements EasyPermissions.
 
     @Override
     public void onCameraIdle() {
-        refreshBusesBitmap.refreshBusAndStation(googleMap.getCameraPosition(), busMarkers, busStationMarkers);
+        refreshBusesBitmap.refreshBusAndStation(getGoogleMap().getCameraPosition(), busMarkers, busStationMarkers);
     }
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
-        this.googleMap = googleMap;
-        this.googleMap.setOnCameraIdleListener(this);
-        this.googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Util.CHICAGO, 10));
+        super.onMapReady(googleMap);
 
-        enableMyLocationOnMapIfAllowed();
-        this.googleMap.setInfoWindowAdapter(new InfoWindowAdapter() {
+        getGoogleMap().setInfoWindowAdapter(new InfoWindowAdapter() {
             @Override
             public View getInfoWindow(final Marker marker) {
                 return null;
@@ -339,7 +263,7 @@ public class BusMapActivity extends FragmentActivity implements EasyPermissions.
                 if (!"".equals(marker.getSnippet())) {
                     final View view = views.get(marker);
                     if (!refreshingInfoWindow) {
-                        selectedMarker = marker;
+                        setSelectedMarker(marker);
                         final String busId = marker.getSnippet();
                         Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL, 0);
                         ObservableUtil.createFollowBusObservable(getApplicationContext(), busId)
@@ -353,11 +277,11 @@ public class BusMapActivity extends FragmentActivity implements EasyPermissions.
             }
         });
 
-        this.googleMap.setOnInfoWindowClickListener(marker -> {
+        getGoogleMap().setOnInfoWindowClickListener(marker -> {
             if (!"".equals(marker.getSnippet())) {
                 final View view = views.get(marker);
                 if (!refreshingInfoWindow) {
-                    selectedMarker = marker;
+                    setSelectedMarker(marker);
                     final String runNumber = marker.getSnippet();
                     final boolean current = status.get(marker);
                     Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL, 0);

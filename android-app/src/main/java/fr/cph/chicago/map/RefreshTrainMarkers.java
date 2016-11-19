@@ -22,7 +22,7 @@ import android.support.annotation.NonNull;
 import fr.cph.chicago.R;
 
 /**
- * Train map on camera change listener
+ * Refresh train markers
  *
  * @author Carl-Philipp Harmant
  * @version 1

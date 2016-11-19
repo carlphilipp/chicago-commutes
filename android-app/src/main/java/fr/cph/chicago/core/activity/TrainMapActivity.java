@@ -16,26 +16,17 @@
 
 package fr.cph.chicago.core.activity;
 
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.annimon.stream.Stream;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -54,15 +45,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.BindDrawable;
 import butterknife.BindString;
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.adapter.TrainMapSnippetAdapter;
-import fr.cph.chicago.map.RefreshTrainMarkers;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.Eta;
@@ -72,14 +60,10 @@ import fr.cph.chicago.entity.Train;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
+import fr.cph.chicago.map.RefreshTrainMarkers;
 import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.util.Util;
-import pub.devrel.easypermissions.AfterPermissionGranted;
-import pub.devrel.easypermissions.EasyPermissions;
 
-import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
-import static android.Manifest.permission.ACCESS_FINE_LOCATION;
-import static fr.cph.chicago.Constants.GPS_ACCESS;
 import static fr.cph.chicago.Constants.TRAINS_FOLLOW_URL;
 import static fr.cph.chicago.Constants.TRAINS_LOCATION_URL;
 import static fr.cph.chicago.connection.CtaRequestType.TRAIN_FOLLOW;
@@ -89,16 +73,7 @@ import static fr.cph.chicago.connection.CtaRequestType.TRAIN_LOCATION;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class TrainMapActivity extends FragmentActivity implements EasyPermissions.PermissionCallbacks,
-    GoogleMap.OnCameraIdleListener,
-    OnMapReadyCallback {
-
-    @BindView(android.R.id.content)
-    ViewGroup viewGroup;
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
-    @BindView(R.id.map_container)
-    LinearLayout layout;
+public class TrainMapActivity extends AbstractMapActivity {
 
     @BindString(R.string.bundle_train_line)
     String bundleTrainLine;
@@ -111,22 +86,16 @@ public class TrainMapActivity extends FragmentActivity implements EasyPermission
     @BindString(R.string.request_rt)
     String requestRt;
 
-    @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
-    Drawable arrowBackWhite;
 
-    private Marker selectedMarker;
     private Map<Marker, View> views;
 
     private String line;
     private Map<Marker, Boolean> status;
     private List<Marker> markers;
     private TrainData trainData;
-    private RefreshTrainMarkers trainListener;
-    private GoogleMap googleMap;
     private RefreshTrainMarkers refreshTrainMarkers;
 
     private boolean centerMap = true;
-    private boolean refreshingInfoWindow = false;
     private boolean drawLine = true;
 
     public TrainMapActivity() {
@@ -142,16 +111,9 @@ public class TrainMapActivity extends FragmentActivity implements EasyPermission
             setContentView(R.layout.activity_map);
             ButterKnife.bind(this);
 
-            if (savedInstanceState != null) {
-                line = savedInstanceState.getString(bundleTrainLine);
-            } else {
-                line = getIntent().getExtras().getString(bundleTrainLine);
-            }
-
-            refreshTrainMarkers = new RefreshTrainMarkers(getApplicationContext());
-
-            final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-            mapFragment.getMapAsync(this);
+            line = savedInstanceState != null
+                ? savedInstanceState.getString(bundleTrainLine)
+                : getIntent().getExtras().getString(bundleTrainLine);
 
             // Init data
             initData();
@@ -164,28 +126,25 @@ public class TrainMapActivity extends FragmentActivity implements EasyPermission
         }
     }
 
-    private void initData() {
-        // Load data
+    @Override
+    protected void initData() {
+        super.initData();
         trainData = DataHolder.INSTANCE.getTrainData();
         markers = new ArrayList<>();
         status = new HashMap<>();
-        trainListener = new RefreshTrainMarkers(getApplicationContext());
+        refreshTrainMarkers = new RefreshTrainMarkers(getApplicationContext());
     }
 
-    private void setToolbar() {
-        toolbar.inflateMenu(R.menu.main);
+    @Override
+    protected void setToolbar() {
+        super.setToolbar();
         toolbar.setOnMenuItemClickListener((item -> {
             new LoadTrainPositionTask(line, trainData).execute(false, true);
             return false;
         }));
+
         final TrainLine trainLine = TrainLine.fromXmlString(line);
         Util.setWindowsColor(this, toolbar, trainLine);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            toolbar.setElevation(4);
-        }
-        toolbar.setNavigationIcon(arrowBackWhite);
-        toolbar.setOnClickListener(v -> finish());
-
         toolbar.setTitle(trainLine.toStringWithLine());
     }
 
@@ -207,15 +166,6 @@ public class TrainMapActivity extends FragmentActivity implements EasyPermission
         super.onSaveInstanceState(savedInstanceState);
     }
 
-    private void refreshInfoWindow() {
-        if (selectedMarker == null) {
-            return;
-        }
-        refreshingInfoWindow = true;
-        selectedMarker.showInfoWindow();
-        refreshingInfoWindow = false;
-    }
-
     private void centerMapOnTrain(@NonNull final List<Train> result) {
         final Position position;
         final int zoom;
@@ -226,8 +176,7 @@ public class TrainMapActivity extends FragmentActivity implements EasyPermission
             position = Train.getBestPosition(result);
             zoom = 11;
         }
-        final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+        centerMapOn(position.getLatitude(), position.getLongitude(), zoom);
     }
 
     private void drawTrains(@NonNull final List<Train> trains) {
@@ -237,15 +186,14 @@ public class TrainMapActivity extends FragmentActivity implements EasyPermission
         } else {
             views.clear();
         }
-        Stream.of(markers).forEach(Marker::remove);
-        markers.clear();
-        final BitmapDescriptor bitmapDescr = trainListener.getCurrentDescriptor();
+        cleanAllMarkers();
+        final BitmapDescriptor bitmapDescr = refreshTrainMarkers.getCurrentDescriptor();
         Stream.of(trains).forEach(train -> {
             final LatLng point = new LatLng(train.getPosition().getLatitude(), train.getPosition().getLongitude());
             final String title = "To " + train.getDestName();
             final String snippet = Integer.toString(train.getRouteNumber());
 
-            final Marker marker = googleMap.addMarker(new MarkerOptions().position(point).title(title).snippet(snippet).icon(bitmapDescr).anchor(0.5f, 0.5f).rotation(train.getHeading()).flat(true));
+            final Marker marker = getGoogleMap().addMarker(new MarkerOptions().position(point).title(title).snippet(snippet).icon(bitmapDescr).anchor(0.5f, 0.5f).rotation(train.getHeading()).flat(true));
             markers.add(marker);
 
             final View view = getLayoutInflater().inflate(R.layout.marker_train, viewGroup, false);
@@ -259,6 +207,11 @@ public class TrainMapActivity extends FragmentActivity implements EasyPermission
         });
     }
 
+    private void cleanAllMarkers() {
+        Stream.of(markers).forEach(Marker::remove);
+        markers.clear();
+    }
+
     private void drawLine(@NonNull final List<Position> positions) {
         if (drawLine) {
             final PolylineOptions poly = new PolylineOptions();
@@ -268,51 +221,20 @@ public class TrainMapActivity extends FragmentActivity implements EasyPermission
                 .map(position -> new LatLng(position.getLatitude(), position.getLongitude()))
                 .forEach(poly::add);
 
-            googleMap.addPolyline(poly);
+            getGoogleMap().addPolyline(poly);
             drawLine = false;
         }
     }
 
-    @AfterPermissionGranted(GPS_ACCESS)
-    private void enableMyLocationOnMapIfAllowed() {
-        if (EasyPermissions.hasPermissions(getApplicationContext(), ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)) {
-            setLocationOnMap();
-        } else {
-            EasyPermissions.requestPermissions(this, "Would you like to see your current location on the map?", GPS_ACCESS, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
-
-    @Override
-    public void onPermissionsGranted(int requestCode, List<String> perms) {
-        setLocationOnMap();
-    }
-
-    @Override
-    public void onPermissionsDenied(int requestCode, List<String> perms) {
-    }
-
-    public void setLocationOnMap() throws SecurityException {
-        googleMap.setMyLocationEnabled(true);
-    }
-
     @Override
     public void onCameraIdle() {
-        refreshTrainMarkers.refresh(googleMap.getCameraPosition(), markers);
+        refreshTrainMarkers.refresh(getGoogleMap().getCameraPosition(), markers);
     }
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
-        this.googleMap = googleMap;
-        this.googleMap.setOnCameraIdleListener(this);
-        this.googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Util.CHICAGO, 10));
-
-        enableMyLocationOnMapIfAllowed();
-        this.googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+        super.onMapReady(googleMap);
+        getGoogleMap().setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
             @Override
             public View getInfoWindow(final Marker marker) {
                 return null;
@@ -324,7 +246,7 @@ public class TrainMapActivity extends FragmentActivity implements EasyPermission
                     // View can be null
                     final View view = views.get(marker);
                     if (!refreshingInfoWindow) {
-                        selectedMarker = marker;
+                        setSelectedMarker(marker);
                         final String runNumber = marker.getSnippet();
                         new LoadTrainFollowTask(view, false, trainData).execute(runNumber);
                         status.put(marker, false);
@@ -335,11 +257,11 @@ public class TrainMapActivity extends FragmentActivity implements EasyPermission
                 }
             }
         });
-        this.googleMap.setOnInfoWindowClickListener(marker -> {
+        getGoogleMap().setOnInfoWindowClickListener(marker -> {
             if (!"".equals(marker.getSnippet())) {
                 final View view = views.get(marker);
                 if (!refreshingInfoWindow) {
-                    selectedMarker = marker;
+                    setSelectedMarker(marker);
                     final String runNumber = marker.getSnippet();
                     final Boolean current = status.get(marker);
                     new LoadTrainFollowTask(view, !current, trainData).execute(runNumber);
