@@ -49,7 +49,6 @@
     <string name="bundle_title">title</string>
     <string name="bundle_train_error">trainError</string>
     <string name="bundle_bus_error">busError</string>
-    <string name="bundle_bike_error">bikeError</string>
 
     <string name="empty_string">&#160;</string>
     <string name="app_name">Chicago Commutes</string>
@@ -141,11 +140,8 @@
     <string name="analytics_action_get_bus">CTA Bus</string>
     <string name="analytics_action_get_train">CTA Train</string>
     <string name="analytics_action_get_divvy">Divvy</string>
-    <string name="analytics_action_get_google">Google</string>
 
     <string name="analytics_action_get_divvy_all">All</string>
-
-    <string name="analytics_action_get_google_map_street_view">Street View Picture</string>
 
     <string name="analytics_action_refresh_fav">Refresh favorites</string>
 
@@ -167,17 +163,13 @@
     <string name="message_no_train_found">No trains found!</string>
     <string name="message_error_while_loading_data">Error while loading data!</string>
     <string name="message_see_all_buses_on_line">See all buses on line&#160;</string>
-    <string name="message_error_google_street">Error while connecting to google street view API</string>
     <string name="message_network_error">No network connection detected!</string>
     <string name="message_add_fav">Added to favorites!</string>
     <string name="message_remove_fav">Removed from favorites!</string>
     <string name="message_too_fast">You are a bit fast! Try again in a second!</string>
     <string name="message_not_ready">Not ready yet. Please try again in few seconds!</string>
     <string name="message_something_went_wrong">Oops something went wrong!</string>
-    <string name="message_surprising_error">A surprising error has occurred. Try again!</string>
-    <string name="message_error">Error!</string>
     <string name="message_error_could_not_load_path">Sorry, could not load the path!</string>
-    <string name="message_error_divvy">Error while connecting or parsing divvy data</string>
     <string name="message_error_train_favorites">Could not load trains :(</string>
     <string name="message_error_bus_favorites">Could not load buses :(</string>
     <string name="message_error_bike_favorites">Could not load bikes :(</string>
