@@ -216,8 +216,8 @@ public class BusMapActivity extends AbstractMapActivity {
                     if ("S".equals(patternPoint.getType())) {
                         marker = getGoogleMap().addMarker(new MarkerOptions()
                             .position(point)
-                            .title(patternPoint.getStopName() + " (" + pattern.getDirection() + ")")
-                            .snippet("")
+                            .title(patternPoint.getStopName())
+                            .snippet(pattern.getDirection())
                             .icon(j == 0 ? red : blue)
                         );
                         marker.setVisible(false);
