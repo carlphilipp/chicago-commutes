@@ -212,15 +212,20 @@ public class BusMapActivity extends AbstractMapActivity {
                 .map(patternPoint -> {
                     final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());
                     poly.add(point);
-                    final Marker marker = getGoogleMap().addMarker(new MarkerOptions()
-                        .position(point)
-                        .title(patternPoint.getStopName() + " (" + pattern.getDirection() + ")")
-                        .snippet("")
-                        .icon(j == 0 ? red : blue)
-                    );
-                    marker.setVisible(false);
+                    Marker marker = null;
+                    if ("S".equals(patternPoint.getType())) {
+                        marker = getGoogleMap().addMarker(new MarkerOptions()
+                            .position(point)
+                            .title(patternPoint.getStopName() + " (" + pattern.getDirection() + ")")
+                            .snippet("")
+                            .icon(j == 0 ? red : blue)
+                        );
+                        marker.setVisible(false);
+                    }
+                    // Potential null sent, if stream api change, it could fail
                     return marker;
                 })
+                .filter(marker -> marker != null)
                 .forEach(busStationMarkers::add);
             getGoogleMap().addPolyline(poly);
             j++;
