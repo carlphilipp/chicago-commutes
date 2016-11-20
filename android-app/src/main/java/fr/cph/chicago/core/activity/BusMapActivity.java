@@ -183,11 +183,19 @@ public class BusMapActivity extends AbstractMapActivity {
         final BitmapDescriptor bitmapDescr = refreshBusesBitmap.getCurrentDescriptor();
         Stream.of(buses).forEach(bus -> {
             final LatLng point = new LatLng(bus.getPosition().getLatitude(), bus.getPosition().getLongitude());
-            final Marker marker = getGoogleMap().addMarker(new MarkerOptions().position(point).title("To " + bus.getDestination()).snippet(bus.getId() + "").icon(bitmapDescr).anchor(0.5f, 0.5f).rotation(bus.getHeading()).flat(true));
+            final Marker marker = getGoogleMap().addMarker(
+                new MarkerOptions().position(point)
+                    .title("To " + bus.getDestination())
+                    .snippet(bus.getId() + "")
+                    .icon(bitmapDescr)
+                    .anchor(0.5f, 0.5f)
+                    .rotation(bus.getHeading())
+                    .flat(true)
+            );
             busMarkers.add(marker);
 
             final LayoutInflater layoutInflater = (LayoutInflater) BusMapActivity.this.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            final View view = layoutInflater.inflate(R.layout.marker_train, viewGroup, false);
+            final View view = layoutInflater.inflate(R.layout.marker, viewGroup, false);
             final TextView title = (TextView) view.findViewById(R.id.title);
             title.setText(marker.getTitle());
 

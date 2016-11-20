@@ -196,12 +196,9 @@ public class TrainMapActivity extends AbstractMapActivity {
             final Marker marker = getGoogleMap().addMarker(new MarkerOptions().position(point).title(title).snippet(snippet).icon(bitmapDescr).anchor(0.5f, 0.5f).rotation(train.getHeading()).flat(true));
             markers.add(marker);
 
-            final View view = getLayoutInflater().inflate(R.layout.marker_train, viewGroup, false);
+            final View view = getLayoutInflater().inflate(R.layout.marker, viewGroup, false);
             final TextView title2 = (TextView) view.findViewById(R.id.title);
             title2.setText(title);
-
-            final TextView color = (TextView) view.findViewById(R.id.route_color_value);
-            color.setBackgroundColor(TrainLine.fromXmlString(line).getColor());
 
             views.put(marker, view);
         });
