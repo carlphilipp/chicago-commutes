@@ -73,7 +73,6 @@ public class TrainMapSnippetAdapter extends BaseAdapter {
 			time.setText(eta.getTimeLeftDueDelay());
 		} else {
 			name.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.grey));
-			name.setTypeface(null, Typeface.BOLD);
 			name.setGravity(Gravity.CENTER);
 		}
 		return convertView;

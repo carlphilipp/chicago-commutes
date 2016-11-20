@@ -73,7 +73,6 @@ public class BusMapSnippetAdapter extends BaseAdapter {
             final TextView timeTextView = (TextView) convertView.findViewById(R.id.time);
             timeTextView.setText(arrival.getTimeLeftDueDelay());
         } else {
-            stationNameTextView.setTypeface(null, Typeface.BOLD);
             stationNameTextView.setText(arrival.getStopName());
             stationNameTextView.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.grey));
             stationNameTextView.setGravity(Gravity.CENTER);

@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import com.annimon.stream.Stream;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
@@ -231,7 +232,7 @@ public class TrainMapActivity extends AbstractMapActivity {
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         super.onMapReady(googleMap);
-        getGoogleMap().setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+        getGoogleMap().setInfoWindowAdapter(new InfoWindowAdapter() {
             @Override
             public View getInfoWindow(final Marker marker) {
                 return null;
