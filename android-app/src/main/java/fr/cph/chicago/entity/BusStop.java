@@ -45,13 +45,8 @@ public class BusStop extends RealmObject implements Comparable<BusStop>, Parcela
      **/
     @PrimaryKey
     private int id;
-    /**
-     * The name
-     **/
     private String name;
-    /**
-     * The position
-     **/
+    private String description;
     private Position position;
 
     public BusStop() {
@@ -82,12 +77,14 @@ public class BusStop extends RealmObject implements Comparable<BusStop>, Parcela
     public final void writeToParcel(final Parcel dest, final int flags) {
         dest.writeInt(id);
         dest.writeString(name);
+        dest.writeString(description);
         dest.writeParcelable(position, flags);
     }
 
     private void readFromParcel(@NonNull final Parcel in) {
         id = in.readInt();
         name = in.readString();
+        description = in.readString();
         position = in.readParcelable(Position.class.getClassLoader());
     }
 

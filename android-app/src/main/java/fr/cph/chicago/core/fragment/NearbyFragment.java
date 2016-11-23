@@ -187,9 +187,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         mapFragment = SupportMapFragment.newInstance(options);
         mapFragment.setRetainInstance(true);
         final FragmentManager fm = activity.getSupportFragmentManager();
-        new Thread(() -> {
-            fm.beginTransaction().replace(R.id.map, mapFragment).commit();
-        }).start();
+        new Thread(() -> fm.beginTransaction().replace(R.id.map, mapFragment).commit()).start();
     }
 
     @Override
@@ -370,29 +368,44 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                 Stream.of(busStops)
                     .map(busStop -> {
                         final LatLng point = new LatLng(busStop.getPosition().getLatitude(), busStop.getPosition().getLongitude());
-                        return new MarkerOptions().position(point).title(busStop.getName()).snippet(Integer.toString(busStop.getId())).icon(azure);
+                        final MarkerOptions markerOptions = new MarkerOptions()
+                            .position(point)
+                            .title(busStop.getName())
+                            .snippet(busStop.getDescription())
+                            .icon(azure);
+                        final Marker marker = googleMap.addMarker(markerOptions);
+                        marker.setTag(busStop.getId() + "_" + busStop.getName());
+                        return marker;
                     })
-                    .map(googleMap::addMarker)
                     .forEach(markers::add);
-
 
                 Stream.of(trainStation)
                     .forEach(station ->
                         Stream.of(station.getStopsPosition())
                             .map(position -> {
                                 final LatLng point = new LatLng(position.getLatitude(), position.getLongitude());
-                                return new MarkerOptions().position(point).title(station.getName()).snippet(Integer.toString(station.getId())).icon(violet);
+                                final MarkerOptions markerOptions = new MarkerOptions()
+                                    .position(point)
+                                    .title(station.getName())
+                                    .icon(violet);
+                                final Marker marker = googleMap.addMarker(markerOptions);
+                                marker.setTag(station.getId() + "_" + station.getName());
+                                return marker;
                             })
-                            .map(googleMap::addMarker)
                             .forEach(markers::add)
                     );
 
                 Stream.of(bikeStations)
                     .map(station -> {
                         final LatLng point = new LatLng(station.getLatitude(), station.getLongitude());
-                        return new MarkerOptions().position(point).title(station.getName()).snippet(station.getId() + "").icon(yellow);
+                        final MarkerOptions markerOptions = new MarkerOptions()
+                            .position(point)
+                            .title(station.getName())
+                            .icon(yellow);
+                        final Marker marker = googleMap.addMarker(markerOptions);
+                        marker.setTag(station.getId() + "_" + station.getName());
+                        return marker;
                     })
-                    .map(googleMap::addMarker)
                     .forEach(markers::add);
 
                 addClickEventsToMarkers(busStops, trainStation, bikeStations);
@@ -410,28 +423,27 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         @NonNull final List<BikeStation> bikeStations) {
         mapFragment.getMapAsync(googleMap ->
             googleMap.setOnMarkerClickListener(marker -> {
-                boolean found = false;
                 for (int i = 0; i < stations.size(); i++) {
-                    if (marker.getSnippet().equals(Integer.toString(stations.get(i).getId()))) {
+                    final Station station = stations.get(i);
+                    if (marker.getTag() != null && marker.getTag().equals(station.getId() + "_" + station.getName())) {
                         listView.smoothScrollToPosition(i);
-                        found = true;
-                        break;
+                        return false;
                     }
                 }
-                if (!found) {
-                    for (int i = 0; i < busStops.size(); i++) {
-                        int index = i + stations.size();
-                        if (marker.getSnippet().equals(Integer.toString(busStops.get(i).getId()))) {
-                            listView.smoothScrollToPosition(index);
-                            break;
-                        }
+                for (int i = 0; i < busStops.size(); i++) {
+                    int index = i + stations.size();
+                    final BusStop busStop = busStops.get(i);
+                    if (marker.getTag() != null && marker.getTag().equals(busStop.getId() + "_" + busStop.getName())) {
+                        listView.smoothScrollToPosition(index);
+                        return false;
                     }
                 }
                 for (int i = 0; i < bikeStations.size(); i++) {
                     int index = i + stations.size() + busStops.size();
-                    if (marker.getSnippet().equals(Integer.toString(bikeStations.get(i).getId()))) {
+                    final BikeStation bikeStation = bikeStations.get(i);
+                    if (marker.getTag() != null && marker.getTag().equals(bikeStation.getId() + "_" + bikeStation.getName())) {
                         listView.smoothScrollToPosition(index);
-                        break;
+                        return false;
                     }
                 }
                 return false;
@@ -469,8 +481,8 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         private List<BikeStation> bikeStations;
 
         private LoadNearbyTask() {
-            this.busStops = new ArrayList<>();
-            this.trainStations = new ArrayList<>();
+            busStops = new ArrayList<>();
+            trainStations = new ArrayList<>();
         }
 
         @Override

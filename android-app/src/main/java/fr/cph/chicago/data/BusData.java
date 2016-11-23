@@ -107,6 +107,7 @@ public enum BusData {
             .map(currentBusStop -> {
                 final BusStop busStop = new BusStop();
                 busStop.setName(currentBusStop.getName());
+                busStop.setDescription(currentBusStop.getDescription());
                 final Position pos = new Position();
                 pos.setLatitude(currentBusStop.getPosition().getLatitude());
                 pos.setLongitude(currentBusStop.getPosition().getLongitude());

@@ -31,11 +31,11 @@ public class NearbyOnClickListener implements View.OnClickListener {
 
     private final GoogleMap googleMap;
     private final List<Marker> markers;
-    private final int id;
+    private final String id;
     private final double latitude;
     private final double longitude;
 
-    public NearbyOnClickListener(final GoogleMap googleMap, final List<Marker> markers, final int id, final double latitude, final double longitude) {
+    public NearbyOnClickListener(final GoogleMap googleMap, final List<Marker> markers, final String id, final double latitude, final double longitude) {
         this.googleMap = googleMap;
         this.markers = markers;
         this.id = id;
@@ -49,7 +49,7 @@ public class NearbyOnClickListener implements View.OnClickListener {
         final CameraPosition current = new CameraPosition.Builder().target(latLng).zoom(15.5f).bearing(0).tilt(0).build();
         googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(current), Math.max(1000, 1), null);
         Stream.of(markers)
-            .filter(marker -> marker.getSnippet().equals(Integer.toString(id)))
+            .filter(marker -> marker.getTag().equals(id))
             .findFirst()
             .ifPresent(Marker::showInfoWindow);
     }

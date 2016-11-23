@@ -243,7 +243,7 @@ public final class NearbyAdapter extends BaseAdapter {
                 }
             }
         }
-        convertView.setOnClickListener(new NearbyOnClickListener(googleMap, markers, station.getId(), station.getStopsPosition().get(0).getLatitude(), station.getStopsPosition().get(0).getLongitude()));
+        convertView.setOnClickListener(new NearbyOnClickListener(googleMap, markers, station.getId() + "_" + station.getName(), station.getStopsPosition().get(0).getLatitude(), station.getStopsPosition().get(0).getLongitude()));
         return convertView;
     }
 
@@ -322,7 +322,7 @@ public final class NearbyAdapter extends BaseAdapter {
             resultLayout.addView(insideLayout);
         });
 
-        convertView.setOnClickListener(new NearbyOnClickListener(googleMap, markers, busStop.getId(), busStop.getPosition().getLatitude(), busStop.getPosition().getLongitude()));
+        convertView.setOnClickListener(new NearbyOnClickListener(googleMap, markers, busStop.getId() + "_" + busStop.getName(), busStop.getPosition().getLatitude(), busStop.getPosition().getLongitude()));
         return convertView;
     }
 
@@ -424,7 +424,7 @@ public final class NearbyAdapter extends BaseAdapter {
 
         favoritesData.addView(llh);
 
-        convertView.setOnClickListener(new NearbyOnClickListener(googleMap, markers, bikeStation.getId(), bikeStation.getLatitude(), bikeStation.getLongitude()));
+        convertView.setOnClickListener(new NearbyOnClickListener(googleMap, markers, bikeStation.getId() + "_" + bikeStation.getName(), bikeStation.getLatitude(), bikeStation.getLongitude()));
         return convertView;
     }
 
