@@ -46,15 +46,15 @@ dependencies {
     )
 
     androidTestCompile(
-        [group: 'com.android.support', name: 'support-annotations', version: '25.0.0'],
-        [group: 'com.android.support.test', name: 'runner', version: '0.5'],
-        [group: 'com.android.support.test', name: 'rules', version: '0.5'],
+        [group: 'com.android.support', name: 'support-annotations', version: google_support_version],
+        [group: 'com.android.support.test', name: 'runner', version: google_support_version_test],
+        [group: 'com.android.support.test', name: 'rules', version: google_support_version_test],
         // Optional -- UI testing with Espresso
-        androidTestCompile(group: 'com.android.support.test.espresso', name: 'espresso-core', version: '2.2.2') {
+        androidTestCompile(group: 'com.android.support.test.espresso', name: 'espresso-core', version: google_support_version_test_espresso) {
             exclude group: 'com.android.support', module: 'support-annotations'
         },
         // Optional -- UI testing with UI Automator
-        [group: 'com.android.support.test.uiautomator', name: 'uiautomator-v18', version: '2.1.2']
+        [group: 'com.android.support.test.uiautomator', name: 'uiautomator-v18', version: google_support_version_test_uiautomator]
     )
 
     provided(
