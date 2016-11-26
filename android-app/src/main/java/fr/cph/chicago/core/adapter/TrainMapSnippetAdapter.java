@@ -17,7 +17,6 @@
 package fr.cph.chicago.core.adapter;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
@@ -38,43 +37,43 @@ import fr.cph.chicago.entity.Eta;
  */
 public class TrainMapSnippetAdapter extends BaseAdapter {
 
-	private final List<Eta> etas;
+    private final List<Eta> etas;
 
-	public TrainMapSnippetAdapter(@NonNull final List<Eta> etas) {
-		this.etas = etas;
-	}
+    public TrainMapSnippetAdapter(@NonNull final List<Eta> etas) {
+        this.etas = etas;
+    }
 
-	@Override
-	public final int getCount() {
-		return etas.size();
-	}
+    @Override
+    public final int getCount() {
+        return etas.size();
+    }
 
-	@Override
-	public final Object getItem(final int position) {
-		return etas.get(position);
-	}
+    @Override
+    public final Object getItem(final int position) {
+        return etas.get(position);
+    }
 
-	@Override
-	public final long getItemId(final int position) {
-		return position;
-	}
+    @Override
+    public final long getItemId(final int position) {
+        return position;
+    }
 
-	@Override
-	public final View getView(final int position, View convertView, final ViewGroup parent) {
-		final Eta eta = (Eta) getItem(position);
-		final LayoutInflater vi = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		// TODO implement view holder
-		convertView = vi.inflate(R.layout.list_map_train, parent, false);
-		final TextView name = (TextView) convertView.findViewById(R.id.station_name);
-		name.setText(eta.getStation().getName());
+    @Override
+    public final View getView(final int position, View convertView, final ViewGroup parent) {
+        final Eta eta = (Eta) getItem(position);
+        final LayoutInflater vi = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        // TODO implement view holder
+        convertView = vi.inflate(R.layout.list_map_train, parent, false);
+        final TextView name = (TextView) convertView.findViewById(R.id.station_name);
+        name.setText(eta.getStation().getName());
 
-		if (!(position == etas.size() - 1 && "0 min".equals(eta.getTimeLeftDueDelay()))) {
-			final TextView time = (TextView) convertView.findViewById(R.id.time);
-			time.setText(eta.getTimeLeftDueDelay());
-		} else {
-			name.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.grey));
-			name.setGravity(Gravity.CENTER);
-		}
-		return convertView;
-	}
+        if (!(position == etas.size() - 1 && "0 min".equals(eta.getTimeLeftDueDelay()))) {
+            final TextView time = (TextView) convertView.findViewById(R.id.time);
+            time.setText(eta.getTimeLeftDueDelay());
+        } else {
+            name.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.grey));
+            name.setGravity(Gravity.CENTER);
+        }
+        return convertView;
+    }
 }

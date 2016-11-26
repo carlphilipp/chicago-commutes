@@ -55,7 +55,7 @@ public enum CtaConnect {
      * @param requestType the type of request
      * @param params      the params
      * @return a string
-     * @throws ConnectException
+     * @throws ConnectException the connection exception
      */
     @NonNull
     public final InputStream connect(@NonNull final CtaRequestType requestType, @NonNull final MultiValuedMap<String, String> params, @NonNull final Context context) throws ConnectException {

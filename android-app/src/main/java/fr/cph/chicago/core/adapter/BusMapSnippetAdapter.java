@@ -17,7 +17,6 @@
 package fr.cph.chicago.core.adapter;
 
 import android.app.Activity;
-import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
