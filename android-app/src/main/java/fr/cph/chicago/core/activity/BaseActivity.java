@@ -138,7 +138,7 @@ public class BaseActivity extends Activity {
                     }
                 ).subscribe(this::startMainActivity, onError -> {
                         Log.e(TAG, onError.getMessage(), onError);
-                        displayError();
+                        startErrorActivity();
                     }
                 )
             ).subscribe();
@@ -165,15 +165,15 @@ public class BaseActivity extends Activity {
 
         finish();
         startActivity(intent);
-    }
-
-    private void displayError() {
-        DataHolder.INSTANCE.setTrainData(null);
-        DataHolder.INSTANCE.setBusData(null);
-        startErrorActivity();
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     private void startErrorActivity() {
+        // Reset data
+        DataHolder.INSTANCE.setTrainData(null);
+        DataHolder.INSTANCE.setBusData(null);
+
+        // Start error activity
         final Intent intent = new Intent(this, ErrorActivity.class);
         final Bundle extras = new Bundle();
         extras.putString(bundleError, somethingWentWrong);
