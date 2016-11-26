@@ -209,11 +209,10 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                     final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                     builder.setAdapter(ada, (dialog, position) -> startActivity(lines.get(position)));
 
-                    final int[] screenSize = Util.getScreenSize(context);
                     final AlertDialog dialog = builder.create();
                     dialog.show();
                     if (dialog.getWindow() != null) {
-                        dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), LayoutParams.WRAP_CONTENT);
+                        dialog.getWindow().setLayout((int) (App.getScreenWidth() * 0.7), LayoutParams.WRAP_CONTENT);
                     }
                 }
             }

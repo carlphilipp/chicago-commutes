@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Set;
 
 import fr.cph.chicago.R;
+import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.activity.StationActivity;
 import fr.cph.chicago.core.activity.TrainMapActivity;
 import fr.cph.chicago.core.adapter.PopupTrainAdapter;
@@ -101,11 +102,10 @@ public class TrainOnClickListener implements OnClickListener {
                 }
             });
 
-            final int[] screenSize = Util.getScreenSize(view.getContext().getApplicationContext());
             final AlertDialog dialog = builder.create();
             dialog.show();
             if (dialog.getWindow() != null) {
-                dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), ViewGroup.LayoutParams.WRAP_CONTENT);
+                dialog.getWindow().setLayout((int) (App.getScreenWidth() * 0.7), ViewGroup.LayoutParams.WRAP_CONTENT);
             }
         }
     }

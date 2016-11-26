@@ -30,6 +30,7 @@ import java.util.Date;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.activity.BaseActivity;
 import fr.cph.chicago.data.DataHolder;
+import fr.cph.chicago.util.Util;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -78,6 +79,10 @@ public class App extends Application {
      * Analytics stuff
      **/
     private static Tracker tracker;
+    @Getter
+    private static int screenWidth;
+    @Getter
+    private static float lineWidth;
 
     public static boolean checkTrainData(@NonNull final Activity activity) {
         if (DataHolder.INSTANCE.getTrainData() == null) {
@@ -110,5 +115,11 @@ public class App extends Application {
             tracker.enableAutoActivityTracking(true);
         }
         return tracker;
+    }
+
+    public static void setupScreenWidth(@NonNull final Context context) {
+        final int[] screenSize = Util.getScreenSize(context);
+        screenWidth = screenSize[0];
+        lineWidth = screenWidth > 1080 ? 7f : (screenWidth > 480 ? 4f : 2f);
     }
 }

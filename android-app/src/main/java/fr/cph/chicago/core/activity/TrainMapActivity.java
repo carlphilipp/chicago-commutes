@@ -89,7 +89,6 @@ public class TrainMapActivity extends AbstractMapActivity {
 
 
     private Map<Marker, View> views;
-
     private String line;
     private Map<Marker, Boolean> status;
     private List<Marker> markers;
@@ -213,7 +212,7 @@ public class TrainMapActivity extends AbstractMapActivity {
     private void drawLine(@NonNull final List<Position> positions) {
         if (drawLine) {
             final PolylineOptions poly = new PolylineOptions();
-            poly.width(7f);
+            poly.width(App.getLineWidth());
             poly.geodesic(true).color(TrainLine.fromXmlString(line).getColor());
             Stream.of(positions)
                 .map(position -> new LatLng(position.getLatitude(), position.getLongitude()))

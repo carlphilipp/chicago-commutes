@@ -51,6 +51,7 @@ import lombok.SneakyThrows;
 
 import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;
 import static fr.cph.chicago.Constants.TRAINS_ARRIVALS_URL;
+import static fr.cph.chicago.core.App.setupScreenWidth;
 
 /**
  * This class represents the base activity of the application It will load the loading screen and/or the main
@@ -80,6 +81,7 @@ public class BaseActivity extends Activity {
         setContentView(R.layout.loading);
         ButterKnife.bind(this);
 
+        setupScreenWidth(getApplicationContext());
         setUpRealm();
         loadLocalAndFavoritesData();
         trackWithGoogleAnalytics();

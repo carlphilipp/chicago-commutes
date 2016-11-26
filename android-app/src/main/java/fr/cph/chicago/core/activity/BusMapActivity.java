@@ -215,7 +215,7 @@ public class BusMapActivity extends AbstractMapActivity {
         Stream.of(patterns).forEach(pattern -> {
             final PolylineOptions poly = new PolylineOptions()
                 .color(j == 0 ? Color.RED : (j == 1 ? Color.BLUE : Color.YELLOW))
-                .width(7f).geodesic(true);
+                .width(App.getLineWidth()).geodesic(true);
             Stream.of(pattern.getPoints())
                 .map(patternPoint -> {
                     final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());

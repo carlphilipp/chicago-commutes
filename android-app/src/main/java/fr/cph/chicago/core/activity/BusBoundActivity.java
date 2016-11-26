@@ -230,7 +230,7 @@ public class BusBoundActivity extends ListActivity {
         mapFragment.getMapAsync(googleMap -> {
             final PolylineOptions poly = new PolylineOptions();
             poly.geodesic(true).color(Color.BLACK);
-            poly.width(7f);
+            poly.width(App.getLineWidth());
             Stream.of(pattern.getPoints())
                 .map(patternPoint -> new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude()))
                 .forEach(poly::add);

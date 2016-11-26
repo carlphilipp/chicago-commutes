@@ -18,6 +18,7 @@ import com.annimon.stream.Stream;
 import java.util.List;
 
 import fr.cph.chicago.R;
+import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.activity.BusBoundActivity;
 import fr.cph.chicago.core.activity.BusMapActivity;
 import fr.cph.chicago.core.adapter.PopupBusAdapter;
@@ -88,11 +89,10 @@ public class BusDirectionObserver implements Observer<BusDirections> {
                 }
             });
             builder.setOnCancelListener(dialog -> convertView.setVisibility(LinearLayout.GONE));
-            final int[] screenSize = Util.getScreenSize(parent.getContext());
             final AlertDialog dialog = builder.create();
             dialog.show();
             if (dialog.getWindow() != null) {
-                dialog.getWindow().setLayout((int) (screenSize[0] * 0.7), ViewGroup.LayoutParams.WRAP_CONTENT);
+                dialog.getWindow().setLayout((int) (App.getScreenWidth() * 0.7), ViewGroup.LayoutParams.WRAP_CONTENT);
             }
         }
     }

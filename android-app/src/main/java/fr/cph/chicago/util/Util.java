@@ -232,9 +232,9 @@ public enum Util {
     public static int[] getScreenSize(@NonNull final Context context) {
         final WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         final Display display = wm.getDefaultDisplay();
-        final Point size = new Point();
-        display.getSize(size);
-        return new int[]{size.x, size.y};
+        final Point point = new Point();
+        display.getSize(point);
+        return new int[]{point.x, point.y};
     }
 
     /**
@@ -464,7 +464,7 @@ public enum Util {
     }
 
     @SneakyThrows(PackageManager.NameNotFoundException.class)
-    public static String getCurrentVersion(final Context context){
+    public static String getCurrentVersion(final Context context) {
         final PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
         return packageInfo.versionName;
     }
