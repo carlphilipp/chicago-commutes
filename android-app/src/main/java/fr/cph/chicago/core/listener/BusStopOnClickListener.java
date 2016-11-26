@@ -69,7 +69,7 @@ public class BusStopOnClickListener implements View.OnClickListener {
             builder.setAdapter(ada, (dialog, position) -> {
                 final BusDetailsDTO busDetails = busDetailsDTOs.get(position);
                 loadBusDetails(view, busDetails);
-                Util.trackAction(context, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_STOP_URL, 0);
+                Util.trackAction(context, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_STOP_URL);
             });
             final AlertDialog dialog = builder.create();
             dialog.show();

@@ -266,7 +266,7 @@ public class BusActivity extends AbstractStationActivity {
 
     @Override
     protected boolean isFavorite() {
-        final List<String> favorites = PreferencesImpl.INSTANCE.getBusFavorites(getApplicationContext(), App.PREFERENCE_FAVORITES_BUS);
+        final List<String> favorites = PreferencesImpl.INSTANCE.getBusFavorites(getApplicationContext());
         return Stream.of(favorites)
             .filter(favorite -> favorite.equals(busRouteId + "_" + busStopId + "_" + boundTitle))
             .findFirst()
@@ -310,7 +310,7 @@ public class BusActivity extends AbstractStationActivity {
             } catch (final ParserException | ConnectException e) {
                 this.trackerException = e;
             }
-            Util.trackAction(BusActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL, 0);
+            Util.trackAction(BusActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL);
             return null;
         }
 

@@ -42,9 +42,12 @@ import fr.cph.chicago.util.Util;
 
 import static android.content.Context.MODE_PRIVATE;
 import static fr.cph.chicago.core.App.PREFERENCE_FAVORITES;
+import static fr.cph.chicago.core.App.PREFERENCE_FAVORITES_BIKE;
 import static fr.cph.chicago.core.App.PREFERENCE_FAVORITES_BIKE_NAME_MAPPING;
+import static fr.cph.chicago.core.App.PREFERENCE_FAVORITES_BUS;
 import static fr.cph.chicago.core.App.PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING;
 import static fr.cph.chicago.core.App.PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING;
+import static fr.cph.chicago.core.App.PREFERENCE_FAVORITES_TRAIN;
 
 /**
  * Class that store user preferences into phoneO
@@ -64,50 +67,49 @@ public enum PreferencesImpl implements Preferences {
     /**
      * Save train favorites
      *
-     * @param name      the name of the train preference string
+     * @param context   the context
      * @param favorites the favorites
      */
     @Override
-    public void saveTrainFavorites(@NonNull final Context context, @NonNull final String name, @NonNull final List<Integer> favorites) {
+    public void saveTrainFavorites(@NonNull final Context context, @NonNull final List<Integer> favorites) {
         final SharedPreferences sharedPref = getPrivatePreferences(context);
         final SharedPreferences.Editor editor = sharedPref.edit();
         final Set<String> set = Stream.of(favorites).map(Object::toString).collect(Collectors.toSet());
         Log.v(TAG, "Put train favorites: " + favorites.toString());
-        editor.putStringSet(name, set);
+        editor.putStringSet(PREFERENCE_FAVORITES_TRAIN, set);
         editor.apply();
     }
 
     /**
      * Check if the user has favorites already
      *
-     * @param trains the trains preference string
-     * @param bus    the bus preference string
+     * @param context the context
      * @return a boolean
      */
     @Override
-    public boolean hasFavorites(@NonNull final Context context, @NonNull final String trains, @NonNull final String bus, @NonNull final String bike) {
+    public boolean hasFavorites(@NonNull final Context context) {
         final SharedPreferences sharedPref = getPrivatePreferences(context);
-        final Set<String> setPref1 = sharedPref.getStringSet(trains, null);
-        final Set<String> setPref2 = sharedPref.getStringSet(bus, null);
-        final Set<String> setPref3 = sharedPref.getStringSet(bike, null);
+        final Set<String> setPref1 = sharedPref.getStringSet(PREFERENCE_FAVORITES_TRAIN, null);
+        final Set<String> setPref2 = sharedPref.getStringSet(PREFERENCE_FAVORITES_BUS, null);
+        final Set<String> setPref3 = sharedPref.getStringSet(PREFERENCE_FAVORITES_BIKE, null);
         return !((setPref1 == null || setPref1.size() == 0) && (setPref2 == null || setPref2.size() == 0) && (setPref3 == null || setPref3.size() == 0));
     }
 
     @Override
-    public void saveBikeFavorites(@NonNull final Context context, @NonNull final String name, @NonNull final List<String> favorites) {
+    public void saveBikeFavorites(@NonNull final Context context, @NonNull final List<String> favorites) {
         final SharedPreferences sharedPref = getPrivatePreferences(context);
         final SharedPreferences.Editor editor = sharedPref.edit();
         final Set<String> set = Stream.of(favorites).collect(Collectors.toSet());
         Log.v(TAG, "Put bike favorites: " + set.toString());
-        editor.putStringSet(name, set);
+        editor.putStringSet(PREFERENCE_FAVORITES_BIKE, set);
         editor.apply();
     }
 
     @Override
     @NonNull
-    public List<String> getBikeFavorites(@NonNull final Context context, @NonNull final String name) {
+    public List<String> getBikeFavorites(@NonNull final Context context) {
         final SharedPreferences sharedPref = getPrivatePreferences(context);
-        final Set<String> setPref = sharedPref.getStringSet(name, new LinkedHashSet<>());
+        final Set<String> setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_BIKE, new LinkedHashSet<>());
         Log.v(TAG, "Read bike favorites : " + setPref.toString());
         return Stream.of(setPref).sorted().collect(Collectors.toList());
     }
@@ -133,31 +135,31 @@ public enum PreferencesImpl implements Preferences {
     /**
      * Save bus into favorites
      *
-     * @param name      the name of the bus preference string
+     * @param context the context
      * @param favorites the list of favorites to save
      */
     @Override
-    public void saveBusFavorites(@NonNull final Context context, @NonNull final String name, @NonNull final List<String> favorites) {
+    public void saveBusFavorites(@NonNull final Context context, @NonNull final List<String> favorites) {
         final SharedPreferences sharedPref = getPrivatePreferences(context);
         final SharedPreferences.Editor editor = sharedPref.edit();
         final Set<String> set = new LinkedHashSet<>();
         set.addAll(favorites);
         Log.v(TAG, "Put bus favorites: " + favorites.toString());
-        editor.putStringSet(name, set);
+        editor.putStringSet(PREFERENCE_FAVORITES_BUS, set);
         editor.apply();
     }
 
     /**
      * Get favorites bus
      *
-     * @param name the name of the bus preference string
+     * @param context the context
      * @return a list of favorites bus
      */
     @Override
     @NonNull
-    public List<String> getBusFavorites(@NonNull final Context context, @NonNull final String name) {
+    public List<String> getBusFavorites(@NonNull final Context context) {
         final SharedPreferences sharedPref = getPrivatePreferences(context);
-        final Set<String> setPref = sharedPref.getStringSet(name, new LinkedHashSet<>());
+        final Set<String> setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_BUS, new LinkedHashSet<>());
         Log.v(TAG, "Read bus favorites : " + setPref.toString());
         return Stream.of(setPref).sorted(
             (str1, str2) -> {
@@ -215,14 +217,14 @@ public enum PreferencesImpl implements Preferences {
     /**
      * Get train favorites
      *
-     * @param name the name of the train preference string
+     * @param context the context
      * @return the favorites
      */
     @Override
     @NonNull
-    public List<Integer> getTrainFavorites(@NonNull final Context context, @NonNull final String name) {
+    public List<Integer> getTrainFavorites(@NonNull final Context context) {
         final SharedPreferences sharedPref = getPrivatePreferences(context);
-        final Set<String> setPref = sharedPref.getStringSet(name, new LinkedHashSet<>());
+        final Set<String> setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_TRAIN, new LinkedHashSet<>());
         Log.v(TAG, "Read train favorites : " + setPref);
         return Stream.of(setPref)
             .map(Integer::valueOf)

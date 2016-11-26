@@ -245,11 +245,11 @@ public enum FavoritesData {
     }
 
     public final void setFavorites(@NonNull final Context context) {
-        trainFavorites = preferences.getTrainFavorites(context, App.PREFERENCE_FAVORITES_TRAIN);
-        busFavorites = preferences.getBusFavorites(context, App.PREFERENCE_FAVORITES_BUS);
+        trainFavorites = preferences.getTrainFavorites(context);
+        busFavorites = preferences.getBusFavorites(context);
         fakeBusFavorites = calculateActualRouteNumberBusFavorites();
         bikeFavorites.clear();
-        final List<String> bikeFavoritesTemp = preferences.getBikeFavorites(context, App.PREFERENCE_FAVORITES_BIKE);
+        final List<String> bikeFavoritesTemp = preferences.getBikeFavorites(context);
         if (bikeStations != null && bikeStations.size() != 0) {
             Stream.of(bikeFavoritesTemp)
                 .flatMap(bikeStationId -> Stream.of(bikeStations).filter(station -> Integer.toString(station.getId()).equals(bikeStationId)))

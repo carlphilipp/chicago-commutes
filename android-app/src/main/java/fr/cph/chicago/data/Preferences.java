@@ -12,24 +12,24 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 
 public interface Preferences {
 
-    void saveTrainFavorites(@NonNull Context context, @NonNull String name, @NonNull List<Integer> favorites);
+    void saveTrainFavorites(@NonNull Context context, @NonNull List<Integer> favorites);
 
-    boolean hasFavorites(@NonNull Context context, @NonNull String trains, @NonNull String bus, @NonNull String bike);
+    boolean hasFavorites(@NonNull Context context);
 
-    void saveBikeFavorites(@NonNull Context context, @NonNull String name, @NonNull List<String> favorites);
+    void saveBikeFavorites(@NonNull Context context, @NonNull List<String> favorites);
 
     @NonNull
-    List<String> getBikeFavorites(@NonNull Context context, @NonNull String name);
+    List<String> getBikeFavorites(@NonNull Context context);
 
     void addBikeRouteNameMapping(@NonNull Context context, @NonNull String bikeId, @NonNull String bikeName);
 
     @Nullable
     String getBikeRouteNameMapping(@NonNull Context context, @NonNull String bikeId);
 
-    void saveBusFavorites(@NonNull Context context, @NonNull String name, @NonNull List<String> favorites);
+    void saveBusFavorites(@NonNull Context context, @NonNull List<String> favorites);
 
     @NonNull
-    List<String> getBusFavorites(@NonNull Context context, @NonNull String name);
+    List<String> getBusFavorites(@NonNull Context context);
 
     void addBusRouteNameMapping(@NonNull Context context, @NonNull String busStopId, @NonNull String routeName);
 
@@ -42,7 +42,7 @@ public interface Preferences {
     String getBusStopNameMapping(@NonNull Context context, @NonNull String busStopId);
 
     @NonNull
-    List<Integer> getTrainFavorites(@NonNull Context context, @NonNull String name);
+    List<Integer> getTrainFavorites(@NonNull Context context);
 
     void saveTrainFilter(@NonNull Context context, @NonNull Integer stationId, @NonNull TrainLine line, @NonNull TrainDirection direction, boolean value);
 

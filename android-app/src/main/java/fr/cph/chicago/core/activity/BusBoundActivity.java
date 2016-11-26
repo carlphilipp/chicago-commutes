@@ -172,7 +172,7 @@ public class BusBoundActivity extends ListActivity {
                     }
                 );
 
-            Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_STOP_URL, 0);
+            Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_STOP_URL);
 
             // Preventing keyboard from moving background when showing up
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
@@ -199,7 +199,7 @@ public class BusBoundActivity extends ListActivity {
         mapFragment.getMapAsync(googleMap -> {
             googleMap.getUiSettings().setMyLocationButtonEnabled(false);
             googleMap.getUiSettings().setZoomControlsEnabled(false);
-            Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL, 0);
+            Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL);
             ObservableUtil.createBusPatternObservable(getApplicationContext(), busRouteId, bound)
                 .subscribe(
                     busPattern -> {

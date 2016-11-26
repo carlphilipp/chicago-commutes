@@ -185,10 +185,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 // Favorite fragment
                 favoritesFragment.startRefreshing();
 
-                Util.trackAction(getApplicationContext(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL, 0);
-                Util.trackAction(getApplicationContext(), R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL, 0);
-                Util.trackAction(getApplicationContext(), R.string.analytics_category_req, R.string.analytics_action_get_divvy, getApplicationContext().getString(R.string.analytics_action_get_divvy_all), 0);
-                Util.trackAction(getApplicationContext(), R.string.analytics_category_ui, R.string.analytics_action_press, getApplicationContext().getString(R.string.analytics_action_refresh_fav), 0);
+                Util.trackAction(getApplicationContext(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
+                Util.trackAction(getApplicationContext(), R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
+                Util.trackAction(getApplicationContext(), R.string.analytics_category_req, R.string.analytics_action_get_divvy, getApplicationContext().getString(R.string.analytics_action_get_divvy_all));
+                Util.trackAction(getApplicationContext(), R.string.analytics_category_ui, R.string.analytics_action_press, getApplicationContext().getString(R.string.analytics_action_refresh_fav));
 
                 if (Util.isNetworkAvailable(getApplicationContext())) {
                     final DataHolder dataHolder = DataHolder.INSTANCE;
@@ -232,8 +232,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             },
             onError -> Util.showSnackBar(this, R.string.message_something_went_wrong),
             () -> {
-                Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ROUTES_URL, 0);
-                Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, getApplicationContext().getString(R.string.analytics_action_get_divvy_all), 0);
+                Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ROUTES_URL);
+                Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, getApplicationContext().getString(R.string.analytics_action_get_divvy_all));
             }
         );
     }

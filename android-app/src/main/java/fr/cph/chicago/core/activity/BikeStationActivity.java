@@ -200,7 +200,7 @@ public class BikeStationActivity extends AbstractStationActivity {
      */
     @Override
     protected boolean isFavorite() {
-        final List<String> favorites = PreferencesImpl.INSTANCE.getBikeFavorites(getApplicationContext(), App.PREFERENCE_FAVORITES_BIKE);
+        final List<String> favorites = PreferencesImpl.INSTANCE.getBikeFavorites(getApplicationContext());
         return Stream.of(favorites)
             .filter(favorite -> Integer.valueOf(favorite) == bikeStation.getId())
             .findFirst()

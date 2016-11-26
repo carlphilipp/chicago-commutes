@@ -178,10 +178,10 @@ public class FavoritesFragment extends Fragment {
 
             swipeRefreshLayout.setOnRefreshListener(() -> {
                 swipeRefreshLayout.setColorSchemeColors(Util.getRandomColor());
-                Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL, 0);
-                Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL, 0);
-                Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, getContext().getString(R.string.analytics_action_get_divvy_all), 0);
-                Util.trackAction(activity, R.string.analytics_category_ui, R.string.analytics_action_press, getContext().getString(R.string.analytics_action_refresh_fav), 0);
+                Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
+                Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
+                Util.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, getContext().getString(R.string.analytics_action_get_divvy_all));
+                Util.trackAction(activity, R.string.analytics_category_ui, R.string.analytics_action_press, getContext().getString(R.string.analytics_action_refresh_fav));
 
                 final DataHolder dataHolder = DataHolder.INSTANCE;
                 if (dataHolder.getBusData() == null
@@ -245,7 +245,7 @@ public class FavoritesFragment extends Fragment {
             startRefreshTask();
         }
         if (welcomeLayout != null) {
-            boolean hasFav = PreferencesImpl.INSTANCE.hasFavorites(getContext(), PREFERENCE_FAVORITES_TRAIN, PREFERENCE_FAVORITES_BUS, PREFERENCE_FAVORITES_BIKE);
+            boolean hasFav = PreferencesImpl.INSTANCE.hasFavorites(getContext());
             welcomeLayout.setVisibility(hasFav ? View.GONE : View.VISIBLE);
         }
     }

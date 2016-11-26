@@ -309,7 +309,7 @@ public class TrainMapActivity extends AbstractMapActivity {
             } catch (final ConnectException | ParserException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
-            Util.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_FOLLOW_URL, 0);
+            Util.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_FOLLOW_URL);
             if (!loadAll && etas.size() > 7) {
                 etas = etas.subList(0, 6);
 
@@ -401,7 +401,7 @@ public class TrainMapActivity extends AbstractMapActivity {
                 connectParam.put(requestRt, line);
                 final InputStream content = CtaConnect.INSTANCE.connect(TRAIN_LOCATION, connectParam, getApplicationContext());
                 trains = XmlParser.INSTANCE.parseTrainsLocation(content);
-                Util.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_LOCATION_URL, 0);
+                Util.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_LOCATION_URL);
             } catch (final ConnectException | ParserException e) {
                 Log.e(TAG, e.getMessage(), e);
             }

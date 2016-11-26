@@ -342,7 +342,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
     }
 
     private void trackWithGoogleAnalytics(@NonNull final Context context, final int category, final int action, final String label) {
-        Util.trackAction(context, category, action, label, 0);
+        Util.trackAction(context, category, action, label);
     }
 
     @Override

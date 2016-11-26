@@ -301,7 +301,7 @@ public class StationActivity extends AbstractStationActivity {
      */
     @Override
     protected boolean isFavorite() {
-        final List<Integer> favorites = PreferencesImpl.INSTANCE.getTrainFavorites(getApplicationContext(), App.PREFERENCE_FAVORITES_TRAIN);
+        final List<Integer> favorites = PreferencesImpl.INSTANCE.getTrainFavorites(getApplicationContext());
         return Stream.of(favorites)
             .filter(favorite -> favorite == stationId)
             .findFirst()

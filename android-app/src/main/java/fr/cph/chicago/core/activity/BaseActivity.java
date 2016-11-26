@@ -66,6 +66,8 @@ public class BaseActivity extends Activity {
 
     @BindString(R.string.bundle_error)
     String bundleError;
+    @BindString(R.string.message_something_went_wrong)
+    String somethingWentWrong;
 
     private final TrainService trainService;
     private final BusService busService;
@@ -136,15 +138,15 @@ public class BaseActivity extends Activity {
                     }
                 ).subscribe(this::startMainActivity, onError -> {
                         Log.e(TAG, onError.getMessage(), onError);
-                        displayError("Oops, something went wrong!");
+                        displayError();
                     }
                 )
             ).subscribe();
     }
 
     private void trackWithGoogleAnalytics() {
-        Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL, 0);
-        Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL, 0);
+        Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
+        Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
     }
 
     /**
@@ -165,16 +167,16 @@ public class BaseActivity extends Activity {
         startActivity(intent);
     }
 
-    private void displayError(@NonNull final String message) {
+    private void displayError() {
         DataHolder.INSTANCE.setTrainData(null);
         DataHolder.INSTANCE.setBusData(null);
-        startErrorActivity(message);
+        startErrorActivity();
     }
 
-    private void startErrorActivity(@NonNull final String message) {
+    private void startErrorActivity() {
         final Intent intent = new Intent(this, ErrorActivity.class);
         final Bundle extras = new Bundle();
-        extras.putString(bundleError, message);
+        extras.putString(bundleError, somethingWentWrong);
         intent.putExtras(extras);
         finish();
         startActivity(intent);
