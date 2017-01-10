@@ -21,7 +21,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
-import android.location.LocationListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -39,6 +38,9 @@ import android.widget.RelativeLayout;
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -131,6 +133,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
     private MainActivity activity;
     private NearbyAdapter nearbyAdapter;
     private boolean hideStationsStops;
+    private GoogleApiClient googleApiClient;
 
     @NonNull
     public static NearbyFragment newInstance(final int sectionNumber) {
@@ -153,6 +156,9 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         App.checkTrainData(activity);
         App.checkBusData(activity);
         Util.trackScreen(getContext(), getString(R.string.analytics_nearby_fragment));
+        googleApiClient = new GoogleApiClient.Builder(activity)
+            .addApi(LocationServices.API)
+            .build();
     }
 
     @Override
@@ -194,6 +200,14 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
     public final void onResume() {
         super.onResume();
         loadNearbyIfAllowed();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (googleApiClient.isConnected()) {
+            googleApiClient.disconnect();
+        }
     }
 
     private void loadAllArrivals(@NonNull final List<BusStop> busStops, @NonNull final List<Station> trainStations, @NonNull final List<BikeStation> bikeStations) {
@@ -489,10 +503,14 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         protected final Optional<Position> doInBackground(final Void... params) {
             bikeStations = activity.getIntent().getExtras().getParcelableArrayList(bundleBikeStations);
 
+            if (!googleApiClient.isConnected()) {
+                googleApiClient.blockingConnect();
+            }
+
             final BusData busData = DataHolder.INSTANCE.getBusData();
             final TrainData trainData = DataHolder.INSTANCE.getTrainData();
 
-            final GPSUtil gpsUtil = new GPSUtil(this, activity);
+            final GPSUtil gpsUtil = new GPSUtil(googleApiClient, this);
             final Optional<Position> position = gpsUtil.getLocation();
             if (position.isPresent()) {
                 final Realm realm = Realm.getDefaultInstance();
@@ -515,18 +533,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
 
         @Override
         public final void onLocationChanged(final Location location) {
-        }
-
-        @Override
-        public final void onProviderDisabled(final String provider) {
-        }
-
-        @Override
-        public final void onProviderEnabled(final String provider) {
-        }
-
-        @Override
-        public final void onStatusChanged(final String provider, final int status, final Bundle extras) {
+            Log.v(TAG, "Location changed: " + location.getLatitude() + " " + location.getLongitude());
         }
     }
 
