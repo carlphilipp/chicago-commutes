@@ -37,4 +37,11 @@
     <!-- Layout dimension -->
     <dimen name="layout_round_height">11dp</dimen>
     <dimen name="layout_round_width">11dp</dimen>
+
+    <!-- Map icon -->
+    <dimen name="icon_main">15dp</dimen>
+    <dimen name="icon_shadow_2">19dp</dimen>
+    <dimen name="icon_shadow_3">20dp</dimen>
+    <dimen name="icon_shadow_4">21dp</dimen>
+    <dimen name="icon_shadow_5">22dp</dimen>
 </resources>

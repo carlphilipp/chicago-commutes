@@ -20,12 +20,17 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -376,9 +381,10 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         if (isAdded()) {
             mapFragment.getMapAsync(googleMap -> {
                 final List<Marker> markers = new ArrayList<>();
-                final BitmapDescriptor azure = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE);
-                final BitmapDescriptor violet = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
-                final BitmapDescriptor yellow = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
+                final BitmapDescriptor bitmapDescriptorBus = createStop(getContext(), R.drawable.bus_stop_icon);
+                final BitmapDescriptor bitmapDescriptorTrain = createStop(getContext(), R.drawable.train_station_icon);
+                final BitmapDescriptor bitmapDescriptorBike = createStop(getContext(), R.drawable.bike_station_icon);
+
                 Stream.of(busStops)
                     .map(busStop -> {
                         final LatLng point = new LatLng(busStop.getPosition().getLatitude(), busStop.getPosition().getLongitude());
@@ -386,7 +392,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                             .position(point)
                             .title(busStop.getName())
                             .snippet(busStop.getDescription())
-                            .icon(azure);
+                            .icon(bitmapDescriptorBus);
                         final Marker marker = googleMap.addMarker(markerOptions);
                         marker.setTag(busStop.getId() + "_" + busStop.getName());
                         return marker;
@@ -401,7 +407,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                                 final MarkerOptions markerOptions = new MarkerOptions()
                                     .position(point)
                                     .title(station.getName())
-                                    .icon(violet);
+                                    .icon(bitmapDescriptorTrain);
                                 final Marker marker = googleMap.addMarker(markerOptions);
                                 marker.setTag(station.getId() + "_" + station.getName());
                                 return marker;
@@ -415,7 +421,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                         final MarkerOptions markerOptions = new MarkerOptions()
                             .position(point)
                             .title(station.getName())
-                            .icon(yellow);
+                            .icon(bitmapDescriptorBike);
                         final Marker marker = googleMap.addMarker(markerOptions);
                         marker.setTag(station.getId() + "_" + station.getName());
                         return marker;
@@ -429,6 +435,16 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                 nearbyContainer.setVisibility(View.VISIBLE);
             });
         }
+    }
+
+    private static BitmapDescriptor createStop(@NonNull final Context context, @DrawableRes final int icon) {
+        final int px = context.getResources().getDimensionPixelSize(R.dimen.icon_shadow_2);
+        final Bitmap bitMapBusStation = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(bitMapBusStation);
+        final Drawable shape = ContextCompat.getDrawable(context, icon);
+        shape.setBounds(0, 0, px, bitMapBusStation.getHeight());
+        shape.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitMapBusStation);
     }
 
     private void addClickEventsToMarkers(
