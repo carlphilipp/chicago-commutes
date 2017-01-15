@@ -28,7 +28,8 @@ dependencies {
         [group: 'com.annimon', name: 'stream', version: annimon_stream_version],
         [group: 'com.jakewharton', name: 'butterknife', version: butterknife_version],
         [group: 'pub.devrel', name: 'easypermissions', version: easypermissions_version],
-        [group: 'com.github.chrisbanes', name: 'PhotoView', version: photoview_version]
+        [group: 'com.github.chrisbanes', name: 'PhotoView', version: photoview_version],
+        [group: 'com.sothree.slidinguppanel', name: 'library', version: sliding_up_panel_version]
     )
 
     // TODO Migrate to annotationProcessor when java 8 works https://bitbucket.org/hvisser/android-apt/wiki/Migration

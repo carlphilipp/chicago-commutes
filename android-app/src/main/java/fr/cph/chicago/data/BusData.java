@@ -86,16 +86,14 @@ public enum BusData {
      * @return a list of bus stop
      */
     @NonNull
-    public final List<BusStop> readNearbyStops(@NonNull final Realm realm, @NonNull final Position position) {
-        final double dist = 0.004472;
-
+    public final List<BusStop> readNearbyStops(@NonNull final Realm realm, @NonNull final Position position, final double range) {
         final double latitude = position.getLatitude();
         final double longitude = position.getLongitude();
 
-        final double latMax = latitude + dist;
-        final double latMin = latitude - dist;
-        final double lonMax = longitude + dist;
-        final double lonMin = longitude - dist;
+        final double latMax = latitude + range;
+        final double latMin = latitude - range;
+        final double lonMax = longitude + range;
+        final double lonMin = longitude - range;
 
         return Stream.of(realm.where(BusStop.class)
             // TODO use between when child object is supported by Realm

@@ -222,17 +222,14 @@ public enum TrainData {
      * @return a list of station
      */
     @NonNull
-    public final List<Station> readNearbyStation(final Position position) {
-
-        final double dist = 0.004472;
-
+    public final List<Station> readNearbyStation(final Position position, final double range) {
         final double latitude = position.getLatitude();
         final double longitude = position.getLongitude();
 
-        final double latMax = latitude + dist;
-        final double latMin = latitude - dist;
-        final double lonMax = longitude + dist;
-        final double lonMin = longitude - dist;
+        final double latMax = latitude + range;
+        final double latMin = latitude - range;
+        final double lonMax = longitude + range;
+        final double lonMin = longitude - range;
 
         final List<Station> nearByStations = new ArrayList<>();
         for (int i = 0; i < stations.size(); i++) {

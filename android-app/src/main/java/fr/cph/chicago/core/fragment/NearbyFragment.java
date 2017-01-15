@@ -16,8 +16,6 @@
 
 package fr.cph.chicago.core.fragment;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -28,6 +26,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
@@ -36,9 +35,9 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Optional;
@@ -54,12 +53,14 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -73,10 +74,8 @@ import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.DivvyConnect;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.activity.MainActivity;
-import fr.cph.chicago.core.adapter.NearbyAdapter;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
-import fr.cph.chicago.data.PreferencesImpl;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
@@ -114,15 +113,14 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
 
     private static final String TAG = NearbyFragment.class.getSimpleName();
     private static final String ARG_SECTION_NUMBER = "section_number";
+    private static final double DEFAULT_RANGE = 0.008;
 
-    @BindView(R.id.fragment_nearby_list)
-    ListView listView;
-    @BindView(R.id.loading_layout)
-    View loadLayout;
-    @BindView(R.id.nearby_list_container)
-    RelativeLayout nearbyContainer;
-    @BindView(R.id.hideEmptyStops)
-    CheckBox checkBox;
+    @BindView(R.id.activity_bar)
+    ProgressBar progressBar;
+    @BindView(R.id.sliding_layout)
+    SlidingUpPanelLayout slidingUpPanelLayout;
+    @BindView(R.id.loading_layout_container)
+    LinearLayout layoutContainer;
 
     @BindString(R.string.request_stop_id)
     String requestStopId;
@@ -136,9 +134,9 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
     private SupportMapFragment mapFragment;
 
     private MainActivity activity;
-    private NearbyAdapter nearbyAdapter;
-    private boolean hideStationsStops;
     private GoogleApiClient googleApiClient;
+
+    private Map<Marker, Object> markers;
 
     @NonNull
     public static NearbyFragment newInstance(final int sectionNumber) {
@@ -171,18 +169,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         final View rootView = inflater.inflate(R.layout.fragment_nearby, container, false);
         if (!activity.isFinishing()) {
             unbinder = ButterKnife.bind(this, rootView);
-            nearbyAdapter = new NearbyAdapter(getContext());
-            listView.setAdapter(nearbyAdapter);
-
-            hideStationsStops = PreferencesImpl.INSTANCE.getHideShowNearby(getContext());
-            checkBox.setChecked(hideStationsStops);
-            checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                PreferencesImpl.INSTANCE.saveHideShowNearby(getContext(), isChecked);
-                hideStationsStops = isChecked;
-                if (Util.isNetworkAvailable(getContext())) {
-                    reloadData();
-                }
-            });
+            markers = new HashMap<>();
             showProgress(true);
         }
         return rootView;
@@ -219,32 +206,31 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         final SparseArray<Map<String, List<BusArrival>>> busArrivalsMap = new SparseArray<>();
         // Execute in parallel all requests to bus arrivals
         // To be able to wait that all the threads ended we transform to list (it enforces it)
-        // And then process train and bikes
+        // And then process train and bikes in sequence
         Observable.fromIterable(busStops)
             .flatMap(busStop -> Observable.just(busStop).subscribeOn(Schedulers.computation())
                 .map(currentBusStop -> {
-                    loadAroundBusArrivals(currentBusStop, busArrivalsMap);
+                    //loadAroundBusArrivals(currentBusStop, busArrivalsMap);
                     return new Object();
                 })
             )
             .doOnError(throwable -> {
                 Log.e(TAG, throwable.getMessage(), throwable);
-                Util.handleConnectOrParserException(throwable, null, listView, listView);
+                //Util.handleConnectOrParserException(throwable, null, listView, listView);
                 activity.runOnUiThread(() -> showProgress(false));
             })
             .toList()
             .subscribeOn(Schedulers.io())
             .subscribe(
                 val -> {
-                    final SparseArray<TrainArrival> trainArrivals = loadAroundTrainArrivals(trainStations);
+                    //final SparseArray<TrainArrival> trainArrivals = loadAroundTrainArrivals(trainStations);
                     final List<BikeStation> bikeStationsRes = loadAroundBikeArrivals(bikeStations);
-                    hideStationsAndStopsIfNeeded(busStops, busArrivalsMap, trainStations, trainArrivals);
 
-                    activity.runOnUiThread(() -> updateMarkersAndModel(busStops, busArrivalsMap, trainStations, trainArrivals, bikeStationsRes));
+                    activity.runOnUiThread(() -> updateMarkersAndModel(busStops, busArrivalsMap, trainStations, new SparseArray<>(), bikeStationsRes));
                 },
                 throwable -> {
                     Log.e(TAG, throwable.getMessage(), throwable);
-                    Util.handleConnectOrParserException(throwable, null, listView, listView);
+                    //Util.handleConnectOrParserException(throwable, null, listView, listView);
                     activity.runOnUiThread(() -> showProgress(false));
                 }
             );
@@ -330,36 +316,6 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         }
     }
 
-    private void hideStationsAndStopsIfNeeded(
-        @NonNull final List<BusStop> busStops,
-        @NonNull final SparseArray<Map<String, List<BusArrival>>> busArrivalsMap,
-        @NonNull final List<Station> trainStations,
-        @NonNull final SparseArray<TrainArrival> trainArrivals) {
-        if (hideStationsStops && isAdded()) {
-            final List<BusStop> busStopTmp = new ArrayList<>();
-            for (final BusStop busStop : busStops) {
-                if (busArrivalsMap.get(busStop.getId(), new ConcurrentHashMap<>()).size() == 0) {
-                    busArrivalsMap.remove(busStop.getId());
-                } else {
-                    busStopTmp.add(busStop);
-                }
-            }
-            busStops.clear();
-            busStops.addAll(busStopTmp);
-
-            final List<Station> trainStationTmp = new ArrayList<>();
-            for (final Station station : trainStations) {
-                if (trainArrivals.get(station.getId()) == null || trainArrivals.get(station.getId()).getEtas().size() == 0) {
-                    trainArrivals.remove(station.getId());
-                } else {
-                    trainStationTmp.add(station);
-                }
-            }
-            trainStations.clear();
-            trainStations.addAll(trainStationTmp);
-        }
-    }
-
     private void trackWithGoogleAnalytics(@NonNull final Context context, final int category, final int action, final String label) {
         Util.trackAction(context, category, action, label);
     }
@@ -380,13 +336,19 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         @NonNull final List<BikeStation> bikeStations) {
         if (isAdded()) {
             mapFragment.getMapAsync(googleMap -> {
-                final List<Marker> markers = new ArrayList<>();
+                googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+                googleMap.getUiSettings().setZoomControlsEnabled(false);
+                googleMap.getUiSettings().setMapToolbarEnabled(false);
+
+                Stream.of(markers).forEach(markerObjectEntry -> markerObjectEntry.getKey().remove());
+                markers.clear();
+
                 final BitmapDescriptor bitmapDescriptorBus = createStop(getContext(), R.drawable.bus_stop_icon);
                 final BitmapDescriptor bitmapDescriptorTrain = createStop(getContext(), R.drawable.train_station_icon);
                 final BitmapDescriptor bitmapDescriptorBike = createStop(getContext(), R.drawable.bike_station_icon);
 
                 Stream.of(busStops)
-                    .map(busStop -> {
+                    .forEach(busStop -> {
                         final LatLng point = new LatLng(busStop.getPosition().getLatitude(), busStop.getPosition().getLongitude());
                         final MarkerOptions markerOptions = new MarkerOptions()
                             .position(point)
@@ -395,14 +357,13 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                             .icon(bitmapDescriptorBus);
                         final Marker marker = googleMap.addMarker(markerOptions);
                         marker.setTag(busStop.getId() + "_" + busStop.getName());
-                        return marker;
-                    })
-                    .forEach(markers::add);
+                        markers.put(marker, busStop);
+                    });
 
                 Stream.of(trainStation)
                     .forEach(station ->
                         Stream.of(station.getStopsPosition())
-                            .map(position -> {
+                            .forEach(position -> {
                                 final LatLng point = new LatLng(position.getLatitude(), position.getLongitude());
                                 final MarkerOptions markerOptions = new MarkerOptions()
                                     .position(point)
@@ -410,13 +371,12 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                                     .icon(bitmapDescriptorTrain);
                                 final Marker marker = googleMap.addMarker(markerOptions);
                                 marker.setTag(station.getId() + "_" + station.getName());
-                                return marker;
+                                markers.put(marker, station);
                             })
-                            .forEach(markers::add)
                     );
 
                 Stream.of(bikeStations)
-                    .map(station -> {
+                    .forEach(station -> {
                         final LatLng point = new LatLng(station.getLatitude(), station.getLongitude());
                         final MarkerOptions markerOptions = new MarkerOptions()
                             .position(point)
@@ -424,27 +384,27 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                             .icon(bitmapDescriptorBike);
                         final Marker marker = googleMap.addMarker(markerOptions);
                         marker.setTag(station.getId() + "_" + station.getName());
-                        return marker;
-                    })
-                    .forEach(markers::add);
+                        markers.put(marker, station);
+                    });
 
                 addClickEventsToMarkers(busStops, trainStation, bikeStations);
-                nearbyAdapter.updateData(busStops, busArrivals, trainStation, trainArrivals, bikeStations, googleMap, markers);
-                nearbyAdapter.notifyDataSetChanged();
                 showProgress(false);
-                nearbyContainer.setVisibility(View.VISIBLE);
             });
         }
     }
 
-    private static BitmapDescriptor createStop(@NonNull final Context context, @DrawableRes final int icon) {
-        final int px = context.getResources().getDimensionPixelSize(R.dimen.icon_shadow_2);
-        final Bitmap bitMapBusStation = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888);
-        final Canvas canvas = new Canvas(bitMapBusStation);
-        final Drawable shape = ContextCompat.getDrawable(context, icon);
-        shape.setBounds(0, 0, px, bitMapBusStation.getHeight());
-        shape.draw(canvas);
-        return BitmapDescriptorFactory.fromBitmap(bitMapBusStation);
+    private static BitmapDescriptor createStop(@Nullable final Context context, @DrawableRes final int icon) {
+        if (context != null) {
+            final int px = context.getResources().getDimensionPixelSize(R.dimen.icon_shadow_2);
+            final Bitmap bitMapBusStation = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888);
+            final Canvas canvas = new Canvas(bitMapBusStation);
+            final Drawable shape = ContextCompat.getDrawable(context, icon);
+            shape.setBounds(0, 0, px, bitMapBusStation.getHeight());
+            shape.draw(canvas);
+            return BitmapDescriptorFactory.fromBitmap(bitMapBusStation);
+        } else {
+            return BitmapDescriptorFactory.defaultMarker();
+        }
     }
 
     private void addClickEventsToMarkers(
@@ -453,28 +413,25 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         @NonNull final List<BikeStation> bikeStations) {
         mapFragment.getMapAsync(googleMap ->
             googleMap.setOnMarkerClickListener(marker -> {
-                for (int i = 0; i < stations.size(); i++) {
-                    final Station station = stations.get(i);
-                    if (marker.getTag() != null && marker.getTag().equals(station.getId() + "_" + station.getName())) {
-                        listView.smoothScrollToPosition(i);
-                        return false;
-                    }
-                }
-                for (int i = 0; i < busStops.size(); i++) {
-                    int index = i + stations.size();
-                    final BusStop busStop = busStops.get(i);
-                    if (marker.getTag() != null && marker.getTag().equals(busStop.getId() + "_" + busStop.getName())) {
-                        listView.smoothScrollToPosition(index);
-                        return false;
-                    }
-                }
-                for (int i = 0; i < bikeStations.size(); i++) {
-                    int index = i + stations.size() + busStops.size();
-                    final BikeStation bikeStation = bikeStations.get(i);
-                    if (marker.getTag() != null && marker.getTag().equals(bikeStation.getId() + "_" + bikeStation.getName())) {
-                        listView.smoothScrollToPosition(index);
-                        return false;
-                    }
+                slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                layoutContainer.removeAllViews();
+
+                Object object = markers.get(marker);
+                if (object instanceof Station) {
+                    final Station station = (Station) object;
+                    final TextView textView = new TextView(getContext());
+                    textView.setText(station.getName());
+                    layoutContainer.addView(textView);
+                } else if (object instanceof BusStop) {
+                    final BusStop station = (BusStop) object;
+                    final TextView textView = new TextView(getContext());
+                    textView.setText(station.getName());
+                    layoutContainer.addView(textView);
+                } else if (object instanceof BikeStation) {
+                    final BikeStation station = (BikeStation) object;
+                    final TextView textView = new TextView(getContext());
+                    textView.setText(station.getName());
+                    layoutContainer.addView(textView);
                 }
                 return false;
             })
@@ -482,21 +439,13 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
     }
 
     private void showProgress(final boolean show) {
-        try {
-            if (isAdded()) {
-                int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-                loadLayout.setVisibility(View.VISIBLE);
-                loadLayout.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(final Animator animation) {
-                        if (loadLayout != null) {
-                            loadLayout.setVisibility(show ? View.VISIBLE : View.GONE);
-                        }
-                    }
-                });
+        if (isAdded()) {
+            if (show) {
+                progressBar.setVisibility(View.VISIBLE);
+                progressBar.setProgress(50);
+            } else {
+                progressBar.setVisibility(View.GONE);
             }
-        } catch (final IllegalStateException e) {
-            Log.w(TAG, e.getMessage(), e);
         }
     }
 
@@ -530,13 +479,10 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
             final Optional<Position> position = gpsUtil.getLocation();
             if (position.isPresent()) {
                 final Realm realm = Realm.getDefaultInstance();
-                busStops = busData.readNearbyStops(realm, position.get());
+                busStops = busData.readNearbyStops(realm, position.get(), DEFAULT_RANGE);
                 realm.close();
-                trainStations = trainData.readNearbyStation(position.get());
-                // TODO: wait bikeStations is loaded
-                if (bikeStations != null) {
-                    bikeStations = BikeStation.readNearbyStation(bikeStations, position.get());
-                }
+                trainStations = trainData.readNearbyStation(position.get(), DEFAULT_RANGE);
+                bikeStations = BikeStation.readNearbyStation(bikeStations, position.get(), DEFAULT_RANGE);
             }
             return position;
         }
@@ -579,8 +525,9 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
 
     private void startLoadingNearby() {
         if (Util.isNetworkAvailable(getContext())) {
-            nearbyContainer.setVisibility(View.GONE);
+            //nearbyContainer.setVisibility(View.GONE);
             showProgress(true);
+            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
             new LoadNearbyTask().execute();
         } else {
             Util.showNetworkErrorMessage(activity);
