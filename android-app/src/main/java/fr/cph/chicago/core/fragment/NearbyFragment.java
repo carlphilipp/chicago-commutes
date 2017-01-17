@@ -23,6 +23,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -30,6 +31,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -37,6 +39,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.annimon.stream.Collectors;
@@ -63,7 +66,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import butterknife.BindString;
 import butterknife.BindView;
@@ -83,10 +85,12 @@ import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.TrainArrival;
+import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.parser.JsonParser;
 import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.util.GPSUtil;
+import fr.cph.chicago.util.LayoutUtil;
 import fr.cph.chicago.util.Util;
 import io.reactivex.Observable;
 import io.reactivex.exceptions.Exceptions;
@@ -97,6 +101,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;
 import static fr.cph.chicago.Constants.GPS_ACCESS;
 import static fr.cph.chicago.Constants.TRAINS_ARRIVALS_URL;
@@ -236,29 +241,25 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
             );
     }
 
-    private void loadAroundBusArrivals(@NonNull final BusStop busStop, @NonNull final SparseArray<Map<String, List<BusArrival>>> busArrivalsMap) {
+    private Map<String, List<BusArrival>> loadAroundBusArrivals(@NonNull final BusStop busStop) {
+        final Map<String, List<BusArrival>> result = new HashMap<>();
         try {
             if (isAdded()) {
-                int busStopId = busStop.getId();
                 // Create
-                final Map<String, List<BusArrival>> tempMap = busArrivalsMap.get(busStopId, new ConcurrentHashMap<>());
-                if (!tempMap.containsKey(Integer.toString(busStopId))) {
-                    busArrivalsMap.put(busStopId, tempMap);
-                }
-
+                int busStopId = busStop.getId();
                 final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>(1, 1);
                 reqParams.put(requestStopId, Integer.toString(busStopId));
                 final InputStream is = CtaConnect.INSTANCE.connect(BUS_ARRIVALS, reqParams, getContext());
                 final List<BusArrival> busArrivals = XmlParser.INSTANCE.parseBusArrivals(is);
                 for (final BusArrival busArrival : busArrivals) {
                     final String direction = busArrival.getRouteDirection();
-                    if (tempMap.containsKey(direction)) {
-                        final List<BusArrival> temp = tempMap.get(direction);
+                    if (result.containsKey(direction)) {
+                        final List<BusArrival> temp = result.get(direction);
                         temp.add(busArrival);
                     } else {
                         final List<BusArrival> temp = new ArrayList<>();
                         temp.add(busArrival);
-                        tempMap.put(direction, temp);
+                        result.put(direction, temp);
                     }
                 }
                 trackWithGoogleAnalytics(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
@@ -267,6 +268,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
             Log.e(TAG, throwable.getMessage(), throwable);
             throw Exceptions.propagate(throwable);
         }
+        return result;
     }
 
     private SparseArray<TrainArrival> loadAroundTrainArrivals(@NonNull final List<Station> trainStations) {
@@ -427,6 +429,79 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                     final TextView textView = new TextView(getContext());
                     textView.setText(station.getName());
                     layoutContainer.addView(textView);
+
+                    // TODO refactor that code
+                    new Thread(() -> {
+                        final Map<String, List<BusArrival>> busArrivalsMap = loadAroundBusArrivals(station);
+                        activity.runOnUiThread(() -> {
+                            if (busArrivalsMap.size() != 0) {
+                                Stream.of(busArrivalsMap.entrySet()).forEach(entry -> {
+                                    final LinearLayout.LayoutParams leftParam = new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
+                                    final RelativeLayout insideLayout = new RelativeLayout(getContext());
+                                    insideLayout.setLayoutParams(leftParam);
+                                    int line1PaddingColor = (int) getContext().getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
+                                    int stopsPaddingTop = (int) getContext().getResources().getDimension(R.dimen.activity_station_stops_padding_top);
+                                    insideLayout.setPadding(line1PaddingColor * 2, stopsPaddingTop, 0, 0);
+
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                        insideLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.any_selector));
+                                    }
+
+                                    final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(getContext(), TrainLine.NA);
+                                    int lineId = Util.generateViewId();
+                                    lineIndication.setId(lineId);
+
+                                    final RelativeLayout.LayoutParams stopParam = new RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
+                                    stopParam.addRule(RelativeLayout.RIGHT_OF, lineId);
+                                    stopParam.setMargins(Util.convertDpToPixel(getContext(), 10), 0, 0, 0);
+
+                                    final LinearLayout stopLayout = new LinearLayout(getContext());
+                                    stopLayout.setOrientation(LinearLayout.VERTICAL);
+                                    stopLayout.setLayoutParams(stopParam);
+                                    int stopId = Util.generateViewId();
+                                    stopLayout.setId(stopId);
+
+                                    final RelativeLayout.LayoutParams boundParam = new RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
+                                    boundParam.addRule(RelativeLayout.RIGHT_OF, stopId);
+
+                                    final LinearLayout boundLayout = new LinearLayout(getContext());
+                                    boundLayout.setOrientation(LinearLayout.HORIZONTAL);
+
+                                    final String direction = entry.getKey();
+                                    final List<BusArrival> busArrivals = entry.getValue();
+                                    final String routeId = busArrivals.get(0).getRouteId();
+
+                                    final TextView bound = new TextView(getContext());
+                                    final String routeIdText = routeId + " (" + direction + "): ";
+                                    bound.setText(routeIdText);
+                                    bound.setTextColor(ContextCompat.getColor(getContext(), R.color.grey_5));
+                                    boundLayout.addView(bound);
+
+                                    Stream.of(busArrivals).forEach(busArrival -> {
+                                        final TextView timeView = new TextView(getContext());
+                                        final String timeLeftDueDelay = busArrival.getTimeLeftDueDelay() + " ";
+                                        timeView.setText(timeLeftDueDelay);
+                                        timeView.setTextColor(ContextCompat.getColor(getContext(), R.color.grey));
+                                        timeView.setLines(1);
+                                        timeView.setEllipsize(TextUtils.TruncateAt.END);
+                                        boundLayout.addView(timeView);
+                                    });
+
+                                    stopLayout.addView(boundLayout);
+
+                                    insideLayout.addView(lineIndication);
+                                    insideLayout.addView(stopLayout);
+                                    layoutContainer.addView(insideLayout);
+                                });
+                            } else {
+                                final TextView noStopView = new TextView(getContext());
+                                noStopView.setText("No result");
+                                layoutContainer.addView(noStopView);
+                            }
+                        });
+                    }).start();
+
+
                 } else if (object instanceof BikeStation) {
                     final BikeStation station = (BikeStation) object;
                     final TextView textView = new TextView(getContext());
