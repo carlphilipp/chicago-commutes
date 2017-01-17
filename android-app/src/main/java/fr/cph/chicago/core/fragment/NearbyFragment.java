@@ -37,6 +37,7 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -76,14 +77,17 @@ import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.connection.DivvyConnect;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.activity.MainActivity;
+import fr.cph.chicago.core.adapter.NearbyAdapter;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusStop;
+import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
+import fr.cph.chicago.entity.Stop;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
@@ -141,7 +145,9 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
     private MainActivity activity;
     private GoogleApiClient googleApiClient;
 
-    private Map<Marker, Object> markers;
+    private Map<String, Object> stations;
+
+    private List<Marker> markers;
 
     @NonNull
     public static NearbyFragment newInstance(final int sectionNumber) {
@@ -174,7 +180,8 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         final View rootView = inflater.inflate(R.layout.fragment_nearby, container, false);
         if (!activity.isFinishing()) {
             unbinder = ButterKnife.bind(this, rootView);
-            markers = new HashMap<>();
+            stations = new HashMap<>();
+            markers = new ArrayList<>();
             showProgress(true);
         }
         return rootView;
@@ -271,29 +278,27 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         return result;
     }
 
-    private SparseArray<TrainArrival> loadAroundTrainArrivals(@NonNull final List<Station> trainStations) {
+    private SparseArray<TrainArrival> loadAroundTrainArrivals(@NonNull final Station station) {
         final SparseArray<TrainArrival> trainArrivals = new SparseArray<>();
-        try {
-            if (isAdded()) {
-                for (final Station station : trainStations) {
-                    final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>(1, 1);
-                    reqParams.put(requestMapId, Integer.toString(station.getId()));
-                    final InputStream xmlRes = CtaConnect.INSTANCE.connect(TRAIN_ARRIVALS, reqParams, getContext());
-                    final SparseArray<TrainArrival> temp = XmlParser.INSTANCE.parseArrivals(xmlRes, DataHolder.INSTANCE.getTrainData());
-                    for (int j = 0; j < temp.size(); j++) {
-                        trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
-                    }
-                    trackWithGoogleAnalytics(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
+        if (isAdded()) {
+            try {
+                final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>(1, 1);
+                reqParams.put(requestMapId, Integer.toString(station.getId()));
+                final InputStream xmlRes = CtaConnect.INSTANCE.connect(TRAIN_ARRIVALS, reqParams, getContext());
+                final SparseArray<TrainArrival> temp = XmlParser.INSTANCE.parseArrivals(xmlRes, DataHolder.INSTANCE.getTrainData());
+                for (int j = 0; j < temp.size(); j++) {
+                    trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
                 }
+                trackWithGoogleAnalytics(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
+            } catch (final ConnectException exception) {
+                Log.e(TAG, exception.getMessage(), exception);
+                return trainArrivals;
+            } catch (final Throwable throwable) {
+                Log.e(TAG, throwable.getMessage(), throwable);
+                throw Exceptions.propagate(throwable);
             }
-            return trainArrivals;
-        } catch (final ConnectException exception) {
-            Log.e(TAG, exception.getMessage(), exception);
-            return trainArrivals;
-        } catch (final Throwable throwable) {
-            Log.e(TAG, throwable.getMessage(), throwable);
-            throw Exceptions.propagate(throwable);
         }
+        return trainArrivals;
     }
 
     private List<BikeStation> loadAroundBikeArrivals(@NonNull final List<BikeStation> bikeStations) {
@@ -342,7 +347,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                 googleMap.getUiSettings().setZoomControlsEnabled(false);
                 googleMap.getUiSettings().setMapToolbarEnabled(false);
 
-                Stream.of(markers).forEach(markerObjectEntry -> markerObjectEntry.getKey().remove());
+                Stream.of(markers).forEach(Marker::remove);
                 markers.clear();
 
                 final BitmapDescriptor bitmapDescriptorBus = createStop(getContext(), R.drawable.bus_stop_icon);
@@ -359,21 +364,28 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                             .icon(bitmapDescriptorBus);
                         final Marker marker = googleMap.addMarker(markerOptions);
                         marker.setTag(busStop.getId() + "_" + busStop.getName());
-                        markers.put(marker, busStop);
+                        markers.add(marker);
+                        stations.put(busStop.getId() + "_" + busStop.getName(), busStop);
+                        Log.i(TAG, "Add bus stop: " + busStop.getId() + "_" + busStop.getName() + " " + busStop.getPosition().getLatitude() + " " + busStop.getPosition().getLongitude());
                     });
 
                 Stream.of(trainStation)
                     .forEach(station ->
                         Stream.of(station.getStopsPosition())
                             .forEach(position -> {
-                                final LatLng point = new LatLng(position.getLatitude(), position.getLongitude());
-                                final MarkerOptions markerOptions = new MarkerOptions()
-                                    .position(point)
-                                    .title(station.getName())
-                                    .icon(bitmapDescriptorTrain);
-                                final Marker marker = googleMap.addMarker(markerOptions);
-                                marker.setTag(station.getId() + "_" + station.getName());
-                                markers.put(marker, station);
+                                final String key = station.getId() + "_" + station.getName() + "_train";
+                                if(!stations.containsKey(key)) {
+                                    final LatLng point = new LatLng(position.getLatitude(), position.getLongitude());
+                                    final MarkerOptions markerOptions = new MarkerOptions()
+                                        .position(point)
+                                        .title(station.getName())
+                                        .icon(bitmapDescriptorTrain);
+                                    final Marker marker = googleMap.addMarker(markerOptions);
+                                    marker.setTag(key);
+                                    markers.add(marker);
+                                    stations.put(key, station);
+                                    Log.i(TAG, "Add train station: " + key + " " + position.getLatitude() + " " + position.getLongitude());
+                                }
                             })
                     );
 
@@ -386,7 +398,9 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                             .icon(bitmapDescriptorBike);
                         final Marker marker = googleMap.addMarker(markerOptions);
                         marker.setTag(station.getId() + "_" + station.getName());
-                        markers.put(marker, station);
+                        markers.add(marker);
+                        stations.put(station.getId() + "_" + station.getName(), station);
+                        Log.i(TAG, "Add bike stop: " + station.getId() + "_" + station.getName() + " " + station.getLatitude() + " " + station.getLongitude());
                     });
 
                 addClickEventsToMarkers(busStops, trainStation, bikeStations);
@@ -415,15 +429,125 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         @NonNull final List<BikeStation> bikeStations) {
         mapFragment.getMapAsync(googleMap ->
             googleMap.setOnMarkerClickListener(marker -> {
+                Log.i(TAG, "Marker selected: " + marker.getTag().toString());
                 slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
                 layoutContainer.removeAllViews();
 
-                Object object = markers.get(marker);
+                int line1PaddingColor = (int) getContext().getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
+                int stopsPaddingTop = (int) getContext().getResources().getDimension(R.dimen.activity_station_stops_padding_top);
+
+                Object object = this.stations.get(marker.getTag().toString());
+                Log.i(TAG, "Object found: " + object+ " is a " + object.getClass());
                 if (object instanceof Station) {
                     final Station station = (Station) object;
                     final TextView textView = new TextView(getContext());
                     textView.setText(station.getName());
                     layoutContainer.addView(textView);
+
+                    new Thread(() -> {
+                        final SparseArray<TrainArrival> trainArrivals = loadAroundTrainArrivals(station);
+                        activity.runOnUiThread(() -> {
+
+                            NearbyAdapter.TrainViewHolder viewHolder;
+                            final LayoutInflater vi = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                            final View convertView = vi.inflate(R.layout.list_nearby, null, false);
+
+                            viewHolder = new NearbyAdapter.TrainViewHolder();
+                            viewHolder.resultLayout = (LinearLayout) convertView.findViewById(R.id.nearby_results);
+                            viewHolder.stationNameView = (TextView) convertView.findViewById(R.id.station_name);
+                            viewHolder.imageView = (ImageView) convertView.findViewById(R.id.icon);
+                            viewHolder.details = new HashMap<>();
+                            viewHolder.arrivalTime = new HashMap<>();
+
+                            convertView.setTag(viewHolder);
+
+                            viewHolder.stationNameView.setText(station.getName());
+                            viewHolder.imageView.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_train_white_24dp));
+
+
+                            for (final TrainLine trainLine : station.getLines()) {
+                                final List<Eta> etas = trainArrivals.get(station.getId()).getEtas(trainLine);
+                                if (!etas.isEmpty()) {
+                                    final LinearLayout mainLayout;
+                                    boolean cleanBeforeAdd = false;
+                                    if (viewHolder.details.containsKey(station.getName() + trainLine)) {
+                                        mainLayout = viewHolder.details.get(station.getName() + trainLine);
+                                        cleanBeforeAdd = true;
+                                    } else {
+                                        mainLayout = new LinearLayout(getContext());
+                                        mainLayout.setOrientation(LinearLayout.VERTICAL);
+                                        mainLayout.setPadding(line1PaddingColor, 0, 0, 0);
+
+                                        final LinearLayout linearLayout = new LinearLayout(getContext());
+                                        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+                                        linearLayout.setPadding(line1PaddingColor, stopsPaddingTop, 0, 0);
+
+                                        linearLayout.addView(mainLayout);
+                                        viewHolder.resultLayout.addView(linearLayout);
+                                        viewHolder.details.put(station.getName() + trainLine, mainLayout);
+                                    }
+
+                                    final List<String> keysCleaned = new ArrayList<>();
+
+                                    for (final Eta eta : etas) {
+                                        final Stop stop = eta.getStop();
+                                        final String key = station.getName() + "_" + trainLine.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName();
+                                        if (viewHolder.arrivalTime.containsKey(key)) {
+                                            final RelativeLayout insideLayout = viewHolder.arrivalTime.get(key);
+                                            final TextView timing = (TextView) insideLayout.getChildAt(2);
+                                            if (cleanBeforeAdd && !keysCleaned.contains(key)) {
+                                                timing.setText("");
+                                                keysCleaned.add(key);
+                                            }
+                                            final String timingText = timing.getText() + eta.getTimeLeftDueDelay() + " ";
+                                            timing.setText(timingText);
+                                        } else {
+                                            final LinearLayout.LayoutParams leftParam = new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
+                                            final RelativeLayout insideLayout = new RelativeLayout(getContext());
+                                            insideLayout.setLayoutParams(leftParam);
+
+                                            final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(getContext(), trainLine);
+                                            int lineId = Util.generateViewId();
+                                            lineIndication.setId(lineId);
+
+                                            final RelativeLayout.LayoutParams availableParam = new RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
+                                            availableParam.addRule(RelativeLayout.RIGHT_OF, lineId);
+                                            availableParam.setMargins(Util.convertDpToPixel(getContext(), 10), 0, 0, 0);
+
+                                            final TextView stopName = new TextView(getContext());
+                                            final String destName = eta.getDestName() + ": ";
+                                            stopName.setText(destName);
+                                            stopName.setTextColor(ContextCompat.getColor(getContext(), R.color.grey_5));
+                                            stopName.setLayoutParams(availableParam);
+                                            int availableId = Util.generateViewId();
+                                            stopName.setId(availableId);
+
+                                            final RelativeLayout.LayoutParams availableValueParam = new RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
+                                            availableValueParam.addRule(RelativeLayout.RIGHT_OF, availableId);
+                                            availableValueParam.setMargins(0, 0, 0, 0);
+
+                                            final TextView timing = new TextView(getContext());
+                                            final String timeLeftDueDelay = eta.getTimeLeftDueDelay() + " ";
+                                            timing.setText(timeLeftDueDelay);
+                                            timing.setTextColor(ContextCompat.getColor(getContext(), R.color.grey));
+                                            timing.setLines(1);
+                                            timing.setEllipsize(TextUtils.TruncateAt.END);
+                                            timing.setLayoutParams(availableValueParam);
+
+                                            insideLayout.addView(lineIndication);
+                                            insideLayout.addView(stopName);
+                                            insideLayout.addView(timing);
+
+                                            mainLayout.addView(insideLayout);
+                                            viewHolder.arrivalTime.put(key, insideLayout);
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }).start();
+
+
                 } else if (object instanceof BusStop) {
                     final BusStop station = (BusStop) object;
                     final TextView textView = new TextView(getContext());
@@ -439,8 +563,6 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                                     final LinearLayout.LayoutParams leftParam = new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
                                     final RelativeLayout insideLayout = new RelativeLayout(getContext());
                                     insideLayout.setLayoutParams(leftParam);
-                                    int line1PaddingColor = (int) getContext().getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
-                                    int stopsPaddingTop = (int) getContext().getResources().getDimension(R.dimen.activity_station_stops_padding_top);
                                     insideLayout.setPadding(line1PaddingColor * 2, stopsPaddingTop, 0, 0);
 
                                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {

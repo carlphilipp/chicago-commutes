@@ -444,11 +444,11 @@ public final class NearbyAdapter extends BaseAdapter {
         this.markers = markers;
     }
 
-    private static class TrainViewHolder {
-        TextView stationNameView;
-        ImageView imageView;
-        LinearLayout resultLayout;
-        Map<String, LinearLayout> details;
-        Map<String, RelativeLayout> arrivalTime;
+    public static class TrainViewHolder {
+        public TextView stationNameView;
+        public ImageView imageView;
+        public LinearLayout resultLayout;
+        public Map<String, LinearLayout> details;
+        public Map<String, RelativeLayout> arrivalTime;
     }
 }
