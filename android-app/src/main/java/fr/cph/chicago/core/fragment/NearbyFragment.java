@@ -100,6 +100,7 @@ import io.reactivex.Observable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
+import lombok.Data;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -122,7 +123,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
 
     private static final String TAG = NearbyFragment.class.getSimpleName();
     private static final String ARG_SECTION_NUMBER = "section_number";
-    private static final double DEFAULT_RANGE = 0.004;//0.008;
+    private static final double DEFAULT_RANGE = 0.008;
 
     @BindView(R.id.activity_bar)
     ProgressBar progressBar;
@@ -144,12 +145,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
 
     private MainActivity activity;
     private GoogleApiClient googleApiClient;
-
-/*    private Map<String, Object> stations;
-
-    private List<Marker> markers;*/
-
-    private MarkerHolder markerHolder;
+    private MarkerDataHolder markerDataHolder;
 
     @NonNull
     public static NearbyFragment newInstance(final int sectionNumber) {
@@ -182,9 +178,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         final View rootView = inflater.inflate(R.layout.fragment_nearby, container, false);
         if (!activity.isFinishing()) {
             unbinder = ButterKnife.bind(this, rootView);
-            /*stations = new HashMap<>();
-            markers = new ArrayList<>();*/
-            markerHolder = new MarkerHolder();
+            markerDataHolder = new MarkerDataHolder();
             showProgress(true);
         }
         return rootView;
@@ -338,47 +332,47 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         }
     }
 
-    private class MarkerHolder {
-        private Map<CustMarker, List<Object>> stations;
+    private class MarkerDataHolder {
+        final Map<LatLng, List<MarkerHolder>> data;
 
-        private MarkerHolder() {
-            stations = new HashMap<>();
+        private MarkerDataHolder() {
+            data = new HashMap<>();
         }
 
-        void addMarker(final Marker marker, final Object object) {
-            final CustMarker custMarker = CustMarker.builder().marker(marker).build();
-            if (!stations.containsKey(custMarker)) {
-                marker.setVisible(true);
-                final List<Object> objects = new ArrayList<>();
-                objects.add(object);
-                stations.put(custMarker, objects);
+        void addData(final Marker marker, final Object object) {
+            marker.setVisible(true);
+            final MarkerHolder markerHolder = new MarkerHolder();
+            markerHolder.setMarker(marker);
+            markerHolder.setStation(object);
+            final LatLng latLng = marker.getPosition();
+            if (data.containsKey(latLng)) {
+                final List<MarkerHolder> markerHolderList = data.get(latLng);
+                final Optional<MarkerHolder> optional = Stream.of(markerHolderList)
+                    .filter(m -> m.getStation() instanceof Station)
+                    .findFirst();
+                if (!optional.isPresent()) {
+                    Stream.of(markerHolderList).forEach(m -> m.getMarker().setVisible(false));
+                }
+                markerHolderList.add(markerHolder);
             } else {
-                final List<Object> objects = stations.get(custMarker);
-                objects.add(object);
-                Stream.of(stations.keySet()).findFirst().ifPresent(m -> {
-                    if (object instanceof Station) {
-                        marker.setVisible(true);
-                        m.setMarker(marker);
-                    }
-                });
+                final List<MarkerHolder> markerHolderList = new ArrayList<>();
+                markerHolderList.add(markerHolder);
+                data.put(latLng, markerHolderList);
             }
         }
 
         void clear() {
-            Stream.of(stations.keySet()).forEach(CustMarker::remove);
-            stations.clear();
+            data.clear();
         }
 
-        boolean containsStation(final Station station) {
-            return stations.containsValue(station);
+        List<MarkerHolder> getData(final Marker marker) {
+            return data.get(marker.getPosition());
         }
 
-        List<Object> findObject(final Marker marker) {
-            CustMarker custMarker = CustMarker.builder().marker(marker).build();
-            return Stream.of(stations.keySet())
-                .filter(key -> key.equals(custMarker) || (key.getPosition().latitude == marker.getPosition().latitude && key.getPosition().longitude == marker.getPosition().longitude))
-                .map(key -> stations.get(key))
-                .collect(Collectors.toList());
+        @Data
+        class MarkerHolder {
+            private Marker marker;
+            private Object station;
         }
     }
 
@@ -397,7 +391,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                 /*Stream.of(markers).forEach(Marker::remove);
                 markers.clear();*/
 
-                markerHolder.clear();
+                markerDataHolder.clear();
 
                 final BitmapDescriptor bitmapDescriptorBus = createStop(getContext(), R.drawable.bus_stop_icon);
                 final BitmapDescriptor bitmapDescriptorTrain = createStop(getContext(), R.drawable.train_station_icon);
@@ -416,7 +410,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                         marker.setVisible(false);
                         /*markers.add(marker);
                         stations.put(busStop.getId() + "_" + busStop.getName(), busStop);*/
-                        markerHolder.addMarker(marker, busStop);
+                        markerDataHolder.addData(marker, busStop);
                         Log.i(TAG, "Add bus stop: " + busStop.getId() + "_" + busStop.getName() + " " + busStop.getPosition().getLatitude() + " " + busStop.getPosition().getLongitude());
                     });
 
@@ -425,20 +419,20 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                         Stream.of(station.getStopsPosition())
                             .forEach(position -> {
                                 final String key = station.getId() + "_" + station.getName() + "_train";
-                                if (!markerHolder.containsStation(station)) {
-                                    final LatLng point = new LatLng(position.getLatitude(), position.getLongitude());
-                                    final MarkerOptions markerOptions = new MarkerOptions()
-                                        .position(point)
-                                        .title(station.getName())
-                                        .icon(bitmapDescriptorTrain);
-                                    final Marker marker = googleMap.addMarker(markerOptions);
-                                    marker.setTag(key);
-                                    marker.setVisible(false);
+                                //if (!markerHolder.containsStation(station)) {
+                                final LatLng point = new LatLng(position.getLatitude(), position.getLongitude());
+                                final MarkerOptions markerOptions = new MarkerOptions()
+                                    .position(point)
+                                    .title(station.getName())
+                                    .icon(bitmapDescriptorTrain);
+                                final Marker marker = googleMap.addMarker(markerOptions);
+                                marker.setTag(key);
+                                marker.setVisible(false);
                                     /*markers.add(marker);
                                     stations.put(key, station);*/
-                                    markerHolder.addMarker(marker, station);
-                                    Log.i(TAG, "Add train station: " + key + " " + position.getLatitude() + " " + position.getLongitude());
-                                }
+                                markerDataHolder.addData(marker, station);
+                                Log.i(TAG, "Add train station: " + key + " " + position.getLatitude() + " " + position.getLongitude());
+                                //}
                             })
                     );
 
@@ -454,7 +448,8 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                         marker.setVisible(false);
                         /*markers.add(marker);
                         stations.put(station.getId() + "_" + station.getName(), station);*/
-                        markerHolder.addMarker(marker, station);
+                        //markerHolder.addMarker(marker, station);
+                        markerDataHolder.addData(marker, station);
                         Log.i(TAG, "Add bike stop: " + station.getId() + "_" + station.getName() + " " + station.getLatitude() + " " + station.getLongitude());
                     });
 
@@ -491,12 +486,12 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                 int line1PaddingColor = (int) getContext().getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
                 int stopsPaddingTop = (int) getContext().getResources().getDimension(R.dimen.activity_station_stops_padding_top);
 
-                List<Object> objects = this.markerHolder.findObject(marker);
+                List<MarkerDataHolder.MarkerHolder> objects = this.markerDataHolder.getData(marker);
                 Log.i(TAG, "Object found: " + objects + " is a " + objects.getClass());
                 Log.i(TAG, "Size: " + objects.size());
                 if (objects.size() != 0) {
-                    if (objects.get(0) instanceof Station) {
-                        final Station station = (Station) objects.get(0);
+                    if (objects.get(0).getStation() instanceof Station) {
+                        final Station station = (Station) objects.get(0).getStation();
                         final TextView textView = new TextView(getContext());
                         textView.setText(station.getName());
                         layoutContainer.addView(textView);
@@ -605,8 +600,8 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                         }).start();
 
 
-                    } else if (objects.get(0) instanceof BusStop) {
-                        final BusStop station = (BusStop) objects.get(0);
+                    } else if (objects.get(0).getStation() instanceof BusStop) {
+                        final BusStop station = (BusStop) objects.get(0).getStation();
                         final TextView textView = new TextView(getContext());
                         textView.setText(station.getName());
                         layoutContainer.addView(textView);
@@ -681,8 +676,8 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                         }).start();
 
 
-                    } else if (objects.get(0) instanceof BikeStation) {
-                        final BikeStation station = (BikeStation) objects.get(0);
+                    } else if (objects.get(0).getStation() instanceof BikeStation) {
+                        final BikeStation station = (BikeStation) objects.get(0).getStation();
                         final TextView textView = new TextView(getContext());
                         textView.setText(station.getName());
                         layoutContainer.addView(textView);
