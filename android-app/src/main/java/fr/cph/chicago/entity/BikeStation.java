@@ -41,7 +41,7 @@ import lombok.Data;
 @Builder
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public final class BikeStation implements Parcelable {
+public final class BikeStation implements Parcelable, AStation {
 
     @JsonProperty("id")
     private int id;

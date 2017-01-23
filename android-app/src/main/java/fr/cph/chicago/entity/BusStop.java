@@ -35,14 +35,9 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class BusStop extends RealmObject implements Comparable<BusStop>, Parcelable, Serializable {
-    /**
-     *
-     */
+public class BusStop extends RealmObject implements Comparable<BusStop>, Parcelable, Serializable, AStation {
+
     private static final long serialVersionUID = 0L;
-    /**
-     * The id
-     **/
     @PrimaryKey
     private int id;
     private String name;

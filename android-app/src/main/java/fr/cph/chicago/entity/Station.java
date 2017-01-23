@@ -49,18 +49,10 @@ import lombok.Data;
 @AllArgsConstructor
 @Builder
 @Data
-public class Station implements Comparable<Station>, Parcelable {
-    /**
-     * The id
-     **/
+public class Station implements Comparable<Station>, Parcelable, AStation {
+
     private int id;
-    /**
-     * The name
-     **/
     private String name;
-    /**
-     * The stops list
-     **/
     private List<Stop> stops;
 
     private Station(@NonNull final Parcel in) {

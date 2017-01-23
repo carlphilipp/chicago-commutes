@@ -21,7 +21,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -47,8 +46,8 @@ import com.annimon.stream.Collectors;
 import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -67,6 +66,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import butterknife.BindString;
 import butterknife.BindView;
@@ -81,6 +81,7 @@ import fr.cph.chicago.core.adapter.NearbyAdapter;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
+import fr.cph.chicago.entity.AStation;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusStop;
@@ -143,7 +144,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
 
     private SupportMapFragment mapFragment;
 
-    private MainActivity activity;
+    MainActivity activity;
     private GoogleApiClient googleApiClient;
     private MarkerDataHolder markerDataHolder;
 
@@ -211,59 +212,69 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         }
     }
 
-    private void loadAllArrivals(@NonNull final List<BusStop> busStops, @NonNull final List<Station> trainStations, @NonNull final List<BikeStation> bikeStations) {
+    private void loadAllArrivals(@NonNull final List<AStation> stations) {
+        final List<Station> trainStations = Stream.of(stations).filter(station -> station instanceof Station).map(station -> (Station) station).collect(Collectors.toList());
+        final List<BusStop> busStops = Stream.of(stations).filter(station -> station instanceof BusStop).map(station -> (BusStop) station).collect(Collectors.toList());
+        final List<BikeStation> bikeStations = Stream.of(stations).filter(station -> station instanceof BikeStation).map(station -> (BikeStation) station).collect(Collectors.toList());
+
+        // Train handling
+        final SparseArray<TrainArrival> resultTrainStation = new SparseArray<>();
+        final Observable<Object> trainObservable = Observable.fromIterable(trainStations)
+            .map(station -> {
+                loadAroundTrainArrival(station, resultTrainStation);
+                return new Object();
+            });
+
+        // Bus handling
         final SparseArray<Map<String, List<BusArrival>>> busArrivalsMap = new SparseArray<>();
-        // Execute in parallel all requests to bus arrivals
-        // To be able to wait that all the threads ended we transform to list (it enforces it)
-        // And then process train and bikes in sequence
-        Observable.fromIterable(busStops)
+        final Observable<Object> busObservable = Observable.fromIterable(busStops)
             .flatMap(busStop -> Observable.just(busStop).subscribeOn(Schedulers.computation())
                 .map(currentBusStop -> {
-                    //loadAroundBusArrivals(currentBusStop, busArrivalsMap);
+                    loadAroundBusArrivals(currentBusStop, busArrivalsMap);
                     return new Object();
                 })
-            )
+            );
+
+
+        Observable.fromArray(trainObservable, busObservable)
             .doOnError(throwable -> {
                 Log.e(TAG, throwable.getMessage(), throwable);
-                //Util.handleConnectOrParserException(throwable, null, listView, listView);
                 activity.runOnUiThread(() -> showProgress(false));
             })
-            .toList()
             .subscribeOn(Schedulers.io())
-            .subscribe(
-                val -> {
-                    //final SparseArray<TrainArrival> trainArrivals = loadAroundTrainArrivals(trainStations);
-                    final List<BikeStation> bikeStationsRes = loadAroundBikeArrivals(bikeStations);
-
-                    activity.runOnUiThread(() -> updateMarkersAndModel(busStops, busArrivalsMap, trainStations, new SparseArray<>(), bikeStationsRes));
-                },
-                throwable -> {
-                    Log.e(TAG, throwable.getMessage(), throwable);
-                    //Util.handleConnectOrParserException(throwable, null, listView, listView);
-                    activity.runOnUiThread(() -> showProgress(false));
-                }
-            );
+            .subscribe(val -> {
+                final List<BikeStation> bikeStationsRes = loadAroundBikeArrivals(bikeStations);
+                Log.i(TAG, "busArrivalsMap: " + busArrivalsMap);
+                Log.i(TAG, "resultTrainStation: " + resultTrainStation);
+                Log.i(TAG, "bikeStationsRes: " + bikeStationsRes);
+                activity.runOnUiThread(() -> updateMarkersAndModel(busStops, trainStations, bikeStationsRes));
+            });
     }
 
-    private Map<String, List<BusArrival>> loadAroundBusArrivals(@NonNull final BusStop busStop) {
+    Map<String, List<BusArrival>> loadAroundBusArrivals(@NonNull final BusStop busStop, @NonNull final SparseArray<Map<String, List<BusArrival>>> busArrivalsMap) {
         final Map<String, List<BusArrival>> result = new HashMap<>();
         try {
             if (isAdded()) {
-                // Create
                 int busStopId = busStop.getId();
+                // Create
+                final Map<String, List<BusArrival>> tempMap = busArrivalsMap.get(busStopId, new ConcurrentHashMap<>());
+                if (!tempMap.containsKey(Integer.toString(busStopId))) {
+                    busArrivalsMap.put(busStopId, tempMap);
+                }
+
                 final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>(1, 1);
                 reqParams.put(requestStopId, Integer.toString(busStopId));
                 final InputStream is = CtaConnect.INSTANCE.connect(BUS_ARRIVALS, reqParams, getContext());
                 final List<BusArrival> busArrivals = XmlParser.INSTANCE.parseBusArrivals(is);
                 for (final BusArrival busArrival : busArrivals) {
                     final String direction = busArrival.getRouteDirection();
-                    if (result.containsKey(direction)) {
-                        final List<BusArrival> temp = result.get(direction);
+                    if (tempMap.containsKey(direction)) {
+                        final List<BusArrival> temp = tempMap.get(direction);
                         temp.add(busArrival);
                     } else {
                         final List<BusArrival> temp = new ArrayList<>();
                         temp.add(busArrival);
-                        result.put(direction, temp);
+                        tempMap.put(direction, temp);
                     }
                 }
                 trackWithGoogleAnalytics(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
@@ -275,7 +286,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         return result;
     }
 
-    private SparseArray<TrainArrival> loadAroundTrainArrivals(@NonNull final Station station) {
+    SparseArray<TrainArrival> loadAroundTrainArrivals(@NonNull final Station station) {
         final SparseArray<TrainArrival> trainArrivals = new SparseArray<>();
         if (isAdded()) {
             try {
@@ -296,6 +307,26 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
             }
         }
         return trainArrivals;
+    }
+
+    private void loadAroundTrainArrival(@NonNull final Station station, final SparseArray<TrainArrival> resultTrainStation) {
+        if (isAdded()) {
+            try {
+                final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>(1, 1);
+                reqParams.put(requestMapId, Integer.toString(station.getId()));
+                final InputStream xmlRes = CtaConnect.INSTANCE.connect(TRAIN_ARRIVALS, reqParams, getContext());
+                final SparseArray<TrainArrival> temp = XmlParser.INSTANCE.parseArrivals(xmlRes, DataHolder.INSTANCE.getTrainData());
+                for (int j = 0; j < temp.size(); j++) {
+                    resultTrainStation.put(temp.keyAt(j), temp.valueAt(j));
+                }
+                trackWithGoogleAnalytics(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
+            } catch (final ConnectException exception) {
+                Log.e(TAG, exception.getMessage(), exception);
+            } catch (final Throwable throwable) {
+                Log.e(TAG, throwable.getMessage(), throwable);
+                throw Exceptions.propagate(throwable);
+            }
+        }
     }
 
     private List<BikeStation> loadAroundBikeArrivals(@NonNull final List<BikeStation> bikeStations) {
@@ -332,18 +363,18 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         }
     }
 
-    private class MarkerDataHolder {
+    class MarkerDataHolder {
         final Map<LatLng, List<MarkerHolder>> data;
 
         private MarkerDataHolder() {
             data = new HashMap<>();
         }
 
-        void addData(final Marker marker, final Object object) {
+        void addData(final Marker marker, final AStation station) {
             marker.setVisible(true);
             final MarkerHolder markerHolder = new MarkerHolder();
             markerHolder.setMarker(marker);
-            markerHolder.setStation(object);
+            markerHolder.setStation(station);
             final LatLng latLng = marker.getPosition();
             if (data.containsKey(latLng)) {
                 final List<MarkerHolder> markerHolderList = data.get(latLng);
@@ -365,31 +396,26 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
             data.clear();
         }
 
-        List<MarkerHolder> getData(final Marker marker) {
-            return data.get(marker.getPosition());
+        List<AStation> getData(final Marker marker) {
+            return Stream.of(data.get(marker.getPosition())).map(MarkerHolder::getStation).collect(Collectors.toList());
         }
 
         @Data
-        class MarkerHolder {
+        private class MarkerHolder {
             private Marker marker;
-            private Object station;
+            private AStation station;
         }
     }
 
     private void updateMarkersAndModel(
         @NonNull final List<BusStop> busStops,
-        @NonNull final SparseArray<Map<String, List<BusArrival>>> busArrivals,
         @NonNull final List<Station> trainStation,
-        @NonNull final SparseArray<TrainArrival> trainArrivals,
         @NonNull final List<BikeStation> bikeStations) {
         if (isAdded()) {
             mapFragment.getMapAsync(googleMap -> {
                 googleMap.getUiSettings().setMyLocationButtonEnabled(true);
                 googleMap.getUiSettings().setZoomControlsEnabled(false);
                 googleMap.getUiSettings().setMapToolbarEnabled(false);
-
-                /*Stream.of(markers).forEach(Marker::remove);
-                markers.clear();*/
 
                 markerDataHolder.clear();
 
@@ -408,8 +434,6 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                         final Marker marker = googleMap.addMarker(markerOptions);
                         marker.setTag(busStop.getId() + "_" + busStop.getName());
                         marker.setVisible(false);
-                        /*markers.add(marker);
-                        stations.put(busStop.getId() + "_" + busStop.getName(), busStop);*/
                         markerDataHolder.addData(marker, busStop);
                         Log.i(TAG, "Add bus stop: " + busStop.getId() + "_" + busStop.getName() + " " + busStop.getPosition().getLatitude() + " " + busStop.getPosition().getLongitude());
                     });
@@ -428,8 +452,6 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                                 final Marker marker = googleMap.addMarker(markerOptions);
                                 marker.setTag(key);
                                 marker.setVisible(false);
-                                    /*markers.add(marker);
-                                    stations.put(key, station);*/
                                 markerDataHolder.addData(marker, station);
                                 Log.i(TAG, "Add train station: " + key + " " + position.getLatitude() + " " + position.getLongitude());
                                 //}
@@ -446,15 +468,13 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                         final Marker marker = googleMap.addMarker(markerOptions);
                         marker.setTag(station.getId() + "_" + station.getName());
                         marker.setVisible(false);
-                        /*markers.add(marker);
-                        stations.put(station.getId() + "_" + station.getName(), station);*/
-                        //markerHolder.addMarker(marker, station);
+
                         markerDataHolder.addData(marker, station);
                         Log.i(TAG, "Add bike stop: " + station.getId() + "_" + station.getName() + " " + station.getLatitude() + " " + station.getLongitude());
                     });
 
-                addClickEventsToMarkers(busStops, trainStation, bikeStations);
                 showProgress(false);
+                googleMap.setOnMarkerClickListener(new OnMarkerClickListener(markerDataHolder, NearbyFragment.this));
             });
         }
     }
@@ -473,225 +493,6 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         }
     }
 
-    private void addClickEventsToMarkers(
-        @NonNull final List<BusStop> busStops,
-        @NonNull final List<Station> stations,
-        @NonNull final List<BikeStation> bikeStations) {
-        mapFragment.getMapAsync(googleMap ->
-            googleMap.setOnMarkerClickListener(marker -> {
-                Log.i(TAG, "Marker selected: " + marker.getTag().toString());
-                slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-                layoutContainer.removeAllViews();
-
-                int line1PaddingColor = (int) getContext().getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
-                int stopsPaddingTop = (int) getContext().getResources().getDimension(R.dimen.activity_station_stops_padding_top);
-
-                List<MarkerDataHolder.MarkerHolder> objects = this.markerDataHolder.getData(marker);
-                Log.i(TAG, "Object found: " + objects + " is a " + objects.getClass());
-                Log.i(TAG, "Size: " + objects.size());
-                if (objects.size() != 0) {
-                    if (objects.get(0).getStation() instanceof Station) {
-                        final Station station = (Station) objects.get(0).getStation();
-                        final TextView textView = new TextView(getContext());
-                        textView.setText(station.getName());
-                        layoutContainer.addView(textView);
-
-                        new Thread(() -> {
-                            final SparseArray<TrainArrival> trainArrivals = loadAroundTrainArrivals(station);
-                            activity.runOnUiThread(() -> {
-
-                                NearbyAdapter.TrainViewHolder viewHolder;
-                                final LayoutInflater vi = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                                final View convertView = vi.inflate(R.layout.list_nearby, null, false);
-
-                                viewHolder = new NearbyAdapter.TrainViewHolder();
-                                viewHolder.resultLayout = (LinearLayout) convertView.findViewById(R.id.nearby_results);
-                                viewHolder.stationNameView = (TextView) convertView.findViewById(R.id.station_name);
-                                viewHolder.imageView = (ImageView) convertView.findViewById(R.id.icon);
-                                viewHolder.details = new HashMap<>();
-                                viewHolder.arrivalTime = new HashMap<>();
-
-                                convertView.setTag(viewHolder);
-
-                                viewHolder.stationNameView.setText(station.getName());
-                                viewHolder.imageView.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_train_white_24dp));
-
-
-                                for (final TrainLine trainLine : station.getLines()) {
-                                    final List<Eta> etas = trainArrivals.get(station.getId()).getEtas(trainLine);
-                                    if (!etas.isEmpty()) {
-                                        final LinearLayout mainLayout;
-                                        boolean cleanBeforeAdd = false;
-                                        if (viewHolder.details.containsKey(station.getName() + trainLine)) {
-                                            mainLayout = viewHolder.details.get(station.getName() + trainLine);
-                                            cleanBeforeAdd = true;
-                                        } else {
-                                            mainLayout = new LinearLayout(getContext());
-                                            mainLayout.setOrientation(LinearLayout.VERTICAL);
-                                            mainLayout.setPadding(line1PaddingColor, 0, 0, 0);
-
-                                            final LinearLayout linearLayout = new LinearLayout(getContext());
-                                            linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-                                            linearLayout.setPadding(line1PaddingColor, stopsPaddingTop, 0, 0);
-
-                                            linearLayout.addView(mainLayout);
-                                            viewHolder.resultLayout.addView(linearLayout);
-                                            viewHolder.details.put(station.getName() + trainLine, mainLayout);
-                                        }
-
-                                        final List<String> keysCleaned = new ArrayList<>();
-
-                                        for (final Eta eta : etas) {
-                                            final Stop stop = eta.getStop();
-                                            final String key = station.getName() + "_" + trainLine.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName();
-                                            if (viewHolder.arrivalTime.containsKey(key)) {
-                                                final RelativeLayout insideLayout = viewHolder.arrivalTime.get(key);
-                                                final TextView timing = (TextView) insideLayout.getChildAt(2);
-                                                if (cleanBeforeAdd && !keysCleaned.contains(key)) {
-                                                    timing.setText("");
-                                                    keysCleaned.add(key);
-                                                }
-                                                final String timingText = timing.getText() + eta.getTimeLeftDueDelay() + " ";
-                                                timing.setText(timingText);
-                                            } else {
-                                                final LinearLayout.LayoutParams leftParam = new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
-                                                final RelativeLayout insideLayout = new RelativeLayout(getContext());
-                                                insideLayout.setLayoutParams(leftParam);
-
-                                                final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(getContext(), trainLine);
-                                                int lineId = Util.generateViewId();
-                                                lineIndication.setId(lineId);
-
-                                                final RelativeLayout.LayoutParams availableParam = new RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
-                                                availableParam.addRule(RelativeLayout.RIGHT_OF, lineId);
-                                                availableParam.setMargins(Util.convertDpToPixel(getContext(), 10), 0, 0, 0);
-
-                                                final TextView stopName = new TextView(getContext());
-                                                final String destName = eta.getDestName() + ": ";
-                                                stopName.setText(destName);
-                                                stopName.setTextColor(ContextCompat.getColor(getContext(), R.color.grey_5));
-                                                stopName.setLayoutParams(availableParam);
-                                                int availableId = Util.generateViewId();
-                                                stopName.setId(availableId);
-
-                                                final RelativeLayout.LayoutParams availableValueParam = new RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
-                                                availableValueParam.addRule(RelativeLayout.RIGHT_OF, availableId);
-                                                availableValueParam.setMargins(0, 0, 0, 0);
-
-                                                final TextView timing = new TextView(getContext());
-                                                final String timeLeftDueDelay = eta.getTimeLeftDueDelay() + " ";
-                                                timing.setText(timeLeftDueDelay);
-                                                timing.setTextColor(ContextCompat.getColor(getContext(), R.color.grey));
-                                                timing.setLines(1);
-                                                timing.setEllipsize(TextUtils.TruncateAt.END);
-                                                timing.setLayoutParams(availableValueParam);
-
-                                                insideLayout.addView(lineIndication);
-                                                insideLayout.addView(stopName);
-                                                insideLayout.addView(timing);
-
-                                                mainLayout.addView(insideLayout);
-                                                viewHolder.arrivalTime.put(key, insideLayout);
-                                            }
-                                        }
-                                    }
-                                }
-                            });
-                        }).start();
-
-
-                    } else if (objects.get(0).getStation() instanceof BusStop) {
-                        final BusStop station = (BusStop) objects.get(0).getStation();
-                        final TextView textView = new TextView(getContext());
-                        textView.setText(station.getName());
-                        layoutContainer.addView(textView);
-
-                        // TODO refactor that code
-                        new Thread(() -> {
-                            final Map<String, List<BusArrival>> busArrivalsMap = loadAroundBusArrivals(station);
-                            activity.runOnUiThread(() -> {
-                                if (busArrivalsMap.size() != 0) {
-                                    Stream.of(busArrivalsMap.entrySet()).forEach(entry -> {
-                                        final LinearLayout.LayoutParams leftParam = new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
-                                        final RelativeLayout insideLayout = new RelativeLayout(getContext());
-                                        insideLayout.setLayoutParams(leftParam);
-                                        insideLayout.setPadding(line1PaddingColor * 2, stopsPaddingTop, 0, 0);
-
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                                            insideLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.any_selector));
-                                        }
-
-                                        final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(getContext(), TrainLine.NA);
-                                        int lineId = Util.generateViewId();
-                                        lineIndication.setId(lineId);
-
-                                        final RelativeLayout.LayoutParams stopParam = new RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
-                                        stopParam.addRule(RelativeLayout.RIGHT_OF, lineId);
-                                        stopParam.setMargins(Util.convertDpToPixel(getContext(), 10), 0, 0, 0);
-
-                                        final LinearLayout stopLayout = new LinearLayout(getContext());
-                                        stopLayout.setOrientation(LinearLayout.VERTICAL);
-                                        stopLayout.setLayoutParams(stopParam);
-                                        int stopId = Util.generateViewId();
-                                        stopLayout.setId(stopId);
-
-                                        final RelativeLayout.LayoutParams boundParam = new RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
-                                        boundParam.addRule(RelativeLayout.RIGHT_OF, stopId);
-
-                                        final LinearLayout boundLayout = new LinearLayout(getContext());
-                                        boundLayout.setOrientation(LinearLayout.HORIZONTAL);
-
-                                        final String direction = entry.getKey();
-                                        final List<BusArrival> busArrivals = entry.getValue();
-                                        final String routeId = busArrivals.get(0).getRouteId();
-
-                                        final TextView bound = new TextView(getContext());
-                                        final String routeIdText = routeId + " (" + direction + "): ";
-                                        bound.setText(routeIdText);
-                                        bound.setTextColor(ContextCompat.getColor(getContext(), R.color.grey_5));
-                                        boundLayout.addView(bound);
-
-                                        Stream.of(busArrivals).forEach(busArrival -> {
-                                            final TextView timeView = new TextView(getContext());
-                                            final String timeLeftDueDelay = busArrival.getTimeLeftDueDelay() + " ";
-                                            timeView.setText(timeLeftDueDelay);
-                                            timeView.setTextColor(ContextCompat.getColor(getContext(), R.color.grey));
-                                            timeView.setLines(1);
-                                            timeView.setEllipsize(TextUtils.TruncateAt.END);
-                                            boundLayout.addView(timeView);
-                                        });
-
-                                        stopLayout.addView(boundLayout);
-
-                                        insideLayout.addView(lineIndication);
-                                        insideLayout.addView(stopLayout);
-                                        layoutContainer.addView(insideLayout);
-                                    });
-                                } else {
-                                    final TextView noStopView = new TextView(getContext());
-                                    noStopView.setText("No result");
-                                    layoutContainer.addView(noStopView);
-                                }
-                            });
-                        }).start();
-
-
-                    } else if (objects.get(0).getStation() instanceof BikeStation) {
-                        final BikeStation station = (BikeStation) objects.get(0).getStation();
-                        final TextView textView = new TextView(getContext());
-                        textView.setText(station.getName());
-                        layoutContainer.addView(textView);
-                    }
-                } else {
-                    final TextView noStopView = new TextView(getContext());
-                    noStopView.setText("No result");
-                    layoutContainer.addView(noStopView);
-                }
-                return false;
-            })
-        );
-    }
-
     private void showProgress(final boolean show) {
         if (isAdded()) {
             if (show) {
@@ -707,7 +508,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         loadNearbyIfAllowed();
     }
 
-    private class LoadNearbyTask extends AsyncTask<Void, Void, Optional<Position>> implements LocationListener {
+    private class LoadNearbyTask extends AsyncTask<Void, Void, Optional<Position>> {
 
         private List<BusStop> busStops;
         private List<Station> trainStations;
@@ -729,7 +530,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
             final BusData busData = DataHolder.INSTANCE.getBusData();
             final TrainData trainData = DataHolder.INSTANCE.getTrainData();
 
-            final GPSUtil gpsUtil = new GPSUtil(googleApiClient, this);
+            final GPSUtil gpsUtil = new GPSUtil(googleApiClient);
             final Optional<Position> position = gpsUtil.getLocation();
             if (position.isPresent()) {
                 final Realm realm = Realm.getDefaultInstance();
@@ -744,12 +545,9 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         @Override
         protected final void onPostExecute(final Optional<Position> result) {
             Util.centerMap(mapFragment, result);
-            loadAllArrivals(busStops, trainStations, bikeStations);
-        }
-
-        @Override
-        public final void onLocationChanged(final Location location) {
-            Log.v(TAG, "Location changed: " + location.getLatitude() + " " + location.getLongitude());
+            //final List<BikeStation> bikeStationsRes = loadAroundBikeArrivals(bikeStations);
+            //activity.runOnUiThread(() -> updateMarkersAndModel(busStops, trainStations, bikeStations));
+            updateMarkersAndModel(busStops, trainStations, bikeStations);
         }
     }
 
@@ -782,6 +580,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
             //nearbyContainer.setVisibility(View.GONE);
             showProgress(true);
             slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+
             new LoadNearbyTask().execute();
         } else {
             Util.showNetworkErrorMessage(activity);
