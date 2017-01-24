@@ -1,5 +1,7 @@
 package fr.cph.chicago.service.impl;
 
+import android.support.annotation.NonNull;
+
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 
@@ -25,5 +27,10 @@ public enum BikeServiceImpl implements BikeService {
         } catch (final Throwable throwable) {
             throw Exceptions.propagate(throwable);
         }
+    }
+
+    @Override
+    public List<BikeStation> loadBikes(@NonNull final List<Integer> ids) {
+        return Stream.of(loadAllBikes()).filter(value -> ids.contains(value.getId())).collect(Collectors.toList());
     }
 }

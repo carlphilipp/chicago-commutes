@@ -1,45 +1,55 @@
-package fr.cph.chicago.core.fragment;
+package fr.cph.chicago.core.listener;
 
 import android.content.Context;
-import android.os.Build;
-import android.support.v4.content.ContextCompat;
-import android.text.TextUtils;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.SparseArray;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
+import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import fr.cph.chicago.R;
-import fr.cph.chicago.core.adapter.NearbyAdapter;
+import fr.cph.chicago.connection.CtaConnect;
+import fr.cph.chicago.connection.DivvyConnect;
+import fr.cph.chicago.core.fragment.NearbyFragment;
+import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.AStation;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusStop;
-import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Station;
-import fr.cph.chicago.entity.Stop;
 import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.util.LayoutUtil;
+import fr.cph.chicago.exception.ConnectException;
+import fr.cph.chicago.parser.JsonParser;
+import fr.cph.chicago.parser.XmlParser;
+import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.util.Util;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.schedulers.Schedulers;
 
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;
+import static fr.cph.chicago.Constants.TRAINS_ARRIVALS_URL;
+import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
+import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
 
 public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
+
+    private static final String TAG = OnMarkerClickListener.class.getSimpleName();
 
     private NearbyFragment nearbyFragment;
     private NearbyFragment.MarkerDataHolder markerDataHolder;
@@ -49,31 +59,31 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
         this.nearbyFragment = nearbyFragment;
     }
 
-    private static final String TAG = OnMarkerClickListener.class.getSimpleName();
-
     @Override
     public boolean onMarkerClick(final Marker marker) {
         Log.i(TAG, "Marker selected: " + marker.getTag().toString());
         List<AStation> stations = markerDataHolder.getData(marker);
-        nearbyFragment.slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-        nearbyFragment.layoutContainer.removeAllViews();
+        nearbyFragment.getSlidingUpPanelLayout().setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        nearbyFragment.getLayoutContainer().removeAllViews();
+
+        loadAllArrivals(stations);
 
         int line1PaddingColor = (int) nearbyFragment.getContext().getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
         int stopsPaddingTop = (int) nearbyFragment.getContext().getResources().getDimension(R.dimen.activity_station_stops_padding_top);
 
         Log.i(TAG, "Object found: " + stations + " is a " + stations.getClass());
         Log.i(TAG, "Size: " + stations.size());
-        if (stations.size() != 0) {
+        /*if (stations.size() != 0) {
 
             if (stations.get(0) instanceof Station) {
                 final Station station = (Station) stations.get(0);
                 final TextView textView = new TextView(nearbyFragment.getContext());
                 textView.setText(station.getName());
-                nearbyFragment.layoutContainer.addView(textView);
+                nearbyFragment.getLayoutContainer().addView(textView);
 
                 new Thread(() -> {
-                    final SparseArray<TrainArrival> trainArrivals = nearbyFragment.loadAroundTrainArrivals(station);
-                    nearbyFragment.activity.runOnUiThread(() -> {
+                    final SparseArray<TrainArrival> trainArrivals = loadAroundTrainArrivals(station);
+                    nearbyFragment.getActivity().runOnUiThread(() -> {
 
                         NearbyAdapter.TrainViewHolder viewHolder;
                         final LayoutInflater vi = (LayoutInflater) nearbyFragment.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -179,13 +189,13 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
                 final BusStop station = (BusStop) stations.get(0);
                 final TextView textView = new TextView(nearbyFragment.getContext());
                 textView.setText(station.getName());
-                nearbyFragment.layoutContainer.addView(textView);
+                nearbyFragment.getLayoutContainer().addView(textView);
 
                 // TODO refactor that code
                 new Thread(() -> {
                     SparseArray<Map<String, List<BusArrival>>> busArrivalsMap2 = new SparseArray<>();
-                    final Map<String, List<BusArrival>> busArrivalsMap = nearbyFragment.loadAroundBusArrivals(station, busArrivalsMap2);
-                    nearbyFragment.activity.runOnUiThread(() -> {
+                    final Map<String, List<BusArrival>> busArrivalsMap = loadAroundBusArrivals(station, busArrivalsMap2);
+                    nearbyFragment.getActivity().runOnUiThread(() -> {
                         if (busArrivalsMap.size() != 0) {
                             Stream.of(busArrivalsMap.entrySet()).forEach(entry -> {
                                 final LinearLayout.LayoutParams leftParam = new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
@@ -241,12 +251,12 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
 
                                 insideLayout.addView(lineIndication);
                                 insideLayout.addView(stopLayout);
-                                nearbyFragment.layoutContainer.addView(insideLayout);
+                                nearbyFragment.getLayoutContainer().addView(insideLayout);
                             });
                         } else {
                             final TextView noStopView = new TextView(nearbyFragment.getContext());
                             noStopView.setText("No result");
-                            nearbyFragment.layoutContainer.addView(noStopView);
+                            nearbyFragment.getLayoutContainer().addView(noStopView);
                         }
                     });
                 }).start();
@@ -254,13 +264,164 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
                 final BikeStation station = (BikeStation) stations.get(0);
                 final TextView textView = new TextView(nearbyFragment.getContext());
                 textView.setText(station.getName());
-                nearbyFragment.layoutContainer.addView(textView);
+                nearbyFragment.getLayoutContainer().addView(textView);
             }
         } else {
             final TextView noStopView = new TextView(nearbyFragment.getContext());
             noStopView.setText("No result");
-            nearbyFragment.layoutContainer.addView(noStopView);
-        }
+            nearbyFragment.getLayoutContainer().addView(noStopView);
+        }*/
         return false;
     }
+
+
+    private void loadAllArrivals(@NonNull final List<AStation> stations) {
+        final List<Station> trainStations = Stream.of(stations).filter(station -> station instanceof Station).map(station -> (Station) station).collect(Collectors.toList());
+        final List<BusStop> busStops = Stream.of(stations).filter(station -> station instanceof BusStop).map(station -> (BusStop) station).collect(Collectors.toList());
+        final List<BikeStation> bikeStations = Stream.of(stations).filter(station -> station instanceof BikeStation).map(station -> (BikeStation) station).collect(Collectors.toList());
+
+        Log.i(TAG, "trainStations: " + trainStations.size());
+        Log.i(TAG, "busStops: " + busStops.size());
+        Log.i(TAG, "bikeStations: " + bikeStations.size());
+
+        // Train handling
+        final SparseArray<TrainArrival> resultTrainStation = new SparseArray<>();
+        final Observable<Object> trainObservable = Observable.fromIterable(trainStations)
+            .map(station -> {
+                //loadAroundTrainArrival(station, resultTrainStation);
+                return new Object();
+            })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread());
+
+        // Bus handling
+        final SparseArray<Map<String, List<BusArrival>>> busArrivalsMap = new SparseArray<>();
+        final Observable<SparseArray<Map<String, List<BusArrival>>>> busObservable = Observable.fromIterable(busStops)
+            .flatMap(busStop -> Observable.just(busStop).subscribeOn(Schedulers.computation())
+                .map(currentBusStop -> {
+                    loadAroundBusArrivals(currentBusStop, busArrivalsMap);
+                    return busArrivalsMap;
+                })
+            )
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread());
+
+        final Observable<SparseArray<Map<String, List<BusArrival>>>> zipped = ObservableUtil.createMarkerDataObservable(
+            nearbyFragment.getRequestStopId(),
+            busStops,
+            nearbyFragment.getContext(),
+            Stream.of(bikeStations).map(BikeStation::getId).collect(Collectors.toList())
+        );
+        zipped.subscribe(
+            favoritesResult -> Log.e(TAG, "done with " + favoritesResult),
+            onError -> {
+                Log.e(TAG, onError.getMessage(), onError);
+            }
+        );
+    }
+
+    private Map<String, List<BusArrival>> loadAroundBusArrivals(@NonNull final BusStop busStop, @NonNull final SparseArray<Map<String, List<BusArrival>>> busArrivalsMap) {
+        final Map<String, List<BusArrival>> result = new HashMap<>();
+        try {
+            if (nearbyFragment.isAdded()) {
+                int busStopId = busStop.getId();
+                // Create
+                final Map<String, List<BusArrival>> tempMap = busArrivalsMap.get(busStopId, new ConcurrentHashMap<>());
+                if (!tempMap.containsKey(Integer.toString(busStopId))) {
+                    busArrivalsMap.put(busStopId, tempMap);
+                }
+
+                final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>(1, 1);
+                reqParams.put(nearbyFragment.getRequestStopId(), Integer.toString(busStopId));
+                final InputStream is = CtaConnect.INSTANCE.connect(BUS_ARRIVALS, reqParams, nearbyFragment.getContext());
+                final List<BusArrival> busArrivals = XmlParser.INSTANCE.parseBusArrivals(is);
+                for (final BusArrival busArrival : busArrivals) {
+                    final String direction = busArrival.getRouteDirection();
+                    if (tempMap.containsKey(direction)) {
+                        final List<BusArrival> temp = tempMap.get(direction);
+                        temp.add(busArrival);
+                    } else {
+                        final List<BusArrival> temp = new ArrayList<>();
+                        temp.add(busArrival);
+                        tempMap.put(direction, temp);
+                    }
+                }
+                trackWithGoogleAnalytics(nearbyFragment.getActivity(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
+            }
+        } catch (final Throwable throwable) {
+            Log.e(TAG, throwable.getMessage(), throwable);
+            throw Exceptions.propagate(throwable);
+        }
+        return result;
+    }
+
+    private SparseArray<TrainArrival> loadAroundTrainArrivals(@NonNull final Station station) {
+        final SparseArray<TrainArrival> trainArrivals = new SparseArray<>();
+        if (nearbyFragment.isAdded()) {
+            try {
+                final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>(1, 1);
+                reqParams.put(nearbyFragment.getRequestStopId(), Integer.toString(station.getId()));
+                final InputStream xmlRes = CtaConnect.INSTANCE.connect(TRAIN_ARRIVALS, reqParams, nearbyFragment.getContext());
+                final SparseArray<TrainArrival> temp = XmlParser.INSTANCE.parseArrivals(xmlRes, DataHolder.INSTANCE.getTrainData());
+                for (int j = 0; j < temp.size(); j++) {
+                    trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
+                }
+                trackWithGoogleAnalytics(nearbyFragment.getActivity(), R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
+            } catch (final ConnectException exception) {
+                Log.e(TAG, exception.getMessage(), exception);
+                return trainArrivals;
+            } catch (final Throwable throwable) {
+                Log.e(TAG, throwable.getMessage(), throwable);
+                throw Exceptions.propagate(throwable);
+            }
+        }
+        return trainArrivals;
+    }
+
+    private void loadAroundTrainArrival(@NonNull final Station station, final SparseArray<TrainArrival> resultTrainStation) {
+        if (nearbyFragment.isAdded()) {
+            try {
+                final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>(1, 1);
+                reqParams.put(nearbyFragment.getRequestStopId(), Integer.toString(station.getId()));
+                final InputStream xmlRes = CtaConnect.INSTANCE.connect(TRAIN_ARRIVALS, reqParams, nearbyFragment.getContext());
+                final SparseArray<TrainArrival> temp = XmlParser.INSTANCE.parseArrivals(xmlRes, DataHolder.INSTANCE.getTrainData());
+                for (int j = 0; j < temp.size(); j++) {
+                    resultTrainStation.put(temp.keyAt(j), temp.valueAt(j));
+                }
+                trackWithGoogleAnalytics(nearbyFragment.getActivity(), R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
+            } catch (final ConnectException exception) {
+                Log.e(TAG, exception.getMessage(), exception);
+            } catch (final Throwable throwable) {
+                Log.e(TAG, throwable.getMessage(), throwable);
+                throw Exceptions.propagate(throwable);
+            }
+        }
+    }
+
+    private List<BikeStation> loadAroundBikeArrivals(@NonNull final List<BikeStation> bikeStations) {
+        List<BikeStation> bikeStationsRes = new ArrayList<>();
+        try {
+            if (nearbyFragment.isAdded()) {
+                final InputStream content = DivvyConnect.INSTANCE.connect();
+                final List<BikeStation> bikeStationUpdated = JsonParser.INSTANCE.parseStations(content);
+                bikeStationsRes = Stream.of(bikeStationUpdated)
+                    .filter(bikeStations::contains)
+                    .sorted(Util.BIKE_COMPARATOR_NAME)
+                    .collect(Collectors.toList());
+                trackWithGoogleAnalytics(nearbyFragment.getActivity(), R.string.analytics_category_req, R.string.analytics_action_get_divvy, nearbyFragment.getActivity().getString(R.string.analytics_action_get_divvy_all));
+            }
+/*        } catch (final ConnectException exception) {
+            Log.e(TAG, exception.getMessage(), exception);
+            return bikeStationsRes;*/
+        } catch (final Throwable throwable) {
+            Log.e(TAG, throwable.getMessage(), throwable);
+            throw Exceptions.propagate(throwable);
+        }
+        return bikeStationsRes;
+    }
+
+    private void trackWithGoogleAnalytics(@NonNull final Context context, final int category, final int action, final String label) {
+        Util.trackAction(context, category, action, label);
+    }
+
 }

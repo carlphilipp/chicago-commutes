@@ -41,6 +41,7 @@ enum Connect {
             final HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setConnectTimeout(5000);
             urlConnection.setReadTimeout(5000);
+            urlConnection.connect();
             inputStream = new BufferedInputStream(urlConnection.getInputStream());
         } catch (final IOException e) {
             Log.e(TAG, e.getMessage(), e);

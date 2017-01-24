@@ -22,7 +22,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -30,24 +29,18 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
-import android.text.TextUtils;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -58,61 +51,38 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import fr.cph.chicago.R;
-import fr.cph.chicago.connection.CtaConnect;
-import fr.cph.chicago.connection.DivvyConnect;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.activity.MainActivity;
-import fr.cph.chicago.core.adapter.NearbyAdapter;
+import fr.cph.chicago.core.listener.OnMarkerClickListener;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.AStation;
 import fr.cph.chicago.entity.BikeStation;
-import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusStop;
-import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
-import fr.cph.chicago.entity.Stop;
-import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.exception.ConnectException;
-import fr.cph.chicago.parser.JsonParser;
-import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.util.GPSUtil;
-import fr.cph.chicago.util.LayoutUtil;
 import fr.cph.chicago.util.Util;
-import io.reactivex.Observable;
-import io.reactivex.exceptions.Exceptions;
-import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
 import lombok.Data;
+import lombok.Getter;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;
 import static fr.cph.chicago.Constants.GPS_ACCESS;
-import static fr.cph.chicago.Constants.TRAINS_ARRIVALS_URL;
-import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
-import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
 
 /**
  * Nearby Fragment
@@ -128,11 +98,14 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
 
     @BindView(R.id.activity_bar)
     ProgressBar progressBar;
+    @Getter
     @BindView(R.id.sliding_layout)
     SlidingUpPanelLayout slidingUpPanelLayout;
+    @Getter
     @BindView(R.id.loading_layout_container)
     LinearLayout layoutContainer;
 
+    @Getter
     @BindString(R.string.request_stop_id)
     String requestStopId;
     @BindString(R.string.request_map_id)
@@ -144,7 +117,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
 
     private SupportMapFragment mapFragment;
 
-    MainActivity activity;
+    private MainActivity activity;
     private GoogleApiClient googleApiClient;
     private MarkerDataHolder markerDataHolder;
 
@@ -212,149 +185,6 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         }
     }
 
-    private void loadAllArrivals(@NonNull final List<AStation> stations) {
-        final List<Station> trainStations = Stream.of(stations).filter(station -> station instanceof Station).map(station -> (Station) station).collect(Collectors.toList());
-        final List<BusStop> busStops = Stream.of(stations).filter(station -> station instanceof BusStop).map(station -> (BusStop) station).collect(Collectors.toList());
-        final List<BikeStation> bikeStations = Stream.of(stations).filter(station -> station instanceof BikeStation).map(station -> (BikeStation) station).collect(Collectors.toList());
-
-        // Train handling
-        final SparseArray<TrainArrival> resultTrainStation = new SparseArray<>();
-        final Observable<Object> trainObservable = Observable.fromIterable(trainStations)
-            .map(station -> {
-                loadAroundTrainArrival(station, resultTrainStation);
-                return new Object();
-            });
-
-        // Bus handling
-        final SparseArray<Map<String, List<BusArrival>>> busArrivalsMap = new SparseArray<>();
-        final Observable<Object> busObservable = Observable.fromIterable(busStops)
-            .flatMap(busStop -> Observable.just(busStop).subscribeOn(Schedulers.computation())
-                .map(currentBusStop -> {
-                    loadAroundBusArrivals(currentBusStop, busArrivalsMap);
-                    return new Object();
-                })
-            );
-
-
-        Observable.fromArray(trainObservable, busObservable)
-            .doOnError(throwable -> {
-                Log.e(TAG, throwable.getMessage(), throwable);
-                activity.runOnUiThread(() -> showProgress(false));
-            })
-            .subscribeOn(Schedulers.io())
-            .subscribe(val -> {
-                final List<BikeStation> bikeStationsRes = loadAroundBikeArrivals(bikeStations);
-                Log.i(TAG, "busArrivalsMap: " + busArrivalsMap);
-                Log.i(TAG, "resultTrainStation: " + resultTrainStation);
-                Log.i(TAG, "bikeStationsRes: " + bikeStationsRes);
-                activity.runOnUiThread(() -> updateMarkersAndModel(busStops, trainStations, bikeStationsRes));
-            });
-    }
-
-    Map<String, List<BusArrival>> loadAroundBusArrivals(@NonNull final BusStop busStop, @NonNull final SparseArray<Map<String, List<BusArrival>>> busArrivalsMap) {
-        final Map<String, List<BusArrival>> result = new HashMap<>();
-        try {
-            if (isAdded()) {
-                int busStopId = busStop.getId();
-                // Create
-                final Map<String, List<BusArrival>> tempMap = busArrivalsMap.get(busStopId, new ConcurrentHashMap<>());
-                if (!tempMap.containsKey(Integer.toString(busStopId))) {
-                    busArrivalsMap.put(busStopId, tempMap);
-                }
-
-                final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>(1, 1);
-                reqParams.put(requestStopId, Integer.toString(busStopId));
-                final InputStream is = CtaConnect.INSTANCE.connect(BUS_ARRIVALS, reqParams, getContext());
-                final List<BusArrival> busArrivals = XmlParser.INSTANCE.parseBusArrivals(is);
-                for (final BusArrival busArrival : busArrivals) {
-                    final String direction = busArrival.getRouteDirection();
-                    if (tempMap.containsKey(direction)) {
-                        final List<BusArrival> temp = tempMap.get(direction);
-                        temp.add(busArrival);
-                    } else {
-                        final List<BusArrival> temp = new ArrayList<>();
-                        temp.add(busArrival);
-                        tempMap.put(direction, temp);
-                    }
-                }
-                trackWithGoogleAnalytics(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
-            }
-        } catch (final Throwable throwable) {
-            Log.e(TAG, throwable.getMessage(), throwable);
-            throw Exceptions.propagate(throwable);
-        }
-        return result;
-    }
-
-    SparseArray<TrainArrival> loadAroundTrainArrivals(@NonNull final Station station) {
-        final SparseArray<TrainArrival> trainArrivals = new SparseArray<>();
-        if (isAdded()) {
-            try {
-                final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>(1, 1);
-                reqParams.put(requestMapId, Integer.toString(station.getId()));
-                final InputStream xmlRes = CtaConnect.INSTANCE.connect(TRAIN_ARRIVALS, reqParams, getContext());
-                final SparseArray<TrainArrival> temp = XmlParser.INSTANCE.parseArrivals(xmlRes, DataHolder.INSTANCE.getTrainData());
-                for (int j = 0; j < temp.size(); j++) {
-                    trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
-                }
-                trackWithGoogleAnalytics(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
-            } catch (final ConnectException exception) {
-                Log.e(TAG, exception.getMessage(), exception);
-                return trainArrivals;
-            } catch (final Throwable throwable) {
-                Log.e(TAG, throwable.getMessage(), throwable);
-                throw Exceptions.propagate(throwable);
-            }
-        }
-        return trainArrivals;
-    }
-
-    private void loadAroundTrainArrival(@NonNull final Station station, final SparseArray<TrainArrival> resultTrainStation) {
-        if (isAdded()) {
-            try {
-                final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>(1, 1);
-                reqParams.put(requestMapId, Integer.toString(station.getId()));
-                final InputStream xmlRes = CtaConnect.INSTANCE.connect(TRAIN_ARRIVALS, reqParams, getContext());
-                final SparseArray<TrainArrival> temp = XmlParser.INSTANCE.parseArrivals(xmlRes, DataHolder.INSTANCE.getTrainData());
-                for (int j = 0; j < temp.size(); j++) {
-                    resultTrainStation.put(temp.keyAt(j), temp.valueAt(j));
-                }
-                trackWithGoogleAnalytics(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
-            } catch (final ConnectException exception) {
-                Log.e(TAG, exception.getMessage(), exception);
-            } catch (final Throwable throwable) {
-                Log.e(TAG, throwable.getMessage(), throwable);
-                throw Exceptions.propagate(throwable);
-            }
-        }
-    }
-
-    private List<BikeStation> loadAroundBikeArrivals(@NonNull final List<BikeStation> bikeStations) {
-        List<BikeStation> bikeStationsRes = new ArrayList<>();
-        try {
-            if (isAdded()) {
-                final InputStream content = DivvyConnect.INSTANCE.connect();
-                final List<BikeStation> bikeStationUpdated = JsonParser.INSTANCE.parseStations(content);
-                bikeStationsRes = Stream.of(bikeStationUpdated)
-                    .filter(bikeStations::contains)
-                    .sorted(Util.BIKE_COMPARATOR_NAME)
-                    .collect(Collectors.toList());
-                trackWithGoogleAnalytics(activity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, activity.getString(R.string.analytics_action_get_divvy_all));
-            }
-            return bikeStationsRes;
-        } catch (final ConnectException exception) {
-            Log.e(TAG, exception.getMessage(), exception);
-            return bikeStationsRes;
-        } catch (final Throwable throwable) {
-            Log.e(TAG, throwable.getMessage(), throwable);
-            throw Exceptions.propagate(throwable);
-        }
-    }
-
-    private void trackWithGoogleAnalytics(@NonNull final Context context, final int category, final int action, final String label) {
-        Util.trackAction(context, category, action, label);
-    }
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -363,7 +193,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         }
     }
 
-    class MarkerDataHolder {
+    public class MarkerDataHolder {
         final Map<LatLng, List<MarkerHolder>> data;
 
         private MarkerDataHolder() {
@@ -396,7 +226,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
             data.clear();
         }
 
-        List<AStation> getData(final Marker marker) {
+        public List<AStation> getData(final Marker marker) {
             return Stream.of(data.get(marker.getPosition())).map(MarkerHolder::getStation).collect(Collectors.toList());
         }
 
@@ -407,7 +237,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         }
     }
 
-    private void updateMarkersAndModel(
+    public void updateMarkersAndModel(
         @NonNull final List<BusStop> busStops,
         @NonNull final List<Station> trainStation,
         @NonNull final List<BikeStation> bikeStations) {
@@ -493,7 +323,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         }
     }
 
-    private void showProgress(final boolean show) {
+    public void showProgress(final boolean show) {
         if (isAdded()) {
             if (show) {
                 progressBar.setVisibility(View.VISIBLE);
@@ -537,7 +367,10 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                 busStops = busData.readNearbyStops(realm, position.get(), DEFAULT_RANGE);
                 realm.close();
                 trainStations = trainData.readNearbyStation(position.get(), DEFAULT_RANGE);
-                bikeStations = BikeStation.readNearbyStation(bikeStations, position.get(), DEFAULT_RANGE);
+                // FIXME: wait for bike stations to be loaded
+                if (bikeStations != null) {
+                    bikeStations = BikeStation.readNearbyStation(bikeStations, position.get(), DEFAULT_RANGE);
+                }
             }
             return position;
         }

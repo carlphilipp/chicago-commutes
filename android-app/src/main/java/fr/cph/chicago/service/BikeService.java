@@ -7,4 +7,6 @@ import fr.cph.chicago.entity.BikeStation;
 public interface BikeService {
 
     List<BikeStation> loadAllBikes();
+
+    List<BikeStation> loadBikes(List<Integer> ids);
 }
