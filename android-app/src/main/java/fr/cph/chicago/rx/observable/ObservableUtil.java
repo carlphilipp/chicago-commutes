@@ -29,9 +29,11 @@ import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusPattern;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
+import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.dto.BusArrivalDTO;
 import fr.cph.chicago.entity.dto.FavoritesDTO;
 import fr.cph.chicago.entity.dto.FirstLoadDTO;
+import fr.cph.chicago.entity.dto.NearbyDTO;
 import fr.cph.chicago.entity.dto.TrainArrivalDTO;
 import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.service.BikeService;
@@ -80,6 +82,18 @@ public enum ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
+    public static Observable<Optional<TrainArrival>> createTrainArrivalsObservable(@NonNull final Context context, final int stationId) {
+        return Observable.create(
+            (ObservableEmitter<Optional<TrainArrival>> observableOnSubscribe) -> {
+                if (!observableOnSubscribe.isDisposed()) {
+                    observableOnSubscribe.onNext(TRAIN_SERVICE.loadStationTrainArrival(context, stationId));
+                    observableOnSubscribe.onComplete();
+                }
+            })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread());
+    }
+
     public static Observable<BusArrivalDTO> createFavoritesBusArrivalsObservable(@NonNull final Context context) {
         return Observable.create(
             (ObservableEmitter<BusArrivalDTO> observableOnSubscribe) -> {
@@ -109,7 +123,7 @@ public enum ObservableUtil {
                 if (!observableOnSubscribe.isDisposed()) {
                     final SparseArray<Map<String, List<BusArrival>>> busArrivalsMap = new SparseArray<>();
                     Stream.of(bustStops).forEach(busStop -> {
-                        ObservableUtil.loadAroundBusArrivals(requestStopId,context, busStop, busArrivalsMap);
+                        ObservableUtil.loadAroundBusArrivals(requestStopId, context, busStop, busArrivalsMap);
                     });
                     observableOnSubscribe.onNext(busArrivalsMap);
                     observableOnSubscribe.onComplete();
@@ -173,7 +187,7 @@ public enum ObservableUtil {
 
     public static Observable<List<BikeStation>> createBikeStationsObservable(@NonNull final List<Integer> ids) {
         if (ids.isEmpty()) {
-            return Observable.empty();
+            return Observable.create((ObservableEmitter<List<BikeStation>> observableOnSubscribe) -> new ArrayList<>());
         } else {
             return Observable.create(
                 (ObservableEmitter<List<BikeStation>> observableOnSubscribe) -> {
@@ -210,15 +224,20 @@ public enum ObservableUtil {
             });
     }
 
-    public static Observable<SparseArray<Map<String, List<BusArrival>>>> createMarkerDataObservable(String requestStopId, @NonNull final List<BusStop> bustStops, @NonNull final Context context, @NonNull final List<Integer> bikeStationsIds) {
+    public static Observable<NearbyDTO> createMarkerDataObservable(String requestStopId, @NonNull final List<BusStop> bustStops, @NonNull final Context context, @NonNull final List<Integer> bikeStationsIds) {
         // Train online favorites
         final Observable<TrainArrivalDTO> trainArrivalsObservable = ObservableUtil.createFavoritesTrainArrivalsObservable(context);
         // Bus online favorites
         final Observable<SparseArray<Map<String, List<BusArrival>>>> busArrivalsObservable = ObservableUtil.createBusArrivalsObservable(requestStopId, context, bustStops);
         // Bikes online all stations
         final Observable<List<BikeStation>> bikeStationsObservable = ObservableUtil.createBikeStationsObservable(bikeStationsIds);
-        return Observable.zip(trainArrivalsObservable, busArrivalsObservable, bikeStationsObservable,
-            (trainArrivalsDTO, busArrivalsDTO, bikeStations) -> busArrivalsDTO);
+        return Observable.zip(bikeStationsObservable, trainArrivalsObservable, busArrivalsObservable,
+            (bikeStations, trainArrivalsDTO, busArrivalsDTO) -> NearbyDTO.builder()
+                .trainArrivalDTO(trainArrivalsDTO)
+                .busArrivalDTO(busArrivalsDTO)
+                .bikeStations(bikeStations)
+                .bikeError(bikeStations.isEmpty())
+                .build());
     }
 
 

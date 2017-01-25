@@ -64,13 +64,12 @@ import fr.cph.chicago.entity.Stop;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.TrainDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
+import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.rx.observer.TrainArrivalObserver;
 import fr.cph.chicago.service.TrainService;
 import fr.cph.chicago.service.impl.TrainServiceImpl;
 import fr.cph.chicago.util.Util;
 import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -294,6 +293,14 @@ public class StationActivity extends AbstractStationActivity {
         super.onSaveInstanceState(savedInstanceState);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (trainArrivalObservable != null) {
+            trainArrivalObservable.unsubscribeOn(Schedulers.io());
+        }
+    }
+
     /**
      * Is favorite or not ?
      *
@@ -405,15 +412,7 @@ public class StationActivity extends AbstractStationActivity {
     }
 
     private void createTrainArrivalObservableAndSubscribe() {
-        trainArrivalObservable = Observable.create(
-            (ObservableEmitter<Optional<TrainArrival>> observableOnSubscribe) -> {
-                if (!observableOnSubscribe.isDisposed()) {
-                    observableOnSubscribe.onNext(trainService.loadStationTrainArrival(getApplicationContext(), station.getId()));
-                    observableOnSubscribe.onComplete();
-                }
-            })
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread());
+        trainArrivalObservable = ObservableUtil.createTrainArrivalsObservable(getApplicationContext(), stationId);
         trainArrivalObservable.subscribe(new TrainArrivalObserver(this, swipeRefreshLayout));
     }
 }

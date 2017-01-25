@@ -35,7 +35,6 @@ public class TrainArrivalObserver implements Observer<Optional<TrainArrival>> {
 
     @Override
     public void onNext(final Optional<TrainArrival> trainArrival) {
-        Log.d(TAG, "Found train arrival: " + trainArrival);
         final List<Eta> etas;
         if (trainArrival.isPresent()) {
             etas = trainArrival.get().getEtas();

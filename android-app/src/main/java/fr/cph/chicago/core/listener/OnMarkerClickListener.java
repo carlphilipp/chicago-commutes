@@ -32,6 +32,8 @@ import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.TrainArrival;
+import fr.cph.chicago.entity.dto.FavoritesDTO;
+import fr.cph.chicago.entity.dto.NearbyDTO;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.parser.JsonParser;
 import fr.cph.chicago.parser.XmlParser;
@@ -71,8 +73,8 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
         int line1PaddingColor = (int) nearbyFragment.getContext().getResources().getDimension(R.dimen.activity_station_stops_line1_padding_color);
         int stopsPaddingTop = (int) nearbyFragment.getContext().getResources().getDimension(R.dimen.activity_station_stops_padding_top);
 
-        Log.i(TAG, "Object found: " + stations + " is a " + stations.getClass());
-        Log.i(TAG, "Size: " + stations.size());
+        //Log.i(TAG, "Object found: " + stations + " is a " + stations.getClass());
+        //Log.i(TAG, "Size: " + stations.size());
         /*if (stations.size() != 0) {
 
             if (stations.get(0) instanceof Station) {
@@ -285,7 +287,7 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
         Log.i(TAG, "bikeStations: " + bikeStations.size());
 
         // Train handling
-        final SparseArray<TrainArrival> resultTrainStation = new SparseArray<>();
+/*        final SparseArray<TrainArrival> resultTrainStation = new SparseArray<>();
         final Observable<Object> trainObservable = Observable.fromIterable(trainStations)
             .map(station -> {
                 //loadAroundTrainArrival(station, resultTrainStation);
@@ -304,16 +306,16 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
                 })
             )
             .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread());
+            .observeOn(AndroidSchedulers.mainThread());*/
 
-        final Observable<SparseArray<Map<String, List<BusArrival>>>> zipped = ObservableUtil.createMarkerDataObservable(
+        final Observable<NearbyDTO> zipped = ObservableUtil.createMarkerDataObservable(
             nearbyFragment.getRequestStopId(),
             busStops,
             nearbyFragment.getContext(),
             Stream.of(bikeStations).map(BikeStation::getId).collect(Collectors.toList())
         );
         zipped.subscribe(
-            favoritesResult -> Log.e(TAG, "done with " + favoritesResult),
+            result -> Log.e(TAG, "done with " + result),
             onError -> {
                 Log.e(TAG, onError.getMessage(), onError);
             }
