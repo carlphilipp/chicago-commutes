@@ -29,6 +29,7 @@ import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusPattern;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.BusStop;
+import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.dto.BusArrivalDTO;
 import fr.cph.chicago.entity.dto.FavoritesDTO;
@@ -92,6 +93,19 @@ public enum ObservableUtil {
             })
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public static Observable<Optional<TrainArrival>> createTrainArrivalsObservable(@NonNull final Context context, final List<Station> trainStations) {
+        if (trainStations.isEmpty()) {
+            return Observable.create((ObservableEmitter<Optional<TrainArrival>> observableOnSubscribe) -> {
+                observableOnSubscribe.onNext(Optional.empty());
+                observableOnSubscribe.onComplete();
+            })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+        } else {
+            return createTrainArrivalsObservable(context, trainStations.get(0).getId());
+        }
     }
 
     public static Observable<BusArrivalDTO> createFavoritesBusArrivalsObservable(@NonNull final Context context) {

@@ -6,6 +6,7 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.annimon.stream.Collectors;
+import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
@@ -32,17 +33,13 @@ import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.entity.dto.FavoritesDTO;
-import fr.cph.chicago.entity.dto.NearbyDTO;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.parser.JsonParser;
 import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.util.Util;
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.schedulers.Schedulers;
 
 import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;
 import static fr.cph.chicago.Constants.TRAINS_ARRIVALS_URL;
@@ -308,7 +305,13 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());*/
 
-        final Observable<NearbyDTO> zipped = ObservableUtil.createMarkerDataObservable(
+        final Observable<Optional<TrainArrival>> trainArrivalObservable = ObservableUtil.createTrainArrivalsObservable(nearbyFragment.getContext(), trainStations);
+        trainArrivalObservable.subscribe(
+            result -> Log.e(TAG, "done with " + result),
+            onError -> Log.e(TAG, onError.getMessage(), onError)
+        );
+
+/*        final Observable<NearbyDTO> zipped = ObservableUtil.createMarkerDataObservable(
             nearbyFragment.getRequestStopId(),
             busStops,
             nearbyFragment.getContext(),
@@ -319,7 +322,7 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
             onError -> {
                 Log.e(TAG, onError.getMessage(), onError);
             }
-        );
+        );*/
     }
 
     private Map<String, List<BusArrival>> loadAroundBusArrivals(@NonNull final BusStop busStop, @NonNull final SparseArray<Map<String, List<BusArrival>>> busArrivalsMap) {
