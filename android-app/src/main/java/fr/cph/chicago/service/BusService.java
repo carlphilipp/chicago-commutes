@@ -1,11 +1,12 @@
 package fr.cph.chicago.service;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import android.util.SparseArray;
 
 import com.annimon.stream.Optional;
 
 import java.util.List;
+import java.util.Map;
 
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.entity.Bus;
@@ -17,19 +18,21 @@ import fr.cph.chicago.entity.BusStop;
 
 public interface BusService {
 
-    List<BusArrival> loadFavoritesBuses(@NonNull final Context context);
+    List<BusArrival> loadFavoritesBuses(Context context);
 
-    List<BusStop> loadOneBusStop(@NonNull final Context context, @NonNull final String stopId, @NonNull final String bound);
+    List<BusStop> loadOneBusStop(Context context, String stopId, String bound);
 
-    BusData loadLocalBusData(@NonNull final Context context);
+    BusData loadLocalBusData(Context context);
 
-    BusDirections loadBusDirections(@NonNull final Context context, @NonNull final String busRouteId);
+    BusDirections loadBusDirections(Context context, String busRouteId);
 
-    List<BusRoute> loadBusRoutes(@NonNull final Context context);
+    List<BusRoute> loadBusRoutes(Context context);
 
-    List<BusArrival> loadFollowBus(@NonNull final Context context, @NonNull final String busId);
+    List<BusArrival> loadFollowBus(Context context, String busId);
 
-    Optional<BusPattern> loadBusPattern(@NonNull final Context context, @NonNull final String busRouteId, @NonNull final String bound);
+    Optional<BusPattern> loadBusPattern(Context context, String busRouteId, String bound);
 
-    List<Bus> loadBus(@NonNull final Context context, final int busId, @NonNull final String busRouteId);
+    List<Bus> loadBus(Context context, int busId, String busRouteId);
+
+    Map<String, List<BusArrival>> loadAroundBusArrivals(Context context, BusStop busStop, SparseArray<Map<String, List<BusArrival>>> busArrivalsMap);
 }

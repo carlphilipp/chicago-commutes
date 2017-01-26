@@ -8,20 +8,12 @@ import android.util.SparseArray;
 import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-import fr.cph.chicago.R;
-import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.Bus;
@@ -37,7 +29,6 @@ import fr.cph.chicago.entity.dto.FavoritesDTO;
 import fr.cph.chicago.entity.dto.FirstLoadDTO;
 import fr.cph.chicago.entity.dto.NearbyDTO;
 import fr.cph.chicago.entity.dto.TrainArrivalDTO;
-import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.service.BikeService;
 import fr.cph.chicago.service.BusService;
 import fr.cph.chicago.service.TrainService;
@@ -47,10 +38,7 @@ import fr.cph.chicago.service.impl.TrainServiceImpl;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.exceptions.Exceptions;
 import io.reactivex.schedulers.Schedulers;
-
-import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
 
 public enum ObservableUtil {
     ;
@@ -138,7 +126,7 @@ public enum ObservableUtil {
                 if (!observableOnSubscribe.isDisposed()) {
                     final SparseArray<Map<String, List<BusArrival>>> busArrivalsMap = new SparseArray<>();
                     Stream.of(bustStops).forEach(busStop -> {
-                        ObservableUtil.loadAroundBusArrivals(context, busStop, busArrivalsMap);
+                        BUS_SERVICE.loadAroundBusArrivals(context, busStop, busArrivalsMap);
                     });
                     observableOnSubscribe.onNext(busArrivalsMap);
                     observableOnSubscribe.onComplete();
@@ -150,38 +138,6 @@ public enum ObservableUtil {
             })
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    private static Map<String, List<BusArrival>> loadAroundBusArrivals(@NonNull final Context context, @NonNull final BusStop busStop, @NonNull final SparseArray<Map<String, List<BusArrival>>> busArrivalsMap) {
-        final Map<String, List<BusArrival>> result = new HashMap<>();
-        try {
-            int busStopId = busStop.getId();
-            // Create
-            final Map<String, List<BusArrival>> tempMap = busArrivalsMap.get(busStopId, new ConcurrentHashMap<>());
-            if (!tempMap.containsKey(Integer.toString(busStopId))) {
-                busArrivalsMap.put(busStopId, tempMap);
-            }
-
-            final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>(1, 1);
-            reqParams.put(context.getString(R.string.request_stop_id), Integer.toString(busStopId));
-            final InputStream is = CtaConnect.INSTANCE.connect(BUS_ARRIVALS, reqParams, context);
-            final List<BusArrival> busArrivals = XmlParser.INSTANCE.parseBusArrivals(is);
-            for (final BusArrival busArrival : busArrivals) {
-                final String direction = busArrival.getRouteDirection();
-                if (tempMap.containsKey(direction)) {
-                    final List<BusArrival> temp = tempMap.get(direction);
-                    temp.add(busArrival);
-                } else {
-                    final List<BusArrival> temp = new ArrayList<>();
-                    temp.add(busArrival);
-                    tempMap.put(direction, temp);
-                }
-            }
-        } catch (final Throwable throwable) {
-            Log.e(TAG, throwable.getMessage(), throwable);
-            throw Exceptions.propagate(throwable);
-        }
-        return result;
     }
 
     public static Observable<List<BikeStation>> createAllBikeStationsObservable() {

@@ -2,6 +2,7 @@ package fr.cph.chicago.service.impl;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.SparseArray;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Optional;
@@ -13,11 +14,13 @@ import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
@@ -179,5 +182,37 @@ public enum BusServiceImpl implements BusService {
         } catch (final Throwable throwable) {
             throw Exceptions.propagate(throwable);
         }
+    }
+
+    @Override
+    public Map<String, List<BusArrival>> loadAroundBusArrivals(@NonNull final Context context, @NonNull final BusStop busStop, @NonNull final SparseArray<Map<String, List<BusArrival>>> busArrivalsMap) {
+        final Map<String, List<BusArrival>> result = new HashMap<>();
+        try {
+            int busStopId = busStop.getId();
+            // Create
+            final Map<String, List<BusArrival>> tempMap = busArrivalsMap.get(busStopId, new ConcurrentHashMap<>());
+            if (!tempMap.containsKey(Integer.toString(busStopId))) {
+                busArrivalsMap.put(busStopId, tempMap);
+            }
+
+            final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>(1, 1);
+            reqParams.put(context.getString(R.string.request_stop_id), Integer.toString(busStopId));
+            final InputStream is = CtaConnect.INSTANCE.connect(BUS_ARRIVALS, reqParams, context);
+            final List<BusArrival> busArrivals = XmlParser.INSTANCE.parseBusArrivals(is);
+            for (final BusArrival busArrival : busArrivals) {
+                final String direction = busArrival.getRouteDirection();
+                if (tempMap.containsKey(direction)) {
+                    final List<BusArrival> temp = tempMap.get(direction);
+                    temp.add(busArrival);
+                } else {
+                    final List<BusArrival> temp = new ArrayList<>();
+                    temp.add(busArrival);
+                    tempMap.put(direction, temp);
+                }
+            }
+        } catch (final Throwable throwable) {
+            throw Exceptions.propagate(throwable);
+        }
+        return result;
     }
 }
