@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import fr.cph.chicago.R;
 import fr.cph.chicago.connection.CtaConnect;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.entity.BikeStation;
@@ -95,16 +96,16 @@ public enum ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<Optional<TrainArrival>> createTrainArrivalsObservable(@NonNull final Context context, final List<Station> trainStations) {
-        if (trainStations.isEmpty()) {
+    public static Observable<Optional<TrainArrival>> createTrainArrivalsObservable(@NonNull final Context context, final Optional<Station> trainStation) {
+        if (trainStation.isPresent()) {
+            return createTrainArrivalsObservable(context, trainStation.get().getId());
+        } else {
             return Observable.create((ObservableEmitter<Optional<TrainArrival>> observableOnSubscribe) -> {
                 observableOnSubscribe.onNext(Optional.empty());
                 observableOnSubscribe.onComplete();
             })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
-        } else {
-            return createTrainArrivalsObservable(context, trainStations.get(0).getId());
         }
     }
 
@@ -131,13 +132,13 @@ public enum ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<SparseArray<Map<String, List<BusArrival>>>> createBusArrivalsObservable(String requestStopId, Context context, @NonNull final List<BusStop> bustStops) {
+    public static Observable<SparseArray<Map<String, List<BusArrival>>>> createBusArrivalsObservable(@NonNull final Context context, @NonNull final List<BusStop> bustStops) {
         return Observable.create(
             (ObservableEmitter<SparseArray<Map<String, List<BusArrival>>>> observableOnSubscribe) -> {
                 if (!observableOnSubscribe.isDisposed()) {
                     final SparseArray<Map<String, List<BusArrival>>> busArrivalsMap = new SparseArray<>();
                     Stream.of(bustStops).forEach(busStop -> {
-                        ObservableUtil.loadAroundBusArrivals(requestStopId, context, busStop, busArrivalsMap);
+                        ObservableUtil.loadAroundBusArrivals(context, busStop, busArrivalsMap);
                     });
                     observableOnSubscribe.onNext(busArrivalsMap);
                     observableOnSubscribe.onComplete();
@@ -151,7 +152,7 @@ public enum ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    private static Map<String, List<BusArrival>> loadAroundBusArrivals(String requestStopId, Context context, @NonNull final BusStop busStop, @NonNull final SparseArray<Map<String, List<BusArrival>>> busArrivalsMap) {
+    private static Map<String, List<BusArrival>> loadAroundBusArrivals(@NonNull final Context context, @NonNull final BusStop busStop, @NonNull final SparseArray<Map<String, List<BusArrival>>> busArrivalsMap) {
         final Map<String, List<BusArrival>> result = new HashMap<>();
         try {
             int busStopId = busStop.getId();
@@ -162,7 +163,7 @@ public enum ObservableUtil {
             }
 
             final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>(1, 1);
-            reqParams.put(requestStopId, Integer.toString(busStopId));
+            reqParams.put(context.getString(R.string.request_stop_id), Integer.toString(busStopId));
             final InputStream is = CtaConnect.INSTANCE.connect(BUS_ARRIVALS, reqParams, context);
             final List<BusArrival> busArrivals = XmlParser.INSTANCE.parseBusArrivals(is);
             for (final BusArrival busArrival : busArrivals) {
@@ -199,24 +200,20 @@ public enum ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<List<BikeStation>> createBikeStationsObservable(@NonNull final List<Integer> ids) {
-        if (ids.isEmpty()) {
-            return Observable.create((ObservableEmitter<List<BikeStation>> observableOnSubscribe) -> new ArrayList<>());
-        } else {
-            return Observable.create(
-                (ObservableEmitter<List<BikeStation>> observableOnSubscribe) -> {
-                    if (!observableOnSubscribe.isDisposed()) {
-                        observableOnSubscribe.onNext(BIKE_SERVICE.loadBikes(ids));
-                        observableOnSubscribe.onComplete();
-                    }
-                })
-                .onErrorReturn(throwable -> {
-                    Log.e(TAG, throwable.getMessage(), throwable);
-                    return new ArrayList<>();
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-        }
+    public static Observable<Optional<BikeStation>> createBikeStationsObservable(@NonNull final Optional<BikeStation> bikeStation) {
+        return Observable.create(
+            (ObservableEmitter<Optional<BikeStation>> observableOnSubscribe) -> {
+                if (!observableOnSubscribe.isDisposed()) {
+                    observableOnSubscribe.onNext(bikeStation.isPresent() ? BIKE_SERVICE.loadBikes(bikeStation.get().getId()) : Optional.empty());
+                    observableOnSubscribe.onComplete();
+                }
+            })
+            .onErrorReturn(throwable -> {
+                Log.e(TAG, throwable.getMessage(), throwable);
+                return Optional.empty();
+            })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread());
     }
 
     public static Observable<FavoritesDTO> createAllDataObservable(@NonNull final Context context) {
@@ -238,19 +235,15 @@ public enum ObservableUtil {
             });
     }
 
-    public static Observable<NearbyDTO> createMarkerDataObservable(String requestStopId, @NonNull final List<BusStop> bustStops, @NonNull final Context context, @NonNull final List<Integer> bikeStationsIds) {
-        // Train online favorites
-        final Observable<TrainArrivalDTO> trainArrivalsObservable = ObservableUtil.createFavoritesTrainArrivalsObservable(context);
-        // Bus online favorites
-        final Observable<SparseArray<Map<String, List<BusArrival>>>> busArrivalsObservable = ObservableUtil.createBusArrivalsObservable(requestStopId, context, bustStops);
-        // Bikes online all stations
-        final Observable<List<BikeStation>> bikeStationsObservable = ObservableUtil.createBikeStationsObservable(bikeStationsIds);
-        return Observable.zip(bikeStationsObservable, trainArrivalsObservable, busArrivalsObservable,
-            (bikeStations, trainArrivalsDTO, busArrivalsDTO) -> NearbyDTO.builder()
-                .trainArrivalDTO(trainArrivalsDTO)
+    public static Observable<NearbyDTO> createMarkerDataObservable(@NonNull final Context context, @NonNull final Optional<Station> trainStation, @NonNull final List<BusStop> busStops, @NonNull final Optional<BikeStation> bikeStation) {
+        final Observable<Optional<TrainArrival>> trainArrivalObservable = ObservableUtil.createTrainArrivalsObservable(context, trainStation);
+        final Observable<SparseArray<Map<String, List<BusArrival>>>> busArrivalObservable = ObservableUtil.createBusArrivalsObservable(context, busStops);
+        final Observable<Optional<BikeStation>> bikeStationsObservable = ObservableUtil.createBikeStationsObservable(bikeStation);
+        return Observable.zip(trainArrivalObservable, busArrivalObservable, bikeStationsObservable,
+            (trainArrival, busArrivalsDTO, bikeStationsResult) -> NearbyDTO.builder()
+                .trainArrival(trainArrival.isPresent() ? trainArrival.get() : null)
                 .busArrivalDTO(busArrivalsDTO)
-                .bikeStations(bikeStations)
-                .bikeError(bikeStations.isEmpty())
+                .bikeStations(bikeStationsResult.isPresent() ? bikeStationsResult.get() : null)
                 .build());
     }
 

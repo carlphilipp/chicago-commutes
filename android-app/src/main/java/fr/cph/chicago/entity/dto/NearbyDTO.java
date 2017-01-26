@@ -7,15 +7,14 @@ import java.util.Map;
 
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
+import fr.cph.chicago.entity.TrainArrival;
 import lombok.Builder;
 import lombok.Data;
 
 @Builder
 @Data
 public class NearbyDTO {
-    private TrainArrivalDTO trainArrivalDTO;
+    private TrainArrival trainArrival;
     private SparseArray<Map<String, List<BusArrival>>> busArrivalDTO;
-
-    private boolean bikeError;
-    private List<BikeStation> bikeStations;
+    private BikeStation bikeStations;
 }

@@ -105,11 +105,6 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
     @BindView(R.id.loading_layout_container)
     LinearLayout layoutContainer;
 
-    @Getter
-    @BindString(R.string.request_stop_id)
-    String requestStopId;
-    @BindString(R.string.request_map_id)
-    String requestMapId;
     @BindString(R.string.bundle_bike_stations)
     String bundleBikeStations;
 
