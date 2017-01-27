@@ -14,7 +14,7 @@ import lombok.Data;
 @Builder
 @Data
 public class NearbyDTO {
-    private TrainArrival trainArrival;
-    private SparseArray<Map<String, List<BusArrival>>> busArrivalDTO;
+    private TrainArrival trainArrivals;
+    private SparseArray<Map<String, List<BusArrival>>> busArrivals;
     private BikeStation bikeStations;
 }

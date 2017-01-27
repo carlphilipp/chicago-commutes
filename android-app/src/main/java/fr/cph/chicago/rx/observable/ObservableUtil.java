@@ -196,9 +196,9 @@ public enum ObservableUtil {
         final Observable<SparseArray<Map<String, List<BusArrival>>>> busArrivalObservable = ObservableUtil.createBusArrivalsObservable(context, busStops);
         final Observable<Optional<BikeStation>> bikeStationsObservable = ObservableUtil.createBikeStationsObservable(bikeStation);
         return Observable.zip(trainArrivalObservable, busArrivalObservable, bikeStationsObservable,
-            (trainArrival, busArrivalsDTO, bikeStationsResult) -> NearbyDTO.builder()
-                .trainArrival(trainArrival.isPresent() ? trainArrival.get() : null)
-                .busArrivalDTO(busArrivalsDTO)
+            (trainArrivals, busArrivals, bikeStationsResult) -> NearbyDTO.builder()
+                .trainArrivals(trainArrivals.isPresent() ? trainArrivals.get() : null)
+                .busArrivals(busArrivals)
                 .bikeStations(bikeStationsResult.isPresent() ? bikeStationsResult.get() : null)
                 .build());
     }

@@ -30,11 +30,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Optional;
@@ -69,9 +72,12 @@ import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.AStation;
 import fr.cph.chicago.entity.BikeStation;
+import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
+import fr.cph.chicago.entity.TrainArrival;
+import fr.cph.chicago.entity.dto.NearbyDTO;
 import fr.cph.chicago.util.GPSUtil;
 import fr.cph.chicago.util.Util;
 import io.realm.Realm;
@@ -186,6 +192,47 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         if (unbinder != null) {
             unbinder.unbind();
         }
+    }
+
+    public void updateBottom(@NonNull final NearbyDTO nearbyDTO) {
+        getLayoutContainer().removeAllViews();
+        if (nearbyDTO.getTrainArrivals() != null) {
+            updateTrainArrival(nearbyDTO.getTrainArrivals());
+        }
+        if (nearbyDTO.getBusArrivals() != null) {
+            updateBusArrival(nearbyDTO.getBusArrivals());
+        }
+        if (nearbyDTO.getBikeStations() != null) {
+            updateBikeStation(nearbyDTO.getBikeStations());
+        }
+    }
+
+    private void updateTrainArrival(@NonNull final TrainArrival trainArrival) {
+        final Station station = trainArrival.getEtas().get(0).getStation();
+        final View headerView = createStationHeaderView(station.getName(), R.drawable.ic_train_white_24dp);
+        getLayoutContainer().addView(headerView);
+    }
+
+    private void updateBusArrival(@NonNull final SparseArray<Map<String, List<BusArrival>>> busArrivalDTO) {
+
+    }
+
+    private void updateBikeStation(@NonNull final BikeStation bikeStation) {
+        final View headerView = createStationHeaderView(bikeStation.getName(), R.drawable.ic_directions_bike_white_24dp);
+        getLayoutContainer().addView(headerView);
+    }
+
+    private View createStationHeaderView(@NonNull final String stationName, @DrawableRes final int drawable) {
+        final LayoutInflater vi = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View convertView = vi.inflate(R.layout.nearby_station_main, null, false);
+
+        final TextView stationNameView = (TextView) convertView.findViewById(R.id.station_name);
+        final ImageView imageView = (ImageView) convertView.findViewById(R.id.icon);
+
+        stationNameView.setText(stationName);
+        imageView.setImageDrawable(ContextCompat.getDrawable(getContext(), drawable));
+
+        return convertView;
     }
 
     public class MarkerDataHolder {
