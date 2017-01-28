@@ -7,7 +7,8 @@ dependencies {
 
     compile(
         [group: 'commons-io', name: 'commons-io', version: commons_io_version],
-        [group: 'com.annimon', name: 'stream', version: annimon_stream_version]
+        [group: 'com.annimon', name: 'stream', version: annimon_stream_version],
+        [group: 'com.univocity', name: 'univocity-parsers', version: univocity_parsers_version],
     )
 }
 

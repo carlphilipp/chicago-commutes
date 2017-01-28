@@ -15,7 +15,7 @@ import java.net.URL;
  */
 abstract class Update {
     String tempDirectory;
-    private String destinationDirectory;
+    String destinationDirectory;
 
     Update(final String tempDirectory, final String destinationDirectory) {
         this.tempDirectory = tempDirectory;
