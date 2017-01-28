@@ -6,13 +6,11 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.annimon.stream.Optional;
-import com.annimon.stream.Stream;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.entity.BikeStation;
@@ -120,21 +118,17 @@ public enum ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<SparseArray<Map<String, List<BusArrival>>>> createBusArrivalsObservable(@NonNull final Context context, @NonNull final List<BusStop> bustStops) {
+    public static Observable<List<BusArrival>> createBusArrivalsObservable(@NonNull final Context context, @NonNull final Optional<BusStop> busStop) {
         return Observable.create(
-            (ObservableEmitter<SparseArray<Map<String, List<BusArrival>>>> observableOnSubscribe) -> {
+            (ObservableEmitter<List<BusArrival>> observableOnSubscribe) -> {
                 if (!observableOnSubscribe.isDisposed()) {
-                    final SparseArray<Map<String, List<BusArrival>>> busArrivalsMap = new SparseArray<>();
-                    Stream.of(bustStops).forEach(busStop -> {
-                        BUS_SERVICE.loadAroundBusArrivals(context, busStop, busArrivalsMap);
-                    });
-                    observableOnSubscribe.onNext(busArrivalsMap);
+                    observableOnSubscribe.onNext(busStop.isPresent() ? BUS_SERVICE.loadAroundBusArrivals(context, busStop.get()) : new ArrayList<>());
                     observableOnSubscribe.onComplete();
                 }
             })
             .onErrorReturn(throwable -> {
                 Log.e(TAG, throwable.getMessage(), throwable);
-                return new SparseArray<>();
+                return new ArrayList<>();
             })
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
@@ -191,11 +185,11 @@ public enum ObservableUtil {
             });
     }
 
-    public static Observable<NearbyDTO> createMarkerDataObservable(@NonNull final Context context, @NonNull final Optional<Station> trainStation, @NonNull final List<BusStop> busStops, @NonNull final Optional<BikeStation> bikeStation) {
+    public static Observable<NearbyDTO> createMarkerDataObservable(@NonNull final Context context, @NonNull final Optional<Station> trainStation, @NonNull final Optional<BusStop> busStop, @NonNull final Optional<BikeStation> bikeStation) {
         final Observable<Optional<TrainArrival>> trainArrivalObservable = ObservableUtil.createTrainArrivalsObservable(context, trainStation);
-        final Observable<SparseArray<Map<String, List<BusArrival>>>> busArrivalObservable = ObservableUtil.createBusArrivalsObservable(context, busStops);
+        final Observable<List<BusArrival>> busArrivalsObservable = ObservableUtil.createBusArrivalsObservable(context, busStop);
         final Observable<Optional<BikeStation>> bikeStationsObservable = ObservableUtil.createBikeStationsObservable(bikeStation);
-        return Observable.zip(trainArrivalObservable, busArrivalObservable, bikeStationsObservable,
+        return Observable.zip(trainArrivalObservable, busArrivalsObservable, bikeStationsObservable,
             (trainArrivals, busArrivals, bikeStationsResult) -> NearbyDTO.builder()
                 .trainArrivals(trainArrivals.isPresent() ? trainArrivals.get() : null)
                 .busArrivals(busArrivals)

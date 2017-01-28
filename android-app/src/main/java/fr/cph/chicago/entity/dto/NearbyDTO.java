@@ -1,9 +1,6 @@
 package fr.cph.chicago.entity.dto;
 
-import android.util.SparseArray;
-
 import java.util.List;
-import java.util.Map;
 
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
@@ -15,6 +12,6 @@ import lombok.Data;
 @Data
 public class NearbyDTO {
     private TrainArrival trainArrivals;
-    private SparseArray<Map<String, List<BusArrival>>> busArrivals;
+    private List<BusArrival> busArrivals;
     private BikeStation bikeStations;
 }

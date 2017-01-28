@@ -30,7 +30,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,6 +57,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import butterknife.BindString;
 import butterknife.BindView;
@@ -199,7 +199,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         if (nearbyDTO.getTrainArrivals() != null) {
             updateTrainArrival(nearbyDTO.getTrainArrivals());
         }
-        if (nearbyDTO.getBusArrivals() != null) {
+        if (nearbyDTO.getBusArrivals() != null && !nearbyDTO.getBusArrivals().isEmpty()) {
             updateBusArrival(nearbyDTO.getBusArrivals());
         }
         if (nearbyDTO.getBikeStations() != null) {
@@ -213,8 +213,9 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         getLayoutContainer().addView(headerView);
     }
 
-    private void updateBusArrival(@NonNull final SparseArray<Map<String, List<BusArrival>>> busArrivalDTO) {
-
+    private void updateBusArrival(@NonNull final List<BusArrival> busArrivals) {
+        final View headerView = createStationHeaderView(busArrivals.get(0).getStopName(), R.drawable.ic_directions_bus_white_24dp);
+        getLayoutContainer().addView(headerView);
     }
 
     private void updateBikeStation(@NonNull final BikeStation bikeStation) {
@@ -224,7 +225,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
 
     private View createStationHeaderView(@NonNull final String stationName, @DrawableRes final int drawable) {
         final LayoutInflater vi = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View convertView = vi.inflate(R.layout.nearby_station_main, null, false);
+        final View convertView = vi.inflate(R.layout.nearby_station_main, this.getSlidingUpPanelLayout(), false);
 
         final TextView stationNameView = (TextView) convertView.findViewById(R.id.station_name);
         final ImageView imageView = (ImageView) convertView.findViewById(R.id.icon);

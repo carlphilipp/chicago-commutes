@@ -274,10 +274,11 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
     private void loadAllArrivals(@NonNull final List<AStation> stations) {
         // One train station can only be on one coordinate
         final Optional<Station> trainStation = Stream.of(stations).filter(station -> station instanceof Station).map(station -> (Station) station).findFirst();
-        final List<BusStop> busStops = Stream.of(stations).filter(station -> station instanceof BusStop).map(station -> (BusStop) station).collect(Collectors.toList());
+        // One bus stop can only be on one coordinate
+        final Optional<BusStop> busStop = Stream.of(stations).filter(station -> station instanceof BusStop).map(station -> (BusStop) station).findFirst();
         // One bike station can only be on one coordinate
         final Optional<BikeStation> bikeStation = Stream.of(stations).filter(station -> station instanceof BikeStation).map(station -> (BikeStation) station).findFirst();
-        ObservableUtil.createMarkerDataObservable(nearbyFragment.getContext(), trainStation, busStops, bikeStation)
+        ObservableUtil.createMarkerDataObservable(nearbyFragment.getContext(), trainStation, busStop, bikeStation)
             .subscribe(
                 // TODO handle result => UI update
                 result -> {

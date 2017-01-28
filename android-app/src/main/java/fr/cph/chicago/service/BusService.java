@@ -1,12 +1,10 @@
 package fr.cph.chicago.service;
 
 import android.content.Context;
-import android.util.SparseArray;
 
 import com.annimon.stream.Optional;
 
 import java.util.List;
-import java.util.Map;
 
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.entity.Bus;
@@ -34,5 +32,5 @@ public interface BusService {
 
     List<Bus> loadBus(Context context, int busId, String busRouteId);
 
-    Map<String, List<BusArrival>> loadAroundBusArrivals(Context context, BusStop busStop, SparseArray<Map<String, List<BusArrival>>> busArrivalsMap);
+    List<BusArrival> loadAroundBusArrivals(Context context, BusStop busStop);
 }
