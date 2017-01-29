@@ -57,7 +57,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import butterknife.BindString;
 import butterknife.BindView;
@@ -314,9 +313,9 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                 Stream.of(trainStation)
                     .forEach(station ->
                         Stream.of(station.getStopsPosition())
-                            .forEach(position -> {
+                            .findFirst()
+                            .ifPresent(position -> {
                                 final String key = station.getId() + "_" + station.getName() + "_train";
-                                //if (!markerHolder.containsStation(station)) {
                                 final LatLng point = new LatLng(position.getLatitude(), position.getLongitude());
                                 final MarkerOptions markerOptions = new MarkerOptions()
                                     .position(point)
@@ -327,7 +326,6 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                                 marker.setVisible(false);
                                 markerDataHolder.addData(marker, station);
                                 Log.i(TAG, "Add train station: " + key + " " + position.getLatitude() + " " + position.getLongitude());
-                                //}
                             })
                     );
 
@@ -411,9 +409,9 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                 realm.close();
                 trainStations = trainData.readNearbyStation(position.get(), DEFAULT_RANGE);
                 // FIXME: wait for bike stations to be loaded
-                if (bikeStations != null) {
-                    bikeStations = BikeStation.readNearbyStation(bikeStations, position.get(), DEFAULT_RANGE);
-                }
+                bikeStations = bikeStations != null
+                    ? BikeStation.readNearbyStation(bikeStations, position.get(), DEFAULT_RANGE)
+                    : new ArrayList<>();
             }
             return position;
         }

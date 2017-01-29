@@ -1,48 +1,23 @@
 package fr.cph.chicago.core.listener;
 
-import android.content.Context;
-import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.text.TextUtils;
 import android.util.Log;
-import android.util.SparseArray;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
-import com.annimon.stream.Collectors;
 import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import fr.cph.chicago.R;
-import fr.cph.chicago.core.adapter.NearbyAdapter;
 import fr.cph.chicago.core.fragment.NearbyFragment;
 import fr.cph.chicago.entity.AStation;
 import fr.cph.chicago.entity.BikeStation;
-import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusStop;
-import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Station;
-import fr.cph.chicago.entity.Stop;
-import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.rx.observable.ObservableUtil;
-import fr.cph.chicago.util.LayoutUtil;
-import fr.cph.chicago.util.Util;
-
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
 
@@ -60,6 +35,7 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
     public boolean onMarkerClick(final Marker marker) {
         Log.i(TAG, "Marker selected: " + marker.getTag().toString());
         List<AStation> stations = markerDataHolder.getData(marker);
+        Log.i(TAG, "Number of stations: " + stations.size());
         nearbyFragment.getSlidingUpPanelLayout().setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         nearbyFragment.getLayoutContainer().removeAllViews();
 
