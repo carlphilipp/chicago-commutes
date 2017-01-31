@@ -213,7 +213,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
     }
 
     private void updateBusArrival(@NonNull final List<BusArrival> busArrivals) {
-        final View headerView = createStationHeaderView(busArrivals.get(0).getStopName(), R.drawable.ic_directions_bus_white_24dp);
+        final View headerView = createStationHeaderView(busArrivals.get(0).getRouteId(), R.drawable.ic_directions_bus_white_24dp);
         getLayoutContainer().addView(headerView);
     }
 
@@ -307,7 +307,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                         marker.setTag(busStop.getId() + "_" + busStop.getName());
                         marker.setVisible(false);
                         markerDataHolder.addData(marker, busStop);
-                        Log.i(TAG, "Add bus stop: " + busStop.getId() + "_" + busStop.getName() + " " + busStop.getPosition().getLatitude() + " " + busStop.getPosition().getLongitude());
+                        Log.d(TAG, "Add bus stop: " + busStop.getId() + "_" + busStop.getName() + " " + busStop.getPosition().getLatitude() + " " + busStop.getPosition().getLongitude());
                     });
 
                 Stream.of(trainStation)
@@ -325,7 +325,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                                 marker.setTag(key);
                                 marker.setVisible(false);
                                 markerDataHolder.addData(marker, station);
-                                Log.i(TAG, "Add train station: " + key + " " + position.getLatitude() + " " + position.getLongitude());
+                                Log.d(TAG, "Add train station: " + key + " " + position.getLatitude() + " " + position.getLongitude());
                             })
                     );
 
@@ -341,7 +341,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                         marker.setVisible(false);
 
                         markerDataHolder.addData(marker, station);
-                        Log.i(TAG, "Add bike stop: " + station.getId() + "_" + station.getName() + " " + station.getLatitude() + " " + station.getLongitude());
+                        Log.d(TAG, "Add bike stop: " + station.getId() + "_" + station.getName() + " " + station.getLatitude() + " " + station.getLongitude());
                     });
 
                 showProgress(false);

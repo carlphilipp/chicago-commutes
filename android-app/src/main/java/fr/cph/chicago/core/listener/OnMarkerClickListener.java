@@ -35,7 +35,6 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
     public boolean onMarkerClick(final Marker marker) {
         Log.i(TAG, "Marker selected: " + marker.getTag().toString());
         List<AStation> stations = markerDataHolder.getData(marker);
-        Log.i(TAG, "Number of stations: " + stations.size());
         nearbyFragment.getSlidingUpPanelLayout().setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         nearbyFragment.getLayoutContainer().removeAllViews();
 

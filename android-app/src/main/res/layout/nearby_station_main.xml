@@ -41,13 +41,14 @@
         android:layout_alignBaseline="@+id/icon"
         android:layout_toEndOf="@+id/icon"
         android:layout_toRightOf="@+id/icon"
-        android:paddingEnd="@dimen/activity_station_stops_0dp"
-        android:paddingLeft="@dimen/activity_station_stops_line1_padding_color"
-        android:paddingRight="@dimen/activity_station_stops_0dp"
-        android:paddingStart="@dimen/activity_station_stops_line1_padding_color"
         android:textColor="@color/black"
         android:textIsSelectable="false"
         android:textStyle="bold" />
+
+<!--    android:paddingEnd="@dimen/activity_station_stops_0dp"
+    android:paddingLeft="@dimen/activity_station_stops_line1_padding_color"
+    android:paddingRight="@dimen/activity_station_stops_0dp"
+    android:paddingStart="@dimen/activity_station_stops_line1_padding_color"-->
 
     <LinearLayout
         android:id="@+id/nearby_results"
