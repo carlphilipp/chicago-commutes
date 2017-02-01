@@ -25,7 +25,6 @@ import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.dto.BusArrivalDTO;
 import fr.cph.chicago.entity.dto.FavoritesDTO;
 import fr.cph.chicago.entity.dto.FirstLoadDTO;
-import fr.cph.chicago.entity.dto.NearbyDTO;
 import fr.cph.chicago.entity.dto.TrainArrivalDTO;
 import fr.cph.chicago.service.BikeService;
 import fr.cph.chicago.service.BusService;
@@ -70,11 +69,11 @@ public enum ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<Optional<TrainArrival>> createTrainArrivalsObservable(@NonNull final Context context, final int stationId) {
+    public static Observable<Optional<TrainArrival>> createTrainArrivalsObservable(@NonNull final Context context, final Station station) {
         return Observable.create(
             (ObservableEmitter<Optional<TrainArrival>> observableOnSubscribe) -> {
                 if (!observableOnSubscribe.isDisposed()) {
-                    observableOnSubscribe.onNext(TRAIN_SERVICE.loadStationTrainArrival(context, stationId));
+                    observableOnSubscribe.onNext(TRAIN_SERVICE.loadStationTrainArrival(context, station.getId()));
                     observableOnSubscribe.onComplete();
                 }
             })
@@ -84,7 +83,7 @@ public enum ObservableUtil {
 
     public static Observable<Optional<TrainArrival>> createTrainArrivalsObservable(@NonNull final Context context, final Optional<Station> trainStation) {
         if (trainStation.isPresent()) {
-            return createTrainArrivalsObservable(context, trainStation.get().getId());
+            return createTrainArrivalsObservable(context, trainStation.get());
         } else {
             return Observable.create((ObservableEmitter<Optional<TrainArrival>> observableOnSubscribe) -> {
                 observableOnSubscribe.onNext(Optional.empty());
@@ -118,11 +117,11 @@ public enum ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<List<BusArrival>> createBusArrivalsObservable(@NonNull final Context context, @NonNull final Optional<BusStop> busStop) {
+    public static Observable<List<BusArrival>> createBusArrivalsObservable(@NonNull final Context context, @NonNull final BusStop busStop) {
         return Observable.create(
             (ObservableEmitter<List<BusArrival>> observableOnSubscribe) -> {
                 if (!observableOnSubscribe.isDisposed()) {
-                    observableOnSubscribe.onNext(busStop.isPresent() ? BUS_SERVICE.loadAroundBusArrivals(context, busStop.get()) : new ArrayList<>());
+                    observableOnSubscribe.onNext(BUS_SERVICE.loadAroundBusArrivals(context, busStop));
                     observableOnSubscribe.onComplete();
                 }
             })
@@ -150,11 +149,11 @@ public enum ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<Optional<BikeStation>> createBikeStationsObservable(@NonNull final Optional<BikeStation> bikeStation) {
+    public static Observable<Optional<BikeStation>> createBikeStationsObservable(@NonNull final BikeStation bikeStation) {
         return Observable.create(
             (ObservableEmitter<Optional<BikeStation>> observableOnSubscribe) -> {
                 if (!observableOnSubscribe.isDisposed()) {
-                    observableOnSubscribe.onNext(bikeStation.isPresent() ? BIKE_SERVICE.loadBikes(bikeStation.get().getId()) : Optional.empty());
+                    observableOnSubscribe.onNext(BIKE_SERVICE.loadBikes(bikeStation.getId()));
                     observableOnSubscribe.onComplete();
                 }
             })
@@ -184,19 +183,6 @@ public enum ObservableUtil {
                     .build();
             });
     }
-
-    public static Observable<NearbyDTO> createMarkerDataObservable(@NonNull final Context context, @NonNull final Optional<Station> trainStation, @NonNull final Optional<BusStop> busStop, @NonNull final Optional<BikeStation> bikeStation) {
-        final Observable<Optional<TrainArrival>> trainArrivalObservable = ObservableUtil.createTrainArrivalsObservable(context, trainStation);
-        final Observable<List<BusArrival>> busArrivalsObservable = ObservableUtil.createBusArrivalsObservable(context, busStop);
-        final Observable<Optional<BikeStation>> bikeStationsObservable = ObservableUtil.createBikeStationsObservable(bikeStation);
-        return Observable.zip(trainArrivalObservable, busArrivalsObservable, bikeStationsObservable,
-            (trainArrivals, busArrivals, bikeStationsResult) -> NearbyDTO.builder()
-                .trainArrivals(trainArrivals.isPresent() ? trainArrivals.get() : null)
-                .busArrivals(busArrivals)
-                .bikeStations(bikeStationsResult.isPresent() ? bikeStationsResult.get() : null)
-                .build());
-    }
-
 
     public static Observable<List<BusStop>> createBusStopBoundObservable(@NonNull final Context context, @NonNull final String stopId, @NonNull final String bound) {
         return Observable.create(

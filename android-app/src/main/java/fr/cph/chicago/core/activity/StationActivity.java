@@ -412,7 +412,7 @@ public class StationActivity extends AbstractStationActivity {
     }
 
     private void createTrainArrivalObservableAndSubscribe() {
-        trainArrivalObservable = ObservableUtil.createTrainArrivalsObservable(getApplicationContext(), stationId);
+        trainArrivalObservable = ObservableUtil.createTrainArrivalsObservable(getApplicationContext(), station);
         trainArrivalObservable.subscribe(new TrainArrivalObserver(this, swipeRefreshLayout));
     }
 }

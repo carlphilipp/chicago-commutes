@@ -38,7 +38,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.annimon.stream.Collectors;
 import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -193,50 +192,8 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         }
     }
 
-    public void updateBottom(@NonNull final NearbyDTO nearbyDTO) {
-        getLayoutContainer().removeAllViews();
-        if (nearbyDTO.getTrainArrivals() != null) {
-            updateTrainArrival(nearbyDTO.getTrainArrivals());
-        }
-        if (nearbyDTO.getBusArrivals() != null && !nearbyDTO.getBusArrivals().isEmpty()) {
-            updateBusArrival(nearbyDTO.getBusArrivals());
-        }
-        if (nearbyDTO.getBikeStations() != null) {
-            updateBikeStation(nearbyDTO.getBikeStations());
-        }
-    }
-
-    private void updateTrainArrival(@NonNull final TrainArrival trainArrival) {
-        final Station station = trainArrival.getEtas().get(0).getStation();
-        final View headerView = createStationHeaderView(station.getName(), R.drawable.ic_train_white_24dp);
-        getLayoutContainer().addView(headerView);
-    }
-
-    private void updateBusArrival(@NonNull final List<BusArrival> busArrivals) {
-        final View headerView = createStationHeaderView(busArrivals.get(0).getRouteId(), R.drawable.ic_directions_bus_white_24dp);
-        getLayoutContainer().addView(headerView);
-    }
-
-    private void updateBikeStation(@NonNull final BikeStation bikeStation) {
-        final View headerView = createStationHeaderView(bikeStation.getName(), R.drawable.ic_directions_bike_white_24dp);
-        getLayoutContainer().addView(headerView);
-    }
-
-    private View createStationHeaderView(@NonNull final String stationName, @DrawableRes final int drawable) {
-        final LayoutInflater vi = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View convertView = vi.inflate(R.layout.nearby_station_main, this.getSlidingUpPanelLayout(), false);
-
-        final TextView stationNameView = (TextView) convertView.findViewById(R.id.station_name);
-        final ImageView imageView = (ImageView) convertView.findViewById(R.id.icon);
-
-        stationNameView.setText(stationName);
-        imageView.setImageDrawable(ContextCompat.getDrawable(getContext(), drawable));
-
-        return convertView;
-    }
-
     public class MarkerDataHolder {
-        final Map<LatLng, List<MarkerHolder>> data;
+        final Map<LatLng, MarkerHolder> data;
 
         private MarkerDataHolder() {
             data = new HashMap<>();
@@ -248,28 +205,15 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
             markerHolder.setMarker(marker);
             markerHolder.setStation(station);
             final LatLng latLng = marker.getPosition();
-            if (data.containsKey(latLng)) {
-                final List<MarkerHolder> markerHolderList = data.get(latLng);
-                final Optional<MarkerHolder> optional = Stream.of(markerHolderList)
-                    .filter(m -> m.getStation() instanceof Station)
-                    .findFirst();
-                if (!optional.isPresent()) {
-                    Stream.of(markerHolderList).forEach(m -> m.getMarker().setVisible(false));
-                }
-                markerHolderList.add(markerHolder);
-            } else {
-                final List<MarkerHolder> markerHolderList = new ArrayList<>();
-                markerHolderList.add(markerHolder);
-                data.put(latLng, markerHolderList);
-            }
+            data.put(latLng, markerHolder);
         }
 
         void clear() {
             data.clear();
         }
 
-        public List<AStation> getData(final Marker marker) {
-            return Stream.of(data.get(marker.getPosition())).map(MarkerHolder::getStation).collect(Collectors.toList());
+        public AStation getStation(final Marker marker) {
+            return data.get(marker.getPosition()).getStation();
         }
 
         @Data
@@ -304,7 +248,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                             .snippet(busStop.getDescription())
                             .icon(bitmapDescriptorBus);
                         final Marker marker = googleMap.addMarker(markerOptions);
-                        marker.setTag(busStop.getId() + "_" + busStop.getName());
+                        marker.setTag(busStop.getName());
                         marker.setVisible(false);
                         markerDataHolder.addData(marker, busStop);
                         Log.d(TAG, "Add bus stop: " + busStop.getId() + "_" + busStop.getName() + " " + busStop.getPosition().getLatitude() + " " + busStop.getPosition().getLongitude());
@@ -322,7 +266,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                                     .title(station.getName())
                                     .icon(bitmapDescriptorTrain);
                                 final Marker marker = googleMap.addMarker(markerOptions);
-                                marker.setTag(key);
+                                marker.setTag(station.getName());
                                 marker.setVisible(false);
                                 markerDataHolder.addData(marker, station);
                                 Log.d(TAG, "Add train station: " + key + " " + position.getLatitude() + " " + position.getLongitude());
@@ -337,7 +281,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                             .title(station.getName())
                             .icon(bitmapDescriptorBike);
                         final Marker marker = googleMap.addMarker(markerOptions);
-                        marker.setTag(station.getId() + "_" + station.getName());
+                        marker.setTag(station.getName());
                         marker.setVisible(false);
 
                         markerDataHolder.addData(marker, station);
@@ -460,5 +404,40 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
             Util.showNetworkErrorMessage(activity);
             showProgress(false);
         }
+    }
+
+
+    // TODO VIEW METHOD. see where and how to handle it
+    public void updateBottom(@NonNull final NearbyDTO nearbyDTO, @NonNull final String title) {
+
+    }
+
+    public void updateBottomTitleTrain(@NonNull final String title) {
+        final View headerView = createStationHeaderView(title, R.drawable.ic_train_white_24dp);
+        getLayoutContainer().addView(headerView);
+    }
+
+    public void updateBottomTitleBus(@NonNull final String title) {
+        final View headerView = createStationHeaderView(title, R.drawable.ic_directions_bus_white_24dp);
+        getLayoutContainer().addView(headerView);
+    }
+
+    public void updateBottomTitleBike(@NonNull final String title) {
+        final View headerView = createStationHeaderView(title, R.drawable.ic_directions_bike_white_24dp);
+        getLayoutContainer().addView(headerView);
+    }
+
+    private View createStationHeaderView(@NonNull final String title, @DrawableRes final int drawable) {
+        getLayoutContainer().removeAllViews();
+        final LayoutInflater vi = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View convertView = vi.inflate(R.layout.nearby_station_main, this.getSlidingUpPanelLayout(), false);
+
+        final TextView stationNameView = (TextView) convertView.findViewById(R.id.station_name);
+        final ImageView imageView = (ImageView) convertView.findViewById(R.id.icon);
+
+        stationNameView.setText(title);
+        imageView.setImageDrawable(ContextCompat.getDrawable(getContext(), drawable));
+
+        return convertView;
     }
 }
