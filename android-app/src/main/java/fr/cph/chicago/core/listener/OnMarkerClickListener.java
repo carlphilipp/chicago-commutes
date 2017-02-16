@@ -45,7 +45,7 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
             ObservableUtil.createTrainArrivalsObservable(nearbyFragment.getContext(), trainStation)
                 .subscribe(
                     result -> {
-                        Log.i(TAG, "Done with " + result);
+                        Log.i(TAG, "Done Train with " + result);
                     },
                     onError -> Log.e(TAG, onError.getMessage(), onError)
                 );
@@ -55,7 +55,7 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
             ObservableUtil.createBusArrivalsObservable(nearbyFragment.getContext(), (BusStop) station)
                 .subscribe(
                     result -> {
-                        Log.i(TAG, "Done with " + result);
+                        Log.i(TAG, "Done Bus with " + result);
                     },
                     onError -> Log.e(TAG, onError.getMessage(), onError)
                 );
@@ -65,7 +65,8 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
             ObservableUtil.createBikeStationsObservable((BikeStation) station)
                 .subscribe(
                     result -> {
-                        Log.i(TAG, "Done with " + result);
+                        Log.i(TAG, "Done Bike with " + result);
+                        nearbyFragment.addBike(result);
                     },
                     onError -> Log.e(TAG, onError.getMessage(), onError)
                 );
