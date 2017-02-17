@@ -46,6 +46,7 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
                 .subscribe(
                     result -> {
                         Log.i(TAG, "Done Train with " + result);
+                        nearbyFragment.addTrainStation(result);
                     },
                     onError -> Log.e(TAG, onError.getMessage(), onError)
                 );

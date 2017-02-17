@@ -29,7 +29,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,8 +41,12 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.annimon.stream.Collector;
 import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
+import com.annimon.stream.function.BiConsumer;
+import com.annimon.stream.function.Function;
+import com.annimon.stream.function.Supplier;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMapOptions;
@@ -72,8 +78,10 @@ import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.AStation;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusStop;
+import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
+import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.GPSUtil;
 import fr.cph.chicago.util.LayoutUtil;
@@ -421,6 +429,134 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
     public void updateBottomTitleBike(@NonNull final String title) {
         final View headerView = createStationHeaderView(title, R.drawable.ic_directions_bike_white_24dp);
         getLayoutContainer().addView(headerView);
+    }
+
+    public void addTrainStation(final Optional<TrainArrival> trainArrivalOptional) {
+        final RelativeLayout relativeLayout = (RelativeLayout) getLayoutContainer().getChildAt(0);
+        final LinearLayout linearLayout = (LinearLayout) relativeLayout.findViewById(R.id.nearby_results);
+
+        if (trainArrivalOptional.isPresent()) {
+            Stream.of(TrainLine.values()).forEach(trainLine -> {
+                final Map<String, String> etas = getTrainArrivalByLine(trainArrivalOptional.get().getEtas(trainLine));
+                boolean newLine = true;
+                int i = 0;
+                // FIXME duplicate from favorite adapter, to refactor
+                for (final Map.Entry<String, String> entry : etas.entrySet()) {
+
+
+
+                    int marginLeftPixel = Util.convertDpToPixel(getContext(), 10);
+                    int pixels = Util.convertDpToPixel(getContext(), 16);
+                    int pixelsHalf = pixels / 2;
+                    int pixelsQuarter = pixels / 4;
+                    int grey5 = ContextCompat.getColor(getContext(), R.color.grey_5);
+
+
+
+
+
+
+                    final LinearLayout.LayoutParams containParam = getInsideParams(newLine, i == etas.size() - 1);
+                    final LinearLayout container = new LinearLayout(getContext());
+                    container.setOrientation(LinearLayout.HORIZONTAL);
+                    container.setLayoutParams(containParam);
+
+                    // Left
+                    final RelativeLayout.LayoutParams leftParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    final RelativeLayout left = new RelativeLayout(getContext());
+                    left.setLayoutParams(leftParam);
+
+                    final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(getContext(), trainLine);
+                    int lineId = Util.generateViewId();
+                    lineIndication.setId(lineId);
+
+                    final RelativeLayout.LayoutParams destinationParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    destinationParams.addRule(RelativeLayout.RIGHT_OF, lineId);
+                    destinationParams.setMargins(pixelsHalf, 0, 0, 0);
+
+                    final String destination = entry.getKey();
+                    final TextView destinationTextView = new TextView(getContext());
+                    destinationTextView.setTextColor(grey5);
+                    destinationTextView.setText(destination);
+                    destinationTextView.setLines(1);
+                    destinationTextView.setLayoutParams(destinationParams);
+
+                    left.addView(lineIndication);
+                    left.addView(destinationTextView);
+
+                    // Right
+                    final LinearLayout.LayoutParams rightParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    rightParams.setMargins(marginLeftPixel, 0, 0, 0);
+                    final LinearLayout right = new LinearLayout(getContext());
+                    right.setOrientation(LinearLayout.VERTICAL);
+                    right.setLayoutParams(rightParams);
+
+                    final String currentEtas = entry.getValue();
+                    final TextView arrivalText = new TextView(getContext());
+                    arrivalText.setText(currentEtas);
+                    arrivalText.setGravity(Gravity.END);
+                    arrivalText.setSingleLine(true);
+                    arrivalText.setTextColor(grey5);
+                    arrivalText.setEllipsize(TextUtils.TruncateAt.END);
+
+                    right.addView(arrivalText);
+
+                    container.addView(left);
+                    container.addView(right);
+
+                    linearLayout.addView(container);
+                    newLine = false;
+                    i++;
+                }
+            });
+        } else {
+
+        }
+    }
+
+    // FIXME: duplicate from FavoritesData
+    @NonNull
+    public final Map<String, String> getTrainArrivalByLine(final List<Eta> etas) {
+        return Stream.of(etas).collect(new Collector<Eta, Map<String, String>, Map<String, String>>() {
+            @Override
+            public Supplier<Map<String, String>> supplier() {
+                return HashMap::new;
+            }
+
+            @Override
+            public BiConsumer<Map<String, String>, Eta> accumulator() {
+                return (map, eta) -> {
+                    final String stopNameData = eta.getDestName();
+                    final String timingData = eta.getTimeLeftDueDelay();
+                    final String value = map.containsKey(stopNameData)
+                        ? map.get(stopNameData) + " " + timingData
+                        : timingData;
+                    map.put(stopNameData, value);
+                };
+            }
+
+            @Override
+            public Function<Map<String, String>, Map<String, String>> finisher() {
+                return null;
+            }
+        });
+    }
+
+    @NonNull
+    private LinearLayout.LayoutParams getInsideParams(final boolean newLine, final boolean lastLine) {
+        int pixels = Util.convertDpToPixel(getContext(), 16);
+        int pixelsQuarter = pixels / 4;
+        final LinearLayout.LayoutParams paramsLeft = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        if (newLine && lastLine) {
+            paramsLeft.setMargins(pixels, pixelsQuarter, pixels, pixelsQuarter);
+        } else if (newLine) {
+            paramsLeft.setMargins(pixels, pixelsQuarter, pixels, 0);
+        } else if (lastLine) {
+            paramsLeft.setMargins(pixels, 0, pixels, pixelsQuarter);
+        } else {
+            paramsLeft.setMargins(pixels, 0, pixels, 0);
+        }
+        return paramsLeft;
     }
 
     public void addBike(final Optional<BikeStation> bikeStationOptional) {
