@@ -464,9 +464,8 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         final RelativeLayout relativeLayout = (RelativeLayout) getLayoutContainer().getChildAt(0);
         final LinearLayout linearLayout = (LinearLayout) relativeLayout.findViewById(R.id.nearby_results);
 
-        for (final Map.Entry<String, Map<String, List<BusArrival>>> entry : busArrivalMappedDTO.entrySet()) {
-            final String stopName = entry.getKey();
-            final String stopNameTrimmed = Util.trimBusStopNameIfNeeded(stopName);
+        Stream.of(busArrivalMappedDTO.entrySet()).forEach(entry -> {
+            final String stopNameTrimmed = Util.trimBusStopNameIfNeeded(entry.getKey());
             final Map<String, List<BusArrival>> boundMap = entry.getValue();
 
             boolean newLine = true;
@@ -482,15 +481,13 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                 newLine = false;
                 i++;
             }
-        }
+        });
     }
 
     public void addBike(final Optional<BikeStation> bikeStationOptional) {
         final RelativeLayout relativeLayout = (RelativeLayout) getLayoutContainer().getChildAt(0);
         final LinearLayout linearLayout = (LinearLayout) relativeLayout.findViewById(R.id.nearby_results);
-        final LinearLayout firstLine = LayoutUtil.createBikeFirstLine(getContext(), bikeStationOptional.get());
-        linearLayout.addView(firstLine);
-        final LinearLayout secondLine = LayoutUtil.createBikeSecondLine(getContext(), bikeStationOptional.get());
-        linearLayout.addView(secondLine);
+        final LinearLayout bikeResultLayout = LayoutUtil.createBikeLayout(getContext(), bikeStationOptional.get());
+        linearLayout.addView(bikeResultLayout);
     }
 }

@@ -93,6 +93,7 @@ public enum LayoutUtil {
         return paramsLeft;
     }
 
+    // TODO Create XML files instead of doing all those methods in Java
     @NonNull
     public static LinearLayout createBusArrivalsLayout(@NonNull final Context context, @NonNull final LinearLayout.LayoutParams containParams, @NonNull final String stopNameTrimmed, @NonNull final Map.Entry<String, List<BusArrival>> entry) {
         int pixels = Util.convertDpToPixel(context, 16);
@@ -214,13 +215,19 @@ public enum LayoutUtil {
     }
 
     @NonNull
-    public static LinearLayout createBikeFirstLine(@NonNull final Context context, @NonNull final BikeStation bikeStation) {
-        return createBikeLine(context, bikeStation, true);
-    }
+    public static LinearLayout createBikeLayout(@NonNull final Context context, @NonNull final BikeStation bikeStation) {
+        final LinearLayout.LayoutParams containerParams = getInsideParams(context, true, true);
+        final LinearLayout container = new LinearLayout(context);
+        container.setOrientation(LinearLayout.VERTICAL);
+        container.setLayoutParams(containerParams);
 
-    @NonNull
-    public static LinearLayout createBikeSecondLine(@NonNull final Context context, @NonNull final BikeStation bikeStation) {
-        return createBikeLine(context, bikeStation, false);
+        final LinearLayout linearLayout = new LinearLayout(context);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.addView(createBikeLine(context, bikeStation, true));
+        linearLayout.addView(createBikeLine(context, bikeStation, false));
+
+        container.addView(linearLayout);
+        return container;
     }
 
     @NonNull
@@ -240,7 +247,7 @@ public enum LayoutUtil {
         final RelativeLayout left = new RelativeLayout(context);
         left.setLayoutParams(leftParam);
 
-        final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(context, TrainLine.NA);
+        final RelativeLayout lineIndication = createColoredRoundForFavorites(context, TrainLine.NA);
         int lineId = Util.generateViewId();
         lineIndication.setId(lineId);
 

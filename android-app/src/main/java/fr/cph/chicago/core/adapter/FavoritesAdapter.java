@@ -219,7 +219,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
             int i = 0;
             final Map<String, String> etas = FavoritesData.INSTANCE.getTrainArrivalByLine(stationId, trainLine);
             for (final Entry<String, String> entry : etas.entrySet()) {
-                final LinearLayout.LayoutParams containParams = getInsideParams(newLine, i == etas.size() - 1);
+                final LinearLayout.LayoutParams containParams = LayoutUtil.getInsideParams(activity.getApplicationContext(), newLine, i == etas.size() - 1);
                 final LinearLayout container = LayoutUtil.createTrainArrivalsLayout(context, containParams, entry, trainLine);
 
                 holder.mainLayout.addView(container);
@@ -236,21 +236,6 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         extras.putString(activity.getString(R.string.bundle_train_line), trainLine.toTextString());
         intent.putExtras(extras);
         activity.startActivity(intent);
-    }
-
-    @NonNull
-    private LinearLayout.LayoutParams getInsideParams(final boolean newLine, final boolean lastLine) {
-        final LinearLayout.LayoutParams paramsLeft = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-        if (newLine && lastLine) {
-            paramsLeft.setMargins(pixels, pixelsQuarter, pixels, pixelsQuarter);
-        } else if (newLine) {
-            paramsLeft.setMargins(pixels, pixelsQuarter, pixels, 0);
-        } else if (lastLine) {
-            paramsLeft.setMargins(pixels, 0, pixels, pixelsQuarter);
-        } else {
-            paramsLeft.setMargins(pixels, 0, pixels, 0);
-        }
-        return paramsLeft;
     }
 
     private void handleBusRoute(@NonNull final FavoritesViewHolder holder, @NonNull final BusRoute busRoute) {
@@ -286,7 +271,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 busDetailsDTOs.add(busDetails);
 
                 // Build UI
-                final LinearLayout.LayoutParams containParams = getInsideParams(newLine, i == boundMap.size() - 1);
+                final LinearLayout.LayoutParams containParams = LayoutUtil.getInsideParams(activity.getApplicationContext(), newLine, i == boundMap.size() - 1);
                 final LinearLayout container = LayoutUtil.createBusArrivalsLayout(activity.getApplicationContext(), containParams, stopNameTrimmed, entry2);
 
                 holder.mainLayout.addView(container);
@@ -334,18 +319,9 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         holder.mapButton.setText(activity.getString(R.string.favorites_view_station));
         holder.mapButton.setOnClickListener(new GoogleMapOnClickListener(bikeStation.getLatitude(), bikeStation.getLongitude()));
 
-        final LinearLayout.LayoutParams containerParams = getInsideParams(true, true);
-        final LinearLayout container = new LinearLayout(context);
-        container.setOrientation(LinearLayout.VERTICAL);
-        container.setLayoutParams(containerParams);
+        final LinearLayout bikeResultLayout = LayoutUtil.createBikeLayout(activity.getApplicationContext(), bikeStation);
 
-        final LinearLayout firstLine = LayoutUtil.createBikeFirstLine(activity.getApplicationContext(), bikeStation);
-        container.addView(firstLine);
-
-        final LinearLayout secondLine = LayoutUtil.createBikeSecondLine(activity.getApplicationContext(), bikeStation);
-        container.addView(secondLine);
-
-        holder.mainLayout.addView(container);
+        holder.mainLayout.addView(bikeResultLayout);
     }
 
     @Override

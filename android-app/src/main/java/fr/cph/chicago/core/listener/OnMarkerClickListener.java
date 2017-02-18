@@ -54,6 +54,7 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
                 );
         } else if (station instanceof BusStop) {
             final BusStop busStop = (BusStop) station;
+            // FIXME update with line name
             nearbyFragment.updateBottomTitleBus(busStop.getName() + " nop");
             ObservableUtil.createBusArrivalsObservable(nearbyFragment.getContext(), (BusStop) station)
                 .subscribe(
