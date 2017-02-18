@@ -29,7 +29,7 @@
         android:layout_alignParentTop="true"
         android:gravity="bottom"
         sothree:umanoInitialState="hidden"
-        sothree:umanoPanelHeight="68dp"
+        sothree:umanoPanelHeight="90dp"
         sothree:umanoShadowHeight="4dp">
 
         <RelativeLayout
