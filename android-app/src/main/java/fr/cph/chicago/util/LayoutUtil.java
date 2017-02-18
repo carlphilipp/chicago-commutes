@@ -50,6 +50,7 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 public enum LayoutUtil {
     ;
 
+    // FIXME Find a way to not use context everywhere here
     @NonNull
     public static RelativeLayout createColoredRoundForFavorites(@NonNull final Context context, @NonNull final TrainLine trainLine) {
         final RelativeLayout lineIndication = new RelativeLayout(context);
@@ -151,6 +152,63 @@ public enum LayoutUtil {
 
         container.addView(left);
         container.addView(right);
+        return container;
+    }
+
+    @NonNull
+    public static LinearLayout createTrainArrivalsLayout(@NonNull final Context context, @NonNull final LinearLayout.LayoutParams containParams, @NonNull final Map.Entry<String, String> entry, @NonNull final TrainLine trainLine) {
+        int pixels = Util.convertDpToPixel(context, 16);
+        int pixelsHalf = pixels / 2;
+        int marginLeftPixel = Util.convertDpToPixel(context, 10);
+        int grey5 = ContextCompat.getColor(context, R.color.grey_5);
+
+        final LinearLayout container = new LinearLayout(context);
+        container.setOrientation(LinearLayout.HORIZONTAL);
+        container.setLayoutParams(containParams);
+
+        // Left
+        final RelativeLayout.LayoutParams leftParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        final RelativeLayout left = new RelativeLayout(context);
+        left.setLayoutParams(leftParam);
+
+        final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(context, trainLine);
+        int lineId = Util.generateViewId();
+        lineIndication.setId(lineId);
+
+        final RelativeLayout.LayoutParams destinationParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        destinationParams.addRule(RelativeLayout.RIGHT_OF, lineId);
+        destinationParams.setMargins(pixelsHalf, 0, 0, 0);
+
+        final String destination = entry.getKey();
+        final TextView destinationTextView = new TextView(context);
+        destinationTextView.setTextColor(grey5);
+        destinationTextView.setText(destination);
+        destinationTextView.setLines(1);
+        destinationTextView.setLayoutParams(destinationParams);
+
+        left.addView(lineIndication);
+        left.addView(destinationTextView);
+
+        // Right
+        final LinearLayout.LayoutParams rightParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        rightParams.setMargins(marginLeftPixel, 0, 0, 0);
+        final LinearLayout right = new LinearLayout(context);
+        right.setOrientation(LinearLayout.VERTICAL);
+        right.setLayoutParams(rightParams);
+
+        final String currentEtas = entry.getValue();
+        final TextView arrivalText = new TextView(context);
+        arrivalText.setText(currentEtas);
+        arrivalText.setGravity(Gravity.END);
+        arrivalText.setSingleLine(true);
+        arrivalText.setTextColor(grey5);
+        arrivalText.setEllipsize(TextUtils.TruncateAt.END);
+
+        right.addView(arrivalText);
+
+        container.addView(left);
+        container.addView(right);
+
         return container;
     }
 }

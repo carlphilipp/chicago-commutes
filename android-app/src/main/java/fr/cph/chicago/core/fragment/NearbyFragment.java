@@ -29,9 +29,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -416,18 +414,29 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
 
     // TODO VIEW METHOD. see where and how to handle it
     public void updateBottomTitleTrain(@NonNull final String title) {
-        final View headerView = createStationHeaderView(title, R.drawable.ic_train_white_24dp);
-        getLayoutContainer().addView(headerView);
+        createStationHeaderView(title, R.drawable.ic_train_white_24dp);
     }
 
     public void updateBottomTitleBus(@NonNull final String title) {
-        final View headerView = createStationHeaderView(title, R.drawable.ic_directions_bus_white_24dp);
-        getLayoutContainer().addView(headerView);
+        createStationHeaderView(title, R.drawable.ic_directions_bus_white_24dp);
     }
 
     public void updateBottomTitleBike(@NonNull final String title) {
-        final View headerView = createStationHeaderView(title, R.drawable.ic_directions_bike_white_24dp);
-        getLayoutContainer().addView(headerView);
+        createStationHeaderView(title, R.drawable.ic_directions_bike_white_24dp);
+    }
+
+    private void createStationHeaderView(@NonNull final String title, @DrawableRes final int drawable) {
+        getLayoutContainer().removeAllViews();
+        final LayoutInflater vi = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View convertView = vi.inflate(R.layout.nearby_station_main, this.getSlidingUpPanelLayout(), false);
+
+        final TextView stationNameView = (TextView) convertView.findViewById(R.id.station_name);
+        final ImageView imageView = (ImageView) convertView.findViewById(R.id.icon);
+
+        stationNameView.setText(title);
+        imageView.setImageDrawable(ContextCompat.getDrawable(getContext(), drawable));
+
+        getLayoutContainer().addView(convertView);
     }
 
     public void addTrainStation(final Optional<TrainArrival> trainArrivalOptional) {
@@ -439,62 +448,9 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                 final Map<String, String> etas = Stream.of(trainArrivalOptional.get().getEtas(trainLine)).collect(CommutesCollectors.toTrainArrivalByLine());
                 boolean newLine = true;
                 int i = 0;
-                // FIXME duplicate from favorite adapter, to refactor
                 for (final Map.Entry<String, String> entry : etas.entrySet()) {
-                    int marginLeftPixel = Util.convertDpToPixel(getContext(), 10);
-                    int pixels = Util.convertDpToPixel(getContext(), 16);
-                    int pixelsHalf = pixels / 2;
-                    int pixelsQuarter = pixels / 4;
-                    int grey5 = ContextCompat.getColor(getContext(), R.color.grey_5);
-
-
-                    final LinearLayout.LayoutParams containParam = LayoutUtil.getInsideParams(getContext(), newLine, i == etas.size() - 1);
-                    final LinearLayout container = new LinearLayout(getContext());
-                    container.setOrientation(LinearLayout.HORIZONTAL);
-                    container.setLayoutParams(containParam);
-
-                    // Left
-                    final RelativeLayout.LayoutParams leftParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    final RelativeLayout left = new RelativeLayout(getContext());
-                    left.setLayoutParams(leftParam);
-
-                    final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(getContext(), trainLine);
-                    int lineId = Util.generateViewId();
-                    lineIndication.setId(lineId);
-
-                    final RelativeLayout.LayoutParams destinationParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    destinationParams.addRule(RelativeLayout.RIGHT_OF, lineId);
-                    destinationParams.setMargins(pixelsHalf, 0, 0, 0);
-
-                    final String destination = entry.getKey();
-                    final TextView destinationTextView = new TextView(getContext());
-                    destinationTextView.setTextColor(grey5);
-                    destinationTextView.setText(destination);
-                    destinationTextView.setLines(1);
-                    destinationTextView.setLayoutParams(destinationParams);
-
-                    left.addView(lineIndication);
-                    left.addView(destinationTextView);
-
-                    // Right
-                    final LinearLayout.LayoutParams rightParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    rightParams.setMargins(marginLeftPixel, 0, 0, 0);
-                    final LinearLayout right = new LinearLayout(getContext());
-                    right.setOrientation(LinearLayout.VERTICAL);
-                    right.setLayoutParams(rightParams);
-
-                    final String currentEtas = entry.getValue();
-                    final TextView arrivalText = new TextView(getContext());
-                    arrivalText.setText(currentEtas);
-                    arrivalText.setGravity(Gravity.END);
-                    arrivalText.setSingleLine(true);
-                    arrivalText.setTextColor(grey5);
-                    arrivalText.setEllipsize(TextUtils.TruncateAt.END);
-
-                    right.addView(arrivalText);
-
-                    container.addView(left);
-                    container.addView(right);
+                    final LinearLayout.LayoutParams containParams = LayoutUtil.getInsideParams(getContext(), newLine, i == etas.size() - 1);
+                    final LinearLayout container = LayoutUtil.createTrainArrivalsLayout(getContext(), containParams, entry, trainLine);
 
                     linearLayout.addView(container);
                     newLine = false;
@@ -509,7 +465,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
     public void addBusArrival(final BusArrivalMappedDTO busArrivalMappedDTO) {
         final RelativeLayout relativeLayout = (RelativeLayout) getLayoutContainer().getChildAt(0);
         final LinearLayout linearLayout = (LinearLayout) relativeLayout.findViewById(R.id.nearby_results);
-        
+
         for (final Map.Entry<String, Map<String, List<BusArrival>>> entry : busArrivalMappedDTO.entrySet()) {
             final String stopName = entry.getKey();
             final String stopNameTrimmed = Util.trimBusStopNameIfNeeded(stopName);
@@ -538,19 +494,5 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         linearLayout.addView(firstLine);
         final LinearLayout secondLine = ViewUtil.createBikeSecondLine(getContext(), bikeStationOptional.get());
         linearLayout.addView(secondLine);
-    }
-
-    private View createStationHeaderView(@NonNull final String title, @DrawableRes final int drawable) {
-        getLayoutContainer().removeAllViews();
-        final LayoutInflater vi = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View convertView = vi.inflate(R.layout.nearby_station_main, this.getSlidingUpPanelLayout(), false);
-
-        final TextView stationNameView = (TextView) convertView.findViewById(R.id.station_name);
-        final ImageView imageView = (ImageView) convertView.findViewById(R.id.icon);
-
-        stationNameView.setText(title);
-        imageView.setImageDrawable(ContextCompat.getDrawable(getContext(), drawable));
-
-        return convertView;
     }
 }

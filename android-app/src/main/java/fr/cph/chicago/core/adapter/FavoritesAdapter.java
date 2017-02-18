@@ -24,11 +24,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.text.SpannableString;
 import android.text.TextUtils;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.RelativeSizeSpan;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -224,53 +220,8 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
             int i = 0;
             final Map<String, String> etas = FavoritesData.INSTANCE.getTrainArrivalByLine(stationId, trainLine);
             for (final Entry<String, String> entry : etas.entrySet()) {
-                final LinearLayout.LayoutParams containParam = getInsideParams(newLine, i == etas.size() - 1);
-                final LinearLayout container = new LinearLayout(context);
-                container.setOrientation(LinearLayout.HORIZONTAL);
-                container.setLayoutParams(containParam);
-
-                // Left
-                final RelativeLayout.LayoutParams leftParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                final RelativeLayout left = new RelativeLayout(context);
-                left.setLayoutParams(leftParam);
-
-                final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(context, trainLine);
-                int lineId = Util.generateViewId();
-                lineIndication.setId(lineId);
-
-                final RelativeLayout.LayoutParams destinationParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                destinationParams.addRule(RelativeLayout.RIGHT_OF, lineId);
-                destinationParams.setMargins(pixelsHalf, 0, 0, 0);
-
-                final String destination = entry.getKey();
-                final TextView destinationTextView = new TextView(context);
-                destinationTextView.setTextColor(grey5);
-                destinationTextView.setText(destination);
-                destinationTextView.setLines(1);
-                destinationTextView.setLayoutParams(destinationParams);
-
-                left.addView(lineIndication);
-                left.addView(destinationTextView);
-
-                // Right
-                final LinearLayout.LayoutParams rightParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-                rightParams.setMargins(marginLeftPixel, 0, 0, 0);
-                final LinearLayout right = new LinearLayout(context);
-                right.setOrientation(LinearLayout.VERTICAL);
-                right.setLayoutParams(rightParams);
-
-                final String currentEtas = entry.getValue();
-                final TextView arrivalText = new TextView(context);
-                arrivalText.setText(currentEtas);
-                arrivalText.setGravity(Gravity.END);
-                arrivalText.setSingleLine(true);
-                arrivalText.setTextColor(grey5);
-                arrivalText.setEllipsize(TextUtils.TruncateAt.END);
-
-                right.addView(arrivalText);
-
-                container.addView(left);
-                container.addView(right);
+                final LinearLayout.LayoutParams containParams = getInsideParams(newLine, i == etas.size() - 1);
+                final LinearLayout container = LayoutUtil.createTrainArrivalsLayout(context, containParams, entry, trainLine);
 
                 holder.mainLayout.addView(container);
 
