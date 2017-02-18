@@ -82,7 +82,6 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.GPSUtil;
 import fr.cph.chicago.util.LayoutUtil;
 import fr.cph.chicago.util.Util;
-import fr.cph.chicago.util.ViewUtil;
 import io.realm.Realm;
 import lombok.Data;
 import lombok.Getter;
@@ -489,9 +488,9 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
     public void addBike(final Optional<BikeStation> bikeStationOptional) {
         final RelativeLayout relativeLayout = (RelativeLayout) getLayoutContainer().getChildAt(0);
         final LinearLayout linearLayout = (LinearLayout) relativeLayout.findViewById(R.id.nearby_results);
-        final LinearLayout firstLine = ViewUtil.createBikeFirstLine(getContext(), bikeStationOptional.get());
+        final LinearLayout firstLine = LayoutUtil.createBikeFirstLine(getContext(), bikeStationOptional.get());
         linearLayout.addView(firstLine);
-        final LinearLayout secondLine = ViewUtil.createBikeSecondLine(getContext(), bikeStationOptional.get());
+        final LinearLayout secondLine = LayoutUtil.createBikeSecondLine(getContext(), bikeStationOptional.get());
         linearLayout.addView(secondLine);
     }
 }

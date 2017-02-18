@@ -66,7 +66,6 @@ import fr.cph.chicago.entity.enumeration.BusDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.LayoutUtil;
 import fr.cph.chicago.util.Util;
-import fr.cph.chicago.util.ViewUtil;
 
 import static java.util.Map.Entry;
 
@@ -340,10 +339,10 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         container.setOrientation(LinearLayout.VERTICAL);
         container.setLayoutParams(containerParams);
 
-        final LinearLayout firstLine = ViewUtil.createBikeFirstLine(activity.getApplicationContext(), bikeStation);
+        final LinearLayout firstLine = LayoutUtil.createBikeFirstLine(activity.getApplicationContext(), bikeStation);
         container.addView(firstLine);
 
-        final LinearLayout secondLine = ViewUtil.createBikeSecondLine(activity.getApplicationContext(), bikeStation);
+        final LinearLayout secondLine = LayoutUtil.createBikeSecondLine(activity.getApplicationContext(), bikeStation);
         container.addView(secondLine);
 
         holder.mainLayout.addView(container);
