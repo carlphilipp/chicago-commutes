@@ -59,7 +59,6 @@ import fr.cph.chicago.core.activity.StationActivity;
 import fr.cph.chicago.core.activity.TrainMapActivity;
 import fr.cph.chicago.core.listener.BusStopOnClickListener;
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener;
-import fr.cph.chicago.core.view.CommutesView;
 import fr.cph.chicago.data.FavoritesData;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
@@ -71,6 +70,7 @@ import fr.cph.chicago.entity.enumeration.BusDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.LayoutUtil;
 import fr.cph.chicago.util.Util;
+import fr.cph.chicago.util.ViewUtil;
 
 import static java.util.Map.Entry;
 
@@ -337,59 +337,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
                 // Build UI
                 final LinearLayout.LayoutParams containParams = getInsideParams(newLine, i == boundMap.size() - 1);
-                final LinearLayout container = new LinearLayout(context);
-                container.setOrientation(LinearLayout.HORIZONTAL);
-                container.setLayoutParams(containParams);
-
-                // Left
-                final LinearLayout.LayoutParams leftParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                final RelativeLayout left = new RelativeLayout(context);
-                left.setLayoutParams(leftParams);
-
-                final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(context, TrainLine.NA);
-                int lineId = Util.generateViewId();
-                lineIndication.setId(lineId);
-
-                final RelativeLayout.LayoutParams destinationParams = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                destinationParams.addRule(RelativeLayout.RIGHT_OF, lineId);
-                destinationParams.setMargins(pixelsHalf, 0, 0, 0);
-
-                final String bound = BusDirection.BusDirectionEnum.fromString(entry2.getKey()).getShortLowerCase();
-                final String leftString = stopNameTrimmed + " " + bound;
-                final SpannableString destinationSpannable = new SpannableString(leftString);
-                destinationSpannable.setSpan(new RelativeSizeSpan(0.65f), stopNameTrimmed.length(), leftString.length(), 0); // set size
-                destinationSpannable.setSpan(new ForegroundColorSpan(grey5), 0, leftString.length(), 0); // set color
-
-                final TextView boundCustomTextView = new TextView(context);
-                boundCustomTextView.setText(destinationSpannable);
-                boundCustomTextView.setSingleLine(true);
-                boundCustomTextView.setLayoutParams(destinationParams);
-
-                left.addView(lineIndication);
-                left.addView(boundCustomTextView);
-
-                // Right
-                final LinearLayout.LayoutParams rightParams = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-                rightParams.setMargins(marginLeftPixel, 0, 0, 0);
-                final LinearLayout right = new LinearLayout(context);
-                right.setOrientation(LinearLayout.VERTICAL);
-                right.setLayoutParams(rightParams);
-
-                final List<BusArrival> buses = entry2.getValue();
-                final StringBuilder currentEtas = new StringBuilder();
-                Stream.of(buses).forEach(arri -> currentEtas.append(" ").append(arri.getTimeLeftDueDelay()));
-
-                final TextView arrivalText = new TextView(context);
-                arrivalText.setText(currentEtas);
-                arrivalText.setGravity(Gravity.END);
-                arrivalText.setSingleLine(true);
-                arrivalText.setTextColor(grey5);
-                arrivalText.setEllipsize(TextUtils.TruncateAt.END);
-
-                right.addView(arrivalText);
-
-                container.addView(left);
-                container.addView(right);
+                final LinearLayout container = LayoutUtil.createBusArrivalsLayout(activity.getApplicationContext(), containParams, stopNameTrimmed, entry2);
 
                 holder.mainLayout.addView(container);
 
@@ -441,10 +389,10 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         container.setOrientation(LinearLayout.VERTICAL);
         container.setLayoutParams(containerParams);
 
-        final LinearLayout firstLine = CommutesView.createBikeFirstLine(activity.getApplicationContext(), bikeStation);
+        final LinearLayout firstLine = ViewUtil.createBikeFirstLine(activity.getApplicationContext(), bikeStation);
         container.addView(firstLine);
 
-        final LinearLayout secondLine = CommutesView.createBikeSecondLine(activity.getApplicationContext(), bikeStation);
+        final LinearLayout secondLine = ViewUtil.createBikeSecondLine(activity.getApplicationContext(), bikeStation);
         container.addView(secondLine);
 
         holder.mainLayout.addView(container);

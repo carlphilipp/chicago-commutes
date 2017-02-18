@@ -1,4 +1,4 @@
-package fr.cph.chicago.core.view;
+package fr.cph.chicago.util;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -11,13 +11,16 @@ import android.widget.TextView;
 import fr.cph.chicago.R;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.util.LayoutUtil;
-import fr.cph.chicago.util.Util;
 
 /**
- * @author carl
+ * View util class
+ *
+ * @author Carl-Philipp Harmant
+ * @version 1
  */
-public class CommutesView {
+public enum ViewUtil {
+    ;
+
 
     @NonNull
     public static LinearLayout createBikeFirstLine(@NonNull final Context context, @NonNull final BikeStation bikeStation) {
