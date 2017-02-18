@@ -41,12 +41,8 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.annimon.stream.Collector;
 import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
-import com.annimon.stream.function.BiConsumer;
-import com.annimon.stream.function.Function;
-import com.annimon.stream.function.Supplier;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMapOptions;
@@ -69,6 +65,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import fr.cph.chicago.R;
+import fr.cph.chicago.collector.CommutesCollectors;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.activity.MainActivity;
 import fr.cph.chicago.core.listener.OnMarkerClickListener;
@@ -78,7 +75,6 @@ import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.AStation;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusStop;
-import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.TrainArrival;
@@ -437,12 +433,11 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
 
         if (trainArrivalOptional.isPresent()) {
             Stream.of(TrainLine.values()).forEach(trainLine -> {
-                final Map<String, String> etas = getTrainArrivalByLine(trainArrivalOptional.get().getEtas(trainLine));
+                final Map<String, String> etas = Stream.of(trainArrivalOptional.get().getEtas(trainLine)).collect(CommutesCollectors.toTrainArrivalByLine());
                 boolean newLine = true;
                 int i = 0;
                 // FIXME duplicate from favorite adapter, to refactor
                 for (final Map.Entry<String, String> entry : etas.entrySet()) {
-
 
 
                     int marginLeftPixel = Util.convertDpToPixel(getContext(), 10);
@@ -450,10 +445,6 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                     int pixelsHalf = pixels / 2;
                     int pixelsQuarter = pixels / 4;
                     int grey5 = ContextCompat.getColor(getContext(), R.color.grey_5);
-
-
-
-
 
 
                     final LinearLayout.LayoutParams containParam = getInsideParams(newLine, i == etas.size() - 1);
@@ -512,34 +503,6 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         } else {
 
         }
-    }
-
-    // FIXME: duplicate from FavoritesData
-    @NonNull
-    public final Map<String, String> getTrainArrivalByLine(final List<Eta> etas) {
-        return Stream.of(etas).collect(new Collector<Eta, Map<String, String>, Map<String, String>>() {
-            @Override
-            public Supplier<Map<String, String>> supplier() {
-                return HashMap::new;
-            }
-
-            @Override
-            public BiConsumer<Map<String, String>, Eta> accumulator() {
-                return (map, eta) -> {
-                    final String stopNameData = eta.getDestName();
-                    final String timingData = eta.getTimeLeftDueDelay();
-                    final String value = map.containsKey(stopNameData)
-                        ? map.get(stopNameData) + " " + timingData
-                        : timingData;
-                    map.put(stopNameData, value);
-                };
-            }
-
-            @Override
-            public Function<Map<String, String>, Map<String, String>> finisher() {
-                return null;
-            }
-        });
     }
 
     @NonNull

@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import fr.cph.chicago.collector.CommutesCollectors;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
@@ -158,29 +159,7 @@ public enum FavoritesData {
     @NonNull
     public final Map<String, String> getTrainArrivalByLine(final int stationId, @NonNull final TrainLine trainLine) {
         final List<Eta> etas = getTrainArrival(stationId).getEtas(trainLine);
-        return Stream.of(etas).collect(new Collector<Eta, Map<String, String>, Map<String, String>>() {
-            @Override
-            public Supplier<Map<String, String>> supplier() {
-                return HashMap::new;
-            }
-
-            @Override
-            public BiConsumer<Map<String, String>, Eta> accumulator() {
-                return (map, eta) -> {
-                    final String stopNameData = eta.getDestName();
-                    final String timingData = eta.getTimeLeftDueDelay();
-                    final String value = map.containsKey(stopNameData)
-                        ? map.get(stopNameData) + " " + timingData
-                        : timingData;
-                    map.put(stopNameData, value);
-                };
-            }
-
-            @Override
-            public Function<Map<String, String>, Map<String, String>> finisher() {
-                return null;
-            }
-        });
+        return Stream.of(etas).collect(CommutesCollectors.toTrainArrivalByLine());
     }
 
     /**
