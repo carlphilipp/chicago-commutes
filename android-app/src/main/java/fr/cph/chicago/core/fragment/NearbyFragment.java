@@ -38,7 +38,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -73,6 +72,7 @@ import fr.cph.chicago.collector.CommutesCollectors;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.activity.MainActivity;
 import fr.cph.chicago.core.listener.OnMarkerClickListener;
+import fr.cph.chicago.core.view.CommutesView;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
@@ -615,9 +615,9 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
     public void addBike(final Optional<BikeStation> bikeStationOptional) {
         final RelativeLayout relativeLayout = (RelativeLayout) getLayoutContainer().getChildAt(0);
         final LinearLayout linearLayout = (LinearLayout) relativeLayout.findViewById(R.id.nearby_results);
-        final LinearLayout firstLine = createBikeFirstLine(bikeStationOptional.get());
+        final LinearLayout firstLine = CommutesView.createBikeFirstLine(getContext(), bikeStationOptional.get());
         linearLayout.addView(firstLine);
-        final LinearLayout secondLine = createBikeSecondLine(bikeStationOptional.get());
+        final LinearLayout secondLine = CommutesView.createBikeSecondLine(getContext(), bikeStationOptional.get());
         linearLayout.addView(secondLine);
     }
 
@@ -633,75 +633,5 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         imageView.setImageDrawable(ContextCompat.getDrawable(getContext(), drawable));
 
         return convertView;
-    }
-
-    // FIXME : duplicate code from FavoriteAdapter, needs to be refactor in one place.
-    @NonNull
-    private LinearLayout createBikeFirstLine(@NonNull final BikeStation bikeStation) {
-        return createBikeLine(bikeStation, true);
-    }
-
-    @NonNull
-    private LinearLayout createBikeSecondLine(@NonNull final BikeStation bikeStation) {
-        return createBikeLine(bikeStation, false);
-    }
-
-    @NonNull
-    private LinearLayout createBikeLine(@NonNull final BikeStation bikeStation, final boolean firstLine) {
-
-        int pixels = Util.convertDpToPixel(getContext(), 16);
-        int pixelsHalf = pixels / 2;
-        int grey5 = ContextCompat.getColor(getContext(), R.color.grey_5);
-
-
-        final LinearLayout.LayoutParams lineParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        final LinearLayout line = new LinearLayout(getContext());
-        line.setOrientation(LinearLayout.HORIZONTAL);
-        line.setLayoutParams(lineParams);
-
-        // Left
-        final LinearLayout.LayoutParams leftParam = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        final RelativeLayout left = new RelativeLayout(getContext());
-        left.setLayoutParams(leftParam);
-
-        final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(getContext(), TrainLine.NA);
-        int lineId = Util.generateViewId();
-        lineIndication.setId(lineId);
-
-        final RelativeLayout.LayoutParams availableParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        availableParam.addRule(RelativeLayout.RIGHT_OF, lineId);
-        availableParam.setMargins(pixelsHalf, 0, 0, 0);
-
-        final TextView boundCustomTextView = new TextView(getContext());
-        boundCustomTextView.setText(activity.getString(R.string.bike_available_docks));
-        boundCustomTextView.setSingleLine(true);
-        boundCustomTextView.setLayoutParams(availableParam);
-        boundCustomTextView.setTextColor(grey5);
-        int availableId = Util.generateViewId();
-        boundCustomTextView.setId(availableId);
-
-        final RelativeLayout.LayoutParams availableValueParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        availableValueParam.addRule(RelativeLayout.RIGHT_OF, availableId);
-        availableValueParam.setMargins(pixelsHalf, 0, 0, 0);
-
-        final TextView amountBike = new TextView(getContext());
-        final String text = firstLine ? activity.getString(R.string.bike_available_bikes) : activity.getString(R.string.bike_available_docks);
-        boundCustomTextView.setText(text);
-        final Integer data = firstLine ? bikeStation.getAvailableBikes() : bikeStation.getAvailableDocks();
-        if (data == null) {
-            amountBike.setText("?");
-            amountBike.setTextColor(ContextCompat.getColor(getContext(), R.color.orange));
-        } else {
-            amountBike.setText(String.valueOf(data));
-            final int color = data == 0 ? R.color.red : R.color.green;
-            amountBike.setTextColor(ContextCompat.getColor(getContext(), color));
-        }
-        amountBike.setLayoutParams(availableValueParam);
-
-        left.addView(lineIndication);
-        left.addView(boundCustomTextView);
-        left.addView(amountBike);
-        line.addView(left);
-        return line;
     }
 }
