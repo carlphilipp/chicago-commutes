@@ -33,7 +33,9 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
         Log.i(TAG, "Marker selected: " + marker.getTag().toString());
         final AStation station = markerDataHolder.getStation(marker);
         nearbyFragment.getSlidingUpPanelLayout().setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-        nearbyFragment.getLayoutContainer().removeAllViews();
+        if (nearbyFragment.getLayoutContainer().getChildCount() != 0) {
+            nearbyFragment.getLayoutContainer().removeViewAt(0);
+        }
 
         loadAllArrivals(station);
         return false;
@@ -43,23 +45,20 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
     private void loadAllArrivals(@NonNull final AStation station) {
         if (station instanceof Station) {
             final Station trainStation = (Station) station;
-            nearbyFragment.updateBottomTitleTrain(trainStation.getName());
             ObservableUtil.createTrainArrivalsObservable(nearbyFragment.getContext(), trainStation)
                 .subscribe(
                     result -> {
-                        Log.i(TAG, "Done Train with " + result);
+                        nearbyFragment.updateBottomTitleTrain(trainStation.getName());
                         nearbyFragment.addTrainStation(result);
                     },
                     onError -> Log.e(TAG, onError.getMessage(), onError)
                 );
         } else if (station instanceof BusStop) {
             final BusStop busStop = (BusStop) station;
-            // FIXME update with line name
-            nearbyFragment.updateBottomTitleBus(busStop.getName() + " nop");
             ObservableUtil.createBusArrivalsObservable(nearbyFragment.getContext(), (BusStop) station)
                 .subscribe(
                     result -> {
-                        Log.i(TAG, "Done Bus with " + result);
+                        nearbyFragment.updateBottomTitleBus(!result.isEmpty() ? result.get(0).getRouteId() : busStop.getName());
                         final BusArrivalMappedDTO busArrivalDTO = new BusArrivalMappedDTO();
                         Stream.of(result).forEach(busArrivalDTO::addBusArrival);
                         nearbyFragment.addBusArrival(busArrivalDTO);
@@ -68,11 +67,11 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
                 );
         } else if (station instanceof BikeStation) {
             final BikeStation bikeStation = (BikeStation) station;
-            nearbyFragment.updateBottomTitleBike(bikeStation.getName());
+
             ObservableUtil.createBikeStationsObservable((BikeStation) station)
                 .subscribe(
                     result -> {
-                        Log.i(TAG, "Done Bike with " + result);
+                        nearbyFragment.updateBottomTitleBike(bikeStation.getName());
                         nearbyFragment.addBike(result);
                     },
                     onError -> Log.e(TAG, onError.getMessage(), onError)

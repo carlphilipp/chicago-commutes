@@ -29,6 +29,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -298,6 +299,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         }
     }
 
+    // TODO check why context could be null here.
     private static BitmapDescriptor createStop(@Nullable final Context context, @DrawableRes final int icon) {
         if (context != null) {
             final int px = context.getResources().getDimensionPixelSize(R.dimen.icon_shadow_2);
@@ -367,8 +369,6 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         @Override
         protected final void onPostExecute(final Optional<Position> result) {
             Util.centerMap(mapFragment, result);
-            //final List<BikeStation> bikeStationsRes = loadAroundBikeArrivals(bikeStations);
-            //activity.runOnUiThread(() -> updateMarkersAndModel(busStops, trainStations, bikeStations));
             updateMarkersAndModel(busStops, trainStations, bikeStations);
         }
     }
@@ -399,9 +399,8 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
 
     private void startLoadingNearby() {
         if (Util.isNetworkAvailable(getContext())) {
-            //nearbyContainer.setVisibility(View.GONE);
             showProgress(true);
-            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+            //slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
 
             new LoadNearbyTask().execute();
         } else {
@@ -424,14 +423,15 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
     }
 
     private void createStationHeaderView(@NonNull final String title, @DrawableRes final int drawable) {
-        getLayoutContainer().removeAllViews();
         final LayoutInflater vi = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View convertView = vi.inflate(R.layout.nearby_station_main, this.getSlidingUpPanelLayout(), false);
+        final View convertView = vi.inflate(R.layout.nearby_station_main, slidingUpPanelLayout, false);
 
         final TextView stationNameView = (TextView) convertView.findViewById(R.id.station_name);
         final ImageView imageView = (ImageView) convertView.findViewById(R.id.icon);
 
         stationNameView.setText(title);
+        stationNameView.setMaxLines(1);
+        stationNameView.setEllipsize(TextUtils.TruncateAt.END);
         imageView.setImageDrawable(ContextCompat.getDrawable(getContext(), drawable));
 
         getLayoutContainer().addView(convertView);
@@ -440,6 +440,8 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
     public void addTrainStation(final Optional<TrainArrival> trainArrivalOptional) {
         final RelativeLayout relativeLayout = (RelativeLayout) getLayoutContainer().getChildAt(0);
         final LinearLayout linearLayout = (LinearLayout) relativeLayout.findViewById(R.id.nearby_results);
+
+        final int[] nbOfLine = {0};
 
         if (trainArrivalOptional.isPresent()) {
             Stream.of(TrainLine.values()).forEach(trainLine -> {
@@ -454,15 +456,39 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                     newLine = false;
                     i++;
                 }
+                nbOfLine[0] = nbOfLine[0] + etas.size();
             });
         } else {
             // TODO do something here I guess
         }
+        slidingUpPanelLayout.setPanelHeight(getSlidingPanelHeight(nbOfLine[0]));
     }
 
+    private int getSlidingPanelHeight(final int nbLine) {
+/*        switch (nbLine) {
+            case 0:
+                return 150;
+            case 1:
+                return 220;
+            case 2:
+                return 280;
+            case 3:
+                return 340;
+            case 4:
+                return 400;
+            default:
+                return 150;
+        }*/
+        Log.i(TAG, "Nb of line: " + nbLine);
+        return nbLine == 0 ? 150 : 220 + (60 * (nbLine - 1));
+    }
+
+    // FIXME this is totally wrong, what's displayed on the activity miss a lot of data
     public void addBusArrival(final BusArrivalMappedDTO busArrivalMappedDTO) {
         final RelativeLayout relativeLayout = (RelativeLayout) getLayoutContainer().getChildAt(0);
         final LinearLayout linearLayout = (LinearLayout) relativeLayout.findViewById(R.id.nearby_results);
+
+        final int[] nbOfLine = {0};
 
         Stream.of(busArrivalMappedDTO.entrySet()).forEach(entry -> {
             final String stopNameTrimmed = Util.trimBusStopNameIfNeeded(entry.getKey());
@@ -481,7 +507,10 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                 newLine = false;
                 i++;
             }
+            nbOfLine[0] = nbOfLine[0] + boundMap.size();
         });
+
+        slidingUpPanelLayout.setPanelHeight(getSlidingPanelHeight(nbOfLine[0]));
     }
 
     public void addBike(final Optional<BikeStation> bikeStationOptional) {
@@ -489,5 +518,6 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         final LinearLayout linearLayout = (LinearLayout) relativeLayout.findViewById(R.id.nearby_results);
         final LinearLayout bikeResultLayout = LayoutUtil.createBikeLayout(getContext(), bikeStationOptional.get());
         linearLayout.addView(bikeResultLayout);
+        slidingUpPanelLayout.setPanelHeight(getSlidingPanelHeight(2));
     }
 }
