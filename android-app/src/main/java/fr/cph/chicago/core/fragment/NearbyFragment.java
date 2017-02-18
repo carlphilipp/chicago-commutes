@@ -29,12 +29,16 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -74,10 +78,13 @@ import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.AStation;
 import fr.cph.chicago.entity.BikeStation;
+import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.TrainArrival;
+import fr.cph.chicago.entity.dto.BusArrivalMappedDTO;
+import fr.cph.chicago.entity.enumeration.BusDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.GPSUtil;
 import fr.cph.chicago.util.LayoutUtil;
@@ -501,7 +508,90 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                 }
             });
         } else {
+            // TODO do something here I guess
+        }
+    }
 
+    public void addBusArrival(final BusArrivalMappedDTO busArrivalMappedDTO) {
+        final RelativeLayout relativeLayout = (RelativeLayout) getLayoutContainer().getChildAt(0);
+        final LinearLayout linearLayout = (LinearLayout) relativeLayout.findViewById(R.id.nearby_results);
+
+        int pixels = Util.convertDpToPixel(getContext(), 16);
+        int pixelsHalf = pixels / 2;
+        int grey5 = ContextCompat.getColor(getContext(), R.color.grey_5);
+        int marginLeftPixel = Util.convertDpToPixel(getContext(), 10);
+
+        // FIXME duplicate from FavoritesAdapter, please refactor
+        for (final Map.Entry<String, Map<String, List<BusArrival>>> entry : busArrivalMappedDTO.entrySet()) {
+            final String stopName = entry.getKey();
+            final String stopNameTrimmed = Util.trimBusStopNameIfNeeded(stopName);
+            final Map<String, List<BusArrival>> boundMap = entry.getValue();
+
+            boolean newLine = true;
+            int i = 0;
+
+            for (final Map.Entry<String, List<BusArrival>> entry2 : boundMap.entrySet()) {
+                // Build UI
+                final LinearLayout.LayoutParams containParams = getInsideParams(newLine, i == boundMap.size() - 1);
+                final LinearLayout container = new LinearLayout(getContext());
+                container.setOrientation(LinearLayout.HORIZONTAL);
+                container.setLayoutParams(containParams);
+
+                // Left
+                final LinearLayout.LayoutParams leftParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                final RelativeLayout left = new RelativeLayout(getContext());
+                left.setLayoutParams(leftParams);
+
+                final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(getContext(), TrainLine.NA);
+                int lineId = Util.generateViewId();
+                lineIndication.setId(lineId);
+
+                final RelativeLayout.LayoutParams destinationParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                destinationParams.addRule(RelativeLayout.RIGHT_OF, lineId);
+                destinationParams.setMargins(pixelsHalf, 0, 0, 0);
+
+                final String bound = BusDirection.BusDirectionEnum.fromString(entry2.getKey()).getShortLowerCase();
+                final String leftString = stopNameTrimmed + " " + bound;
+                final SpannableString destinationSpannable = new SpannableString(leftString);
+                destinationSpannable.setSpan(new RelativeSizeSpan(0.65f), stopNameTrimmed.length(), leftString.length(), 0); // set size
+                destinationSpannable.setSpan(new ForegroundColorSpan(grey5), 0, leftString.length(), 0); // set color
+
+                final TextView boundCustomTextView = new TextView(getContext());
+                boundCustomTextView.setText(destinationSpannable);
+                boundCustomTextView.setSingleLine(true);
+                boundCustomTextView.setLayoutParams(destinationParams);
+
+                left.addView(lineIndication);
+                left.addView(boundCustomTextView);
+
+                // Right
+                final LinearLayout.LayoutParams rightParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                rightParams.setMargins(marginLeftPixel, 0, 0, 0);
+                final LinearLayout right = new LinearLayout(getContext());
+                right.setOrientation(LinearLayout.VERTICAL);
+                right.setLayoutParams(rightParams);
+
+                final List<BusArrival> buses = entry2.getValue();
+                final StringBuilder currentEtas = new StringBuilder();
+                Stream.of(buses).forEach(arri -> currentEtas.append(" ").append(arri.getTimeLeftDueDelay()));
+
+                final TextView arrivalText = new TextView(getContext());
+                arrivalText.setText(currentEtas);
+                arrivalText.setGravity(Gravity.END);
+                arrivalText.setSingleLine(true);
+                arrivalText.setTextColor(grey5);
+                arrivalText.setEllipsize(TextUtils.TruncateAt.END);
+
+                right.addView(arrivalText);
+
+                container.addView(left);
+                container.addView(right);
+
+                linearLayout.addView(container);
+
+                newLine = false;
+                i++;
+            }
         }
     }
 
@@ -564,13 +654,13 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         int grey5 = ContextCompat.getColor(getContext(), R.color.grey_5);
 
 
-        final LinearLayout.LayoutParams lineParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        final LinearLayout.LayoutParams lineParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         final LinearLayout line = new LinearLayout(getContext());
         line.setOrientation(LinearLayout.HORIZONTAL);
         line.setLayoutParams(lineParams);
 
         // Left
-        final LinearLayout.LayoutParams leftParam = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        final LinearLayout.LayoutParams leftParam = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         final RelativeLayout left = new RelativeLayout(getContext());
         left.setLayoutParams(leftParam);
 
@@ -578,7 +668,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         int lineId = Util.generateViewId();
         lineIndication.setId(lineId);
 
-        final RelativeLayout.LayoutParams availableParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        final RelativeLayout.LayoutParams availableParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         availableParam.addRule(RelativeLayout.RIGHT_OF, lineId);
         availableParam.setMargins(pixelsHalf, 0, 0, 0);
 
@@ -590,7 +680,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         int availableId = Util.generateViewId();
         boundCustomTextView.setId(availableId);
 
-        final RelativeLayout.LayoutParams availableValueParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        final RelativeLayout.LayoutParams availableValueParam = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         availableValueParam.addRule(RelativeLayout.RIGHT_OF, availableId);
         availableValueParam.setMargins(pixelsHalf, 0, 0, 0);
 

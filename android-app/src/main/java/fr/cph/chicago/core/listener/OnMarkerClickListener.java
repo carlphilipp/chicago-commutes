@@ -3,6 +3,7 @@ package fr.cph.chicago.core.listener;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.annimon.stream.Stream;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -12,6 +13,7 @@ import fr.cph.chicago.entity.AStation;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Station;
+import fr.cph.chicago.entity.dto.BusArrivalMappedDTO;
 import fr.cph.chicago.rx.observable.ObservableUtil;
 
 public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
@@ -57,6 +59,9 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
                 .subscribe(
                     result -> {
                         Log.i(TAG, "Done Bus with " + result);
+                        final BusArrivalMappedDTO busArrivalDTO = new BusArrivalMappedDTO();
+                        Stream.of(result).forEach(busArrivalDTO::addBusArrival);
+                        nearbyFragment.addBusArrival(busArrivalDTO);
                     },
                     onError -> Log.e(TAG, onError.getMessage(), onError)
                 );
