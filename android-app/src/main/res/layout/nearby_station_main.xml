@@ -27,34 +27,45 @@
     android:paddingStart="@dimen/activity_train_line_padding_left"
     android:paddingTop="@dimen/activity_train_line_padding_top">
 
-    <ImageView
-        android:id="@+id/icon"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:contentDescription="@string/description"
-        android:tint="@color/grey_5" />
+        android:layout_gravity="center"
+        android:id="@id/title"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/station_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/icon"
-        android:layout_toEndOf="@+id/icon"
-        android:layout_toRightOf="@+id/icon"
-        android:textColor="@color/black"
-        android:textIsSelectable="false"
-        android:textStyle="bold" />
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/description"
+            android:tint="@color/grey_5" />
 
-<!--    android:paddingEnd="@dimen/activity_station_stops_0dp"
-    android:paddingLeft="@dimen/activity_station_stops_line1_padding_color"
-    android:paddingRight="@dimen/activity_station_stops_0dp"
-    android:paddingStart="@dimen/activity_station_stops_line1_padding_color"-->
+        <TextView
+            android:id="@+id/station_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/icon"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/icon"
+            android:layout_toRightOf="@+id/icon"
+            android:gravity="center"
+            android:paddingEnd="@dimen/activity_train_line_padding_left"
+            android:paddingLeft="@dimen/activity_train_line_padding_left"
+            android:paddingRight="@dimen/activity_train_line_padding_right"
+            android:paddingStart="@dimen/activity_train_line_padding_right"
+            android:textColor="@color/black"
+            android:textIsSelectable="false"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/nearby_results"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/icon"
+        android:paddingTop="@dimen/activity_station_stops_line1_padding_color"
+        android:layout_below="@id/title"
         android:orientation="vertical" />
 
 </RelativeLayout>

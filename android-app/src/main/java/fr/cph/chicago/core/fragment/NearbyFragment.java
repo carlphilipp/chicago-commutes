@@ -411,7 +411,6 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         }
     }
 
-
     // TODO VIEW METHOD. see where and how to handle it
     public void updateBottomTitleTrain(@NonNull final String title) {
         createStationHeaderView(title, R.drawable.ic_train_white_24dp);
