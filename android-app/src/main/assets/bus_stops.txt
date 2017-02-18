@@ -393,10 +393,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 567,567,"Chicago & Larrabee","Chicago & Larrabee, Eastbound, Southeast Corner",41.89638809,-87.64273373,0,,1
 572,572,"Chicago & Franklin (Brown line)","Chicago & Franklin (Brown line), Eastbound, Southwest Corner",41.89647376,-87.63591236,0,,1
 574,574,"Chicago & LaSalle","Chicago & LaSalle, Eastbound, Southwest Corner",41.89651769,-87.63295213,0,,1
-<<<<<<< HEAD
-=======
 575,575,"Chicago & Clark","Chicago & Clark, Eastbound, Southwest Corner",41.89653382,-87.63136267,0,,1
->>>>>>> master
 580,580,"Chicago & Michigan","Chicago & Michigan, Eastbound, Southwest Corner",41.89666084,-87.6245301,0,,1
 582,582,"Chicago & Fairbanks","Chicago & Fairbanks, Eastbound, Southwest Corner",41.896716,-87.62053,0,,1
 584,584,"Fairbanks & Huron","Fairbanks & Huron, Southbound, Northwest Corner",41.895127,-87.620375,0,,1
@@ -9933,11 +9930,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 15672,15672,"Grand & Desplaines","Grand & Desplaines, Westbound, Northwest Corner",41.89130045,-87.64467028,0,,1
 15673,15673,"Homan & Monroe","Homan & Monroe, Southbound, Southwest Corner",41.87938165,-87.71103916,0,,1
 15674,15674,"Homan & Roosevelt","Homan & Roosevelt, Southbound, Southwest Corner",41.86601685,-87.71062571,0,,1
-<<<<<<< HEAD
-15675,15675,"Kostner & 73rd Street Terminal","Kostner & 73rd Street Terminal, Westbound, Bus Terminal",41.75874996,-87.73195794,0,,1
-=======
 15675,15675,"Kostner & 73rd Street Terminal","",41.75874996,-87.73195794,0,,1
->>>>>>> master
 15676,15676,"Division & Wells","Division & Wells, Westbound, Northwest Corner",41.90391691,-87.63492031,0,,1
 15678,15678,"Commercial & 89th Street","Commercial & 89th Street, Northbound, Northeast Corner",41.73394601,-87.55126926,0,,1
 15679,15679,"Kedzie & Lake (Green Line)","Kedzie & Lake (Green Line), Southbound, Southwest Corner",41.88413907,-87.70629358,0,,1
