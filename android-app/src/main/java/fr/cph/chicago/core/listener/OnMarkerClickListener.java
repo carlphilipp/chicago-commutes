@@ -45,16 +45,15 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
     private void loadAllArrivals(@NonNull final AStation station) {
         if (station instanceof Station) {
             final Station trainStation = (Station) station;
+            nearbyFragment.updateBottomTitleTrain(trainStation.getName());
             ObservableUtil.createTrainArrivalsObservable(nearbyFragment.getContext(), trainStation)
                 .subscribe(
-                    result -> {
-                        nearbyFragment.updateBottomTitleTrain(trainStation.getName());
-                        nearbyFragment.addTrainStation(result);
-                    },
+                    nearbyFragment::addTrainStation,
                     onError -> Log.e(TAG, onError.getMessage(), onError)
                 );
         } else if (station instanceof BusStop) {
             final BusStop busStop = (BusStop) station;
+            //nearbyFragment.updateBottomTitleBus("... loading");
             ObservableUtil.createBusArrivalsObservable(nearbyFragment.getContext(), (BusStop) station)
                 .subscribe(
                     result -> {
@@ -67,13 +66,10 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
                 );
         } else if (station instanceof BikeStation) {
             final BikeStation bikeStation = (BikeStation) station;
-
+            nearbyFragment.updateBottomTitleBike(bikeStation.getName());
             ObservableUtil.createBikeStationsObservable((BikeStation) station)
                 .subscribe(
-                    result -> {
-                        nearbyFragment.updateBottomTitleBike(bikeStation.getName());
-                        nearbyFragment.addBike(result);
-                    },
+                    nearbyFragment::addBike,
                     onError -> Log.e(TAG, onError.getMessage(), onError)
                 );
         }
