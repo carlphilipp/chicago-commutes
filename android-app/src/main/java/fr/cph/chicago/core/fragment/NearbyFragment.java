@@ -480,6 +480,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
             default:
                 return 150;
         }*/
+        // FIXME re-implement that
         Log.d(TAG, "Number of line to display: " + nbLine);
         return nbLine == 0 ? 150 : 220 + (60 * (nbLine - 1));
     }
