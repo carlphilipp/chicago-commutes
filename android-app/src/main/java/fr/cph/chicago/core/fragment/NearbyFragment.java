@@ -78,7 +78,8 @@ import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.entity.dto.BusArrivalMappedDTO;
+import fr.cph.chicago.entity.dto.BusArrivalRouteDTO;
+import fr.cph.chicago.entity.dto.BusArrivalStopMappedDTO;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.GPSUtil;
 import fr.cph.chicago.util.LayoutUtil;
@@ -484,13 +485,13 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
     }
 
     // FIXME this is totally wrong, what's displayed on the activity miss a lot of data
-    public void addBusArrival(final BusArrivalMappedDTO busArrivalMappedDTO) {
+    public void addBusArrival(final BusArrivalRouteDTO busArrivalRouteDTO) {
         final RelativeLayout relativeLayout = (RelativeLayout) getLayoutContainer().getChildAt(0);
         final LinearLayout linearLayout = (LinearLayout) relativeLayout.findViewById(R.id.nearby_results);
 
         final int[] nbOfLine = {0};
 
-        Stream.of(busArrivalMappedDTO.entrySet()).forEach(entry -> {
+        Stream.of(busArrivalRouteDTO.entrySet()).forEach(entry -> {
             final String stopNameTrimmed = Util.trimBusStopNameIfNeeded(entry.getKey());
             final Map<String, List<BusArrival>> boundMap = entry.getValue();
 

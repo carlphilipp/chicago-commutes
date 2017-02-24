@@ -25,7 +25,7 @@ import java.util.TreeMap;
 
 import fr.cph.chicago.entity.BusArrival;
 
-public class BusArrivalMappedDTO extends TreeMap<String, Map<String, List<BusArrival>>> {
+public class BusArrivalStopMappedDTO extends TreeMap<String, Map<String, List<BusArrival>>> {
     // stop name => { bound => BusArrival }
 
     public void addBusArrival(@NonNull final BusArrival busArrival) {

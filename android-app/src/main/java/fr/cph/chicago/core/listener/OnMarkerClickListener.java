@@ -13,7 +13,8 @@ import fr.cph.chicago.entity.AStation;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Station;
-import fr.cph.chicago.entity.dto.BusArrivalMappedDTO;
+import fr.cph.chicago.entity.dto.BusArrivalRouteDTO;
+import fr.cph.chicago.entity.dto.BusArrivalStopMappedDTO;
 import fr.cph.chicago.rx.observable.ObservableUtil;
 
 public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
@@ -53,14 +54,13 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
                 );
         } else if (station instanceof BusStop) {
             final BusStop busStop = (BusStop) station;
-            //nearbyFragment.updateBottomTitleBus("... loading");
+            nearbyFragment.updateBottomTitleBus(busStop.getName());
             ObservableUtil.createBusArrivalsObservable(nearbyFragment.getContext(), (BusStop) station)
                 .subscribe(
                     result -> {
-                        nearbyFragment.updateBottomTitleBus(!result.isEmpty() ? result.get(0).getRouteId() : busStop.getName());
-                        final BusArrivalMappedDTO busArrivalDTO = new BusArrivalMappedDTO();
-                        Stream.of(result).forEach(busArrivalDTO::addBusArrival);
-                        nearbyFragment.addBusArrival(busArrivalDTO);
+                        final BusArrivalRouteDTO busArrivalRouteDTO = new BusArrivalRouteDTO();
+                        Stream.of(result).forEach(busArrivalRouteDTO::addBusArrival);
+                        nearbyFragment.addBusArrival(busArrivalRouteDTO);
                     },
                     onError -> Log.e(TAG, onError.getMessage(), onError)
                 );
