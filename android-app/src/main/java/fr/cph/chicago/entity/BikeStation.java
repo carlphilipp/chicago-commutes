@@ -55,30 +55,10 @@ public final class BikeStation implements Parcelable, AStation {
     private double latitude;
     @JsonProperty("longitude")
     private double longitude;
-    @JsonProperty("statusValue")
-    private String statusValue;
-    @JsonProperty("statusKey")
-    private String statusKey;
     @JsonProperty("availableBikes")
     private Integer availableBikes;
     @JsonProperty("stAddress1")
     private String stAddress1;
-    @JsonProperty("stAddress2")
-    private String stAddress2;
-    @JsonProperty("city")
-    private String city;
-    @JsonProperty("postalCode")
-    private String postalCode;
-    @JsonProperty("location")
-    private String location;
-    @JsonProperty("altitude")
-    private String altitude;
-    @JsonProperty("testStation")
-    private boolean testStation;
-    @JsonProperty("lastCommunicationTime")
-    private String lastCommunicationTime;
-    @JsonProperty("landMark")
-    private String landMark;
 
     public BikeStation() {
     }
@@ -87,10 +67,6 @@ public final class BikeStation implements Parcelable, AStation {
         readFromParcel(in);
     }
 
-    @Override
-    public final String toString() {
-        return "[" + id + " " + name + " " + availableBikes + "/" + totalDocks + "]";
-    }
 
     @Override
     public final int describeContents() {
@@ -105,18 +81,8 @@ public final class BikeStation implements Parcelable, AStation {
         dest.writeInt(totalDocks);
         dest.writeDouble(latitude);
         dest.writeDouble(longitude);
-        dest.writeString(statusValue);
-        dest.writeString(statusKey);
         dest.writeInt(availableBikes);
         dest.writeString(stAddress1);
-        dest.writeString(stAddress2);
-        dest.writeString(city);
-        dest.writeString(postalCode);
-        dest.writeString(location);
-        dest.writeString(altitude);
-        dest.writeString(String.valueOf(testStation));
-        dest.writeString(lastCommunicationTime);
-        dest.writeString(landMark);
     }
 
     private void readFromParcel(@NonNull final Parcel in) {
@@ -126,18 +92,8 @@ public final class BikeStation implements Parcelable, AStation {
         totalDocks = in.readInt();
         latitude = in.readDouble();
         longitude = in.readDouble();
-        statusValue = in.readString();
-        statusKey = in.readString();
         availableBikes = in.readInt();
         stAddress1 = in.readString();
-        stAddress2 = in.readString();
-        city = in.readString();
-        postalCode = in.readString();
-        location = in.readString();
-        altitude = in.readString();
-        testStation = Boolean.valueOf(in.readString());
-        lastCommunicationTime = in.readString();
-        landMark = in.readString();
     }
 
     @Override
@@ -164,18 +120,8 @@ public final class BikeStation implements Parcelable, AStation {
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         temp = Double.doubleToLongBits(longitude);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + (statusValue != null ? statusValue.hashCode() : 0);
-        result = 31 * result + (statusKey != null ? statusKey.hashCode() : 0);
         result = 31 * result + availableBikes;
         result = 31 * result + (stAddress1 != null ? stAddress1.hashCode() : 0);
-        result = 31 * result + (stAddress2 != null ? stAddress2.hashCode() : 0);
-        result = 31 * result + (city != null ? city.hashCode() : 0);
-        result = 31 * result + (postalCode != null ? postalCode.hashCode() : 0);
-        result = 31 * result + (location != null ? location.hashCode() : 0);
-        result = 31 * result + (altitude != null ? altitude.hashCode() : 0);
-        result = 31 * result + (testStation ? 1 : 0);
-        result = 31 * result + (lastCommunicationTime != null ? lastCommunicationTime.hashCode() : 0);
-        result = 31 * result + (landMark != null ? landMark.hashCode() : 0);
         return result;
     }
 

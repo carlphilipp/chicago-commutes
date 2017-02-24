@@ -79,7 +79,6 @@ import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.dto.BusArrivalRouteDTO;
-import fr.cph.chicago.entity.dto.BusArrivalStopMappedDTO;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.GPSUtil;
 import fr.cph.chicago.util.LayoutUtil;
@@ -402,6 +401,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         if (Util.isNetworkAvailable(getContext())) {
             showProgress(true);
             //slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+            slidingUpPanelLayout.setAnchorPoint(0.5f);
 
             new LoadNearbyTask().execute();
         } else {
@@ -462,14 +462,14 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         } else {
             // TODO do something here I guess
         }
-        slidingUpPanelLayout.setPanelHeight(getSlidingPanelHeight(nbOfLine[0]));
+        //slidingUpPanelLayout.setPanelHeight(getSlidingPanelHeight(nbOfLine[0]));
     }
 
     private int getSlidingPanelHeight(final int nbLine) {
 /*        switch (nbLine) {
             case 0:
                 return 150;
-            case 1:
+            case 1:1
                 return 220;
             case 2:
                 return 280;
@@ -485,7 +485,6 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         return nbLine == 0 ? 150 : 220 + (60 * (nbLine - 1));
     }
 
-    // FIXME this is totally wrong, what's displayed on the activity miss a lot of data
     public void addBusArrival(final BusArrivalRouteDTO busArrivalRouteDTO) {
         final RelativeLayout relativeLayout = (RelativeLayout) getLayoutContainer().getChildAt(0);
         final LinearLayout linearLayout = (LinearLayout) relativeLayout.findViewById(R.id.nearby_results);
@@ -500,7 +499,6 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
             int i = 0;
 
             for (final Map.Entry<String, List<BusArrival>> entry2 : boundMap.entrySet()) {
-                // Build UI
                 final LinearLayout.LayoutParams containParams = LayoutUtil.getInsideParams(getContext(), newLine, i == boundMap.size() - 1);
                 final LinearLayout container = LayoutUtil.createBusArrivalsLayout(getContext(), containParams, stopNameTrimmed, entry2);
 
@@ -512,7 +510,8 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
             nbOfLine[0] = nbOfLine[0] + boundMap.size();
         });
 
-        slidingUpPanelLayout.setPanelHeight(getSlidingPanelHeight(nbOfLine[0]));
+        //slidingUpPanelLayout.setPanelHeight(getSlidingPanelHeight(nbOfLine[0]));
+        //slidingUpPanelLayout.setAnchorPoint();
     }
 
     public void addBike(final Optional<BikeStation> bikeStationOptional) {
@@ -520,6 +519,6 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         final LinearLayout linearLayout = (LinearLayout) relativeLayout.findViewById(R.id.nearby_results);
         final LinearLayout bikeResultLayout = LayoutUtil.createBikeLayout(getContext(), bikeStationOptional.get());
         linearLayout.addView(bikeResultLayout);
-        slidingUpPanelLayout.setPanelHeight(getSlidingPanelHeight(2));
+        //slidingUpPanelLayout.setPanelHeight(getSlidingPanelHeight(2));
     }
 }

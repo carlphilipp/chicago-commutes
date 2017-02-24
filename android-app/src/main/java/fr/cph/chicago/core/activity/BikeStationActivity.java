@@ -35,7 +35,6 @@ import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import fr.cph.chicago.R;
-import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener;
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener;
@@ -54,27 +53,46 @@ import fr.cph.chicago.util.Util;
  */
 public class BikeStationActivity extends AbstractStationActivity {
 
-    @BindView(R.id.activity_station_swipe_refresh_layout) SwipeRefreshLayout swipeRefreshLayout;
-    @BindView(R.id.activity_favorite_star) ImageView favoritesImage;
-    @BindView(R.id.activity_bike_station_streetview_image) ImageView streetViewImage;
-    @BindView(R.id.activity_bike_station_steetview_text) TextView streetViewText;
-    @BindView(R.id.activity_map_image) ImageView mapImage;
-    @BindView(R.id.activity_map_direction) ImageView directionImage;
-    @BindView(R.id.map_container) LinearLayout mapContainer;
-    @BindView(R.id.walk_container) LinearLayout walkContainer;
-    @BindView(R.id.favorites_container) LinearLayout favoritesImageContainer;
-    @BindView(R.id.activity_bike_station_value) TextView bikeStationValue;
-    @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.favorites_bikes_list) LinearLayout container;
+    @BindView(R.id.activity_station_swipe_refresh_layout)
+    SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.activity_favorite_star)
+    ImageView favoritesImage;
+    @BindView(R.id.activity_bike_station_streetview_image)
+    ImageView streetViewImage;
+    @BindView(R.id.activity_bike_station_steetview_text)
+    TextView streetViewText;
+    @BindView(R.id.activity_map_image)
+    ImageView mapImage;
+    @BindView(R.id.activity_map_direction)
+    ImageView directionImage;
+    @BindView(R.id.map_container)
+    LinearLayout mapContainer;
+    @BindView(R.id.walk_container)
+    LinearLayout walkContainer;
+    @BindView(R.id.favorites_container)
+    LinearLayout favoritesImageContainer;
+    @BindView(R.id.activity_bike_station_value)
+    TextView bikeStationValue;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.favorites_bikes_list)
+    LinearLayout container;
 
-    @BindString(R.string.bundle_bike_station) String bundleBikeStation;
-    @BindString(R.string.bike_available_bikes) String bikeAvailableBikes;
-    @BindString(R.string.bike_available_docks) String bikeAvailableDocks;
+    @BindString(R.string.bundle_bike_station)
+    String bundleBikeStation;
+    @BindString(R.string.bike_available_bikes)
+    String bikeAvailableBikes;
+    @BindString(R.string.bike_available_docks)
+    String bikeAvailableDocks;
 
-    @BindColor(R.color.grey_5) int grey_5;
-    @BindColor(R.color.red) int red;
-    @BindColor(R.color.green) int green;
-    @BindColor(R.color.yellowLineDark) int yellowLineDark;
+    @BindColor(R.color.grey_5)
+    int grey_5;
+    @BindColor(R.color.red)
+    int red;
+    @BindColor(R.color.green)
+    int green;
+    @BindColor(R.color.yellowLineDark)
+    int yellowLineDark;
 
     private BikeStation bikeStation;
     private boolean isFavorite;
