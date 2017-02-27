@@ -42,30 +42,30 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
     private void loadAllArrivals(@NonNull final AStation station) {
         if (station instanceof Station) {
             final Station trainStation = (Station) station;
-            nearbyFragment.updateBottomTitleTrain(trainStation.getName());
+            nearbyFragment.getSlidingUpAdapter().updateBottomTitleTrain(trainStation.getName());
             ObservableUtil.createTrainArrivalsObservable(nearbyFragment.getContext(), trainStation)
                 .subscribe(
-                    nearbyFragment::addTrainStation,
+                    nearbyFragment.getSlidingUpAdapter()::addTrainStation,
                     onError -> Log.e(TAG, onError.getMessage(), onError)
                 );
         } else if (station instanceof BusStop) {
             final BusStop busStop = (BusStop) station;
-            nearbyFragment.updateBottomTitleBus(busStop.getName());
+            nearbyFragment.getSlidingUpAdapter().updateBottomTitleBus(busStop.getName());
             ObservableUtil.createBusArrivalsObservable(nearbyFragment.getContext(), (BusStop) station)
                 .subscribe(
                     result -> {
                         final BusArrivalRouteDTO busArrivalRouteDTO = new BusArrivalRouteDTO();
                         Stream.of(result).forEach(busArrivalRouteDTO::addBusArrival);
-                        nearbyFragment.addBusArrival(busArrivalRouteDTO);
+                        nearbyFragment.getSlidingUpAdapter().addBusArrival(busArrivalRouteDTO);
                     },
                     onError -> Log.e(TAG, onError.getMessage(), onError)
                 );
         } else if (station instanceof BikeStation) {
             final BikeStation bikeStation = (BikeStation) station;
-            nearbyFragment.updateBottomTitleBike(bikeStation.getName());
+            nearbyFragment.getSlidingUpAdapter().updateBottomTitleBike(bikeStation.getName());
             ObservableUtil.createBikeStationsObservable((BikeStation) station)
                 .subscribe(
-                    nearbyFragment::addBike,
+                    nearbyFragment.getSlidingUpAdapter()::addBike,
                     onError -> Log.e(TAG, onError.getMessage(), onError)
                 );
         }

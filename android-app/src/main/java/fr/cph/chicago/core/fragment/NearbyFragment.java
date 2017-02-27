@@ -29,16 +29,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
@@ -55,38 +51,28 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import fr.cph.chicago.R;
-import fr.cph.chicago.collector.CommutesCollectors;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.activity.MainActivity;
+import fr.cph.chicago.core.adapter.SlidingUpAdapter;
 import fr.cph.chicago.core.listener.OnMarkerClickListener;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.MarkerDataHolder;
 import fr.cph.chicago.data.TrainData;
-import fr.cph.chicago.entity.AStation;
 import fr.cph.chicago.entity.BikeStation;
-import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
-import fr.cph.chicago.entity.TrainArrival;
-import fr.cph.chicago.entity.dto.BusArrivalRouteDTO;
-import fr.cph.chicago.entity.enumeration.BusDirection;
-import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.GPSUtil;
-import fr.cph.chicago.util.LayoutUtil;
 import fr.cph.chicago.util.Util;
 import io.realm.Realm;
-import lombok.Data;
 import lombok.Getter;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -106,8 +92,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
     private static final String TAG = NearbyFragment.class.getSimpleName();
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final double DEFAULT_RANGE = 0.008;
-    private static final int LINE_HEIGHT = 77;
-    private static final int HEADER_HEIGHT = 130;
+
 
     @BindView(R.id.activity_bar)
     ProgressBar progressBar;
@@ -127,6 +112,8 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
 
     private MainActivity activity;
     private GoogleApiClient googleApiClient;
+    @Getter
+    private SlidingUpAdapter slidingUpAdapter;
     private MarkerDataHolder markerDataHolder;
 
     @NonNull
@@ -160,6 +147,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         final View rootView = inflater.inflate(R.layout.fragment_nearby, container, false);
         if (!activity.isFinishing()) {
             unbinder = ButterKnife.bind(this, rootView);
+            slidingUpAdapter = new SlidingUpAdapter(this);
             markerDataHolder = new MarkerDataHolder();
             showProgress(true);
         }
@@ -271,7 +259,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
             });
         }
     }
-    
+
     private static BitmapDescriptor createStop(@Nullable final Context context, @DrawableRes final int icon) {
         if (context != null) {
             final int px = context.getResources().getDimensionPixelSize(R.dimen.icon_shadow_2);
@@ -373,120 +361,11 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         if (Util.isNetworkAvailable(getContext())) {
             showProgress(true);
             slidingUpPanelLayout.setAnchorPoint(0.5f);
-            slidingUpPanelLayout.setPanelHeight(getSlidingPanelHeight(0));
 
             new LoadNearbyTask().execute();
         } else {
             Util.showNetworkErrorMessage(activity);
             showProgress(false);
-        }
-    }
-
-    // TODO VIEW METHOD. see where and how to handle it
-    public void updateBottomTitleTrain(@NonNull final String title) {
-        createStationHeaderView(title, R.drawable.ic_train_white_24dp);
-    }
-
-    public void updateBottomTitleBus(@NonNull final String title) {
-        createStationHeaderView(title, R.drawable.ic_directions_bus_white_24dp);
-    }
-
-    public void updateBottomTitleBike(@NonNull final String title) {
-        createStationHeaderView(title, R.drawable.ic_directions_bike_white_24dp);
-    }
-
-    private void createStationHeaderView(@NonNull final String title, @DrawableRes final int drawable) {
-        final LayoutInflater vi = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View convertView = vi.inflate(R.layout.nearby_station_main, slidingUpPanelLayout, false);
-
-        final TextView stationNameView = (TextView) convertView.findViewById(R.id.station_name);
-        final ImageView imageView = (ImageView) convertView.findViewById(R.id.icon);
-
-        stationNameView.setText(title);
-        stationNameView.setMaxLines(1);
-        stationNameView.setEllipsize(TextUtils.TruncateAt.END);
-        imageView.setImageDrawable(ContextCompat.getDrawable(getContext(), drawable));
-
-        getLayoutContainer().addView(convertView);
-    }
-
-    public void addTrainStation(final Optional<TrainArrival> trainArrivalOptional) {
-        final RelativeLayout relativeLayout = (RelativeLayout) getLayoutContainer().getChildAt(0);
-        final LinearLayout linearLayout = (LinearLayout) relativeLayout.findViewById(R.id.nearby_results);
-
-        final int[] nbOfLine = {0};
-
-        if (trainArrivalOptional.isPresent()) {
-            Stream.of(TrainLine.values()).forEach(trainLine -> {
-                final Map<String, String> etas = Stream.of(trainArrivalOptional.get().getEtas(trainLine)).collect(CommutesCollectors.toTrainArrivalByLine());
-                boolean newLine = true;
-                int i = 0;
-                for (final Map.Entry<String, String> entry : etas.entrySet()) {
-                    final LinearLayout.LayoutParams containParams = LayoutUtil.getInsideParams(getContext(), newLine, i == etas.size() - 1);
-                    final LinearLayout container = LayoutUtil.createTrainArrivalsLayout(getContext(), containParams, entry, trainLine);
-
-                    linearLayout.addView(container);
-                    newLine = false;
-                    i++;
-                }
-                nbOfLine[0] = nbOfLine[0] + etas.size();
-            });
-        } else {
-            // TODO do something here I guess
-        }
-        updatePanelStateAndHeight((nbOfLine[0]));
-    }
-
-    private int getSlidingPanelHeight(final int nbLine) {
-        return (LINE_HEIGHT * nbLine) + HEADER_HEIGHT;
-    }
-
-    public void addBusArrival(final BusArrivalRouteDTO busArrivalRouteDTO) {
-        final RelativeLayout relativeLayout = (RelativeLayout) getLayoutContainer().getChildAt(0);
-        final LinearLayout linearLayout = (LinearLayout) relativeLayout.findViewById(R.id.nearby_results);
-
-        final int[] nbOfLine = {0};
-
-        Stream.of(busArrivalRouteDTO.entrySet()).forEach(entry -> {
-            final String stopNameTrimmed = Util.trimBusStopNameIfNeeded(entry.getKey());
-            final Map<String, List<BusArrival>> boundMap = entry.getValue();
-
-            boolean newLine = true;
-            int i = 0;
-
-            for (final Map.Entry<String, List<BusArrival>> entry2 : boundMap.entrySet()) {
-                final LinearLayout.LayoutParams containParams = LayoutUtil.getInsideParams(getContext(), newLine, i == boundMap.size() - 1);
-                final LinearLayout container = LayoutUtil.createBusArrivalsLayout(getContext(), containParams, stopNameTrimmed, BusDirection.BusDirectionEnum.fromString(entry2.getKey()), entry2.getValue());
-
-                linearLayout.addView(container);
-                newLine = false;
-                i++;
-            }
-            nbOfLine[0] = nbOfLine[0] + boundMap.size();
-        });
-
-        // Handle the case when we have no bus returned.
-        if (busArrivalRouteDTO.size() == 0) {
-            final LinearLayout.LayoutParams containParams = LayoutUtil.getInsideParams(getContext(), true, true);
-            final LinearLayout container = LayoutUtil.createBusArrivalsNoResult(getContext(), containParams, "No result");
-            linearLayout.addView(container);
-            nbOfLine[0]++;
-        }
-        updatePanelStateAndHeight(nbOfLine[0]);
-    }
-
-    public void addBike(final Optional<BikeStation> bikeStationOptional) {
-        final RelativeLayout relativeLayout = (RelativeLayout) getLayoutContainer().getChildAt(0);
-        final LinearLayout linearLayout = (LinearLayout) relativeLayout.findViewById(R.id.nearby_results);
-        final LinearLayout bikeResultLayout = LayoutUtil.createBikeLayout(getContext(), bikeStationOptional.get());
-        linearLayout.addView(bikeResultLayout);
-        updatePanelStateAndHeight(2);
-    }
-
-    public void updatePanelStateAndHeight(final int height) {
-        slidingUpPanelLayout.setPanelHeight(getSlidingPanelHeight(height));
-        if (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN) {
-            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         }
     }
 }
