@@ -29,7 +29,6 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
 
     @Override
     public boolean onMarkerClick(final Marker marker) {
-        Log.i(TAG, "Marker selected: " + marker.getTag().toString());
         final AStation station = markerDataHolder.getStation(marker);
         if (nearbyFragment.getLayoutContainer().getChildCount() != 0) {
             nearbyFragment.getLayoutContainer().removeViewAt(0);
