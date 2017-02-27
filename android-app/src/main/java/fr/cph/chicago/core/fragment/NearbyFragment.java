@@ -105,6 +105,8 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
     private static final String TAG = NearbyFragment.class.getSimpleName();
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final double DEFAULT_RANGE = 0.008;
+    private static final int LINE_HEIGHT = 77;
+    private static final int HEADER_HEIGHT = 130;
 
     @BindView(R.id.activity_bar)
     ProgressBar progressBar;
@@ -467,8 +469,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
     }
 
     private int getSlidingPanelHeight(final int nbLine) {
-        Log.d(TAG, "Number of line to display: " + nbLine);
-        return (75 * nbLine) + 130;
+        return (LINE_HEIGHT * nbLine) + HEADER_HEIGHT;
     }
 
     public void addBusArrival(final BusArrivalRouteDTO busArrivalRouteDTO) {
