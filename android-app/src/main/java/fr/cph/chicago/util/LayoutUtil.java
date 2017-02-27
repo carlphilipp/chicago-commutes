@@ -18,6 +18,7 @@ package fr.cph.chicago.util;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -32,7 +33,6 @@ import android.widget.TextView;
 import com.annimon.stream.Stream;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -96,12 +96,12 @@ public enum LayoutUtil {
     }
 
     public static LinearLayout createBusArrivalsNoResult(@NonNull final Context context, @NonNull final LinearLayout.LayoutParams containParams, @NonNull final String stopNameTrimmed) {
-        return createBusArrivalsLayout(context, containParams, stopNameTrimmed, "No result", Collections.emptyList());
+        return createBusArrivalsLayout(context, containParams, stopNameTrimmed, null, Collections.emptyList());
     }
 
     // TODO Create XML files instead of doing all those methods in Java
     @NonNull
-    public static LinearLayout createBusArrivalsLayout(@NonNull final Context context, @NonNull final LinearLayout.LayoutParams containParams, @NonNull final String stopNameTrimmed, @NonNull final String key, @NonNull final List<BusArrival> buses) {
+    public static LinearLayout createBusArrivalsLayout(@NonNull final Context context, @NonNull final LinearLayout.LayoutParams containParams, @NonNull final String stopNameTrimmed, @Nullable final BusDirection.BusDirectionEnum busDirection, @NonNull final List<BusArrival> buses) {
         int pixels = Util.convertDpToPixel(context, 16);
         int pixelsHalf = pixels / 2;
         int marginLeftPixel = Util.convertDpToPixel(context, 10);
@@ -124,8 +124,7 @@ public enum LayoutUtil {
         destinationParams.addRule(RelativeLayout.RIGHT_OF, lineId);
         destinationParams.setMargins(pixelsHalf, 0, 0, 0);
 
-        final String bound = BusDirection.BusDirectionEnum.fromString(key).getShortLowerCase();
-        final String leftString = stopNameTrimmed + " " + bound;
+        final String leftString = busDirection == null ? stopNameTrimmed : stopNameTrimmed + " " + busDirection.getShortLowerCase();
         final SpannableString destinationSpannable = new SpannableString(leftString);
         destinationSpannable.setSpan(new RelativeSizeSpan(0.65f), stopNameTrimmed.length(), leftString.length(), 0); // set size
         destinationSpannable.setSpan(new ForegroundColorSpan(grey5), 0, leftString.length(), 0); // set color

@@ -79,6 +79,7 @@ import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.dto.BusArrivalRouteDTO;
+import fr.cph.chicago.entity.enumeration.BusDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.GPSUtil;
 import fr.cph.chicago.util.LayoutUtil;
@@ -462,7 +463,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         } else {
             // TODO do something here I guess
         }
-        updatePanelStateAndHeight((getSlidingPanelHeight(nbOfLine[0])));
+        updatePanelStateAndHeight((nbOfLine[0]));
     }
 
     private int getSlidingPanelHeight(final int nbLine) {
@@ -485,7 +486,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
 
             for (final Map.Entry<String, List<BusArrival>> entry2 : boundMap.entrySet()) {
                 final LinearLayout.LayoutParams containParams = LayoutUtil.getInsideParams(getContext(), newLine, i == boundMap.size() - 1);
-                final LinearLayout container = LayoutUtil.createBusArrivalsLayout(getContext(), containParams, stopNameTrimmed, entry2.getKey(), entry2.getValue());
+                final LinearLayout container = LayoutUtil.createBusArrivalsLayout(getContext(), containParams, stopNameTrimmed, BusDirection.BusDirectionEnum.fromString(entry2.getKey()), entry2.getValue());
 
                 linearLayout.addView(container);
                 newLine = false;
@@ -493,12 +494,15 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
             }
             nbOfLine[0] = nbOfLine[0] + boundMap.size();
         });
-        if (nbOfLine[0] == 0) {
+
+        // Handle the case when we have no bus returned.
+        if (busArrivalRouteDTO.size() == 0) {
             final LinearLayout.LayoutParams containParams = LayoutUtil.getInsideParams(getContext(), true, true);
-            final LinearLayout container = LayoutUtil.createBusArrivalsNoResult(getContext(), containParams, "Derp");
+            final LinearLayout container = LayoutUtil.createBusArrivalsNoResult(getContext(), containParams, "No result");
             linearLayout.addView(container);
+            nbOfLine[0]++;
         }
-        updatePanelStateAndHeight(getSlidingPanelHeight(nbOfLine[0]));
+        updatePanelStateAndHeight(nbOfLine[0]);
     }
 
     public void addBike(final Optional<BikeStation> bikeStationOptional) {
@@ -506,11 +510,11 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         final LinearLayout linearLayout = (LinearLayout) relativeLayout.findViewById(R.id.nearby_results);
         final LinearLayout bikeResultLayout = LayoutUtil.createBikeLayout(getContext(), bikeStationOptional.get());
         linearLayout.addView(bikeResultLayout);
-        updatePanelStateAndHeight(getSlidingPanelHeight(2));
+        updatePanelStateAndHeight(2);
     }
 
     public void updatePanelStateAndHeight(final int height) {
-        slidingUpPanelLayout.setPanelHeight(height);
+        slidingUpPanelLayout.setPanelHeight(getSlidingPanelHeight(height));
         if (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN) {
             slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         }
