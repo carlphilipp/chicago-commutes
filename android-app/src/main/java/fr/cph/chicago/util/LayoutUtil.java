@@ -31,6 +31,8 @@ import android.widget.TextView;
 
 import com.annimon.stream.Stream;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -93,9 +95,13 @@ public enum LayoutUtil {
         return paramsLeft;
     }
 
+    public static LinearLayout createBusArrivalsNoResult(@NonNull final Context context, @NonNull final LinearLayout.LayoutParams containParams, @NonNull final String stopNameTrimmed) {
+        return createBusArrivalsLayout(context, containParams, stopNameTrimmed, "No result", Collections.emptyList());
+    }
+
     // TODO Create XML files instead of doing all those methods in Java
     @NonNull
-    public static LinearLayout createBusArrivalsLayout(@NonNull final Context context, @NonNull final LinearLayout.LayoutParams containParams, @NonNull final String stopNameTrimmed, @NonNull final Map.Entry<String, List<BusArrival>> entry) {
+    public static LinearLayout createBusArrivalsLayout(@NonNull final Context context, @NonNull final LinearLayout.LayoutParams containParams, @NonNull final String stopNameTrimmed, @NonNull final String key, @NonNull final List<BusArrival> buses) {
         int pixels = Util.convertDpToPixel(context, 16);
         int pixelsHalf = pixels / 2;
         int marginLeftPixel = Util.convertDpToPixel(context, 10);
@@ -118,7 +124,7 @@ public enum LayoutUtil {
         destinationParams.addRule(RelativeLayout.RIGHT_OF, lineId);
         destinationParams.setMargins(pixelsHalf, 0, 0, 0);
 
-        final String bound = BusDirection.BusDirectionEnum.fromString(entry.getKey()).getShortLowerCase();
+        final String bound = BusDirection.BusDirectionEnum.fromString(key).getShortLowerCase();
         final String leftString = stopNameTrimmed + " " + bound;
         final SpannableString destinationSpannable = new SpannableString(leftString);
         destinationSpannable.setSpan(new RelativeSizeSpan(0.65f), stopNameTrimmed.length(), leftString.length(), 0); // set size
@@ -139,7 +145,6 @@ public enum LayoutUtil {
         right.setOrientation(LinearLayout.VERTICAL);
         right.setLayoutParams(rightParams);
 
-        final List<BusArrival> buses = entry.getValue();
         final StringBuilder currentEtas = new StringBuilder();
         Stream.of(buses).forEach(arri -> currentEtas.append(" ").append(arri.getTimeLeftDueDelay()));
 

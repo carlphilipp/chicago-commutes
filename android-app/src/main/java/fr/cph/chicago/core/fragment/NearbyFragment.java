@@ -400,8 +400,8 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
     private void startLoadingNearby() {
         if (Util.isNetworkAvailable(getContext())) {
             showProgress(true);
-            //slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
             slidingUpPanelLayout.setAnchorPoint(0.5f);
+            slidingUpPanelLayout.setPanelHeight(getSlidingPanelHeight(0));
 
             new LoadNearbyTask().execute();
         } else {
@@ -462,27 +462,12 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         } else {
             // TODO do something here I guess
         }
-        //slidingUpPanelLayout.setPanelHeight(getSlidingPanelHeight(nbOfLine[0]));
+        updatePanelStateAndHeight((getSlidingPanelHeight(nbOfLine[0])));
     }
 
     private int getSlidingPanelHeight(final int nbLine) {
-/*        switch (nbLine) {
-            case 0:
-                return 150;
-            case 1:1
-                return 220;
-            case 2:
-                return 280;
-            case 3:
-                return 340;
-            case 4:
-                return 400;
-            default:
-                return 150;
-        }*/
-        // FIXME re-implement that
         Log.d(TAG, "Number of line to display: " + nbLine);
-        return nbLine == 0 ? 150 : 220 + (60 * (nbLine - 1));
+        return (75 * nbLine) + 130;
     }
 
     public void addBusArrival(final BusArrivalRouteDTO busArrivalRouteDTO) {
@@ -500,18 +485,20 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
 
             for (final Map.Entry<String, List<BusArrival>> entry2 : boundMap.entrySet()) {
                 final LinearLayout.LayoutParams containParams = LayoutUtil.getInsideParams(getContext(), newLine, i == boundMap.size() - 1);
-                final LinearLayout container = LayoutUtil.createBusArrivalsLayout(getContext(), containParams, stopNameTrimmed, entry2);
+                final LinearLayout container = LayoutUtil.createBusArrivalsLayout(getContext(), containParams, stopNameTrimmed, entry2.getKey(), entry2.getValue());
 
                 linearLayout.addView(container);
-
                 newLine = false;
                 i++;
             }
             nbOfLine[0] = nbOfLine[0] + boundMap.size();
         });
-
-        //slidingUpPanelLayout.setPanelHeight(getSlidingPanelHeight(nbOfLine[0]));
-        //slidingUpPanelLayout.setAnchorPoint();
+        if (nbOfLine[0] == 0) {
+            final LinearLayout.LayoutParams containParams = LayoutUtil.getInsideParams(getContext(), true, true);
+            final LinearLayout container = LayoutUtil.createBusArrivalsNoResult(getContext(), containParams, "Derp");
+            linearLayout.addView(container);
+        }
+        updatePanelStateAndHeight(getSlidingPanelHeight(nbOfLine[0]));
     }
 
     public void addBike(final Optional<BikeStation> bikeStationOptional) {
@@ -519,6 +506,13 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         final LinearLayout linearLayout = (LinearLayout) relativeLayout.findViewById(R.id.nearby_results);
         final LinearLayout bikeResultLayout = LayoutUtil.createBikeLayout(getContext(), bikeStationOptional.get());
         linearLayout.addView(bikeResultLayout);
-        //slidingUpPanelLayout.setPanelHeight(getSlidingPanelHeight(2));
+        updatePanelStateAndHeight(getSlidingPanelHeight(2));
+    }
+
+    public void updatePanelStateAndHeight(final int height) {
+        slidingUpPanelLayout.setPanelHeight(height);
+        if (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN) {
+            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        }
     }
 }

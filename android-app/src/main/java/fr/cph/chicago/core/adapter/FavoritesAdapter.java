@@ -272,7 +272,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
                 // Build UI
                 final LinearLayout.LayoutParams containParams = LayoutUtil.getInsideParams(activity.getApplicationContext(), newLine, i == boundMap.size() - 1);
-                final LinearLayout container = LayoutUtil.createBusArrivalsLayout(activity.getApplicationContext(), containParams, stopNameTrimmed, entry2);
+                final LinearLayout container = LayoutUtil.createBusArrivalsLayout(activity.getApplicationContext(), containParams, stopNameTrimmed, entry2.getKey(), entry2.getValue());
 
                 holder.mainLayout.addView(container);
 

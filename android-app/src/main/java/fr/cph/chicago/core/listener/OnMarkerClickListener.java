@@ -6,7 +6,6 @@ import android.util.Log;
 import com.annimon.stream.Stream;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
-import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import fr.cph.chicago.core.fragment.NearbyFragment;
 import fr.cph.chicago.entity.AStation;
@@ -14,7 +13,6 @@ import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.dto.BusArrivalRouteDTO;
-import fr.cph.chicago.entity.dto.BusArrivalStopMappedDTO;
 import fr.cph.chicago.rx.observable.ObservableUtil;
 
 public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
@@ -33,7 +31,6 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
     public boolean onMarkerClick(final Marker marker) {
         Log.i(TAG, "Marker selected: " + marker.getTag().toString());
         final AStation station = markerDataHolder.getStation(marker);
-        nearbyFragment.getSlidingUpPanelLayout().setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         if (nearbyFragment.getLayoutContainer().getChildCount() != 0) {
             nearbyFragment.getLayoutContainer().removeViewAt(0);
         }
