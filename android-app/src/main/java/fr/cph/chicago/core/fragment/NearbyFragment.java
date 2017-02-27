@@ -70,6 +70,7 @@ import fr.cph.chicago.core.activity.MainActivity;
 import fr.cph.chicago.core.listener.OnMarkerClickListener;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
+import fr.cph.chicago.data.MarkerDataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.AStation;
 import fr.cph.chicago.entity.BikeStation;
@@ -200,37 +201,6 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         }
     }
 
-    public class MarkerDataHolder {
-        final Map<LatLng, MarkerHolder> data;
-
-        private MarkerDataHolder() {
-            data = new HashMap<>();
-        }
-
-        void addData(final Marker marker, final AStation station) {
-            marker.setVisible(true);
-            final MarkerHolder markerHolder = new MarkerHolder();
-            markerHolder.setMarker(marker);
-            markerHolder.setStation(station);
-            final LatLng latLng = marker.getPosition();
-            data.put(latLng, markerHolder);
-        }
-
-        void clear() {
-            data.clear();
-        }
-
-        public AStation getStation(final Marker marker) {
-            return data.get(marker.getPosition()).getStation();
-        }
-
-        @Data
-        private class MarkerHolder {
-            private Marker marker;
-            private AStation station;
-        }
-    }
-
     public void updateMarkersAndModel(
         @NonNull final List<BusStop> busStops,
         @NonNull final List<Station> trainStation,
@@ -301,8 +271,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
             });
         }
     }
-
-    // TODO check why context could be null here.
+    
     private static BitmapDescriptor createStop(@Nullable final Context context, @DrawableRes final int icon) {
         if (context != null) {
             final int px = context.getResources().getDimensionPixelSize(R.dimen.icon_shadow_2);

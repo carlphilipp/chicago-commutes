@@ -8,6 +8,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
 
 import fr.cph.chicago.core.fragment.NearbyFragment;
+import fr.cph.chicago.data.MarkerDataHolder;
 import fr.cph.chicago.entity.AStation;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusStop;
@@ -20,9 +21,9 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
     private static final String TAG = OnMarkerClickListener.class.getSimpleName();
 
     private final NearbyFragment nearbyFragment;
-    private final NearbyFragment.MarkerDataHolder markerDataHolder;
+    private final MarkerDataHolder markerDataHolder;
 
-    public OnMarkerClickListener(final NearbyFragment.MarkerDataHolder markerDataHolder, final NearbyFragment nearbyFragment) {
+    public OnMarkerClickListener(final MarkerDataHolder markerDataHolder, final NearbyFragment nearbyFragment) {
         this.markerDataHolder = markerDataHolder;
         this.nearbyFragment = nearbyFragment;
     }
@@ -33,7 +34,6 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
         if (nearbyFragment.getLayoutContainer().getChildCount() != 0) {
             nearbyFragment.getLayoutContainer().removeViewAt(0);
         }
-
         loadAllArrivals(station);
         return false;
     }
