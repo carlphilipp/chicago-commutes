@@ -7,6 +7,8 @@ import android.util.Log;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 
+import org.apache.commons.io.IOUtils;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -31,10 +33,14 @@ public enum BusStopCsvParser {
     }
 
     public void parse(@NonNull final Context context) {
+        InputStreamReader inputStreamReader = null;
         try {
-            parser.parse(new InputStreamReader(context.getAssets().open(STOP_FILE_PATH)));
+            inputStreamReader = new InputStreamReader(context.getAssets().open(STOP_FILE_PATH));
+            parser.parse(inputStreamReader);
         } catch (final IOException e) {
             Log.e(TAG, e.getMessage(), e);
+        } finally {
+            IOUtils.closeQuietly(inputStreamReader);
         }
     }
 }

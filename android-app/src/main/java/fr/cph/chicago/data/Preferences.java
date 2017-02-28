@@ -12,49 +12,49 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 
 public interface Preferences {
 
-    void saveTrainFavorites(@NonNull Context context, @NonNull List<Integer> favorites);
+    void saveTrainFavorites(Context context, List<Integer> favorites);
 
-    boolean hasFavorites(@NonNull Context context);
+    boolean hasFavorites(Context context);
 
-    void saveBikeFavorites(@NonNull Context context, @NonNull List<String> favorites);
-
-    @NonNull
-    List<String> getBikeFavorites(@NonNull Context context);
-
-    void addBikeRouteNameMapping(@NonNull Context context, @NonNull String bikeId, @NonNull String bikeName);
-
-    @Nullable
-    String getBikeRouteNameMapping(@NonNull Context context, @NonNull String bikeId);
-
-    void saveBusFavorites(@NonNull Context context, @NonNull List<String> favorites);
+    void saveBikeFavorites(Context context, List<String> favorites);
 
     @NonNull
-    List<String> getBusFavorites(@NonNull Context context);
+    List<String> getBikeFavorites(Context context);
 
-    void addBusRouteNameMapping(@NonNull Context context, @NonNull String busStopId, @NonNull String routeName);
-
-    @Nullable
-    String getBusRouteNameMapping(@NonNull Context context, @NonNull String busStopId);
-
-    void addBusStopNameMapping(@NonNull Context context, @NonNull String busStopId, @NonNull String stopName);
+    void addBikeRouteNameMapping(Context context, String bikeId, String bikeName);
 
     @Nullable
-    String getBusStopNameMapping(@NonNull Context context, @NonNull String busStopId);
+    String getBikeRouteNameMapping(Context context, String bikeId);
+
+    void saveBusFavorites(Context context, List<String> favorites);
 
     @NonNull
-    List<Integer> getTrainFavorites(@NonNull Context context);
+    List<String> getBusFavorites(Context context);
 
-    void saveTrainFilter(@NonNull Context context, @NonNull Integer stationId, @NonNull TrainLine line, @NonNull TrainDirection direction, boolean value);
+    void addBusRouteNameMapping(Context context, String busStopId, String routeName);
 
-    boolean getTrainFilter(@NonNull Context context, @NonNull Integer stationId, @NonNull TrainLine line, @NonNull TrainDirection direction);
+    @Nullable
+    String getBusRouteNameMapping(Context context, String busStopId);
 
-    void saveHideShowNearby(@NonNull Context context, boolean hide);
+    void addBusStopNameMapping(Context context, String busStopId, String stopName);
 
-    boolean getHideShowNearby(@NonNull Context context);
+    @Nullable
+    String getBusStopNameMapping(Context context, String busStopId);
 
-    Date getRateLastSeen(@NonNull Context context);
+    @NonNull
+    List<Integer> getTrainFavorites(Context context);
 
-    void setRateLastSeen(@NonNull Context context);
+    void saveTrainFilter(Context context, Integer stationId, TrainLine line, TrainDirection direction, boolean value);
 
-    void clearPreferences(@NonNull final Context context);
+    boolean getTrainFilter(Context context, Integer stationId, TrainLine line, TrainDirection direction);
+
+    void saveHideShowNearby(Context context, boolean hide);
+
+    boolean getHideShowNearby(Context context);
+
+    Date getRateLastSeen(Context context);
+
+    void setRateLastSeen(Context context);
+
+    void clearPreferences(final Context context);
 }
