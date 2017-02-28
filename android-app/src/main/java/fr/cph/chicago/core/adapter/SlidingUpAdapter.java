@@ -42,16 +42,15 @@ public class SlidingUpAdapter {
         this.nearbyFragment = nearbyFragment;
     }
 
-    // TODO VIEW METHOD. see where and how to handle it
-    public void updateBottomTitleTrain(@NonNull final String title) {
+    public void updateTitleTrain(@NonNull final String title) {
         createStationHeaderView(title, R.drawable.ic_train_white_24dp);
     }
 
-    public void updateBottomTitleBus(@NonNull final String title) {
+    public void updateTitleBus(@NonNull final String title) {
         createStationHeaderView(title, R.drawable.ic_directions_bus_white_24dp);
     }
 
-    public void updateBottomTitleBike(@NonNull final String title) {
+    public void updateTitleBike(@NonNull final String title) {
         createStationHeaderView(title, R.drawable.ic_directions_bike_white_24dp);
     }
 

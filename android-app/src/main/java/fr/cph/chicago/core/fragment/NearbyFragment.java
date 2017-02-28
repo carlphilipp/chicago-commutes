@@ -211,13 +211,9 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                         final MarkerOptions markerOptions = new MarkerOptions()
                             .position(point)
                             .title(busStop.getName())
-                            .snippet(busStop.getDescription())
                             .icon(bitmapDescriptorBus);
                         final Marker marker = googleMap.addMarker(markerOptions);
-                        marker.setTag(busStop.getName());
-                        marker.setVisible(false);
                         markerDataHolder.addData(marker, busStop);
-                        Log.d(TAG, "Add bus stop: " + busStop.getId() + "_" + busStop.getName() + " " + busStop.getPosition().getLatitude() + " " + busStop.getPosition().getLongitude());
                     });
 
                 Stream.of(trainStation)
@@ -225,33 +221,23 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                         Stream.of(station.getStopsPosition())
                             .findFirst()
                             .ifPresent(position -> {
-                                final String key = station.getId() + "_" + station.getName() + "_train";
-                                final LatLng point = new LatLng(position.getLatitude(), position.getLongitude());
                                 final MarkerOptions markerOptions = new MarkerOptions()
-                                    .position(point)
+                                    .position(new LatLng(position.getLatitude(), position.getLongitude()))
                                     .title(station.getName())
                                     .icon(bitmapDescriptorTrain);
                                 final Marker marker = googleMap.addMarker(markerOptions);
-                                marker.setTag(station.getName());
-                                marker.setVisible(false);
                                 markerDataHolder.addData(marker, station);
-                                Log.d(TAG, "Add train station: " + key + " " + position.getLatitude() + " " + position.getLongitude());
                             })
                     );
 
                 Stream.of(bikeStations)
                     .forEach(station -> {
-                        final LatLng point = new LatLng(station.getLatitude(), station.getLongitude());
                         final MarkerOptions markerOptions = new MarkerOptions()
-                            .position(point)
+                            .position(new LatLng(station.getLatitude(), station.getLongitude()))
                             .title(station.getName())
                             .icon(bitmapDescriptorBike);
                         final Marker marker = googleMap.addMarker(markerOptions);
-                        marker.setTag(station.getName());
-                        marker.setVisible(false);
-
                         markerDataHolder.addData(marker, station);
-                        Log.d(TAG, "Add bike stop: " + station.getId() + "_" + station.getName() + " " + station.getLatitude() + " " + station.getLongitude());
                     });
 
                 showProgress(false);

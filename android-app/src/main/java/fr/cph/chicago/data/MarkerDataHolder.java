@@ -17,7 +17,6 @@ public class MarkerDataHolder {
     }
 
     public void addData(final Marker marker, final AStation station) {
-        marker.setVisible(true);
         final MarkerDataHolder.MarkerHolder markerHolder = new MarkerDataHolder.MarkerHolder();
         markerHolder.setMarker(marker);
         markerHolder.setStation(station);
