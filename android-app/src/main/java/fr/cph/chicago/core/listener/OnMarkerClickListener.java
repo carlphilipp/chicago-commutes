@@ -34,40 +34,49 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
         if (nearbyFragment.getLayoutContainer().getChildCount() != 0) {
             nearbyFragment.getLayoutContainer().removeViewAt(0);
         }
-        loadAllArrivals(station);
+        loadArrivals(station);
         return false;
     }
 
 
-    private void loadAllArrivals(@NonNull final AStation station) {
+    private void loadArrivals(@NonNull final AStation station) {
         if (station instanceof Station) {
-            final Station trainStation = (Station) station;
-            nearbyFragment.getSlidingUpAdapter().updateBottomTitleTrain(trainStation.getName());
-            ObservableUtil.createTrainArrivalsObservable(nearbyFragment.getContext(), trainStation)
-                .subscribe(
-                    nearbyFragment.getSlidingUpAdapter()::addTrainStation,
-                    onError -> Log.e(TAG, onError.getMessage(), onError)
-                );
+            loadTrainArrivals((Station) station);
         } else if (station instanceof BusStop) {
-            final BusStop busStop = (BusStop) station;
-            nearbyFragment.getSlidingUpAdapter().updateBottomTitleBus(busStop.getName());
-            ObservableUtil.createBusArrivalsObservable(nearbyFragment.getContext(), (BusStop) station)
-                .subscribe(
-                    result -> {
-                        final BusArrivalRouteDTO busArrivalRouteDTO = new BusArrivalRouteDTO();
-                        Stream.of(result).forEach(busArrivalRouteDTO::addBusArrival);
-                        nearbyFragment.getSlidingUpAdapter().addBusArrival(busArrivalRouteDTO);
-                    },
-                    onError -> Log.e(TAG, onError.getMessage(), onError)
-                );
+            loadBusArrivals((BusStop) station);
         } else if (station instanceof BikeStation) {
-            final BikeStation bikeStation = (BikeStation) station;
-            nearbyFragment.getSlidingUpAdapter().updateBottomTitleBike(bikeStation.getName());
-            ObservableUtil.createBikeStationsObservable((BikeStation) station)
-                .subscribe(
-                    nearbyFragment.getSlidingUpAdapter()::addBike,
-                    onError -> Log.e(TAG, onError.getMessage(), onError)
-                );
+            loadBikes((BikeStation) station);
         }
+    }
+
+    private void loadTrainArrivals(final Station trainStation) {
+        nearbyFragment.getSlidingUpAdapter().updateBottomTitleTrain(trainStation.getName());
+        ObservableUtil.createTrainArrivalsObservable(nearbyFragment.getContext(), trainStation)
+            .subscribe(
+                nearbyFragment.getSlidingUpAdapter()::addTrainStation,
+                onError -> Log.e(TAG, onError.getMessage(), onError)
+            );
+    }
+
+    private void loadBusArrivals(final BusStop busStop) {
+        nearbyFragment.getSlidingUpAdapter().updateBottomTitleBus(busStop.getName());
+        ObservableUtil.createBusArrivalsObservable(nearbyFragment.getContext(), busStop)
+            .subscribe(
+                result -> {
+                    final BusArrivalRouteDTO busArrivalRouteDTO = new BusArrivalRouteDTO();
+                    Stream.of(result).forEach(busArrivalRouteDTO::addBusArrival);
+                    nearbyFragment.getSlidingUpAdapter().addBusArrival(busArrivalRouteDTO);
+                },
+                onError -> Log.e(TAG, onError.getMessage(), onError)
+            );
+    }
+
+    private void loadBikes(final BikeStation bikeStation) {
+        nearbyFragment.getSlidingUpAdapter().updateBottomTitleBike(bikeStation.getName());
+        ObservableUtil.createBikeStationsObservable(bikeStation)
+            .subscribe(
+                nearbyFragment.getSlidingUpAdapter()::addBike,
+                onError -> Log.e(TAG, onError.getMessage(), onError)
+            );
     }
 }

@@ -10,7 +10,7 @@ import fr.cph.chicago.entity.AStation;
 import lombok.Data;
 
 public class MarkerDataHolder {
-    final Map<LatLng, MarkerDataHolder.MarkerHolder> data;
+    private final Map<LatLng, MarkerDataHolder.MarkerHolder> data;
 
     public MarkerDataHolder() {
         data = new HashMap<>();

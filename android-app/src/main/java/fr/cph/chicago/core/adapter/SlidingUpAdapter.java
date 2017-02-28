@@ -128,7 +128,7 @@ public class SlidingUpAdapter {
         // Handle the case when we have no bus returned.
         if (busArrivalRouteDTO.size() == 0) {
             final LinearLayout.LayoutParams containParams = LayoutUtil.getInsideParams(nearbyFragment.getContext(), true, true);
-            final LinearLayout container = LayoutUtil.createBusArrivalsNoResult(nearbyFragment.getContext(), containParams, "No result");
+            final LinearLayout container = LayoutUtil.createBusArrivalsNoResult(nearbyFragment.getContext(), containParams, "No results");
             linearLayout.addView(container);
             nbOfLine[0]++;
         }
@@ -143,7 +143,7 @@ public class SlidingUpAdapter {
         updatePanelStateAndHeight(2);
     }
 
-    public void updatePanelStateAndHeight(final int height) {
+    private void updatePanelStateAndHeight(final int height) {
         nearbyFragment.getSlidingUpPanelLayout().setPanelHeight(getSlidingPanelHeight(height));
         if (nearbyFragment.getSlidingUpPanelLayout().getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN) {
             nearbyFragment.getSlidingUpPanelLayout().setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
