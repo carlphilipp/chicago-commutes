@@ -22,7 +22,7 @@ public abstract class AbstractStationActivity extends Activity {
         googleMapImageObservable = Observable.create(
             (ObservableEmitter<Optional<Drawable>> observableOnSubscribe) -> {
                 if (!observableOnSubscribe.isDisposed()) {
-                    observableOnSubscribe.onNext(GStreetViewConnect.INSTANCE.connect(latitude, longitude, getApplicationContext()));
+                    observableOnSubscribe.onNext(GStreetViewConnect.INSTANCE.connect(latitude, longitude));
                     observableOnSubscribe.onComplete();
                 }
             })

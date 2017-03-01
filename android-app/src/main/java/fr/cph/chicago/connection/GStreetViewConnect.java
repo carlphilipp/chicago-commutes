@@ -16,7 +16,6 @@
 
 package fr.cph.chicago.connection;
 
-import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -28,7 +27,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.InputStream;
 import java.net.URL;
 
-import fr.cph.chicago.R;
+import fr.cph.chicago.core.App;
 
 import static fr.cph.chicago.Constants.GOOGLE_STREET_VIEW_URL;
 
@@ -46,9 +45,9 @@ public enum GStreetViewConnect {
     private static final int HEIGHT = 300;
 
     @NonNull
-    public final Optional<Drawable> connect(final double latitude, final double longitude, @NonNull final Context context) {
+    public final Optional<Drawable> connect(final double latitude, final double longitude) {
         final String address = GOOGLE_STREET_VIEW_URL + "?key=" +
-            context.getString(R.string.google_maps_api_key) +
+            App.getGoogleStreetKey() +
             "&sensor=false" +
             "&size=" + WIDTH + "x" + HEIGHT +
             "&fov=120" +

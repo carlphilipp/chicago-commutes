@@ -66,6 +66,8 @@ public class App extends Application {
     private static String ctaTrainKey;
     @Getter
     private static String ctaBusKey;
+    @Getter
+    private static String googleStreetKey;
 
     public static boolean checkTrainData(@NonNull final Activity activity) {
         if (DataHolder.INSTANCE.getTrainData() == null) {
@@ -106,5 +108,6 @@ public class App extends Application {
         lineWidth = screenWidth > 1080 ? 7f : (screenWidth > 480 ? 4f : 2f);
         ctaTrainKey = context.getString(R.string.cta_train_key);
         ctaBusKey = context.getString(R.string.cta_bus_key);
+        googleStreetKey = context.getString(R.string.google_maps_api_key);
     }
 }
