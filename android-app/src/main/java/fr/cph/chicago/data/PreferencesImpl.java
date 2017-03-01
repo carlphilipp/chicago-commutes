@@ -135,7 +135,7 @@ public enum PreferencesImpl implements Preferences {
     /**
      * Save bus into favorites
      *
-     * @param context the context
+     * @param context   the context
      * @param favorites the list of favorites to save
      */
     @Override
@@ -263,20 +263,6 @@ public enum PreferencesImpl implements Preferences {
     public boolean getTrainFilter(@NonNull final Context context, @NonNull final Integer stationId, @NonNull final TrainLine line, @NonNull final TrainDirection direction) {
         final SharedPreferences sharedPref = getPrivatePreferences(context);
         return sharedPref.getBoolean(String.valueOf(stationId) + "_" + line + "_" + direction, true);
-    }
-
-    @Override
-    public void saveHideShowNearby(@NonNull final Context context, boolean hide) {
-        final SharedPreferences sharedPref = getPrivatePreferences(context);
-        final SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putBoolean("hideNearby", hide);
-        editor.apply();
-    }
-
-    @Override
-    public boolean getHideShowNearby(@NonNull final Context context) {
-        final SharedPreferences sharedPref = getPrivatePreferences(context);
-        return sharedPref.getBoolean("hideNearby", true);
     }
 
     @Override

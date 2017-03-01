@@ -78,26 +78,14 @@ import static java.util.Map.Entry;
 // TODO to analyze and refactor
 public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder> {
 
-    private final int grey5;
     private final Context context;
     private final MainActivity activity;
-    private final int marginLeftPixel;
-    private final int pixels;
-    private final int pixelsHalf;
-    private final int pixelsQuarter;
 
     private String lastUpdate;
 
     public FavoritesAdapter(@NonNull final MainActivity activity) {
         this.context = activity.getApplicationContext();
-        this.grey5 = ContextCompat.getColor(context, R.color.grey_5);
-
         this.activity = activity;
-
-        this.marginLeftPixel = Util.convertDpToPixel(context, 10);
-        this.pixels = Util.convertDpToPixel(context, 16);
-        this.pixelsHalf = pixels / 2;
-        this.pixelsQuarter = pixels / 4;
     }
 
     static class FavoritesViewHolder extends RecyclerView.ViewHolder {

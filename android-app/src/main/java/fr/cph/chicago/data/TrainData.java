@@ -27,6 +27,8 @@ import com.annimon.stream.Stream;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 
+import org.apache.commons.io.IOUtils;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -74,8 +76,10 @@ public enum TrainData {
      */
     public final void read(@NonNull final Context context) {
         if (stations.size() == 0 && stops.size() == 0) {
+            InputStreamReader inputStreamReader = null;
             try {
-                final List<String[]> allRows = parser.parseAll((new InputStreamReader(context.getAssets().open(TRAIN_FILE_PATH))));
+                inputStreamReader = new InputStreamReader(context.getAssets().open(TRAIN_FILE_PATH));
+                final List<String[]> allRows = parser.parseAll(inputStreamReader);
                 for (int i = 1; i < allRows.size(); i++) {
                     final String[] row = allRows.get(i);
                     final int stopId = Integer.parseInt(row[0]); // STOP_ID
@@ -152,6 +156,8 @@ public enum TrainData {
                 sort();
             } catch (final IOException e) {
                 Log.e(TAG, e.getMessage(), e);
+            } finally {
+                IOUtils.closeQuietly(inputStreamReader);
             }
         }
     }
@@ -249,8 +255,10 @@ public enum TrainData {
 
     @NonNull
     public final List<Position> readPattern(@NonNull final Context context, @NonNull final TrainLine line) {
+        InputStreamReader inputStreamReader = null;
         try {
-            final List<String[]> allRows = parser.parseAll(new InputStreamReader(context.getAssets().open("train_pattern/" + line.toTextString() + "_pattern.csv")));
+            inputStreamReader = new InputStreamReader(context.getAssets().open("train_pattern/" + line.toTextString() + "_pattern.csv"));
+            final List<String[]> allRows = parser.parseAll(inputStreamReader);
             return Stream.of(allRows)
                 .map(row -> {
                     final double longitude = Double.parseDouble(row[0]);
@@ -264,6 +272,8 @@ public enum TrainData {
         } catch (final IOException e) {
             Log.e(TAG, e.getMessage(), e);
             return new ArrayList<>();
+        } finally {
+            IOUtils.closeQuietly(inputStreamReader);
         }
     }
 
@@ -287,10 +297,5 @@ public enum TrainData {
                 }
             }
         }
-    }
-
-    @NonNull
-    public final SparseArray<Station> getStations() {
-        return stations;
     }
 }

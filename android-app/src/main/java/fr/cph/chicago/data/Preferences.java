@@ -48,10 +48,6 @@ public interface Preferences {
 
     boolean getTrainFilter(Context context, Integer stationId, TrainLine line, TrainDirection direction);
 
-    void saveHideShowNearby(Context context, boolean hide);
-
-    boolean getHideShowNearby(Context context);
-
     Date getRateLastSeen(Context context);
 
     void setRateLastSeen(Context context);
