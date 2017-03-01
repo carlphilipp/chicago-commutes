@@ -41,48 +41,31 @@ import lombok.Setter;
  * @version 1
  */
 public class App extends Application {
-    /**
-     * Preference string that is used to in shared preference of the phone
-     **/
+
     public static final String PREFERENCE_FAVORITES = "ChicagoTrackerFavorites";
-    /**
-     * Train preference string
-     **/
     public static final String PREFERENCE_FAVORITES_TRAIN = "ChicagoTrackerFavoritesTrain";
-    /**
-     * Bus preference string
-     **/
     public static final String PREFERENCE_FAVORITES_BUS = "ChicagoTrackerFavoritesBus";
-    /**
-     * Bus mapping name string
-     **/
     public static final String PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING = "ChicagoTrackerFavoritesBusNameMapping";
-    /**
-     * Bus mapping name string
-     **/
     public static final String PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING = "ChicagoTrackerFavoritesBusStopNameMapping";
-    /**
-     * Bike preference string
-     **/
     public static final String PREFERENCE_FAVORITES_BIKE = "ChicagoTrackerFavoritesBike";
-    /**
-     * Bike mapping name string
-     **/
     public static final String PREFERENCE_FAVORITES_BIKE_NAME_MAPPING = "ChicagoTrackerFavoritesBikeNameMapping";
+
     /**
      * Last update of favorites
      **/
     @Setter
     @Getter
     private static Date lastUpdate;
-    /**
-     * Analytics stuff
-     **/
     private static Tracker tracker;
+
     @Getter
     private static int screenWidth;
     @Getter
     private static float lineWidth;
+    @Getter
+    private static String ctaTrainKey;
+    @Getter
+    private static String ctaBusKey;
 
     public static boolean checkTrainData(@NonNull final Activity activity) {
         if (DataHolder.INSTANCE.getTrainData() == null) {
@@ -108,8 +91,8 @@ public class App extends Application {
 
     @NonNull
     public static Tracker getTracker(final Context context) {
-        final GoogleAnalytics analytics = GoogleAnalytics.getInstance(context);
         if (tracker == null) {
+            final GoogleAnalytics analytics = GoogleAnalytics.getInstance(context);
             final String key = context.getString(R.string.google_analytics_key);
             tracker = analytics.newTracker(key);
             tracker.enableAutoActivityTracking(true);
@@ -117,9 +100,11 @@ public class App extends Application {
         return tracker;
     }
 
-    public static void setupScreenWidth(@NonNull final Context context) {
+    public static void setupContextData(@NonNull final Context context) {
         final int[] screenSize = Util.getScreenSize(context);
         screenWidth = screenSize[0];
         lineWidth = screenWidth > 1080 ? 7f : (screenWidth > 480 ? 4f : 2f);
+        ctaTrainKey = context.getString(R.string.cta_train_key);
+        ctaBusKey = context.getString(R.string.cta_bus_key);
     }
 }

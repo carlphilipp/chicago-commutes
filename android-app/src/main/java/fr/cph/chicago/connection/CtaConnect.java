@@ -26,6 +26,7 @@ import org.apache.commons.collections4.MultiValuedMap;
 import java.io.InputStream;
 
 import fr.cph.chicago.R;
+import fr.cph.chicago.core.App;
 import fr.cph.chicago.exception.ConnectException;
 
 import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;
@@ -58,9 +59,9 @@ public enum CtaConnect {
      * @throws ConnectException the connection exception
      */
     @NonNull
-    public final InputStream connect(@NonNull final CtaRequestType requestType, @NonNull final MultiValuedMap<String, String> params, @NonNull final Context context) throws ConnectException {
-        final String ctaTrainKey = context.getString(R.string.cta_train_key);
-        final String ctaBusKey = context.getString(R.string.cta_bus_key);
+    public final InputStream connect(@NonNull final CtaRequestType requestType, @NonNull final MultiValuedMap<String, String> params) throws ConnectException {
+        final String ctaTrainKey = App.getCtaTrainKey();
+        final String ctaBusKey = App.getCtaBusKey();
         final StringBuilder address;
         switch (requestType) {
             case TRAIN_ARRIVALS:

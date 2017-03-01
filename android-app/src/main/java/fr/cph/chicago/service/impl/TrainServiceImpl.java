@@ -46,7 +46,7 @@ public enum TrainServiceImpl implements TrainService {
                 if ("mapid".equals(key)) {
                     final List<String> list = (List<String>) entry.getValue();
                     if (list.size() < 5) {
-                        final InputStream xmlResult = CtaConnect.INSTANCE.connect(TRAIN_ARRIVALS, trainParams, context);
+                        final InputStream xmlResult = CtaConnect.INSTANCE.connect(TRAIN_ARRIVALS, trainParams);
                         trainArrivals = XmlParser.INSTANCE.parseArrivals(xmlResult, DataHolder.INSTANCE.getTrainData());
                     } else {
                         final int size = list.size();
@@ -58,7 +58,7 @@ public enum TrainServiceImpl implements TrainService {
                             for (final String sub : subList) {
                                 paramsTemp.put(key, sub);
                             }
-                            final InputStream xmlResult = CtaConnect.INSTANCE.connect(TRAIN_ARRIVALS, paramsTemp, context);
+                            final InputStream xmlResult = CtaConnect.INSTANCE.connect(TRAIN_ARRIVALS, paramsTemp);
                             final SparseArray<TrainArrival> temp = XmlParser.INSTANCE.parseArrivals(xmlResult, DataHolder.INSTANCE.getTrainData());
                             for (int j = 0; j < temp.size(); j++) {
                                 trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
@@ -109,7 +109,7 @@ public enum TrainServiceImpl implements TrainService {
             final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
             params.put(context.getString(R.string.request_map_id), Integer.toString(stationId));
 
-            final InputStream xmlResult = CtaConnect.INSTANCE.connect(TRAIN_ARRIVALS, params, context);
+            final InputStream xmlResult = CtaConnect.INSTANCE.connect(TRAIN_ARRIVALS, params);
             final SparseArray<TrainArrival> arrivals = XmlParser.INSTANCE.parseArrivals(xmlResult, TrainData.INSTANCE);
             return arrivals.size() == 1
                 ? Optional.of(arrivals.get(stationId))

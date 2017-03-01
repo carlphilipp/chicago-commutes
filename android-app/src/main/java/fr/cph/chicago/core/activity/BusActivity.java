@@ -304,7 +304,7 @@ public class BusActivity extends AbstractStationActivity {
             reqParams.put(requestStopId, Integer.toString(busStopId));
             try {
                 // Connect to CTA API bus to get XML result of inc buses
-                final InputStream xmlResult = CtaConnect.INSTANCE.connect(BUS_ARRIVALS, reqParams, getApplicationContext());
+                final InputStream xmlResult = CtaConnect.INSTANCE.connect(BUS_ARRIVALS, reqParams);
                 // Parse and return arrival buses
                 return XmlParser.INSTANCE.parseBusArrivals(xmlResult);
             } catch (final ParserException | ConnectException e) {
