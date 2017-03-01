@@ -70,6 +70,14 @@ public class CtaMapFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (unbinder != null) {
+            unbinder.unbind();
+        }
+    }
+
     private class BitmapWorkerTask extends AsyncTask<Void, Void, Bitmap> {
         private final PhotoView imageView;
 
@@ -86,14 +94,6 @@ public class CtaMapFragment extends Fragment {
         protected final void onPostExecute(final Bitmap bitmap) {
             CtaMapFragment.this.bitmapCache = bitmap;
             imageView.setImageBitmap(bitmap);
-        }
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (unbinder != null) {
-            unbinder.unbind();
         }
     }
 }

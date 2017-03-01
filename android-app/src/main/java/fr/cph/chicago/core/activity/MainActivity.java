@@ -64,6 +64,8 @@ import static fr.cph.chicago.Constants.TRAINS_ARRIVALS_URL;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String SELECTED_ID = "SELECTED_ID";
+    private static final int POSITION_BUS = 2;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -95,9 +97,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @BindColor(R.color.primaryColorDarker)
     int primaryColorDarker;
-
-    private static final String SELECTED_ID = "SELECTED_ID";
-    private static final int POSITION_BUS = 2;
 
     private int currentPosition;
 
@@ -179,9 +178,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void setToolbar() {
         toolbar.setOnMenuItemClickListener(item -> {
-            if (nearby.equals(toolbar.getTitle())) {
+/*            if (nearby.equals(toolbar.getTitle())) {
                 nearbyFragment.reloadData();
-            } else {
+            } else {*/
                 // Favorite fragment
                 favoritesFragment.startRefreshing();
 
@@ -210,7 +209,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 } else {
                     favoritesFragment.displayError(R.string.message_network_error);
                 }
-            }
+            //}
             return true;
         });
         toolbar.inflateMenu(R.menu.main);
@@ -337,7 +336,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         .doOnError(throwable -> Log.e(TAG, throwable.getMessage(), throwable))
                         .subscribe(o -> fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commit());
                 }
-                showActionBarMenu();
+                hideActionBarMenu();
                 break;
             case R.id.navigation_cta_map:
                 setBarTitle(ctaMap);

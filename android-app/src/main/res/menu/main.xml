@@ -16,12 +16,13 @@
   limitations under the License.
 -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:commutes="http://schemas.android.com/apk/res-auto" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:commutes="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/action_refresh"
         android:icon="@drawable/ic_refresh_white_24dp"
         android:orderInCategory="200"
-        commutes:showAsAction="always"
-        android:title="@string/action_refresh"/>
+        android:title="@string/action_refresh"
+        commutes:showAsAction="always" />
 </menu>

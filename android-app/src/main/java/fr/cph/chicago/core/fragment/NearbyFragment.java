@@ -29,7 +29,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -89,7 +88,6 @@ import static fr.cph.chicago.Constants.GPS_ACCESS;
  */
 public class NearbyFragment extends Fragment implements EasyPermissions.PermissionCallbacks {
 
-    private static final String TAG = NearbyFragment.class.getSimpleName();
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final double DEFAULT_RANGE = 0.008;
 
@@ -269,10 +267,6 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
                 progressBar.setVisibility(View.GONE);
             }
         }
-    }
-
-    public final void reloadData() {
-        loadNearbyIfAllowed();
     }
 
     private class LoadNearbyTask extends AsyncTask<Void, Void, Optional<Position>> {
