@@ -5,6 +5,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -33,8 +34,8 @@ import fr.cph.chicago.util.Util;
 
 public class SlidingUpAdapter {
 
-    private static final int LINE_HEIGHT = 77;
-    private static final int HEADER_HEIGHT = 130;
+    private static final int LINE_HEIGHT = 27;
+    private static final int HEADER_HEIGHT = 40;
 
     private final NearbyFragment nearbyFragment;
 
@@ -93,11 +94,8 @@ public class SlidingUpAdapter {
         } else {
             // TODO do something here I guess
         }
-        updatePanelStateAndHeight((nbOfLine[0]));
-    }
-
-    private int getSlidingPanelHeight(final int nbLine) {
-        return (LINE_HEIGHT * nbLine) + HEADER_HEIGHT;
+        nearbyFragment.getSlidingUpPanelLayout().setPanelHeight(getSlidingPanelHeight(nbOfLine[0]));
+        updatePanelState();
     }
 
     public void addBusArrival(final BusArrivalRouteDTO busArrivalRouteDTO) {
@@ -131,7 +129,8 @@ public class SlidingUpAdapter {
             linearLayout.addView(container);
             nbOfLine[0]++;
         }
-        updatePanelStateAndHeight(nbOfLine[0]);
+        nearbyFragment.getSlidingUpPanelLayout().setPanelHeight(getSlidingPanelHeight(nbOfLine[0]));
+        updatePanelState();
     }
 
     public void addBike(final Optional<BikeStation> bikeStationOptional) {
@@ -139,11 +138,17 @@ public class SlidingUpAdapter {
         final LinearLayout linearLayout = (LinearLayout) relativeLayout.findViewById(R.id.nearby_results);
         final LinearLayout bikeResultLayout = LayoutUtil.createBikeLayout(nearbyFragment.getContext(), bikeStationOptional.get());
         linearLayout.addView(bikeResultLayout);
-        updatePanelStateAndHeight(2);
+        nearbyFragment.getSlidingUpPanelLayout().setPanelHeight(getSlidingPanelHeight(2));
+        updatePanelState();
     }
 
-    private void updatePanelStateAndHeight(final int height) {
-        nearbyFragment.getSlidingUpPanelLayout().setPanelHeight(getSlidingPanelHeight(height));
+    private int getSlidingPanelHeight(final int nbLine) {
+        int line = Util.convertDpToPixel(nearbyFragment.getContext(), LINE_HEIGHT);
+        int header = Util.convertDpToPixel(nearbyFragment.getContext(), HEADER_HEIGHT);
+        return (line * nbLine) + header;
+    }
+
+    private void updatePanelState() {
         if (nearbyFragment.getSlidingUpPanelLayout().getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN) {
             nearbyFragment.getSlidingUpPanelLayout().setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         }
