@@ -5,7 +5,6 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -92,7 +91,8 @@ public class SlidingUpAdapter {
                 nbOfLine[0] = nbOfLine[0] + etas.size();
             });
         } else {
-            // TODO do something here I guess
+            handleNoResults(linearLayout);
+            nbOfLine[0]++;
         }
         nearbyFragment.getSlidingUpPanelLayout().setPanelHeight(getSlidingPanelHeight(nbOfLine[0]));
         updatePanelState();
@@ -124,13 +124,17 @@ public class SlidingUpAdapter {
 
         // Handle the case when we have no bus returned.
         if (busArrivalRouteDTO.size() == 0) {
-            final LinearLayout.LayoutParams containParams = LayoutUtil.getInsideParams(nearbyFragment.getContext(), true, true);
-            final LinearLayout container = LayoutUtil.createBusArrivalsNoResult(nearbyFragment.getContext(), containParams, "No results");
-            linearLayout.addView(container);
+            handleNoResults(linearLayout);
             nbOfLine[0]++;
         }
         nearbyFragment.getSlidingUpPanelLayout().setPanelHeight(getSlidingPanelHeight(nbOfLine[0]));
         updatePanelState();
+    }
+
+    private void handleNoResults(final LinearLayout linearLayout) {
+        final LinearLayout.LayoutParams containParams = LayoutUtil.getInsideParams(nearbyFragment.getContext(), true, true);
+        final LinearLayout container = LayoutUtil.createBusArrivalsNoResult(nearbyFragment.getContext(), containParams, "No results");
+        linearLayout.addView(container);
     }
 
     public void addBike(final Optional<BikeStation> bikeStationOptional) {
