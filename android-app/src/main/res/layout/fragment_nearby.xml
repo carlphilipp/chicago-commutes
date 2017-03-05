@@ -30,7 +30,8 @@
         android:gravity="bottom"
         sothree:umanoInitialState="hidden"
         sothree:umanoPanelHeight="90dp"
-        sothree:umanoShadowHeight="4dp">
+        sothree:umanoShadowHeight="4dp"
+        sothree:umanoAnchorPoint="0.5">
 
         <RelativeLayout
             android:id="@+id/map"

@@ -89,7 +89,6 @@ import static fr.cph.chicago.Constants.GPS_ACCESS;
  */
 public class NearbyFragment extends Fragment implements EasyPermissions.PermissionCallbacks {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final double DEFAULT_RANGE = 0.008;
 
@@ -247,7 +246,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         }
     }
 
-    private static BitmapDescriptor createStop(@Nullable final Context context, @DrawableRes final int icon) {
+    private BitmapDescriptor createStop(@Nullable final Context context, @DrawableRes final int icon) {
         if (context != null) {
             final int px = context.getResources().getDimensionPixelSize(R.dimen.icon_shadow_2);
             final Bitmap bitMapBusStation = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888);
@@ -343,8 +342,6 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
     private void startLoadingNearby() {
         if (Util.isNetworkAvailable(getContext())) {
             showProgress(true);
-            slidingUpPanelLayout.setAnchorPoint(0.5f);
-
             new LoadNearbyTask().execute();
         } else {
             Util.showNetworkErrorMessage(activity);
