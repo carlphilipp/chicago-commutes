@@ -29,6 +29,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -88,9 +89,9 @@ import static fr.cph.chicago.Constants.GPS_ACCESS;
  */
 public class NearbyFragment extends Fragment implements EasyPermissions.PermissionCallbacks {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final double DEFAULT_RANGE = 0.008;
-
 
     @BindView(R.id.activity_bar)
     ProgressBar progressBar;
@@ -135,9 +136,6 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         App.checkTrainData(activity);
         App.checkBusData(activity);
         Util.trackScreen(getContext(), getString(R.string.analytics_nearby_fragment));
-        googleApiClient = new GoogleApiClient.Builder(activity)
-            .addApi(LocationServices.API)
-            .build();
     }
 
     @Override
@@ -155,20 +153,25 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
     @Override
     public final void onStart() {
         super.onStart();
-
+        googleApiClient = new GoogleApiClient.Builder(activity)
+            .addApi(LocationServices.API)
+            .build();
         final GoogleMapOptions options = new GoogleMapOptions();
         final CameraPosition camera = new CameraPosition(Util.CHICAGO, 7, 0, 0);
         options.camera(camera);
         mapFragment = SupportMapFragment.newInstance(options);
         mapFragment.setRetainInstance(true);
         final FragmentManager fm = activity.getSupportFragmentManager();
+        loadNearbyIfAllowed();
         new Thread(() -> fm.beginTransaction().replace(R.id.map, mapFragment).commit()).start();
     }
 
     @Override
     public final void onResume() {
         super.onResume();
-        loadNearbyIfAllowed();
+        if (slidingUpPanelLayout != null) {
+            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+        }
     }
 
     @Override
