@@ -24,7 +24,7 @@ public interface BusService {
 
     BusDirections loadBusDirections(Context context, String busRouteId);
 
-    List<BusRoute> loadBusRoutes(Context context);
+    List<BusRoute> loadBusRoutes();
 
     List<BusArrival> loadFollowBus(Context context, String busId);
 

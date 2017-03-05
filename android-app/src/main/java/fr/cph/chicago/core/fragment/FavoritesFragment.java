@@ -60,9 +60,6 @@ import io.reactivex.Observable;
 
 import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;
 import static fr.cph.chicago.Constants.TRAINS_ARRIVALS_URL;
-import static fr.cph.chicago.core.App.PREFERENCE_FAVORITES_BIKE;
-import static fr.cph.chicago.core.App.PREFERENCE_FAVORITES_BUS;
-import static fr.cph.chicago.core.App.PREFERENCE_FAVORITES_TRAIN;
 
 /**
  * FavoritesData Fragment

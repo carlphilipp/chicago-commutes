@@ -81,19 +81,6 @@ public enum ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<Optional<TrainArrival>> createTrainArrivalsObservable(@NonNull final Context context, final Optional<Station> trainStation) {
-        if (trainStation.isPresent()) {
-            return createTrainArrivalsObservable(context, trainStation.get());
-        } else {
-            return Observable.create((ObservableEmitter<Optional<TrainArrival>> observableOnSubscribe) -> {
-                observableOnSubscribe.onNext(Optional.empty());
-                observableOnSubscribe.onComplete();
-            })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-        }
-    }
-
     public static Observable<BusArrivalDTO> createFavoritesBusArrivalsObservable(@NonNull final Context context) {
         return Observable.create(
             (ObservableEmitter<BusArrivalDTO> observableOnSubscribe) -> {
@@ -208,11 +195,11 @@ public enum ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<FirstLoadDTO> createOnFirstLoadObservable(@NonNull final Context context) {
+    public static Observable<FirstLoadDTO> createOnFirstLoadObservable() {
         final Observable<List<BusRoute>> busRoutesObs = Observable.create(
             (ObservableEmitter<List<BusRoute>> observableOnSubscribe) -> {
                 if (!observableOnSubscribe.isDisposed()) {
-                    observableOnSubscribe.onNext(BUS_SERVICE.loadBusRoutes(context));
+                    observableOnSubscribe.onNext(BUS_SERVICE.loadBusRoutes());
                     observableOnSubscribe.onComplete();
                 }
             })

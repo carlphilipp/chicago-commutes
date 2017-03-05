@@ -349,29 +349,6 @@ public enum Util {
         return paramsBus;
     }
 
-    /**
-     * Function to show settings alert dialog
-     */
-    static void showSettingsAlert(@NonNull final Activity activity) {
-        new Thread() {
-            public void run() {
-                activity.runOnUiThread(() -> {
-                    final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
-                    alertDialogBuilder.setTitle("GPS settings");
-                    alertDialogBuilder.setMessage("GPS is not enabled. Do you want to go to settings main.java.fr.cph.chicago.res.menu?");
-                    alertDialogBuilder.setCancelable(false)
-                        .setPositiveButton("Yes", (dialog, id) -> {
-                            final Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                            activity.startActivity(intent);
-                        })
-                        .setNegativeButton("No", (dialog, id) -> dialog.cancel());
-                    final AlertDialog alertDialog = alertDialogBuilder.create();
-                    alertDialog.show();
-                });
-            }
-        }.start();
-    }
-
     public static int convertDpToPixel(@NonNull final Context context, final int dp) {
         float pixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
         return (int) pixels;

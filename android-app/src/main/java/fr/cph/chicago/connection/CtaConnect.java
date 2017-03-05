@@ -16,7 +16,6 @@
 
 package fr.cph.chicago.connection;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.annimon.stream.Stream;
@@ -25,7 +24,6 @@ import org.apache.commons.collections4.MultiValuedMap;
 
 import java.io.InputStream;
 
-import fr.cph.chicago.R;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.exception.ConnectException;
 

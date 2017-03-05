@@ -136,7 +136,7 @@ public class SlidingUpAdapter {
 
     private void handleNoResults(final LinearLayout linearLayout) {
         final LinearLayout.LayoutParams containParams = LayoutUtil.getInsideParams(nearbyFragment.getContext(), true, true);
-        final LinearLayout container = LayoutUtil.createBusArrivalsNoResult(nearbyFragment.getContext(), containParams, "No results");
+        final LinearLayout container = LayoutUtil.createBusArrivalsNoResult(nearbyFragment.getContext(), containParams);
         linearLayout.addView(container);
     }
 

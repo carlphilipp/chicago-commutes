@@ -95,8 +95,8 @@ public enum LayoutUtil {
         return paramsLeft;
     }
 
-    public static LinearLayout createBusArrivalsNoResult(@NonNull final Context context, @NonNull final LinearLayout.LayoutParams containParams, @NonNull final String stopNameTrimmed) {
-        return createBusArrivalsLayout(context, containParams, stopNameTrimmed, null, Collections.emptyList());
+    public static LinearLayout createBusArrivalsNoResult(@NonNull final Context context, @NonNull final LinearLayout.LayoutParams containParams) {
+        return createBusArrivalsLayout(context, containParams, "No Results", null, Collections.emptyList());
     }
 
     // TODO Create XML files instead of doing all those methods in Java

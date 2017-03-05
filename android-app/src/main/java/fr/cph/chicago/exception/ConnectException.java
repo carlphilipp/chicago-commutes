@@ -40,15 +40,6 @@ public class ConnectException extends TrackerException {
      * The constructor
      *
      * @param message the message
-     */
-    public ConnectException(@NonNull final String message) {
-        super(message);
-    }
-
-    /**
-     * The constructor
-     *
-     * @param message the message
      * @param e       the exception
      */
     public ConnectException(@NonNull final String message, @NonNull final Exception e) {

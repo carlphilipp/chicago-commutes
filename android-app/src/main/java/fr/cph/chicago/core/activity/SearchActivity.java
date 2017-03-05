@@ -86,6 +86,7 @@ public class SearchActivity extends AppCompatActivity {
             searchView.setMaxWidth(1000);
             searchView.setFocusable(true);
             searchView.setFocusableInTouchMode(true);
+            // FIXME remove clearfocus if possible
             searchView.clearFocus();
             searchView.requestFocus();
             searchView.requestFocusFromTouch();

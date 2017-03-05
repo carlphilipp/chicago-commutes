@@ -220,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void loadFirstData() {
-        ObservableUtil.createOnFirstLoadObservable(getApplicationContext()).subscribe(
+        ObservableUtil.createOnFirstLoadObservable().subscribe(
             onNext -> {
                 final DataHolder dataHolder = DataHolder.INSTANCE;
                 dataHolder.getBusData().setBusRoutes(onNext.getBusRoutes());

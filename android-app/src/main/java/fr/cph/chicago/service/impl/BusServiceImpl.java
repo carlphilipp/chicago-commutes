@@ -120,7 +120,7 @@ public enum BusServiceImpl implements BusService {
 
     @NonNull
     @Override
-    public List<BusRoute> loadBusRoutes(@NonNull final Context context) {
+    public List<BusRoute> loadBusRoutes() {
         try {
             final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
             final InputStream xmlResult = CtaConnect.INSTANCE.connect(BUS_ROUTES, params);

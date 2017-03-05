@@ -32,9 +32,7 @@ import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static fr.cph.chicago.Constants.GPS_ACCESS;
 
-public class AbstractMapActivity extends FragmentActivity implements EasyPermissions.PermissionCallbacks,
-    GoogleMap.OnCameraIdleListener,
-    OnMapReadyCallback {
+public class AbstractMapActivity extends FragmentActivity implements EasyPermissions.PermissionCallbacks, GoogleMap.OnCameraIdleListener, OnMapReadyCallback {
 
     @BindView(android.R.id.content)
     ViewGroup viewGroup;

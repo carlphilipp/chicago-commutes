@@ -220,10 +220,4 @@ public final class BusArrival implements Parcelable {
             return new BusArrival[size];
         }
     };
-
-    public static List<BusArrival> getRealBusArrival(final List<BusArrival> arrivals) {
-        return Stream.of(arrivals)
-            .filter(arrival -> !arrival.getTimeLeft().equals(NO_SERVICE))
-            .collect(Collectors.toList());
-    }
 }

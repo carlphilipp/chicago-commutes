@@ -127,10 +127,6 @@ public final class Eta implements Comparable<Eta>, Parcelable {
 		return result;
 	}
 
-	public final int getDestSt() {
-		return destSt;
-	}
-
 	public final void setDestSt(final int destSt) {
 		this.destSt = destSt;
 	}
