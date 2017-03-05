@@ -65,15 +65,15 @@ public class TrainArrival implements Parcelable {
 
     @NonNull
     public final List<Eta> getEtas(@NonNull final TrainLine line) {
-        List<Eta> etas = new ArrayList<>();
+        final List<Eta> result = new ArrayList<>();
         if (this.etas != null) {
-            etas.addAll(
+            result.addAll(
                 Stream.of(this.etas)
                     .filter(eta -> eta.getRouteName() == line)
                     .collect(Collectors.toList())
             );
         }
-        return etas;
+        return result;
     }
 
     @Override

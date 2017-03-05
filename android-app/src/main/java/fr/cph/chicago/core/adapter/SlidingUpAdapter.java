@@ -24,6 +24,7 @@ import fr.cph.chicago.collector.CommutesCollectors;
 import fr.cph.chicago.core.fragment.NearbyFragment;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
+import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.dto.BusArrivalRouteDTO;
 import fr.cph.chicago.entity.enumeration.BusDirection;
@@ -73,11 +74,13 @@ public class SlidingUpAdapter {
         final RelativeLayout relativeLayout = (RelativeLayout) nearbyFragment.getLayoutContainer().getChildAt(0);
         final LinearLayout linearLayout = (LinearLayout) relativeLayout.findViewById(R.id.nearby_results);
 
-        final int[] nbOfLine = {0};
+        int nbOfLine = 0;
 
         if (trainArrivalOptional.isPresent()) {
-            Stream.of(TrainLine.values()).forEach(trainLine -> {
-                final Map<String, String> etas = Stream.of(trainArrivalOptional.get().getEtas(trainLine)).collect(CommutesCollectors.toTrainArrivalByLine());
+            for (TrainLine trainLine : TrainLine.values()) {
+                final List<Eta> etaResult = trainArrivalOptional.get().getEtas(trainLine);
+                final Map<String, String> etas = Stream.of(etaResult).collect(CommutesCollectors.toTrainArrivalByLine());
+
                 boolean newLine = true;
                 int i = 0;
                 for (final Map.Entry<String, String> entry : etas.entrySet()) {
@@ -88,13 +91,13 @@ public class SlidingUpAdapter {
                     newLine = false;
                     i++;
                 }
-                nbOfLine[0] = nbOfLine[0] + etas.size();
-            });
+                nbOfLine = nbOfLine + etas.size();
+            }
         } else {
             handleNoResults(linearLayout);
-            nbOfLine[0]++;
+            nbOfLine++;
         }
-        nearbyFragment.getSlidingUpPanelLayout().setPanelHeight(getSlidingPanelHeight(nbOfLine[0]));
+        nearbyFragment.getSlidingUpPanelLayout().setPanelHeight(getSlidingPanelHeight(nbOfLine));
         updatePanelState();
     }
 
