@@ -38,9 +38,12 @@ import fr.cph.chicago.util.Util;
  */
 public class TrainListStationActivity extends ListActivity {
 
-    @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindString(R.string.bundle_train_line) String bundleTrainLine;
-    @BindDrawable(R.drawable.ic_arrow_back_white_24dp) Drawable arrowBackWhite;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindString(R.string.bundle_train_line)
+    String bundleTrainLine;
+    @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
+    Drawable arrowBackWhite;
 
     private TrainLine trainLine;
     private String lineParam;

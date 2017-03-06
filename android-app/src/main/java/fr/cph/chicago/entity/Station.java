@@ -35,6 +35,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import fr.cph.chicago.collector.CommutesCollectors;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -64,7 +65,7 @@ public class Station implements Comparable<Station>, Parcelable, AStation {
         if (stops != null) {
             return Stream.of(stops)
                 .map(Stop::getLines)
-                .collect(new LineCollector());
+                .collect(CommutesCollectors.toTrainLineCollector());
         } else {
             return Collections.emptySet();
         }
@@ -129,21 +130,4 @@ public class Station implements Comparable<Station>, Parcelable, AStation {
             return new Station[size];
         }
     };
-
-    private class LineCollector implements Collector<List<TrainLine>, Set<TrainLine>, Set<TrainLine>> {
-        @Override
-        public Supplier<Set<TrainLine>> supplier() {
-            return TreeSet::new;
-        }
-
-        @Override
-        public BiConsumer<Set<TrainLine>, List<TrainLine>> accumulator() {
-            return Set::addAll;
-        }
-
-        @Override
-        public Function<Set<TrainLine>, Set<TrainLine>> finisher() {
-            return null;
-        }
-    }
 }
