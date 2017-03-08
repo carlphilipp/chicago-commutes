@@ -174,8 +174,6 @@ STOP_ID,DIRECTION_ID,STOP_NAME,STATION_NAME,STATION_DESCRIPTIVE_NAME,MAP_ID,ADA,
 30197,N,Logan Square (O'Hare-bound),Logan Square,Logan Square (Blue Line),41020,true,false,true,false,false,false,false,false,false,false,"(41.929728, -87.708541)"
 30252,S,Loyola (95th-bound),Loyola,Loyola (Red Line),41300,true,true,false,false,false,false,false,false,false,false,"(42.001073, -87.661061)"
 30251,N,Loyola (Howard-bound),Loyola,Loyola (Red Line),41300,true,true,false,false,false,false,false,false,false,false,"(42.001073, -87.661061)"
-30124,S,Madison/Wabash (Inner Loop),Madison/Wabash,"Madison/Wabash (Brown, Green, Orange, Pink & Purple Lines)",40640,false,false,false,true,false,false,true,false,true,true,"(41.882023, -87.626098)"
-30123,N,Madison/Wabash (Outer Loop),Madison/Wabash,"Madison/Wabash (Brown, Green, Orange, Pink & Purple Lines)",40640,false,false,false,true,true,false,false,false,false,false,"(41.882023, -87.626098)"
 30053,S,Main (Howard-Loop-bound),Main,Main (Purple Line),40270,false,false,false,false,false,true,true,false,false,false,"(42.033456, -87.679538)"
 30052,N,Main (Linden-bound),Main,Main (Purple Line),40270,false,false,false,false,false,true,true,false,false,false,"(42.033456, -87.679538)"
 30090,N,Merchandise Mart (Kimball-Linden-bound),Merchandise Mart,Merchandise Mart (Brown & Purple Lines),40460,true,false,false,false,true,false,true,false,false,false,"(41.888969, -87.633924)"
