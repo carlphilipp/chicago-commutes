@@ -70,10 +70,14 @@ import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
+import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.util.GPSUtil;
 import fr.cph.chicago.util.Util;
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
 import io.realm.Realm;
 import lombok.Getter;
+import lombok.Setter;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 

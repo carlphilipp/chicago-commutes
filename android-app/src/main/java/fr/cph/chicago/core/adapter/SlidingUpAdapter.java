@@ -71,82 +71,102 @@ public class SlidingUpAdapter {
     }
 
     public void addTrainStation(final Optional<TrainArrival> trainArrivalOptional) {
-        final RelativeLayout relativeLayout = (RelativeLayout) nearbyFragment.getLayoutContainer().getChildAt(0);
-        final LinearLayout linearLayout = (LinearLayout) relativeLayout.findViewById(R.id.nearby_results);
+        final LinearLayout linearLayout = getNearbyResultsView();
 
-        int nbOfLine = 0;
+        /*
+         * Handle the case where a user clicks quickly from one marker to another. Will not update anything if a child view is already present,
+         * it just mean that the view has been updated already with a faster request.
+         */
+        if (linearLayout.getChildCount() == 0) {
+            int nbOfLine = 0;
 
-        if (trainArrivalOptional.isPresent()) {
-            for (TrainLine trainLine : TrainLine.values()) {
-                final List<Eta> etaResult = trainArrivalOptional.get().getEtas(trainLine);
-                final Map<String, String> etas = Stream.of(etaResult).collect(CommutesCollectors.toTrainArrivalByLine());
+            if (trainArrivalOptional.isPresent()) {
+                for (TrainLine trainLine : TrainLine.values()) {
+                    final List<Eta> etaResult = trainArrivalOptional.get().getEtas(trainLine);
+                    final Map<String, String> etas = Stream.of(etaResult).collect(CommutesCollectors.toTrainArrivalByLine());
+
+                    boolean newLine = true;
+                    int i = 0;
+                    for (final Map.Entry<String, String> entry : etas.entrySet()) {
+                        final LinearLayout.LayoutParams containParams = LayoutUtil.getInsideParams(nearbyFragment.getContext(), newLine, i == etas.size() - 1);
+                        final LinearLayout container = LayoutUtil.createTrainArrivalsLayout(nearbyFragment.getContext(), containParams, entry, trainLine);
+
+                        linearLayout.addView(container);
+                        newLine = false;
+                        i++;
+                    }
+                    nbOfLine = nbOfLine + etas.size();
+                }
+            } else {
+                handleNoResults(linearLayout);
+                nbOfLine++;
+            }
+            nearbyFragment.getSlidingUpPanelLayout().setPanelHeight(getSlidingPanelHeight(nbOfLine));
+            updatePanelState();
+        }
+    }
+
+    public void addBusArrival(final BusArrivalRouteDTO busArrivalRouteDTO) {
+        final LinearLayout linearLayout = getNearbyResultsView();
+
+        /*
+         * Handle the case where a user clicks quickly from one marker to another. Will not update anything if a child view is already present,
+         * it just mean that the view has been updated already with a faster request.
+         */
+        if (linearLayout.getChildCount() == 0) {
+            final int[] nbOfLine = {0};
+
+            Stream.of(busArrivalRouteDTO.entrySet()).forEach(entry -> {
+                final String stopNameTrimmed = Util.trimBusStopNameIfNeeded(entry.getKey());
+                final Map<String, List<BusArrival>> boundMap = entry.getValue();
 
                 boolean newLine = true;
                 int i = 0;
-                for (final Map.Entry<String, String> entry : etas.entrySet()) {
-                    final LinearLayout.LayoutParams containParams = LayoutUtil.getInsideParams(nearbyFragment.getContext(), newLine, i == etas.size() - 1);
-                    final LinearLayout container = LayoutUtil.createTrainArrivalsLayout(nearbyFragment.getContext(), containParams, entry, trainLine);
+
+                for (final Map.Entry<String, List<BusArrival>> entry2 : boundMap.entrySet()) {
+                    final LinearLayout.LayoutParams containParams = LayoutUtil.getInsideParams(nearbyFragment.getContext(), newLine, i == boundMap.size() - 1);
+                    final LinearLayout container = LayoutUtil.createBusArrivalsLayout(nearbyFragment.getContext(), containParams, stopNameTrimmed, BusDirection.BusDirectionEnum.fromString(entry2.getKey()), entry2.getValue());
 
                     linearLayout.addView(container);
                     newLine = false;
                     i++;
                 }
-                nbOfLine = nbOfLine + etas.size();
+                nbOfLine[0] = nbOfLine[0] + boundMap.size();
+            });
+
+            // Handle the case when we have no bus returned.
+            if (busArrivalRouteDTO.size() == 0) {
+                handleNoResults(linearLayout);
+                nbOfLine[0]++;
             }
-        } else {
-            handleNoResults(linearLayout);
-            nbOfLine++;
+            nearbyFragment.getSlidingUpPanelLayout().setPanelHeight(getSlidingPanelHeight(nbOfLine[0]));
+            updatePanelState();
         }
-        nearbyFragment.getSlidingUpPanelLayout().setPanelHeight(getSlidingPanelHeight(nbOfLine));
-        updatePanelState();
     }
 
-    public void addBusArrival(final BusArrivalRouteDTO busArrivalRouteDTO) {
-        final RelativeLayout relativeLayout = (RelativeLayout) nearbyFragment.getLayoutContainer().getChildAt(0);
-        final LinearLayout linearLayout = (LinearLayout) relativeLayout.findViewById(R.id.nearby_results);
-
-        final int[] nbOfLine = {0};
-
-        Stream.of(busArrivalRouteDTO.entrySet()).forEach(entry -> {
-            final String stopNameTrimmed = Util.trimBusStopNameIfNeeded(entry.getKey());
-            final Map<String, List<BusArrival>> boundMap = entry.getValue();
-
-            boolean newLine = true;
-            int i = 0;
-
-            for (final Map.Entry<String, List<BusArrival>> entry2 : boundMap.entrySet()) {
-                final LinearLayout.LayoutParams containParams = LayoutUtil.getInsideParams(nearbyFragment.getContext(), newLine, i == boundMap.size() - 1);
-                final LinearLayout container = LayoutUtil.createBusArrivalsLayout(nearbyFragment.getContext(), containParams, stopNameTrimmed, BusDirection.BusDirectionEnum.fromString(entry2.getKey()), entry2.getValue());
-
-                linearLayout.addView(container);
-                newLine = false;
-                i++;
-            }
-            nbOfLine[0] = nbOfLine[0] + boundMap.size();
-        });
-
-        // Handle the case when we have no bus returned.
-        if (busArrivalRouteDTO.size() == 0) {
-            handleNoResults(linearLayout);
-            nbOfLine[0]++;
+    public void addBike(final Optional<BikeStation> bikeStationOptional) {
+        final LinearLayout linearLayout = getNearbyResultsView();
+        /*
+         * Handle the case where a user clicks quickly from one marker to another. Will not update anything if a child view is already present,
+         * it just mean that the view has been updated already with a faster request.
+         */
+        if (linearLayout.getChildCount() == 0) {
+            final LinearLayout bikeResultLayout = LayoutUtil.createBikeLayout(nearbyFragment.getContext(), bikeStationOptional.get());
+            linearLayout.addView(bikeResultLayout);
+            nearbyFragment.getSlidingUpPanelLayout().setPanelHeight(getSlidingPanelHeight(2));
+            updatePanelState();
         }
-        nearbyFragment.getSlidingUpPanelLayout().setPanelHeight(getSlidingPanelHeight(nbOfLine[0]));
-        updatePanelState();
+    }
+
+    private LinearLayout getNearbyResultsView() {
+        final RelativeLayout relativeLayout = (RelativeLayout) nearbyFragment.getLayoutContainer().getChildAt(0);
+        return (LinearLayout) relativeLayout.findViewById(R.id.nearby_results);
     }
 
     private void handleNoResults(final LinearLayout linearLayout) {
         final LinearLayout.LayoutParams containParams = LayoutUtil.getInsideParams(nearbyFragment.getContext(), true, true);
         final LinearLayout container = LayoutUtil.createBusArrivalsNoResult(nearbyFragment.getContext(), containParams);
         linearLayout.addView(container);
-    }
-
-    public void addBike(final Optional<BikeStation> bikeStationOptional) {
-        final RelativeLayout relativeLayout = (RelativeLayout) nearbyFragment.getLayoutContainer().getChildAt(0);
-        final LinearLayout linearLayout = (LinearLayout) relativeLayout.findViewById(R.id.nearby_results);
-        final LinearLayout bikeResultLayout = LayoutUtil.createBikeLayout(nearbyFragment.getContext(), bikeStationOptional.get());
-        linearLayout.addView(bikeResultLayout);
-        nearbyFragment.getSlidingUpPanelLayout().setPanelHeight(getSlidingPanelHeight(2));
-        updatePanelState();
     }
 
     private int getSlidingPanelHeight(final int nbLine) {
