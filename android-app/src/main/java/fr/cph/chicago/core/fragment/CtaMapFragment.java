@@ -18,7 +18,7 @@ import butterknife.Unbinder;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.activity.MainActivity;
 import fr.cph.chicago.util.Util;
-import uk.co.senab.photoview.PhotoView;
+import com.github.chrisbanes.photoview.PhotoView;
 
 public class CtaMapFragment extends Fragment {
 
