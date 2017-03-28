@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
-apply plugin: 'android-apt'
 apply plugin: 'realm-android'
 
 dependencies {
@@ -32,9 +31,9 @@ dependencies {
         [group: 'com.sothree.slidinguppanel', name: 'library', version: sliding_up_panel_version]
     )
 
-    // TODO Migrate to annotationProcessor when java 8 works https://bitbucket.org/hvisser/android-apt/wiki/Migration
-    apt(
-        [group: 'com.jakewharton', name: 'butterknife-compiler', version: butterknife_version]
+    annotationProcessor(
+        [group: 'com.jakewharton', name: 'butterknife-compiler', version: butterknife_version],
+        [group: 'org.projectlombok', name: 'lombok', version: lombok_version]
     )
 
     testCompile(
@@ -91,7 +90,6 @@ android {
         // FIXME To enable Jack compiler, need to:
         // _ Wait for Realm fix issue: https://github.com/realm/realm-java/issues/3038
         // _ Do not use Retrolambda
-        // _ Switch to annotation processing gradle task https://bitbucket.org/hvisser/android-apt/wiki/Migration
         //jackOptions {
         //    enabled true
         //}
