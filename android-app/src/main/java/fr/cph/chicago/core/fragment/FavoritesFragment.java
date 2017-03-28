@@ -255,10 +255,10 @@ public class FavoritesFragment extends Fragment {
 
     @Override
     public final void onSaveInstanceState(final Bundle outState) {
-        super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(bundleBusArrivals, (ArrayList<BusArrival>) busArrivals);
         outState.putSparseParcelableArray(bundleTrainArrivals, trainArrivals);
         outState.putParcelableArrayList(bundleBikeStation, (ArrayList<BikeStation>) bikeStations);
+        super.onSaveInstanceState(outState);
     }
 
     public final void reloadData(final FavoritesDTO favoritesDTO) {

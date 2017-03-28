@@ -179,5 +179,6 @@ public class SlidingUpAdapter {
         if (nearbyFragment.getSlidingUpPanelLayout().getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN) {
             nearbyFragment.getSlidingUpPanelLayout().setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         }
+        nearbyFragment.showProgress(false);
     }
 }

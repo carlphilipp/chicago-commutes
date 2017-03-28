@@ -166,7 +166,6 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         mapFragment.setRetainInstance(true);
         final FragmentManager fm = activity.getSupportFragmentManager();
         loadNearbyIfAllowed();
-        //new Thread(() -> fm.beginTransaction().replace(R.id.map, mapFragment).commit()).start();
         fm.beginTransaction().replace(R.id.map, mapFragment).commit();
     }
 
