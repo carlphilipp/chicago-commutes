@@ -96,7 +96,7 @@
 -dontnote com.fasterxml.jackson.**
 -dontnote com.univocity.parsers.common.beans.**
 
--keep class uk.co.senab.photoview.** { *; }
+-keep class com.github.chrisbanes.photoview.** { *; }
 -keep public class fr.cph.chicago.exception.TrackerException
 -keep @interface *
 -keepnames class com.fasterxml.jackson.** { *; }
