@@ -92,6 +92,11 @@ android {
         //jackOptions {
         //    enabled true
         //}
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath false
+            }
+        }
     }
 
     // Change output apk name
