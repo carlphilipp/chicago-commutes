@@ -54,12 +54,14 @@ import static fr.cph.chicago.Constants.TRAINS_ARRIVALS_URL;
 import static fr.cph.chicago.core.App.setupContextData;
 
 /**
+ *
  * This class represents the base activity of the application It will load the loading screen and/or the main
  * activity
  *
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@SuppressWarnings("WeakerAccess")
 public class BaseActivity extends Activity {
 
     private static final String TAG = BaseActivity.class.getSimpleName();

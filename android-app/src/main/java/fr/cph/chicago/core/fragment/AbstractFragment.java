@@ -26,6 +26,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import fr.cph.chicago.core.activity.MainActivity;
 
+@SuppressWarnings("WeakerAccess")
 public class AbstractFragment extends Fragment {
 
     private static final String ARG_SECTION_NUMBER = "section_number";

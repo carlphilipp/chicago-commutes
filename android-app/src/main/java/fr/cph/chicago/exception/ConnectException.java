@@ -34,7 +34,7 @@ public class ConnectException extends TrackerException {
     /**
      * The error string
      **/
-    public static final String ERROR = "Can't connect, please check your connection";
+    private static final String ERROR = "Can't connect, please check your connection";
 
     /**
      * The constructor
@@ -42,7 +42,12 @@ public class ConnectException extends TrackerException {
      * @param message the message
      * @param e       the exception
      */
-    public ConnectException(@NonNull final String message, @NonNull final Exception e) {
+    @SuppressWarnings("SameParameterValue")
+    private ConnectException(@NonNull final String message, @NonNull final Exception e) {
         super(message, e);
+    }
+
+    public static ConnectException defaultException(@NonNull final Exception e) {
+        return new ConnectException(ERROR, e);
     }
 }

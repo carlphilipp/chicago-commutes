@@ -66,6 +66,7 @@ import static fr.cph.chicago.Constants.BUSES_STOP_URL;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@SuppressWarnings("WeakerAccess")
 public class BusBoundActivity extends ListActivity {
 
     private static final String TAG = BusBoundActivity.class.getSimpleName();

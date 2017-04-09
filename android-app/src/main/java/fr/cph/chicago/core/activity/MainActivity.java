@@ -61,6 +61,7 @@ import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;
 import static fr.cph.chicago.Constants.BUSES_ROUTES_URL;
 import static fr.cph.chicago.Constants.TRAINS_ARRIVALS_URL;
 
+@SuppressWarnings("WeakerAccess")
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -262,9 +263,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void setBarTitle(@NonNull final String title) {
         this.title = title;
-        if (toolbar != null) {
-            toolbar.setTitle(title);
-        }
+        toolbar.setTitle(title);
     }
 
     private void itemSelection(final int position) {

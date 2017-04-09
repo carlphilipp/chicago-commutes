@@ -20,12 +20,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-import com.annimon.stream.Collector;
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
-import com.annimon.stream.function.BiConsumer;
-import com.annimon.stream.function.Function;
-import com.annimon.stream.function.Supplier;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import fr.cph.chicago.collector.CommutesCollectors;
 import fr.cph.chicago.entity.enumeration.TrainLine;

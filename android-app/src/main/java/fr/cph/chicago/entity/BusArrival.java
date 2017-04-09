@@ -20,11 +20,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-import com.annimon.stream.Collectors;
-import com.annimon.stream.Stream;
-
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -43,55 +39,20 @@ import lombok.Data;
 @Builder
 @Data
 public final class BusArrival implements Parcelable {
-    /** **/
+
     private static final String NO_SERVICE = "No service";
-    /**
-     * Timestamp
-     **/
+
     private Date timeStamp;
-    /**
-     * Error message
-     **/
     private String errorMessage;
-    /**
-     * TYpe of prediction
-     **/
     private PredictionType predictionType;
-    /**
-     * Stop name
-     **/
     private String stopName;
-    /**
-     * Stop id
-     **/
     private int stopId;
-    /**
-     * Bus id
-     **/
     private int busId;
-    /**
-     * Distance to stop
-     **/
     private int distanceToStop; // feets
-    /**
-     * Route id
-     **/
     private String routeId;
-    /**
-     * Route direction
-     **/
     private String routeDirection;
-    /**
-     * Bus destination
-     **/
     private String busDestination;
-    /**
-     * Prediction time
-     **/
     private Date predictionTime;
-    /**
-     * Is delayed
-     **/
     private boolean isDly;
 
     private BusArrival(final Parcel in) {

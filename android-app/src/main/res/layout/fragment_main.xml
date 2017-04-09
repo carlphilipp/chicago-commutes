@@ -17,11 +17,12 @@
 -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/frameLayout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/bg_selector">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_selector">
 
     <RelativeLayout
         android:id="@+id/welcome"
@@ -39,7 +40,7 @@
             android:text="@string/no_fav"
             android:textIsSelectable="false"
             android:textSize="25sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/no_fav2"
@@ -51,7 +52,7 @@
             android:text="@string/add_fav"
             android:textIsSelectable="false"
             android:textSize="18sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -61,11 +62,10 @@
             android:text="@string/add_fav2"
             android:textIsSelectable="false"
             android:textSize="16sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
     </RelativeLayout>
 
-    <android.support.design.widget.CoordinatorLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/main_coordinator"
         android:layout_width="match_parent"
@@ -75,15 +75,15 @@
             android:id="@+id/activity_main_swipe_refresh_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:elevation="3dp">
+            android:elevation="3dp"
+            tools:targetApi="lollipop">
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/favorites_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:dividerHeight="1dp"
-                android:listSelector="@android:color/transparent">
-            </android.support.v7.widget.RecyclerView>
+                android:listSelector="@android:color/transparent" />
 
         </android.support.v4.widget.SwipeRefreshLayout>
 
@@ -93,9 +93,10 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:clickable="true"
+            android:focusable="true"
             android:src="@drawable/ic_search_white_24dp"
             app:layout_anchor="@id/favorites_list"
-            app:layout_anchorGravity="bottom|right|end"/>
+            app:layout_anchorGravity="bottom|right|end" />
 
     </android.support.design.widget.CoordinatorLayout>
 

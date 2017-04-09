@@ -74,6 +74,7 @@ import static fr.cph.chicago.connection.CtaRequestType.TRAIN_LOCATION;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@SuppressWarnings("WeakerAccess")
 public class TrainMapActivity extends AbstractMapActivity {
 
     @BindString(R.string.bundle_train_line)

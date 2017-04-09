@@ -46,6 +46,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import butterknife.BindString;
 import butterknife.ButterKnife;
@@ -77,6 +78,7 @@ import static fr.cph.chicago.connection.CtaRequestType.BUS_PATTERN;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@SuppressWarnings("WeakerAccess")
 public class BusMapActivity extends AbstractMapActivity {
 
     private static final String TAG = BusMapActivity.class.getSimpleName();

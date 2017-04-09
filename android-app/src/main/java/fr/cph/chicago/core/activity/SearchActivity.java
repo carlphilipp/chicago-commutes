@@ -40,13 +40,18 @@ import fr.cph.chicago.util.Util;
 
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 
+@SuppressWarnings("WeakerAccess")
 public class SearchActivity extends AppCompatActivity {
 
-    @BindView(R.id.container) FrameLayout container;
-    @BindView(R.id.search_list) ListView listView;
-    @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.container)
+    FrameLayout container;
+    @BindView(R.id.search_list)
+    ListView listView;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
-    @BindString(R.string.bundle_bike_stations) String bundleBikeStations;
+    @BindString(R.string.bundle_bike_stations)
+    String bundleBikeStations;
 
     private SearchView searchView;
     private SearchAdapter searchAdapter;

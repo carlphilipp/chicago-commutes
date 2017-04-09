@@ -16,6 +16,7 @@
 
 package fr.cph.chicago.core.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -58,6 +59,7 @@ public class TrainMapSnippetAdapter extends BaseAdapter {
         return position;
     }
 
+    @SuppressLint("ViewHolder")
     @Override
     public final View getView(final int position, View convertView, final ViewGroup parent) {
         final Eta eta = (Eta) getItem(position);

@@ -55,6 +55,8 @@ public enum TrainData {
 
     private static final String TAG = TrainData.class.getSimpleName();
 
+    private static final double DEFAULT_RANGE = 0.008;
+
     // https://data.cityofchicago.org/Transportation/CTA-System-Information-List-of-L-Stops/8pix-ypme
     private static final String TRAIN_FILE_PATH = "train_stops.csv";
 
@@ -228,14 +230,14 @@ public enum TrainData {
      * @return a list of station
      */
     @NonNull
-    public final List<Station> readNearbyStation(final Position position, final double range) {
+    public final List<Station> readNearbyStation(final Position position) {
         final double latitude = position.getLatitude();
         final double longitude = position.getLongitude();
 
-        final double latMax = latitude + range;
-        final double latMin = latitude - range;
-        final double lonMax = longitude + range;
-        final double lonMin = longitude - range;
+        final double latMax = latitude + DEFAULT_RANGE;
+        final double latMin = latitude - DEFAULT_RANGE;
+        final double lonMax = longitude + DEFAULT_RANGE;
+        final double lonMin = longitude - DEFAULT_RANGE;
 
         final List<Station> nearByStations = new ArrayList<>();
         for (int i = 0; i < stations.size(); i++) {

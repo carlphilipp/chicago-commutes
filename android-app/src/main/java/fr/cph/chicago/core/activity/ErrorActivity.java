@@ -34,13 +34,18 @@ import fr.cph.chicago.R;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@SuppressWarnings("WeakerAccess")
 public class ErrorActivity extends Activity {
 
-    @BindView(R.id.loading_layout) View loadLayout;
-    @BindView(R.id.error_message) TextView errorText;
-    @BindView(R.id.retry_button) Button button;
+    @BindView(R.id.loading_layout)
+    View loadLayout;
+    @BindView(R.id.error_message)
+    TextView errorText;
+    @BindView(R.id.retry_button)
+    Button button;
 
-    @BindString(R.string.bundle_error) String bundleError;
+    @BindString(R.string.bundle_error)
+    String bundleError;
 
     private String error;
 

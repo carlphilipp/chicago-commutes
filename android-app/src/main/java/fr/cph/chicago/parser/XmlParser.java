@@ -98,6 +98,7 @@ public enum XmlParser {
      * @return a list of train arrival
      * @throws ParserException the parser exception
      */
+    @SuppressWarnings("ConstantConditions")
     @NonNull
     public final synchronized SparseArray<TrainArrival> parseArrivals(@NonNull final InputStream is, @NonNull final TrainData trainData) throws ParserException {
         final SparseArray<TrainArrival> arrivals = new SparseArray<>();
@@ -327,7 +328,7 @@ public enum XmlParser {
             }
         } catch (final XmlPullParserException | ParseException | IOException e) {
             Log.e(TAG, e.getMessage(), e);
-            throw new ParserException(TrackerException.ERROR, e);
+            throw new ParserException(e);
         } finally {
             IOUtils.closeQuietly(is);
         }
@@ -399,7 +400,7 @@ public enum XmlParser {
                 eventType = parser.next();
             }
         } catch (final IOException | XmlPullParserException e) {
-            throw new ParserException(TrackerException.ERROR, e);
+            throw new ParserException(e);
         } finally {
             IOUtils.closeQuietly(xml);
         }
@@ -431,7 +432,7 @@ public enum XmlParser {
                 eventType = parser.next();
             }
         } catch (final IOException | XmlPullParserException e) {
-            throw new ParserException(TrackerException.ERROR, e);
+            throw new ParserException(e);
         } finally {
             IOUtils.closeQuietly(xml);
         }
@@ -489,7 +490,7 @@ public enum XmlParser {
                 eventType = parser.next();
             }
         } catch (final IOException | XmlPullParserException e) {
-            throw new ParserException(TrackerException.ERROR, e);
+            throw new ParserException(e);
         } finally {
             IOUtils.closeQuietly(xml);
         }
@@ -576,7 +577,7 @@ public enum XmlParser {
                 eventType = parser.next();
             }
         } catch (final XmlPullParserException | ParseException | IOException e) {
-            throw new ParserException(TrackerException.ERROR, e);
+            throw new ParserException(e);
         } finally {
             IOUtils.closeQuietly(xml);
         }
@@ -667,7 +668,7 @@ public enum XmlParser {
                 eventType = parser.next();
             }
         } catch (final XmlPullParserException | IOException e) {
-            throw new ParserException(TrackerException.ERROR, e);
+            throw new ParserException(e);
         } finally {
             IOUtils.closeQuietly(xml);
         }
@@ -689,7 +690,6 @@ public enum XmlParser {
                     if ("vehicle".equals(tagName)) {
                         bus = Bus.builder().build();
                     } else if ("error".equals(tagName)) {
-                        eventType = XmlPullParser.END_DOCUMENT;
                         break;
                     }
                 } else if (eventType == XmlPullParser.END_TAG) {
@@ -737,7 +737,7 @@ public enum XmlParser {
                 eventType = parser.next();
             }
         } catch (XmlPullParserException | IOException e) {
-            throw new ParserException(TrackerException.ERROR, e);
+            throw new ParserException(e);
         } finally {
             IOUtils.closeQuietly(is);
         }
@@ -806,13 +806,14 @@ public enum XmlParser {
                 eventType = parser.next();
             }
         } catch (XmlPullParserException | IOException e) {
-            throw new ParserException(TrackerException.ERROR, e);
+            throw new ParserException(e);
         } finally {
             IOUtils.closeQuietly(is);
         }
         return trains;
     }
 
+    @SuppressWarnings("ConstantConditions")
     @NonNull
     public final synchronized List<Eta> parseTrainsFollow(@NonNull final InputStream is, @NonNull final TrainData data) throws ParserException {
         SparseArray<TrainArrival> arrivals = new SparseArray<>();
@@ -1007,7 +1008,7 @@ public enum XmlParser {
                 eventType = parser.next();
             }
         } catch (XmlPullParserException | ParseException | IOException e) {
-            throw new ParserException(TrackerException.ERROR, e);
+            throw new ParserException(e);
         } finally {
             IOUtils.closeQuietly(is);
         }

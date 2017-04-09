@@ -32,7 +32,6 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.annimon.stream.Collectors;
@@ -91,7 +90,6 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     static class FavoritesViewHolder extends RecyclerView.ViewHolder {
         final ViewGroup parent;
         final LinearLayout mainLayout;
-        final RelativeLayout buttonsLayout;
         final TextView lastUpdateTextView;
         final TextView stationNameTextView;
         final ImageView favoriteImage;
@@ -105,7 +103,6 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 this.mainLayout.setBackground(ContextCompat.getDrawable(parent.getContext(), R.drawable.any_selector));
             }
-            this.buttonsLayout = (RelativeLayout) view.findViewById(R.id.favorites_buttons);
             this.favoriteImage = (ImageView) view.findViewById(R.id.favorites_icon);
 
             this.stationNameTextView = (TextView) view.findViewById(R.id.favorites_station_name);

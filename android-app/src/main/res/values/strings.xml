@@ -103,9 +103,6 @@
     <string name="search_title">Search</string>
     <string name="search_hint">Search&#8230;</string>
 
-    <!-- Nearby -->
-    <string name="nearby_check_box">Hide stations/stops with no results</string>
-
     <!-- Loading -->
     <string name="loading_image_description">A nice description</string>
 

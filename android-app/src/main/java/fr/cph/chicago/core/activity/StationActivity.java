@@ -66,8 +66,6 @@ import fr.cph.chicago.entity.enumeration.TrainDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.rx.observer.TrainArrivalObserver;
-import fr.cph.chicago.service.TrainService;
-import fr.cph.chicago.service.impl.TrainServiceImpl;
 import fr.cph.chicago.util.Util;
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
@@ -78,6 +76,7 @@ import io.reactivex.schedulers.Schedulers;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@SuppressWarnings("WeakerAccess")
 public class StationActivity extends AbstractStationActivity {
 
     @BindView(android.R.id.content)

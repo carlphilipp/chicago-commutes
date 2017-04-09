@@ -50,6 +50,7 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@SuppressWarnings("WeakerAccess")
 public enum LayoutUtil {
     ;
 

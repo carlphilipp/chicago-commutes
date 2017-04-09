@@ -20,12 +20,12 @@ import java.util.Random;
 import butterknife.BindView;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.activity.BaseActivity;
-import fr.cph.chicago.core.activity.MainActivity;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.data.PreferencesImpl;
 import fr.cph.chicago.util.RealmUtil;
 import fr.cph.chicago.util.Util;
 
+@SuppressWarnings("WeakerAccess")
 public class SettingsFragment extends AbstractFragment {
 
     @BindView(R.id.clear_cache)

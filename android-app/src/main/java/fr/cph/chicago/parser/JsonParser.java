@@ -30,7 +30,6 @@ import java.util.List;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.dto.DivvyDTO;
 import fr.cph.chicago.exception.ParserException;
-import fr.cph.chicago.exception.TrackerException;
 
 /**
  * Json
@@ -50,7 +49,7 @@ public enum JsonParser {
             });
             return divvyJson.getStations();
         } catch (final IOException e) {
-            throw new ParserException(TrackerException.ERROR, e);
+            throw new ParserException(e);
         } finally {
             IOUtils.closeQuietly(stream);
         }

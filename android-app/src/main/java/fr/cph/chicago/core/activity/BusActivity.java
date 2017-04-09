@@ -65,6 +65,7 @@ import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@SuppressWarnings("WeakerAccess")
 public class BusActivity extends AbstractStationActivity {
 
     @BindView(R.id.activity_bus_stop_swipe_refresh_layout)
@@ -171,7 +172,8 @@ public class BusActivity extends AbstractStationActivity {
             mapContainer.setOnClickListener(new GoogleMapOnClickListener(latitude, longitude));
             walkContainer.setOnClickListener(new GoogleMapDirectionOnClickListener(latitude, longitude));
 
-            busRouteNameView2.setText(busRouteName + " (" + boundTitle + ")");
+            final String busRouteName2 = busRouteName + " (" + boundTitle + ")";
+            busRouteNameView2.setText(busRouteName2);
 
             // Load google street picture and data
             createGoogleStreetObservable(position.getLatitude(), position.getLongitude());

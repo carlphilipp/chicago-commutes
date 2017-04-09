@@ -50,6 +50,7 @@ import fr.cph.chicago.util.Util;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@SuppressWarnings("WeakerAccess")
 public class BusFragment extends AbstractFragment {
 
     @BindView(R.id.bus_filter)

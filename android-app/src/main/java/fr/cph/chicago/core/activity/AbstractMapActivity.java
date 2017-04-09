@@ -1,5 +1,6 @@
 package fr.cph.chicago.core.activity;
 
+import android.annotation.SuppressLint;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,6 +33,8 @@ import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static fr.cph.chicago.Constants.GPS_ACCESS;
 
+@SuppressWarnings("WeakerAccess")
+@SuppressLint("Registered")
 public class AbstractMapActivity extends FragmentActivity implements EasyPermissions.PermissionCallbacks, GoogleMap.OnCameraIdleListener, OnMapReadyCallback {
 
     @BindView(android.R.id.content)
@@ -72,9 +75,6 @@ public class AbstractMapActivity extends FragmentActivity implements EasyPermiss
     }
 
     public void refreshInfoWindow() {
-        if (selectedMarker == null) {
-            return;
-        }
         refreshingInfoWindow = true;
         selectedMarker.showInfoWindow();
         refreshingInfoWindow = false;

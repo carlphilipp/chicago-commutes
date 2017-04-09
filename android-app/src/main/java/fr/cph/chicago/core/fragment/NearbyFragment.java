@@ -54,7 +54,6 @@ import butterknife.BindString;
 import butterknife.BindView;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.App;
-import fr.cph.chicago.core.activity.MainActivity;
 import fr.cph.chicago.core.adapter.SlidingUpAdapter;
 import fr.cph.chicago.core.listener.OnMarkerClickListener;
 import fr.cph.chicago.data.BusData;
@@ -82,9 +81,8 @@ import static fr.cph.chicago.Constants.GPS_ACCESS;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@SuppressWarnings("WeakerAccess")
 public class NearbyFragment extends AbstractFragment implements EasyPermissions.PermissionCallbacks {
-
-    private static final double DEFAULT_RANGE = 0.008;
 
     @BindView(R.id.activity_bar)
     ProgressBar progressBar;
@@ -149,9 +147,7 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
     @Override
     public final void onResume() {
         super.onResume();
-        if (slidingUpPanelLayout != null) {
-            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-        }
+        slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
     }
 
     @Override
@@ -270,12 +266,12 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
             final Optional<Position> position = gpsUtil.getLocation();
             if (position.isPresent()) {
                 final Realm realm = Realm.getDefaultInstance();
-                busStops = busData.readNearbyStops(realm, position.get(), DEFAULT_RANGE);
+                busStops = busData.readNearbyStops(realm, position.get());
                 realm.close();
-                trainStations = trainData.readNearbyStation(position.get(), DEFAULT_RANGE);
+                trainStations = trainData.readNearbyStation(position.get());
                 // FIXME: wait for bike stations to be loaded
                 bikeStations = bikeStations != null
-                    ? BikeStation.readNearbyStation(bikeStations, position.get(), DEFAULT_RANGE)
+                    ? BikeStation.readNearbyStation(bikeStations, position.get())
                     : new ArrayList<>();
             }
             return position;

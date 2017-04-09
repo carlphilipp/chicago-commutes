@@ -44,6 +44,8 @@ import lombok.Setter;
 public enum BusData {
     INSTANCE;
 
+    private static final double DEFAULT_RANGE = 0.008;
+
     private static final String TAG = BusData.class.getSimpleName();
 
     @Getter
@@ -86,14 +88,14 @@ public enum BusData {
      * @return a list of bus stop
      */
     @NonNull
-    public final List<BusStop> readNearbyStops(@NonNull final Realm realm, @NonNull final Position position, final double range) {
+    public final List<BusStop> readNearbyStops(@NonNull final Realm realm, @NonNull final Position position) {
         final double latitude = position.getLatitude();
         final double longitude = position.getLongitude();
 
-        final double latMax = latitude + range;
-        final double latMin = latitude - range;
-        final double lonMax = longitude + range;
-        final double lonMin = longitude - range;
+        final double latMax = latitude + DEFAULT_RANGE;
+        final double latMin = latitude - DEFAULT_RANGE;
+        final double lonMax = longitude + DEFAULT_RANGE;
+        final double lonMin = longitude - DEFAULT_RANGE;
 
         return Stream.of(realm.where(BusStop.class)
             // TODO use between when child object is supported by Realm

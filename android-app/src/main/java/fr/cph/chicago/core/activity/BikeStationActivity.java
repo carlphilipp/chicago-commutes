@@ -51,6 +51,7 @@ import fr.cph.chicago.util.Util;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@SuppressWarnings("WeakerAccess")
 public class BikeStationActivity extends AbstractStationActivity {
 
     @BindView(R.id.activity_station_swipe_refresh_layout)

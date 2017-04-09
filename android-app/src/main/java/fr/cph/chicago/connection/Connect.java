@@ -45,7 +45,7 @@ enum Connect {
             inputStream = new BufferedInputStream(urlConnection.getInputStream());
         } catch (final IOException e) {
             Log.e(TAG, e.getMessage(), e);
-            throw new ConnectException(ConnectException.ERROR, e);
+            throw ConnectException.defaultException(e);
         }
         return inputStream;
     }

@@ -61,6 +61,7 @@ import static fr.cph.chicago.Constants.TRAINS_ARRIVALS_URL;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@SuppressWarnings("WeakerAccess")
 public class FavoritesFragment extends AbstractFragment {
 
     private static final String TAG = FavoritesFragment.class.getSimpleName();
@@ -226,10 +227,8 @@ public class FavoritesFragment extends AbstractFragment {
         if (refreshTimingTask.getStatus() == Status.FINISHED) {
             startRefreshTask();
         }
-        if (welcomeLayout != null) {
-            boolean hasFav = PreferencesImpl.INSTANCE.hasFavorites(getContext());
-            welcomeLayout.setVisibility(hasFav ? View.GONE : View.VISIBLE);
-        }
+        boolean hasFav = PreferencesImpl.INSTANCE.hasFavorites(getContext());
+        welcomeLayout.setVisibility(hasFav ? View.GONE : View.VISIBLE);
     }
 
     @Override
@@ -270,7 +269,7 @@ public class FavoritesFragment extends AbstractFragment {
      *
      * @param message the message
      */
-    public final void displayError(@NonNull final Integer message) {
+    public final void displayError(final int message) {
         Util.showMessage(activity, message);
         stopRefreshing();
     }

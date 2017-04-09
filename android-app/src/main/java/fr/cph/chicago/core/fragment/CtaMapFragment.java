@@ -15,6 +15,7 @@ import butterknife.BindView;
 import fr.cph.chicago.R;
 import fr.cph.chicago.util.Util;
 
+@SuppressWarnings("WeakerAccess")
 public class CtaMapFragment extends AbstractFragment {
 
     @BindView(R.id.cta_map)

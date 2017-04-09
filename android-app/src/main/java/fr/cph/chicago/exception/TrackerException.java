@@ -41,7 +41,7 @@ public class TrackerException extends Exception {
      *
      * @param message the message
      */
-    public TrackerException(@NonNull final String message) {
+    TrackerException(@NonNull final String message) {
         super(message);
     }
 
@@ -51,7 +51,7 @@ public class TrackerException extends Exception {
      * @param message the message
      * @param e       the exception
      */
-    public TrackerException(@NonNull final String message, @NonNull final Exception e) {
+    TrackerException(@NonNull final String message, @NonNull final Exception e) {
         super(message, e);
     }
 

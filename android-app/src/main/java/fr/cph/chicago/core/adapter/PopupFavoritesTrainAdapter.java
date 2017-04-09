@@ -16,6 +16,7 @@
 
 package fr.cph.chicago.core.adapter;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.view.View;
@@ -45,6 +46,7 @@ class PopupFavoritesTrainAdapter extends ArrayAdapter<String> {
         this.colors = colors;
     }
 
+    @SuppressLint("ViewHolder")
     @NonNull
     @Override
     public final View getView(final int position, final View convertView, @NonNull final ViewGroup parent) {

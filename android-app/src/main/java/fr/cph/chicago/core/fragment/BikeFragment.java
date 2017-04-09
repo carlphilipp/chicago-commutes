@@ -16,8 +16,6 @@
 
 package fr.cph.chicago.core.fragment;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -41,7 +39,6 @@ import java.util.List;
 import butterknife.BindString;
 import butterknife.BindView;
 import fr.cph.chicago.R;
-import fr.cph.chicago.core.activity.MainActivity;
 import fr.cph.chicago.core.adapter.BikeAdapter;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.util.Util;
@@ -52,6 +49,7 @@ import fr.cph.chicago.util.Util;
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@SuppressWarnings("WeakerAccess")
 public class BikeFragment extends AbstractFragment {
 
     @BindView(R.id.loading_relativeLayout)

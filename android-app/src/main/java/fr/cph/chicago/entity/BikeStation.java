@@ -43,6 +43,8 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public final class BikeStation implements Parcelable, AStation {
 
+    private static final double DEFAULT_RANGE = 0.008;
+
     @JsonProperty("id")
     private int id;
     @JsonProperty("stationName")
@@ -66,7 +68,6 @@ public final class BikeStation implements Parcelable, AStation {
     private BikeStation(@NonNull final Parcel in) {
         readFromParcel(in);
     }
-
 
     @Override
     public final int describeContents() {
@@ -94,6 +95,23 @@ public final class BikeStation implements Parcelable, AStation {
         longitude = in.readDouble();
         availableBikes = in.readInt();
         stAddress1 = in.readString();
+    }
+
+    public static List<BikeStation> readNearbyStation(@NonNull final List<BikeStation> bikeStations, @NonNull final Position position) {
+        final double latitude = position.getLatitude();
+        final double longitude = position.getLongitude();
+
+        final double latMax = latitude + DEFAULT_RANGE;
+        final double latMin = latitude - DEFAULT_RANGE;
+        final double lonMax = longitude + DEFAULT_RANGE;
+        final double lonMin = longitude - DEFAULT_RANGE;
+
+        return Stream.of(bikeStations)
+            .filter(station -> station.getLatitude() <= latMax)
+            .filter(station -> station.getLatitude() >= latMin)
+            .filter(station -> station.getLongitude() <= lonMax)
+            .filter(station -> station.getLongitude() >= lonMin)
+            .collect(Collectors.toList());
     }
 
     @Override
@@ -134,21 +152,4 @@ public final class BikeStation implements Parcelable, AStation {
             return new BikeStation[size];
         }
     };
-
-    public static List<BikeStation> readNearbyStation(@NonNull final List<BikeStation> bikeStations, @NonNull final Position position, final double range) {
-        final double latitude = position.getLatitude();
-        final double longitude = position.getLongitude();
-
-        final double latMax = latitude + range;
-        final double latMin = latitude - range;
-        final double lonMax = longitude + range;
-        final double lonMin = longitude - range;
-
-        return Stream.of(bikeStations)
-            .filter(station -> station.getLatitude() <= latMax)
-            .filter(station -> station.getLatitude() >= latMin)
-            .filter(station -> station.getLongitude() <= lonMax)
-            .filter(station -> station.getLongitude() >= lonMin)
-            .collect(Collectors.toList());
-    }
 }
