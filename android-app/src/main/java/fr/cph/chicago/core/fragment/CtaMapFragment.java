@@ -1,7 +1,5 @@
 package fr.cph.chicago.core.fragment;
 
-import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -15,25 +13,17 @@ import com.github.chrisbanes.photoview.PhotoView;
 
 import butterknife.BindView;
 import fr.cph.chicago.R;
-import fr.cph.chicago.core.activity.MainActivity;
 import fr.cph.chicago.util.Util;
 
 public class CtaMapFragment extends AbstractFragment {
 
     @BindView(R.id.cta_map)
     PhotoView ctaMap;
-    private MainActivity activity;
     private Bitmap bitmapCache;
 
     @NonNull
     public static CtaMapFragment newInstance(final int sectionNumber) {
         return (CtaMapFragment) fragmentWithBundle(new CtaMapFragment(), sectionNumber);
-    }
-
-    @Override
-    public final void onAttach(final Context context) {
-        super.onAttach(context);
-        activity = context instanceof Activity ? (MainActivity) context : null;
     }
 
     @Override

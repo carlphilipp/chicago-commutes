@@ -1,6 +1,5 @@
 package fr.cph.chicago.core.fragment;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
@@ -36,17 +35,10 @@ public class SettingsFragment extends AbstractFragment {
     TextView versionNumber;
 
     private Preferences preferences;
-    private MainActivity activity;
 
     @NonNull
     public static SettingsFragment newInstance(final int sectionNumber) {
         return (SettingsFragment) fragmentWithBundle(new SettingsFragment(), sectionNumber);
-    }
-
-    @Override
-    public final void onAttach(final Context context) {
-        super.onAttach(context);
-        activity = context instanceof Activity ? (MainActivity) context : null;
     }
 
     @Override

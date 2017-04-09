@@ -16,8 +16,6 @@
 
 package fr.cph.chicago.core.fragment;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
@@ -41,7 +39,6 @@ import butterknife.BindString;
 import butterknife.BindView;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.App;
-import fr.cph.chicago.core.activity.MainActivity;
 import fr.cph.chicago.core.activity.SearchActivity;
 import fr.cph.chicago.core.adapter.FavoritesAdapter;
 import fr.cph.chicago.data.DataHolder;
@@ -89,8 +86,6 @@ public class FavoritesFragment extends AbstractFragment {
     private SparseArray<TrainArrival> trainArrivals;
     private List<BikeStation> bikeStations;
     private RefreshTimingTask refreshTimingTask;
-
-    private MainActivity activity;
 
     private View rootView;
 
@@ -235,12 +230,6 @@ public class FavoritesFragment extends AbstractFragment {
             boolean hasFav = PreferencesImpl.INSTANCE.hasFavorites(getContext());
             welcomeLayout.setVisibility(hasFav ? View.GONE : View.VISIBLE);
         }
-    }
-
-    @Override
-    public final void onAttach(final Context context) {
-        super.onAttach(context);
-        activity = context instanceof Activity ? (MainActivity) context : null;
     }
 
     @Override

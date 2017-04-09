@@ -16,8 +16,6 @@
 
 package fr.cph.chicago.core.fragment;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.Editable;
@@ -40,7 +38,6 @@ import java.util.List;
 import butterknife.BindView;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.App;
-import fr.cph.chicago.core.activity.MainActivity;
 import fr.cph.chicago.core.adapter.BusAdapter;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
@@ -60,7 +57,6 @@ public class BusFragment extends AbstractFragment {
     @BindView(R.id.bus_list)
     ListView listView;
 
-    private MainActivity activity;
     private BusAdapter busAdapter;
 
     /**
@@ -72,12 +68,6 @@ public class BusFragment extends AbstractFragment {
     @NonNull
     public static BusFragment newInstance(final int sectionNumber) {
         return (BusFragment) fragmentWithBundle(new BusFragment(), sectionNumber);
-    }
-
-    @Override
-    public final void onAttach(final Context context) {
-        super.onAttach(context);
-        activity = context instanceof Activity ? (MainActivity) context : null;
     }
 
     @Override

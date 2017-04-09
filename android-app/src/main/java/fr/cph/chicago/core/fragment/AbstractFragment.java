@@ -16,17 +16,21 @@
 
 package fr.cph.chicago.core.fragment;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import fr.cph.chicago.core.activity.MainActivity;
 
 public class AbstractFragment extends Fragment {
 
     private static final String ARG_SECTION_NUMBER = "section_number";
 
+    protected MainActivity activity;
     private Unbinder unbinder;
 
     public void setBinder(final View rootView) {
@@ -41,7 +45,13 @@ public class AbstractFragment extends Fragment {
     }
 
     @Override
-    public void onDestroyView() {
+    public final void onAttach(final Context context) {
+        super.onAttach(context);
+        activity = context instanceof Activity ? (MainActivity) context : null;
+    }
+
+    @Override
+    public final void onDestroyView() {
         super.onDestroyView();
         if (unbinder != null) {
             unbinder.unbind();

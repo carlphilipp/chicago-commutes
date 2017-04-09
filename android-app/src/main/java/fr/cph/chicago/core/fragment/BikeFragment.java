@@ -66,7 +66,6 @@ public class BikeFragment extends AbstractFragment {
     @BindString(R.string.bundle_bike_stations)
     String bundleBikeStations;
 
-    private MainActivity activity;
     private BikeAdapter bikeAdapter;
     private List<BikeStation> bikeStations;
 
@@ -79,12 +78,6 @@ public class BikeFragment extends AbstractFragment {
     @NonNull
     public static BikeFragment newInstance(final int sectionNumber) {
         return (BikeFragment) fragmentWithBundle(new BikeFragment(), sectionNumber);
-    }
-
-    @Override
-    public final void onAttach(final Context context) {
-        super.onAttach(context);
-        activity = context instanceof Activity ? (MainActivity) context : null;
     }
 
     @Override

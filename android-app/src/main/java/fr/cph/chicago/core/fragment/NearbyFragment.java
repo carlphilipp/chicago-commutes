@@ -16,7 +16,6 @@
 
 package fr.cph.chicago.core.fragment;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -101,7 +100,6 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
 
     private SupportMapFragment mapFragment;
 
-    private MainActivity activity;
     private GoogleApiClient googleApiClient;
     @Getter
     private SlidingUpAdapter slidingUpAdapter;
@@ -110,12 +108,6 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
     @NonNull
     public static NearbyFragment newInstance(final int sectionNumber) {
         return (NearbyFragment) fragmentWithBundle(new NearbyFragment(), sectionNumber);
-    }
-
-    @Override
-    public final void onAttach(final Context context) {
-        super.onAttach(context);
-        activity = context instanceof Activity ? (MainActivity) context : null;
     }
 
     @Override
