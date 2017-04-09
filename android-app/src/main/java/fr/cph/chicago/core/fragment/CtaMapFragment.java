@@ -7,36 +7,27 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.github.chrisbanes.photoview.PhotoView;
+
 import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.activity.MainActivity;
 import fr.cph.chicago.util.Util;
-import com.github.chrisbanes.photoview.PhotoView;
 
-public class CtaMapFragment extends Fragment {
-
-    private static final String ARG_SECTION_NUMBER = "section_number";
+public class CtaMapFragment extends AbstractFragment {
 
     @BindView(R.id.cta_map)
     PhotoView ctaMap;
     private MainActivity activity;
     private Bitmap bitmapCache;
-    private Unbinder unbinder;
 
     @NonNull
     public static CtaMapFragment newInstance(final int sectionNumber) {
-        final CtaMapFragment fragment = new CtaMapFragment();
-        final Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-        fragment.setArguments(args);
-        return fragment;
+        return (CtaMapFragment) fragmentWithBundle(new CtaMapFragment(), sectionNumber);
     }
 
     @Override
@@ -55,7 +46,7 @@ public class CtaMapFragment extends Fragment {
     public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_cta_map, container, false);
         if (!activity.isFinishing()) {
-            unbinder = ButterKnife.bind(this, rootView);
+            setBinder(rootView);
             loadBitmap(ctaMap);
         }
         return rootView;
@@ -67,14 +58,6 @@ public class CtaMapFragment extends Fragment {
         } else {
             final BitmapWorkerTask task = new BitmapWorkerTask(imageView);
             task.execute();
-        }
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (unbinder != null) {
-            unbinder.unbind();
         }
     }
 

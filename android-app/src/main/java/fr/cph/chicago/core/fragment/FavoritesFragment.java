@@ -24,7 +24,6 @@ import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -40,8 +39,6 @@ import java.util.List;
 
 import butterknife.BindString;
 import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.activity.MainActivity;
@@ -67,10 +64,9 @@ import static fr.cph.chicago.Constants.TRAINS_ARRIVALS_URL;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class FavoritesFragment extends Fragment {
+public class FavoritesFragment extends AbstractFragment {
 
     private static final String TAG = FavoritesFragment.class.getSimpleName();
-    private static final String ARG_SECTION_NUMBER = "section_number";
 
     @BindView(R.id.welcome)
     RelativeLayout welcomeLayout;
@@ -87,8 +83,6 @@ public class FavoritesFragment extends Fragment {
     String bundleBusArrivals;
     @BindString(R.string.bundle_train_arrivals)
     String bundleTrainArrivals;
-
-    private Unbinder unbinder;
 
     private FavoritesAdapter favoritesAdapter;
     private List<BusArrival> busArrivals;
@@ -108,11 +102,7 @@ public class FavoritesFragment extends Fragment {
      */
     @NonNull
     public static FavoritesFragment newInstance(final int sectionNumber) {
-        final FavoritesFragment fragment = new FavoritesFragment();
-        final Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-        fragment.setArguments(args);
-        return fragment;
+        return (FavoritesFragment) fragmentWithBundle(new FavoritesFragment(), sectionNumber);
     }
 
     @Override
@@ -142,7 +132,7 @@ public class FavoritesFragment extends Fragment {
     public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         if (!activity.isFinishing()) {
             rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            unbinder = ButterKnife.bind(this, rootView);
+            setBinder(rootView);
             if (favoritesAdapter == null) {
                 favoritesAdapter = new FavoritesAdapter(activity);
                 FavoritesData.INSTANCE.setTrainArrivals(trainArrivals);
@@ -317,14 +307,6 @@ public class FavoritesFragment extends Fragment {
 
     private void stopRefreshing() {
         swipeRefreshLayout.setRefreshing(false);
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (unbinder != null) {
-            unbinder.unbind();
-        }
     }
 
     /**

@@ -21,7 +21,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -41,8 +40,6 @@ import java.util.List;
 
 import butterknife.BindString;
 import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.activity.MainActivity;
 import fr.cph.chicago.core.adapter.BikeAdapter;
@@ -55,18 +52,19 @@ import fr.cph.chicago.util.Util;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class BikeFragment extends Fragment {
+public class BikeFragment extends AbstractFragment {
 
-    private static final String ARG_SECTION_NUMBER = "section_number";
+    @BindView(R.id.loading_relativeLayout)
+    RelativeLayout loadingLayout;
+    @BindView(R.id.bike_list)
+    ListView bikeListView;
+    @BindView(R.id.bike_filter)
+    EditText filter;
+    @BindView(R.id.error_layout)
+    RelativeLayout errorLayout;
 
-    @BindView(R.id.loading_relativeLayout) RelativeLayout loadingLayout;
-    @BindView(R.id.bike_list) ListView bikeListView;
-    @BindView(R.id.bike_filter) EditText filter;
-    @BindView(R.id.error_layout) RelativeLayout errorLayout;
-
-    @BindString(R.string.bundle_bike_stations) String bundleBikeStations;
-
-    private Unbinder unbinder;
+    @BindString(R.string.bundle_bike_stations)
+    String bundleBikeStations;
 
     private MainActivity activity;
     private BikeAdapter bikeAdapter;
@@ -80,11 +78,7 @@ public class BikeFragment extends Fragment {
      */
     @NonNull
     public static BikeFragment newInstance(final int sectionNumber) {
-        final BikeFragment fragment = new BikeFragment();
-        final Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-        fragment.setArguments(args);
-        return fragment;
+        return (BikeFragment) fragmentWithBundle(new BikeFragment(), sectionNumber);
     }
 
     @Override
@@ -123,7 +117,7 @@ public class BikeFragment extends Fragment {
     public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_bike, container, false);
         if (!activity.isFinishing()) {
-            unbinder = ButterKnife.bind(this, rootView);
+            setBinder(rootView);
             if (!bikeStations.isEmpty()) {
                 loadList();
             } else {
@@ -131,14 +125,6 @@ public class BikeFragment extends Fragment {
             }
         }
         return rootView;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (unbinder != null) {
-            unbinder.unbind();
-        }
     }
 
     private void loadList() {

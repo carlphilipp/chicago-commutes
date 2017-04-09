@@ -9,7 +9,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +19,6 @@ import java.io.File;
 import java.util.Random;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.activity.BaseActivity;
 import fr.cph.chicago.core.activity.MainActivity;
@@ -30,9 +27,7 @@ import fr.cph.chicago.data.PreferencesImpl;
 import fr.cph.chicago.util.RealmUtil;
 import fr.cph.chicago.util.Util;
 
-public class SettingsFragment extends Fragment {
-
-    private static final String ARG_SECTION_NUMBER = "section_number";
+public class SettingsFragment extends AbstractFragment {
 
     @BindView(R.id.clear_cache)
     LinearLayout clearCache;
@@ -42,15 +37,10 @@ public class SettingsFragment extends Fragment {
 
     private Preferences preferences;
     private MainActivity activity;
-    private Unbinder unbinder;
 
     @NonNull
     public static SettingsFragment newInstance(final int sectionNumber) {
-        final SettingsFragment fragment = new SettingsFragment();
-        final Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-        fragment.setArguments(args);
-        return fragment;
+        return (SettingsFragment) fragmentWithBundle(new SettingsFragment(), sectionNumber);
     }
 
     @Override
@@ -70,7 +60,7 @@ public class SettingsFragment extends Fragment {
     public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_settings, container, false);
         if (!activity.isFinishing()) {
-            unbinder = ButterKnife.bind(this, rootView);
+            setBinder(rootView);
             final String version = "Version " + Util.getCurrentVersion(getContext());
             versionNumber.setText(version);
             clearCache.setOnClickListener(view -> {
@@ -93,14 +83,6 @@ public class SettingsFragment extends Fragment {
             });
         }
         return rootView;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (unbinder != null) {
-            unbinder.unbind();
-        }
     }
 
     private void restartApp() {

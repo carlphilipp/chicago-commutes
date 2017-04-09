@@ -18,7 +18,6 @@ package fr.cph.chicago.core.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,8 +25,6 @@ import android.widget.ListView;
 
 import butterknife.BindString;
 import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.activity.TrainListStationActivity;
 import fr.cph.chicago.core.adapter.TrainStationAdapter;
@@ -40,14 +37,12 @@ import fr.cph.chicago.util.Util;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public final class TrainFragment extends Fragment {
+public final class TrainFragment extends AbstractFragment {
 
-    private static final String ARG_SECTION_NUMBER = "section_number";
-
-    @BindView(R.id.train_list) ListView listView;
-    @BindString(R.string.bundle_train_line) String bundleTrainLine;
-
-    private Unbinder unbinder;
+    @BindView(R.id.train_list)
+    ListView listView;
+    @BindString(R.string.bundle_train_line)
+    String bundleTrainLine;
 
     /**
      * Returns a new instance of this fragment for the given section number.
@@ -56,11 +51,7 @@ public final class TrainFragment extends Fragment {
      * @return a train fragment
      */
     public static TrainFragment newInstance(final int sectionNumber) {
-        final TrainFragment fragment = new TrainFragment();
-        final Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-        fragment.setArguments(args);
-        return fragment;
+        return (TrainFragment) fragmentWithBundle(new TrainFragment(), sectionNumber);
     }
 
     @Override
@@ -72,7 +63,7 @@ public final class TrainFragment extends Fragment {
     @Override
     public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_train, container, false);
-        unbinder = ButterKnife.bind(this, rootView);
+        setBinder(rootView);
         final TrainStationAdapter ada = new TrainStationAdapter();
         listView.setAdapter(ada);
         listView.setOnItemClickListener((parentView, childView, position, id) -> {
@@ -84,13 +75,5 @@ public final class TrainFragment extends Fragment {
             startActivity(intent);
         });
         return rootView;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (unbinder != null) {
-            unbinder.unbind();
-        }
     }
 }

@@ -20,7 +20,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -39,8 +38,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.activity.MainActivity;
@@ -56,17 +53,12 @@ import fr.cph.chicago.util.Util;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class BusFragment extends Fragment {
+public class BusFragment extends AbstractFragment {
 
-    /**
-     * The fragment argument representing the section number for this fragment.
-     **/
-    private static final String ARG_SECTION_NUMBER = "section_number";
-
-    @BindView(R.id.bus_filter) EditText textFilter;
-    @BindView(R.id.bus_list) ListView listView;
-
-    private Unbinder unbinder;
+    @BindView(R.id.bus_filter)
+    EditText textFilter;
+    @BindView(R.id.bus_list)
+    ListView listView;
 
     private MainActivity activity;
     private BusAdapter busAdapter;
@@ -79,11 +71,7 @@ public class BusFragment extends Fragment {
      */
     @NonNull
     public static BusFragment newInstance(final int sectionNumber) {
-        final BusFragment fragment = new BusFragment();
-        final Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-        fragment.setArguments(args);
-        return fragment;
+        return (BusFragment) fragmentWithBundle(new BusFragment(), sectionNumber);
     }
 
     @Override
@@ -103,7 +91,7 @@ public class BusFragment extends Fragment {
     public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_bus, container, false);
         if (!activity.isFinishing()) {
-            unbinder = ButterKnife.bind(this, rootView);
+            setBinder(rootView);
             addView();
         }
         return rootView;
@@ -144,13 +132,5 @@ public class BusFragment extends Fragment {
                 busAdapter.notifyDataSetChanged();
             }
         });
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (unbinder != null) {
-            unbinder.unbind();
-        }
     }
 }

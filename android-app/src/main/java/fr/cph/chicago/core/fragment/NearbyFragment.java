@@ -26,10 +26,8 @@ import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,8 +53,6 @@ import java.util.List;
 
 import butterknife.BindString;
 import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.activity.MainActivity;
@@ -70,14 +66,10 @@ import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
-import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.util.GPSUtil;
 import fr.cph.chicago.util.Util;
-import io.reactivex.Observable;
-import io.reactivex.disposables.Disposable;
 import io.realm.Realm;
 import lombok.Getter;
-import lombok.Setter;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -91,9 +83,8 @@ import static fr.cph.chicago.Constants.GPS_ACCESS;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class NearbyFragment extends Fragment implements EasyPermissions.PermissionCallbacks {
+public class NearbyFragment extends AbstractFragment implements EasyPermissions.PermissionCallbacks {
 
-    private static final String ARG_SECTION_NUMBER = "section_number";
     private static final double DEFAULT_RANGE = 0.008;
 
     @BindView(R.id.activity_bar)
@@ -108,8 +99,6 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
     @BindString(R.string.bundle_bike_stations)
     String bundleBikeStations;
 
-    private Unbinder unbinder;
-
     private SupportMapFragment mapFragment;
 
     private MainActivity activity;
@@ -120,11 +109,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
 
     @NonNull
     public static NearbyFragment newInstance(final int sectionNumber) {
-        final NearbyFragment fragment = new NearbyFragment();
-        final Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-        fragment.setArguments(args);
-        return fragment;
+        return (NearbyFragment) fragmentWithBundle(new NearbyFragment(), sectionNumber);
     }
 
     @Override
@@ -145,7 +130,7 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
     public final View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_nearby, container, false);
         if (!activity.isFinishing()) {
-            unbinder = ButterKnife.bind(this, rootView);
+            setBinder(rootView);
             slidingUpAdapter = new SlidingUpAdapter(this);
             markerDataHolder = new MarkerDataHolder();
             showProgress(true);
@@ -182,14 +167,6 @@ public class NearbyFragment extends Fragment implements EasyPermissions.Permissi
         super.onStop();
         if (googleApiClient.isConnected()) {
             googleApiClient.disconnect();
-        }
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (unbinder != null) {
-            unbinder.unbind();
         }
     }
 
