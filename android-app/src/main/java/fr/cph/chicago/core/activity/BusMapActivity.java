@@ -46,7 +46,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 import butterknife.BindString;
 import butterknife.ButterKnife;
@@ -102,7 +101,6 @@ public class BusMapActivity extends AbstractMapActivity {
     private Integer busId;
     private String busRouteId;
     private String[] bounds;
-    private int j;
     private RefreshBusMarkers refreshBusesBitmap;
 
     private boolean loadPattern = true;
@@ -211,12 +209,12 @@ public class BusMapActivity extends AbstractMapActivity {
     }
 
     private void drawPattern(@NonNull final List<BusPattern> patterns) {
-        j = 0;
+        final int[] index = new int[] {0};
         final BitmapDescriptor red = BitmapDescriptorFactory.defaultMarker();
         final BitmapDescriptor blue = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
         Stream.of(patterns).forEach(pattern -> {
             final PolylineOptions poly = new PolylineOptions()
-                .color(j == 0 ? Color.RED : (j == 1 ? Color.BLUE : Color.YELLOW))
+                .color(index[0] == 0 ? Color.RED : (index[0] == 1 ? Color.BLUE : Color.YELLOW))
                 .width(App.getLineWidth()).geodesic(true);
             Stream.of(pattern.getPoints())
                 .map(patternPoint -> {
@@ -228,7 +226,7 @@ public class BusMapActivity extends AbstractMapActivity {
                             .position(point)
                             .title(patternPoint.getStopName())
                             .snippet(pattern.getDirection())
-                            .icon(j == 0 ? red : blue)
+                            .icon(index[0] == 0 ? red : blue)
                         );
                         marker.setVisible(false);
                     }
@@ -238,7 +236,7 @@ public class BusMapActivity extends AbstractMapActivity {
                 .filter(marker -> marker != null)
                 .forEach(busStationMarkers::add);
             getGoogleMap().addPolyline(poly);
-            j++;
+            index[0]++;
         });
     }
 
