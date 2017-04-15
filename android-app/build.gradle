@@ -64,7 +64,7 @@ dependencies {
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    buildToolsVersion '26.0.0-rc1'
 
     defaultConfig {
         applicationId 'fr.cph.chicago'
