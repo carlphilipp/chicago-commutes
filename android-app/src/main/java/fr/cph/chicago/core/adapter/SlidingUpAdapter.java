@@ -5,6 +5,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -38,9 +39,12 @@ public class SlidingUpAdapter {
     private static final int HEADER_HEIGHT = 40;
 
     private final NearbyFragment nearbyFragment;
+    // Can't be used as local variable because of ProGuard
+    private int[] nbOfLine;
 
     public SlidingUpAdapter(@NonNull final NearbyFragment nearbyFragment) {
         this.nearbyFragment = nearbyFragment;
+        nbOfLine = new int[]{0};
     }
 
     public void updateTitleTrain(@NonNull final String title) {
@@ -114,8 +118,7 @@ public class SlidingUpAdapter {
          * it just mean that the view has been updated already with a faster request.
          */
         if (linearLayout.getChildCount() == 0) {
-            final int[] nbOfLine = {0};
-
+            nbOfLine = new int[]{0};
             Stream.of(busArrivalRouteDTO.entrySet()).forEach(entry -> {
                 final String stopNameTrimmed = Util.trimBusStopNameIfNeeded(entry.getKey());
                 final Map<String, List<BusArrival>> boundMap = entry.getValue();
@@ -176,9 +179,11 @@ public class SlidingUpAdapter {
     }
 
     private void updatePanelState() {
+        Log.i("DERP", "8");
         if (nearbyFragment.getSlidingUpPanelLayout().getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN) {
             nearbyFragment.getSlidingUpPanelLayout().setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         }
         nearbyFragment.showProgress(false);
+        Log.i("DERP", "9");
     }
 }
