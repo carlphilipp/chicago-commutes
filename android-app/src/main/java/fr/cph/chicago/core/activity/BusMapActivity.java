@@ -166,15 +166,9 @@ public class BusMapActivity extends AbstractMapActivity {
     }
 
     public void centerMapOnBus(@NonNull final List<Bus> result) {
-        final Position position;
-        final int zoom;
-        if (result.size() == 1) {
-            position = result.get(0).getPosition();
-            zoom = 15;
-        } else {
-            position = Bus.getBestPosition(result);
-            zoom = 11;
-        }
+        final boolean sizeIsOne = result.size() == 1;
+        final Position position = sizeIsOne ? result.get(0).getPosition() : Bus.getBestPosition(result);
+        final int zoom = sizeIsOne ? 15 : 11;
         centerMapOn(position.getLatitude(), position.getLongitude(), zoom);
     }
 
@@ -209,7 +203,7 @@ public class BusMapActivity extends AbstractMapActivity {
     }
 
     private void drawPattern(@NonNull final List<BusPattern> patterns) {
-        final int[] index = new int[] {0};
+        final int[] index = new int[]{0};
         final BitmapDescriptor red = BitmapDescriptorFactory.defaultMarker();
         final BitmapDescriptor blue = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
         Stream.of(patterns).forEach(pattern -> {

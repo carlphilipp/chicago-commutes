@@ -1091,7 +1091,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 1573,1573,"Michigan & 21st Street","Michigan & 21st Street, Northbound, Northeast Corner",41.85452045,-87.62374128,0,,1
 1574,1574,"Michigan & Cullerton","Michigan & Cullerton, Northbound, Northeast Corner",41.85571036,-87.62377044,0,,1
 1575,1575,"Michigan & 18th Street","Michigan & 18th Street, Northbound, Northeast Corner",41.85812678,-87.6238274,0,,1
-1577,1577,"1509 S Michigan","1509 S Michigan, Northbound, Eastside of the Street",41.86183776,-87.62388488,0,,1
+1577,1577,"1509 S Michigan","",41.86183776,-87.62388488,0,,1
 1579,1579,"Michigan & 13th Street","Michigan & 13th Street, Northbound, Northeast Corner",41.86598373,-87.6239989,0,,1
 1580,1580,"Michigan & Roosevelt","Michigan & Roosevelt, Northbound, Northeast Corner",41.86789271,-87.6239641,0,,1
 1581,1581,"Michigan & 11th Street","Michigan & 11th Street, Northbound, Eastside of the Street",41.86914471,-87.6239645,0,,1
@@ -1106,7 +1106,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 1591,1591,"Michigan & Roosevelt","Michigan & Roosevelt, Southbound, Southwest Corner",41.86712011,-87.62425898,0,,1
 1592,1592,"Michigan & 13th Street","Michigan & 13th Street, Southbound, Southwest Corner",41.86559485,-87.62422692,0,,1
 1593,1593,"Michigan & 14th Street","Michigan & 14th Street, Southbound, Southwest Corner",41.863883,-87.624185,0,,1
-1594,1594,"1510 S Michigan","1510 S Michigan, Southbound, Westside of the Street",41.861798,-87.624121,0,,1
+1594,1594,"1510 S Michigan","",41.861798,-87.624121,0,,1
 1595,1595,"Michigan & 16th Street","Michigan & 16th Street, Southbound, Southwest Corner",41.85994461,-87.62409418,0,,1
 1596,1596,"Michigan & 18th Street","Michigan & 18th Street, Southbound, Southwest Corner",41.85764578,-87.62404108,0,,1
 1597,1597,"Michigan & Cullerton","Michigan & Cullerton, Southbound, Southwest Corner",41.85534056,-87.62399267,0,,1
@@ -1209,7 +1209,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 1732,1732,"Devon & Hoyne","Devon & Hoyne, Eastbound, Southwest Corner",41.99774722,-87.68267389,0,,1
 1733,1733,"Devon & Damen","Devon & Damen, Eastbound, Southside of the Street",41.99778922,-87.68021789,0,,1
 1736,1736,"Devon & Hermitage","Devon & Hermitage, Eastbound, Southwest Corner",41.99795405,-87.67359255,0,,1
-1738,1738,"Devon & Clark","",41.99800623,-87.6707973,0,,1
 1739,1739,"Devon & Clark","Devon & Clark, Eastbound, Southeast Corner",41.99801192,-87.67021201,0,,1
 1740,1740,"Devon & Greenview","Devon & Greenview, Eastbound, Southwest Corner",41.99803912,-87.66802975,0,,1
 1741,1741,"Devon & Glenwood","Devon & Glenwood, Eastbound, Southwest Corner",41.99806512,-87.66558975,0,,1
@@ -3873,7 +3872,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 5537,5537,"Milwaukee & Ashland/Division (Blue Line)","Milwaukee & Ashland/Division (Blue Line), Northwestbound, Southeast Corner",41.90399057,-87.66732673,0,,1
 5538,5538,"Milwaukee & Paulina","Milwaukee & Paulina, Northwestbound, Southeast Corner",41.90560795,-87.66988085,0,,1
 5544,5544,"Milwaukee & Wabansia","Milwaukee & Wabansia, Northwestbound, Southeast Corner",41.9126159,-87.68082869,0,,1
-5545,5545,"Milwaukee & Leavitt","Milwaukee & Leavitt, Northwestbound, Southeast Corner",41.91359493,-87.68231991,0,,1
 5546,5546,"Milwaukee & Oakley/Moffat","Milwaukee & Oakley/Moffat, Northwestbound, Southeast Corner",41.91518572,-87.68477,0,,1
 5547,5547,"Milwaukee & Western","Milwaukee & Western, Northwestbound, Southeast Corner",41.91676642,-87.68719814,0,,1
 5550,5550,"Milwaukee & Maplewood","Milwaukee & Maplewood, Northwestbound, Southeast Corner",41.91932557,-87.69117669,0,,1
@@ -5575,7 +5573,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 8408,8408,"Western & Schubert","Western & Schubert, Northbound, Southeast Corner",41.93024132,-87.68770221,0,,1
 8409,8409,"Western & Elston/Diversey","Western & Elston/Diversey, Northbound, Southeast Corner",41.93193967,-87.68775933,0,,1
 8412,8412,"Western & Barry","Western & Barry, Northbound, Southeast Corner",41.93747124,-87.68783945,0,,1
-8413,8413,"Western & Belmont/Clybourn","",41.93911898,-87.68788375,0,,1
 8415,8415,"Western & Roscoe","Western & Roscoe, Northbound, Southeast Corner",41.94294291,-87.68800704,0,,1
 8417,8417,"Western & Addison","Western & Addison, Northbound, Southeast Corner",41.94659346,-87.68810852,0,,1
 8419,8419,"Western & Grace","Western & Grace, Northbound, Southeast Corner",41.95029151,-87.68821429,0,,1
@@ -6086,7 +6083,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 9294,9294,"Lake Shore Drive & Wellington","Lake Shore Drive & Wellington, Southbound, Northwest Corner",41.9366929,-87.63693608,0,,1
 9295,9295,"Lake Shore Drive & Oakdale","Lake Shore Drive & Oakdale, Southbound, Northwest Corner",41.93569842,-87.6368401,0,,1
 9296,9296,"St. Joseph Hospital","St. Joseph Hospital, Southbound, Westside of the Street",41.93399293,-87.63654679,0,,1
-9298,9298,"Belmont & Clark","",41.9400173,-87.65058175,0,,1
 9300,9300,"Belmont & Seminary","Belmont & Seminary, Westbound, Northeast Corner",41.93993887,-87.65640026,0,,1
 9302,9302,"Belmont & Lakewood","Belmont & Lakewood, Westbound, Northeast Corner",41.93987483,-87.66123383,0,,1
 9303,9303,"Belmont & Southport","Belmont & Southport, Westbound, Northeast Corner",41.9398363,-87.66363158,0,,1
@@ -9390,7 +9386,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 14816,14816,"Kedzie & 63rd Street","Kedzie & 63rd Street, Northbound, Northeast Corner",41.77913982,-87.70304976,0,,1
 14817,14817,"Halsted & 87th Street","Halsted & 87th Street, Southbound, Southwest Corner",41.73557288,-87.64373438,0,,1
 14818,14818,"Halsted & 74th Street","Halsted & 74th Street, Southbound, Southwest Corner",41.75956971,-87.6443577,0,,1
-14819,14819,"Stony Island & 71st Street","Stony Island & 71st Street, Northbound, Northeast Corner",41.7663989,-87.58584519,0,,1
 14820,14820,"63rd Street & Dorchester","63rd Street & Dorchester, Westbound, Northwest Corner",41.78063816,-87.59162021,0,,1
 14821,14821,"63rd Street & Woodlawn","63rd Street & Woodlawn, Westbound, Northwest Corner",41.78057826,-87.59651581,0,,1
 14822,14822,"63rd Street & Stewart","63rd Street & Stewart, Eastbound, Southeast Corner",41.77986475,-87.63478104,0,,1
@@ -9674,7 +9669,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 15229,15229,"Central & Wellington","Central & Wellington, Southbound, Southwest Corner",41.9347807,-87.76644448,0,,1
 15231,15231,"California & North Ave","California & North Ave, Northbound, Northeast Corner",41.91049502,-87.69691444,0,,1
 15232,15232,"Fullerton & Ashland","Fullerton & Ashland, Westbound, Northwest Corner",41.9252282,-87.66853681,0,,1
-15233,15233,"Milwaukee & Leavitt","Milwaukee & Leavitt, Southeastbound, Southwest Corner",41.91329647,-87.68209335,0,,1
 15234,15234,"35th Street & Racine","35th Street & Racine, Eastbound, Southeast Corner",41.83056718,-87.6554383,0,,1
 15235,15235,"Halsted & Summit","Halsted & Summit, Northbound, Eastside of the Street",41.73993614,-87.64364031,0,,1
 15236,15236,"Halsted & 93rd Street","Halsted & 93rd Street, Northbound, Northeast Corner",41.72533044,-87.64318765,0,,1
@@ -10906,7 +10900,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 18125,18125,"Clinton & Madison","Clinton & Madison, Southbound, Southwest Corner",41.88173913,-87.64127987,0,,1
 18126,18126,"Madison & Dearborn/State","Madison & Dearborn/State, Westbound, Northside of the Street",41.88205094,-87.62855887,0,,1
 18127,18127,"Sheridan & Birchwood","Sheridan & Birchwood, Northbound, Southeast Corner",42.01802283,-87.66551305,0,,1
-18128,18128,"Clark & Belmont","",41.93977551,-87.65067676,0,,1
 18129,18129,"Harrison & Damen","Harrison & Damen, Eastbound, Southeast Corner",41.87397626,-87.67622133,0,,1
 18130,18130,"Harrison & Western","Harrison & Western, Westbound, Northwest Corner",41.87394369,-87.68667283,0,,1
 18131,18131,"Harrison & California","Harrison & California, Westbound, Northwest Corner",41.87386746,-87.69633973,0,,1
