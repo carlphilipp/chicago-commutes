@@ -101,8 +101,9 @@ android {
 
     // Change output apk name
     applicationVariants.all { variant ->
-        variant.outputs.each { output ->
-            output.outputFile = new File(output.outputFile.parent, "${parent.name}-${output.baseName}-${variant.versionName}.apk")
+        variant.outputs.all { output ->
+            //output.outputFile = new File(output.outputFile.parent, "${parent.name}-${output.baseName}-${variant.versionName}.apk")
+            outputFileName = "${parent.name}-${output.baseName}-${variant.versionName}.apk"
         }
     }
 
