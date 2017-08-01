@@ -63,8 +63,8 @@ dependencies {
 }
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '26.0.0-rc1'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.1'
 
     defaultConfig {
         applicationId 'fr.cph.chicago'
@@ -72,7 +72,7 @@ android {
         versionName '4.20.0'
 
         minSdkVersion 14
-        targetSdkVersion 25
+        targetSdkVersion 26
         multiDexEnabled true
 
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
@@ -86,12 +86,6 @@ android {
         resValue "string", "cta_train_key", props['cta.train.key']
         resValue "string", "cta_bus_key", props['cta.bus.key']
 
-        // FIXME To enable Jack compiler, need to:
-        // _ Wait for Realm fix issue: https://github.com/realm/realm-java/issues/3038
-        // _ Do not use Retrolambda
-        //jackOptions {
-        //    enabled true
-        //}
         javaCompileOptions {
             annotationProcessorOptions {
                 includeCompileClasspath false
