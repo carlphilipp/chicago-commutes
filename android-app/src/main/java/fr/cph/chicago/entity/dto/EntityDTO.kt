@@ -24,12 +24,7 @@ class FavoritesDTO(
     var bikeError: Boolean = false,
     var bikeStations: List<BikeStation>? = null)
 
-class DivvyDTO {
-    @JsonProperty("executionTime")
-    val executionTime: String? = null
-    @JsonProperty("stationBeanList")
-    val stations: List<BikeStation>? = null
-}
+class DivvyDTO(@JsonProperty("stationBeanList") val stations: List<BikeStation>)
 
 class BusFavoriteDTO(val routeId: String, val stopId: String, val bound: String)
 

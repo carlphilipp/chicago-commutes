@@ -19,6 +19,7 @@ package fr.cph.chicago.parser;
 import android.support.annotation.NonNull;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.commons.io.IOUtils;
@@ -41,6 +42,10 @@ public enum JsonParser {
     INSTANCE;
 
     private final ObjectMapper mapper = new ObjectMapper();
+
+    {
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
 
     @NonNull
     public List<BikeStation> parseStations(@NonNull final InputStream stream) throws ParserException {
