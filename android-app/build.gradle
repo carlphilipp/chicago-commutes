@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'realm-android'
 
 dependencies {
@@ -31,9 +32,8 @@ dependencies {
         [group: 'com.sothree.slidinguppanel', name: 'library', version: sliding_up_panel_version]
     )
 
-    annotationProcessor(
+    kapt(
         [group: 'com.jakewharton', name: 'butterknife-compiler', version: butterknife_version],
-        //[group: 'org.projectlombok', name: 'lombok', version: lombok_version]
     )
 
     testCompile(
@@ -58,10 +58,6 @@ dependencies {
         [group: 'com.android.support.test.uiautomator', name: 'uiautomator-v18', version: google_support_version_test_uiautomator]
     )
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-
-    //provided(
-        //[group: 'org.projectlombok', name: 'lombok', version: lombok_version]
-    //)
 }
 
 android {

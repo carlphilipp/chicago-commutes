@@ -130,12 +130,10 @@ public class BaseActivity extends Activity {
             .doOnComplete(() ->
                 Observable.zip(trainOnlineFavorites, busOnlineFavorites, (trainArrivalsDTO, busArrivalsDTO) -> {
                         App.setLastUpdate(Calendar.getInstance().getTime());
-                        // FIXME kotlin
-                        return new FavoritesDTO();
-                        /*return FavoritesDTO.builder()
-                            .trainArrivalDTO(trainArrivalsDTO)
-                            .busArrivalDTO(busArrivalsDTO)
-                            .build();*/
+                        final FavoritesDTO favoritesDTO = new FavoritesDTO();
+                        favoritesDTO.setTrainArrivalDTO(trainArrivalsDTO);
+                        favoritesDTO.setBusArrivalDTO(busArrivalsDTO);
+                        return favoritesDTO;
                     }
                 ).subscribe(this::startMainActivity, onError -> {
                         Log.e(TAG, onError.getMessage(), onError);

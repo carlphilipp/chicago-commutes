@@ -39,6 +39,7 @@ import butterknife.BindColor;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import fr.cph.chicago.BuildConfig;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.fragment.BikeFragment;
 import fr.cph.chicago.core.fragment.BusFragment;
