@@ -40,8 +40,7 @@ class Bus(var id: Int = 0,
             var maxLongitude: Double? = 0.0
             var minLongitude: Double? = 0.0
             var i = 0
-            // FIXME kotlin
-/*            for (bus in buses) {
+            for (bus in buses) {
                 val temp = bus.position
                 if (i == 0) {
                     maxLatitude = temp?.latitude
@@ -49,23 +48,23 @@ class Bus(var id: Int = 0,
                     maxLongitude = temp?.longitude
                     minLongitude = temp?.longitude
                 } else {
-                    if (temp.latitude > maxLatitude) {
+                    if (temp!!.latitude > maxLatitude!!) {
                         maxLatitude = temp.latitude
                     }
-                    if (temp.getLatitude() < minLatitude) {
-                        minLatitude = temp.getLatitude()
+                    if (temp.latitude < minLatitude!!) {
+                        minLatitude = temp.latitude
                     }
-                    if (temp.getLongitude() > maxLongitude) {
-                        maxLongitude = temp.getLongitude()
+                    if (temp.longitude > maxLongitude!!) {
+                        maxLongitude = temp.longitude
                     }
-                    if (temp.getLongitude() < minLongitude) {
-                        minLongitude = temp.getLongitude()
+                    if (temp.longitude < minLongitude!!) {
+                        minLongitude = temp.longitude
                     }
                 }
                 i++
             }
-            position.setLatitude((maxLatitude + minLatitude) / 2)
-            position.setLongitude((maxLongitude + minLongitude) / 2)*/
+            position.latitude = (maxLatitude!! + minLatitude!!) / 2
+            position.longitude = (maxLongitude!! + minLongitude!!) / 2
             return position
         }
     }

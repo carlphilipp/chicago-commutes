@@ -33,7 +33,7 @@ import java.util.*
  * *
  * @version 1
  */
-class TrainArrival(
+data class TrainArrival(
     val timeStamp: Date? = null,
     val errorCode: Int = 0,
     val errorMessage: String? = null,

@@ -22,28 +22,27 @@ package fr.cph.chicago.entity.dto
 import fr.cph.chicago.entity.BusArrival
 import java.util.*
 
-class BusArrivalStopMappedDTO : TreeMap<String, Map<String, List<BusArrival>>>() {
+class BusArrivalStopMappedDTO : TreeMap<String, MutableMap<String, List<BusArrival>>>() {
     // stop name => { bound => BusArrival }
 
     fun addBusArrival(busArrival: BusArrival) {
-        // FIXME kotlin
-        /*if (containsKey(busArrival.getStopName())) {
-            val tempMap = get(busArrival.getStopName())
-            if (tempMap.containsKey(busArrival.getRouteDirection())) {
-                val arrivals = tempMap[busArrival.getRouteDirection()]
+        if (containsKey(busArrival.stopName)) {
+            val tempMap: MutableMap<String, List<BusArrival>>? = get(busArrival.stopName)
+            if (tempMap!!.containsKey(busArrival.routeDirection)) {
+                val arrivals: MutableList<BusArrival> = tempMap[busArrival.routeDirection]!!.toMutableList()
                 arrivals.add(busArrival)
             } else {
                 val arrivals = ArrayList<BusArrival>()
                 arrivals.add(busArrival)
-                tempMap.put(busArrival.getRouteDirection(), arrivals)
+                tempMap.put(busArrival.routeDirection!!, arrivals)
             }
         } else {
             val tempMap = TreeMap<String, List<BusArrival>>()
             val arrivals = ArrayList<BusArrival>()
             arrivals.add(busArrival)
-            tempMap.put(busArrival.getRouteDirection(), arrivals)
-            put(busArrival.getStopName(), tempMap)
-        }*/
+            tempMap.put(busArrival.routeDirection!!, arrivals)
+            put(busArrival.stopName!!, tempMap)
+        }
     }
 
     fun containsStopNameAndBound(stopName: String, bound: String): Boolean {

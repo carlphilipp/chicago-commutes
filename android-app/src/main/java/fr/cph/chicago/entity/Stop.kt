@@ -73,7 +73,6 @@ class Stop(
         val linesString = ArrayList<String>()
         `in`.readStringList(linesString)
         lines = ArrayList<TrainLine>()
-        // FIXME kotlin
         lines!!.addAll(Stream.of(linesString).map { TrainLine.fromXmlString(it) }.collect(Collectors.toList<TrainLine>()))
     }
 
