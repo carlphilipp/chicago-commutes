@@ -24,7 +24,10 @@ import com.annimon.stream.Collectors;
 import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -199,12 +202,9 @@ public enum FavoritesData {
                 String stopName = preferences.getBusStopNameMapping(context, stopId.toString());
                 stopName = stopName != null ? stopName : stopId.toString();
 
+                // FIXME check if that logic works. I think it does not. In what case do we show that bus arrival?
                 if (!busArrivalDTO.containsStopNameAndBound(stopName, bound)) {
-                    final BusArrival busArrival = new BusArrival();
-                    busArrival.setStopId(stopId);
-                    busArrival.setRouteDirection(bound);
-                    busArrival.setStopName(stopName);
-                    busArrival.setRouteId(routeIdFav);
+                    final BusArrival busArrival = new BusArrival(new Date(), "added bus", stopName, stopId, 0, routeIdFav, bound, StringUtils.EMPTY, new Date(), false);
                     busArrivalDTO.addBusArrival(busArrival);
                 }
             }

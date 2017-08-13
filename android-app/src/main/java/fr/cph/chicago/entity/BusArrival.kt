@@ -21,7 +21,7 @@ package fr.cph.chicago.entity
 
 import android.os.Parcel
 import android.os.Parcelable
-import fr.cph.chicago.entity.enumeration.PredictionType
+import org.apache.commons.lang3.StringUtils
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -32,28 +32,36 @@ import java.util.concurrent.TimeUnit
  * *
  * @version 1
  */
-class BusArrival(
-    var timeStamp: Date? = null,
-    val errorMessage: String? = null,
-    val predictionType: PredictionType? = null,
-    var stopName: String? = null,
-    var stopId: Int = 0,
-    var busId: Int = 0,
-    val distanceToStop: Int = 0, // feets
-    var routeId: String? = null,
-    var routeDirection: String? = null,
-    var busDestination: String? = null,
-    var predictionTime: Date? = null,
-    var isDly: Boolean = false) : Parcelable {
+data class BusArrival(
+    val timeStamp: Date,
+    val errorMessage: String,
+    //val predictionType: PredictionType,
+    val stopName: String,
+    val stopId: Int = 0,
+    val busId: Int = 0,
+    //val distanceToStop: Int, // feets
+    val routeId: String,
+    val routeDirection: String,
+    val busDestination: String,
+    val predictionTime: Date,
+    val isDelay: Boolean) : Parcelable {
 
-    private constructor(source: Parcel) : this() {
-        readFromParcel(source)
-    }
+    private constructor(source: Parcel) : this(
+        Date(source.readLong()),
+        source.readString(),
+        source.readString(),
+        source.readInt(),
+        source.readInt(),
+        source.readString(),
+        source.readString(),
+        source.readString(),
+        Date(source.readLong()),
+        java.lang.Boolean.parseBoolean(source.readString()))
 
     val timeLeft: String
         get() {
-            if (predictionTime != null && timeStamp != null) {
-                val time = predictionTime?.time!! - timeStamp?.time!!
+            if (StringUtils.EMPTY == errorMessage) {
+                val time = predictionTime.time - timeStamp.time
                 return String.format(Locale.ENGLISH, "%d min", TimeUnit.MILLISECONDS.toMinutes(time))
             } else {
                 return NO_SERVICE
@@ -63,7 +71,7 @@ class BusArrival(
     val timeLeftDueDelay: String
         get() {
             val result: String
-            if (isDly) {
+            if (isDelay) {
                 result = "Delay"
             } else {
                 if ("0 min" == timeLeft.trim { it <= ' ' }) {
@@ -75,63 +83,13 @@ class BusArrival(
             return result
         }
 
-    override fun hashCode(): Int {
-        var result = if (timeStamp != null) timeStamp!!.hashCode() else 0
-        result = 31 * result + (errorMessage?.hashCode() ?: 0)
-        result = 31 * result + (predictionType?.hashCode() ?: 0)
-        result = 31 * result + if (stopName != null) stopName!!.hashCode() else 0
-        result = 31 * result + stopId
-        result = 31 * result + busId
-        result = 31 * result + distanceToStop
-        result = 31 * result + if (routeId != null) routeId!!.hashCode() else 0
-        result = 31 * result + if (routeDirection != null) routeDirection!!.hashCode() else 0
-        result = 31 * result + if (busDestination != null) busDestination!!.hashCode() else 0
-        result = 31 * result + if (predictionTime != null) predictionTime!!.hashCode() else 0
-        result = 31 * result + if (isDly) 1 else 0
-        return result
-    }
-
-    override fun equals(o: Any?): Boolean {
-        if (this === o)
-            return true
-        if (o == null || javaClass != o.javaClass)
-            return false
-
-        val that = o as BusArrival?
-
-        if (stopId != that!!.stopId)
-            return false
-        if (busId != that.busId)
-            return false
-        if (distanceToStop != that.distanceToStop)
-            return false
-        if (isDly != that.isDly)
-            return false
-        if (if (timeStamp != null) timeStamp != that.timeStamp else that.timeStamp != null)
-            return false
-        if (if (errorMessage != null) errorMessage != that.errorMessage else that.errorMessage != null)
-            return false
-        if (predictionType != that.predictionType)
-            return false
-        if (if (stopName != null) stopName != that.stopName else that.stopName != null)
-            return false
-        if (if (routeId != null) routeId != that.routeId else that.routeId != null)
-            return false
-        if (if (routeDirection != null) routeDirection != that.routeDirection else that.routeDirection != null)
-            return false
-        if (if (busDestination != null) busDestination != that.busDestination else that.busDestination != null)
-            return false
-        return if (predictionTime != null) predictionTime == that.predictionTime else that.predictionTime == null
-
-    }
-
     override fun describeContents(): Int {
         return 0
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeLong(timeStamp!!.time)
-        //dest.writeString(errorMessage);
+        dest.writeLong(timeStamp.time)
+        dest.writeString(errorMessage)
         //dest.writeString(predictionType.toString());
         dest.writeString(stopName)
         dest.writeInt(stopId)
@@ -140,23 +98,8 @@ class BusArrival(
         dest.writeString(routeId)
         dest.writeString(routeDirection)
         dest.writeString(busDestination)
-        dest.writeLong(predictionTime!!.time)
-        dest.writeString(isDly.toString())
-    }
-
-    private fun readFromParcel(source: Parcel) {
-        timeStamp = Date(source.readLong())
-        //errorMessage = in.readString();
-        //predictionType = PredictionType.fromString(in.readString());
-        stopName = source.readString()
-        stopId = source.readInt()
-        busId = source.readInt()
-        //distanceToStop = in.readInt();
-        routeId = source.readString()
-        routeDirection = source.readString()
-        busDestination = source.readString()
-        predictionTime = Date(source.readLong())
-        isDly = java.lang.Boolean.parseBoolean(source.readString())
+        dest.writeLong(predictionTime.time)
+        dest.writeString(isDelay.toString())
     }
 
     companion object {

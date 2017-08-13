@@ -8,27 +8,27 @@ import fr.cph.chicago.entity.BusRoute
 import fr.cph.chicago.entity.TrainArrival
 import java.util.*
 
-class BusArrivalDTO(val busArrivals: List<BusArrival>, val error: Boolean)
+data class BusArrivalDTO(val busArrivals: List<BusArrival>, val error: Boolean)
 
-class TrainArrivalDTO(val trainArrivalSparseArray: SparseArray<TrainArrival>, val error: Boolean)
+data class TrainArrivalDTO(val trainArrivalSparseArray: SparseArray<TrainArrival>, val error: Boolean)
 
-class FirstLoadDTO(
+data class FirstLoadDTO(
     val busRoutesError: Boolean,
     val bikeStationsError: Boolean,
     val busRoutes: List<BusRoute>,
     val bikeStations: List<BikeStation>)
 
-class FavoritesDTO(
+data class FavoritesDTO(
     val trainArrivalDTO: TrainArrivalDTO,
     val busArrivalDTO: BusArrivalDTO,
     val bikeError: Boolean,
     val bikeStations: List<BikeStation>)
 
-class DivvyDTO(@JsonProperty("stationBeanList") val stations: List<BikeStation>)
+data class DivvyDTO(@JsonProperty("stationBeanList") val stations: List<BikeStation>)
 
-class BusFavoriteDTO(val routeId: String, val stopId: String, val bound: String)
+data class BusFavoriteDTO(val routeId: String, val stopId: String, val bound: String)
 
-class BusDetailsDTO(
+data class BusDetailsDTO(
     val busRouteId: String,
     val bound: String,
     val boundTitle: String,

@@ -6,6 +6,9 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Date;
 import java.util.List;
 
 import fr.cph.chicago.R;
@@ -40,13 +43,11 @@ public class BusFollowObserver implements Observer<List<BusArrival>> {
     public void onNext(List<BusArrival> busArrivals) {
         if (!loadAll && busArrivals.size() > 7) {
             busArrivals = busArrivals.subList(0, 6);
-            final BusArrival arrival = new BusArrival(
-                null, null, null, view.getContext().getString(R.string.bus_all_results),
-                0, 0, 0, null, null, null, null, false);
-            busArrivals.add(arrival);
+            final BusArrival busArrival = new BusArrival(new Date(), "added bus", view.getContext().getString(R.string.bus_all_results), 0, 0, "", "", StringUtils.EMPTY, new Date(), false);
+            busArrivals.add(busArrival);
         }
-        final ListView arrivals = (ListView) view.findViewById(R.id.arrivals);
-        final TextView error = (TextView) view.findViewById(R.id.error);
+        final ListView arrivals = view.findViewById(R.id.arrivals);
+        final TextView error = view.findViewById(R.id.error);
         if (busArrivals.size() != 0) {
             final BusMapSnippetAdapter ada = new BusMapSnippetAdapter(activity, busArrivals);
             arrivals.setAdapter(ada);

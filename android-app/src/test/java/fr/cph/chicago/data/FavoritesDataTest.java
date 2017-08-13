@@ -94,7 +94,7 @@ public class FavoritesDataTest {
             .routeDirection("Northbound")
             .busDestination("Illinois Center")
             .predictionTime(new Date())
-            .isDly(false)
+            .isDelay(false)
             .build();
         return Collections.singletonList(busArrival);
     }

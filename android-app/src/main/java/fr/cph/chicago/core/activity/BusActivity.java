@@ -246,11 +246,11 @@ public class BusActivity extends AbstractStationActivity {
                     final String arrivalText;
                     if (tempMap.containsKey(destination)) {
                         final TextView arrivalView = tempMap.get(destination);
-                        arrivalText = arrival.isDly() ? arrivalView.getText() + " Delay" : arrivalView.getText() + " " + arrival.getTimeLeft();
+                        arrivalText = arrival.isDelay() ? arrivalView.getText() + " Delay" : arrivalView.getText() + " " + arrival.getTimeLeft();
                         arrivalView.setText(arrivalText);
                     } else {
                         final TextView arrivalView = new TextView(getApplicationContext());
-                        arrivalText = arrival.isDly() ? arrival.getBusDestination() + " Delay" : arrival.getBusDestination() + " " + arrival.getTimeLeft();
+                        arrivalText = arrival.isDelay() ? arrival.getBusDestination() + " Delay" : arrival.getBusDestination() + " " + arrival.getTimeLeft();
                         arrivalView.setText(arrivalText);
                         arrivalView.setTextColor(grey);
                         tempMap.put(destination, arrivalView);

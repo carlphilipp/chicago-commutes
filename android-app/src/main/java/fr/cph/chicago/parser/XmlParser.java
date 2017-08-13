@@ -24,6 +24,7 @@ import com.annimon.stream.Optional;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -34,6 +35,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -265,7 +267,7 @@ public enum XmlParser {
                                     }
                                     break;
                                 }
-                                case "isDly": {
+                                case "isDelay": {
                                     final TrainArrival arri = arrivals.get(staId, null);
                                     if (arri != null) {
                                         final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
@@ -509,69 +511,62 @@ public enum XmlParser {
     public final synchronized List<BusArrival> parseBusArrivals(@NonNull final InputStream xml) throws ParserException {
         final List<BusArrival> busArrivals = new ArrayList<>();
         String tagName = null;
-        BusArrival busArrival = null;
         try {
             parser.setInput(xml, "UTF-8");
             int eventType = parser.getEventType();
+            Date timeStamp = null;
+            String stopName = null;
+            Integer stopId = null;
+            Integer busId = null;
+            String routeId = null;
+            String routeDirection = null;
+            String busDestination = null;
+            Date predictionTime = null;
+            Boolean isDelay = null;
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 if (eventType == XmlPullParser.START_TAG) {
                     tagName = parser.getName();
                 } else if (eventType == XmlPullParser.END_TAG) {
+                    final String prd = parser.getName();
+                    if (StringUtils.isNotBlank(prd) && "prd".equals(prd)) {
+                        final BusArrival busArrival = new BusArrival(timeStamp, StringUtils.EMPTY, stopName, stopId, busId, routeId, routeDirection, busDestination, predictionTime, isDelay != null ? isDelay : false);
+                        busArrivals.add(busArrival);
+                    }
                     tagName = null;
                 } else if (eventType == XmlPullParser.TEXT) {
-                    String text = parser.getText();
                     if (tagName != null) {
+                        final String text = parser.getText();
                         switch (tagName) {
                             case "tmstmp":
-                                busArrival = new BusArrival();
-                                busArrival.setTimeStamp(simpleDateFormatBus.parse(text));
-                                busArrivals.add(busArrival);
+                                timeStamp = simpleDateFormatBus.parse(text);
                                 break;
                             case "typ":
-                                //assert busArrival != null;
-                                //busArrival.setPredictionType(PredictionType.fromString(text));
                                 break;
                             case "stpnm":
-                                assert busArrival != null;
-                                // to check if needed
-                                //text = text.replaceAll("&amp;", "&");
-                                busArrival.setStopName(text);
+                                stopName = text;
                                 break;
                             case "stpid":
-                                if (busArrival != null) {
-                                    busArrival.setStopId(Integer.parseInt(text));
-                                }
+                                stopId = Integer.parseInt(text);
                                 break;
                             case "vid":
-                                assert busArrival != null;
-                                busArrival.setBusId(Integer.parseInt(text));
+                                busId = Integer.parseInt(text);
                                 break;
                             case "dstp":
-                                //assert busArrival != null;
-                                //busArrival.setDistanceToStop(Integer.parseInt(text));
                                 break;
                             case "rt":
-                                if (busArrival != null) {
-                                    busArrival.setRouteId(text);
-                                }
+                                routeId = text;
                                 break;
                             case "rtdir":
-                                assert busArrival != null;
-                                text = BusDirection.BusDirectionEnum.fromString(text).toString();
-                                busArrival.setRouteDirection(text);
+                                routeDirection = BusDirection.BusDirectionEnum.fromString(text).toString();
                                 break;
                             case "des":
-                                assert busArrival != null;
-                                busArrival.setBusDestination(text);
+                                busDestination = text;
                                 break;
                             case "prdtm":
-                                assert busArrival != null;
-                                busArrival.setPredictionTime(simpleDateFormatBus.parse(text));
+                                predictionTime = simpleDateFormatBus.parse(text);
                                 break;
                             case "dly":
-                                assert busArrival != null;
-                                // to check
-                                busArrival.setDly(BooleanUtils.toBoolean(text));
+                                isDelay = BooleanUtils.toBoolean(text);
                                 break;
                         }
                     }
@@ -798,7 +793,7 @@ public enum XmlParser {
                                 //assert train != null;
                                 //train.setApp(Boolean.valueOf(text));
                                 break;
-                            case "isDly":
+                            case "isDelay":
                                 //assert train != null;
                                 //train.setDly(Boolean.valueOf(text));
                                 break;
@@ -977,7 +972,7 @@ public enum XmlParser {
                                     //							}
                                     break;
                                 }
-                                case "isDly": {
+                                case "isDelay": {
                                     final TrainArrival arri = arrivals.get(staId, null);
                                     if (arri != null) {
                                         final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);

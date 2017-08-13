@@ -125,7 +125,7 @@ class Eta(
     }
 
     override fun toString(): String {
-        return "Eta(station=$station, stop=$stop, runNumber=$runNumber, routeName=$routeName, destSt=$destSt, destName=$destName, trainRouteDirectionCode=$trainRouteDirectionCode, predictionDate=$predictionDate, arrivalDepartureDate=$arrivalDepartureDate, isApp=$isApp, isSch=$isSch, isFlt=$isFlt, isDly=$isDly, flags=$flags, position=$position, heading=$heading)"
+        return "Eta(station=$station, stop=$stop, runNumber=$runNumber, routeName=$routeName, destSt=$destSt, destName=$destName, trainRouteDirectionCode=$trainRouteDirectionCode, predictionDate=$predictionDate, arrivalDepartureDate=$arrivalDepartureDate, isApp=$isApp, isSch=$isSch, isFlt=$isFlt, isDelay=$isDly, flags=$flags, position=$position, heading=$heading)"
     }
 
     companion object {
