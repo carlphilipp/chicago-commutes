@@ -40,10 +40,9 @@ public class BusFollowObserver implements Observer<List<BusArrival>> {
     public void onNext(List<BusArrival> busArrivals) {
         if (!loadAll && busArrivals.size() > 7) {
             busArrivals = busArrivals.subList(0, 6);
-            final BusArrival arrival = BusArrival.builder()
-                .stopName(view.getContext().getString(R.string.bus_all_results))
-                .isDly(false)
-                .build();
+            final BusArrival arrival = new BusArrival(
+                null, null, null, view.getContext().getString(R.string.bus_all_results),
+                0, 0, 0, null, null, null, null, false);
             busArrivals.add(arrival);
         }
         final ListView arrivals = (ListView) view.findViewById(R.id.arrivals);

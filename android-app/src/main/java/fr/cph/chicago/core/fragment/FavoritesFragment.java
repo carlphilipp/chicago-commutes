@@ -253,13 +253,13 @@ public class FavoritesFragment extends AbstractFragment {
         rootView.setBackgroundResource(R.drawable.highlight_selector);
         rootView.postDelayed(() -> rootView.setBackgroundResource(R.drawable.bg_selector), 100);
         stopRefreshing();
-        if (Util.isAtLeastTwoErrors(favoritesDTO.getTrainArrivalDTO().isError(), favoritesDTO.getBusArrivalDTO().isError(), favoritesDTO.isBikeError())) {
+        if (Util.isAtLeastTwoErrors(favoritesDTO.getTrainArrivalDTO().getError(), favoritesDTO.getBusArrivalDTO().getError(), favoritesDTO.getBikeError())) {
             Util.showMessage(activity, R.string.message_something_went_wrong);
-        } else if (favoritesDTO.getTrainArrivalDTO().isError()) {
+        } else if (favoritesDTO.getTrainArrivalDTO().getError()) {
             Util.showMessage(activity, R.string.message_error_train_favorites);
-        } else if (favoritesDTO.getBusArrivalDTO().isError()) {
+        } else if (favoritesDTO.getBusArrivalDTO().getError()) {
             Util.showMessage(activity, R.string.message_error_bus_favorites);
-        } else if (favoritesDTO.isBikeError()) {
+        } else if (favoritesDTO.getBikeError()) {
             Util.showMessage(activity, R.string.message_error_bike_favorites);
         }
     }

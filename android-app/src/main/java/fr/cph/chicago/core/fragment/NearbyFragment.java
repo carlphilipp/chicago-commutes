@@ -67,7 +67,6 @@ import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.util.GPSUtil;
 import fr.cph.chicago.util.Util;
 import io.realm.Realm;
-import lombok.Getter;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -86,10 +85,8 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
 
     @BindView(R.id.activity_bar)
     ProgressBar progressBar;
-    @Getter
     @BindView(R.id.sliding_layout)
     SlidingUpPanelLayout slidingUpPanelLayout;
-    @Getter
     @BindView(R.id.loading_layout_container)
     LinearLayout layoutContainer;
 
@@ -99,9 +96,20 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
     private SupportMapFragment mapFragment;
 
     private GoogleApiClient googleApiClient;
-    @Getter
     private SlidingUpAdapter slidingUpAdapter;
     private MarkerDataHolder markerDataHolder;
+
+    public SlidingUpPanelLayout getSlidingUpPanelLayout() {
+        return slidingUpPanelLayout;
+    }
+
+    public LinearLayout getLayoutContainer() {
+        return layoutContainer;
+    }
+
+    public SlidingUpAdapter getSlidingUpAdapter() {
+        return slidingUpAdapter;
+    }
 
     @NonNull
     public static NearbyFragment newInstance(final int sectionNumber) {
@@ -271,7 +279,7 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
                 trainStations = trainData.readNearbyStation(position.get());
                 // FIXME: wait for bike stations to be loaded
                 bikeStations = bikeStations != null
-                    ? BikeStation.readNearbyStation(bikeStations, position.get())
+                    ? BikeStation.Companion.readNearbyStation(bikeStations, position.get())
                     : new ArrayList<>();
             }
             return position;

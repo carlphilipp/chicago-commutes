@@ -140,11 +140,8 @@ public enum TrainData {
                     final double longitude = Double.parseDouble(coordinates[0]);
                     final double latitude = Double.parseDouble(coordinates[1]);
 
-                    final Stop stop = Stop.builder().id(stopId).description(stopName).direction(direction).build();
-                    stop.setPosition(new Position(longitude, latitude));
-                    final Station station = Station.builder().id(parentStopId).name(stationName).stops(Collections.emptyList()).build();
-                    stop.setAda(ada);
-                    stop.setLines(lines);
+                    final Station station = new Station(parentStopId, stationName, Collections.emptyList());
+                    final Stop stop = new Stop(stopId, stopName, direction, new Position(longitude, latitude), ada, lines);
                     stops.append(stopId, stop);
 
                     final Station currentStation = stations.get(parentStopId, null);

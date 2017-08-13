@@ -174,7 +174,7 @@ public class TrainMapActivity extends AbstractMapActivity {
             position = result.get(0).getPosition();
             zoom = 15;
         } else {
-            position = Train.getBestPosition(result);
+            position = Train.Companion.getBestPosition(result);
             zoom = 11;
         }
         centerMapOn(position.getLatitude(), position.getLongitude(), zoom);
@@ -313,8 +313,8 @@ public class TrainMapActivity extends AbstractMapActivity {
             Util.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_FOLLOW_URL);
             if (!loadAll && etas.size() > 7) {
                 etas = etas.subList(0, 6);
-
-                final Date currentDate = Calendar.getInstance().getTime();
+                // FIXME kotlin
+/*                final Date currentDate = Calendar.getInstance().getTime();
                 final Station fakeStation = Station.builder().id(0).name(busAllResults).stops(Collections.emptyList()).build();
                 // Add a fake Eta cell to alert the user about the fact that only a part of the result is displayed
                 final Eta eta = Eta.builder()
@@ -326,7 +326,7 @@ public class TrainMapActivity extends AbstractMapActivity {
                     .build();
 
                 eta.setStation(fakeStation);
-                etas.add(eta);
+                etas.add(eta);*/
             }
             return etas;
         }

@@ -47,14 +47,12 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-import lombok.SneakyThrows;
 
 import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;
 import static fr.cph.chicago.Constants.TRAINS_ARRIVALS_URL;
 import static fr.cph.chicago.core.App.setupContextData;
 
 /**
- *
  * This class represents the base activity of the application It will load the loading screen and/or the main
  * activity
  *
@@ -91,7 +89,6 @@ public class BaseActivity extends Activity {
         trackWithGoogleAnalytics();
     }
 
-    @SneakyThrows
     private void setUpRealm() {
         RealmUtil.setUpRealm(getApplicationContext());
     }
@@ -133,10 +130,12 @@ public class BaseActivity extends Activity {
             .doOnComplete(() ->
                 Observable.zip(trainOnlineFavorites, busOnlineFavorites, (trainArrivalsDTO, busArrivalsDTO) -> {
                         App.setLastUpdate(Calendar.getInstance().getTime());
-                        return FavoritesDTO.builder()
+                        // FIXME kotlin
+                        return new FavoritesDTO();
+                        /*return FavoritesDTO.builder()
                             .trainArrivalDTO(trainArrivalsDTO)
                             .busArrivalDTO(busArrivalsDTO)
-                            .build();
+                            .build();*/
                     }
                 ).subscribe(this::startMainActivity, onError -> {
                         Log.e(TAG, onError.getMessage(), onError);
@@ -161,8 +160,8 @@ public class BaseActivity extends Activity {
         final Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(getString(R.string.bundle_bus_arrivals), (ArrayList<BusArrival>) result.getBusArrivalDTO().getBusArrivals());
         bundle.putSparseParcelableArray(getString(R.string.bundle_train_arrivals), result.getTrainArrivalDTO().getTrainArrivalSparseArray());
-        bundle.putBoolean(getString(R.string.bundle_train_error), result.getTrainArrivalDTO().isError());
-        bundle.putBoolean(getString(R.string.bundle_bus_error), result.getBusArrivalDTO().isError());
+        bundle.putBoolean(getString(R.string.bundle_train_error), result.getTrainArrivalDTO().getError());
+        bundle.putBoolean(getString(R.string.bundle_bus_error), result.getBusArrivalDTO().getError());
         intent.putExtras(bundle);
 
         finish();

@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
-import lombok.SneakyThrows;
 
 public enum RealmUtil {
     ;
@@ -22,10 +21,15 @@ public enum RealmUtil {
         Realm.deleteRealm(realmConfig);
     }
 
-    @SneakyThrows(PackageManager.NameNotFoundException.class)
     private static RealmConfiguration getRealmConfiguration(final Context context) {
+        // FIXME kotlin
         Realm.init(context);
-        final PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+        PackageInfo packageInfo = null;
+        try {
+            packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
         return new RealmConfiguration
             .Builder()
             .schemaVersion(packageInfo.versionCode)

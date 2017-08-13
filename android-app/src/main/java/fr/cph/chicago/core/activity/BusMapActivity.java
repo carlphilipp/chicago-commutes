@@ -167,7 +167,7 @@ public class BusMapActivity extends AbstractMapActivity {
 
     public void centerMapOnBus(@NonNull final List<Bus> result) {
         final boolean sizeIsOne = result.size() == 1;
-        final Position position = sizeIsOne ? result.get(0).getPosition() : Bus.getBestPosition(result);
+        final Position position = sizeIsOne ? result.get(0).getPosition() : Bus.Companion.getBestPosition(result);
         final int zoom = sizeIsOne ? 15 : 11;
         centerMapOn(position.getLatitude(), position.getLongitude(), zoom);
     }

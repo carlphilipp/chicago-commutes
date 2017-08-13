@@ -50,20 +50,13 @@ public enum ObservableUtil {
         return Observable.create(
             (ObservableEmitter<TrainArrivalDTO> observableOnSubscribe) -> {
                 if (!observableOnSubscribe.isDisposed()) {
-                    final TrainArrivalDTO trainArrivalDTO = TrainArrivalDTO.builder()
-                        .trainArrivalSparseArray(TRAIN_SERVICE.loadFavoritesTrain(context))
-                        .error(false)
-                        .build();
-                    observableOnSubscribe.onNext(trainArrivalDTO);
+                    observableOnSubscribe.onNext(new TrainArrivalDTO(TRAIN_SERVICE.loadFavoritesTrain(context), false));
                     observableOnSubscribe.onComplete();
                 }
             })
             .onErrorReturn(throwable -> {
                 Log.e(TAG, throwable.getMessage(), throwable);
-                return TrainArrivalDTO.builder()
-                    .trainArrivalSparseArray(new SparseArray<>())
-                    .error(true)
-                    .build();
+                return new TrainArrivalDTO(new SparseArray<>(), true);
             })
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
@@ -85,20 +78,13 @@ public enum ObservableUtil {
         return Observable.create(
             (ObservableEmitter<BusArrivalDTO> observableOnSubscribe) -> {
                 if (!observableOnSubscribe.isDisposed()) {
-                    final BusArrivalDTO busArrivalDTO = BusArrivalDTO.builder()
-                        .busArrivals(BUS_SERVICE.loadFavoritesBuses(context))
-                        .error(false)
-                        .build();
-                    observableOnSubscribe.onNext(busArrivalDTO);
+                    observableOnSubscribe.onNext(new BusArrivalDTO(BUS_SERVICE.loadFavoritesBuses(context), false));
                     observableOnSubscribe.onComplete();
                 }
             })
             .onErrorReturn(throwable -> {
                 Log.e(TAG, throwable.getMessage(), throwable);
-                return BusArrivalDTO.builder()
-                    .busArrivals(new ArrayList<>())
-                    .error(true)
-                    .build();
+                return new BusArrivalDTO(Collections.emptyList(), true);
             })
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
@@ -162,12 +148,7 @@ public enum ObservableUtil {
         return Observable.zip(trainArrivalsObservable, busArrivalsObservable, bikeStationsObservable,
             (trainArrivalsDTO, busArrivalsDTO, bikeStations) -> {
                 App.setLastUpdate(Calendar.getInstance().getTime());
-                return FavoritesDTO.builder()
-                    .trainArrivalDTO(trainArrivalsDTO)
-                    .busArrivalDTO(busArrivalsDTO)
-                    .bikeStations(bikeStations)
-                    .bikeError(bikeStations.isEmpty())
-                    .build();
+                return new FavoritesDTO(trainArrivalsDTO, busArrivalsDTO, bikeStations.isEmpty(), bikeStations);
             });
     }
 
@@ -224,18 +205,7 @@ public enum ObservableUtil {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
 
-        return Observable.zip(busRoutesObs, bikeStationsObs, (busRoutes, bikeStations) -> {
-            final FirstLoadDTO result = FirstLoadDTO.builder()
-                .busRoutes(busRoutes)
-                .bikeStations(bikeStations).build();
-            if (busRoutes.isEmpty()) {
-                result.setBusRoutesError(true);
-            }
-            if (bikeStations.isEmpty()) {
-                result.setBikeStationsError(true);
-            }
-            return result;
-        });
+        return Observable.zip(busRoutesObs, bikeStationsObs, (busRoutes, bikeStations) -> new FirstLoadDTO(busRoutes.isEmpty(), bikeStations.isEmpty(), busRoutes, bikeStations));
     }
 
     public static Observable<List<BusArrival>> createFollowBusObservable(@NonNull final Context context, @NonNull final String busId) {

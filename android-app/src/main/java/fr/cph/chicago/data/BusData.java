@@ -32,8 +32,6 @@ import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.parser.BusStopCsvParser;
 import io.realm.Realm;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Class that handle bus data. Singleton
@@ -48,9 +46,15 @@ public enum BusData {
 
     private static final String TAG = BusData.class.getSimpleName();
 
-    @Getter
-    @Setter
     private List<BusRoute> busRoutes;
+
+    public List<BusRoute> getBusRoutes() {
+        return busRoutes;
+    }
+
+    public void setBusRoutes(List<BusRoute> busRoutes) {
+        this.busRoutes = busRoutes;
+    }
 
     BusData() {
         this.busRoutes = new ArrayList<>();
@@ -77,7 +81,8 @@ public enum BusData {
     @NonNull
     final Optional<BusRoute> getRoute(@NonNull final String routeId) {
         return Stream.of(busRoutes)
-            .filter(busRoute -> busRoute.getId().equals(routeId))
+            // FIXME kotlin
+            //.filter(busRoute -> busRoute.id.equals(routeId))
             .findFirst();
     }
 
@@ -104,7 +109,8 @@ public enum BusData {
             .greaterThan("position.longitude", lonMin)
             .lessThan("position.longitude", lonMax)
             .findAllSorted("name"))
-            .map(currentBusStop -> {
+            // FIXME kotlin
+            /*.map(currentBusStop -> {
                 final BusStop busStop = new BusStop();
                 busStop.setName(currentBusStop.getName());
                 busStop.setDescription(currentBusStop.getDescription());
@@ -114,7 +120,7 @@ public enum BusData {
                 busStop.setPosition(pos);
                 busStop.setId(currentBusStop.getId());
                 return busStop;
-            })
+            })*/
             .collect(Collectors.toList());
     }
 }

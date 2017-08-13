@@ -16,9 +16,6 @@
 
 package fr.cph.chicago.data;
 
-import lombok.Getter;
-import lombok.Setter;
-
 /**
  * Class that hold bus and train data. Singleton
  *
@@ -28,10 +25,22 @@ import lombok.Setter;
 public enum DataHolder {
     INSTANCE;
 
-    @Getter
-    @Setter
     private TrainData trainData;
-    @Getter
-    @Setter
     private BusData busData;
+
+    public TrainData getTrainData() {
+        return trainData;
+    }
+
+    public void setTrainData(TrainData trainData) {
+        this.trainData = trainData;
+    }
+
+    public BusData getBusData() {
+        return busData;
+    }
+
+    public void setBusData(BusData busData) {
+        this.busData = busData;
+    }
 }

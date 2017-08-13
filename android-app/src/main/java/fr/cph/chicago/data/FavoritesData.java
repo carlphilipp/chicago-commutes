@@ -38,8 +38,6 @@ import fr.cph.chicago.entity.dto.BusArrivalStopMappedDTO;
 import fr.cph.chicago.entity.dto.BusFavoriteDTO;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.Util;
-import lombok.AccessLevel;
-import lombok.Setter;
 
 /**
  * Vehicle Arrival. Hold data for favorites adapter.
@@ -54,18 +52,34 @@ public enum FavoritesData {
     private final TrainData trainData;
     private final BusData busData;
 
-    @Setter
+    public void setTrainArrivals(SparseArray<TrainArrival> trainArrivals) {
+        this.trainArrivals = trainArrivals;
+    }
+
+    public void setBusArrivals(List<BusArrival> busArrivals) {
+        this.busArrivals = busArrivals;
+    }
+
+    public void setBikeStations(List<BikeStation> bikeStations) {
+        this.bikeStations = bikeStations;
+    }
+
+    public void setBusFavorites(List<String> busFavorites) {
+        this.busFavorites = busFavorites;
+    }
+
+    public void setPreferences(Preferences preferences) {
+        this.preferences = preferences;
+    }
+
+
     private SparseArray<TrainArrival> trainArrivals;
-    @Setter
     private List<BusArrival> busArrivals;
-    @Setter
     private List<BikeStation> bikeStations;
     private List<Integer> trainFavorites;
-    @Setter(AccessLevel.PACKAGE)
     private List<String> busFavorites;
     private final List<String> bikeFavorites;
     private List<String> fakeBusFavorites;
-    @Setter(AccessLevel.PACKAGE)
     private Preferences preferences;
 
     FavoritesData() {
@@ -111,12 +125,14 @@ public enum FavoritesData {
             } else {
                 // Get name in the preferences if null
                 final String routeName = preferences.getBusRouteNameMapping(context, routeId);
-                final BusRoute busRoute = BusRoute.builder()
+                // FIXME kotlin
+               /* final BusRoute busRoute = BusRoute.builder()
                     .id(routeId)
                     .name(routeName == null ? "" : routeName)
                     .build();
                 busRoute.setId(routeId);
-                return Optional.of(busRoute);
+                return Optional.of(busRoute);*/
+               return Optional.empty();
             }
         } else {
             final int index = position - (trainFavorites.size() + fakeBusFavorites.size());
@@ -133,10 +149,12 @@ public enum FavoritesData {
 
     @NonNull
     private Optional<BikeStation> createEmptyBikeStation(final int index, @NonNull final Context context) {
-        final BikeStation bikeStation = BikeStation.builder().build();
+        // FIXME kotlin
+       /* final BikeStation bikeStation = BikeStation.builder().build();
         final String stationName = preferences.getBikeRouteNameMapping(context, bikeFavorites.get(index));
         bikeStation.setName(stationName);
-        return Optional.of(bikeStation);
+        return Optional.of(bikeStation);*/
+        return Optional.empty();
     }
 
     /**
@@ -147,7 +165,9 @@ public enum FavoritesData {
      */
     @NonNull
     private TrainArrival getTrainArrival(final int stationId) {
-        return trainArrivals.get(stationId, TrainArrival.builder().build());
+        // FIXME kotlin
+        //return trainArrivals.get(stationId, TrainArrival.builder().build());
+        return new TrainArrival();
     }
 
     @NonNull
@@ -188,12 +208,15 @@ public enum FavoritesData {
                 stopName = stopName != null ? stopName : stopId.toString();
 
                 if (!busArrivalDTO.containsStopNameAndBound(stopName, bound)) {
-                    final BusArrival busArrival = BusArrival.builder()
+                    // FIXME kotlin
+                    /*final BusArrival busArrival = BusArrival.builder()
                         .stopId(stopId)
                         .routeDirection(bound)
                         .stopName(stopName)
                         .routeId(routeIdFav)
                         .build();
+                    busArrivalDTO.addBusArrival(busArrival);*/
+                    final BusArrival busArrival = new BusArrival(null, null, null, stopName, stopId, 0, 0, routeIdFav, null, null, null, false);
                     busArrivalDTO.addBusArrival(busArrival);
                 }
             }

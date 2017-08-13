@@ -68,7 +68,6 @@ import fr.cph.chicago.entity.dto.BusFavoriteDTO;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
-import lombok.SneakyThrows;
 
 /**
  * Util class
@@ -195,7 +194,7 @@ public enum Util {
         final int sec = favorite.indexOf('_', first + 1);
         final String stopId = favorite.substring(first + 1, sec);
         final String bound = favorite.substring(sec + 1, favorite.length());
-        return BusFavoriteDTO.builder().routeId(routeId).stopId(stopId).bound(bound).build();
+        return new BusFavoriteDTO(routeId, stopId, bound);
     }
 
     private static final class BikeStationComparator implements Comparator<BikeStation> {
@@ -438,9 +437,13 @@ public enum Util {
             : name;
     }
 
-    @SneakyThrows(PackageManager.NameNotFoundException.class)
     public static String getCurrentVersion(final Context context) {
-        final PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+        PackageInfo packageInfo = null;
+        try {
+            packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
         return packageInfo.versionName;
     }
 }

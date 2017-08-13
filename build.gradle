@@ -1,4 +1,5 @@
 buildscript {
+    ext.kotlin_version = '1.1.3-2'
     repositories {
         jcenter()
         mavenCentral()
@@ -8,9 +9,10 @@ buildscript {
         classpath(
             [group: 'com.android.tools.build', name: 'gradle', version: android_tools_build_version],
             [group: 'me.tatarka', name: 'gradle-retrolambda', version: retro_lambda_version],
-            [group: 'me.tatarka.retrolambda.projectlombok', name: 'lombok.ast', version: retro_lambda_lombok_version],
+            //[group: 'me.tatarka.retrolambda.projectlombok', name: 'lombok.ast', version: retro_lambda_lombok_version],
             [group: 'io.realm', name: 'realm-gradle-plugin', version: realm_version],
         )
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
     configurations.classpath.exclude group: 'com.android.tools.external.lombok'
 }
@@ -18,6 +20,7 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        google()
         // Needed for PhotoView
         maven { url "https://jitpack.io" }
     }

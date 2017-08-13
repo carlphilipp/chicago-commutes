@@ -31,8 +31,6 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.core.activity.BaseActivity;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.util.Util;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Main class that extends Application. Mainly used to get the context from anywhere in the app.
@@ -53,21 +51,63 @@ public class App extends Application {
     /**
      * Last update of favorites
      **/
-    @Setter
-    @Getter
     private static Date lastUpdate;
     private static Tracker tracker;
 
-    @Getter
+
     private static int screenWidth;
-    @Getter
     private static float lineWidth;
-    @Getter
     private static String ctaTrainKey;
-    @Getter
     private static String ctaBusKey;
-    @Getter
     private static String googleStreetKey;
+
+    public static Date getLastUpdate() {
+        return lastUpdate;
+    }
+
+    public static void setLastUpdate(Date lastUpdate) {
+        App.lastUpdate = lastUpdate;
+    }
+
+    public static int getScreenWidth() {
+        return screenWidth;
+    }
+
+    public static void setScreenWidth(int screenWidth) {
+        App.screenWidth = screenWidth;
+    }
+
+    public static float getLineWidth() {
+        return lineWidth;
+    }
+
+    public static void setLineWidth(float lineWidth) {
+        App.lineWidth = lineWidth;
+    }
+
+    public static String getCtaTrainKey() {
+        return ctaTrainKey;
+    }
+
+    public static void setCtaTrainKey(String ctaTrainKey) {
+        App.ctaTrainKey = ctaTrainKey;
+    }
+
+    public static String getCtaBusKey() {
+        return ctaBusKey;
+    }
+
+    public static void setCtaBusKey(String ctaBusKey) {
+        App.ctaBusKey = ctaBusKey;
+    }
+
+    public static String getGoogleStreetKey() {
+        return googleStreetKey;
+    }
+
+    public static void setGoogleStreetKey(String googleStreetKey) {
+        App.googleStreetKey = googleStreetKey;
+    }
 
     public static boolean checkTrainData(@NonNull final Activity activity) {
         if (DataHolder.INSTANCE.getTrainData() == null) {

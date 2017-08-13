@@ -23,9 +23,6 @@ import butterknife.BindDrawable;
 import butterknife.BindView;
 import fr.cph.chicago.R;
 import fr.cph.chicago.util.Util;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -47,9 +44,7 @@ public class AbstractMapActivity extends FragmentActivity implements EasyPermiss
     @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
     Drawable arrowBackWhite;
 
-    @Setter(AccessLevel.PACKAGE)
     private Marker selectedMarker;
-    @Getter(AccessLevel.PACKAGE)
     private GoogleMap googleMap;
 
     boolean refreshingInfoWindow = false;
@@ -123,5 +118,21 @@ public class AbstractMapActivity extends FragmentActivity implements EasyPermiss
 
     private void setLocationOnMap() throws SecurityException {
         googleMap.setMyLocationEnabled(true);
+    }
+
+    public Marker getSelectedMarker() {
+        return selectedMarker;
+    }
+
+    public void setSelectedMarker(Marker selectedMarker) {
+        this.selectedMarker = selectedMarker;
+    }
+
+    public GoogleMap getGoogleMap() {
+        return googleMap;
+    }
+
+    public void setGoogleMap(GoogleMap googleMap) {
+        this.googleMap = googleMap;
     }
 }

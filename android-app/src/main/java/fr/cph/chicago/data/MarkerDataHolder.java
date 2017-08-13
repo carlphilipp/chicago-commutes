@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import fr.cph.chicago.entity.AStation;
-import lombok.Data;
 
 public class MarkerDataHolder {
     private final Map<LatLng, MarkerDataHolder.MarkerHolder> data;
@@ -32,9 +31,24 @@ public class MarkerDataHolder {
         return data.get(marker.getPosition()).getStation();
     }
 
-    @Data
     private class MarkerHolder {
         private Marker marker;
         private AStation station;
+
+        public AStation getStation() {
+            return station;
+        }
+
+        public void setStation(AStation station) {
+            this.station = station;
+        }
+
+        public Marker getMarker() {
+            return marker;
+        }
+
+        public void setMarker(Marker marker) {
+            this.marker = marker;
+        }
     }
 }

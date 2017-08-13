@@ -17,6 +17,7 @@ import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -119,9 +120,12 @@ public class SlidingUpAdapter {
          */
         if (linearLayout.getChildCount() == 0) {
             nbOfLine = new int[]{0};
-            Stream.of(busArrivalRouteDTO.entrySet()).forEach(entry -> {
+            // FIXME kotlin
+           /* Stream.of(busArrivalRouteDTO.entrySet()).forEach(entry -> {
                 final String stopNameTrimmed = Util.trimBusStopNameIfNeeded(entry.getKey());
-                final Map<String, List<BusArrival>> boundMap = entry.getValue();
+                // FIXME kotlin
+                //final Map<String, List<BusArrival>> boundMap = entry.getValue();
+                final Map<String, List<BusArrival>> boundMap = new HashMap<>();
 
                 boolean newLine = true;
                 int i = 0;
@@ -135,7 +139,7 @@ public class SlidingUpAdapter {
                     i++;
                 }
                 nbOfLine[0] = nbOfLine[0] + boundMap.size();
-            });
+            });*/
 
             // Handle the case when we have no bus returned.
             if (busArrivalRouteDTO.size() == 0) {

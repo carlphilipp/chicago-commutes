@@ -14,20 +14,11 @@ import com.google.android.gms.maps.model.Marker;
 
 import java.util.List;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-
 abstract class RefreshMarkers {
 
-    @Getter(AccessLevel.PROTECTED)
     private final BitmapDescriptor bitmapDescrSmall;
-    @Getter(AccessLevel.PROTECTED)
     private final BitmapDescriptor bitmapDescrMedium;
-    @Getter(AccessLevel.PROTECTED)
     private final BitmapDescriptor bitmapDescrLarge;
-    @Getter
-    @Setter(AccessLevel.PROTECTED)
     private BitmapDescriptor currentDescriptor;
 
     RefreshMarkers(@NonNull final Context context, @DrawableRes int drawable) {
@@ -64,5 +55,25 @@ abstract class RefreshMarkers {
                 setCurrentDescriptor(getBitmapDescrLarge());
             }
         }
+    }
+
+    public BitmapDescriptor getBitmapDescrSmall() {
+        return bitmapDescrSmall;
+    }
+
+    public BitmapDescriptor getBitmapDescrMedium() {
+        return bitmapDescrMedium;
+    }
+
+    public BitmapDescriptor getBitmapDescrLarge() {
+        return bitmapDescrLarge;
+    }
+
+    public BitmapDescriptor getCurrentDescriptor() {
+        return currentDescriptor;
+    }
+
+    public void setCurrentDescriptor(BitmapDescriptor currentDescriptor) {
+        this.currentDescriptor = currentDescriptor;
     }
 }

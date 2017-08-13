@@ -222,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 final DataHolder dataHolder = DataHolder.INSTANCE;
                 dataHolder.getBusData().setBusRoutes(onNext.getBusRoutes());
                 refreshFirstLoadData(dataHolder.getBusData(), onNext.getBikeStations());
-                if (onNext.isBikeStationsError() || onNext.isBusRoutesError()) {
+                if (onNext.getBikeStationsError() || onNext.getBusRoutesError()) {
                     Util.showSnackBar(this, R.string.message_something_went_wrong);
                 }
             },

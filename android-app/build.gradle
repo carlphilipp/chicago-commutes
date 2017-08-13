@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 apply plugin: 'realm-android'
 
 dependencies {
@@ -32,7 +33,7 @@ dependencies {
 
     annotationProcessor(
         [group: 'com.jakewharton', name: 'butterknife-compiler', version: butterknife_version],
-        [group: 'org.projectlombok', name: 'lombok', version: lombok_version]
+        //[group: 'org.projectlombok', name: 'lombok', version: lombok_version]
     )
 
     testCompile(
@@ -56,10 +57,11 @@ dependencies {
         // Optional -- UI testing with UI Automator
         [group: 'com.android.support.test.uiautomator', name: 'uiautomator-v18', version: google_support_version_test_uiautomator]
     )
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
-    provided(
-        [group: 'org.projectlombok', name: 'lombok', version: lombok_version]
-    )
+    //provided(
+        //[group: 'org.projectlombok', name: 'lombok', version: lombok_version]
+    //)
 }
 
 android {
@@ -165,4 +167,7 @@ android {
         exclude 'META-INF/dependencies.txt'
         exclude 'META-INF/LGPL2.1'
     }
+}
+repositories {
+    mavenCentral()
 }
