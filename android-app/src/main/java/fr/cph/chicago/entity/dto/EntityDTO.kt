@@ -8,34 +8,34 @@ import fr.cph.chicago.entity.BusRoute
 import fr.cph.chicago.entity.TrainArrival
 import java.util.*
 
-class BusArrivalDTO(val busArrivals: List<BusArrival>? = null, val error: Boolean = false)
+class BusArrivalDTO(val busArrivals: List<BusArrival>, val error: Boolean)
 
-class TrainArrivalDTO(val trainArrivalSparseArray: SparseArray<TrainArrival>? = null, val error: Boolean = false)
+class TrainArrivalDTO(val trainArrivalSparseArray: SparseArray<TrainArrival>, val error: Boolean)
 
 class FirstLoadDTO(
-    val busRoutesError: Boolean = false,
-    val bikeStationsError: Boolean = false,
-    val busRoutes: List<BusRoute>? = null,
-    val bikeStations: List<BikeStation>? = null)
+    val busRoutesError: Boolean,
+    val bikeStationsError: Boolean,
+    val busRoutes: List<BusRoute>,
+    val bikeStations: List<BikeStation>)
 
 class FavoritesDTO(
-    var trainArrivalDTO: TrainArrivalDTO? = null,
-    var busArrivalDTO: BusArrivalDTO? = null,
-    var bikeError: Boolean = false,
-    var bikeStations: List<BikeStation>? = null)
+    val trainArrivalDTO: TrainArrivalDTO,
+    val busArrivalDTO: BusArrivalDTO,
+    val bikeError: Boolean,
+    val bikeStations: List<BikeStation>)
 
 class DivvyDTO(@JsonProperty("stationBeanList") val stations: List<BikeStation>)
 
 class BusFavoriteDTO(val routeId: String, val stopId: String, val bound: String)
 
-class BusDetailsDTO {
-    var busRouteId: String? = null
-    var bound: String? = null
-    var boundTitle: String? = null
-    var stopId: String? = null
-    var routeName: String? = null
-    var stopName: String? = null
-}
+class BusDetailsDTO(
+    val busRouteId: String,
+    val bound: String,
+    val boundTitle: String,
+    val stopId: String,
+    val routeName: String,
+    val stopName: String
+)
 
 class BusArrivalStopMappedDTO : TreeMap<String, MutableMap<String, List<BusArrival>>>() {
     // stop name => { bound => BusArrival }

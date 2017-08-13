@@ -24,6 +24,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 
 import butterknife.BindString;
 import butterknife.ButterKnife;
@@ -130,10 +131,7 @@ public class BaseActivity extends Activity {
             .doOnComplete(() ->
                 Observable.zip(trainOnlineFavorites, busOnlineFavorites, (trainArrivalsDTO, busArrivalsDTO) -> {
                         App.setLastUpdate(Calendar.getInstance().getTime());
-                        final FavoritesDTO favoritesDTO = new FavoritesDTO();
-                        favoritesDTO.setTrainArrivalDTO(trainArrivalsDTO);
-                        favoritesDTO.setBusArrivalDTO(busArrivalsDTO);
-                        return favoritesDTO;
+                        return new FavoritesDTO(trainArrivalsDTO, busArrivalsDTO, false, Collections.emptyList());
                     }
                 ).subscribe(this::startMainActivity, onError -> {
                         Log.e(TAG, onError.getMessage(), onError);

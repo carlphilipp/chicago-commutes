@@ -246,13 +246,14 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 final BusArrival busArrival = entry2.getValue().get(0);
                 final String boundTitle = busArrival.getRouteDirection();
                 final BusDirection.BusDirectionEnum busDirectionEnum = BusDirection.BusDirectionEnum.fromString(boundTitle);
-                final BusDetailsDTO busDetails = new BusDetailsDTO();
-                busDetails.setBusRouteId(busArrival.getRouteId());
-                busDetails.setBound(busDirectionEnum.getShortUpperCase());
-                busDetails.setBoundTitle(boundTitle);
-                busDetails.setStopId(Integer.toString(busArrival.getStopId()));
-                busDetails.setRouteName(busRoute.getName());
-                busDetails.setStopName(stopName);
+                final BusDetailsDTO busDetails = new BusDetailsDTO(
+                    busArrival.getRouteId(),
+                    busDirectionEnum.getShortUpperCase(),
+                    boundTitle,
+                    Integer.toString(busArrival.getStopId()),
+                    busRoute.getName(),
+                    stopName
+                );
                 busDetailsDTOs.add(busDetails);
 
                 // Build UI
