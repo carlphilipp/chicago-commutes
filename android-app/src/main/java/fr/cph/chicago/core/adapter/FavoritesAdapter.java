@@ -232,28 +232,27 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         final BusArrivalStopMappedDTO busArrivalDTO = FavoritesData.INSTANCE.getBusArrivalsMapped(busRoute.getId(), context);
 
         // FIXME kotlin
-/*        for (final Entry<String, Map<String, List<BusArrival>>> entry : busArrivalDTO.entrySet()) {
+        /*for (final Entry<String, Map<String, ? extends List<? extends BusArrival>>> entry : busArrivalDTO.entrySet()) {
             final String stopName = entry.getKey();
             final String stopNameTrimmed = Util.trimBusStopNameIfNeeded(stopName);
-            final Map<String, List<BusArrival>> boundMap = entry.getValue();
+            final Map<String, ? extends List<? extends BusArrival>> boundMap = entry.getValue();
 
             boolean newLine = true;
             int i = 0;
 
-            for (final Entry<String, List<BusArrival>> entry2 : boundMap.entrySet()) {
+            for (final Entry<String, ? extends List<? extends BusArrival>> entry2 : boundMap.entrySet()) {
 
                 // Build data for button outside of the loop
                 final BusArrival busArrival = entry2.getValue().get(0);
                 final String boundTitle = busArrival.getRouteDirection();
                 final BusDirection.BusDirectionEnum busDirectionEnum = BusDirection.BusDirectionEnum.fromString(boundTitle);
-                final BusDetailsDTO busDetails = BusDetailsDTO.builder()
-                    .busRouteId(busArrival.getRouteId())
-                    .bound(busDirectionEnum.getShortUpperCase())
-                    .boundTitle(boundTitle)
-                    .stopId(Integer.toString(busArrival.getStopId()))
-                    .routeName(busRoute.getName())
-                    .stopName(stopName)
-                    .build();
+                final BusDetailsDTO busDetails = new BusDetailsDTO();
+                busDetails.setBusRouteId(busArrival.getRouteId());
+                busDetails.setBound(busDirectionEnum.getShortUpperCase());
+                busDetails.setBoundTitle(boundTitle);
+                busDetails.setStopId(Integer.toString(busArrival.getStopId()));
+                busDetails.setRouteName(busRoute.getName());
+                busDetails.setStopName(stopName);
                 busDetailsDTOs.add(busDetails);
 
                 // Build UI

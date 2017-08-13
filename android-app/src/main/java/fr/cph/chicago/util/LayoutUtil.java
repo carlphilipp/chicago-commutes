@@ -102,7 +102,7 @@ public enum LayoutUtil {
 
     // TODO Create XML files instead of doing all those methods in Java
     @NonNull
-    public static LinearLayout createBusArrivalsLayout(@NonNull final Context context, @NonNull final LinearLayout.LayoutParams containParams, @NonNull final String stopNameTrimmed, @Nullable final BusDirection.BusDirectionEnum busDirection, @NonNull final List<BusArrival> buses) {
+    public static LinearLayout createBusArrivalsLayout(@NonNull final Context context, @NonNull final LinearLayout.LayoutParams containParams, @NonNull final String stopNameTrimmed, @Nullable final BusDirection.BusDirectionEnum busDirection, @NonNull final List<? extends BusArrival> buses) {
         int pixels = Util.convertDpToPixel(context, 16);
         int pixelsHalf = pixels / 2;
         int marginLeftPixel = Util.convertDpToPixel(context, 10);

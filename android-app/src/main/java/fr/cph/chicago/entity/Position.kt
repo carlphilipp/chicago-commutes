@@ -31,34 +31,10 @@ import java.io.Serializable
  * *
  * @version 1
  */
-open class Position : RealmObject, Parcelable, Serializable {
-    /**
-     * The latitude
-     */
-    var latitude: Double = 0.toDouble()
-    /**
-     * The longitude
-     */
-    var longitude: Double = 0.toDouble()
+open class Position(var latitude: Double = 0.toDouble(),
+                    var longitude: Double = 0.toDouble()) : RealmObject(), Parcelable, Serializable {
 
-    /**
-     * Public constructor
-     */
-    constructor() {}
-
-    /**
-     * Public constructor
-
-     * @param latitude  the latitude
-     * *
-     * @param longitude the longitude
-     */
-    constructor(latitude: Double, longitude: Double) {
-        this.latitude = latitude
-        this.longitude = longitude
-    }
-
-    private constructor(`in`: Parcel) {
+    private constructor(`in`: Parcel) : this() {
         readFromParcel(`in`)
     }
 
@@ -81,9 +57,7 @@ open class Position : RealmObject, Parcelable, Serializable {
     }
 
     companion object {
-        /**
-         * Serializable
-         */
+
         private const val serialVersionUID = 0L
 
         val CREATOR: Parcelable.Creator<Position> = object : Parcelable.Creator<Position> {
@@ -92,7 +66,7 @@ open class Position : RealmObject, Parcelable, Serializable {
             }
 
             override fun newArray(size: Int): Array<Position> {
-                // FIXME kotlin
+                // FIXME parcelable kotlin
                 return arrayOf()
             }
         }

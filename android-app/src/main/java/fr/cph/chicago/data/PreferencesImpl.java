@@ -27,7 +27,6 @@ import com.annimon.stream.Stream;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -227,15 +226,13 @@ public enum PreferencesImpl implements Preferences {
         final SharedPreferences sharedPref = getPrivatePreferences(context);
         final Set<String> setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_TRAIN, new LinkedHashSet<>());
         Log.v(TAG, "Read train favorites : " + setPref);
-        // FIXME kotlin
-        /*return Stream.of(setPref)
+        return Stream.of(setPref)
             .map(Integer::valueOf)
             .map(favorite -> DataHolder.INSTANCE.getTrainData().getStation(favorite))
-            .map(optional -> optional.orElse(Station.builder().build()))
+            .map(optional -> optional.orElse(new Station()))
             .sorted()
             .map(station -> station.getId())
-            .collect(Collectors.toList());*/
-        return new ArrayList<>();
+            .collect(Collectors.toList());
     }
 
     /**

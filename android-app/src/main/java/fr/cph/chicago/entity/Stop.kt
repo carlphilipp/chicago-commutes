@@ -21,6 +21,8 @@ package fr.cph.chicago.entity
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.annimon.stream.Collectors
+import com.annimon.stream.Stream
 import fr.cph.chicago.entity.enumeration.TrainDirection
 import fr.cph.chicago.entity.enumeration.TrainLine
 import java.util.*
@@ -40,11 +42,9 @@ class Stop(
     var ada: Boolean = false,
     var lines: MutableList<TrainLine>? = null) : Comparable<Stop>, Parcelable {
 
-    private constructor(`in`: Parcel) : this()
-
-    /*init {
+    private constructor(`in`: Parcel) : this() {
         readFromParcel(`in`)
-    }*/
+    }
 
     override fun compareTo(anotherStop: Stop): Int {
         return this.direction!!.compareTo(anotherStop.direction)
@@ -60,9 +60,8 @@ class Stop(
         dest.writeString(direction!!.toTextString())
         dest.writeParcelable(position, Parcelable.PARCELABLE_WRITE_RETURN_VALUE)
         dest.writeString(ada.toString())
-        // FIXME kotlin
-        //val linesString = Stream.of(lines!!).map<String>(Function<TrainLine, String> { it.toTextString() }).collect<List<String>, Any>(Collectors.toList<String>())
-        //dest.writeStringList(linesString)
+        val linesString = Stream.of(lines!!).map { it.toTextString() }.collect(Collectors.toList<String>())
+        dest.writeStringList(linesString)
     }
 
     private fun readFromParcel(`in`: Parcel) {
@@ -75,7 +74,7 @@ class Stop(
         `in`.readStringList(linesString)
         lines = ArrayList<TrainLine>()
         // FIXME kotlin
-        //lines!!.addAll(Stream.of(linesString).map<TrainLine>(Function<String, TrainLine> { TrainLine.fromXmlString(it) }).collect<List<TrainLine>, Any>(Collectors.toList<TrainLine>()))
+        lines!!.addAll(Stream.of(linesString).map { TrainLine.fromXmlString(it) }.collect(Collectors.toList<TrainLine>()))
     }
 
     companion object {
@@ -86,7 +85,7 @@ class Stop(
             }
 
             override fun newArray(size: Int): Array<Stop> {
-                // FIXME kotlin
+                /// FIXME parcelable kotlin
                 //return arrayOfNulls(size)
                 return arrayOf()
             }

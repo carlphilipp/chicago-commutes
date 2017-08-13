@@ -125,14 +125,10 @@ public enum FavoritesData {
             } else {
                 // Get name in the preferences if null
                 final String routeName = preferences.getBusRouteNameMapping(context, routeId);
-                // FIXME kotlin
-               /* final BusRoute busRoute = BusRoute.builder()
-                    .id(routeId)
-                    .name(routeName == null ? "" : routeName)
-                    .build();
+                final BusRoute busRoute = new BusRoute();
                 busRoute.setId(routeId);
-                return Optional.of(busRoute);*/
-               return Optional.empty();
+                busRoute.setName(routeName == null ? "" : routeName);
+                return Optional.of(busRoute);
             }
         } else {
             final int index = position - (trainFavorites.size() + fakeBusFavorites.size());
@@ -149,12 +145,10 @@ public enum FavoritesData {
 
     @NonNull
     private Optional<BikeStation> createEmptyBikeStation(final int index, @NonNull final Context context) {
-        // FIXME kotlin
-       /* final BikeStation bikeStation = BikeStation.builder().build();
+        final BikeStation bikeStation = new BikeStation();
         final String stationName = preferences.getBikeRouteNameMapping(context, bikeFavorites.get(index));
         bikeStation.setName(stationName);
-        return Optional.of(bikeStation);*/
-        return Optional.empty();
+        return Optional.of(bikeStation);
     }
 
     /**
@@ -165,9 +159,7 @@ public enum FavoritesData {
      */
     @NonNull
     private TrainArrival getTrainArrival(final int stationId) {
-        // FIXME kotlin
-        //return trainArrivals.get(stationId, TrainArrival.builder().build());
-        return new TrainArrival();
+        return trainArrivals.get(stationId, new TrainArrival());
     }
 
     @NonNull
@@ -208,15 +200,11 @@ public enum FavoritesData {
                 stopName = stopName != null ? stopName : stopId.toString();
 
                 if (!busArrivalDTO.containsStopNameAndBound(stopName, bound)) {
-                    // FIXME kotlin
-                    /*final BusArrival busArrival = BusArrival.builder()
-                        .stopId(stopId)
-                        .routeDirection(bound)
-                        .stopName(stopName)
-                        .routeId(routeIdFav)
-                        .build();
-                    busArrivalDTO.addBusArrival(busArrival);*/
-                    final BusArrival busArrival = new BusArrival(null, null, null, stopName, stopId, 0, 0, routeIdFav, null, null, null, false);
+                    final BusArrival busArrival = new BusArrival();
+                    busArrival.setStopId(stopId);
+                    busArrival.setRouteDirection(bound);
+                    busArrival.setStopName(stopName);
+                    busArrival.setRouteId(routeIdFav);
                     busArrivalDTO.addBusArrival(busArrival);
                 }
             }

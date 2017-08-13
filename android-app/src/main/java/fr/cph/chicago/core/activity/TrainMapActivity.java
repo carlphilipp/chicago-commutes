@@ -313,20 +313,19 @@ public class TrainMapActivity extends AbstractMapActivity {
             Util.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_FOLLOW_URL);
             if (!loadAll && etas.size() > 7) {
                 etas = etas.subList(0, 6);
-                // FIXME kotlin
-/*                final Date currentDate = Calendar.getInstance().getTime();
-                final Station fakeStation = Station.builder().id(0).name(busAllResults).stops(Collections.emptyList()).build();
+                final Date currentDate = Calendar.getInstance().getTime();
+                final Station fakeStation = new Station();
+                fakeStation.setId(0);
+                fakeStation.setName(busAllResults);
+                fakeStation.setStops(Collections.emptyList());
                 // Add a fake Eta cell to alert the user about the fact that only a part of the result is displayed
-                final Eta eta = Eta.builder()
-                    .isDly(false)
-                    .isApp(false)
-                    .arrivalDepartureDate(currentDate)
-                    .predictionDate(currentDate)
-                    .station(fakeStation)
-                    .build();
-
+                final Eta eta = new Eta();
+                eta.setDly(false);
+                eta.setApp(false);
+                eta.setArrivalDepartureDate(currentDate);
+                eta.setPredictionDate(currentDate);
                 eta.setStation(fakeStation);
-                etas.add(eta);*/
+                etas.add(eta);
             }
             return etas;
         }

@@ -81,10 +81,8 @@ class Eta(
 
     override fun compareTo(another: Eta): Int {
         val time1 = arrivalDepartureDate!!.time - predictionDate!!.time
-        // FIXME kotlin
-        //val time2 = another.arrivalDepartureDate.time - another.predictionDate?.time
-        //return time1.compareTo(time2)
-        return 1
+        val time2 = another.arrivalDepartureDate!!.time - another.predictionDate!!.time
+        return time1.compareTo(time2)
     }
 
     override fun describeContents(): Int {
@@ -137,7 +135,7 @@ class Eta(
             }
 
             override fun newArray(size: Int): Array<Eta> {
-                // FIXME kotlin
+                // FIXME parcelable kotlin
                 return arrayOf()
             }
         }

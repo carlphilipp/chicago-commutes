@@ -125,14 +125,12 @@ class BikeStation : Parcelable, AStation {
             val lonMax = longitude + DEFAULT_RANGE
             val lonMin = longitude - DEFAULT_RANGE
 
-            // FIXME kotlin
-            return ArrayList()
-            /*return Stream.of(bikeStations)
+            return Stream.of(bikeStations)
                 .filter { station -> station.latitude <= latMax }
                 .filter { station -> station.latitude >= latMin }
                 .filter { station -> station.longitude <= lonMax }
                 .filter { station -> station.longitude >= lonMin }
-                .collect<List<BikeStation>, Any>(Collectors.toList<BikeStation>())*/
+                .collect(Collectors.toList())
         }
 
         val CREATOR: Parcelable.Creator<BikeStation> = object : Parcelable.Creator<BikeStation> {
@@ -141,7 +139,7 @@ class BikeStation : Parcelable, AStation {
             }
 
             override fun newArray(size: Int): Array<BikeStation> {
-                // FIXME kotlin
+                // FIXME parcelable kotlin
                 return arrayOf()
             }
         }

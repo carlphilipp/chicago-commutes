@@ -21,25 +21,24 @@ package fr.cph.chicago.entity
 
 import java.security.Timestamp
 
-class Bus {
-    var id: Int = 0
-    val timestamp: Timestamp? = null
-    var position: Position? = null
-    var heading: Int = 0
-    var patternId: Int = 0
-    var patternDistance: Int = 0
-    var routeId: String? = null
-    var destination: String? = null
-    val delay: Boolean? = null
+class Bus(var id: Int = 0,
+          val timestamp: Timestamp? = null,
+          var position: Position? = null,
+          var heading: Int = 0,
+          var patternId: Int = 0,
+          var patternDistance: Int = 0,
+          var routeId: String? = null,
+          var destination: String? = null,
+          val delay: Boolean? = null) {
 
     companion object {
 
         fun getBestPosition(buses: List<Bus>): Position {
             val position = Position()
-            var maxLatitude : Double? = 0.0
-            var minLatitude : Double? = 0.0
-            var maxLongitude : Double? = 0.0
-            var minLongitude : Double? = 0.0
+            var maxLatitude: Double? = 0.0
+            var minLatitude: Double? = 0.0
+            var maxLongitude: Double? = 0.0
+            var minLongitude: Double? = 0.0
             var i = 0
             // FIXME kotlin
 /*            for (bus in buses) {
@@ -51,7 +50,7 @@ class Bus {
                     minLongitude = temp?.longitude
                 } else {
                     if (temp.latitude > maxLatitude) {
-                        maxLatitude = temp.getLatitude()
+                        maxLatitude = temp.latitude
                     }
                     if (temp.getLatitude() < minLatitude) {
                         minLatitude = temp.getLatitude()

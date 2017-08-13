@@ -70,7 +70,7 @@ class BusPattern() : Parcelable {
             }
 
             override fun newArray(size: Int): Array<BusPattern> {
-                // FIXME kotlin
+                // FIXME parcelable kotlin
                 return arrayOf()
             }
         }

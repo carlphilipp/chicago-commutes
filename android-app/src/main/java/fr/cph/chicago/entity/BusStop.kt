@@ -83,7 +83,7 @@ open class BusStop : RealmObject, Comparable<BusStop>, Parcelable, Serializable,
             }
 
             override fun newArray(size: Int): Array<BusStop> {
-                // FIXME kotlin
+                // FIXME parcelable kotlin
                 return arrayOf()
             }
         }

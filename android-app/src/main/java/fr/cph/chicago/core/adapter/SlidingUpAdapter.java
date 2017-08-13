@@ -17,7 +17,6 @@ import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -121,16 +120,14 @@ public class SlidingUpAdapter {
         if (linearLayout.getChildCount() == 0) {
             nbOfLine = new int[]{0};
             // FIXME kotlin
-           /* Stream.of(busArrivalRouteDTO.entrySet()).forEach(entry -> {
+            /*Stream.of(busArrivalRouteDTO.entrySet()).forEach(entry -> {
                 final String stopNameTrimmed = Util.trimBusStopNameIfNeeded(entry.getKey());
-                // FIXME kotlin
-                //final Map<String, List<BusArrival>> boundMap = entry.getValue();
-                final Map<String, List<BusArrival>> boundMap = new HashMap<>();
+                final Map<String, ? extends List<? extends BusArrival>> boundMap = entry.getValue();
 
                 boolean newLine = true;
                 int i = 0;
 
-                for (final Map.Entry<String, List<BusArrival>> entry2 : boundMap.entrySet()) {
+                for (final Map.Entry<String, ? extends List<? extends BusArrival>> entry2 : boundMap.entrySet()) {
                     final LinearLayout.LayoutParams containParams = LayoutUtil.getInsideParams(nearbyFragment.getContext(), newLine, i == boundMap.size() - 1);
                     final LinearLayout container = LayoutUtil.createBusArrivalsLayout(nearbyFragment.getContext(), containParams, stopNameTrimmed, BusDirection.BusDirectionEnum.fromString(entry2.getKey()), entry2.getValue());
 

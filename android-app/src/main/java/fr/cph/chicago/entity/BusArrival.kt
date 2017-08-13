@@ -169,7 +169,7 @@ class BusArrival(
             }
 
             override fun newArray(size: Int): Array<BusArrival> {
-                // FIXME kotlin
+                // FIXME parcelable kotlin
                 return arrayOf()
             }
         }

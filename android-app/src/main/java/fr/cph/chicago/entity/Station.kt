@@ -21,10 +21,12 @@ package fr.cph.chicago.entity
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.annimon.stream.Collectors
+import com.annimon.stream.Stream
+import fr.cph.chicago.collector.CommutesCollectors
 import fr.cph.chicago.entity.enumeration.TrainLine
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.collections.HashSet
 
 /**
  * Station entity
@@ -44,47 +46,34 @@ class Station(
 
     val lines: Set<TrainLine>
         get() {
-            if (stops != null) {
-/*                return Stream.of(stops!!)
-                    .map<List<TrainLine>>(Function<Stop, List<TrainLine>> { it.getLines() })
-                    .collect(CommutesCollectors.toTrainLineCollector())*/
-                // FIXME kotlin
-                return HashSet()
-            } else {
-                return emptySet()
-            }
+            return Stream.of(stops!!)
+                .map { it.lines }
+                .collect(CommutesCollectors.toTrainLineCollector())
         }
 
     val stopByLines: Map<TrainLine, List<Stop>>
         get() {
             val result = TreeMap<TrainLine, List<Stop>>()
-            // FIXME kotlin
-/*            for (stop in stops) {
-                val lines = stop.getLines()
-                for (tl in lines) {
-                    val stopss: MutableList<Stop>
+            for (stop in stops!!) {
+                val lines = stop.lines
+                for (tl in lines!!) {
+                    val stopss: MutableList<Stop> = mutableListOf()
                     if (result.containsKey(tl)) {
-                        stopss = result[tl]
                         stopss.add(stop)
                     } else {
-                        stopss = ArrayList<Stop>()
                         stopss.add(stop)
                         result.put(tl, stopss)
                     }
                 }
-            }*/
+            }
             return result
         }
 
     override fun compareTo(another: Station): Int {
-        // FIXME kotlin
-        //return this.name!!.compareTo(another.name)
-        return 0
+        return this.name!!.compareTo(another.name!!)
     }
 
-    // FIXME kotlin
-    val stopsPosition: List<Position> get() = ArrayList()
-    //Stream.of(stops!!).map<Position>(Function<Stop, Position> { it.getPosition() }).collect<List<Position>, Any>(Collectors.toList<Position>())
+    val stopsPosition: List<Position?> get() = Stream.of(stops!!).map{ it.position }.collect(Collectors.toList()).toList()
 
     override fun describeContents(): Int {
         return 0
@@ -111,7 +100,7 @@ class Station(
             }
 
             override fun newArray(size: Int): Array<Station> {
-                // FIXME kotlin
+                // FIXME parcelable kotlin
                 return arrayOf()
             }
         }

@@ -51,9 +51,7 @@ class BusRoute(var id: String? = null, var name: String? = null) : Parcelable, S
     }
 
     companion object {
-        /**
 
-         */
         private const val serialVersionUID = 0L
 
         val CREATOR: Parcelable.Creator<BusRoute> = object : Parcelable.Creator<BusRoute> {
@@ -62,7 +60,7 @@ class BusRoute(var id: String? = null, var name: String? = null) : Parcelable, S
             }
 
             override fun newArray(size: Int): Array<BusRoute> {
-                // FIXME kotlin
+                // FIXME parcelable kotlin
                 return arrayOf()
             }
         }

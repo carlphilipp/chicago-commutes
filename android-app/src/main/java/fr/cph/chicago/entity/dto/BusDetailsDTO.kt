@@ -1,10 +1,10 @@
 package fr.cph.chicago.entity.dto
 
 class BusDetailsDTO {
-    val busRouteId: String? = null
-    val bound: String? = null
-    val boundTitle: String? = null
-    val stopId: String? = null
-    val routeName: String? = null
-    val stopName: String? = null
+    var busRouteId: String? = null
+    var bound: String? = null
+    var boundTitle: String? = null
+    var stopId: String? = null
+    var routeName: String? = null
+    var stopName: String? = null
 }

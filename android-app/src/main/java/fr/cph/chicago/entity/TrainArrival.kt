@@ -21,6 +21,8 @@ package fr.cph.chicago.entity
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.annimon.stream.Collectors
+import com.annimon.stream.Stream
 import fr.cph.chicago.entity.enumeration.TrainLine
 import java.util.*
 
@@ -42,14 +44,13 @@ class TrainArrival(
     }
 
     fun getEtas(line: TrainLine): List<Eta> {
-        val result = ArrayList<Eta>()
+        val result = mutableListOf<Eta>()
         if (this.etas != null) {
-            // FIXME kotlin
-/*            result.addAll(
+            result.addAll(
                 Stream.of(this.etas!!)
                     .filter { eta -> eta.routeName === line }
-                    .collect<List<Eta>, Any>(Collectors.toList<Eta>())
-            )*/
+                    .collect(Collectors.toList())
+            )
         }
         return result
     }
@@ -81,7 +82,7 @@ class TrainArrival(
             }
 
             override fun newArray(size: Int): Array<TrainArrival> {
-                // FIXME kotlin
+                // FIXME parcelable kotlin
                 return arrayOf()
             }
         }

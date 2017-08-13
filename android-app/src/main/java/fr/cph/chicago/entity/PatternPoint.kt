@@ -82,7 +82,7 @@ class PatternPoint() : Parcelable {
             }
 
             override fun newArray(size: Int): Array<PatternPoint> {
-                // FIXME kotlin
+                // FIXME parcelable kotlin
                 return arrayOf()
             }
         }

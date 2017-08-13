@@ -81,8 +81,7 @@ public enum BusData {
     @NonNull
     final Optional<BusRoute> getRoute(@NonNull final String routeId) {
         return Stream.of(busRoutes)
-            // FIXME kotlin
-            //.filter(busRoute -> busRoute.id.equals(routeId))
+            .filter(busRoute -> busRoute.getId().equals(routeId))
             .findFirst();
     }
 
@@ -109,8 +108,7 @@ public enum BusData {
             .greaterThan("position.longitude", lonMin)
             .lessThan("position.longitude", lonMax)
             .findAllSorted("name"))
-            // FIXME kotlin
-            /*.map(currentBusStop -> {
+            .map(currentBusStop -> {
                 final BusStop busStop = new BusStop();
                 busStop.setName(currentBusStop.getName());
                 busStop.setDescription(currentBusStop.getDescription());
@@ -120,7 +118,7 @@ public enum BusData {
                 busStop.setPosition(pos);
                 busStop.setId(currentBusStop.getId());
                 return busStop;
-            })*/
+            })
             .collect(Collectors.toList());
     }
 }
