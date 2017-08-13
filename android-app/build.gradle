@@ -66,8 +66,8 @@ android {
 
     defaultConfig {
         applicationId 'fr.cph.chicago'
-        versionCode 128
-        versionName '4.21.0'
+        versionCode 129
+        versionName '5.0.0'
 
         minSdkVersion 14
         targetSdkVersion 26
@@ -94,7 +94,6 @@ android {
     // Change output apk name
     applicationVariants.all { variant ->
         variant.outputs.all { output ->
-            //output.outputFile = new File(output.outputFile.parent, "${parent.name}-${output.baseName}-${variant.versionName}.apk")
             outputFileName = "${parent.name}-${output.baseName}-${variant.versionName}.apk"
         }
     }
