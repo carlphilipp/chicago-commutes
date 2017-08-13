@@ -24,6 +24,7 @@ import android.os.Parcelable
 import com.annimon.stream.Collectors
 import com.annimon.stream.Stream
 import fr.cph.chicago.entity.enumeration.TrainLine
+import java.io.Serializable
 import java.util.*
 
 /**
@@ -34,24 +35,22 @@ import java.util.*
  * @version 1
  */
 data class TrainArrival(
-    val timeStamp: Date? = null,
+    var timeStamp: Date? = null,
     val errorCode: Int = 0,
     val errorMessage: String? = null,
-    var etas: List<Eta>? = null) : Parcelable {
+    var etas: List<Eta> = ArrayList()) : Parcelable, Serializable {
 
-    private constructor(`in`: Parcel) : this() {
-        readFromParcel(`in`)
+    private constructor(source: Parcel) : this() {
+        readFromParcel(source)
     }
 
     fun getEtas(line: TrainLine): List<Eta> {
         val result = mutableListOf<Eta>()
-        if (this.etas != null) {
-            result.addAll(
-                Stream.of(this.etas!!)
-                    .filter { eta -> eta.routeName === line }
-                    .collect(Collectors.toList())
-            )
-        }
+        result.addAll(
+            Stream.of(this.etas)
+                .filter { eta -> eta.routeName === line }
+                .collect(Collectors.toList())
+        )
         return result
     }
 
@@ -60,30 +59,24 @@ data class TrainArrival(
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        //		dest.writeLong(timeStamp.getTime());
-        //		dest.writeInt(errorCode);
-        //		dest.writeString(errorMessage);
-        dest.writeList(etas)
+        dest.writeTypedList(etas)
     }
 
-    private fun readFromParcel(`in`: Parcel) {
-        //		timeStamp = new Date(in.readLong());
-        //		errorCode = in.readInt();
-        //		errorMessage = in.readString();
-        etas = ArrayList<Eta>()
-        `in`.readList(etas, Eta::class.java.classLoader)
+    private fun readFromParcel(source: Parcel) {
+        source.readTypedList(etas, Eta.CREATOR)
     }
 
     companion object {
 
-        val CREATOR: Parcelable.Creator<TrainArrival> = object : Parcelable.Creator<TrainArrival> {
-            override fun createFromParcel(`in`: Parcel): TrainArrival {
-                return TrainArrival(`in`)
+        private const val serialVersionUID = 0L
+
+        @JvmField val CREATOR: Parcelable.Creator<TrainArrival> = object : Parcelable.Creator<TrainArrival> {
+            override fun createFromParcel(source: Parcel): TrainArrival {
+                return TrainArrival(source)
             }
 
-            override fun newArray(size: Int): Array<TrainArrival> {
-                // FIXME parcelable kotlin
-                return arrayOf()
+            override fun newArray(size: Int): Array<TrainArrival?> {
+                return arrayOfNulls(size)
             }
         }
     }

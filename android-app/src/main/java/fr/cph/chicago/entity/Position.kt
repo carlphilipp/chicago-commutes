@@ -34,8 +34,8 @@ import java.io.Serializable
 open class Position(var latitude: Double = 0.toDouble(),
                     var longitude: Double = 0.toDouble()) : RealmObject(), Parcelable, Serializable {
 
-    private constructor(`in`: Parcel) : this() {
-        readFromParcel(`in`)
+    private constructor(source: Parcel) : this() {
+        readFromParcel(source)
     }
 
     override fun toString(): String {
@@ -51,23 +51,22 @@ open class Position(var latitude: Double = 0.toDouble(),
         dest.writeDouble(longitude)
     }
 
-    private fun readFromParcel(`in`: Parcel) {
-        latitude = `in`.readDouble()
-        longitude = `in`.readDouble()
+    private fun readFromParcel(source: Parcel) {
+        latitude = source.readDouble()
+        longitude = source.readDouble()
     }
 
     companion object {
 
         private const val serialVersionUID = 0L
 
-        val CREATOR: Parcelable.Creator<Position> = object : Parcelable.Creator<Position> {
-            override fun createFromParcel(`in`: Parcel): Position {
-                return Position(`in`)
+        @JvmField val CREATOR: Parcelable.Creator<Position> = object : Parcelable.Creator<Position> {
+            override fun createFromParcel(source: Parcel): Position {
+                return Position(source)
             }
 
-            override fun newArray(size: Int): Array<Position> {
-                // FIXME parcelable kotlin
-                return arrayOf()
+            override fun newArray(size: Int): Array<Position?> {
+                return arrayOfNulls(size)
             }
         }
     }

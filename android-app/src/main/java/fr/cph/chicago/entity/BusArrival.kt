@@ -23,6 +23,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import fr.cph.chicago.entity.enumeration.PredictionType
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 /**
  * Bus Arrival entity
@@ -45,16 +46,15 @@ class BusArrival(
     var predictionTime: Date? = null,
     var isDly: Boolean = false) : Parcelable {
 
-    private constructor(`in`: Parcel) : this() {
-        readFromParcel(`in`)
+    private constructor(source: Parcel) : this() {
+        readFromParcel(source)
     }
 
     val timeLeft: String
         get() {
             if (predictionTime != null && timeStamp != null) {
-                //val time = predictionTime?.time - timeStamp?.time
-                //return String.format(Locale.ENGLISH, "%d min", TimeUnit.MILLISECONDS.toMinutes(time))
-                return "time"
+                val time = predictionTime?.time!! - timeStamp?.time!!
+                return String.format(Locale.ENGLISH, "%d min", TimeUnit.MILLISECONDS.toMinutes(time))
             } else {
                 return NO_SERVICE
             }
@@ -144,33 +144,32 @@ class BusArrival(
         dest.writeString(isDly.toString())
     }
 
-    private fun readFromParcel(`in`: Parcel) {
-        timeStamp = Date(`in`.readLong())
+    private fun readFromParcel(source: Parcel) {
+        timeStamp = Date(source.readLong())
         //errorMessage = in.readString();
         //predictionType = PredictionType.fromString(in.readString());
-        stopName = `in`.readString()
-        stopId = `in`.readInt()
-        busId = `in`.readInt()
+        stopName = source.readString()
+        stopId = source.readInt()
+        busId = source.readInt()
         //distanceToStop = in.readInt();
-        routeId = `in`.readString()
-        routeDirection = `in`.readString()
-        busDestination = `in`.readString()
-        predictionTime = Date(`in`.readLong())
-        isDly = java.lang.Boolean.parseBoolean(`in`.readString())
+        routeId = source.readString()
+        routeDirection = source.readString()
+        busDestination = source.readString()
+        predictionTime = Date(source.readLong())
+        isDly = java.lang.Boolean.parseBoolean(source.readString())
     }
 
     companion object {
 
         private val NO_SERVICE = "No service"
 
-        val CREATOR: Parcelable.Creator<BusArrival> = object : Parcelable.Creator<BusArrival> {
-            override fun createFromParcel(`in`: Parcel): BusArrival {
-                return BusArrival(`in`)
+        @JvmField val CREATOR: Parcelable.Creator<BusArrival> = object : Parcelable.Creator<BusArrival> {
+            override fun createFromParcel(source: Parcel): BusArrival {
+                return BusArrival(source)
             }
 
-            override fun newArray(size: Int): Array<BusArrival> {
-                // FIXME parcelable kotlin
-                return arrayOf()
+            override fun newArray(size: Int): Array<BusArrival?> {
+                return arrayOfNulls(size)
             }
         }
     }

@@ -230,9 +230,9 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         final List<BusDetailsDTO> busDetailsDTOs = new ArrayList<>();
 
         final BusArrivalStopMappedDTO busArrivalDTO = FavoritesData.INSTANCE.getBusArrivalsMapped(busRoute.getId(), context);
+        final Set<Entry<String, Map<String, List<? extends BusArrival>>>> entrySet = busArrivalDTO.entrySet();
 
-        // FIXME kotlin
-        /*for (final Entry<String, Map<String, ? extends List<? extends BusArrival>>> entry : busArrivalDTO.entrySet()) {
+        for (final Entry<String, Map<String, List<? extends BusArrival>>> entry : entrySet) {
             final String stopName = entry.getKey();
             final String stopNameTrimmed = Util.trimBusStopNameIfNeeded(stopName);
             final Map<String, ? extends List<? extends BusArrival>> boundMap = entry.getValue();
@@ -264,7 +264,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 newLine = false;
                 i++;
             }
-        }*/
+        }
 
         holder.mapButton.setText(activity.getString(R.string.favorites_view_buses));
         holder.detailsButton.setOnClickListener(new BusStopOnClickListener(activity, holder.parent, busDetailsDTOs));

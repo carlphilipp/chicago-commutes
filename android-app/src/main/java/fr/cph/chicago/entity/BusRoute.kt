@@ -32,8 +32,8 @@ import java.io.Serializable
  */
 class BusRoute(var id: String? = null, var name: String? = null) : Parcelable, Serializable {
 
-    private constructor(`in`: Parcel) : this() {
-        readFromParcel(`in`)
+    private constructor(source: Parcel) : this() {
+        readFromParcel(source)
     }
 
     override fun describeContents(): Int {
@@ -45,23 +45,22 @@ class BusRoute(var id: String? = null, var name: String? = null) : Parcelable, S
         dest.writeString(name)
     }
 
-    private fun readFromParcel(`in`: Parcel) {
-        id = `in`.readString()
-        name = `in`.readString()
+    private fun readFromParcel(source: Parcel) {
+        id = source.readString()
+        name = source.readString()
     }
 
     companion object {
 
         private const val serialVersionUID = 0L
 
-        val CREATOR: Parcelable.Creator<BusRoute> = object : Parcelable.Creator<BusRoute> {
-            override fun createFromParcel(`in`: Parcel): BusRoute {
-                return BusRoute(`in`)
+        @JvmField val CREATOR: Parcelable.Creator<BusRoute> = object : Parcelable.Creator<BusRoute> {
+            override fun createFromParcel(source: Parcel): BusRoute {
+                return BusRoute(source)
             }
 
-            override fun newArray(size: Int): Array<BusRoute> {
-                // FIXME parcelable kotlin
-                return arrayOf()
+            override fun newArray(size: Int): Array<BusRoute?> {
+                return arrayOfNulls(size)
             }
         }
     }

@@ -41,8 +41,8 @@ open class BusStop : RealmObject, Comparable<BusStop>, Parcelable, Serializable,
 
     constructor() {}
 
-    private constructor(`in`: Parcel) {
-        readFromParcel(`in`)
+    private constructor(source: Parcel) {
+        readFromParcel(source)
     }
 
     override fun toString(): String {
@@ -66,25 +66,24 @@ open class BusStop : RealmObject, Comparable<BusStop>, Parcelable, Serializable,
         dest.writeParcelable(position, flags)
     }
 
-    private fun readFromParcel(`in`: Parcel) {
-        id = `in`.readInt()
-        name = `in`.readString()
-        description = `in`.readString()
-        position = `in`.readParcelable<Position>(Position::class.java.classLoader)
+    private fun readFromParcel(source: Parcel) {
+        id = source.readInt()
+        name = source.readString()
+        description = source.readString()
+        position = source.readParcelable<Position>(Position::class.java.classLoader)
     }
 
     companion object {
 
         private const val serialVersionUID = 0L
 
-        val CREATOR: Parcelable.Creator<BusStop> = object : Parcelable.Creator<BusStop> {
-            override fun createFromParcel(`in`: Parcel): BusStop {
-                return BusStop(`in`)
+        @JvmField val CREATOR: Parcelable.Creator<BusStop> = object : Parcelable.Creator<BusStop> {
+            override fun createFromParcel(source: Parcel): BusStop {
+                return BusStop(source)
             }
 
-            override fun newArray(size: Int): Array<BusStop> {
-                // FIXME parcelable kotlin
-                return arrayOf()
+            override fun newArray(size: Int): Array<BusStop?> {
+                return arrayOfNulls(size)
             }
         }
     }

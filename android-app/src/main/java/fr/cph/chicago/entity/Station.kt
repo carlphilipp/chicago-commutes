@@ -40,8 +40,8 @@ class Station(
     var name: String? = null,
     var stops: List<Stop>? = null) : Comparable<Station>, Parcelable, AStation {
 
-    private constructor(`in`: Parcel) : this() {
-        readFromParcel(`in`)
+    private constructor(source: Parcel) : this() {
+        readFromParcel(source)
     }
 
     val lines: Set<TrainLine>
@@ -73,7 +73,7 @@ class Station(
         return this.name!!.compareTo(another.name!!)
     }
 
-    val stopsPosition: List<Position?> get() = Stream.of(stops!!).map{ it.position }.collect(Collectors.toList()).toList()
+    val stopsPosition: List<Position?> get() = Stream.of(stops!!).map { it.position }.collect(Collectors.toList()).toList()
 
     override fun describeContents(): Int {
         return 0
@@ -85,23 +85,22 @@ class Station(
         dest.writeList(stops)
     }
 
-    private fun readFromParcel(`in`: Parcel) {
-        id = `in`.readInt()
-        name = `in`.readString()
+    private fun readFromParcel(source: Parcel) {
+        id = source.readInt()
+        name = source.readString()
         stops = ArrayList<Stop>()
-        `in`.readList(stops, Stop::class.java.classLoader)
+        source.readList(stops, Stop::class.java.classLoader)
     }
 
     companion object {
 
-        val CREATOR: Parcelable.Creator<Station> = object : Parcelable.Creator<Station> {
-            override fun createFromParcel(`in`: Parcel): Station {
-                return Station(`in`)
+        @JvmField val CREATOR: Parcelable.Creator<Station> = object : Parcelable.Creator<Station> {
+            override fun createFromParcel(source: Parcel): Station {
+                return Station(source)
             }
 
-            override fun newArray(size: Int): Array<Station> {
-                // FIXME parcelable kotlin
-                return arrayOf()
+            override fun newArray(size: Int): Array<Station?> {
+                return arrayOfNulls(size)
             }
         }
     }

@@ -55,8 +55,8 @@ class BikeStation : Parcelable, AStation {
 
     constructor() {}
 
-    private constructor(`in`: Parcel) {
-        readFromParcel(`in`)
+    private constructor(source: Parcel) {
+        readFromParcel(source)
     }
 
     override fun describeContents(): Int {
@@ -74,15 +74,15 @@ class BikeStation : Parcelable, AStation {
         dest.writeString(stAddress1)
     }
 
-    private fun readFromParcel(`in`: Parcel) {
-        id = `in`.readInt()
-        name = `in`.readString()
-        availableDocks = `in`.readInt()
-        totalDocks = `in`.readInt()
-        latitude = `in`.readDouble()
-        longitude = `in`.readDouble()
-        availableBikes = `in`.readInt()
-        stAddress1 = `in`.readString()
+    private fun readFromParcel(source: Parcel) {
+        id = source.readInt()
+        name = source.readString()
+        availableDocks = source.readInt()
+        totalDocks = source.readInt()
+        latitude = source.readDouble()
+        longitude = source.readDouble()
+        availableBikes = source.readInt()
+        stAddress1 = source.readString()
     }
 
     override fun equals(obj: Any?): Boolean {
@@ -133,9 +133,9 @@ class BikeStation : Parcelable, AStation {
                 .collect(Collectors.toList())
         }
 
-        val CREATOR: Parcelable.Creator<BikeStation> = object : Parcelable.Creator<BikeStation> {
-            override fun createFromParcel(`in`: Parcel): BikeStation {
-                return BikeStation(`in`)
+        @JvmField val CREATOR: Parcelable.Creator<BikeStation> = object : Parcelable.Creator<BikeStation> {
+            override fun createFromParcel(source: Parcel): BikeStation {
+                return BikeStation(source)
             }
 
             override fun newArray(size: Int): Array<BikeStation> {

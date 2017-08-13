@@ -42,8 +42,8 @@ class Stop(
     var ada: Boolean = false,
     var lines: MutableList<TrainLine>? = null) : Comparable<Stop>, Parcelable {
 
-    private constructor(`in`: Parcel) : this() {
-        readFromParcel(`in`)
+    private constructor(source: Parcel) : this() {
+        readFromParcel(source)
     }
 
     override fun compareTo(anotherStop: Stop): Int {
@@ -64,29 +64,27 @@ class Stop(
         dest.writeStringList(linesString)
     }
 
-    private fun readFromParcel(`in`: Parcel) {
-        id = `in`.readInt()
-        description = `in`.readString()
-        direction = TrainDirection.fromString(`in`.readString())
-        position = `in`.readParcelable<Position>(Position::class.java.classLoader)
-        ada = java.lang.Boolean.valueOf(`in`.readString())!!
+    private fun readFromParcel(source: Parcel) {
+        id = source.readInt()
+        description = source.readString()
+        direction = TrainDirection.fromString(source.readString())
+        position = source.readParcelable<Position>(Position::class.java.classLoader)
+        ada = java.lang.Boolean.valueOf(source.readString())!!
         val linesString = ArrayList<String>()
-        `in`.readStringList(linesString)
+        source.readStringList(linesString)
         lines = ArrayList<TrainLine>()
         lines!!.addAll(Stream.of(linesString).map { TrainLine.fromXmlString(it) }.collect(Collectors.toList<TrainLine>()))
     }
 
     companion object {
 
-        val CREATOR: Parcelable.Creator<Stop> = object : Parcelable.Creator<Stop> {
-            override fun createFromParcel(`in`: Parcel): Stop {
-                return Stop(`in`)
+        @JvmField val CREATOR: Parcelable.Creator<Stop> = object : Parcelable.Creator<Stop> {
+            override fun createFromParcel(source: Parcel): Stop {
+                return Stop(source)
             }
 
-            override fun newArray(size: Int): Array<Stop> {
-                /// FIXME parcelable kotlin
-                //return arrayOfNulls(size)
-                return arrayOf()
+            override fun newArray(size: Int): Array<Stop?> {
+                return arrayOfNulls(size)
             }
         }
     }

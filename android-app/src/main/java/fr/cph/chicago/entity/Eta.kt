@@ -22,6 +22,7 @@ package fr.cph.chicago.entity
 import android.os.Parcel
 import android.os.Parcelable
 import fr.cph.chicago.entity.enumeration.TrainLine
+import java.io.Serializable
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -37,7 +38,7 @@ class Eta(
     var stop: Stop? = null,
     var runNumber: Int = 0,
     var routeName: TrainLine? = null,
-    private var destSt: Int = 0,
+    var destSt: Int = 0,
     var destName: String? = null,
     var trainRouteDirectionCode: Int = 0,
     var predictionDate: Date? = null,
@@ -48,10 +49,10 @@ class Eta(
     var isDly: Boolean = false,
     var flags: String? = null,
     var position: Position? = null,
-    var heading: Int = 0) : Comparable<Eta>, Parcelable {
+    var heading: Int = 0) : Comparable<Eta>, Parcelable, Serializable {
 
-    constructor(`in`: Parcel) : this() {
-        readFromParcel(`in`)
+    constructor(source: Parcel) : this() {
+        readFromParcel(source)
     }
 
     private val timeLeft: String
@@ -74,10 +75,6 @@ class Eta(
             }
             return result
         }
-
-    fun setDestSt(destSt: Int) {
-        this.destSt = destSt
-    }
 
     override fun compareTo(another: Eta): Int {
         val time1 = arrivalDepartureDate!!.time - predictionDate!!.time
@@ -108,35 +105,40 @@ class Eta(
         dest.writeInt(heading)
     }
 
-    private fun readFromParcel(`in`: Parcel) {
-        station = `in`.readParcelable<Station>(Station::class.java.classLoader)
-        stop = `in`.readParcelable<Stop>(Stop::class.java.classLoader)
-        runNumber = `in`.readInt()
-        routeName = TrainLine.fromXmlString(`in`.readString())
-        destSt = `in`.readInt()
-        destName = `in`.readString()
-        trainRouteDirectionCode = `in`.readInt()
-        predictionDate = Date(`in`.readLong())
-        arrivalDepartureDate = Date(`in`.readLong())
-        isApp = java.lang.Boolean.valueOf(`in`.readString())!!
-        isSch = java.lang.Boolean.valueOf(`in`.readString())!!
-        isFlt = java.lang.Boolean.valueOf(`in`.readString())!!
-        isDly = java.lang.Boolean.valueOf(`in`.readString())!!
-        this.flags = `in`.readString()
-        position = `in`.readParcelable<Position>(Position::class.java.classLoader)
-        heading = `in`.readInt()
+    private fun readFromParcel(source: Parcel) {
+        station = source.readParcelable<Station>(Station::class.java.classLoader)
+        stop = source.readParcelable<Stop>(Stop::class.java.classLoader)
+        runNumber = source.readInt()
+        routeName = TrainLine.fromXmlString(source.readString())
+        destSt = source.readInt()
+        destName = source.readString()
+        trainRouteDirectionCode = source.readInt()
+        predictionDate = Date(source.readLong())
+        arrivalDepartureDate = Date(source.readLong())
+        isApp = java.lang.Boolean.valueOf(source.readString())!!
+        isSch = java.lang.Boolean.valueOf(source.readString())!!
+        isFlt = java.lang.Boolean.valueOf(source.readString())!!
+        isDly = java.lang.Boolean.valueOf(source.readString())!!
+        flags = source.readString()
+        position = source.readParcelable<Position>(Position::class.java.classLoader)
+        heading = source.readInt()
+    }
+
+    override fun toString(): String {
+        return "Eta(station=$station, stop=$stop, runNumber=$runNumber, routeName=$routeName, destSt=$destSt, destName=$destName, trainRouteDirectionCode=$trainRouteDirectionCode, predictionDate=$predictionDate, arrivalDepartureDate=$arrivalDepartureDate, isApp=$isApp, isSch=$isSch, isFlt=$isFlt, isDly=$isDly, flags=$flags, position=$position, heading=$heading)"
     }
 
     companion object {
 
-        val CREATOR: Parcelable.Creator<Eta> = object : Parcelable.Creator<Eta> {
-            override fun createFromParcel(`in`: Parcel): Eta {
-                return Eta(`in`)
+        private const val serialVersionUID = 0L
+
+        @JvmField val CREATOR: Parcelable.Creator<Eta> = object : Parcelable.Creator<Eta> {
+            override fun createFromParcel(source: Parcel): Eta {
+                return Eta(source)
             }
 
-            override fun newArray(size: Int): Array<Eta> {
-                // FIXME parcelable kotlin
-                return arrayOf()
+            override fun newArray(size: Int): Array<Eta?> {
+                return arrayOfNulls(size)
             }
         }
     }

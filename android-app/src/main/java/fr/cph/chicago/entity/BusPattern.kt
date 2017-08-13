@@ -33,8 +33,8 @@ class BusPattern() : Parcelable {
     var direction: String? = null
     var points: MutableList<PatternPoint>? = null
 
-    private constructor(`in`: Parcel) : this() {
-        readFromParcel(`in`)
+    private constructor(source: Parcel) : this() {
+        readFromParcel(source)
     }
 
     fun addPoint(patternPoint: PatternPoint) {
@@ -55,23 +55,22 @@ class BusPattern() : Parcelable {
         dest.writeList(points)
     }
 
-    private fun readFromParcel(`in`: Parcel) {
-        id = `in`.readInt()
-        length = `in`.readDouble()
-        direction = `in`.readString()
-        `in`.readList(points, PatternPoint::class.java.classLoader)
+    private fun readFromParcel(source: Parcel) {
+        id = source.readInt()
+        length = source.readDouble()
+        direction = source.readString()
+        source.readList(points, PatternPoint::class.java.classLoader)
     }
 
     companion object {
 
-        val CREATOR: Parcelable.Creator<BusPattern> = object : Parcelable.Creator<BusPattern> {
-            override fun createFromParcel(`in`: Parcel): BusPattern {
-                return BusPattern(`in`)
+        @JvmField val CREATOR: Parcelable.Creator<BusPattern> = object : Parcelable.Creator<BusPattern> {
+            override fun createFromParcel(source: Parcel): BusPattern {
+                return BusPattern(source)
             }
 
-            override fun newArray(size: Int): Array<BusPattern> {
-                // FIXME parcelable kotlin
-                return arrayOf()
+            override fun newArray(size: Int): Array<BusPattern?> {
+                return arrayOfNulls(size)
             }
         }
     }

@@ -48,8 +48,8 @@ class PatternPoint() : Parcelable {
      */
     var distance: Double = 0.toDouble()
 
-    private constructor(`in`: Parcel) : this() {
-        readFromParcel(`in`)
+    private constructor(source: Parcel) : this() {
+        readFromParcel(source)
     }
 
     override fun describeContents(): Int {
@@ -65,25 +65,24 @@ class PatternPoint() : Parcelable {
         dest.writeDouble(distance)
     }
 
-    private fun readFromParcel(`in`: Parcel) {
-        sequence = `in`.readInt()
-        position = `in`.readParcelable<Position>(Position::class.java.classLoader)
-        type = `in`.readString()
-        stopId = `in`.readInt()
-        stopName = `in`.readString()
-        distance = `in`.readDouble()
+    private fun readFromParcel(source: Parcel) {
+        sequence = source.readInt()
+        position = source.readParcelable<Position>(Position::class.java.classLoader)
+        type = source.readString()
+        stopId = source.readInt()
+        stopName = source.readString()
+        distance = source.readDouble()
     }
 
     companion object {
 
-        val CREATOR: Parcelable.Creator<PatternPoint> = object : Parcelable.Creator<PatternPoint> {
-            override fun createFromParcel(`in`: Parcel): PatternPoint {
-                return PatternPoint(`in`)
+        @JvmField val CREATOR: Parcelable.Creator<PatternPoint> = object : Parcelable.Creator<PatternPoint> {
+            override fun createFromParcel(source: Parcel): PatternPoint {
+                return PatternPoint(source)
             }
 
-            override fun newArray(size: Int): Array<PatternPoint> {
-                // FIXME parcelable kotlin
-                return arrayOf()
+            override fun newArray(size: Int): Array<PatternPoint?> {
+                return arrayOfNulls(size)
             }
         }
     }
