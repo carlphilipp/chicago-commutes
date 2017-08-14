@@ -22,6 +22,7 @@ package fr.cph.chicago.entity
 import android.os.Parcel
 import android.os.Parcelable
 import fr.cph.chicago.entity.enumeration.TrainLine
+import org.apache.commons.lang3.StringUtils
 import java.io.Serializable
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -44,16 +45,27 @@ class Eta(
     var predictionDate: Date? = null,
     var arrivalDepartureDate: Date? = null,
     var isApp: Boolean = false,
-    var isSch: Boolean = false,
-    var isFlt: Boolean = false,
     var isDly: Boolean = false,
     var flags: String? = null,
     var position: Position? = null,
     var heading: Int = 0) : Comparable<Eta>, Parcelable, Serializable {
 
-    constructor(source: Parcel) : this() {
-        readFromParcel(source)
-    }
+    constructor(source: Parcel) : this(
+        source.readParcelable<Station>(Station::class.java.classLoader),
+        source.readParcelable<Stop>(Stop::class.java.classLoader),
+        source.readInt(),
+        TrainLine.fromXmlString(source.readString()),
+        source.readInt(),
+        source.readString(),
+        source.readInt(),
+        Date(source.readLong()),
+        Date(source.readLong()),
+        java.lang.Boolean.valueOf(source.readString())!!,
+        java.lang.Boolean.valueOf(source.readString())!!,
+        source.readString(),
+        source.readParcelable<Position>(Position::class.java.classLoader),
+        source.readInt()
+    )
 
     private val timeLeft: String
         get() {
@@ -97,40 +109,23 @@ class Eta(
         dest.writeLong(predictionDate!!.time)
         dest.writeLong(arrivalDepartureDate!!.time)
         dest.writeString(isApp.toString())
-        dest.writeString(isSch.toString())
-        dest.writeString(isFlt.toString())
         dest.writeString(isDly.toString())
         dest.writeString(this.flags)
         dest.writeParcelable(position, flags)
         dest.writeInt(heading)
     }
 
-    private fun readFromParcel(source: Parcel) {
-        station = source.readParcelable<Station>(Station::class.java.classLoader)
-        stop = source.readParcelable<Stop>(Stop::class.java.classLoader)
-        runNumber = source.readInt()
-        routeName = TrainLine.fromXmlString(source.readString())
-        destSt = source.readInt()
-        destName = source.readString()
-        trainRouteDirectionCode = source.readInt()
-        predictionDate = Date(source.readLong())
-        arrivalDepartureDate = Date(source.readLong())
-        isApp = java.lang.Boolean.valueOf(source.readString())!!
-        isSch = java.lang.Boolean.valueOf(source.readString())!!
-        isFlt = java.lang.Boolean.valueOf(source.readString())!!
-        isDly = java.lang.Boolean.valueOf(source.readString())!!
-        flags = source.readString()
-        position = source.readParcelable<Position>(Position::class.java.classLoader)
-        heading = source.readInt()
-    }
-
     override fun toString(): String {
-        return "Eta(station=$station, stop=$stop, runNumber=$runNumber, routeName=$routeName, destSt=$destSt, destName=$destName, trainRouteDirectionCode=$trainRouteDirectionCode, predictionDate=$predictionDate, arrivalDepartureDate=$arrivalDepartureDate, isApp=$isApp, isSch=$isSch, isFlt=$isFlt, isDelay=$isDly, flags=$flags, position=$position, heading=$heading)"
+        return "Eta(station=$station, stop=$stop, runNumber=$runNumber, routeName=$routeName, destSt=$destSt, destName=$destName, trainRouteDirectionCode=$trainRouteDirectionCode, predictionDate=$predictionDate, arrivalDepartureDate=$arrivalDepartureDate, isApp=$isApp, isDelay=$isDly, flags=$flags, position=$position, heading=$heading)"
     }
 
     companion object {
 
         private const val serialVersionUID = 0L
+
+        fun buildFakeEtaWith(station: Station, arrivalDepartureDate: Date, predictionDate: Date, app: Boolean, delay: Boolean): Eta {
+            return Eta(station, Stop(), 0, TrainLine.NA, 0, StringUtils.EMPTY, 0, predictionDate, arrivalDepartureDate, app, delay, "", Position(), 0)
+        }
 
         @JvmField val CREATOR: Parcelable.Creator<Eta> = object : Parcelable.Creator<Eta> {
             override fun createFromParcel(source: Parcel): Eta {

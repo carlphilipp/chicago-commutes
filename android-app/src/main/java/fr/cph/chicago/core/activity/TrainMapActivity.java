@@ -319,12 +319,7 @@ public class TrainMapActivity extends AbstractMapActivity {
                 fakeStation.setName(busAllResults);
                 fakeStation.setStops(Collections.emptyList());
                 // Add a fake Eta cell to alert the user about the fact that only a part of the result is displayed
-                final Eta eta = new Eta();
-                eta.setDly(false);
-                eta.setApp(false);
-                eta.setArrivalDepartureDate(currentDate);
-                eta.setPredictionDate(currentDate);
-                eta.setStation(fakeStation);
+                final Eta eta = Eta.Companion.buildFakeEtaWith(fakeStation, currentDate, currentDate, false, false);
                 etas.add(eta);
             }
             return etas;
@@ -333,8 +328,8 @@ public class TrainMapActivity extends AbstractMapActivity {
         @Override
         protected final void onPostExecute(final List<Eta> result) {
             // View can be null
-            final ListView arrivals = (ListView) view.findViewById(R.id.arrivals);
-            final TextView error = (TextView) view.findViewById(R.id.error);
+            final ListView arrivals = view.findViewById(R.id.arrivals);
+            final TextView error = view.findViewById(R.id.error);
             if (result.size() != 0) {
                 final TrainMapSnippetAdapter ada = new TrainMapSnippetAdapter(result);
                 arrivals.setAdapter(ada);
