@@ -19,59 +19,7 @@
 
 package fr.cph.chicago.entity
 
-import android.os.Parcel
-import android.os.Parcelable
-import java.util.*
-
 /**
  * @author carl
  */
-class BusPattern() : Parcelable {
-
-    var id: Int = 0
-    var length: Double = 0.toDouble()
-    var direction: String? = null
-    var points: MutableList<PatternPoint>? = null
-
-    private constructor(source: Parcel) : this() {
-        readFromParcel(source)
-    }
-
-    fun addPoint(patternPoint: PatternPoint) {
-        if (points == null) {
-            points = ArrayList<PatternPoint>()
-        }
-        this.points!!.add(patternPoint)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeInt(id)
-        dest.writeDouble(length)
-        dest.writeString(direction)
-        dest.writeList(points)
-    }
-
-    private fun readFromParcel(source: Parcel) {
-        id = source.readInt()
-        length = source.readDouble()
-        direction = source.readString()
-        source.readList(points, PatternPoint::class.java.classLoader)
-    }
-
-    companion object {
-
-        @JvmField val CREATOR: Parcelable.Creator<BusPattern> = object : Parcelable.Creator<BusPattern> {
-            override fun createFromParcel(source: Parcel): BusPattern {
-                return BusPattern(source)
-            }
-
-            override fun newArray(size: Int): Array<BusPattern?> {
-                return arrayOfNulls(size)
-            }
-        }
-    }
-}
+class BusPattern(var direction: String, var points: MutableList<PatternPoint>)

@@ -445,72 +445,58 @@ public enum XmlParser {
     public final synchronized List<BusPattern> parsePatterns(@NonNull final InputStream xml) throws ParserException {
         final List<BusPattern> patterns = new ArrayList<>();
         String tagName = null;
-        BusPattern pattern = null;
-        PatternPoint patternPoint = null;
-        Position position = null;
+
+        // Pattern
+        String direction = null;
+        List<PatternPoint> points = new ArrayList<>();
+        // Point
+        double latitude = 0;
+        double longitude = 0;
+        String type = null;
+        String stopName = null;
+
         try {
             parser.setInput(xml, "UTF-8");
             int eventType = parser.getEventType();
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 if (eventType == XmlPullParser.START_TAG) {
                     tagName = parser.getName();
-                    if ("ptr".equals(tagName)) {
-                        pattern = new BusPattern();
-                    }
                 } else if (eventType == XmlPullParser.END_TAG) {
+                    final String current = parser.getName();
+                    if (StringUtils.isNotBlank(current) && "ptr".equals(current)) {
+                        BusPattern busPattern = new BusPattern(direction, new ArrayList<>(points));
+                        patterns.add(busPattern);
+
+                        points = new ArrayList<>();
+                    } else if (StringUtils.isNotBlank(current) && "pt".equals(current)) {
+                        final PatternPoint patternPoint = new PatternPoint(
+                            new Position(latitude, longitude), type, stopName
+                        );
+                        points.add(patternPoint);
+                        latitude = 0;
+                        longitude = 0;
+                        type = null;
+                        stopName = null;
+                    }
                     tagName = null;
                 } else if (eventType == XmlPullParser.TEXT) {
                     String text = parser.getText();
                     if (tagName != null) {
                         switch (tagName) {
-                            case "pid":
-                                assert pattern != null;
-                                pattern.setId(Integer.parseInt(text));
-                                patterns.add(pattern);
-                                break;
-                            case "ln":
-                                assert pattern != null;
-                                pattern.setLength(Double.parseDouble(text));
-                                break;
                             case "rtdir":
-                                assert pattern != null;
-                                text = BusDirection.BusDirectionEnum.fromString(text).toString();
-                                pattern.setDirection(text);
-                                break;
-                            case "pt":
-                                assert pattern != null;
-                                patternPoint = new PatternPoint();
-                                pattern.addPoint(patternPoint);
-                                break;
-                            case "seq":
-                                assert patternPoint != null;
-                                patternPoint.setSequence(Integer.parseInt(text));
+                                direction = BusDirection.BusDirectionEnum.fromString(text).toString();
                                 break;
                             case "lat":
-                                position = new Position();
-                                assert patternPoint != null;
-                                patternPoint.setPosition(position);
-                                position.setLatitude(Double.parseDouble(text));
+                                latitude = Double.parseDouble(text);
                                 break;
                             case "lon":
-                                assert position != null;
-                                position.setLongitude(Double.parseDouble(text));
+                                longitude = Double.parseDouble(text);
                                 break;
                             case "typ":
-                                assert patternPoint != null;
-                                patternPoint.setType(text);
-                                break;
-                            case "stpid":
-                                assert patternPoint != null;
-                                patternPoint.setStopId(Integer.parseInt(text));
+                                type = text;
                                 break;
                             case "stpnm":
-                                assert patternPoint != null;
-                                patternPoint.setStopName(text);
-                                break;
-                            case "pdist":
-                                assert patternPoint != null;
-                                patternPoint.setDistance(Double.parseDouble(text));
+                                stopName = text;
                                 break;
                         }
                     }

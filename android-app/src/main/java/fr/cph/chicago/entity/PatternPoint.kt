@@ -22,56 +22,24 @@ package fr.cph.chicago.entity
 import android.os.Parcel
 import android.os.Parcelable
 
-class PatternPoint() : Parcelable {
-    /**
-     * Sequence number
-     */
-    var sequence: Int = 0
-    /**
-     * The position
-     */
-    var position: Position? = null
-    /**
-     * The type
-     */
-    var type: String? = null
-    /**
-     * The stop id
-     */
-    var stopId: Int = 0
-    /**
-     * The stop name
-     */
-    var stopName: String? = null
-    /**
-     * The distance
-     */
-    var distance: Double = 0.toDouble()
+class PatternPoint(
+    var position: Position,
+    var type: String,
+    var stopName: String? = null) : Parcelable {
 
-    private constructor(source: Parcel) : this() {
-        readFromParcel(source)
-    }
+    private constructor(source: Parcel) : this(
+        source.readParcelable<Position>(Position::class.java.classLoader),
+        source.readString(),
+        source.readString())
 
     override fun describeContents(): Int {
         return 0
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeInt(sequence)
         dest.writeParcelable(position, flags)
         dest.writeString(type)
-        dest.writeInt(stopId)
         dest.writeString(stopName)
-        dest.writeDouble(distance)
-    }
-
-    private fun readFromParcel(source: Parcel) {
-        sequence = source.readInt()
-        position = source.readParcelable<Position>(Position::class.java.classLoader)
-        type = source.readString()
-        stopId = source.readInt()
-        stopName = source.readString()
-        distance = source.readDouble()
     }
 
     companion object {
