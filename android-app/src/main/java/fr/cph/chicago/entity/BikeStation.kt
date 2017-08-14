@@ -70,11 +70,11 @@ class BikeStation(
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeInt(id)
         dest.writeString(name)
-        dest.writeInt(availableDocks!!)
-        dest.writeInt(totalDocks!!)
+        dest.writeInt(availableDocks)
+        dest.writeInt(totalDocks)
         dest.writeDouble(latitude)
         dest.writeDouble(longitude)
-        dest.writeInt(availableBikes!!)
+        dest.writeInt(availableBikes)
         dest.writeString(stAddress1)
     }
 
@@ -93,15 +93,15 @@ class BikeStation(
         var result: Int
         var temp: Long
         result = id
-        result = 31 * result + if (name != null) name!!.hashCode() else 0
-        result = 31 * result + availableDocks!!
-        result = 31 * result + totalDocks!!
+        result = 31 * result + name.hashCode()
+        result = 31 * result + availableDocks
+        result = 31 * result + totalDocks
         temp = java.lang.Double.doubleToLongBits(latitude)
         result = 31 * result + (temp xor temp.ushr(32)).toInt()
         temp = java.lang.Double.doubleToLongBits(longitude)
         result = 31 * result + (temp xor temp.ushr(32)).toInt()
-        result = 31 * result + availableBikes!!
-        result = 31 * result + if (stAddress1 != null) stAddress1!!.hashCode() else 0
+        result = 31 * result + availableBikes
+        result = 31 * result + stAddress1.hashCode()
         return result
     }
 
