@@ -398,7 +398,7 @@ public enum XmlParser {
      */
     @NonNull
     public final synchronized BusDirections parseBusDirections(@NonNull final InputStream xml, @NonNull final String id) throws ParserException {
-        final BusDirections directions = new BusDirections();
+        final BusDirections directions = new BusDirections(id);
         try {
             parser.setInput(xml, "UTF-8");
             int eventType = parser.getEventType();

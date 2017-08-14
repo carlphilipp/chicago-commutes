@@ -28,7 +28,7 @@ import fr.cph.chicago.entity.enumeration.BusDirection
  * *
  * @version 1
  */
-class BusDirections {
+class BusDirections(val id: String) {
 
     val busDirections: MutableList<BusDirection> = mutableListOf()
 
