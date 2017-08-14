@@ -20,8 +20,6 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.SparseArray;
 
-import com.annimon.stream.Optional;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -55,7 +53,6 @@ import fr.cph.chicago.entity.Train;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.BusDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.entity.enumeration.XmlArrivalTrainTag;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 
@@ -94,225 +91,119 @@ public enum XmlParser {
     /**
      * Parse arrivals
      *
-     * @param is        the xml string
-     * @param trainData the train data
+     * @param is   the xml string
+     * @param data the train data
      * @return a list of train arrival
      * @throws ParserException the parser exception
      */
     @SuppressWarnings("ConstantConditions")
     @NonNull
-    public final synchronized SparseArray<TrainArrival> parseArrivals(@NonNull final InputStream is, @NonNull final TrainData trainData) throws ParserException {
-        final SparseArray<TrainArrival> arrivals = new SparseArray<>();
+    public final synchronized SparseArray<TrainArrival> parseArrivals(@NonNull final InputStream is, @NonNull final TrainData data) throws ParserException {
+        SparseArray<TrainArrival> arrivals = new SparseArray<>();
         try {
             parser.setInput(is, "UTF-8");
             int eventType = parser.getEventType();
-            XmlArrivalTrainTag tag = null;
             String tagName = null;
-            Integer staId = null;
+
+            Integer stationId = null;
+            Integer stopId = null;
+            String stationName = null;
+            String stopDestination = null;
+            TrainLine routeName = null;
+            String destinationName = null;
+            Date predictionDate = null;
+            Date arrivalDepartureDate = null;
+            boolean isApp = false;
+            boolean isDly = false;
+            double latitude = 0;
+            double longitude = 0;
+
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 if (eventType == XmlPullParser.START_TAG) {
                     tagName = parser.getName();
-                    switch (tagName) {
-                        case "tmst":
-                            tag = XmlArrivalTrainTag.TMST;
-                            break;
-                        case "errCd":
-                            tag = XmlArrivalTrainTag.ERRCD;
-                            break;
-                        case "errNm":
-                            tag = XmlArrivalTrainTag.ERRNM;
-                            break;
-                        case "eta":
-                            tag = XmlArrivalTrainTag.ETA;
-                            break;
-                        default:
-                            tag = XmlArrivalTrainTag.OTHER;
-                            break;
-                    }
                 } else if (eventType == XmlPullParser.END_TAG) {
-                    tag = null;
+                    final String etaName = parser.getName();
+                    if (StringUtils.isNotBlank(etaName) && "eta".equals(etaName)) {
+                        final Station station = data.getStation(stationId).orElse(new Station());
+                        station.setName(stationName);
+                        final Stop stop = data.getStop(stopId).orElse(new Stop());
+                        stop.setDescription(stopDestination);
+                        final Position position = new Position(latitude, longitude);
+                        destinationName = ("See train".equalsIgnoreCase(destinationName) && stop.getDescription().contains("Loop") && routeName == TrainLine.GREEN)
+                            || ("See train".equalsIgnoreCase(destinationName) && stop.getDescription().contains("Loop") && routeName == TrainLine.BROWN)
+                            || ("Loop, Midway".equalsIgnoreCase(destinationName) && routeName == TrainLine.BROWN)
+                            ? "Loop" : destinationName;
+                        final Eta eta = new Eta(
+                            station,
+                            stop,
+                            routeName,
+                            destinationName,
+                            predictionDate,
+                            arrivalDepartureDate,
+                            isApp,
+                            isDly,
+                            position
+                        );
+                        final TrainArrival arri = arrivals.get(stationId, new TrainArrival());
+                        List<Eta> etas = arri.getEtas();
+                        if (etas == null) {
+                            etas = new ArrayList<>();
+                            arri.setEtas(etas);
+                        }
+                        etas.add(eta);
+                        arrivals.append(stationId, arri);
+                    }
+                    tagName = null;
                 } else if (eventType == XmlPullParser.TEXT) {
-                    final String text = parser.getText();
-                    switch (tag) {
-                        case ETA:
-                            break;
-                        case OTHER:
-                            switch (tagName) {
-                                case "staId": {
-                                    staId = Integer.parseInt(text);
-                                    final TrainArrival arri = arrivals.get(staId, new TrainArrival());
-                                    List<Eta> etas = arri.getEtas();
-                                    if (etas == null) {
-                                        etas = new ArrayList<>();
-                                        arri.setEtas(etas);
-                                    }
-                                    final Optional<Station> station = trainData.getStation(staId);
-                                    final Eta eta = new Eta();
-                                    eta.setStation(station.orElse(new Station()));
-                                    etas.add(eta);
-
-                                    arrivals.append(staId, arri);
-                                    break;
-                                }
-                                case "stpId": {
-                                    final TrainArrival arri = arrivals.get(staId, null);
-                                    if (arri != null) {
-                                        final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-                                        final Stop stop = trainData.getStop(Integer.parseInt(text)).orElse(null);
-                                        currentEta.setStop(stop);
-                                    }
-                                    break;
-                                }
-                                case "staNm": {
-                                    final TrainArrival arri = arrivals.get(staId, null);
-                                    if (arri != null) {
-                                        final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-                                        currentEta.getStation().setName(text);
-                                    }
-                                    break;
-                                }
-                                case "stpDe": {
-                                    final TrainArrival arri = arrivals.get(staId, null);
-                                    if (arri != null) {
-                                        final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-                                        currentEta.getStop().setDescription(text);
-                                    }
-                                    break;
-                                }
-                                case "rn": {
-                                    final TrainArrival arri = arrivals.get(staId, null);
-                                    if (arri != null) {
-                                        final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-                                        currentEta.setRunNumber(Integer.parseInt(text));
-                                    }
-                                    break;
-                                }
-                                case "rt": {
-                                    final TrainArrival arri = arrivals.get(staId, null);
-                                    if (arri != null) {
-                                        final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-                                        currentEta.setRouteName(TrainLine.fromXmlString(text));
-                                    }
-                                    break;
-                                }
-                                case "destSt": {
-                                    final TrainArrival arri = arrivals.get(staId, null);
-                                    if (arri != null) {
-                                        final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-                                        final Integer i = Integer.parseInt(text);
-                                        currentEta.setDestSt(i);
-                                    }
-                                    break;
-                                }
-                                case "destNm": {
-                                    final TrainArrival arri = arrivals.get(staId, null);
-                                    if (arri != null) {
-                                        final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-                                        if ("See train".equalsIgnoreCase(text) && currentEta.getStop().getDescription().contains("Loop") && currentEta.getRouteName() == TrainLine.GREEN) {
-                                            currentEta.setDestName("Loop");
-                                        } else if ("See train".equalsIgnoreCase(text) && currentEta.getStop().getDescription().contains("Loop") && currentEta.getRouteName() == TrainLine.BROWN) {
-                                            currentEta.setDestName("Loop");
-                                        } else if ("Loop, Midway".equalsIgnoreCase(text) && currentEta.getRouteName() == TrainLine.BROWN) {
-                                            currentEta.setDestName("Loop");
-                                        } else {
-                                            currentEta.setDestName(text);
-                                        }
-                                    }
-                                    break;
-                                }
-                                case "trDr": {
-                                    final TrainArrival arri = arrivals.get(staId, null);
-                                    if (arri != null) {
-                                        final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-                                        currentEta.setTrainRouteDirectionCode(Integer.parseInt(text));
-                                    }
-                                    break;
-                                }
-                                case "prdt": {
-                                    final TrainArrival arri = arrivals.get(staId, null);
-                                    if (arri != null) {
-                                        final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-                                        currentEta.setPredictionDate(simpleDateFormatTrain.parse(text));
-                                    }
-                                    break;
-                                }
-                                case "arrT": {
-                                    final TrainArrival arri = arrivals.get(staId, null);
-                                    if (arri != null) {
-                                        final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-                                        currentEta.setArrivalDepartureDate(simpleDateFormatTrain.parse(text));
-                                    }
-                                    break;
-                                }
-                                case "isApp": {
-                                    final TrainArrival arri = arrivals.get(staId, null);
-                                    if (arri != null) {
-                                        final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-                                        currentEta.setApp(BooleanUtils.toBoolean(Integer.parseInt(text)));
-                                    }
-                                    break;
-                                }
-                                case "isSch": {
-                                    /*final TrainArrival arri = arrivals.get(staId, null);
-                                    if (arri != null) {
-                                        final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-                                        currentEta.setSch(BooleanUtils.toBoolean(Integer.parseInt(text)));
-                                    }*/
-                                    break;
-                                }
-                                case "isDelay": {
-                                    final TrainArrival arri = arrivals.get(staId, null);
-                                    if (arri != null) {
-                                        final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-                                        currentEta.setDly(BooleanUtils.toBoolean(Integer.parseInt(text)));
-                                    }
-                                    break;
-                                }
-                                case "isFlt": {
-                                    /*final TrainArrival arri = arrivals.get(staId, null);
-                                    if (arri != null) {
-                                        final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-                                        currentEta.setFlt(BooleanUtils.toBoolean(Integer.parseInt(text)));
-                                    }*/
-                                    break;
-                                }
-                                case "flags":
-                                    break;
-                                case "lat": {
-                                    final TrainArrival arri = arrivals.get(staId, null);
-                                    if (arri != null) {
-                                        final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-                                        final Position position = new Position();
-                                        position.setLatitude(Double.parseDouble(text));
-                                        currentEta.setPosition(position);
-                                    }
-                                    break;
-                                }
-                                case "lon": {
-                                    final TrainArrival arri = arrivals.get(staId, null);
-                                    if (arri != null) {
-                                        final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-                                        final Position position = currentEta.getPosition();
-                                        position.setLongitude(Double.parseDouble(text));
-                                    }
-                                    break;
-                                }
-                                case "heading": {
-                                    final TrainArrival arri = arrivals.get(staId, null);
-                                    if (arri != null) {
-                                        final Eta currentEta = arri.getEtas().get(arri.getEtas().size() - 1);
-                                        currentEta.setHeading(Integer.parseInt(text));
-                                    }
-                                    break;
-                                }
+                    String text = parser.getText();
+                    if (tagName != null) {
+                        switch (tagName) {
+                            case "staId": {
+                                stationId = Integer.parseInt(text);
+                                break;
                             }
-                            break;
+                            case "stpId": {
+                                stopId = Integer.parseInt(text);
+                                break;
+                            }
+                            case "staNm": {
+                                stationName = text;
+                                break;
+                            }
+                            case "stpDe": {
+                                stopDestination = text;
+                                break;
+                            }
+                            case "rt": {
+                                routeName = TrainLine.fromXmlString(text);
+                                break;
+                            }
+                            case "destNm": {
+                                destinationName = text;
+                                break;
+                            }
+                            case "prdt": {
+                                predictionDate = simpleDateFormatTrain.parse(text);
+                                break;
+                            }
+                            case "arrT": {
+                                arrivalDepartureDate = simpleDateFormatTrain.parse(text);
+                                break;
+                            }
+                            case "isApp": {
+                                isApp = Boolean.parseBoolean(text);
+                                break;
+                            }
+                            case "isDly": {
+                                isDly = Boolean.parseBoolean(text);
+                                break;
+                            }
+                        }
                     }
                 }
                 eventType = parser.next();
             }
-        } catch (final XmlPullParserException | ParseException | IOException e) {
-            Log.e(TAG, e.getMessage(), e);
+        } catch (XmlPullParserException | ParseException | IOException e) {
             throw new ParserException(e);
         } finally {
             IOUtils.closeQuietly(is);
@@ -762,131 +653,7 @@ public enum XmlParser {
     @SuppressWarnings("ConstantConditions")
     @NonNull
     public final synchronized List<Eta> parseTrainsFollow(@NonNull final InputStream is, @NonNull final TrainData data) throws ParserException {
-        SparseArray<TrainArrival> arrivals = new SparseArray<>();
-        try {
-            parser.setInput(is, "UTF-8");
-            int eventType = parser.getEventType();
-            String tagName = null;
-            Integer staId = null;
-
-            Integer stationId = null;
-            Integer stopId = null;
-            String stationName = null;
-            String stopDestination = null;
-            Integer routeNumber = null;
-            TrainLine routeName = null;
-            Integer destinationStation = null;
-            String destinationName = null;
-            Integer trainRouteDirectionCode = null;
-            Date predictionDate = null;
-            Date arrivalDepartureDate = null;
-            boolean isApp = false;
-            boolean isDly = false;
-            String flags = null;
-            double latitude = 0;
-            double longitude = 0;
-            Integer heading = null;
-
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-                if (eventType == XmlPullParser.START_TAG) {
-                    tagName = parser.getName();
-                } else if (eventType == XmlPullParser.END_TAG) {
-                    final String etaName = parser.getName();
-                    if (StringUtils.isNotBlank(etaName) && "eta".equals(etaName)) {
-                        // Magic here
-                        final Station station = data.getStation(stationId).orElse(new Station());
-                        station.setName(stationName);
-                        final Stop stop = data.getStop(stopId).orElse(new Stop());
-                        stop.setDescription(stopDestination);
-                        final Position position = new Position(latitude, longitude);
-                        final Eta eta = new Eta(
-                            station,
-                            stop,
-                            routeNumber,
-                            routeName,
-                            destinationStation,
-                            destinationName,
-                            trainRouteDirectionCode,
-                            predictionDate,
-                            arrivalDepartureDate,
-                            isApp,
-                            isDly,
-                            flags,
-                            position,
-                            heading
-                        );
-                        final TrainArrival arri = arrivals.get(staId, new TrainArrival());
-                        List<Eta> etas = arri.getEtas();
-                        if (etas == null) {
-                            etas = new ArrayList<>();
-                            arri.setEtas(etas);
-                        }
-                        etas.add(eta);
-                        arrivals.append(staId, arri);
-                    }
-                    tagName = null;
-                } else if (eventType == XmlPullParser.TEXT) {
-                    String text = parser.getText();
-                    if (tagName != null) {
-                        switch (tagName) {
-                            case "staId": {
-                                stationId = Integer.parseInt(text);
-                                break;
-                            }
-                            case "stpId": {
-                                stopId = Integer.parseInt(text);
-                                break;
-                            }
-                            case "staNm": {
-                                stationName = text;
-                                break;
-                            }
-                            case "stpDe": {
-                                stopDestination = text;
-                                break;
-                            }
-                            case "rn": {
-                                routeNumber = Integer.parseInt(text);
-                                break;
-                            }
-                            case "rt": {
-                                routeName = TrainLine.fromXmlString(text);
-                                break;
-                            }
-                            case "destSt": {
-                                destinationStation = Integer.parseInt(text);
-                                break;
-                            }
-                            case "destNm": {
-                                destinationName = text;
-                                break;
-                            }
-                            case "prdt": {
-                                predictionDate = simpleDateFormatTrain.parse(text);
-                                break;
-                            }
-                            case "arrT": {
-                                arrivalDepartureDate = simpleDateFormatTrain.parse(text);
-                                break;
-                            }
-                            case "isApp": {
-                                isApp = Boolean.parseBoolean(text);
-                                break;
-                            }
-                            case "isDly": {
-                                isDly = Boolean.parseBoolean(text);
-                                break;
-                            }
-                        }
-                    }
-                }
-                eventType = parser.next();
-            }
-        } catch (XmlPullParserException | ParseException | IOException e) {
-            throw new ParserException(e);
-        } finally {
-            IOUtils.closeQuietly(is);
-        }
+        final SparseArray<TrainArrival> arrivals = parseArrivals(is, data);
         final List<Eta> res = new ArrayList<>();
         int index = 0;
         while (index < arrivals.size()) {

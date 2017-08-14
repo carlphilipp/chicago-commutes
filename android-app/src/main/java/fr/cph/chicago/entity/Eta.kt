@@ -35,41 +35,31 @@ import java.util.concurrent.TimeUnit
  * @version 1
  */
 class Eta(
-    var station: Station? = null,
-    var stop: Stop? = null,
-    var runNumber: Int = 0,
-    var routeName: TrainLine? = null,
-    var destSt: Int = 0,
-    var destName: String? = null,
-    var trainRouteDirectionCode: Int = 0,
-    var predictionDate: Date? = null,
-    var arrivalDepartureDate: Date? = null,
-    var isApp: Boolean = false,
-    var isDly: Boolean = false,
-    var flags: String? = null,
-    var position: Position? = null,
-    var heading: Int = 0) : Comparable<Eta>, Parcelable, Serializable {
+    val station: Station,
+    val stop: Stop,
+    val routeName: TrainLine,
+    val destName: String,
+    val predictionDate: Date,
+    val arrivalDepartureDate: Date,
+    val isApp: Boolean,
+    var isDly: Boolean,
+    val position: Position) : Comparable<Eta>, Parcelable, Serializable {
 
     constructor(source: Parcel) : this(
         source.readParcelable<Station>(Station::class.java.classLoader),
         source.readParcelable<Stop>(Stop::class.java.classLoader),
-        source.readInt(),
         TrainLine.fromXmlString(source.readString()),
-        source.readInt(),
         source.readString(),
-        source.readInt(),
         Date(source.readLong()),
         Date(source.readLong()),
         java.lang.Boolean.valueOf(source.readString())!!,
         java.lang.Boolean.valueOf(source.readString())!!,
-        source.readString(),
-        source.readParcelable<Position>(Position::class.java.classLoader),
-        source.readInt()
+        source.readParcelable<Position>(Position::class.java.classLoader)
     )
 
     private val timeLeft: String
         get() {
-            val time = arrivalDepartureDate!!.time - predictionDate!!.time
+            val time = arrivalDepartureDate.time - predictionDate.time
             return String.format(Locale.ENGLISH, "%d min", TimeUnit.MILLISECONDS.toMinutes(time))
         }
 
@@ -89,8 +79,8 @@ class Eta(
         }
 
     override fun compareTo(other: Eta): Int {
-        val time1 = arrivalDepartureDate!!.time - predictionDate!!.time
-        val time2 = other.arrivalDepartureDate!!.time - other.predictionDate!!.time
+        val time1 = arrivalDepartureDate.time - predictionDate.time
+        val time2 = other.arrivalDepartureDate.time - other.predictionDate.time
         return time1.compareTo(time2)
     }
 
@@ -101,22 +91,17 @@ class Eta(
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeParcelable(station, flags)
         dest.writeParcelable(stop, flags)
-        dest.writeInt(runNumber)
-        dest.writeString(routeName!!.toTextString())
-        dest.writeInt(destSt)
+        dest.writeString(routeName.toTextString())
         dest.writeString(destName)
-        dest.writeInt(trainRouteDirectionCode)
-        dest.writeLong(predictionDate!!.time)
-        dest.writeLong(arrivalDepartureDate!!.time)
+        dest.writeLong(predictionDate.time)
+        dest.writeLong(arrivalDepartureDate.time)
         dest.writeString(isApp.toString())
         dest.writeString(isDly.toString())
-        dest.writeString(this.flags)
         dest.writeParcelable(position, flags)
-        dest.writeInt(heading)
     }
 
     override fun toString(): String {
-        return "Eta(station=$station, stop=$stop, runNumber=$runNumber, routeName=$routeName, destSt=$destSt, destName=$destName, trainRouteDirectionCode=$trainRouteDirectionCode, predictionDate=$predictionDate, arrivalDepartureDate=$arrivalDepartureDate, isApp=$isApp, isDelay=$isDly, flags=$flags, position=$position, heading=$heading)"
+        return "Eta(station=$station, stop=$stop, routeName=$routeName, destName=$destName, predictionDate=$predictionDate, arrivalDepartureDate=$arrivalDepartureDate, isApp=$isApp, isDelay=$isDly, position=$position)"
     }
 
     companion object {
@@ -124,7 +109,7 @@ class Eta(
         private const val serialVersionUID = 0L
 
         fun buildFakeEtaWith(station: Station, arrivalDepartureDate: Date, predictionDate: Date, app: Boolean, delay: Boolean): Eta {
-            return Eta(station, Stop(), 0, TrainLine.NA, 0, StringUtils.EMPTY, 0, predictionDate, arrivalDepartureDate, app, delay, "", Position(), 0)
+            return Eta(station, Stop(), TrainLine.NA, StringUtils.EMPTY, predictionDate, arrivalDepartureDate, app, delay, Position())
         }
 
         @JvmField val CREATOR: Parcelable.Creator<Eta> = object : Parcelable.Creator<Eta> {
