@@ -330,9 +330,9 @@ public class BusMapActivity extends AbstractMapActivity {
 
                     final InputStream xmlResult = CtaConnect.INSTANCE.connect(BUS_DIRECTION, directionParams);
                     final BusDirections busDirections = XmlParser.INSTANCE.parseBusDirections(xmlResult, busRouteId);
-                    bounds = new String[busDirections.getLBusDirection().size()];
-                    for (int i = 0; i < busDirections.getLBusDirection().size(); i++) {
-                        bounds[i] = busDirections.getLBusDirection().get(i).getBusDirectionEnum().toString();
+                    bounds = new String[busDirections.getBusDirections().size()];
+                    for (int i = 0; i < busDirections.getBusDirections().size(); i++) {
+                        bounds[i] = busDirections.getBusDirections().get(i).getBusDirectionEnum().toString();
                     }
                     Util.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_DIRECTION_URL);
                 }

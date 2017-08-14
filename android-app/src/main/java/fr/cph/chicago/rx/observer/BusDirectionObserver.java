@@ -50,7 +50,7 @@ public class BusDirectionObserver implements Observer<BusDirections> {
     @Override
     public void onNext(final BusDirections busDirections) {
         if (busDirections != null) {
-            final List<BusDirection> lBusDirections = busDirections.getLBusDirection();
+            final List<BusDirection> lBusDirections = busDirections.getBusDirections();
             final List<String> data = Stream.of(lBusDirections)
                 .map(busDir -> busDir.getBusDirectionEnum().toString())
                 .collect(Collectors.toList());

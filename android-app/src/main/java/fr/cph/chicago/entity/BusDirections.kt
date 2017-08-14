@@ -20,7 +20,6 @@
 package fr.cph.chicago.entity
 
 import fr.cph.chicago.entity.enumeration.BusDirection
-import java.util.*
 
 /**
  * Bus directions entity
@@ -29,14 +28,13 @@ import java.util.*
  * *
  * @version 1
  */
-class BusDirections(val id: String? = null, var lBusDirection: MutableList<BusDirection>? = null) {
+class BusDirections {
 
-    fun addBusDirection(dir: BusDirection) {
-        if (lBusDirection == null) {
-            lBusDirection = ArrayList<BusDirection>()
-        }
-        if (!lBusDirection!!.contains(dir)) {
-            lBusDirection!!.add(dir)
+    val busDirections: MutableList<BusDirection> = mutableListOf()
+
+    fun addBusDirection(busDirection: BusDirection) {
+        if (!busDirections.contains(busDirection)) {
+            busDirections.add(busDirection)
         }
     }
 }
