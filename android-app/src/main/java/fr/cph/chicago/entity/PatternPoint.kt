@@ -19,39 +19,4 @@
 
 package fr.cph.chicago.entity
 
-import android.os.Parcel
-import android.os.Parcelable
-
-class PatternPoint(
-    var position: Position,
-    var type: String,
-    var stopName: String? = null) : Parcelable {
-
-    private constructor(source: Parcel) : this(
-        source.readParcelable<Position>(Position::class.java.classLoader),
-        source.readString(),
-        source.readString())
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeParcelable(position, flags)
-        dest.writeString(type)
-        dest.writeString(stopName)
-    }
-
-    companion object {
-
-        @JvmField val CREATOR: Parcelable.Creator<PatternPoint> = object : Parcelable.Creator<PatternPoint> {
-            override fun createFromParcel(source: Parcel): PatternPoint {
-                return PatternPoint(source)
-            }
-
-            override fun newArray(size: Int): Array<PatternPoint?> {
-                return arrayOfNulls(size)
-            }
-        }
-    }
-}
+class PatternPoint(var position: Position, var type: String, var stopName: String? = null)
