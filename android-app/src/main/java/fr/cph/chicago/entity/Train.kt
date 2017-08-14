@@ -62,8 +62,8 @@ class Train {
                 }
                 i++
             }
-            position.latitude = (maxLatitude!! + minLatitude!!) / 2
-            position.longitude = (maxLongitude!! + minLongitude!!) / 2
+            position.latitude = (maxLatitude + minLatitude) / 2
+            position.longitude = (maxLongitude + minLongitude) / 2
             return position
         }
     }

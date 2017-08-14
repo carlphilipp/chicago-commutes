@@ -46,8 +46,8 @@ class Stop(
         readFromParcel(source)
     }
 
-    override fun compareTo(anotherStop: Stop): Int {
-        return this.direction!!.compareTo(anotherStop.direction)
+    override fun compareTo(other: Stop): Int {
+        return this.direction!!.compareTo(other.direction)
     }
 
     override fun describeContents(): Int {

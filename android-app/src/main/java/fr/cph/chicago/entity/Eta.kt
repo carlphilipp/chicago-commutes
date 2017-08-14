@@ -76,9 +76,9 @@ class Eta(
             return result
         }
 
-    override fun compareTo(another: Eta): Int {
+    override fun compareTo(other: Eta): Int {
         val time1 = arrivalDepartureDate!!.time - predictionDate!!.time
-        val time2 = another.arrivalDepartureDate!!.time - another.predictionDate!!.time
+        val time2 = other.arrivalDepartureDate!!.time - other.predictionDate!!.time
         return time1.compareTo(time2)
     }
 

@@ -39,20 +39,20 @@ open class BusStop : RealmObject, Comparable<BusStop>, Parcelable, Serializable,
     var description: String? = null
     var position: Position? = null
 
-    constructor() {}
+    constructor()
 
     private constructor(source: Parcel) {
         readFromParcel(source)
     }
 
     override fun toString(): String {
-        return "[id:" + id + ";name:" + name + ";position:" + position + "]"
+        return "[id:$id;name:$name;position:$position]"
     }
 
-    override fun compareTo(another: BusStop): Int {
-        val position = another.position
-        val latitude = java.lang.Double.compare(position!!.latitude, position!!.latitude)
-        return if (latitude == 0) java.lang.Double.compare(position!!.longitude, position!!.longitude) else latitude
+    override fun compareTo(other: BusStop): Int {
+        val position = other.position
+        val latitude = java.lang.Double.compare(position!!.latitude, position.latitude)
+        return if (latitude == 0) java.lang.Double.compare(position.longitude, position.longitude) else latitude
     }
 
     override fun describeContents(): Int {

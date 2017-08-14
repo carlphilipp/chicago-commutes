@@ -69,8 +69,8 @@ class Station(
             return result
         }
 
-    override fun compareTo(another: Station): Int {
-        return this.name!!.compareTo(another.name!!)
+    override fun compareTo(other: Station): Int {
+        return this.name!!.compareTo(other.name!!)
     }
 
     val stopsPosition: List<Position?> get() = Stream.of(stops!!).map { it.position }.collect(Collectors.toList()).toList()
