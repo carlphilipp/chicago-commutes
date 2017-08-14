@@ -431,37 +431,38 @@ public enum XmlParser {
     public final synchronized List<BusStop> parseBusBounds(@NonNull final InputStream xml) throws ParserException {
         final List<BusStop> busStops = new ArrayList<>();
         String tagName = null;
-        BusStop busStop = null;
         try {
             parser.setInput(xml, "UTF-8");
+            Integer stopId = null;
+            String stopName = null;
+            Double latitude = null;
+            Double longitude = null;
             int eventType = parser.getEventType();
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 if (eventType == XmlPullParser.START_TAG) {
                     tagName = parser.getName();
                 } else if (eventType == XmlPullParser.END_TAG) {
+                    final String stop = parser.getName();
+                    if (StringUtils.isNotBlank(stop) && "stop".equals(stop)) {
+                        final BusStop busArrival = new BusStop(stopId, stopName, stopName, new Position(latitude, longitude));
+                        busStops.add(busArrival);
+                    }
                     tagName = null;
                 } else if (eventType == XmlPullParser.TEXT) {
                     final String text = parser.getText();
                     if (tagName != null) {
                         switch (tagName) {
                             case "stpid":
-                                busStop = new BusStop();
-                                busStop.setId(Integer.parseInt(text));
-                                busStops.add(busStop);
+                                stopId = Integer.parseInt(text);
                                 break;
                             case "stpnm":
-                                assert busStop != null;
-                                busStop.setName(text);
+                                stopName = text;
                                 break;
                             case "lat":
-                                final Position position = new Position();
-                                position.setLatitude(Double.parseDouble(text));
-                                assert busStop != null;
-                                busStop.setPosition(position);
+                                latitude = Double.parseDouble(text);
                                 break;
                             case "lon":
-                                assert busStop != null;
-                                busStop.getPosition().setLongitude(Double.parseDouble(text));
+                                longitude = Double.parseDouble(text);
                                 break;
                             case "msg":
                                 throw new ParserException(text);

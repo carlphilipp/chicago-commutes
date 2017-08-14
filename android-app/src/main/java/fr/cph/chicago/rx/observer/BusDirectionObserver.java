@@ -58,7 +58,7 @@ public class BusDirectionObserver implements Observer<BusDirections> {
 
             final LayoutInflater vi = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             final View popupView = vi.inflate(R.layout.popup_bus, parent, false);
-            final ListView listView = (ListView) popupView.findViewById(R.id.details);
+            final ListView listView = popupView.findViewById(R.id.details);
             final PopupBusAdapter ada = new PopupBusAdapter(parent.getContext().getApplicationContext(), data);
             listView.setAdapter(ada);
 

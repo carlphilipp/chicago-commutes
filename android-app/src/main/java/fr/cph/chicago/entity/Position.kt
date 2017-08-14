@@ -25,7 +25,7 @@ import io.realm.RealmObject
 import java.io.Serializable
 
 /**
- * The position
+ * The position. This can't be immutable because it needs to extends RealmObject.
 
  * @author Carl-Philipp Harmant
  * *

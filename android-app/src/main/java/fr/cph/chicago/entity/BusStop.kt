@@ -23,27 +23,28 @@ import android.os.Parcel
 import android.os.Parcelable
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
+import org.apache.commons.lang3.StringUtils
 import java.io.Serializable
 
 /**
- * Bus stop entity
+ * Bus stop entity. This can't be immutable because it needs to extends RealmObject.
 
  * @author Carl-Philipp Harmant
  * *
  * @version 1
  */
-open class BusStop : RealmObject, Comparable<BusStop>, Parcelable, Serializable, AStation {
+open class BusStop(
     @PrimaryKey
-    var id: Int = 0
-    var name: String? = null
-    var description: String? = null
-    var position: Position? = null
+    var id: Int = 0,
+    var name: String = StringUtils.EMPTY,
+    var description: String = StringUtils.EMPTY,
+    var position: Position = Position()) : RealmObject(), Comparable<BusStop>, Parcelable, Serializable, AStation {
 
-    constructor()
-
-    private constructor(source: Parcel) {
-        readFromParcel(source)
-    }
+    private constructor(source: Parcel) : this(
+        source.readInt(),
+        source.readString(),
+        source.readString(),
+        source.readParcelable<Position>(Position::class.java.classLoader))
 
     override fun toString(): String {
         return "[id:$id;name:$name;position:$position]"
@@ -51,7 +52,7 @@ open class BusStop : RealmObject, Comparable<BusStop>, Parcelable, Serializable,
 
     override fun compareTo(other: BusStop): Int {
         val position = other.position
-        val latitude = java.lang.Double.compare(position!!.latitude, position.latitude)
+        val latitude = java.lang.Double.compare(position.latitude, position.latitude)
         return if (latitude == 0) java.lang.Double.compare(position.longitude, position.longitude) else latitude
     }
 
@@ -64,13 +65,6 @@ open class BusStop : RealmObject, Comparable<BusStop>, Parcelable, Serializable,
         dest.writeString(name)
         dest.writeString(description)
         dest.writeParcelable(position, flags)
-    }
-
-    private fun readFromParcel(source: Parcel) {
-        id = source.readInt()
-        name = source.readString()
-        description = source.readString()
-        position = source.readParcelable<Position>(Position::class.java.classLoader)
     }
 
     companion object {
