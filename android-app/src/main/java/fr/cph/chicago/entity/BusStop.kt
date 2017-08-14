@@ -41,10 +41,10 @@ open class BusStop(
     var position: Position = Position()) : RealmObject(), Comparable<BusStop>, Parcelable, Serializable, AStation {
 
     private constructor(source: Parcel) : this(
-        source.readInt(),
-        source.readString(),
-        source.readString(),
-        source.readParcelable<Position>(Position::class.java.classLoader))
+        id = source.readInt(),
+        name = source.readString(),
+        description = source.readString(),
+        position = source.readParcelable<Position>(Position::class.java.classLoader))
 
     override fun toString(): String {
         return "[id:$id;name:$name;position:$position]"

@@ -35,11 +35,9 @@ import java.util.concurrent.TimeUnit
 data class BusArrival(
     val timeStamp: Date,
     val errorMessage: String,
-    //val predictionType: PredictionType,
     val stopName: String,
     val stopId: Int = 0,
     val busId: Int = 0,
-    //val distanceToStop: Int, // feets
     val routeId: String,
     val routeDirection: String,
     val busDestination: String,
@@ -47,16 +45,16 @@ data class BusArrival(
     val isDelay: Boolean) : Parcelable {
 
     private constructor(source: Parcel) : this(
-        Date(source.readLong()),
-        source.readString(),
-        source.readString(),
-        source.readInt(),
-        source.readInt(),
-        source.readString(),
-        source.readString(),
-        source.readString(),
-        Date(source.readLong()),
-        java.lang.Boolean.parseBoolean(source.readString()))
+        timeStamp = Date(source.readLong()),
+        errorMessage = source.readString(),
+        stopName = source.readString(),
+        stopId = source.readInt(),
+        busId = source.readInt(),
+        routeId = source.readString(),
+        routeDirection = source.readString(),
+        busDestination = source.readString(),
+        predictionTime = Date(source.readLong()),
+        isDelay = java.lang.Boolean.parseBoolean(source.readString()))
 
     val timeLeft: String
         get() {
@@ -90,11 +88,9 @@ data class BusArrival(
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeLong(timeStamp.time)
         dest.writeString(errorMessage)
-        //dest.writeString(predictionType.toString());
         dest.writeString(stopName)
         dest.writeInt(stopId)
         dest.writeInt(busId)
-        //dest.writeInt(distanceToStop);
         dest.writeString(routeId)
         dest.writeString(routeDirection)
         dest.writeString(busDestination)

@@ -46,15 +46,15 @@ class Eta(
     val position: Position) : Comparable<Eta>, Parcelable, Serializable {
 
     constructor(source: Parcel) : this(
-        source.readParcelable<Station>(Station::class.java.classLoader),
-        source.readParcelable<Stop>(Stop::class.java.classLoader),
-        TrainLine.fromXmlString(source.readString()),
-        source.readString(),
-        Date(source.readLong()),
-        Date(source.readLong()),
-        java.lang.Boolean.valueOf(source.readString())!!,
-        java.lang.Boolean.valueOf(source.readString())!!,
-        source.readParcelable<Position>(Position::class.java.classLoader)
+        station = source.readParcelable<Station>(Station::class.java.classLoader),
+        stop = source.readParcelable<Stop>(Stop::class.java.classLoader),
+        routeName = TrainLine.fromXmlString(source.readString()),
+        destName = source.readString(),
+        predictionDate = Date(source.readLong()),
+        arrivalDepartureDate = Date(source.readLong()),
+        isApp = java.lang.Boolean.valueOf(source.readString())!!,
+        isDly = java.lang.Boolean.valueOf(source.readString())!!,
+        position = source.readParcelable<Position>(Position::class.java.classLoader)
     )
 
     private val timeLeft: String

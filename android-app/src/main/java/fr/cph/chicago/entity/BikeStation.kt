@@ -54,14 +54,14 @@ class BikeStation(
     val stAddress1: String) : Parcelable, AStation {
 
     private constructor(source: Parcel) : this(
-        source.readInt(),
-        source.readString(),
-        source.readInt(),
-        source.readInt(),
-        source.readDouble(),
-        source.readDouble(),
-        source.readInt(),
-        source.readString())
+        id = source.readInt(),
+        name = source.readString(),
+        availableDocks = source.readInt(),
+        totalDocks = source.readInt(),
+        latitude = source.readDouble(),
+        longitude = source.readDouble(),
+        availableBikes = source.readInt(),
+        stAddress1 = source.readString())
 
     override fun describeContents(): Int {
         return 0
