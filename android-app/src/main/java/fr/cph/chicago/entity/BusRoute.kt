@@ -21,7 +21,6 @@ package fr.cph.chicago.entity
 
 import android.os.Parcel
 import android.os.Parcelable
-import java.io.Serializable
 
 /**
  * Bus route entity
@@ -30,11 +29,9 @@ import java.io.Serializable
  * *
  * @version 1
  */
-class BusRoute(var id: String? = null, var name: String? = null) : Parcelable, Serializable {
+data class BusRoute(val id: String, val name: String) : Parcelable {
 
-    private constructor(source: Parcel) : this() {
-        readFromParcel(source)
-    }
+    private constructor(source: Parcel) : this(source.readString(), source.readString())
 
     override fun describeContents(): Int {
         return 0
@@ -45,14 +42,7 @@ class BusRoute(var id: String? = null, var name: String? = null) : Parcelable, S
         dest.writeString(name)
     }
 
-    private fun readFromParcel(source: Parcel) {
-        id = source.readString()
-        name = source.readString()
-    }
-
     companion object {
-
-        private const val serialVersionUID = 0L
 
         @JvmField val CREATOR: Parcelable.Creator<BusRoute> = object : Parcelable.Creator<BusRoute> {
             override fun createFromParcel(source: Parcel): BusRoute {

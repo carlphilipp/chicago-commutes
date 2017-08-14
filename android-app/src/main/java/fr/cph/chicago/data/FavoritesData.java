@@ -128,9 +128,7 @@ public enum FavoritesData {
             } else {
                 // Get name in the preferences if null
                 final String routeName = preferences.getBusRouteNameMapping(context, routeId);
-                final BusRoute busRoute = new BusRoute();
-                busRoute.setId(routeId);
-                busRoute.setName(routeName == null ? "" : routeName);
+                final BusRoute busRoute = new BusRoute(routeId, routeName == null ? "" : routeName);
                 return Optional.of(busRoute);
             }
         } else {

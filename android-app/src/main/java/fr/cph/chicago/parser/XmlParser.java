@@ -55,7 +55,6 @@ import fr.cph.chicago.entity.Train;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.BusDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.entity.enumeration.XmlArrivalBusTag;
 import fr.cph.chicago.entity.enumeration.XmlArrivalTrainTag;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
@@ -351,51 +350,30 @@ public enum XmlParser {
         try {
             parser.setInput(xml, "UTF-8");
             int eventType = parser.getEventType();
-            XmlArrivalBusTag tag = null;
-            String tagName;
-            BusRoute busRoute = null;
+            String tagName = null;
+            String routeId = null;
+            String routeName = null;
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 if (eventType == XmlPullParser.START_TAG) {
                     tagName = parser.getName();
-                    switch (tagName) {
-                        case "route":
-                            tag = XmlArrivalBusTag.ROUTE;
-                            break;
-                        case "rt":
-                            tag = XmlArrivalBusTag.RT;
-                            break;
-                        case "rtnm":
-                            tag = XmlArrivalBusTag.RTNM;
-                            break;
-                        case "bustime-response":
-                        case "SCRIPT":
-                            tag = XmlArrivalBusTag.OTHER;
-                            break;
-                        case "msg":
-                            tag = XmlArrivalBusTag.ERROR;
-                            break;
-                    }
                 } else if (eventType == XmlPullParser.END_TAG) {
-                    tag = XmlArrivalBusTag.OTHER;
+                    final String route = parser.getName();
+                    if (StringUtils.isNotBlank(route) && "route".equals(route)) {
+                        assert routeId != null;
+                        assert routeName != null;
+                        final BusRoute busRoute = new BusRoute(routeId, routeName);
+                        routes.add(busRoute);
+                    }
+                    tagName = null;
                 } else if (eventType == XmlPullParser.TEXT) {
-                    final String text = parser.getText();
-                    if (tag != null) {
-                        switch (tag) {
-                            case ROUTE:
-                                busRoute = new BusRoute();
-                                routes.add(busRoute);
+                    if (tagName != null) {
+                        final String text = parser.getText();
+                        switch (tagName) {
+                            case "rt":
+                                routeId = text;
                                 break;
-                            case RT:
-                                assert busRoute != null;
-                                busRoute.setId(text);
-                                break;
-                            case RTNM:
-                                assert busRoute != null;
-                                busRoute.setName(text);
-                                break;
-                            case ERROR:
-                                throw new ParserException(text);
-                            default:
+                            case "rtnm":
+                                routeName = text;
                                 break;
                         }
                     }
