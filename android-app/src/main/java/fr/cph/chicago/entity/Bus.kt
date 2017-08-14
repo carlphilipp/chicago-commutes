@@ -19,52 +19,46 @@
 
 package fr.cph.chicago.entity
 
-import java.security.Timestamp
-
-class Bus(var id: Int = 0,
-          val timestamp: Timestamp? = null,
-          var position: Position? = null,
-          var heading: Int = 0,
-          var patternId: Int = 0,
-          var patternDistance: Int = 0,
-          var routeId: String? = null,
-          var destination: String? = null,
-          val delay: Boolean? = null) {
+class Bus(val id: Int = 0,
+          val position: Position,
+          val heading: Int,
+          val destination: String) {
 
     companion object {
 
         fun getBestPosition(buses: List<Bus>): Position {
             val position = Position()
-            var maxLatitude: Double? = 0.0
-            var minLatitude: Double? = 0.0
-            var maxLongitude: Double? = 0.0
-            var minLongitude: Double? = 0.0
-            var i = 0
-            for (bus in buses) {
-                val temp = bus.position
-                if (i == 0) {
-                    maxLatitude = temp?.latitude
-                    minLatitude = temp?.latitude
-                    maxLongitude = temp?.longitude
-                    minLongitude = temp?.longitude
-                } else {
-                    if (temp!!.latitude > maxLatitude!!) {
+            var maxLatitude: Double = 0.0
+            var minLatitude: Double = 0.0
+            var maxLongitude: Double = 0.0
+            var minLongitude: Double = 0.0
+
+            buses
+                .asSequence()
+                .map { it.position }
+                .forEachIndexed { i, temp ->
+                    if (i == 0) {
                         maxLatitude = temp.latitude
-                    }
-                    if (temp.latitude < minLatitude!!) {
                         minLatitude = temp.latitude
-                    }
-                    if (temp.longitude > maxLongitude!!) {
                         maxLongitude = temp.longitude
-                    }
-                    if (temp.longitude < minLongitude!!) {
                         minLongitude = temp.longitude
+                    } else {
+                        if (temp.latitude > maxLatitude) {
+                            maxLatitude = temp.latitude
+                        }
+                        if (temp.latitude < minLatitude) {
+                            minLatitude = temp.latitude
+                        }
+                        if (temp.longitude > maxLongitude) {
+                            maxLongitude = temp.longitude
+                        }
+                        if (temp.longitude < minLongitude) {
+                            minLongitude = temp.longitude
+                        }
                     }
                 }
-                i++
-            }
-            position.latitude = (maxLatitude!! + minLatitude!!) / 2
-            position.longitude = (maxLongitude!! + minLongitude!!) / 2
+            position.latitude = (maxLatitude + minLatitude) / 2
+            position.longitude = (maxLongitude + minLongitude) / 2
             return position
         }
     }

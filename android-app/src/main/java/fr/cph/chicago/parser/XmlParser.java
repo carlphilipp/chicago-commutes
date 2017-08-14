@@ -654,57 +654,44 @@ public enum XmlParser {
     public final synchronized List<Bus> parseVehicles(@NonNull final InputStream is) throws ParserException {
         final List<Bus> buses = new ArrayList<>();
         String tagName = null;
-        Bus bus = null;
-        Position position = null;
         try {
+            Integer busId = null;
+            Double latitude = null;
+            Double longitude = null;
+            Integer heading = null;
+            String destination = null;
+
             parser.setInput(is, "UTF-8");
             int eventType = parser.getEventType();
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 if (eventType == XmlPullParser.START_TAG) {
                     tagName = parser.getName();
-                    if ("vehicle".equals(tagName)) {
-                        bus = new Bus();
-                    } else if ("error".equals(tagName)) {
-                        break;
-                    }
                 } else if (eventType == XmlPullParser.END_TAG) {
+                    final String vehicle = parser.getName();
+                    if (StringUtils.isNotBlank(vehicle) && "vehicle".equals(vehicle)) {
+                        final Position position = new Position(latitude, longitude);
+                        final Bus bus = new Bus(busId, position, heading, destination);
+                        buses.add(bus);
+                    }
                     tagName = null;
                 } else if (eventType == XmlPullParser.TEXT) {
                     String text = parser.getText();
                     if (tagName != null) {
                         switch (tagName) {
                             case "vid":
-                                assert bus != null;
-                                bus.setId(Integer.parseInt(text));
-                                buses.add(bus);
-                                break;
-                            case "tmstmp":
+                                busId = Integer.parseInt(text);
                                 break;
                             case "lat":
-                                position = new Position();
-                                assert bus != null;
-                                bus.setPosition(position);
-                                position.setLatitude(Double.parseDouble(text));
+                                latitude = Double.parseDouble(text);
                                 break;
                             case "lon":
-                                assert position != null;
-                                position.setLongitude(Double.parseDouble(text));
+                                longitude = Double.parseDouble(text);
                                 break;
                             case "hdg":
-                                assert bus != null;
-                                bus.setHeading(Integer.parseInt(text));
-                                break;
-                            case "pid":
-                                assert bus != null;
-                                bus.setPatternId((Integer.parseInt(text)));
-                                break;
-                            case "rt":
-                                assert bus != null;
-                                bus.setRouteId(text);
+                                heading = Integer.parseInt(text);
                                 break;
                             case "des":
-                                assert bus != null;
-                                bus.setDestination(text);
+                                destination = text;
                                 break;
                         }
                     }
