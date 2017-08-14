@@ -25,6 +25,7 @@ import com.annimon.stream.Collectors
 import com.annimon.stream.Stream
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import org.apache.commons.lang3.StringUtils
 
 /**
  * Bike station entity
@@ -34,30 +35,33 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @version 1
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-class BikeStation : Parcelable, AStation {
-
+class BikeStation(
     @JsonProperty("id")
-    var id: Int = 0
+    val id: Int,
     @JsonProperty("stationName")
-    var name: String? = null
+    val name: String,
     @JsonProperty("availableDocks")
-    var availableDocks: Int? = null
+    val availableDocks: Int,
     @JsonProperty("totalDocks")
-    var totalDocks: Int? = null
+    val totalDocks: Int,
     @JsonProperty("latitude")
-    var latitude: Double = 0.toDouble()
+    val latitude: Double,
     @JsonProperty("longitude")
-    var longitude: Double = 0.toDouble()
+    val longitude: Double,
     @JsonProperty("availableBikes")
-    var availableBikes: Int? = null
+    val availableBikes: Int,
     @JsonProperty("stAddress1")
-    var stAddress1: String? = null
+    val stAddress1: String) : Parcelable, AStation {
 
-    constructor()
-
-    private constructor(source: Parcel) {
-        readFromParcel(source)
-    }
+    private constructor(source: Parcel) : this(
+        source.readInt(),
+        source.readString(),
+        source.readInt(),
+        source.readInt(),
+        source.readDouble(),
+        source.readDouble(),
+        source.readInt(),
+        source.readString())
 
     override fun describeContents(): Int {
         return 0
@@ -72,17 +76,6 @@ class BikeStation : Parcelable, AStation {
         dest.writeDouble(longitude)
         dest.writeInt(availableBikes!!)
         dest.writeString(stAddress1)
-    }
-
-    private fun readFromParcel(source: Parcel) {
-        id = source.readInt()
-        name = source.readString()
-        availableDocks = source.readInt()
-        totalDocks = source.readInt()
-        latitude = source.readDouble()
-        longitude = source.readDouble()
-        availableBikes = source.readInt()
-        stAddress1 = source.readString()
     }
 
     override fun equals(other: Any?): Boolean {
@@ -116,6 +109,10 @@ class BikeStation : Parcelable, AStation {
 
         private val DEFAULT_RANGE = 0.008
 
+        fun buildDefaultBikeStationWithName(name: String): BikeStation {
+            return BikeStation(0, name, 0, 0, 0.0, 0.0, 0, StringUtils.EMPTY)
+        }
+
         fun readNearbyStation(bikeStations: List<BikeStation>, position: Position): List<BikeStation> {
             val latitude = position.latitude
             val longitude = position.longitude
@@ -138,9 +135,8 @@ class BikeStation : Parcelable, AStation {
                 return BikeStation(source)
             }
 
-            override fun newArray(size: Int): Array<BikeStation> {
-                // FIXME parcelable kotlin
-                return arrayOf()
+            override fun newArray(size: Int): Array<BikeStation?> {
+                return arrayOfNulls(size)
             }
         }
     }

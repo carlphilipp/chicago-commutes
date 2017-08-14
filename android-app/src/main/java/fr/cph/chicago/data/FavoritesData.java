@@ -146,9 +146,8 @@ public enum FavoritesData {
 
     @NonNull
     private Optional<BikeStation> createEmptyBikeStation(final int index, @NonNull final Context context) {
-        final BikeStation bikeStation = new BikeStation();
         final String stationName = preferences.getBikeRouteNameMapping(context, bikeFavorites.get(index));
-        bikeStation.setName(stationName);
+        final BikeStation bikeStation = BikeStation.Companion.buildDefaultBikeStationWithName(stationName == null ? StringUtils.EMPTY : stationName);
         return Optional.of(bikeStation);
     }
 
