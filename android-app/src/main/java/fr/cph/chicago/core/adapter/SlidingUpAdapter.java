@@ -24,11 +24,9 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.collector.CommutesCollectors;
 import fr.cph.chicago.core.fragment.NearbyFragment;
 import fr.cph.chicago.entity.BikeStation;
-import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.dto.BusArrivalRouteDTO;
-import fr.cph.chicago.entity.enumeration.BusDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.LayoutUtil;
 import fr.cph.chicago.util.Util;
@@ -148,14 +146,14 @@ public class SlidingUpAdapter {
         }
     }
 
-    public void addBike(final Optional<BikeStation> bikeStationOptional) {
+    public void addBike(final BikeStation bikeStation) {
         final LinearLayout linearLayout = getNearbyResultsView();
         /*
          * Handle the case where a user clicks quickly from one marker to another. Will not update anything if a child view is already present,
          * it just mean that the view has been updated already with a faster request.
          */
-        if (linearLayout.getChildCount() == 0) {
-            final LinearLayout bikeResultLayout = LayoutUtil.createBikeLayout(nearbyFragment.getContext(), bikeStationOptional.get());
+        if (linearLayout.getChildCount() == 0 || "error".equals(bikeStation.getName())) {
+            final LinearLayout bikeResultLayout = LayoutUtil.createBikeLayout(nearbyFragment.getContext(), bikeStation);
             linearLayout.addView(bikeResultLayout);
             nearbyFragment.getSlidingUpPanelLayout().setPanelHeight(getSlidingPanelHeight(2));
             updatePanelState();

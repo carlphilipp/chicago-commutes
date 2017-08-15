@@ -44,7 +44,7 @@ public enum ObservableUtil {
 
     private static final TrainService TRAIN_SERVICE = TrainServiceImpl.INSTANCE;
     private static final BusService BUS_SERVICE = BusServiceImpl.INSTANCE;
-    private static final BikeService BIKE_SERVICE = BikeServiceImpl.INSTANCE;
+    private static final BikeService BIKE_SERVICE = BikeServiceImpl.Companion.getINSTANCE();
 
     public static Observable<TrainArrivalDTO> createFavoritesTrainArrivalsObservable(@NonNull final Context context) {
         return Observable.create(
@@ -122,9 +122,9 @@ public enum ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<Optional<BikeStation>> createBikeStationsObservable(@NonNull final BikeStation bikeStation) {
+    public static Observable<BikeStation> createBikeStationsObservable(@NonNull final BikeStation bikeStation) {
         return Observable.create(
-            (ObservableEmitter<Optional<BikeStation>> observableOnSubscribe) -> {
+            (ObservableEmitter<BikeStation> observableOnSubscribe) -> {
                 if (!observableOnSubscribe.isDisposed()) {
                     observableOnSubscribe.onNext(BIKE_SERVICE.loadBikes(bikeStation.getId()));
                     observableOnSubscribe.onComplete();
@@ -132,7 +132,7 @@ public enum ObservableUtil {
             })
             .onErrorReturn(throwable -> {
                 Log.e(TAG, throwable.getMessage(), throwable);
-                return Optional.empty();
+                return BikeStation.Companion.buildDefaultBikeStationWithName("error");
             })
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
