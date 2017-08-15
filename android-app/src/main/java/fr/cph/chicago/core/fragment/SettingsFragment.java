@@ -89,7 +89,7 @@ public class SettingsFragment extends AbstractFragment {
     private void cleanLocalData() {
         deleteCache(getContext());
         preferences.clearPreferences(getContext());
-        RealmUtil.cleanRealm(getContext());
+        RealmUtil.INSTANCE.cleanRealm(getContext());
     }
 
     private void deleteCache(final Context context) {
