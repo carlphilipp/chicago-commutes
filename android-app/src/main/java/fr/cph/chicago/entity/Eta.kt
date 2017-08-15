@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit
  * *
  * @version 1
  */
-class Eta(
+data class Eta(
     val station: Station,
     val stop: Stop,
     val routeName: TrainLine,
@@ -109,7 +109,7 @@ class Eta(
         private const val serialVersionUID = 0L
 
         fun buildFakeEtaWith(station: Station, arrivalDepartureDate: Date, predictionDate: Date, app: Boolean, delay: Boolean): Eta {
-            return Eta(station, Stop(), TrainLine.NA, StringUtils.EMPTY, predictionDate, arrivalDepartureDate, app, delay, Position())
+            return Eta(station,  Stop.buildEmptyStop(), TrainLine.NA, StringUtils.EMPTY, predictionDate, arrivalDepartureDate, app, delay, Position())
         }
 
         @JvmField val CREATOR: Parcelable.Creator<Eta> = object : Parcelable.Creator<Eta> {

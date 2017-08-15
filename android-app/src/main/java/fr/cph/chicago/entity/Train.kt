@@ -38,12 +38,12 @@ data class Train(
             for (train in trains) {
                 val temp = train.position
                 if (i == 0) {
-                    maxLatitude = temp!!.latitude
+                    maxLatitude = temp.latitude
                     minLatitude = temp.latitude
                     maxLongitude = temp.longitude
                     minLongitude = temp.longitude
                 } else {
-                    if (temp!!.latitude > maxLatitude) {
+                    if (temp.latitude > maxLatitude) {
                         maxLatitude = temp.latitude
                     }
                     if (temp.latitude < minLatitude) {

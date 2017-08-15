@@ -25,7 +25,7 @@ import com.annimon.stream.Collectors
 import com.annimon.stream.Stream
 import fr.cph.chicago.entity.enumeration.TrainDirection
 import fr.cph.chicago.entity.enumeration.TrainLine
-import java.util.*
+import org.apache.commons.lang3.StringUtils
 
 /**
  * Station entity
@@ -34,20 +34,25 @@ import java.util.*
  * *
  * @version 1
  */
-class Stop(
-    var id: Int = 0,
-    var description: String? = null,
-    var direction: TrainDirection? = null,
-    var position: Position? = null,
-    var ada: Boolean = false,
-    var lines: MutableList<TrainLine>? = null) : Comparable<Stop>, Parcelable {
+data class Stop(
+    var id: Int,
+    var description: String,
+    var direction: TrainDirection,
+    var position: Position,
+    var ada: Boolean,
+    var lines: MutableList<TrainLine>) : Comparable<Stop>, Parcelable {
 
-    private constructor(source: Parcel) : this() {
-        readFromParcel(source)
-    }
+    private constructor(source: Parcel) : this(
+        id = source.readInt(),
+        description = source.readString(),
+        direction = TrainDirection.fromString(source.readString()),
+        position = source.readParcelable<Position>(Position::class.java.classLoader),
+        ada = java.lang.Boolean.valueOf(source.readString())!!,
+        lines = source.createStringArrayList().map { TrainLine.fromXmlString(it) }.toMutableList()
+    )
 
     override fun compareTo(other: Stop): Int {
-        return this.direction!!.compareTo(other.direction)
+        return this.direction.compareTo(other.direction)
     }
 
     override fun describeContents(): Int {
@@ -57,26 +62,18 @@ class Stop(
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeInt(id)
         dest.writeString(description)
-        dest.writeString(direction!!.toTextString())
+        dest.writeString(direction.toTextString())
         dest.writeParcelable(position, Parcelable.PARCELABLE_WRITE_RETURN_VALUE)
         dest.writeString(ada.toString())
         val linesString = Stream.of(lines!!).map { it.toTextString() }.collect(Collectors.toList<String>())
         dest.writeStringList(linesString)
     }
 
-    private fun readFromParcel(source: Parcel) {
-        id = source.readInt()
-        description = source.readString()
-        direction = TrainDirection.fromString(source.readString())
-        position = source.readParcelable<Position>(Position::class.java.classLoader)
-        ada = java.lang.Boolean.valueOf(source.readString())!!
-        val linesString = ArrayList<String>()
-        source.readStringList(linesString)
-        lines = ArrayList<TrainLine>()
-        lines!!.addAll(Stream.of(linesString).map { TrainLine.fromXmlString(it) }.collect(Collectors.toList<TrainLine>()))
-    }
-
     companion object {
+
+        fun buildEmptyStop(): Stop {
+            return Stop(0, StringUtils.EMPTY, TrainDirection.UNKNOWN, Position(), false, mutableListOf())
+        }
 
         @JvmField val CREATOR: Parcelable.Creator<Stop> = object : Parcelable.Creator<Stop> {
             override fun createFromParcel(source: Parcel): Stop {

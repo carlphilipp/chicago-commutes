@@ -6,6 +6,8 @@ import com.univocity.parsers.common.Format;
 import com.univocity.parsers.common.ParsingContext;
 import com.univocity.parsers.common.processor.RowProcessor;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +43,7 @@ class BusStopCsvProcessor implements RowProcessor {
         final int stopCode = row[1] == null ? -1 : Integer.parseInt(row[1]); // stop_code
         if (stopCode != -1) {
             final String stopName = row[2]; // stop_name
-            final String stopDesc = row[3]; // stop_desc
+            final String stopDesc = row[3] == null ? StringUtils.EMPTY : row[3]; // stop_desc
 
             final double latitude = Double.parseDouble(row[4]);// stop_lat
             final double longitude = Double.parseDouble(row[5]);// stop_lon

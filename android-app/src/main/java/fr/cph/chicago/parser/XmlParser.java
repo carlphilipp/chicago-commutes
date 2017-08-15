@@ -126,7 +126,7 @@ public enum XmlParser {
                     if (StringUtils.isNotBlank(etaName) && "eta".equals(etaName)) {
                         final Station station = data.getStation(stationId).orElse(new Station());
                         station.setName(stationName);
-                        final Stop stop = data.getStop(stopId).orElse(new Stop());
+                        final Stop stop = data.getStop(stopId).orElse(Stop.Companion.buildEmptyStop());
                         stop.setDescription(stopDestination);
                         final Position position = new Position(latitude, longitude);
                         destinationName = ("See train".equalsIgnoreCase(destinationName) && stop.getDescription().contains("Loop") && routeName == TrainLine.GREEN)
