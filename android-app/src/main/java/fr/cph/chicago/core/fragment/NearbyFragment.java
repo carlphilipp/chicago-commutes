@@ -248,7 +248,7 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
         }
     }
 
-    private class LoadNearbyTask extends AsyncTask<Void, Void, Optional<Position>> {
+    private class LoadNearbyTask extends AsyncTask<Void, Void, Position> {
 
         private List<BusStop> busStops;
         private List<Station> trainStations;
@@ -260,7 +260,7 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
         }
 
         @Override
-        protected final Optional<Position> doInBackground(final Void... params) {
+        protected final Position doInBackground(final Void... params) {
             bikeStations = activity.getIntent().getExtras().getParcelableArrayList(bundleBikeStations);
 
             if (!googleApiClient.isConnected()) {
@@ -271,22 +271,22 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
             final TrainData trainData = DataHolder.INSTANCE.getTrainData();
 
             final GPSUtil gpsUtil = new GPSUtil(googleApiClient);
-            final Optional<Position> position = gpsUtil.getLocation();
-            if (position.isPresent()) {
+            final Position position = gpsUtil.getLocation();
+            if (position != null) {
                 final Realm realm = Realm.getDefaultInstance();
-                busStops = busData.readNearbyStops(realm, position.get());
+                busStops = busData.readNearbyStops(realm, position);
                 realm.close();
-                trainStations = trainData.readNearbyStation(position.get());
+                trainStations = trainData.readNearbyStation(position);
                 // FIXME: wait for bike stations to be loaded
                 bikeStations = bikeStations != null
-                    ? BikeStation.Companion.readNearbyStation(bikeStations, position.get())
+                    ? BikeStation.Companion.readNearbyStation(bikeStations, position)
                     : new ArrayList<>();
             }
             return position;
         }
 
         @Override
-        protected final void onPostExecute(final Optional<Position> result) {
+        protected final void onPostExecute(final Position result) {
             Util.centerMap(mapFragment, result);
             updateMarkersAndModel(busStops, trainStations, bikeStations);
         }

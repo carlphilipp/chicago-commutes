@@ -313,11 +313,11 @@ public enum Util {
         return keys.get(random.nextInt(keys.size())).getColor();
     }
 
-    public static void centerMap(@NonNull final SupportMapFragment mapFragment, @NonNull final Optional<Position> position) throws SecurityException {
+    public static void centerMap(@NonNull final SupportMapFragment mapFragment, @Nullable  final Position position) throws SecurityException {
         mapFragment.getMapAsync(googleMap -> {
             googleMap.setMyLocationEnabled(true);
-            if (position.isPresent()) {
-                final LatLng latLng = new LatLng(position.get().getLatitude(), position.get().getLongitude());
+            if (position != null) {
+                final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
             } else {
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CHICAGO, 10));
