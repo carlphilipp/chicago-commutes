@@ -19,16 +19,12 @@
 
 package fr.cph.chicago.entity
 
-class Train {
-
-    var routeNumber: Int = 0
-    val destStation: Int = 0
-    var destName: String? = null
-    val routeDirection: Int = 0
-    val app: Boolean = false
-    val dly: Boolean = false
-    var position: Position? = null
-    var heading: Int = 0
+data class Train(
+    var routeNumber: Int,
+    var destName: String,
+    val app: Boolean,
+    var position: Position,
+    var heading: Int) {
 
     companion object {
 
