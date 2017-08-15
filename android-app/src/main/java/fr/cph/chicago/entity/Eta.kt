@@ -52,8 +52,8 @@ data class Eta(
         destName = source.readString(),
         predictionDate = Date(source.readLong()),
         arrivalDepartureDate = Date(source.readLong()),
-        isApp = java.lang.Boolean.valueOf(source.readString())!!,
-        isDly = java.lang.Boolean.valueOf(source.readString())!!,
+        isApp = source.readString().toBoolean(),
+        isDly = source.readString().toBoolean(),
         position = source.readParcelable<Position>(Position::class.java.classLoader)
     )
 

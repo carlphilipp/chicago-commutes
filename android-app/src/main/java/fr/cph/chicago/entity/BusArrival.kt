@@ -54,7 +54,7 @@ data class BusArrival(
         routeDirection = source.readString(),
         busDestination = source.readString(),
         predictionTime = Date(source.readLong()),
-        isDelay = java.lang.Boolean.parseBoolean(source.readString()))
+        isDelay = source.readString().toBoolean())
 
     val timeLeft: String
         get() {
