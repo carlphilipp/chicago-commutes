@@ -99,20 +99,20 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         private FavoritesViewHolder(final View view, final ViewGroup parent) {
             super(view);
             this.parent = parent;
-            this.mainLayout = (LinearLayout) view.findViewById(R.id.favorites_arrival_layout);
+            this.mainLayout = view.findViewById(R.id.favorites_arrival_layout);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 this.mainLayout.setBackground(ContextCompat.getDrawable(parent.getContext(), R.drawable.any_selector));
             }
-            this.favoriteImage = (ImageView) view.findViewById(R.id.favorites_icon);
+            this.favoriteImage = view.findViewById(R.id.favorites_icon);
 
-            this.stationNameTextView = (TextView) view.findViewById(R.id.favorites_station_name);
+            this.stationNameTextView = view.findViewById(R.id.favorites_station_name);
             this.stationNameTextView.setLines(1);
             this.stationNameTextView.setEllipsize(TextUtils.TruncateAt.END);
 
-            this.lastUpdateTextView = (TextView) view.findViewById(R.id.last_update);
+            this.lastUpdateTextView = view.findViewById(R.id.last_update);
 
-            this.detailsButton = (Button) view.findViewById(R.id.details_button);
-            this.mapButton = (Button) view.findViewById(R.id.view_map_button);
+            this.detailsButton = view.findViewById(R.id.details_button);
+            this.mapButton = view.findViewById(R.id.view_map_button);
         }
     }
 
@@ -204,8 +204,8 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
             int i = 0;
             final Map<String, String> etas = FavoritesData.INSTANCE.getTrainArrivalByLine(stationId, trainLine);
             for (final Entry<String, String> entry : etas.entrySet()) {
-                final LinearLayout.LayoutParams containParams = LayoutUtil.getInsideParams(activity.getApplicationContext(), newLine, i == etas.size() - 1);
-                final LinearLayout container = LayoutUtil.createTrainArrivalsLayout(context, containParams, entry, trainLine);
+                final LinearLayout.LayoutParams containParams = LayoutUtil.INSTANCE.getInsideParams(activity.getApplicationContext(), newLine, i == etas.size() - 1);
+                final LinearLayout container = LayoutUtil.INSTANCE.createTrainArrivalsLayout(context, containParams, entry, trainLine);
 
                 holder.mainLayout.addView(container);
 
@@ -257,8 +257,8 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 busDetailsDTOs.add(busDetails);
 
                 // Build UI
-                final LinearLayout.LayoutParams containParams = LayoutUtil.getInsideParams(activity.getApplicationContext(), newLine, i == boundMap.size() - 1);
-                final LinearLayout container = LayoutUtil.createBusArrivalsLayout(activity.getApplicationContext(), containParams, stopNameTrimmed, BusDirection.BusDirectionEnum.fromString(entry2.getKey()), entry2.getValue());
+                final LinearLayout.LayoutParams containParams = LayoutUtil.INSTANCE.getInsideParams(activity.getApplicationContext(), newLine, i == boundMap.size() - 1);
+                final LinearLayout container = LayoutUtil.INSTANCE.createBusArrivalsLayout(activity.getApplicationContext(), containParams, stopNameTrimmed, BusDirection.BusDirectionEnum.fromString(entry2.getKey()), entry2.getValue());
 
                 holder.mainLayout.addView(container);
 
@@ -305,7 +305,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         holder.mapButton.setText(activity.getString(R.string.favorites_view_station));
         holder.mapButton.setOnClickListener(new GoogleMapOnClickListener(bikeStation.getLatitude(), bikeStation.getLongitude()));
 
-        final LinearLayout bikeResultLayout = LayoutUtil.createBikeLayout(activity.getApplicationContext(), bikeStation);
+        final LinearLayout bikeResultLayout = LayoutUtil.INSTANCE.createBikeLayout(activity.getApplicationContext(), bikeStation);
 
         holder.mainLayout.addView(bikeResultLayout);
     }

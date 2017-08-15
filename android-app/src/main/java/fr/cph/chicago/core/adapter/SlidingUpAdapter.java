@@ -90,8 +90,8 @@ public class SlidingUpAdapter {
                     boolean newLine = true;
                     int i = 0;
                     for (final Map.Entry<String, String> entry : etas.entrySet()) {
-                        final LinearLayout.LayoutParams containParams = LayoutUtil.getInsideParams(nearbyFragment.getContext(), newLine, i == etas.size() - 1);
-                        final LinearLayout container = LayoutUtil.createTrainArrivalsLayout(nearbyFragment.getContext(), containParams, entry, trainLine);
+                        final LinearLayout.LayoutParams containParams = LayoutUtil.INSTANCE.getInsideParams(nearbyFragment.getContext(), newLine, i == etas.size() - 1);
+                        final LinearLayout container = LayoutUtil.INSTANCE.createTrainArrivalsLayout(nearbyFragment.getContext(), containParams, entry, trainLine);
 
                         linearLayout.addView(container);
                         newLine = false;
@@ -153,7 +153,7 @@ public class SlidingUpAdapter {
          * it just mean that the view has been updated already with a faster request.
          */
         if (linearLayout.getChildCount() == 0 || "error".equals(bikeStation.getName())) {
-            final LinearLayout bikeResultLayout = LayoutUtil.createBikeLayout(nearbyFragment.getContext(), bikeStation);
+            final LinearLayout bikeResultLayout = LayoutUtil.INSTANCE.createBikeLayout(nearbyFragment.getContext(), bikeStation);
             linearLayout.addView(bikeResultLayout);
             nearbyFragment.getSlidingUpPanelLayout().setPanelHeight(getSlidingPanelHeight(2));
             updatePanelState();
@@ -166,8 +166,8 @@ public class SlidingUpAdapter {
     }
 
     private void handleNoResults(final LinearLayout linearLayout) {
-        final LinearLayout.LayoutParams containParams = LayoutUtil.getInsideParams(nearbyFragment.getContext(), true, true);
-        final LinearLayout container = LayoutUtil.createBusArrivalsNoResult(nearbyFragment.getContext(), containParams);
+        final LinearLayout.LayoutParams containParams = LayoutUtil.INSTANCE.getInsideParams(nearbyFragment.getContext(), true, true);
+        final LinearLayout container = LayoutUtil.INSTANCE.createBusArrivalsNoResult(nearbyFragment.getContext(), containParams);
         linearLayout.addView(container);
     }
 

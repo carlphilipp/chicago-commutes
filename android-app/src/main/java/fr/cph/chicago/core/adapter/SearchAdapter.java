@@ -111,7 +111,7 @@ public final class SearchAdapter extends BaseAdapter {
 
             final Set<TrainLine> lines = station.getLines();
             for (final TrainLine tl : lines) {
-                final LinearLayout layout = LayoutUtil.createColoredRoundForMultiple(context, tl);
+                final LinearLayout layout = LayoutUtil.INSTANCE.createColoredRoundForMultiple(context, tl);
                 stationColorView.addView(layout);
             }
 

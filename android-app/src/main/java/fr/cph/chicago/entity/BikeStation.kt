@@ -110,7 +110,7 @@ class BikeStation(
         private val DEFAULT_RANGE = 0.008
 
         fun buildDefaultBikeStationWithName(name: String): BikeStation {
-            return BikeStation(0, name, 0, 0, 0.0, 0.0, 0, StringUtils.EMPTY)
+            return BikeStation(0, name, -1, 0, 0.0, 0.0, -1, StringUtils.EMPTY)
         }
 
         fun readNearbyStation(bikeStations: List<BikeStation>, position: Position): List<BikeStation> {

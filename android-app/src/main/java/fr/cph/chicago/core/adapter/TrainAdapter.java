@@ -100,7 +100,7 @@ public final class TrainAdapter extends BaseAdapter {
 
         holder.stationColorView.removeAllViews();
         Stream.of(lines)
-            .map(line -> LayoutUtil.createColoredRoundForMultiple(activity.getApplicationContext(), line))
+            .map(line -> LayoutUtil.INSTANCE.createColoredRoundForMultiple(activity.getApplicationContext(), line))
             .forEach(layout -> holder.stationColorView.addView(layout));
         convertView.setOnClickListener(new TrainOnClickListener(parent.getContext(), station.getId(), lines));
         return convertView;
