@@ -109,7 +109,7 @@ data class Eta(
         private const val serialVersionUID = 0L
 
         fun buildFakeEtaWith(station: Station, arrivalDepartureDate: Date, predictionDate: Date, app: Boolean, delay: Boolean): Eta {
-            return Eta(station,  Stop.buildEmptyStop(), TrainLine.NA, StringUtils.EMPTY, predictionDate, arrivalDepartureDate, app, delay, Position())
+            return Eta(station, Stop.buildEmptyStop(), TrainLine.NA, StringUtils.EMPTY, predictionDate, arrivalDepartureDate, app, delay, Position())
         }
 
         @JvmField val CREATOR: Parcelable.Creator<Eta> = object : Parcelable.Creator<Eta> {

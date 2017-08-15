@@ -19,7 +19,7 @@ package fr.cph.chicago.exception;
 import android.support.annotation.NonNull;
 
 /**
- * Connect exception
+ * HttpClient exception
  *
  * @author Carl-Philipp Harmant
  * @version 1

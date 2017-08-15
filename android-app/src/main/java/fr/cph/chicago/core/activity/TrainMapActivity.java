@@ -49,7 +49,7 @@ import java.util.Map;
 import butterknife.BindString;
 import butterknife.ButterKnife;
 import fr.cph.chicago.R;
-import fr.cph.chicago.connection.CtaConnect;
+import fr.cph.chicago.client.CtaClient;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.adapter.TrainMapSnippetAdapter;
 import fr.cph.chicago.data.DataHolder;
@@ -67,8 +67,8 @@ import fr.cph.chicago.util.Util;
 
 import static fr.cph.chicago.Constants.TRAINS_FOLLOW_URL;
 import static fr.cph.chicago.Constants.TRAINS_LOCATION_URL;
-import static fr.cph.chicago.connection.CtaRequestType.TRAIN_FOLLOW;
-import static fr.cph.chicago.connection.CtaRequestType.TRAIN_LOCATION;
+import static fr.cph.chicago.client.CtaRequestType.TRAIN_FOLLOW;
+import static fr.cph.chicago.client.CtaRequestType.TRAIN_LOCATION;
 
 /**
  * @author Carl-Philipp Harmant
@@ -305,7 +305,7 @@ public class TrainMapActivity extends AbstractMapActivity {
             try {
                 final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
                 connectParam.put(requestRunNumber, runNumber);
-                final InputStream content = CtaConnect.INSTANCE.connect(TRAIN_FOLLOW, connectParam);
+                final InputStream content = CtaClient.Companion.getINSTANCE().connect(TRAIN_FOLLOW, connectParam);
                 etas = XmlParser.INSTANCE.parseTrainsFollow(content, trainData);
             } catch (final ConnectException | ParserException e) {
                 Log.e(TAG, e.getMessage(), e);
@@ -391,7 +391,7 @@ public class TrainMapActivity extends AbstractMapActivity {
             try {
                 final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
                 connectParam.put(requestRt, line);
-                final InputStream content = CtaConnect.INSTANCE.connect(TRAIN_LOCATION, connectParam);
+                final InputStream content = CtaClient.Companion.getINSTANCE().connect(TRAIN_LOCATION, connectParam);
                 trains = XmlParser.INSTANCE.parseTrainsLocation(content);
                 Util.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_LOCATION_URL);
             } catch (final ConnectException | ParserException e) {

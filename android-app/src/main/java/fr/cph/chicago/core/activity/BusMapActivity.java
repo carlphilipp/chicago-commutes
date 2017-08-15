@@ -50,7 +50,7 @@ import java.util.Map;
 import butterknife.BindString;
 import butterknife.ButterKnife;
 import fr.cph.chicago.R;
-import fr.cph.chicago.connection.CtaConnect;
+import fr.cph.chicago.client.CtaClient;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.entity.Bus;
 import fr.cph.chicago.entity.BusDirections;
@@ -70,8 +70,8 @@ import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;
 import static fr.cph.chicago.Constants.BUSES_DIRECTION_URL;
 import static fr.cph.chicago.Constants.BUSES_PATTERN_URL;
 import static fr.cph.chicago.Constants.BUSES_VEHICLES_URL;
-import static fr.cph.chicago.connection.CtaRequestType.BUS_DIRECTION;
-import static fr.cph.chicago.connection.CtaRequestType.BUS_PATTERN;
+import static fr.cph.chicago.client.CtaRequestType.BUS_DIRECTION;
+import static fr.cph.chicago.client.CtaRequestType.BUS_PATTERN;
 
 /**
  * @author Carl-Philipp Harmant
@@ -328,7 +328,7 @@ public class BusMapActivity extends AbstractMapActivity {
                     final MultiValuedMap<String, String> directionParams = new ArrayListValuedHashMap<>();
                     directionParams.put(requestRt, busRouteId);
 
-                    final InputStream xmlResult = CtaConnect.INSTANCE.connect(BUS_DIRECTION, directionParams);
+                    final InputStream xmlResult = CtaClient.Companion.getINSTANCE().connect(BUS_DIRECTION, directionParams);
                     final BusDirections busDirections = XmlParser.INSTANCE.parseBusDirections(xmlResult, busRouteId);
                     bounds = new String[busDirections.getBusDirections().size()];
                     for (int i = 0; i < busDirections.getBusDirections().size(); i++) {
@@ -339,7 +339,7 @@ public class BusMapActivity extends AbstractMapActivity {
 
                 final MultiValuedMap<String, String> routeIdParam = new ArrayListValuedHashMap<>();
                 routeIdParam.put(requestRt, busRouteId);
-                final InputStream content = CtaConnect.INSTANCE.connect(BUS_PATTERN, routeIdParam);
+                final InputStream content = CtaClient.Companion.getINSTANCE().connect(BUS_PATTERN, routeIdParam);
                 final List<BusPattern> patterns = XmlParser.INSTANCE.parsePatterns(content);
                 Stream.of(patterns)
                     .flatMap(pattern ->

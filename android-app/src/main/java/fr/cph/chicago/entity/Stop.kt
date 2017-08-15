@@ -65,7 +65,7 @@ data class Stop(
         dest.writeString(direction.toTextString())
         dest.writeParcelable(position, Parcelable.PARCELABLE_WRITE_RETURN_VALUE)
         dest.writeString(ada.toString())
-        val linesString = Stream.of(lines!!).map { it.toTextString() }.collect(Collectors.toList<String>())
+        val linesString = Stream.of(lines).map { it.toTextString() }.collect(Collectors.toList<String>())
         dest.writeStringList(linesString)
     }
 

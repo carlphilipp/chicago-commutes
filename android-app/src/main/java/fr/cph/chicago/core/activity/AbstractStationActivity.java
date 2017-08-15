@@ -8,7 +8,7 @@ import android.widget.TextView;
 import com.annimon.stream.Optional;
 
 import fr.cph.chicago.R;
-import fr.cph.chicago.connection.GStreetViewConnect;
+import fr.cph.chicago.client.GoogleStreetClient;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -22,7 +22,7 @@ public abstract class AbstractStationActivity extends Activity {
         googleMapImageObservable = Observable.create(
             (ObservableEmitter<Optional<Drawable>> observableOnSubscribe) -> {
                 if (!observableOnSubscribe.isDisposed()) {
-                    observableOnSubscribe.onNext(GStreetViewConnect.INSTANCE.connect(latitude, longitude));
+                    observableOnSubscribe.onNext(GoogleStreetClient.Companion.getINSTANCE().connect(latitude, longitude));
                     observableOnSubscribe.onComplete();
                 }
             })

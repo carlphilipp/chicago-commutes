@@ -91,7 +91,7 @@ public class FavoritesFragment extends AbstractFragment {
     private View rootView;
 
     /**
-     * Returns a new instance of this fragment for the given section number.
+     * Returns a new INSTANCE of this fragment for the given section number.
      *
      * @param sectionNumber the section number
      * @return a favorite fragment

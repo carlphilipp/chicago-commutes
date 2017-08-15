@@ -61,7 +61,7 @@ public class BusFragment extends AbstractFragment {
     private BusAdapter busAdapter;
 
     /**
-     * Returns a new instance of this fragment for the given section number.
+     * Returns a new INSTANCE of this fragment for the given section number.
      *
      * @param sectionNumber the section number
      * @return the fragment

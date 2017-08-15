@@ -41,7 +41,7 @@ import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import fr.cph.chicago.R;
-import fr.cph.chicago.connection.CtaConnect;
+import fr.cph.chicago.client.CtaClient;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener;
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener;
@@ -57,7 +57,7 @@ import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.util.Util;
 
 import static fr.cph.chicago.Constants.BUSES_PATTERN_URL;
-import static fr.cph.chicago.connection.CtaRequestType.BUS_ARRIVALS;
+import static fr.cph.chicago.client.CtaRequestType.BUS_ARRIVALS;
 
 /**
  * Activity that represents the bus stop
@@ -305,8 +305,8 @@ public class BusActivity extends AbstractStationActivity {
             reqParams.put(requestRt, busRouteId);
             reqParams.put(requestStopId, Integer.toString(busStopId));
             try {
-                // Connect to CTA API bus to get XML result of inc buses
-                final InputStream xmlResult = CtaConnect.INSTANCE.connect(BUS_ARRIVALS, reqParams);
+                // HttpClient to CTA API bus to get XML result of inc buses
+                final InputStream xmlResult = CtaClient.Companion.getINSTANCE().connect(BUS_ARRIVALS, reqParams);
                 // Parse and return arrival buses
                 return XmlParser.INSTANCE.parseBusArrivals(xmlResult);
             } catch (final ParserException | ConnectException e) {

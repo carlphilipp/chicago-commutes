@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import fr.cph.chicago.R;
-import fr.cph.chicago.connection.CtaConnect;
+import fr.cph.chicago.client.CtaClient;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.PreferencesImpl;
 import fr.cph.chicago.data.TrainData;
@@ -30,7 +30,7 @@ import fr.cph.chicago.service.TrainService;
 import fr.cph.chicago.util.Util;
 import io.reactivex.exceptions.Exceptions;
 
-import static fr.cph.chicago.connection.CtaRequestType.TRAIN_ARRIVALS;
+import static fr.cph.chicago.client.CtaRequestType.TRAIN_ARRIVALS;
 
 public enum TrainServiceImpl implements TrainService {
     INSTANCE;
@@ -46,7 +46,7 @@ public enum TrainServiceImpl implements TrainService {
                 if ("mapid".equals(key)) {
                     final List<String> list = (List<String>) entry.getValue();
                     if (list.size() < 5) {
-                        final InputStream xmlResult = CtaConnect.INSTANCE.connect(TRAIN_ARRIVALS, trainParams);
+                        final InputStream xmlResult = CtaClient.Companion.getINSTANCE().connect(TRAIN_ARRIVALS, trainParams);
                         trainArrivals = XmlParser.INSTANCE.parseArrivals(xmlResult, DataHolder.INSTANCE.getTrainData());
                     } else {
                         final int size = list.size();
@@ -58,7 +58,7 @@ public enum TrainServiceImpl implements TrainService {
                             for (final String sub : subList) {
                                 paramsTemp.put(key, sub);
                             }
-                            final InputStream xmlResult = CtaConnect.INSTANCE.connect(TRAIN_ARRIVALS, paramsTemp);
+                            final InputStream xmlResult = CtaClient.Companion.getINSTANCE().connect(TRAIN_ARRIVALS, paramsTemp);
                             final SparseArray<TrainArrival> temp = XmlParser.INSTANCE.parseArrivals(xmlResult, DataHolder.INSTANCE.getTrainData());
                             for (int j = 0; j < temp.size(); j++) {
                                 trainArrivals.put(temp.keyAt(j), temp.valueAt(j));
@@ -109,7 +109,7 @@ public enum TrainServiceImpl implements TrainService {
             final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
             params.put(context.getString(R.string.request_map_id), Integer.toString(stationId));
 
-            final InputStream xmlResult = CtaConnect.INSTANCE.connect(TRAIN_ARRIVALS, params);
+            final InputStream xmlResult = CtaClient.Companion.getINSTANCE().connect(TRAIN_ARRIVALS, params);
             final SparseArray<TrainArrival> arrivals = XmlParser.INSTANCE.parseArrivals(xmlResult, TrainData.INSTANCE);
             return arrivals.size() == 1
                 ? Optional.of(arrivals.get(stationId))
