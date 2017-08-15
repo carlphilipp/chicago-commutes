@@ -21,10 +21,8 @@ package fr.cph.chicago.client
 
 import android.util.Log
 import fr.cph.chicago.exception.ConnectException
-import java.io.BufferedInputStream
 import java.io.IOException
 import java.io.InputStream
-import java.net.HttpURLConnection
 import java.net.URL
 
 class HttpClient private constructor() {
@@ -35,20 +33,12 @@ class HttpClient private constructor() {
 
     @Throws(ConnectException::class)
     fun connect(address: String): InputStream {
-        val inputStream: InputStream
         try {
-            Log.v(TAG, "Address: " + address)
-            val url = URL(address)
-            val urlConnection = url.openConnection() as HttpURLConnection
-            urlConnection.connectTimeout = 5000
-            urlConnection.readTimeout = 5000
-            urlConnection.connect()
-            inputStream = BufferedInputStream(urlConnection.inputStream)
+            return URL(address).readBytes().inputStream()
         } catch (e: IOException) {
             Log.e(TAG, e.message, e)
             throw ConnectException.defaultException(e)
         }
-        return inputStream
     }
 
     companion object {
