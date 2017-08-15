@@ -69,7 +69,7 @@ public class BusStopOnClickListener implements View.OnClickListener {
             builder.setAdapter(ada, (dialog, position) -> {
                 final BusDetailsDTO busDetails = busDetailsDTOs.get(position);
                 loadBusDetails(view, busDetails);
-                Util.trackAction(context, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_STOP_URL);
+                Util.INSTANCE.trackAction(context, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_STOP_URL);
             });
             final AlertDialog dialog = builder.create();
             dialog.show();
@@ -103,11 +103,11 @@ public class BusStopOnClickListener implements View.OnClickListener {
                             },
                             onError -> {
                                 Log.e(TAG, onError.getMessage(), onError);
-                                Util.showOopsSomethingWentWrong(parent);
+                                Util.INSTANCE.showOopsSomethingWentWrong(parent);
                             }),
                 onError -> {
                     Log.e(TAG, onError.getMessage(), onError);
-                    Util.showNetworkErrorMessage(view);
+                    Util.INSTANCE.showNetworkErrorMessage(view);
                 }
             );
     }

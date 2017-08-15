@@ -172,8 +172,8 @@ public class SlidingUpAdapter {
     }
 
     private int getSlidingPanelHeight(final int nbLine) {
-        int line = Util.convertDpToPixel(nearbyFragment.getContext(), LINE_HEIGHT);
-        int header = Util.convertDpToPixel(nearbyFragment.getContext(), HEADER_HEIGHT);
+        int line = Util.INSTANCE.convertDpToPixel(nearbyFragment.getContext(), LINE_HEIGHT);
+        int header = Util.INSTANCE.convertDpToPixel(nearbyFragment.getContext(), HEADER_HEIGHT);
         return (line * nbLine) + header;
     }
 

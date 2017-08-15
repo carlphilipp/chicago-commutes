@@ -121,7 +121,7 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
         super.onCreate(savedInstanceState);
         App.checkTrainData(activity);
         App.checkBusData(activity);
-        Util.trackScreen(getContext(), getString(R.string.analytics_nearby_fragment));
+        Util.INSTANCE.trackScreen(getContext(), getString(R.string.analytics_nearby_fragment));
     }
 
     @Override
@@ -143,7 +143,7 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
             .addApi(LocationServices.API)
             .build();
         final GoogleMapOptions options = new GoogleMapOptions();
-        final CameraPosition camera = new CameraPosition(Util.CHICAGO, 7, 0, 0);
+        final CameraPosition camera = new CameraPosition(Util.INSTANCE.chicago(), 7, 0, 0);
         options.camera(camera);
         mapFragment = SupportMapFragment.newInstance(options);
         mapFragment.setRetainInstance(true);
@@ -287,7 +287,7 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
 
         @Override
         protected final void onPostExecute(final Position result) {
-            Util.centerMap(mapFragment, result);
+            Util.INSTANCE.centerMap(mapFragment, result);
             updateMarkersAndModel(busStops, trainStations, bikeStations);
         }
     }
@@ -317,11 +317,11 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
     }
 
     private void startLoadingNearby() {
-        if (Util.isNetworkAvailable(getContext())) {
+        if (Util.INSTANCE.isNetworkAvailable(getContext())) {
             showProgress(true);
             new LoadNearbyTask().execute();
         } else {
-            Util.showNetworkErrorMessage(activity);
+            Util.INSTANCE.showNetworkErrorMessage(activity);
             showProgress(false);
         }
     }

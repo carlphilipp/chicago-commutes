@@ -99,7 +99,7 @@ public class BusDirectionObserver implements Observer<BusDirections> {
 
     @Override
     public void onError(final Throwable throwable) {
-        Util.showOopsSomethingWentWrong(convertView);
+        Util.INSTANCE.showOopsSomethingWentWrong(convertView);
         convertView.setVisibility(LinearLayout.GONE);
         Log.e(TAG, throwable.getMessage(), throwable);
     }

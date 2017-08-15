@@ -187,7 +187,7 @@ public class StationActivity extends AbstractStationActivity {
                 swipeRefreshLayout.setColorSchemeColors(randomTrainLine.getColor());
                 setToolBar(randomTrainLine);
 
-                Util.trackScreen(getApplicationContext(), trainDetails);
+                Util.INSTANCE.trackScreen(getApplicationContext(), trainDetails);
             }
         }
     }
@@ -244,7 +244,7 @@ public class StationActivity extends AbstractStationActivity {
                 final LinearLayout arrivalTrainsLayout = new LinearLayout(this);
                 arrivalTrainsLayout.setOrientation(LinearLayout.VERTICAL);
                 arrivalTrainsLayout.setLayoutParams(paramsStop);
-                int id = Util.generateViewId();
+                int id = Util.INSTANCE.generateViewId();
                 arrivalTrainsLayout.setId(id);
                 ids.put(line.toString() + "_" + stop.getDirection().toString(), id);
 
@@ -266,7 +266,7 @@ public class StationActivity extends AbstractStationActivity {
             toolbar.setElevation(4);
         }
 
-        Util.setWindowsColor(this, toolbar, randomTrainLine);
+        Util.INSTANCE.setWindowsColor(this, toolbar, randomTrainLine);
 
         toolbar.setTitle(station.getName());
         toolbar.setNavigationIcon(arrowBackWhite);
@@ -353,7 +353,7 @@ public class StationActivity extends AbstractStationActivity {
                 final LinearLayout insideLayout = new LinearLayout(this);
                 insideLayout.setOrientation(LinearLayout.HORIZONTAL);
                 insideLayout.setLayoutParams(paramsStop);
-                final int newId = Util.generateViewId();
+                final int newId = Util.INSTANCE.generateViewId();
                 insideLayout.setId(newId);
                 ids.put(line.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName(), newId);
 
@@ -388,11 +388,11 @@ public class StationActivity extends AbstractStationActivity {
      */
     private void switchFavorite() {
         if (isFavorite) {
-            Util.removeFromTrainFavorites(stationId, scrollView);
+            Util.INSTANCE.removeFromTrainFavorites(stationId, scrollView);
             isFavorite = false;
             favoritesImage.setColorFilter(grey);
         } else {
-            Util.addToTrainFavorites(stationId, scrollView);
+            Util.INSTANCE.addToTrainFavorites(stationId, scrollView);
             isFavorite = true;
             favoritesImage.setColorFilter(yellowLineDark);
         }

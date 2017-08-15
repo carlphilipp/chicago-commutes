@@ -43,13 +43,13 @@ public class BikeAllBikeStationsObserver implements Observer<List<BikeStation>> 
                     bundle.putParcelable(activity.getString(R.string.bundle_bike_station), station);
                 });
         } else {
-            Util.showOopsSomethingWentWrong(swipeRefreshLayout);
+            Util.INSTANCE.showOopsSomethingWentWrong(swipeRefreshLayout);
         }
     }
 
     @Override
     public void onError(final Throwable throwable) {
-        Util.showOopsSomethingWentWrong(swipeRefreshLayout);
+        Util.INSTANCE.showOopsSomethingWentWrong(swipeRefreshLayout);
     }
 
     @Override

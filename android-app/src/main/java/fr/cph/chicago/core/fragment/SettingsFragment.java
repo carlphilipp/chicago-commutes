@@ -45,7 +45,7 @@ public class SettingsFragment extends AbstractFragment {
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         preferences = PreferencesImpl.INSTANCE;
-        Util.trackScreen(getContext(), getString(R.string.analytics_settings_fragment));
+        Util.INSTANCE.trackScreen(getContext(), getString(R.string.analytics_settings_fragment));
     }
 
     @Override
@@ -53,7 +53,7 @@ public class SettingsFragment extends AbstractFragment {
         final View rootView = inflater.inflate(R.layout.fragment_settings, container, false);
         if (!activity.isFinishing()) {
             setBinder(rootView);
-            final String version = "Version " + Util.getCurrentVersion(getContext());
+            final String version = "Version " + Util.INSTANCE.getCurrentVersion(getContext());
             versionNumber.setText(version);
             clearCache.setOnClickListener(view -> {
                 final DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {

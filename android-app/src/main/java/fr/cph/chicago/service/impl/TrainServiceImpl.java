@@ -38,7 +38,7 @@ public enum TrainServiceImpl implements TrainService {
     @NonNull
     @Override
     public SparseArray<TrainArrival> loadFavoritesTrain(@NonNull final Context context) {
-        final MultiValuedMap<String, String> trainParams = Util.getFavoritesTrainParams(context);
+        final MultiValuedMap<String, String> trainParams = Util.INSTANCE.getFavoritesTrainParams(context);
         SparseArray<TrainArrival> trainArrivals = new SparseArray<>();
         try {
             for (final Map.Entry<String, Collection<String>> entry : trainParams.asMap().entrySet()) {

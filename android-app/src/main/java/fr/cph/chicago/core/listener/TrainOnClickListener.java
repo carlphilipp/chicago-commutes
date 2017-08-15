@@ -63,8 +63,8 @@ public class TrainOnClickListener implements OnClickListener {
 
     @Override
     public void onClick(final View view) {
-        if (!Util.isNetworkAvailable(view.getContext())) {
-            Util.showNetworkErrorMessage(view);
+        if (!Util.INSTANCE.isNetworkAvailable(view.getContext())) {
+            Util.INSTANCE.showNetworkErrorMessage(view);
         } else {
             final List<String> values = new ArrayList<>();
             final List<Integer> colors = new ArrayList<>();

@@ -190,7 +190,7 @@ public enum FavoritesData {
 
     private void addNoServiceBusIfNeeded(@NonNull final BusArrivalStopMappedDTO busArrivalDTO, @NonNull final String routeId, @NonNull final Context context) {
         for (final String bus : busFavorites) {
-            final BusFavoriteDTO busFavorite = Util.decodeBusFavorite(bus);
+            final BusFavoriteDTO busFavorite = Util.INSTANCE.decodeBusFavorite(bus);
             final String routeIdFav = busFavorite.getRouteId();
             if (routeIdFav.equals(routeId)) {
                 final Integer stopId = Integer.valueOf(busFavorite.getStopId());
@@ -218,7 +218,7 @@ public enum FavoritesData {
      */
     private boolean isInFavorites(@NonNull final String routeId, final int stopId, @NonNull final String bound) {
         return Stream.of(busFavorites)
-            .map(Util::decodeBusFavorite)
+            .map(Util.INSTANCE::decodeBusFavorite)
             // TODO: Is that correct ? maybe remove stopId
             .filter(decoded -> routeId.equals(decoded.getRouteId()) && Integer.toString(stopId).equals(decoded.getStopId()) && bound.equals(decoded.getBound()))
             .findFirst()
@@ -234,7 +234,7 @@ public enum FavoritesData {
         if (bikeStations != null && bikeStations.size() != 0) {
             Stream.of(bikeFavoritesTemp)
                 .flatMap(bikeStationId -> Stream.of(bikeStations).filter(station -> Integer.toString(station.getId()).equals(bikeStationId)))
-                .sorted(Util.BIKE_COMPARATOR_NAME)
+                .sorted(Util.INSTANCE.getBIKE_COMPARATOR_NAME())
                 .map(station -> Integer.toString(station.getId()))
                 .forEach(bikeFavorites::add);
         } else {
@@ -245,7 +245,7 @@ public enum FavoritesData {
     @NonNull
     private List<String> calculateActualRouteNumberBusFavorites() {
         return Stream.of(busFavorites)
-            .map(Util::decodeBusFavorite)
+            .map(Util.INSTANCE::decodeBusFavorite)
             .map(BusFavoriteDTO::getRouteId)
             .distinct()
             .collect(Collectors.toList());

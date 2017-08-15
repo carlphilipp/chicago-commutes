@@ -149,7 +149,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void setupToolbar() {
-        Util.setWindowsColor(this, toolbar, TrainLine.NA);
+        Util.INSTANCE.setWindowsColor(this, toolbar, TrainLine.NA);
         setSupportActionBar(toolbar);
         final ActionBar actionBar = getSupportActionBarNotNull();
         actionBar.setDisplayShowHomeEnabled(true);
@@ -182,13 +182,13 @@ public class SearchActivity extends AppCompatActivity {
             final List<BusRoute> foundBusRoutes = Stream.of(busData.getBusRoutes())
                 .filter(busRoute -> containsIgnoreCase(busRoute.getId(), query) || containsIgnoreCase(busRoute.getName(), query))
                 .distinct()
-                .sorted(Util.BUS_STOP_COMPARATOR_NAME)
+                .sorted(Util.INSTANCE.getBUS_STOP_COMPARATOR_NAME())
                 .collect(Collectors.toList());
 
             final List<BikeStation> foundBikeStations = Stream.of(bikeStations)
                 .filter(bikeStation -> containsIgnoreCase(bikeStation.getName(), query) || containsIgnoreCase(bikeStation.getStAddress1(), query))
                 .distinct()
-                .sorted(Util.BIKE_COMPARATOR_NAME)
+                .sorted(Util.INSTANCE.getBIKE_COMPARATOR_NAME())
                 .collect(Collectors.toList());
             searchAdapter.updateData(foundStations, foundBusRoutes, foundBikeStations);
             searchAdapter.notifyDataSetChanged();

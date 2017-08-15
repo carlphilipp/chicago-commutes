@@ -47,7 +47,7 @@ public enum BusServiceImpl implements BusService {
     @Override
     public List<BusArrival> loadFavoritesBuses(@NonNull final Context context) {
         final Set<BusArrival> busArrivals = new LinkedHashSet<>();
-        final MultiValuedMap<String, String> paramBus = Util.getFavoritesBusParams(context);
+        final MultiValuedMap<String, String> paramBus = Util.INSTANCE.getFavoritesBusParams(context);
         // Load bus
         try {
             final List<String> rts = new ArrayList<>();

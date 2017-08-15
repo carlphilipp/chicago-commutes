@@ -9,7 +9,7 @@ public class UtilTest {
     @Test
     public void testGenerateViewId() {
         // When
-        int actual = Util.generateViewId();
+        int actual = Util.INSTANCE.generateViewId();
 
         // Then
         assertNotEquals(0, actual);
@@ -18,8 +18,8 @@ public class UtilTest {
     @Test
     public void testGenerateViewIdUnique() {
         // When
-        int actual1 = Util.generateViewId();
-        int actual2 = Util.generateViewId();
+        int actual1 = Util.INSTANCE.generateViewId();
+        int actual2 = Util.INSTANCE.generateViewId();
 
         // Then
         assertNotEquals(actual1, actual2);

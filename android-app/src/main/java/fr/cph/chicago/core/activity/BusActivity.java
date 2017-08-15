@@ -182,7 +182,7 @@ public class BusActivity extends AbstractStationActivity {
             setToolBar();
 
             // Google analytics
-            Util.trackScreen(getApplicationContext(), analyticsBusDetails);
+            Util.INSTANCE.trackScreen(getApplicationContext(), analyticsBusDetails);
         }
     }
 
@@ -193,7 +193,7 @@ public class BusActivity extends AbstractStationActivity {
             new LoadStationDataTask().execute();
             return false;
         }));
-        Util.setWindowsColor(this, toolbar, TrainLine.NA);
+        Util.INSTANCE.setWindowsColor(this, toolbar, TrainLine.NA);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.setElevation(4);
         }
@@ -279,11 +279,11 @@ public class BusActivity extends AbstractStationActivity {
      */
     private void switchFavorite() {
         if (isFavorite) {
-            Util.removeFromBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, scrollView);
+            Util.INSTANCE.removeFromBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, scrollView);
             favoritesImage.setColorFilter(grey_5);
             isFavorite = false;
         } else {
-            Util.addToBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, scrollView);
+            Util.INSTANCE.addToBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, scrollView);
             PreferencesImpl.INSTANCE.addBusRouteNameMapping(getApplicationContext(), String.valueOf(busStopId), busRouteName);
             PreferencesImpl.INSTANCE.addBusStopNameMapping(getApplicationContext(), String.valueOf(busStopId), busStopName);
             favoritesImage.setColorFilter(yellowLineDark);
@@ -311,7 +311,7 @@ public class BusActivity extends AbstractStationActivity {
             } catch (final ParserException | ConnectException e) {
                 this.trackerException = e;
             }
-            Util.trackAction(BusActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL);
+            Util.INSTANCE.trackAction(BusActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL);
             return null;
         }
 
@@ -325,7 +325,7 @@ public class BusActivity extends AbstractStationActivity {
                 setBusArrivals(result);
                 drawArrivals();
             } else {
-                Util.showNetworkErrorMessage(scrollView);
+                Util.INSTANCE.showNetworkErrorMessage(scrollView);
             }
             scrollView.setRefreshing(false);
         }

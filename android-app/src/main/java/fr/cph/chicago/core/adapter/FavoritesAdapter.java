@@ -154,8 +154,8 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         holder.favoriteImage.setImageResource(R.drawable.ic_train_white_24dp);
         holder.stationNameTextView.setText(station.getName());
         holder.detailsButton.setOnClickListener(v -> {
-            if (!Util.isNetworkAvailable(context)) {
-                Util.showNetworkErrorMessage(activity);
+            if (!Util.INSTANCE.isNetworkAvailable(context)) {
+                Util.INSTANCE.showNetworkErrorMessage(activity);
             } else {
                 // Start station activity
                 final Bundle extras = new Bundle();
@@ -168,8 +168,8 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
         holder.mapButton.setText(activity.getString(R.string.favorites_view_trains));
         holder.mapButton.setOnClickListener(v -> {
-            if (!Util.isNetworkAvailable(context)) {
-                Util.showNetworkErrorMessage(activity);
+            if (!Util.INSTANCE.isNetworkAvailable(context)) {
+                Util.INSTANCE.showNetworkErrorMessage(activity);
             } else {
                 if (trainLines.size() == 1) {
                     startActivity(trainLines.iterator().next());
@@ -234,7 +234,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
         for (final Entry<String, Map<String, List<? extends BusArrival>>> entry : entrySet) {
             final String stopName = entry.getKey();
-            final String stopNameTrimmed = Util.trimBusStopNameIfNeeded(stopName);
+            final String stopNameTrimmed = Util.INSTANCE.trimBusStopNameIfNeeded(stopName);
             final Map<String, ? extends List<? extends BusArrival>> boundMap = entry.getValue();
 
             boolean newLine = true;
@@ -270,8 +270,8 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         holder.mapButton.setText(activity.getString(R.string.favorites_view_buses));
         holder.detailsButton.setOnClickListener(new BusStopOnClickListener(activity, holder.parent, busDetailsDTOs));
         holder.mapButton.setOnClickListener(v -> {
-            if (!Util.isNetworkAvailable(context)) {
-                Util.showNetworkErrorMessage(activity);
+            if (!Util.INSTANCE.isNetworkAvailable(context)) {
+                Util.INSTANCE.showNetworkErrorMessage(activity);
             } else {
                 final Set<String> bounds = Stream.of(busDetailsDTOs).map(BusDetailsDTO::getBound).collect(Collectors.toSet());
                 final Intent intent = new Intent(activity.getApplicationContext(), BusMapActivity.class);
@@ -289,8 +289,8 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
         holder.favoriteImage.setImageResource(R.drawable.ic_directions_bike_white_24dp);
 
         holder.detailsButton.setOnClickListener(v -> {
-            if (!Util.isNetworkAvailable(context)) {
-                Util.showNetworkErrorMessage(activity);
+            if (!Util.INSTANCE.isNetworkAvailable(context)) {
+                Util.INSTANCE.showNetworkErrorMessage(activity);
             } else if (bikeStation.getLatitude() != 0 && bikeStation.getLongitude() != 0) {
                 final Intent intent = new Intent(activity.getApplicationContext(), BikeStationActivity.class);
                 final Bundle extras = new Bundle();
@@ -298,7 +298,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 intent.putExtras(extras);
                 activity.startActivity(intent);
             } else {
-                Util.showMessage(activity, R.string.message_not_ready);
+                Util.INSTANCE.showMessage(activity, R.string.message_not_ready);
             }
         });
 

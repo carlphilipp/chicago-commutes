@@ -130,7 +130,7 @@ public final class SearchAdapter extends BaseAdapter {
                 loadingTextView.setVisibility(LinearLayout.VISIBLE);
                 ObservableUtil.createBusDirectionsObservable(parent.getContext(), busRoute.getId())
                     .onErrorReturn(throwable -> {
-                        Util.handleConnectOrParserException(throwable, activity, null, loadingTextView);
+                        Util.INSTANCE.handleConnectOrParserException(throwable, activity, null, loadingTextView);
                         Log.e(TAG, throwable.getMessage(), throwable);
                         return null;
                     }).subscribe(new BusDirectionObserver(parent, loadingTextView, busRoute));

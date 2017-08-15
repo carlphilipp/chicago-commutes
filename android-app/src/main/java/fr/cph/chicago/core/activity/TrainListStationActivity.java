@@ -62,7 +62,7 @@ public class TrainListStationActivity extends ListActivity {
             trainLine = TrainLine.fromString(lineParam);
             setTitle(trainLine.toStringWithLine());
 
-            Util.setWindowsColor(this, toolbar, trainLine);
+            Util.INSTANCE.setWindowsColor(this, toolbar, trainLine);
             toolbar.setTitle(trainLine.toStringWithLine());
 
             toolbar.setNavigationIcon(arrowBackWhite);

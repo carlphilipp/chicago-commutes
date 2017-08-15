@@ -155,7 +155,7 @@ public class BusBoundActivity extends ListActivity {
             });
 
 
-            Util.setWindowsColor(this, toolbar, TrainLine.NA);
+            Util.INSTANCE.setWindowsColor(this, toolbar, TrainLine.NA);
             toolbar.setTitle(busRouteId + " - " + boundTitle);
 
             toolbar.setNavigationIcon(arrowBackWhite);
@@ -169,11 +169,11 @@ public class BusBoundActivity extends ListActivity {
                     },
                     onError -> {
                         Log.e(TAG, onError.getMessage(), onError);
-                        Util.showOopsSomethingWentWrong(getListView());
+                        Util.INSTANCE.showOopsSomethingWentWrong(getListView());
                     }
                 );
 
-            Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_STOP_URL);
+            Util.INSTANCE.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_STOP_URL);
 
             // Preventing keyboard from moving background when showing up
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
@@ -186,7 +186,7 @@ public class BusBoundActivity extends ListActivity {
         if (mapFragment == null) {
             final android.app.FragmentManager fm = getFragmentManager();
             final GoogleMapOptions options = new GoogleMapOptions();
-            final CameraPosition camera = new CameraPosition(Util.CHICAGO, 7, 0, 0);
+            final CameraPosition camera = new CameraPosition(Util.INSTANCE.chicago(), 7, 0, 0);
             options.camera(camera);
             mapFragment = MapFragment.newInstance(options);
             mapFragment.setRetainInstance(true);
@@ -201,7 +201,7 @@ public class BusBoundActivity extends ListActivity {
             googleMap.getUiSettings().setMyLocationButtonEnabled(false);
             googleMap.getUiSettings().setZoomControlsEnabled(false);
             googleMap.getUiSettings().setMapToolbarEnabled(false);
-            Util.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL);
+            Util.INSTANCE.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL);
             ObservableUtil.createBusPatternObservable(getApplicationContext(), busRouteId, bound)
                 .subscribe(
                     busPattern -> {
@@ -213,15 +213,15 @@ public class BusBoundActivity extends ListActivity {
                                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
                                 googleMap.animateCamera(CameraUpdateFactory.zoomTo(9), 500, null);
                             } else {
-                                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Util.CHICAGO, 10));
+                                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Util.INSTANCE.chicago(), 10));
                             }
                             drawPattern(busPattern.get());
                         } else {
-                            Util.showMessage(this, R.string.message_error_could_not_load_path);
+                            Util.INSTANCE.showMessage(this, R.string.message_error_could_not_load_path);
                         }
                     },
                     onError -> {
-                        Util.handleConnectOrParserException(onError, null, layout, layout);
+                        Util.INSTANCE.handleConnectOrParserException(onError, null, layout, layout);
                         Log.e(TAG, onError.getMessage(), onError);
                     }
                 );

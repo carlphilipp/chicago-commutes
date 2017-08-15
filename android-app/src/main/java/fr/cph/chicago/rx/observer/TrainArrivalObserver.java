@@ -51,7 +51,7 @@ public class TrainArrivalObserver implements Observer<Optional<TrainArrival>> {
         if (swipeRefreshLayout.isRefreshing()) {
             swipeRefreshLayout.setRefreshing(false);
         }
-        Util.showNetworkErrorMessage(swipeRefreshLayout);
+        Util.INSTANCE.showNetworkErrorMessage(swipeRefreshLayout);
     }
 
     @Override

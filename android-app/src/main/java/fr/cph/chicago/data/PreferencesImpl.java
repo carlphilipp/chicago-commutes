@@ -163,8 +163,8 @@ public enum PreferencesImpl implements Preferences {
         Log.v(TAG, "Read bus favorites : " + setPref.toString());
         return Stream.of(setPref).sorted(
             (str1, str2) -> {
-                final String str1Decoded = Util.decodeBusFavorite(str1).getRouteId();
-                final String str2Decoded = Util.decodeBusFavorite(str2).getRouteId();
+                final String str1Decoded = Util.INSTANCE.decodeBusFavorite(str1).getRouteId();
+                final String str2Decoded = Util.INSTANCE.decodeBusFavorite(str2).getRouteId();
 
                 final Matcher matcher1 = PATTERN.matcher(str1Decoded);
                 final Matcher matcher2 = PATTERN.matcher(str2Decoded);

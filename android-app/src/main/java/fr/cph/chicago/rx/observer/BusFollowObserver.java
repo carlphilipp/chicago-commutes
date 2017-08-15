@@ -62,7 +62,7 @@ public class BusFollowObserver implements Observer<List<BusArrival>> {
 
     @Override
     public void onError(@NonNull final Throwable throwable) {
-        Util.handleConnectOrParserException(throwable, null, layout, layout);
+        Util.INSTANCE.handleConnectOrParserException(throwable, null, layout, layout);
         Log.e(TAG, throwable.getMessage(), throwable);
     }
 

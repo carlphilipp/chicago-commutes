@@ -149,7 +149,7 @@ public class BikeStationActivity extends AbstractStationActivity {
                 .subscribe(new BikeAllBikeStationsObserver(BikeStationActivity.this, bikeStation.getId(), swipeRefreshLayout));
             return false;
         }));
-        Util.setWindowsColor(this, toolbar, TrainLine.NA);
+        Util.INSTANCE.setWindowsColor(this, toolbar, TrainLine.NA);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.setElevation(4);
         }
@@ -236,11 +236,11 @@ public class BikeStationActivity extends AbstractStationActivity {
      */
     private void switchFavorite() {
         if (isFavorite) {
-            Util.removeFromBikeFavorites(bikeStation.getId(), swipeRefreshLayout);
+            Util.INSTANCE.removeFromBikeFavorites(bikeStation.getId(), swipeRefreshLayout);
             favoritesImage.setColorFilter(grey_5);
             isFavorite = false;
         } else {
-            Util.addToBikeFavorites(bikeStation.getId(), swipeRefreshLayout);
+            Util.INSTANCE.addToBikeFavorites(bikeStation.getId(), swipeRefreshLayout);
             PreferencesImpl.INSTANCE.addBikeRouteNameMapping(getApplicationContext(), Integer.toString(bikeStation.getId()), bikeStation.getName());
             favoritesImage.setColorFilter(yellowLineDark);
             isFavorite = true;

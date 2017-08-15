@@ -103,7 +103,7 @@ public class AbstractMapActivity extends FragmentActivity implements EasyPermiss
     public void onMapReady(final GoogleMap googleMap) {
         this.googleMap = googleMap;
         this.googleMap.setOnCameraIdleListener(this);
-        this.googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Util.CHICAGO, 10));
+        this.googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Util.INSTANCE.chicago(), 10));
         enableMyLocationOnMapIfAllowed();
     }
 

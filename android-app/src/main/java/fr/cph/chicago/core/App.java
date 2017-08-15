@@ -143,7 +143,7 @@ public class App extends Application {
     }
 
     public static void setupContextData(@NonNull final Context context) {
-        final int[] screenSize = Util.getScreenSize(context);
+        final int[] screenSize = Util.INSTANCE.getScreenSize(context);
         screenWidth = screenSize[0];
         lineWidth = screenWidth > 1080 ? 7f : (screenWidth > 480 ? 4f : 2f);
         ctaTrainKey = context.getString(R.string.cta_train_key);

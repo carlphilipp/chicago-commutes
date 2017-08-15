@@ -40,6 +40,6 @@ public class TwoErrors {
 
     @Test
     public void test() {
-        assertEquals(expected, Util.isAtLeastTwoErrors(trainError, busError, bikeError));
+        assertEquals(expected, Util.INSTANCE.isAtLeastTwoErrors(trainError, busError, bikeError));
     }
 }

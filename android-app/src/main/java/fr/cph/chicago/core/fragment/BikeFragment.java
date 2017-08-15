@@ -86,7 +86,7 @@ public class BikeFragment extends AbstractFragment {
 
         setHasOptionsMenu(true);
 
-        Util.trackScreen(getContext(), getString(R.string.analytics_bike_fragment));
+        Util.INSTANCE.trackScreen(getContext(), getString(R.string.analytics_bike_fragment));
     }
 
     @NonNull

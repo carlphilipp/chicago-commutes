@@ -39,16 +39,16 @@ public class BusObserver implements Observer<List<Bus>> {
                     activity.centerMapOnBus(buses);
                 }
             } else {
-                Util.showMessage(view, R.string.message_no_bus_found);
+                Util.INSTANCE.showMessage(view, R.string.message_no_bus_found);
             }
         } else {
-            Util.showMessage(view, R.string.message_error_while_loading_data);
+            Util.INSTANCE.showMessage(view, R.string.message_error_while_loading_data);
         }
     }
 
     @Override
     public void onError(final Throwable throwable) {
-        Util.handleConnectOrParserException(throwable, null, view, view);
+        Util.INSTANCE.handleConnectOrParserException(throwable, null, view, view);
         Log.e(TAG, throwable.getMessage(), throwable);
     }
 

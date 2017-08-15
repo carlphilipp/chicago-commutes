@@ -123,7 +123,7 @@ public class TrainMapActivity extends AbstractMapActivity {
             setToolbar();
 
             // Google analytics
-            Util.trackScreen(getApplicationContext(), analyticsTrainMap);
+            Util.INSTANCE.trackScreen(getApplicationContext(), analyticsTrainMap);
         }
     }
 
@@ -145,7 +145,7 @@ public class TrainMapActivity extends AbstractMapActivity {
         }));
 
         final TrainLine trainLine = TrainLine.fromXmlString(line);
-        Util.setWindowsColor(this, toolbar, trainLine);
+        Util.INSTANCE.setWindowsColor(this, toolbar, trainLine);
         toolbar.setTitle(trainLine.toStringWithLine());
     }
 
@@ -271,10 +271,10 @@ public class TrainMapActivity extends AbstractMapActivity {
     }
 
     private void loadActivityData() {
-        if (Util.isNetworkAvailable(getApplicationContext())) {
+        if (Util.INSTANCE.isNetworkAvailable(getApplicationContext())) {
             new LoadTrainPositionTask(line, trainData).execute(centerMap, true);
         } else {
-            Util.showNetworkErrorMessage(layout);
+            Util.INSTANCE.showNetworkErrorMessage(layout);
         }
     }
 
@@ -310,7 +310,7 @@ public class TrainMapActivity extends AbstractMapActivity {
             } catch (final ConnectException | ParserException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
-            Util.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_FOLLOW_URL);
+            Util.INSTANCE.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_FOLLOW_URL);
             if (!loadAll && etas.size() > 7) {
                 etas = etas.subList(0, 6);
                 final Date currentDate = Calendar.getInstance().getTime();
@@ -379,10 +379,10 @@ public class TrainMapActivity extends AbstractMapActivity {
                         centerMapOnTrain(trains);
                     }
                 } else {
-                    Util.showMessage(TrainMapActivity.this, R.string.message_no_train_found);
+                    Util.INSTANCE.showMessage(TrainMapActivity.this, R.string.message_no_train_found);
                 }
             } else {
-                Util.showMessage(TrainMapActivity.this, R.string.message_error_while_loading_data);
+                Util.INSTANCE.showMessage(TrainMapActivity.this, R.string.message_error_while_loading_data);
             }
         }
 
@@ -393,7 +393,7 @@ public class TrainMapActivity extends AbstractMapActivity {
                 connectParam.put(requestRt, line);
                 final InputStream content = CtaClient.INSTANCE.connect(TRAIN_LOCATION, connectParam);
                 trains = XmlParser.INSTANCE.parseTrainsLocation(content);
-                Util.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_LOCATION_URL);
+                Util.INSTANCE.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_LOCATION_URL);
             } catch (final ConnectException | ParserException e) {
                 Log.e(TAG, e.getMessage(), e);
             }

@@ -81,7 +81,7 @@ public enum LayoutUtil {
 
     @NonNull
     public static LinearLayout.LayoutParams getInsideParams(@NonNull final Context context, final boolean newLine, final boolean lastLine) {
-        int pixels = Util.convertDpToPixel(context, 16);
+        int pixels = Util.INSTANCE.convertDpToPixel(context, 16);
         int pixelsQuarter = pixels / 4;
         final LinearLayout.LayoutParams paramsLeft = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         if (newLine && lastLine) {
@@ -103,9 +103,9 @@ public enum LayoutUtil {
     // TODO Create XML files instead of doing all those methods in Java
     @NonNull
     public static LinearLayout createBusArrivalsLayout(@NonNull final Context context, @NonNull final LinearLayout.LayoutParams containParams, @NonNull final String stopNameTrimmed, @Nullable final BusDirection.BusDirectionEnum busDirection, @NonNull final List<? extends BusArrival> buses) {
-        int pixels = Util.convertDpToPixel(context, 16);
+        int pixels = Util.INSTANCE.convertDpToPixel(context, 16);
         int pixelsHalf = pixels / 2;
-        int marginLeftPixel = Util.convertDpToPixel(context, 10);
+        int marginLeftPixel = Util.INSTANCE.convertDpToPixel(context, 10);
         int grey5 = ContextCompat.getColor(context, R.color.grey_5);
 
         final LinearLayout container = new LinearLayout(context);
@@ -118,7 +118,7 @@ public enum LayoutUtil {
         left.setLayoutParams(leftParams);
 
         final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(context, TrainLine.NA);
-        int lineId = Util.generateViewId();
+        int lineId = Util.INSTANCE.generateViewId();
         lineIndication.setId(lineId);
 
         final RelativeLayout.LayoutParams destinationParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -164,9 +164,9 @@ public enum LayoutUtil {
 
     @NonNull
     public static LinearLayout createTrainArrivalsLayout(@NonNull final Context context, @NonNull final LinearLayout.LayoutParams containParams, @NonNull final Map.Entry<String, String> entry, @NonNull final TrainLine trainLine) {
-        int pixels = Util.convertDpToPixel(context, 16);
+        int pixels = Util.INSTANCE.convertDpToPixel(context, 16);
         int pixelsHalf = pixels / 2;
-        int marginLeftPixel = Util.convertDpToPixel(context, 10);
+        int marginLeftPixel = Util.INSTANCE.convertDpToPixel(context, 10);
         int grey5 = ContextCompat.getColor(context, R.color.grey_5);
 
         final LinearLayout container = new LinearLayout(context);
@@ -179,7 +179,7 @@ public enum LayoutUtil {
         left.setLayoutParams(leftParam);
 
         final RelativeLayout lineIndication = LayoutUtil.createColoredRoundForFavorites(context, trainLine);
-        int lineId = Util.generateViewId();
+        int lineId = Util.INSTANCE.generateViewId();
         lineIndication.setId(lineId);
 
         final RelativeLayout.LayoutParams destinationParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -237,7 +237,7 @@ public enum LayoutUtil {
 
     @NonNull
     private static LinearLayout createBikeLine(@NonNull final Context context, @NonNull final BikeStation bikeStation, final boolean firstLine) {
-        int pixels = Util.convertDpToPixel(context, 16);
+        int pixels = Util.INSTANCE.convertDpToPixel(context, 16);
         int pixelsHalf = pixels / 2;
         int grey5 = ContextCompat.getColor(context, R.color.grey_5);
 
@@ -253,7 +253,7 @@ public enum LayoutUtil {
         left.setLayoutParams(leftParam);
 
         final RelativeLayout lineIndication = createColoredRoundForFavorites(context, TrainLine.NA);
-        int lineId = Util.generateViewId();
+        int lineId = Util.INSTANCE.generateViewId();
         lineIndication.setId(lineId);
 
         final RelativeLayout.LayoutParams availableParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -265,7 +265,7 @@ public enum LayoutUtil {
         boundCustomTextView.setSingleLine(true);
         boundCustomTextView.setLayoutParams(availableParam);
         boundCustomTextView.setTextColor(grey5);
-        int availableId = Util.generateViewId();
+        int availableId = Util.INSTANCE.generateViewId();
         boundCustomTextView.setId(availableId);
 
         final RelativeLayout.LayoutParams availableValueParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
