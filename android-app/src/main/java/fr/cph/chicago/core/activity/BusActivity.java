@@ -307,7 +307,7 @@ public class BusActivity extends AbstractStationActivity {
                 // HttpClient to CTA API bus to get XML result of inc buses
                 final InputStream xmlResult = CtaClient.Companion.getINSTANCE().connect(BUS_ARRIVALS, reqParams);
                 // Parse and return arrival buses
-                return XmlParser.INSTANCE.parseBusArrivals(xmlResult);
+                return XmlParser.Companion.getINSTANCE().parseBusArrivals(xmlResult);
             } catch (final ParserException | ConnectException e) {
                 this.trackerException = e;
             }

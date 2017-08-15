@@ -76,7 +76,7 @@ public enum BusServiceImpl implements BusService {
                 para.put(context.getString(R.string.request_rt), rts.get(i));
                 para.put(context.getString(R.string.request_stop_id), stpids.get(i));
                 final InputStream xmlResult = CtaClient.Companion.getINSTANCE().connect(BUS_ARRIVALS, para);
-                busArrivals.addAll(XmlParser.INSTANCE.parseBusArrivals(xmlResult));
+                busArrivals.addAll(XmlParser.Companion.getINSTANCE().parseBusArrivals(xmlResult));
             }
         } catch (final Throwable e) {
             throw Exceptions.propagate(e);
@@ -92,7 +92,7 @@ public enum BusServiceImpl implements BusService {
             params.put(context.getString(R.string.request_rt), stopId);
             params.put(context.getString(R.string.request_dir), bound);
             final InputStream xmlResult = CtaClient.Companion.getINSTANCE().connect(BUS_STOP_LIST, params);
-            return XmlParser.INSTANCE.parseBusBounds(xmlResult);
+            return XmlParser.Companion.getINSTANCE().parseBusBounds(xmlResult);
         } catch (final Throwable throwable) {
             throw Exceptions.propagate(throwable);
         }
@@ -112,7 +112,7 @@ public enum BusServiceImpl implements BusService {
             final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
             reqParams.put(context.getString(R.string.request_rt), busRouteId);
             final InputStream xmlResult = CtaClient.Companion.getINSTANCE().connect(BUS_DIRECTION, reqParams);
-            return XmlParser.INSTANCE.parseBusDirections(xmlResult, busRouteId);
+            return XmlParser.Companion.getINSTANCE().parseBusDirections(xmlResult, busRouteId);
         } catch (final Throwable throwable) {
             throw Exceptions.propagate(throwable);
         }
@@ -124,7 +124,7 @@ public enum BusServiceImpl implements BusService {
         try {
             final MultiValuedMap<String, String> params = new ArrayListValuedHashMap<>();
             final InputStream xmlResult = CtaClient.Companion.getINSTANCE().connect(BUS_ROUTES, params);
-            return XmlParser.INSTANCE.parseBusRoutes(xmlResult);
+            return XmlParser.Companion.getINSTANCE().parseBusRoutes(xmlResult);
         } catch (final Throwable throwable) {
             throw Exceptions.propagate(throwable);
         }
@@ -137,7 +137,7 @@ public enum BusServiceImpl implements BusService {
             final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
             connectParam.put(context.getString(R.string.request_vid), busId);
             final InputStream content = CtaClient.Companion.getINSTANCE().connect(BUS_ARRIVALS, connectParam);
-            return XmlParser.INSTANCE.parseBusArrivals(content);
+            return XmlParser.Companion.getINSTANCE().parseBusArrivals(content);
         } catch (final Throwable throwable) {
             throw Exceptions.propagate(throwable);
         }
@@ -151,7 +151,7 @@ public enum BusServiceImpl implements BusService {
         final String boundIgnoreCase = bound.toLowerCase(Locale.US);
         try {
             final InputStream content = CtaClient.Companion.getINSTANCE().connect(BUS_PATTERN, connectParam);
-            final List<BusPattern> patterns = XmlParser.INSTANCE.parsePatterns(content);
+            final List<BusPattern> patterns = XmlParser.Companion.getINSTANCE().parsePatterns(content);
             return Stream.of(patterns)
                 .filter(pattern -> {
                     final String directionIgnoreCase = pattern.getDirection().toLowerCase(Locale.US);
@@ -175,7 +175,7 @@ public enum BusServiceImpl implements BusService {
         }
         try {
             final InputStream content = CtaClient.Companion.getINSTANCE().connect(BUS_VEHICLES, connectParam);
-            return XmlParser.INSTANCE.parseVehicles(content);
+            return XmlParser.Companion.getINSTANCE().parseVehicles(content);
         } catch (final Throwable throwable) {
             throw Exceptions.propagate(throwable);
         }
@@ -188,7 +188,7 @@ public enum BusServiceImpl implements BusService {
             final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>(1, 1);
             reqParams.put(context.getString(R.string.request_stop_id), Integer.toString(busStopId));
             final InputStream is = CtaClient.Companion.getINSTANCE().connect(BUS_ARRIVALS, reqParams);
-            return XmlParser.INSTANCE.parseBusArrivals(is);
+            return XmlParser.Companion.getINSTANCE().parseBusArrivals(is);
         } catch (final Throwable throwable) {
             throw Exceptions.propagate(throwable);
         }
