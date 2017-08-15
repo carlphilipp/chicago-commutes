@@ -38,7 +38,7 @@ import java.util.*
 class Station(
     var id: Int,
     var name: String,
-    var stops: List<Stop>) : Comparable<Station>, Parcelable, AStation {
+    var stops: MutableList<Stop>) : Comparable<Station>, Parcelable, AStation {
 
     private constructor(source: Parcel) : this(
         id = source.readInt(),

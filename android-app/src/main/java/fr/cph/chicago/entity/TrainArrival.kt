@@ -21,8 +21,6 @@ package fr.cph.chicago.entity
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.annimon.stream.Collectors
-import com.annimon.stream.Stream
 import fr.cph.chicago.entity.enumeration.TrainLine
 import java.io.Serializable
 
@@ -33,18 +31,12 @@ import java.io.Serializable
  * *
  * @version 1
  */
-data class TrainArrival(var etas: List<Eta>) : Parcelable, Serializable {
+data class TrainArrival(var etas: MutableList<Eta>) : Parcelable, Serializable {
 
-    private constructor(source: Parcel) : this(etas = source.createTypedArray(Eta.CREATOR).toList())
+    private constructor(source: Parcel) : this(etas = source.createTypedArray(Eta.CREATOR).toMutableList())
 
-    fun getEtas(line: TrainLine): List<Eta> {
-        val result = mutableListOf<Eta>()
-        result.addAll(
-            Stream.of(this.etas)
-                .filter { eta -> eta.routeName === line }
-                .collect(Collectors.toList())
-        )
-        return result
+    fun getEtas(line: TrainLine): MutableList<Eta> {
+        return this.etas.filter { eta -> eta.routeName == line }.toMutableList()
     }
 
     override fun describeContents(): Int {

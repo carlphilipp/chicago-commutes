@@ -19,7 +19,7 @@
 
 package fr.cph.chicago.entity
 
-class Bus(val id: Int = 0,
+class Bus(val id: Int,
           val position: Position,
           val heading: Int,
           val destination: String) {

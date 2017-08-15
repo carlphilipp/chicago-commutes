@@ -19,4 +19,4 @@
 
 package fr.cph.chicago.entity
 
-class PatternPoint(var position: Position, var type: String, var stopName: String? = null)
+class PatternPoint(val position: Position, val type: String, val stopName: String)

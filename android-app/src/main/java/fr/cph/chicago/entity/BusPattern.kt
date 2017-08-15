@@ -22,4 +22,4 @@ package fr.cph.chicago.entity
 /**
  * @author carl
  */
-class BusPattern(var direction: String, var points: MutableList<PatternPoint>)
+class BusPattern(val direction: String, val points: MutableList<PatternPoint>)

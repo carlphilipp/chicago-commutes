@@ -31,8 +31,7 @@ import java.io.Serializable
  * *
  * @version 1
  */
-open class Position(var latitude: Double = 0.0,
-                    var longitude: Double = 0.0) : RealmObject(), Parcelable, Serializable {
+open class Position(var latitude: Double = 0.0, var longitude: Double = 0.0) : RealmObject(), Parcelable, Serializable {
 
     private constructor(source: Parcel) : this() {
         readFromParcel(source)
