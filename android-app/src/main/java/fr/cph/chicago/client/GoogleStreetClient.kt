@@ -19,9 +19,10 @@
 
 package fr.cph.chicago.client
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.util.Log
-import com.annimon.stream.Optional
 import fr.cph.chicago.Constants.GOOGLE_STREET_VIEW_URL
 import fr.cph.chicago.core.App
 import org.apache.commons.io.IOUtils
@@ -41,7 +42,7 @@ class GoogleStreetClient private constructor() {
         val INSTANCE = GoogleStreetClient()
     }
 
-    fun connect(latitude: Double, longitude: Double): Optional<Drawable> {
+    fun connect(latitude: Double, longitude: Double): Drawable {
         val address = GOOGLE_STREET_VIEW_URL + "?key=" +
             App.getGoogleStreetKey() +
             "&sensor=false" +
@@ -60,16 +61,16 @@ class GoogleStreetClient private constructor() {
      * *
      * @return a drawable map
      */
-    private fun connectUrl(address: String): Optional<Drawable> {
+    private fun connectUrl(address: String): Drawable {
         Log.v(TAG, "Address: " + address)
         var inputStream: InputStream? = null
         try {
             inputStream = URL(address).content as InputStream
-            return Optional.of(Drawable.createFromStream(inputStream, "src name"))
+            return Drawable.createFromStream(inputStream, "src name")
         } catch (e: Exception) {
             Log.e(TAG, e.message, e)
             // TODO add a temporary image here
-            return Optional.empty<Drawable>()
+            return ColorDrawable(Color.TRANSPARENT);
         } finally {
             IOUtils.closeQuietly(inputStream)
         }

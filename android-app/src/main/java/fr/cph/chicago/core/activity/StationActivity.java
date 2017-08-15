@@ -160,8 +160,7 @@ public class StationActivity extends AbstractStationActivity {
                 ids = new HashMap<>();
                 isFavorite = isFavorite();
 
-                createGoogleStreetObservable(position.getLatitude(), position.getLongitude());
-                subscribeToGoogleStreet(streetViewImage, streetViewText);
+                loadGoogleStreetImage(position, streetViewImage, streetViewText);
                 createTrainArrivalObservableAndSubscribe();
 
                 streetViewImage.setOnClickListener(new GoogleStreetOnClickListener(position.getLatitude(), position.getLongitude()));

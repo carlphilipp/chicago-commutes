@@ -40,6 +40,7 @@ import fr.cph.chicago.core.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener;
 import fr.cph.chicago.data.PreferencesImpl;
 import fr.cph.chicago.entity.BikeStation;
+import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.rx.observable.ObservableUtil;
 import fr.cph.chicago.rx.observer.BikeAllBikeStationsObserver;
@@ -117,8 +118,7 @@ public class BikeStationActivity extends AbstractStationActivity {
                 isFavorite = isFavorite();
 
                 // Call google street api to load image
-                createGoogleStreetObservable(latitude, longitude);
-                subscribeToGoogleStreet(streetViewImage, streetViewText);
+                loadGoogleStreetImage(new Position(latitude, longitude), streetViewImage, streetViewText);
 
                 mapImage.setColorFilter(grey_5);
                 directionImage.setColorFilter(grey_5);

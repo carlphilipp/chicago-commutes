@@ -176,8 +176,7 @@ public class BusActivity extends AbstractStationActivity {
             busRouteNameView2.setText(busRouteName2);
 
             // Load google street picture and data
-            createGoogleStreetObservable(position.getLatitude(), position.getLongitude());
-            subscribeToGoogleStreet(streetViewImage, streetViewText);
+            loadGoogleStreetImage(position, streetViewImage, streetViewText);
             new LoadStationDataTask().execute();
 
             setToolBar();
