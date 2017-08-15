@@ -229,9 +229,9 @@ public enum PreferencesImpl implements Preferences {
         return Stream.of(setPref)
             .map(Integer::valueOf)
             .map(favorite -> DataHolder.INSTANCE.getTrainData().getStation(favorite))
-            .map(optional -> optional.orElse(new Station()))
+            .map(optional -> optional.orElse(Station.Companion.buildEmptyStation()))
             .sorted()
-            .map(station -> station.getId())
+            .map(Station::getId)
             .collect(Collectors.toList());
     }
 

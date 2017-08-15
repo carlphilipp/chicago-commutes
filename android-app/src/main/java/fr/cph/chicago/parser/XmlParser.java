@@ -124,7 +124,7 @@ public enum XmlParser {
                 } else if (eventType == XmlPullParser.END_TAG) {
                     final String etaName = parser.getName();
                     if (StringUtils.isNotBlank(etaName) && "eta".equals(etaName)) {
-                        final Station station = data.getStation(stationId).orElse(new Station());
+                        final Station station = data.getStation(stationId).orElse(Station.Companion.buildEmptyStation());
                         station.setName(stationName);
                         final Stop stop = data.getStop(stopId).orElse(Stop.Companion.buildEmptyStop());
                         stop.setDescription(stopDestination);

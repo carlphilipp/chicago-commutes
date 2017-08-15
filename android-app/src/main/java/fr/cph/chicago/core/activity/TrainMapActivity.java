@@ -314,10 +314,7 @@ public class TrainMapActivity extends AbstractMapActivity {
             if (!loadAll && etas.size() > 7) {
                 etas = etas.subList(0, 6);
                 final Date currentDate = Calendar.getInstance().getTime();
-                final Station fakeStation = new Station();
-                fakeStation.setId(0);
-                fakeStation.setName(busAllResults);
-                fakeStation.setStops(Collections.emptyList());
+                final Station fakeStation = new Station(0, busAllResults, Collections.emptyList());
                 // Add a fake Eta cell to alert the user about the fact that only a part of the result is displayed
                 final Eta eta = Eta.Companion.buildFakeEtaWith(fakeStation, currentDate, currentDate, false, false);
                 etas.add(eta);

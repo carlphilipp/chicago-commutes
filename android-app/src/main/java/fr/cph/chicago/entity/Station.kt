@@ -25,8 +25,8 @@ import com.annimon.stream.Collectors
 import com.annimon.stream.Stream
 import fr.cph.chicago.collector.CommutesCollectors
 import fr.cph.chicago.entity.enumeration.TrainLine
+import org.apache.commons.lang3.StringUtils
 import java.util.*
-import kotlin.collections.ArrayList
 
 /**
  * Station entity
@@ -36,17 +36,18 @@ import kotlin.collections.ArrayList
  * @version 1
  */
 class Station(
-    var id: Int = 0,
-    var name: String? = null,
-    var stops: List<Stop>? = null) : Comparable<Station>, Parcelable, AStation {
+    var id: Int,
+    var name: String,
+    var stops: List<Stop>) : Comparable<Station>, Parcelable, AStation {
 
-    private constructor(source: Parcel) : this() {
-        readFromParcel(source)
-    }
+    private constructor(source: Parcel) : this(
+        id = source.readInt(),
+        name = source.readString(),
+        stops = source.createTypedArrayList(Stop.CREATOR))
 
     val lines: Set<TrainLine>
         get() {
-            return Stream.of(stops!!)
+            return Stream.of(stops)
                 .map { it.lines }
                 .collect(CommutesCollectors.toTrainLineCollector())
         }
@@ -54,9 +55,9 @@ class Station(
     val stopByLines: Map<TrainLine, List<Stop>>
         get() {
             val result = TreeMap<TrainLine, List<Stop>>()
-            for (stop in stops!!) {
+            for (stop in stops) {
                 val lines = stop.lines
-                for (tl in lines!!) {
+                for (tl in lines) {
                     val stopss: MutableList<Stop> = mutableListOf()
                     if (result.containsKey(tl)) {
                         stopss.add(stop)
@@ -70,10 +71,10 @@ class Station(
         }
 
     override fun compareTo(other: Station): Int {
-        return this.name!!.compareTo(other.name!!)
+        return this.name.compareTo(other.name)
     }
 
-    val stopsPosition: List<Position?> get() = Stream.of(stops!!).map { it.position }.collect(Collectors.toList()).toList()
+    val stopsPosition: List<Position?> get() = Stream.of(stops).map { it.position }.collect(Collectors.toList()).toList()
 
     override fun describeContents(): Int {
         return 0
@@ -82,17 +83,14 @@ class Station(
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeInt(id)
         dest.writeString(name)
-        dest.writeList(stops)
-    }
-
-    private fun readFromParcel(source: Parcel) {
-        id = source.readInt()
-        name = source.readString()
-        stops = ArrayList<Stop>()
-        source.readList(stops, Stop::class.java.classLoader)
+        dest.writeTypedList(stops)
     }
 
     companion object {
+
+        fun buildEmptyStation(): Station {
+            return Station(0, StringUtils.EMPTY, mutableListOf())
+        }
 
         @JvmField val CREATOR: Parcelable.Creator<Station> = object : Parcelable.Creator<Station> {
             override fun createFromParcel(source: Parcel): Station {
