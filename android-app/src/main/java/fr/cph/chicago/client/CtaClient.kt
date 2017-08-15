@@ -33,11 +33,9 @@ import java.io.InputStream
  * *
  * @version 1
  */
-class CtaClient private constructor() {
+object CtaClient {
 
-    private object Holder {
-        val INSTANCE = CtaClient()
-    }
+    private val QUERY_PARAM_KEY = "?key="
 
     /**
      * HttpClient
@@ -70,11 +68,6 @@ class CtaClient private constructor() {
         params.asMap()
             .flatMap { entry -> entry.value.map { value -> StringBuilder().append("&").append(entry.key).append("=").append(value) } }
             .forEach({ address.append(it) })
-        return HttpClient.INSTANCE.connect(address.toString())
-    }
-
-    companion object {
-        private val QUERY_PARAM_KEY = "?key="
-        val INSTANCE: CtaClient by lazy { Holder.INSTANCE }
+        return HttpClient.connect(address.toString())
     }
 }

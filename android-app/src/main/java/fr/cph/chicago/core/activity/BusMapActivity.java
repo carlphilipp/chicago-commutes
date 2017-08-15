@@ -328,8 +328,8 @@ public class BusMapActivity extends AbstractMapActivity {
                     final MultiValuedMap<String, String> directionParams = new ArrayListValuedHashMap<>();
                     directionParams.put(requestRt, busRouteId);
 
-                    final InputStream xmlResult = CtaClient.Companion.getINSTANCE().connect(BUS_DIRECTION, directionParams);
-                    final BusDirections busDirections = XmlParser.Companion.getINSTANCE().parseBusDirections(xmlResult, busRouteId);
+                    final InputStream xmlResult = CtaClient.INSTANCE.connect(BUS_DIRECTION, directionParams);
+                    final BusDirections busDirections = XmlParser.INSTANCE.parseBusDirections(xmlResult, busRouteId);
                     bounds = new String[busDirections.getBusDirections().size()];
                     for (int i = 0; i < busDirections.getBusDirections().size(); i++) {
                         bounds[i] = busDirections.getBusDirections().get(i).getBusDirectionEnum().toString();
@@ -339,8 +339,8 @@ public class BusMapActivity extends AbstractMapActivity {
 
                 final MultiValuedMap<String, String> routeIdParam = new ArrayListValuedHashMap<>();
                 routeIdParam.put(requestRt, busRouteId);
-                final InputStream content = CtaClient.Companion.getINSTANCE().connect(BUS_PATTERN, routeIdParam);
-                final List<BusPattern> patterns = XmlParser.Companion.getINSTANCE().parsePatterns(content);
+                final InputStream content = CtaClient.INSTANCE.connect(BUS_PATTERN, routeIdParam);
+                final List<BusPattern> patterns = XmlParser.INSTANCE.parsePatterns(content);
                 Stream.of(patterns)
                     .flatMap(pattern ->
                         Stream.of(bounds)

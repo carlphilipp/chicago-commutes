@@ -305,8 +305,8 @@ public class TrainMapActivity extends AbstractMapActivity {
             try {
                 final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
                 connectParam.put(requestRunNumber, runNumber);
-                final InputStream content = CtaClient.Companion.getINSTANCE().connect(TRAIN_FOLLOW, connectParam);
-                etas = XmlParser.Companion.getINSTANCE().parseTrainsFollow(content, trainData);
+                final InputStream content = CtaClient.INSTANCE.connect(TRAIN_FOLLOW, connectParam);
+                etas = XmlParser.INSTANCE.parseTrainsFollow(content, trainData);
             } catch (final ConnectException | ParserException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
@@ -391,8 +391,8 @@ public class TrainMapActivity extends AbstractMapActivity {
             try {
                 final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
                 connectParam.put(requestRt, line);
-                final InputStream content = CtaClient.Companion.getINSTANCE().connect(TRAIN_LOCATION, connectParam);
-                trains = XmlParser.Companion.getINSTANCE().parseTrainsLocation(content);
+                final InputStream content = CtaClient.INSTANCE.connect(TRAIN_LOCATION, connectParam);
+                trains = XmlParser.INSTANCE.parseTrainsLocation(content);
                 Util.trackAction(TrainMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_LOCATION_URL);
             } catch (final ConnectException | ParserException e) {
                 Log.e(TAG, e.getMessage(), e);

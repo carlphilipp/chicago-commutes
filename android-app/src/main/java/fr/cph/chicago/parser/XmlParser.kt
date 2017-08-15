@@ -44,11 +44,7 @@ import java.util.*
  * @version 1
  */
 // TODO to refactor and optimize
-class XmlParser private constructor() {
-
-    private object Holder {
-        val INSTANCE = XmlParser()
-    }
+object XmlParser {
 
     private val parser: XmlPullParser = XmlPullParserFactory.newInstance().newPullParser()
     private val simpleDateFormatTrain: SimpleDateFormat = SimpleDateFormat("yyyyMMdd HH:mm:ss", Locale.US)
@@ -542,9 +538,5 @@ class XmlParser private constructor() {
         }
         Collections.sort(res)
         return res
-    }
-
-    companion object {
-        val INSTANCE: XmlParser by lazy { Holder.INSTANCE }
     }
 }

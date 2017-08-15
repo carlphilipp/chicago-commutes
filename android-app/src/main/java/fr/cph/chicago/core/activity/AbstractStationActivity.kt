@@ -18,7 +18,7 @@ abstract class AbstractStationActivity : Activity() {
     fun loadGoogleStreetImage(position: Position, streetViewImage: ImageView, streetViewText: TextView) {
         Observable.create { observableOnSubscribe: ObservableEmitter<Drawable> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(GoogleStreetClient.INSTANCE.connect(position.latitude, position.longitude))
+                observableOnSubscribe.onNext(GoogleStreetClient.connect(position.latitude, position.longitude))
                 observableOnSubscribe.onComplete()
             }
         }

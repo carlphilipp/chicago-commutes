@@ -67,7 +67,7 @@ public enum BusData {
         final Realm realm = Realm.getDefaultInstance();
         if (realm.where(BusStop.class).findFirst() == null) {
             Log.d(TAG, "Load bus stop from CSV");
-            BusStopCsvParser.Companion.getINSTANCE().parse(context);
+            BusStopCsvParser.INSTANCE.parse(context);
         }
         realm.close();
     }

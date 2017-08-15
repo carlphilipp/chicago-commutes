@@ -25,11 +25,9 @@ import java.io.IOException
 import java.io.InputStream
 import java.net.URL
 
-class HttpClient private constructor() {
+object HttpClient {
 
-    private object Holder {
-        val INSTANCE = HttpClient()
-    }
+    private val TAG = HttpClient::class.java.simpleName
 
     @Throws(ConnectException::class)
     fun connect(address: String): InputStream {
@@ -39,10 +37,5 @@ class HttpClient private constructor() {
             Log.e(TAG, e.message, e)
             throw ConnectException.defaultException(e)
         }
-    }
-
-    companion object {
-        private val TAG = HttpClient::class.java.simpleName
-        val INSTANCE: HttpClient by lazy { Holder.INSTANCE }
     }
 }

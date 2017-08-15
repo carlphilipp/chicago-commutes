@@ -44,7 +44,7 @@ public enum ObservableUtil {
 
     private static final TrainService TRAIN_SERVICE = TrainServiceImpl.INSTANCE;
     private static final BusService BUS_SERVICE = BusServiceImpl.INSTANCE;
-    private static final BikeService BIKE_SERVICE = BikeServiceImpl.Companion.getINSTANCE();
+    private static final BikeService BIKE_SERVICE = BikeServiceImpl.INSTANCE;
 
     public static Observable<TrainArrivalDTO> createFavoritesTrainArrivalsObservable(@NonNull final Context context) {
         return Observable.create(

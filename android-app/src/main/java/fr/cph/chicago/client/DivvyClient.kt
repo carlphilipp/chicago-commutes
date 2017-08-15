@@ -30,18 +30,10 @@ import java.io.InputStream
  * *
  * @version 1
  */
-class DivvyClient private constructor() {
-
-    private object Holder {
-        val INSTANCE = DivvyClient()
-    }
+object DivvyClient {
 
     @Throws(ConnectException::class)
     fun connect(): InputStream {
-        return HttpClient.INSTANCE.connect(DIVYY_URL)
-    }
-
-    companion object {
-        val INSTANCE: DivvyClient by lazy { Holder.INSTANCE }
+        return HttpClient.connect(DIVYY_URL)
     }
 }

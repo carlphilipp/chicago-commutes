@@ -36,12 +36,7 @@ import java.io.InputStream
  * *
  * @version 1
  */
-class JsonParser {
-
-    private object Holder {
-        val INSTANCE = JsonParser()
-    }
-
+object JsonParser {
     private val mapper = ObjectMapper()
 
     init {
@@ -58,9 +53,5 @@ class JsonParser {
         } finally {
             IOUtils.closeQuietly(stream)
         }
-    }
-
-    companion object {
-        val INSTANCE: JsonParser by lazy { Holder.INSTANCE }
     }
 }

@@ -2,21 +2,16 @@ package fr.cph.chicago.parser
 
 import android.content.Context
 import android.util.Log
-
 import com.univocity.parsers.csv.CsvParser
 import com.univocity.parsers.csv.CsvParserSettings
-import fr.cph.chicago.client.CtaClient
-
 import org.apache.commons.io.IOUtils
-
 import java.io.IOException
 import java.io.InputStreamReader
 
-class BusStopCsvParser private constructor() {
+object BusStopCsvParser {
 
-    private object Holder {
-        val INSTANCE = BusStopCsvParser()
-    }
+    private val TAG = BusStopCsvParser::class.java.simpleName
+    private val STOP_FILE_PATH = "bus_stops.txt"
 
     private val parser: CsvParser
 
@@ -38,15 +33,5 @@ class BusStopCsvParser private constructor() {
         } finally {
             IOUtils.closeQuietly(inputStreamReader)
         }
-    }
-
-    companion object {
-
-        private val TAG = BusStopCsvParser::class.java.simpleName
-
-        // http://www.transitchicago.com/developers/gtfs.aspx
-        // http://www.transitchicago.com/downloads/sch_data/
-        private val STOP_FILE_PATH = "bus_stops.txt"
-        val INSTANCE: BusStopCsvParser by lazy { Holder.INSTANCE }
     }
 }
