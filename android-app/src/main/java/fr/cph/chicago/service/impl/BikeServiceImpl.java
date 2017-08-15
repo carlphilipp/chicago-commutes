@@ -21,7 +21,7 @@ public enum BikeServiceImpl implements BikeService {
     public List<BikeStation> loadAllBikes() {
         try {
             final InputStream bikeContent = DivvyClient.Companion.getINSTANCE().connect();
-            final List<BikeStation> bikeStations = JsonParser.INSTANCE.parseStations(bikeContent);
+            final List<BikeStation> bikeStations = JsonParser.Companion.getINSTANCE().parseStations(bikeContent);
             return Stream.of(bikeStations).sorted(Util.BIKE_COMPARATOR_NAME).collect(Collectors.toList());
         } catch (final Throwable throwable) {
             throw Exceptions.propagate(throwable);
