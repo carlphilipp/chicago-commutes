@@ -25,7 +25,6 @@ import com.annimon.stream.Collectors
 import com.annimon.stream.Stream
 import fr.cph.chicago.entity.enumeration.TrainLine
 import java.io.Serializable
-import java.util.*
 
 /**
  * Train Arrival entity
@@ -34,15 +33,9 @@ import java.util.*
  * *
  * @version 1
  */
-data class TrainArrival(
-    var timeStamp: Date? = null,
-    val errorCode: Int = 0,
-    val errorMessage: String? = null,
-    var etas: List<Eta> = ArrayList()) : Parcelable, Serializable {
+data class TrainArrival(var etas: List<Eta>) : Parcelable, Serializable {
 
-    private constructor(source: Parcel) : this() {
-        readFromParcel(source)
-    }
+    private constructor(source: Parcel) : this(etas = source.createTypedArray(Eta.CREATOR).toList())
 
     fun getEtas(line: TrainLine): List<Eta> {
         val result = mutableListOf<Eta>()
@@ -62,13 +55,13 @@ data class TrainArrival(
         dest.writeTypedList(etas)
     }
 
-    private fun readFromParcel(source: Parcel) {
-        source.readTypedList(etas, Eta.CREATOR)
-    }
-
     companion object {
 
         private const val serialVersionUID = 0L
+
+        fun buildEmptyTrainArrival(): TrainArrival {
+            return TrainArrival(mutableListOf())
+        }
 
         @JvmField val CREATOR: Parcelable.Creator<TrainArrival> = object : Parcelable.Creator<TrainArrival> {
             override fun createFromParcel(source: Parcel): TrainArrival {

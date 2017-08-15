@@ -142,14 +142,9 @@ public enum XmlParser {
                             arrivalDepartureDate,
                             isApp,
                             isDly,
-                            position
-                        );
-                        final TrainArrival arri = arrivals.get(stationId, new TrainArrival());
-                        List<Eta> etas = arri.getEtas();
-                        if (etas == null) {
-                            etas = new ArrayList<>();
-                            arri.setEtas(etas);
-                        }
+                            position);
+                        final TrainArrival arri = arrivals.get(stationId, TrainArrival.Companion.buildEmptyTrainArrival());
+                        final List<Eta> etas = arri.getEtas();
                         etas.add(eta);
                         arrivals.append(stationId, arri);
                     }

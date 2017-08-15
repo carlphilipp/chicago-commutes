@@ -159,7 +159,7 @@ public enum FavoritesData {
      */
     @NonNull
     private TrainArrival getTrainArrival(final int stationId) {
-        return trainArrivals.get(stationId, new TrainArrival());
+        return trainArrivals.get(stationId, TrainArrival.Companion.buildEmptyTrainArrival());
     }
 
     @NonNull
