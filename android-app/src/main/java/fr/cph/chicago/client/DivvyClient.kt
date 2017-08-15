@@ -19,7 +19,7 @@
 
 package fr.cph.chicago.client
 
-import fr.cph.chicago.Constants.DIVYY_URL
+import fr.cph.chicago.Constants.Companion.DIVYY_URL
 import fr.cph.chicago.exception.ConnectException
 import java.io.InputStream
 

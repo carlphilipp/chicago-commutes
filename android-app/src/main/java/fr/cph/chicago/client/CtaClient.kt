@@ -19,7 +19,15 @@
 
 package fr.cph.chicago.client
 
-import fr.cph.chicago.Constants.*
+import fr.cph.chicago.Constants.Companion.BUSES_ARRIVAL_URL
+import fr.cph.chicago.Constants.Companion.BUSES_DIRECTION_URL
+import fr.cph.chicago.Constants.Companion.BUSES_PATTERN_URL
+import fr.cph.chicago.Constants.Companion.BUSES_ROUTES_URL
+import fr.cph.chicago.Constants.Companion.BUSES_STOP_URL
+import fr.cph.chicago.Constants.Companion.BUSES_VEHICLES_URL
+import fr.cph.chicago.Constants.Companion.TRAINS_ARRIVALS_URL
+import fr.cph.chicago.Constants.Companion.TRAINS_FOLLOW_URL
+import fr.cph.chicago.Constants.Companion.TRAINS_LOCATION_URL
 import fr.cph.chicago.client.CtaRequestType.*
 import fr.cph.chicago.core.App
 import fr.cph.chicago.exception.ConnectException

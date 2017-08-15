@@ -23,7 +23,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.util.Log
-import fr.cph.chicago.Constants.GOOGLE_STREET_VIEW_URL
+import fr.cph.chicago.Constants.Companion.GOOGLE_STREET_VIEW_URL
 import fr.cph.chicago.core.App
 import org.apache.commons.io.IOUtils
 import java.io.InputStream
