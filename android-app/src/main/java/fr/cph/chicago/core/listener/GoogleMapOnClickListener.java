@@ -28,7 +28,7 @@ public class GoogleMapOnClickListener extends GoogleMapListener {
 
 	@Override
 	public void onClick(final View v) {
-		final String uri = "http://maps.google.com/maps?z=12&t=m&q=loc:" + latitude + "+" + longitude;
+		final String uri = "http://maps.google.com/maps?z=12&t=m&q=loc:" + getLatitude() + "+" + getLongitude();
 		final Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
 		i.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
