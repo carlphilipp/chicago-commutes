@@ -378,7 +378,7 @@ object XmlParser {
             var latitude = 0.0
             var longitude = 0.0
             var type: String? = null
-            var stopName: String? = null
+            var stopName: String? = ""
 
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 if (eventType == XmlPullParser.START_TAG) {
@@ -389,7 +389,7 @@ object XmlParser {
                         val busPattern = BusPattern(direction!!, ArrayList(points))
                         result.add(busPattern)
 
-                        points = ArrayList<PatternPoint>()
+                        points = ArrayList()
                     } else if (StringUtils.isNotBlank(current) && "pt" == current) {
                         val patternPoint = PatternPoint(
                             Position(latitude, longitude), type!!, stopName!!
@@ -398,7 +398,7 @@ object XmlParser {
                         latitude = 0.0
                         longitude = 0.0
                         type = null
-                        stopName = null
+                        stopName = ""
                     }
                     tagName = null
                 } else if (eventType == XmlPullParser.TEXT) {

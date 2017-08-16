@@ -2,9 +2,6 @@ package fr.cph.chicago.service
 
 import android.content.Context
 import android.util.SparseArray
-
-import com.annimon.stream.Optional
-
 import fr.cph.chicago.data.TrainData
 import fr.cph.chicago.entity.TrainArrival
 
