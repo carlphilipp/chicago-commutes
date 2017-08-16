@@ -74,7 +74,7 @@ public class SlidingUpAdapter {
         nearbyFragment.getLayoutContainer().addView(convertView);
     }
 
-    public void addTrainStation(final Optional<TrainArrival> trainArrivalOptional) {
+    public void addTrainStation(final TrainArrival trainArrival) {
         final LinearLayout linearLayout = getNearbyResultsView();
 
         /*
@@ -84,9 +84,10 @@ public class SlidingUpAdapter {
         if (linearLayout.getChildCount() == 0) {
             int nbOfLine = 0;
 
-            if (trainArrivalOptional.isPresent()) {
+            // FIXME removed optional to test what it looks like in the sliding panel. Not sure if it breaks anything
+            //if (trainArrivalOptional.isPresent()) {
                 for (TrainLine trainLine : TrainLine.values()) {
-                    final List<Eta> etaResult = trainArrivalOptional.get().getEtas(trainLine);
+                    final List<Eta> etaResult = trainArrival.getEtas(trainLine);
                     final Map<String, String> etas = Stream.of(etaResult).collect(CommutesCollectors.toTrainArrivalByLine());
 
                     boolean newLine = true;
@@ -101,10 +102,10 @@ public class SlidingUpAdapter {
                     }
                     nbOfLine = nbOfLine + etas.size();
                 }
-            } else {
-                handleNoResults(linearLayout);
-                nbOfLine++;
-            }
+            //} else {
+            //    handleNoResults(linearLayout);
+            //    nbOfLine++;
+            //}
             nearbyFragment.getSlidingUpPanelLayout().setPanelHeight(getSlidingPanelHeight(nbOfLine));
             updatePanelState();
         }

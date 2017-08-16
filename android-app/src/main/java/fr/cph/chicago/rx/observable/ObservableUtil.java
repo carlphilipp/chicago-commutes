@@ -62,9 +62,9 @@ public enum ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<Optional<TrainArrival>> createTrainArrivalsObservable(@NonNull final Context context, final Station station) {
+    public static Observable<TrainArrival> createTrainArrivalsObservable(@NonNull final Context context, @NonNull final Station station) {
         return Observable.create(
-            (ObservableEmitter<Optional<TrainArrival>> observableOnSubscribe) -> {
+            (ObservableEmitter<TrainArrival> observableOnSubscribe) -> {
                 if (!observableOnSubscribe.isDisposed()) {
                     observableOnSubscribe.onNext(TRAIN_SERVICE.loadStationTrainArrival(context, station.getId()));
                     observableOnSubscribe.onComplete();

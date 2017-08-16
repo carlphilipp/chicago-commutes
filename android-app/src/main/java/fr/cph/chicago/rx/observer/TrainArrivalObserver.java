@@ -4,20 +4,15 @@ import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 
-import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 
-import java.util.Collections;
-import java.util.List;
-
 import fr.cph.chicago.core.activity.StationActivity;
-import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.util.Util;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
-public class TrainArrivalObserver implements Observer<Optional<TrainArrival>> {
+public class TrainArrivalObserver implements Observer<TrainArrival> {
 
     private static final String TAG = TrainArrivalObserver.class.getSimpleName();
 
@@ -34,15 +29,9 @@ public class TrainArrivalObserver implements Observer<Optional<TrainArrival>> {
     }
 
     @Override
-    public void onNext(final Optional<TrainArrival> trainArrival) {
-        final List<Eta> etas;
-        if (trainArrival.isPresent()) {
-            etas = trainArrival.get().getEtas();
-        } else {
-            etas = Collections.emptyList();
-        }
+    public void onNext(final TrainArrival trainArrival) {
         activity.hideAllArrivalViews();
-        Stream.of(etas).forEach(activity::drawAllArrivalsTrain);
+        Stream.of(trainArrival.getEtas()).forEach(activity::drawAllArrivalsTrain);
     }
 
     @Override

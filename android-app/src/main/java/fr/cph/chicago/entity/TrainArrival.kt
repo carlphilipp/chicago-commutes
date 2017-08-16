@@ -31,7 +31,7 @@ import java.io.Serializable
  * *
  * @version 1
  */
-data class TrainArrival(var etas: MutableList<Eta>) : Parcelable, Serializable {
+data class TrainArrival(var etas: MutableList<Eta> = mutableListOf()) : Parcelable, Serializable {
 
     private constructor(source: Parcel) : this(etas = source.createTypedArray(Eta.CREATOR).toMutableList())
 
@@ -55,7 +55,8 @@ data class TrainArrival(var etas: MutableList<Eta>) : Parcelable, Serializable {
             return TrainArrival(mutableListOf())
         }
 
-        @JvmField val CREATOR: Parcelable.Creator<TrainArrival> = object : Parcelable.Creator<TrainArrival> {
+        @JvmField
+        val CREATOR: Parcelable.Creator<TrainArrival> = object : Parcelable.Creator<TrainArrival> {
             override fun createFromParcel(source: Parcel): TrainArrival {
                 return TrainArrival(source)
             }

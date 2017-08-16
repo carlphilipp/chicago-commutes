@@ -134,7 +134,7 @@ public class StationActivity extends AbstractStationActivity {
     private int stationId;
     private Station station;
     private Map<String, Integer> ids;
-    private Observable<Optional<TrainArrival>> trainArrivalObservable;
+    private Observable<TrainArrival> trainArrivalObservable;
 
     @Override
     protected final void onCreate(final Bundle savedInstanceState) {
