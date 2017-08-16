@@ -124,7 +124,7 @@ object ObservableUtil {
         return Observable.zip(busArrivalsObservable, trainArrivalsObservable, bikeStationsObservable,
             Function3 { busArrivalDTO: BusArrivalDTO, trainArrivalsDTO: TrainArrivalDTO, bikeStations: List<BikeStation>
                 ->
-                App.setLastUpdate(Calendar.getInstance().time)
+                App.lastUpdate = Calendar.getInstance().time
                 FavoritesDTO(trainArrivalsDTO, busArrivalDTO, bikeStations.isEmpty(), bikeStations)
             })
     }

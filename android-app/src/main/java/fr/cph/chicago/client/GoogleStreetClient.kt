@@ -44,7 +44,7 @@ object GoogleStreetClient {
 
     fun connect(latitude: Double, longitude: Double): Drawable {
         val address = GOOGLE_STREET_VIEW_URL + "?key=" +
-            App.getGoogleStreetKey() +
+            App.googleStreetKey +
             "&sensor=false" +
             "&size=" + WIDTH + "x" + HEIGHT +
             "&fov=120" +

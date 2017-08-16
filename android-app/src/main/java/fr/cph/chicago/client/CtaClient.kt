@@ -58,8 +58,8 @@ object CtaClient {
      */
     @Throws(ConnectException::class)
     fun connect(requestType: CtaRequestType, params: MultiValuedMap<String, String>): InputStream {
-        val ctaTrainKey = App.getCtaTrainKey()
-        val ctaBusKey = App.getCtaBusKey()
+        val ctaTrainKey = App.ctaTrainKey
+        val ctaBusKey = App.ctaBusKey
         val address: StringBuilder
         when (requestType) {
             TRAIN_ARRIVALS -> address = StringBuilder(TRAINS_ARRIVALS_URL + QUERY_PARAM_KEY + ctaTrainKey)

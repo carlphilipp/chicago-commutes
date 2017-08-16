@@ -189,7 +189,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                     final AlertDialog dialog = builder.create();
                     dialog.show();
                     if (dialog.getWindow() != null) {
-                        dialog.getWindow().setLayout((int) (App.getScreenWidth() * 0.7), LayoutParams.WRAP_CONTENT);
+                        dialog.getWindow().setLayout((int) (App.Companion.getScreenWidth() * 0.7), LayoutParams.WRAP_CONTENT);
                     }
                 }
             }
@@ -328,7 +328,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
      * Refresh date update
      */
     public final void refreshUpdated() {
-        App.setLastUpdate(Calendar.getInstance().getTime());
+        App.Companion.setLastUpdate(Calendar.getInstance().getTime());
     }
 
     /**
@@ -347,7 +347,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     private String getLastUpdateInMinutes() {
         final StringBuilder lastUpdateInMinutes = new StringBuilder();
         final Date currentDate = Calendar.getInstance().getTime();
-        final long[] diff = getTimeDifference(App.getLastUpdate(), currentDate);
+        final long[] diff = getTimeDifference(App.Companion.getLastUpdate(), currentDate);
         final long hours = diff[0];
         final long minutes = diff[1];
         if (hours == 0 && minutes == 0) {

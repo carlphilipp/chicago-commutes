@@ -106,7 +106,7 @@ public class TrainMapActivity extends AbstractMapActivity {
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        App.checkTrainData(this);
+        App.Companion.checkTrainData(this);
         if (!this.isFinishing()) {
             MapsInitializer.initialize(getApplicationContext());
             setContentView(R.layout.activity_map);
@@ -213,7 +213,7 @@ public class TrainMapActivity extends AbstractMapActivity {
     private void drawLine(@NonNull final List<Position> positions) {
         if (drawLine) {
             final PolylineOptions poly = new PolylineOptions();
-            poly.width(App.getLineWidth());
+            poly.width(App.Companion.getLineWidth());
             poly.geodesic(true).color(TrainLine.Companion.fromXmlString(line).getColor());
             Stream.of(positions)
                 .map(position -> new LatLng(position.getLatitude(), position.getLongitude()))

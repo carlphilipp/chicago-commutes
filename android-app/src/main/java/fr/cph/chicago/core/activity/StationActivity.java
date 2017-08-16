@@ -138,7 +138,7 @@ public class StationActivity extends AbstractStationActivity {
     @Override
     protected final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        App.checkTrainData(this);
+        App.Companion.checkTrainData(this);
         if (!this.isFinishing()) {
             // Layout setup
             setContentView(R.layout.activity_station);

@@ -113,9 +113,9 @@ public class FavoritesFragment extends AbstractFragment {
             busArrivals = savedInstanceState.getParcelableArrayList(getString(R.string.bundle_bus_arrivals));
             trainArrivals = savedInstanceState.getSparseParcelableArray(getString(R.string.bundle_train_arrivals));
             bikeStations = savedInstanceState.getParcelableArrayList(getString(R.string.bundle_bike_stations));
-            boolean boolTrain = App.checkTrainData(activity);
+            boolean boolTrain = App.Companion.checkTrainData(activity);
             if (boolTrain) {
-                App.checkBusData(activity);
+                App.Companion.checkBusData(activity);
             }
         }
         if (bikeStations == null) {

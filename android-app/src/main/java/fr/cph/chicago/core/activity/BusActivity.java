@@ -135,7 +135,7 @@ public class BusActivity extends AbstractStationActivity {
     @Override
     protected final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        App.checkBusData(this);
+        App.Companion.checkBusData(this);
         if (!this.isFinishing()) {
             setContentView(R.layout.activity_bus);
             ButterKnife.bind(this);

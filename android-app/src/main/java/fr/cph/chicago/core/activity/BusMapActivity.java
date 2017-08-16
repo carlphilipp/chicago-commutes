@@ -108,7 +108,7 @@ public class BusMapActivity extends AbstractMapActivity {
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        App.checkBusData(this);
+        App.Companion.checkBusData(this);
         if (!this.isFinishing()) {
             MapsInitializer.initialize(getApplicationContext());
             setContentView(R.layout.activity_map);
@@ -209,7 +209,7 @@ public class BusMapActivity extends AbstractMapActivity {
         Stream.of(patterns).forEach(pattern -> {
             final PolylineOptions poly = new PolylineOptions()
                 .color(index[0] == 0 ? Color.RED : (index[0] == 1 ? Color.BLUE : Color.YELLOW))
-                .width(App.getLineWidth()).geodesic(true);
+                .width(App.Companion.getLineWidth()).geodesic(true);
             Stream.of(pattern.getPoints())
                 .map(patternPoint -> {
                     final LatLng point = new LatLng(patternPoint.getPosition().getLatitude(), patternPoint.getPosition().getLongitude());

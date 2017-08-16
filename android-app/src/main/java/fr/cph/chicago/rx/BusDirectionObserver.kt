@@ -68,7 +68,7 @@ class BusDirectionObserver(private val parent: ViewGroup, private val convertVie
         val dialog = builder.create()
         dialog.show()
         if (dialog.window != null) {
-            dialog.window!!.setLayout((App.getScreenWidth() * 0.7).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
+            dialog.window!!.setLayout((App.screenWidth * 0.7).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
         }
     }
 

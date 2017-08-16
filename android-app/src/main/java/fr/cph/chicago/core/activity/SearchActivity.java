@@ -64,8 +64,8 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(final Bundle state) {
         super.onCreate(state);
-        App.checkTrainData(this);
-        App.checkBusData(this);
+        App.Companion.checkTrainData(this);
+        App.Companion.checkBusData(this);
         if (!this.isFinishing()) {
             setContentView(R.layout.activity_search);
             ButterKnife.bind(this);

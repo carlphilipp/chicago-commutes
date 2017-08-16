@@ -105,7 +105,7 @@ public class TrainOnClickListener implements OnClickListener {
             final AlertDialog dialog = builder.create();
             dialog.show();
             if (dialog.getWindow() != null) {
-                dialog.getWindow().setLayout((int) (App.getScreenWidth() * 0.7), ViewGroup.LayoutParams.WRAP_CONTENT);
+                dialog.getWindow().setLayout((int) (App.Companion.getScreenWidth() * 0.7), ViewGroup.LayoutParams.WRAP_CONTENT);
             }
         }
     }

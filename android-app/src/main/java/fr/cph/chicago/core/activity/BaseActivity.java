@@ -51,7 +51,6 @@ import io.reactivex.schedulers.Schedulers;
 
 import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;
 import static fr.cph.chicago.Constants.TRAINS_ARRIVALS_URL;
-import static fr.cph.chicago.core.App.setupContextData;
 
 /**
  * This class represents the base activity of the application It will load the loading screen and/or the main
@@ -84,7 +83,7 @@ public class BaseActivity extends Activity {
         setContentView(R.layout.loading);
         ButterKnife.bind(this);
 
-        setupContextData(getApplicationContext());
+        App.Companion.setupContextData(getApplicationContext());
         setUpRealm();
         loadLocalAndFavoritesData();
         trackWithGoogleAnalytics();
@@ -130,7 +129,7 @@ public class BaseActivity extends Activity {
         Observable.zip(trainLocalData, busLocalData, (trainData, busData) -> true)
             .doOnComplete(() ->
                 Observable.zip(trainOnlineFavorites, busOnlineFavorites, (trainArrivalsDTO, busArrivalsDTO) -> {
-                        App.setLastUpdate(Calendar.getInstance().getTime());
+                        App.Companion.setLastUpdate(Calendar.getInstance().getTime());
                         return new FavoritesDTO(trainArrivalsDTO, busArrivalsDTO, false, Collections.emptyList());
                     }
                 ).subscribe(this::startMainActivity, onError -> {

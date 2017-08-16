@@ -74,7 +74,7 @@ public class BusFragment extends AbstractFragment {
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        App.checkBusData(activity);
+        App.Companion.checkBusData(activity);
         Util.INSTANCE.trackScreen(getContext(), getString(R.string.analytics_bus_fragment));
     }
 

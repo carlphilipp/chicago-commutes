@@ -23,8 +23,6 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.util.Log
-import fr.cph.chicago.core.App.*
-import fr.cph.chicago.entity.Station
 import fr.cph.chicago.entity.enumeration.TrainDirection
 import fr.cph.chicago.entity.enumeration.TrainLine
 import fr.cph.chicago.util.Util
@@ -45,6 +43,14 @@ object PreferencesImpl : Preferences {
 
     private val PATTERN = Pattern.compile("(\\d{1,3})")
     private val FORMAT = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
+
+    private val PREFERENCE_FAVORITES = "ChicagoTrackerFavorites"
+    private val PREFERENCE_FAVORITES_TRAIN = "ChicagoTrackerFavoritesTrain"
+    private val PREFERENCE_FAVORITES_BUS = "ChicagoTrackerFavoritesBus"
+    private val PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING = "ChicagoTrackerFavoritesBusNameMapping"
+    private val PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING = "ChicagoTrackerFavoritesBusStopNameMapping"
+    private val PREFERENCE_FAVORITES_BIKE = "ChicagoTrackerFavoritesBike"
+    private val PREFERENCE_FAVORITES_BIKE_NAME_MAPPING = "ChicagoTrackerFavoritesBikeNameMapping"
 
     /**
      * Save train favorites
