@@ -72,7 +72,7 @@ class Station(
         return this.name.compareTo(other.name)
     }
 
-    val stopsPosition: List<Position?> get() = stops.map { it.position }.toList()
+    val stopsPosition: List<Position> get() = stops.map { it.position }.toMutableList()
 
     override fun describeContents(): Int {
         return 0

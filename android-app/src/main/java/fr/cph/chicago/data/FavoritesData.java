@@ -122,9 +122,9 @@ public enum FavoritesData {
         } else if (position < trainFavorites.size() + fakeBusFavorites.size() && (position - trainFavorites.size() < fakeBusFavorites.size())) {
             final int index = position - trainFavorites.size();
             final String routeId = fakeBusFavorites.get(index);
-            final Optional<BusRoute> busRouteOptional = busData.getRoute(routeId);
-            if (busRouteOptional.isPresent()) {
-                return busRouteOptional;
+            final BusRoute busDataRoute = busData.getRoute(routeId);
+            if (!busDataRoute.getName().equals("error")) {
+                return Optional.of(busDataRoute);
             } else {
                 // Get name in the preferences if null
                 final String routeName = preferences.getBusRouteNameMapping(context, routeId);

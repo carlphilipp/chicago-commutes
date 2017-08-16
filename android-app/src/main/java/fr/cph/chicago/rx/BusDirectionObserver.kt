@@ -39,7 +39,7 @@ class BusDirectionObserver(private val parent: ViewGroup, private val convertVie
         listView.adapter = ada
 
         val builder = AlertDialog.Builder(parent.context)
-        builder.setAdapter(ada) { dialog, pos ->
+        builder.setAdapter(ada) { _, pos ->
             val extras = Bundle()
             if (pos != data.size - 1) {
                 val intent = Intent(parent.context, BusBoundActivity::class.java)

@@ -68,8 +68,8 @@ object BusServiceImpl : BusService {
     }
 
     override fun loadLocalBusData(context: Context): BusData {
-        BusData.INSTANCE.readBusStopsIfNeeded(context)
-        return BusData.INSTANCE
+        BusData.readBusStopsIfNeeded(context)
+        return BusData
     }
 
     override fun loadBusDirections(context: Context, busRouteId: String): BusDirections {

@@ -18,8 +18,8 @@ class BusFollowObserver(private val activity: BusMapActivity, private val layout
 
     override fun onSubscribe(d: Disposable) {}
 
-    override fun onNext(busArrivals: MutableList<BusArrival>) {
-        var busArrivals = busArrivals
+    override fun onNext(busArrivalsParam: MutableList<BusArrival>) {
+        var busArrivals = busArrivalsParam
         if (!loadAll && busArrivals.size > 7) {
             busArrivals = busArrivals.subList(0, 6)
             val busArrival = BusArrival(Date(), "added bus", view.context.getString(R.string.bus_all_results), 0, 0, "", "", StringUtils.EMPTY, Date(), false)

@@ -26,7 +26,7 @@ object TrainServiceImpl : TrainService {
                     val list = value as List<String>
                     if (list.size < 5) {
                         val xmlResult = CtaClient.connect(TRAIN_ARRIVALS, trainParams)
-                        trainArrivals = XmlParser.parseArrivals(xmlResult, DataHolder.INSTANCE.trainData)
+                        trainArrivals = XmlParser.parseArrivals(xmlResult, DataHolder.trainData)
                     } else {
                         val size = list.size
                         var start = 0
@@ -38,7 +38,7 @@ object TrainServiceImpl : TrainService {
                                 paramsTemp.put(key, sub)
                             }
                             val xmlResult = CtaClient.connect(TRAIN_ARRIVALS, paramsTemp)
-                            val temp = XmlParser.parseArrivals(xmlResult, DataHolder.INSTANCE.trainData)
+                            val temp = XmlParser.parseArrivals(xmlResult, DataHolder.trainData)
                             for (j in 0..temp.size() - 1) {
                                 trainArrivals.put(temp.keyAt(j), temp.valueAt(j))
                             }
@@ -61,7 +61,7 @@ object TrainServiceImpl : TrainService {
                 trainArrival.etas =
                     etas.filter { (station, stop, line) ->
                         val direction = stop.direction
-                        PreferencesImpl.INSTANCE.getTrainFilter(context, station.id, line, direction)
+                        PreferencesImpl.getTrainFilter(context, station.id, line, direction)
                     }
                         .sorted()
                         .toMutableList()
