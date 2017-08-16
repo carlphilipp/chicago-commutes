@@ -32,8 +32,8 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BusRoute;
-import fr.cph.chicago.rx.ObservableUtil;
 import fr.cph.chicago.rx.BusDirectionObserver;
+import fr.cph.chicago.rx.ObservableUtil;
 import fr.cph.chicago.util.Util;
 
 /**
@@ -88,13 +88,13 @@ public final class BusAdapter extends BaseAdapter {
             convertView = vi.inflate(R.layout.list_bus, parent, false);
 
             final ViewHolder holder = new ViewHolder();
-            routeNameView = (TextView) convertView.findViewById(R.id.route_name);
+            routeNameView = convertView.findViewById(R.id.route_name);
             holder.routeNameView = routeNameView;
 
-            routeNumberView = (TextView) convertView.findViewById(R.id.route_number);
+            routeNumberView = convertView.findViewById(R.id.route_number);
             holder.routeNumberView = routeNumberView;
 
-            detailsLayout = (LinearLayout) convertView.findViewById(R.id.route_details);
+            detailsLayout = convertView.findViewById(R.id.route_details);
             holder.detailsLayout = detailsLayout;
 
             convertView.setTag(holder);
