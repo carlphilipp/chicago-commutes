@@ -152,9 +152,7 @@ public class BusActivity extends AbstractStationActivity {
                 longitude = extras.getDouble(bundleBusLongitude);
             }
 
-            final Position position = new Position();
-            position.setLatitude(latitude);
-            position.setLongitude(longitude);
+            final Position position = new Position(latitude, longitude);
 
             isFavorite = isFavorite();
 

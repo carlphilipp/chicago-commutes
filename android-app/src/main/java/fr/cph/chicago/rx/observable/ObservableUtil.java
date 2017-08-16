@@ -220,9 +220,9 @@ public enum ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<Optional<BusPattern>> createBusPatternObservable(@NonNull final Context context, @NonNull final String busRouteId, @NonNull final String bound) {
+    public static Observable<BusPattern> createBusPatternObservable(@NonNull final Context context, @NonNull final String busRouteId, @NonNull final String bound) {
         return Observable.create(
-            (ObservableEmitter<Optional<BusPattern>> observableOnSubscribe) -> {
+            (ObservableEmitter<BusPattern> observableOnSubscribe) -> {
                 if (!observableOnSubscribe.isDisposed()) {
                     observableOnSubscribe.onNext(BUS_SERVICE.loadBusPattern(context, busRouteId, bound));
                     observableOnSubscribe.onComplete();

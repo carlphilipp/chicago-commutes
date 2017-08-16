@@ -71,20 +71,32 @@ public class BusBoundActivity extends ListActivity {
 
     private static final String TAG = BusBoundActivity.class.getSimpleName();
 
-    @BindView(R.id.bellow) LinearLayout layout;
-    @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.bus_filter) EditText filter;
+    @BindView(R.id.bellow)
+    LinearLayout layout;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.bus_filter)
+    EditText filter;
 
-    @BindString(R.string.bundle_bus_stop_id) String bundleBusStopId;
-    @BindString(R.string.bundle_bus_route_id) String bundleBusRouteId;
-    @BindString(R.string.bundle_bus_bound) String bundleBusBound;
-    @BindString(R.string.bundle_bus_bound_title) String bundleBusBoundTitle;
-    @BindString(R.string.bundle_bus_stop_name) String bundleBusStopName;
-    @BindString(R.string.bundle_bus_route_name) String bundleBusRouteName;
-    @BindString(R.string.bundle_bus_latitude) String bundleBusLatitude;
-    @BindString(R.string.bundle_bus_longitude) String bundleBusLongitude;
+    @BindString(R.string.bundle_bus_stop_id)
+    String bundleBusStopId;
+    @BindString(R.string.bundle_bus_route_id)
+    String bundleBusRouteId;
+    @BindString(R.string.bundle_bus_bound)
+    String bundleBusBound;
+    @BindString(R.string.bundle_bus_bound_title)
+    String bundleBusBoundTitle;
+    @BindString(R.string.bundle_bus_stop_name)
+    String bundleBusStopName;
+    @BindString(R.string.bundle_bus_route_name)
+    String bundleBusRouteName;
+    @BindString(R.string.bundle_bus_latitude)
+    String bundleBusLatitude;
+    @BindString(R.string.bundle_bus_longitude)
+    String bundleBusLongitude;
 
-    @BindDrawable(R.drawable.ic_arrow_back_white_24dp) Drawable arrowBackWhite;
+    @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
+    Drawable arrowBackWhite;
 
     private MapFragment mapFragment;
     private String busRouteId;
@@ -205,17 +217,17 @@ public class BusBoundActivity extends ListActivity {
             ObservableUtil.createBusPatternObservable(getApplicationContext(), busRouteId, bound)
                 .subscribe(
                     busPattern -> {
-                        if (busPattern.isPresent()) {
-                            final int center = busPattern.get().getPoints().size() / 2;
-                            final Position position = busPattern.get().getPoints().get(center).getPosition();
-                            if (position != null) {
+                        if (busPattern.getDirection().equals("error")) {
+                            final int center = busPattern.getPoints().size() / 2;
+                            final Position position = busPattern.getPoints().get(center).getPosition();
+                            if (position.getLatitude() == 0 && position.getLongitude() == 0) {
+                                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Util.INSTANCE.chicago(), 10));
+                            } else {
                                 final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
                                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
                                 googleMap.animateCamera(CameraUpdateFactory.zoomTo(9), 500, null);
-                            } else {
-                                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Util.INSTANCE.chicago(), 10));
                             }
-                            drawPattern(busPattern.get());
+                            drawPattern(busPattern);
                         } else {
                             Util.INSTANCE.showMessage(this, R.string.message_error_could_not_load_path);
                         }
