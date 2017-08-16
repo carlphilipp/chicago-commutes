@@ -52,7 +52,7 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
 
     private void loadTrainArrivals(final Station trainStation) {
         nearbyFragment.getSlidingUpAdapter().updateTitleTrain(trainStation.getName());
-        ObservableUtil.createTrainArrivalsObservable(nearbyFragment.getContext(), trainStation)
+        ObservableUtil.INSTANCE.createTrainArrivalsObservable(nearbyFragment.getContext(), trainStation)
             .subscribe(
                 nearbyFragment.getSlidingUpAdapter()::addTrainStation,
                 onError -> Log.e(TAG, onError.getMessage(), onError)
@@ -61,7 +61,7 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
 
     private void loadBusArrivals(final BusStop busStop) {
         nearbyFragment.getSlidingUpAdapter().updateTitleBus(busStop.getName());
-        ObservableUtil.createBusArrivalsObservable(nearbyFragment.getContext(), busStop)
+        ObservableUtil.INSTANCE.createBusArrivalsObservable(nearbyFragment.getContext(), busStop)
             .subscribe(
                 result -> {
                     final BusArrivalRouteDTO busArrivalRouteDTO = new BusArrivalRouteDTO();
@@ -74,7 +74,7 @@ public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
 
     private void loadBikes(final BikeStation bikeStation) {
         nearbyFragment.getSlidingUpAdapter().updateTitleBike(bikeStation.getName());
-        ObservableUtil.createBikeStationsObservable(bikeStation)
+        ObservableUtil.INSTANCE.createBikeStationsObservable(bikeStation)
             .subscribe(
                 nearbyFragment.getSlidingUpAdapter()::addBike,
                 onError -> Log.e(TAG, onError.getMessage(), onError)

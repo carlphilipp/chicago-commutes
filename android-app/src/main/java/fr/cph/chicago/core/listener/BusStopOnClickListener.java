@@ -80,7 +80,7 @@ public class BusStopOnClickListener implements View.OnClickListener {
     }
 
     private void loadBusDetails(final View view, final BusDetailsDTO busDetails) {
-        ObservableUtil.createBusStopBoundObservable(context.getApplicationContext(), busDetails.getBusRouteId(), busDetails.getBoundTitle())
+        ObservableUtil.INSTANCE.createBusStopBoundObservable(context.getApplicationContext(), busDetails.getBusRouteId(), busDetails.getBoundTitle())
             .subscribe(onNext ->
                     Observable.fromIterable(onNext)
                         .filter(busStop -> Integer.toString(busStop.getId()).equals(busDetails.getStopId()))

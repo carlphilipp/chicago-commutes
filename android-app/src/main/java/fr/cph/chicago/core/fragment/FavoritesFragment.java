@@ -176,7 +176,7 @@ public class FavoritesFragment extends AbstractFragment {
                 }
 
                 if (Util.INSTANCE.isNetworkAvailable(getContext())) {
-                    final Observable<FavoritesDTO> zipped = ObservableUtil.createAllDataObservable(getContext());
+                    final Observable<FavoritesDTO> zipped = ObservableUtil.INSTANCE.createAllDataObservable(getContext());
                     zipped.subscribe(
                         this::reloadData,
                         onError -> {

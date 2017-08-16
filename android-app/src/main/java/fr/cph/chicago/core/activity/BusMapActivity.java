@@ -157,7 +157,7 @@ public class BusMapActivity extends AbstractMapActivity {
         super.setToolbar();
         toolbar.setOnMenuItemClickListener((item -> {
             Util.INSTANCE.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_VEHICLES_URL);
-            ObservableUtil.createBusListObservable(getApplicationContext(), busId, busRouteId).subscribe(new BusObserver(BusMapActivity.this, false, layout));
+            ObservableUtil.INSTANCE.createBusListObservable(getApplicationContext(), busId, busRouteId).subscribe(new BusObserver(BusMapActivity.this, false, layout));
             return false;
         }));
 
@@ -273,7 +273,7 @@ public class BusMapActivity extends AbstractMapActivity {
                         setSelectedMarker(marker);
                         final String busId = marker.getSnippet();
                         Util.INSTANCE.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
-                        ObservableUtil.createFollowBusObservable(getApplicationContext(), busId)
+                        ObservableUtil.INSTANCE.createFollowBusObservable(getApplicationContext(), busId)
                             .subscribe(new BusFollowObserver(BusMapActivity.this, layout, view, false));
                         status.put(marker, false);
                     }
@@ -292,7 +292,7 @@ public class BusMapActivity extends AbstractMapActivity {
                     final String runNumber = marker.getSnippet();
                     final boolean current = status.get(marker);
                     Util.INSTANCE.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
-                    ObservableUtil.createFollowBusObservable(getApplicationContext(), runNumber)
+                    ObservableUtil.INSTANCE.createFollowBusObservable(getApplicationContext(), runNumber)
                         .subscribe(new BusFollowObserver(BusMapActivity.this, layout, view, !current));
                     status.put(marker, !current);
                 }
@@ -304,7 +304,7 @@ public class BusMapActivity extends AbstractMapActivity {
     private void loadActivityData() {
         if (Util.INSTANCE.isNetworkAvailable(getApplicationContext())) {
             Util.INSTANCE.trackAction(BusMapActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_VEHICLES_URL);
-            ObservableUtil.createBusListObservable(getApplicationContext(), busId, busRouteId).subscribe(new BusObserver(BusMapActivity.this, true, layout));
+            ObservableUtil.INSTANCE.createBusListObservable(getApplicationContext(), busId, busRouteId).subscribe(new BusObserver(BusMapActivity.this, true, layout));
             if (loadPattern) {
                 new LoadPattern().execute();
             }

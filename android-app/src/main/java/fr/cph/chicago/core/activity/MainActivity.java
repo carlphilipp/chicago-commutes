@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     || getIntent().getParcelableArrayListExtra(bundleBikeStations).size() == 0) {
                     loadFirstData();
                 }
-                final Observable<FavoritesDTO> zipped = ObservableUtil.createAllDataObservable(getApplicationContext());
+                final Observable<FavoritesDTO> zipped = ObservableUtil.INSTANCE.createAllDataObservable(getApplicationContext());
                 zipped.subscribe(
                     favoritesResult -> favoritesFragment.reloadData(favoritesResult),
                     onError -> {
@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void loadFirstData() {
-        ObservableUtil.createOnFirstLoadObservable().subscribe(
+        ObservableUtil.INSTANCE.createOnFirstLoadObservable().subscribe(
             onNext -> {
                 final DataHolder dataHolder = DataHolder.INSTANCE;
                 dataHolder.getBusData().setBusRoutes(onNext.getBusRoutes());

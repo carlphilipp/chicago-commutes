@@ -121,10 +121,10 @@ public class BaseActivity extends Activity {
             .observeOn(AndroidSchedulers.mainThread());
 
         // Train online favorites
-        final Observable<TrainArrivalDTO> trainOnlineFavorites = ObservableUtil.createFavoritesTrainArrivalsObservable(getApplicationContext());
+        final Observable<TrainArrivalDTO> trainOnlineFavorites = ObservableUtil.INSTANCE.createFavoritesTrainArrivalsObservable(getApplicationContext());
 
         // Bus online favorites
-        final Observable<BusArrivalDTO> busOnlineFavorites = ObservableUtil.createFavoritesBusArrivalsObservable(getApplicationContext());
+        final Observable<BusArrivalDTO> busOnlineFavorites = ObservableUtil.INSTANCE.createFavoritesBusArrivalsObservable(getApplicationContext());
 
         // Run local first and then online: Ensure that local data is loaded first
         Observable.zip(trainLocalData, busLocalData, (trainData, busData) -> true)

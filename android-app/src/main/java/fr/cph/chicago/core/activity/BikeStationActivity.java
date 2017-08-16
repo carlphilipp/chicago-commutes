@@ -111,7 +111,7 @@ public class BikeStationActivity extends AbstractStationActivity {
                 final double longitude = bikeStation.getLongitude();
 
                 swipeRefreshLayout.setOnRefreshListener(
-                    () -> ObservableUtil.createAllBikeStationsObservable()
+                    () -> ObservableUtil.INSTANCE.createAllBikeStationsObservable()
                         .subscribe(new BikeAllBikeStationsObserver(this, bikeStation.getId(), swipeRefreshLayout))
                 );
 
@@ -145,7 +145,7 @@ public class BikeStationActivity extends AbstractStationActivity {
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener((item -> {
             swipeRefreshLayout.setRefreshing(true);
-            ObservableUtil.createAllBikeStationsObservable()
+            ObservableUtil.INSTANCE.createAllBikeStationsObservable()
                 .subscribe(new BikeAllBikeStationsObserver(BikeStationActivity.this, bikeStation.getId(), swipeRefreshLayout));
             return false;
         }));

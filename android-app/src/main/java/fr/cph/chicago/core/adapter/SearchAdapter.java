@@ -128,7 +128,7 @@ public final class SearchAdapter extends BaseAdapter {
             final TextView loadingTextView = convertView.findViewById(R.id.loading_text_view);
             convertView.setOnClickListener(v -> {
                 loadingTextView.setVisibility(LinearLayout.VISIBLE);
-                ObservableUtil.createBusDirectionsObservable(parent.getContext(), busRoute.getId())
+                ObservableUtil.INSTANCE.createBusDirectionsObservable(parent.getContext(), busRoute.getId())
                     .onErrorReturn(throwable -> {
                         Util.INSTANCE.handleConnectOrParserException(throwable, activity, null, loadingTextView);
                         Log.e(TAG, throwable.getMessage(), throwable);

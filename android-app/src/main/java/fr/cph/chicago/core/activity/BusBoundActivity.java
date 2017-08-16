@@ -173,7 +173,7 @@ public class BusBoundActivity extends ListActivity {
             toolbar.setNavigationIcon(arrowBackWhite);
             toolbar.setOnClickListener(v -> finish());
 
-            ObservableUtil.createBusStopBoundObservable(getApplicationContext(), busRouteId, bound)
+            ObservableUtil.INSTANCE.createBusStopBoundObservable(getApplicationContext(), busRouteId, bound)
                 .subscribe(onNext -> {
                         busStops = onNext;
                         busBoundAdapter.update(onNext);
@@ -214,7 +214,7 @@ public class BusBoundActivity extends ListActivity {
             googleMap.getUiSettings().setZoomControlsEnabled(false);
             googleMap.getUiSettings().setMapToolbarEnabled(false);
             Util.INSTANCE.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL);
-            ObservableUtil.createBusPatternObservable(getApplicationContext(), busRouteId, bound)
+            ObservableUtil.INSTANCE.createBusPatternObservable(getApplicationContext(), busRouteId, bound)
                 .subscribe(
                     busPattern -> {
                         if (busPattern.getDirection().equals("error")) {
