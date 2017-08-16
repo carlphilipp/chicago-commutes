@@ -132,7 +132,7 @@ object PreferencesImpl : Preferences {
         val sharedPref = getPrivatePreferences(context)
         val setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_BUS, LinkedHashSet())
         Log.v(TAG, "Read bus favorites : " + setPref!!.toString())
-        return setPref.sortedWith(kotlin.Comparator { str1, str2 ->
+        return setPref.sortedWith(Comparator { str1, str2 ->
             val str1Decoded = Util.decodeBusFavorite(str1).routeId
             val str2Decoded = Util.decodeBusFavorite(str2).routeId
             val matcher1 = PATTERN.matcher(str1Decoded)
@@ -190,7 +190,6 @@ object PreferencesImpl : Preferences {
         return setPref
             .map { Integer.valueOf(it) }
             .map { favorite -> DataHolder.trainData.getStation(favorite!!) }
-            .map { optional -> optional.orElse(Station.buildEmptyStation()) }
             .sorted()
             .map { it.id }
             .toMutableList()

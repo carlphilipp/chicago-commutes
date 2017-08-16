@@ -5,7 +5,6 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -13,7 +12,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -86,22 +84,22 @@ public class SlidingUpAdapter {
 
             // FIXME removed optional to test what it looks like in the sliding panel. Not sure if it breaks anything
             //if (trainArrivalOptional.isPresent()) {
-                for (TrainLine trainLine : TrainLine.values()) {
-                    final List<Eta> etaResult = trainArrival.getEtas(trainLine);
-                    final Map<String, String> etas = Stream.of(etaResult).collect(CommutesCollectors.toTrainArrivalByLine());
+            for (TrainLine trainLine : TrainLine.values()) {
+                final List<Eta> etaResult = trainArrival.getEtas(trainLine);
+                final Map<String, String> etas = Stream.of(etaResult).collect(CommutesCollectors.toTrainArrivalByLine());
 
-                    boolean newLine = true;
-                    int i = 0;
-                    for (final Map.Entry<String, String> entry : etas.entrySet()) {
-                        final LinearLayout.LayoutParams containParams = LayoutUtil.INSTANCE.getInsideParams(nearbyFragment.getContext(), newLine, i == etas.size() - 1);
-                        final LinearLayout container = LayoutUtil.INSTANCE.createTrainArrivalsLayout(nearbyFragment.getContext(), containParams, entry, trainLine);
+                boolean newLine = true;
+                int i = 0;
+                for (final Map.Entry<String, String> entry : etas.entrySet()) {
+                    final LinearLayout.LayoutParams containParams = LayoutUtil.INSTANCE.getInsideParams(nearbyFragment.getContext(), newLine, i == etas.size() - 1);
+                    final LinearLayout container = LayoutUtil.INSTANCE.createTrainArrivalsLayout(nearbyFragment.getContext(), containParams, entry, trainLine);
 
-                        linearLayout.addView(container);
-                        newLine = false;
-                        i++;
-                    }
-                    nbOfLine = nbOfLine + etas.size();
+                    linearLayout.addView(container);
+                    newLine = false;
+                    i++;
                 }
+                nbOfLine = nbOfLine + etas.size();
+            }
             //} else {
             //    handleNoResults(linearLayout);
             //    nbOfLine++;
@@ -181,11 +179,9 @@ public class SlidingUpAdapter {
     }
 
     private void updatePanelState() {
-        Log.i("DERP", "8");
         if (nearbyFragment.getSlidingUpPanelLayout().getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN) {
             nearbyFragment.getSlidingUpPanelLayout().setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         }
         nearbyFragment.showProgress(false);
-        Log.i("DERP", "9");
     }
 }

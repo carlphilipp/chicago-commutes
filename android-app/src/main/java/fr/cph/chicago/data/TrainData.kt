@@ -22,7 +22,6 @@ package fr.cph.chicago.data
 import android.content.Context
 import android.util.Log
 import android.util.SparseArray
-import com.annimon.stream.Optional
 import com.univocity.parsers.csv.CsvParser
 import com.univocity.parsers.csv.CsvParserSettings
 import fr.cph.chicago.entity.Position
@@ -169,13 +168,9 @@ enum class TrainData constructor() {
      * @param id the id of the station
      * @return the station
      */
-    fun getStation(id: Int): Optional<Station> {
+    fun getStation(id: Int): Station { // FIXME should be Station? ??
         val station = stations!!.get(id)
-        return if (station == null) {
-            Optional.empty()
-        } else {
-            Optional.of(station)
-        }
+        return station ?: Station.buildEmptyStation()
     }
 
     val isStationNull: Boolean
@@ -190,10 +185,8 @@ enum class TrainData constructor() {
      * @param id the id of the stop
      * @return a stop
      */
-    fun getStop(id: Int?): Optional<Stop> {
-        return if (stops!!.size() != 0) {
-            Optional.ofNullable(stops.get(id!!))
-        } else Optional.empty()
+    fun getStop(id: Int?): Stop {
+        return if (stops!!.size() != 0) stops.get(id!!) else Stop.buildEmptyStop()
     }
 
     /**
@@ -214,18 +207,18 @@ enum class TrainData constructor() {
         val nearByStations = ArrayList<Station>()
         for (i in 0 until stations!!.size()) {
             val station = stations.valueAt(i)
-
-            // FIXME : Kotlin
-
-
             station.stopsPosition
                 .filter { stopPosition ->
                     val trainLatitude = stopPosition.latitude
                     val trainLongitude = stopPosition.longitude
                     trainLatitude in latMin..latMax && trainLongitude <= lonMax && trainLongitude >= lonMin
                 }
-                .map { stopPosition -> station }
-                .first { found -> if (found != null) nearByStations.add(found); true }
+                .getOrElse(0, { Position() })
+                .also {
+                    if (position.latitude != 0.0 && position.longitude != 0.0) {
+                        nearByStations.add(station)
+                    }
+                }
         }
         return nearByStations
     }

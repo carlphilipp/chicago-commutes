@@ -89,9 +89,9 @@ object XmlParser {
                 } else if (eventType == XmlPullParser.END_TAG) {
                     val etaName = parser.name
                     if (StringUtils.isNotBlank(etaName) && "eta" == etaName) {
-                        val station = data.getStation(stationId!!).orElse(Station.buildEmptyStation())
+                        val station = data.getStation(stationId!!)
                         station.name = stationName!!
-                        val stop = data.getStop(stopId).orElse(Stop.buildEmptyStop())
+                        val stop = data.getStop(stopId)
                         stop.description = stopDestination!!
                         val position = Position(latitude, longitude)
                         // FIXME that should not be done here

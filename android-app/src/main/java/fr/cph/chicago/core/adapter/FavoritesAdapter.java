@@ -35,7 +35,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.annimon.stream.Collectors;
-import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 
 import java.util.ArrayList;
@@ -126,20 +125,17 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
     @Override
     public void onBindViewHolder(final FavoritesViewHolder holder, final int position) {
         resetData(holder);
-        final Optional<?> optional = FavoritesData.INSTANCE.getObject(position, context);
+        final Object model = FavoritesData.INSTANCE.getObject(position, context);
         holder.lastUpdateTextView.setText(lastUpdate);
-        if (optional.isPresent()) {
-            final Object object = optional.get();
-            if (object instanceof Station) {
-                final Station station = (Station) object;
-                handleStation(holder, station);
-            } else if (object instanceof BusRoute) {
-                final BusRoute busRoute = (BusRoute) object;
-                handleBusRoute(holder, busRoute);
-            } else {
-                final BikeStation bikeStation = (BikeStation) object;
-                handleBikeStation(holder, bikeStation);
-            }
+        if (model instanceof Station) {
+            final Station station = (Station) model;
+            handleStation(holder, station);
+        } else if (model instanceof BusRoute) {
+            final BusRoute busRoute = (BusRoute) model;
+            handleBusRoute(holder, busRoute);
+        } else {
+            final BikeStation bikeStation = (BikeStation) model;
+            handleBikeStation(holder, bikeStation);
         }
     }
 
