@@ -101,13 +101,13 @@ public final class SearchAdapter extends BaseAdapter {
         final LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         convertView = vi.inflate(R.layout.list_search, parent, false);
 
-        final TextView routeName = (TextView) convertView.findViewById(R.id.station_name);
+        final TextView routeName = convertView.findViewById(R.id.station_name);
 
         if (position < trains.size()) {
             final Station station = (Station) getItem(position);
             routeName.setText(station.getName());
 
-            final LinearLayout stationColorView = (LinearLayout) convertView.findViewById(R.id.station_color);
+            final LinearLayout stationColorView = convertView.findViewById(R.id.station_color);
 
             final Set<TrainLine> lines = station.getLines();
             for (final TrainLine tl : lines) {
@@ -119,13 +119,13 @@ public final class SearchAdapter extends BaseAdapter {
         } else if (position < trains.size() + busRoutes.size()) {
             final BusRoute busRoute = (BusRoute) getItem(position);
 
-            final ImageView icon = (ImageView) convertView.findViewById(R.id.icon);
+            final ImageView icon = convertView.findViewById(R.id.icon);
             icon.setImageDrawable(ContextCompat.getDrawable(parent.getContext(), R.drawable.ic_directions_bus_white_24dp));
 
             final String name = busRoute.getId() + " " + busRoute.getName();
             routeName.setText(name);
 
-            final TextView loadingTextView = (TextView) convertView.findViewById(R.id.loading_text_view);
+            final TextView loadingTextView = convertView.findViewById(R.id.loading_text_view);
             convertView.setOnClickListener(v -> {
                 loadingTextView.setVisibility(LinearLayout.VISIBLE);
                 ObservableUtil.createBusDirectionsObservable(parent.getContext(), busRoute.getId())
@@ -138,7 +138,7 @@ public final class SearchAdapter extends BaseAdapter {
         } else {
             final BikeStation bikeStation = (BikeStation) getItem(position);
 
-            final ImageView icon = (ImageView) convertView.findViewById(R.id.icon);
+            final ImageView icon = convertView.findViewById(R.id.icon);
             icon.setImageDrawable(ContextCompat.getDrawable(parent.getContext(), R.drawable.ic_directions_bike_white_24dp));
 
             routeName.setText(bikeStation.getName());

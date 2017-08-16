@@ -24,9 +24,11 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.collector.CommutesCollectors;
 import fr.cph.chicago.core.fragment.NearbyFragment;
 import fr.cph.chicago.entity.BikeStation;
+import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.dto.BusArrivalRouteDTO;
+import fr.cph.chicago.entity.enumeration.BusDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.util.LayoutUtil;
 import fr.cph.chicago.util.Util;
@@ -117,24 +119,24 @@ public class SlidingUpAdapter {
          */
         if (linearLayout.getChildCount() == 0) {
             nbOfLine = new int[]{0};
-            // FIXME kotlin
-            /*Stream.of(busArrivalRouteDTO.entrySet()).forEach(entry -> {
-                final String stopNameTrimmed = Util.trimBusStopNameIfNeeded(entry.getKey());
+
+            Stream.of(busArrivalRouteDTO.entrySet()).forEach(entry -> {
+                final String stopNameTrimmed = Util.INSTANCE.trimBusStopNameIfNeeded(entry.getKey());
                 final Map<String, ? extends List<? extends BusArrival>> boundMap = entry.getValue();
 
                 boolean newLine = true;
                 int i = 0;
 
                 for (final Map.Entry<String, ? extends List<? extends BusArrival>> entry2 : boundMap.entrySet()) {
-                    final LinearLayout.LayoutParams containParams = LayoutUtil.getInsideParams(nearbyFragment.getContext(), newLine, i == boundMap.size() - 1);
-                    final LinearLayout container = LayoutUtil.createBusArrivalsLayout(nearbyFragment.getContext(), containParams, stopNameTrimmed, BusDirection.BusDirectionEnum.fromString(entry2.getKey()), entry2.getValue());
+                    final LinearLayout.LayoutParams containParams = LayoutUtil.INSTANCE.getInsideParams(nearbyFragment.getContext(), newLine, i == boundMap.size() - 1);
+                    final LinearLayout container = LayoutUtil.INSTANCE.createBusArrivalsLayout(nearbyFragment.getContext(), containParams, stopNameTrimmed, BusDirection.BusDirectionEnum.fromString(entry2.getKey()), entry2.getValue());
 
                     linearLayout.addView(container);
                     newLine = false;
                     i++;
                 }
                 nbOfLine[0] = nbOfLine[0] + boundMap.size();
-            });*/
+            });
 
             // Handle the case when we have no bus returned.
             if (busArrivalRouteDTO.size() == 0) {

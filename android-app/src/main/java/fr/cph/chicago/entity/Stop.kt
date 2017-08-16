@@ -21,8 +21,6 @@ package fr.cph.chicago.entity
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.annimon.stream.Collectors
-import com.annimon.stream.Stream
 import fr.cph.chicago.entity.enumeration.TrainDirection
 import fr.cph.chicago.entity.enumeration.TrainLine
 import org.apache.commons.lang3.StringUtils
@@ -65,7 +63,7 @@ data class Stop(
         dest.writeString(direction.toTextString())
         dest.writeParcelable(position, Parcelable.PARCELABLE_WRITE_RETURN_VALUE)
         dest.writeString(ada.toString())
-        val linesString = Stream.of(lines).map { it.toTextString() }.collect(Collectors.toList<String>())
+        val linesString = lines.map { it.toTextString() }.toList()
         dest.writeStringList(linesString)
     }
 
@@ -75,7 +73,8 @@ data class Stop(
             return Stop(0, StringUtils.EMPTY, TrainDirection.UNKNOWN, Position(), false, mutableListOf())
         }
 
-        @JvmField val CREATOR: Parcelable.Creator<Stop> = object : Parcelable.Creator<Stop> {
+        @JvmField
+        val CREATOR: Parcelable.Creator<Stop> = object : Parcelable.Creator<Stop> {
             override fun createFromParcel(source: Parcel): Stop {
                 return Stop(source)
             }

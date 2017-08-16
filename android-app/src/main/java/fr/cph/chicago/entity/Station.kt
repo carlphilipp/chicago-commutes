@@ -21,12 +21,10 @@ package fr.cph.chicago.entity
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.annimon.stream.Collectors
-import com.annimon.stream.Stream
-import fr.cph.chicago.collector.CommutesCollectors
 import fr.cph.chicago.entity.enumeration.TrainLine
 import org.apache.commons.lang3.StringUtils
 import java.util.*
+import kotlin.collections.HashSet
 
 /**
  * Station entity
@@ -47,9 +45,9 @@ class Station(
 
     val lines: Set<TrainLine>
         get() {
-            return Stream.of(stops)
+            return stops
                 .map { it.lines }
-                .collect(CommutesCollectors.toTrainLineCollector())
+                .fold(HashSet(), { accumulator, item -> accumulator.addAll(item); accumulator })
         }
 
     val stopByLines: Map<TrainLine, List<Stop>>
@@ -74,7 +72,7 @@ class Station(
         return this.name.compareTo(other.name)
     }
 
-    val stopsPosition: List<Position?> get() = Stream.of(stops).map { it.position }.collect(Collectors.toList()).toList()
+    val stopsPosition: List<Position?> get() = stops.map { it.position }.toList()
 
     override fun describeContents(): Int {
         return 0
@@ -92,7 +90,8 @@ class Station(
             return Station(0, StringUtils.EMPTY, mutableListOf())
         }
 
-        @JvmField val CREATOR: Parcelable.Creator<Station> = object : Parcelable.Creator<Station> {
+        @JvmField
+        val CREATOR: Parcelable.Creator<Station> = object : Parcelable.Creator<Station> {
             override fun createFromParcel(source: Parcel): Station {
                 return Station(source)
             }

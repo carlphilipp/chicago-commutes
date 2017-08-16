@@ -7,13 +7,9 @@ import com.annimon.stream.function.Function;
 import com.annimon.stream.function.Supplier;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 import fr.cph.chicago.entity.Eta;
-import fr.cph.chicago.entity.enumeration.TrainLine;
 
 public class CommutesCollectors {
 
@@ -38,25 +34,6 @@ public class CommutesCollectors {
 
             @Override
             public Function<Map<String, String>, Map<String, String>> finisher() {
-                return null;
-            }
-        };
-    }
-
-    public static Collector<List<TrainLine>, Set<TrainLine>, Set<TrainLine>> toTrainLineCollector() {
-        return new Collector<List<TrainLine>, Set<TrainLine>, Set<TrainLine>>() {
-            @Override
-            public Supplier<Set<TrainLine>> supplier() {
-                return TreeSet::new;
-            }
-
-            @Override
-            public BiConsumer<Set<TrainLine>, List<TrainLine>> accumulator() {
-                return Set::addAll;
-            }
-
-            @Override
-            public Function<Set<TrainLine>, Set<TrainLine>> finisher() {
                 return null;
             }
         };

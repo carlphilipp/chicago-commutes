@@ -21,8 +21,6 @@ package fr.cph.chicago.entity
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.annimon.stream.Collectors
-import com.annimon.stream.Stream
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.apache.commons.lang3.StringUtils
@@ -122,15 +120,16 @@ class BikeStation(
             val lonMax = longitude + DEFAULT_RANGE
             val lonMin = longitude - DEFAULT_RANGE
 
-            return Stream.of(bikeStations)
+            return bikeStations
                 .filter { station -> station.latitude <= latMax }
                 .filter { station -> station.latitude >= latMin }
                 .filter { station -> station.longitude <= lonMax }
                 .filter { station -> station.longitude >= lonMin }
-                .collect(Collectors.toList())
+                .toList()
         }
 
-        @JvmField val CREATOR: Parcelable.Creator<BikeStation> = object : Parcelable.Creator<BikeStation> {
+        @JvmField
+        val CREATOR: Parcelable.Creator<BikeStation> = object : Parcelable.Creator<BikeStation> {
             override fun createFromParcel(source: Parcel): BikeStation {
                 return BikeStation(source)
             }
