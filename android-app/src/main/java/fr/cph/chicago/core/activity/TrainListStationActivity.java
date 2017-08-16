@@ -59,7 +59,7 @@ public class TrainListStationActivity extends ListActivity {
             // Load data
             lineParam = savedInstanceState != null ? savedInstanceState.getString(bundleTrainLine) : getIntent().getExtras().getString(bundleTrainLine);
 
-            trainLine = TrainLine.fromString(lineParam);
+            trainLine = TrainLine.Companion.fromString(lineParam);
             setTitle(trainLine.toStringWithLine());
 
             Util.INSTANCE.setWindowsColor(this, toolbar, trainLine);
@@ -77,7 +77,7 @@ public class TrainListStationActivity extends ListActivity {
     public void onRestoreInstanceState(final Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         lineParam = savedInstanceState.getString(bundleTrainLine);
-        trainLine = TrainLine.fromString(lineParam);
+        trainLine = TrainLine.Companion.fromString(lineParam);
     }
 
     @Override

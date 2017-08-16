@@ -144,7 +144,7 @@ public class TrainMapActivity extends AbstractMapActivity {
             return false;
         }));
 
-        final TrainLine trainLine = TrainLine.fromXmlString(line);
+        final TrainLine trainLine = TrainLine.Companion.fromXmlString(line);
         Util.INSTANCE.setWindowsColor(this, toolbar, trainLine);
         toolbar.setTitle(trainLine.toStringWithLine());
     }
@@ -214,7 +214,7 @@ public class TrainMapActivity extends AbstractMapActivity {
         if (drawLine) {
             final PolylineOptions poly = new PolylineOptions();
             poly.width(App.getLineWidth());
-            poly.geodesic(true).color(TrainLine.fromXmlString(line).getColor());
+            poly.geodesic(true).color(TrainLine.Companion.fromXmlString(line).getColor());
             Stream.of(positions)
                 .map(position -> new LatLng(position.getLatitude(), position.getLongitude()))
                 .forEach(poly::add);
@@ -365,7 +365,7 @@ public class TrainMapActivity extends AbstractMapActivity {
 
 
             final List<Train> trains = getTrainData();
-            positions = trainData.readPattern(getApplicationContext(), TrainLine.fromXmlString(line));
+            positions = trainData.readPattern(getApplicationContext(), TrainLine.Companion.fromXmlString(line));
             return trains;
         }
 

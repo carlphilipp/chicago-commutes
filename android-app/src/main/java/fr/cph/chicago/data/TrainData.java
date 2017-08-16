@@ -85,7 +85,7 @@ public enum TrainData {
                 for (int i = 1; i < allRows.size(); i++) {
                     final String[] row = allRows.get(i);
                     final int stopId = Integer.parseInt(row[0]); // STOP_ID
-                    final TrainDirection direction = TrainDirection.fromString(row[1]); // DIRECTION_ID
+                    final TrainDirection direction = TrainDirection.Companion.fromString(row[1]); // DIRECTION_ID
                     final String stopName = row[2]; // STOP_NAME
                     final String stationName = row[3];// STATION_NAME
                     // String stationDescription = row[4];//STATION_DESCRIPTIVE_NAME

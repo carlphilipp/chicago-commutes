@@ -1,12 +1,15 @@
 /**
  * Copyright 2017 Carl-Philipp Harmant
- * <p/>
+ *
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ *
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ *
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,9 +17,7 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.exception;
-
-import android.support.annotation.NonNull;
+package fr.cph.chicago.exception
 
 /**
  * Tracker exception
@@ -24,26 +25,14 @@ import android.support.annotation.NonNull;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-public class TrackerException extends Exception {
-
-    /**
-     * Serializable
-     **/
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * The error string
-     **/
-    public static final String ERROR = "Error, please try again later";
+open class TrackerException : Exception {
 
     /**
      * The constructor
      *
      * @param message the message
      */
-    TrackerException(@NonNull final String message) {
-        super(message);
-    }
+    internal constructor(message: String) : super(message)
 
     /**
      * The constructor
@@ -51,8 +40,11 @@ public class TrackerException extends Exception {
      * @param message the message
      * @param e       the exception
      */
-    TrackerException(@NonNull final String message, @NonNull final Exception e) {
-        super(message, e);
-    }
+    internal constructor(message: String, e: Exception) : super(message, e)
 
+    companion object {
+
+        private val serialVersionUID = 1L
+        val ERROR = "Error, please try again later"
+    }
 }

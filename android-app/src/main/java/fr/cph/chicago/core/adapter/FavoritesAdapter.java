@@ -245,7 +245,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
                 // Build data for button outside of the loop
                 final BusArrival busArrival = entry2.getValue().get(0);
                 final String boundTitle = busArrival.getRouteDirection();
-                final BusDirection.BusDirectionEnum busDirectionEnum = BusDirection.BusDirectionEnum.fromString(boundTitle);
+                final BusDirection.BusDirectionEnum busDirectionEnum = BusDirection.BusDirectionEnum.Companion.fromString(boundTitle);
                 final BusDetailsDTO busDetails = new BusDetailsDTO(
                     busArrival.getRouteId(),
                     busDirectionEnum.getShortUpperCase(),
@@ -258,7 +258,7 @@ public final class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapte
 
                 // Build UI
                 final LinearLayout.LayoutParams containParams = LayoutUtil.INSTANCE.getInsideParams(activity.getApplicationContext(), newLine, i == boundMap.size() - 1);
-                final LinearLayout container = LayoutUtil.INSTANCE.createBusArrivalsLayout(activity.getApplicationContext(), containParams, stopNameTrimmed, BusDirection.BusDirectionEnum.fromString(entry2.getKey()), entry2.getValue());
+                final LinearLayout container = LayoutUtil.INSTANCE.createBusArrivalsLayout(activity.getApplicationContext(), containParams, stopNameTrimmed, BusDirection.BusDirectionEnum.Companion.fromString(entry2.getKey()), entry2.getValue());
 
                 holder.mainLayout.addView(container);
 

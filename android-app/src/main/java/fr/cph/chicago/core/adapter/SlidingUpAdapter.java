@@ -130,7 +130,7 @@ public class SlidingUpAdapter {
 
                 for (final Map.Entry<String, ? extends List<? extends BusArrival>> entry2 : boundMap.entrySet()) {
                     final LinearLayout.LayoutParams containParams = LayoutUtil.INSTANCE.getInsideParams(nearbyFragment.getContext(), newLine, i == boundMap.size() - 1);
-                    final LinearLayout container = LayoutUtil.INSTANCE.createBusArrivalsLayout(nearbyFragment.getContext(), containParams, stopNameTrimmed, BusDirection.BusDirectionEnum.fromString(entry2.getKey()), entry2.getValue());
+                    final LinearLayout container = LayoutUtil.INSTANCE.createBusArrivalsLayout(nearbyFragment.getContext(), containParams, stopNameTrimmed, BusDirection.BusDirectionEnum.Companion.fromString(entry2.getKey()), entry2.getValue());
 
                     linearLayout.addView(container);
                     newLine = false;

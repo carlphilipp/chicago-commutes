@@ -38,7 +38,7 @@ public final class TrainStationAdapter extends BaseAdapter {
 
     @Override
     public final int getCount() {
-        return TrainLine.size() - 1;
+        return TrainLine.Companion.size() - 1;
     }
 
     @Override

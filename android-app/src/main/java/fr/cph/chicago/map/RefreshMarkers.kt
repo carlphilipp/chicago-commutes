@@ -4,8 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.support.annotation.DrawableRes
-
-import com.annimon.stream.Stream
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -42,13 +40,13 @@ abstract class RefreshMarkers(context: Context, @DrawableRes drawable: Int) {
             currentZoom = position.zoom
 
             if (isIn(currentZoom, 12.9f, 11f) && !isIn(oldZoom, 12.9f, 11f)) {
-                Stream.of(markers).forEach { marker -> marker.setIcon(bitmapDescrSmall) }
+                markers.forEach { marker -> marker.setIcon(bitmapDescrSmall) }
                 currentDescriptor = bitmapDescrSmall
             } else if (isIn(currentZoom, 14.9f, 13f) && !isIn(oldZoom, 14.9f, 13f)) {
-                Stream.of(markers).forEach { marker -> marker.setIcon(bitmapDescrMedium) }
+                markers.forEach { marker -> marker.setIcon(bitmapDescrMedium) }
                 currentDescriptor = bitmapDescrMedium
             } else if (isIn(currentZoom, 21f, 15f) && !isIn(oldZoom, 21f, 15f)) {
-                Stream.of(markers).forEach { marker -> marker.setIcon(bitmapDescrLarge) }
+                markers.forEach { marker -> marker.setIcon(bitmapDescrLarge) }
                 currentDescriptor = bitmapDescrLarge
             }
         }
