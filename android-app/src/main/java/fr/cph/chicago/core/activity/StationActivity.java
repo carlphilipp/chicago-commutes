@@ -34,7 +34,6 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.annimon.stream.Optional;
 import com.annimon.stream.Stream;
 
 import java.util.ArrayList;
@@ -64,8 +63,8 @@ import fr.cph.chicago.entity.Stop;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.TrainDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.rx.observable.ObservableUtil;
-import fr.cph.chicago.rx.observer.TrainArrivalObserver;
+import fr.cph.chicago.rx.ObservableUtil;
+import fr.cph.chicago.rx.TrainArrivalObserver;
 import fr.cph.chicago.util.Util;
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;

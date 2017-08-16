@@ -14,7 +14,7 @@ import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.dto.BusArrivalRouteDTO;
-import fr.cph.chicago.rx.observable.ObservableUtil;
+import fr.cph.chicago.rx.ObservableUtil;
 
 public class OnMarkerClickListener implements GoogleMap.OnMarkerClickListener {
 

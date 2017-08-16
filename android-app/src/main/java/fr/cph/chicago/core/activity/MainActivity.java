@@ -52,7 +52,7 @@ import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.dto.FavoritesDTO;
-import fr.cph.chicago.rx.observable.ObservableUtil;
+import fr.cph.chicago.rx.ObservableUtil;
 import fr.cph.chicago.util.Util;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;

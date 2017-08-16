@@ -37,7 +37,7 @@ import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.dto.BusArrivalDTO;
 import fr.cph.chicago.entity.dto.FavoritesDTO;
 import fr.cph.chicago.entity.dto.TrainArrivalDTO;
-import fr.cph.chicago.rx.observable.ObservableUtil;
+import fr.cph.chicago.rx.ObservableUtil;
 import fr.cph.chicago.service.BusService;
 import fr.cph.chicago.service.TrainService;
 import fr.cph.chicago.service.impl.BusServiceImpl;

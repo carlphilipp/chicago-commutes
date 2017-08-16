@@ -42,8 +42,8 @@ import fr.cph.chicago.data.PreferencesImpl;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.rx.observable.ObservableUtil;
-import fr.cph.chicago.rx.observer.BikeAllBikeStationsObserver;
+import fr.cph.chicago.rx.ObservableUtil;
+import fr.cph.chicago.rx.BikeAllBikeStationsObserver;
 import fr.cph.chicago.util.Util;
 
 /**

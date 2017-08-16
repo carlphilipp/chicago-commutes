@@ -40,8 +40,8 @@ import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.rx.observable.ObservableUtil;
-import fr.cph.chicago.rx.observer.BusDirectionObserver;
+import fr.cph.chicago.rx.ObservableUtil;
+import fr.cph.chicago.rx.BusDirectionObserver;
 import fr.cph.chicago.util.LayoutUtil;
 import fr.cph.chicago.util.Util;
 

@@ -1,4 +1,4 @@
-package fr.cph.chicago.rx.observable
+package fr.cph.chicago.rx
 
 import android.content.Context
 import android.util.Log

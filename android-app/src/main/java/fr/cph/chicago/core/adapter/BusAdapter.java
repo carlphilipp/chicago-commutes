@@ -32,8 +32,8 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BusRoute;
-import fr.cph.chicago.rx.observable.ObservableUtil;
-import fr.cph.chicago.rx.observer.BusDirectionObserver;
+import fr.cph.chicago.rx.ObservableUtil;
+import fr.cph.chicago.rx.BusDirectionObserver;
 import fr.cph.chicago.util.Util;
 
 /**

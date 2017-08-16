@@ -61,9 +61,9 @@ import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.map.RefreshBusMarkers;
 import fr.cph.chicago.parser.XmlParser;
-import fr.cph.chicago.rx.observable.ObservableUtil;
-import fr.cph.chicago.rx.observer.BusFollowObserver;
-import fr.cph.chicago.rx.observer.BusObserver;
+import fr.cph.chicago.rx.ObservableUtil;
+import fr.cph.chicago.rx.BusFollowObserver;
+import fr.cph.chicago.rx.BusObserver;
 import fr.cph.chicago.util.Util;
 
 import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;

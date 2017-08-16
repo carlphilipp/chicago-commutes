@@ -1,4 +1,4 @@
-package fr.cph.chicago.rx.observer
+package fr.cph.chicago.rx
 
 import android.support.v4.widget.SwipeRefreshLayout
 import android.util.Log
