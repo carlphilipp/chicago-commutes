@@ -26,7 +26,6 @@ import fr.cph.chicago.entity.BikeStation
 import fr.cph.chicago.entity.dto.DivvyDTO
 import fr.cph.chicago.exception.ParserException
 import org.apache.commons.io.IOUtils
-import java.io.IOException
 import java.io.InputStream
 
 /**
@@ -48,7 +47,7 @@ object JsonParser {
         try {
             val (stations) = mapper.readValue<DivvyDTO>(stream, object : TypeReference<DivvyDTO>() {})
             return stations
-        } catch (e: IOException) {
+        } catch (e: Exception) {
             throw ParserException(e)
         } finally {
             IOUtils.closeQuietly(stream)

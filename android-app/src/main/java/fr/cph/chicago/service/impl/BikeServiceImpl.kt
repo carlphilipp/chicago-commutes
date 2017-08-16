@@ -16,12 +16,11 @@ object BikeServiceImpl : BikeService {
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }
-
     }
 
     override fun loadBikes(id: Int): BikeStation {
         try {
-            return loadAllBikes().filter { value -> value.id == id }.first()
+            return loadAllBikes().first { value -> value.id == id }
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }
