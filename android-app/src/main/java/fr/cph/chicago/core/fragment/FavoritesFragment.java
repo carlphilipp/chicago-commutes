@@ -315,8 +315,8 @@ public class FavoritesFragment extends AbstractFragment {
                 Log.v(TAG, "Updated of time " + Thread.currentThread().getId());
                 try {
                     publishProgress();
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
+                    Thread.sleep(10000);
+                } catch (final InterruptedException e) {
                     Log.v(TAG, "Stopping thread. Normal Behavior");
                 }
             }
