@@ -47,7 +47,7 @@ class Station(
         get() {
             return stops
                 .map { it.lines }
-                .fold(HashSet(), { accumulator, item -> accumulator.addAll(item); accumulator })
+                .fold(LinkedHashSet(), { accumulator, item -> accumulator.addAll(item); accumulator })
         }
 
     val stopByLines: Map<TrainLine, List<Stop>>

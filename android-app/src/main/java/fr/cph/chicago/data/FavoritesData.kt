@@ -81,7 +81,7 @@ object FavoritesData {
      * @return a size
      */
     fun size(): Int {
-        return trainFavorites!!.size + fakeBusFavorites.size + bikeFavorites.size
+        return trainFavorites.size + fakeBusFavorites.size + bikeFavorites.size
     }
 
     /**
@@ -136,7 +136,7 @@ object FavoritesData {
 
     fun getTrainArrivalByLine(stationId: Int, trainLine: TrainLine): Map<String, String> {
         val etas = getTrainArrival(stationId).getEtas(trainLine)
-        return etas.fold(HashMap(), { accumulator, eta ->
+        return etas.fold(TreeMap(), { accumulator, eta ->
             val stopNameData = eta.destName
             val timingData = eta.timeLeftDueDelay
             val value = if (accumulator.containsKey(stopNameData))
@@ -157,7 +157,7 @@ object FavoritesData {
     fun getBusArrivalsMapped(routeId: String, context: Context): BusArrivalStopMappedDTO {
         // TODO check why (and if?) this method is called several time
         val busArrivalDTO = BusArrivalStopMappedDTO()
-        busArrivals!!
+        busArrivals
             .filter { (_, _, _, _, _, routeId1) -> routeId1 == routeId }
             .filter { (_, _, _, stopId, _, _, routeDirection) -> isInFavorites(routeId, stopId, routeDirection) }
             .forEach({ busArrivalDTO.addBusArrival(it) })

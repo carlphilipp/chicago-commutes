@@ -49,8 +49,9 @@ object TrainData {
 
     private val stations: SparseArray<Station> = SparseArray()
     private val stops: SparseArray<Stop> = SparseArray()
+    private var stationsOrderByLineMap: TreeMap<TrainLine, MutableList<Station>> = TreeMap()
+
     private val parser: CsvParser
-    private var stationsOrderByLineMap: MutableMap<TrainLine, MutableList<Station>> = mutableMapOf()
 
     init {
         val settings = CsvParserSettings()
@@ -69,23 +70,23 @@ object TrainData {
                 val allRows = parser.parseAll(inputStreamReader)
                 for (i in 1 until allRows.size) {
                     val row = allRows[i]
-                    val stopId = Integer.parseInt(row[0]) // STOP_ID
+                    val stopId = row[0].toInt() // STOP_ID
                     val direction = TrainDirection.fromString(row[1]) // DIRECTION_ID
                     val stopName = row[2] // STOP_NAME
                     val stationName = row[3]// STATION_NAME
                     // String stationDescription = row[4];//STATION_DESCRIPTIVE_NAME
-                    val parentStopId = Integer.parseInt(row[5])// MAP_ID (old PARENT_STOP_ID)
-                    val ada = java.lang.Boolean.parseBoolean(row[6])// ADA
+                    val parentStopId = row[5].toInt()// MAP_ID (old PARENT_STOP_ID)
+                    val ada = row[6].toBoolean()// ADA
                     val lines = ArrayList<TrainLine>()
-                    val red = java.lang.Boolean.parseBoolean(row[7])// Red
-                    val blue = java.lang.Boolean.parseBoolean(row[8])// Blue
-                    val green = java.lang.Boolean.parseBoolean(row[9])// G
-                    val brown = java.lang.Boolean.parseBoolean(row[10])// Brn
-                    val purple = java.lang.Boolean.parseBoolean(row[11])// P
-                    val purpleExp = java.lang.Boolean.parseBoolean(row[12])// Pexp
-                    val yellow = java.lang.Boolean.parseBoolean(row[13])// Y
-                    val pink = java.lang.Boolean.parseBoolean(row[14])// Pink
-                    val orange = java.lang.Boolean.parseBoolean(row[15])// Org
+                    val red = row[7].toBoolean()// Red
+                    val blue = row[8].toBoolean()// Blue
+                    val green = row[9].toBoolean()// G
+                    val brown = row[10].toBoolean()// Brn
+                    val purple = row[11].toBoolean()// P
+                    val purpleExp = row[12].toBoolean()// Pexp
+                    val yellow = row[13].toBoolean()// Y
+                    val pink = row[14].toBoolean()// Pink
+                    val orange = row[15].toBoolean()// Org
                     if (red) {
                         lines.add(TrainLine.RED)
                     }
@@ -247,7 +248,7 @@ object TrainData {
         }
     }
 
-    private fun sortStation(): MutableMap<TrainLine, MutableList<Station>> {
+    private fun sortStation(): TreeMap<TrainLine, MutableList<Station>> {
         val result = TreeMap<TrainLine, MutableList<Station>>()
         for (i in 0 until stations.size()) {
             val station = stations.valueAt(i)
