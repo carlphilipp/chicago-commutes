@@ -168,7 +168,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
             }
         }
 
-        Stream.of(trainLines).forEach { trainLine ->
+        trainLines.forEach { trainLine ->
             var newLine = true
             var i = 0
             val etas = FavoritesData.getTrainArrivalByLine(stationId, trainLine)

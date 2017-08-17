@@ -27,7 +27,6 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.annimon.stream.Stream
 import fr.cph.chicago.R
 import fr.cph.chicago.core.listener.TrainOnClickListener
 import fr.cph.chicago.data.DataHolder
@@ -77,7 +76,7 @@ class TrainAdapter(line: TrainLine, private val activity: Activity) : BaseAdapte
 
         holder.stationNameView.text = station.name
         holder.stationColorView.removeAllViews()
-        Stream.of(station.lines)
+        station.lines
             .map { line -> LayoutUtil.createColoredRoundForMultiple(activity.applicationContext, line) }
             .forEach { layout -> holder.stationColorView.addView(layout) }
 

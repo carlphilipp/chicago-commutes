@@ -10,10 +10,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
-import com.annimon.stream.Stream
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import fr.cph.chicago.R
-import fr.cph.chicago.collector.CommutesCollectors
 import fr.cph.chicago.core.fragment.NearbyFragment
 import fr.cph.chicago.entity.BikeStation
 import fr.cph.chicago.entity.BusArrival
@@ -69,7 +67,16 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
             //if (trainArrivalOptional.isPresent()) {
             for (trainLine in TrainLine.values()) {
                 val etaResult = trainArrival.getEtas(trainLine)
-                val etas = Stream.of(etaResult).collect(CommutesCollectors.toTrainArrivalByLine())
+                val etas = etaResult.fold(HashMap(), { accumulator: HashMap<String, String>, eta ->
+                    val stopNameData = eta.destName
+                    val timingData = eta.timeLeftDueDelay
+                    val value = if (accumulator.containsKey(stopNameData))
+                        accumulator.get(stopNameData) + " " + timingData
+                    else
+                        timingData
+                    accumulator.put(stopNameData, value)
+                    accumulator
+                })
 
                 var newLine = true
                 var i = 0
