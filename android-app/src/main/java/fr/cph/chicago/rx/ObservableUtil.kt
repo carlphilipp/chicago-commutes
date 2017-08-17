@@ -1,5 +1,6 @@
 package fr.cph.chicago.rx
 
+import android.app.Application
 import android.content.Context
 import android.util.Log
 import android.util.SparseArray
@@ -114,17 +115,17 @@ object ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun createAllDataObservable(context: Context): Observable<FavoritesDTO> {
+    fun createAllDataObservable(application: Application): Observable<FavoritesDTO> {
         // Train online favorites
-        val trainArrivalsObservable = createFavoritesTrainArrivalsObservable(context)
+        val trainArrivalsObservable = createFavoritesTrainArrivalsObservable(application)
         // Bus online favorites
-        val busArrivalsObservable = createFavoritesBusArrivalsObservable(context)
+        val busArrivalsObservable = createFavoritesBusArrivalsObservable(application)
         // Bikes online all stations
         val bikeStationsObservable = createAllBikeStationsObservable()
         return Observable.zip(busArrivalsObservable, trainArrivalsObservable, bikeStationsObservable,
             Function3 { busArrivalDTO: BusArrivalDTO, trainArrivalsDTO: TrainArrivalDTO, bikeStations: List<BikeStation>
                 ->
-                App.lastUpdate = Calendar.getInstance().time
+                (application as App).lastUpdate = Calendar.getInstance().time
                 FavoritesDTO(trainArrivalsDTO, busArrivalDTO, bikeStations.isEmpty(), bikeStations)
             })
     }

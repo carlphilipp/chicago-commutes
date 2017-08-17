@@ -31,6 +31,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import fr.cph.chicago.R
+import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.listener.BikeStationOnClickListener
 import fr.cph.chicago.core.listener.TrainOnClickListener
@@ -96,7 +97,7 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
                 stationColorView.addView(layout)
             }
 
-            view.setOnClickListener(TrainOnClickListener(parent.context, station.id, lines))
+            view.setOnClickListener(TrainOnClickListener(parent.context, activity, station.id, lines))
         } else if (position < trains!!.size + busRoutes!!.size) {
             val busRoute = getItem(position) as BusRoute
 
@@ -113,7 +114,7 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
                     .doOnError { throwable ->
                         Util.handleConnectOrParserException(throwable, activity, null, loadingTextView)
                         Log.e(TAG, throwable.message, throwable)
-                    }.subscribe(BusDirectionObserver(parent, loadingTextView, busRoute))
+                    }.subscribe(BusDirectionObserver(activity.application as App, parent, loadingTextView, busRoute))
             }
         } else {
             val bikeStation = getItem(position) as BikeStation

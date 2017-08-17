@@ -35,7 +35,6 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.annimon.stream.Stream
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.*
@@ -162,7 +161,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
                     val dialog = builder.create()
                     dialog.show()
                     if (dialog.window != null) {
-                        dialog.window!!.setLayout((App.screenWidth * 0.7).toInt(), LayoutParams.WRAP_CONTENT)
+                        dialog.window!!.setLayout(((activity.application as App).screenWidth * 0.7).toInt(), LayoutParams.WRAP_CONTENT)
                     }
                 }
             }
@@ -234,7 +233,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         }
 
         holder.mapButton.text = activity.getString(R.string.favorites_view_buses)
-        holder.detailsButton.setOnClickListener(BusStopOnClickListener(activity.application as App, holder.parent, busDetailsDTOs))
+        holder.detailsButton.setOnClickListener(BusStopOnClickListener(activity, holder.parent, busDetailsDTOs))
         holder.mapButton.setOnClickListener { v ->
             if (!Util.isNetworkAvailable(context)) {
                 Util.showNetworkErrorMessage(activity)
@@ -296,7 +295,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
      * Refresh date update
      */
     fun refreshUpdated() {
-        App.lastUpdate = Calendar.getInstance().time
+        (activity.application as App).lastUpdate = Calendar.getInstance().time
     }
 
     /**
@@ -316,7 +315,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         get() {
             val lastUpdateInMinutes = StringBuilder()
             val currentDate = Calendar.getInstance().time
-            val diff = getTimeDifference(App.lastUpdate, currentDate)
+            val diff = getTimeDifference((activity.application as App).lastUpdate, currentDate)
             val hours = diff[0]
             val minutes = diff[1]
             if (hours == 0L && minutes == 0L) {

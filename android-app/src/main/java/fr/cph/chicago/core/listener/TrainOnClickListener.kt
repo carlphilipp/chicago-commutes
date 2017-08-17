@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.listener
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -27,9 +28,6 @@ import android.support.v4.content.ContextCompat
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
-
-import java.util.ArrayList
-
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.StationActivity
@@ -37,6 +35,7 @@ import fr.cph.chicago.core.activity.TrainMapActivity
 import fr.cph.chicago.core.adapter.PopupTrainAdapter
 import fr.cph.chicago.entity.enumeration.TrainLine
 import fr.cph.chicago.util.Util
+import java.util.*
 
 /**
  * FavoritesData train on click listener
@@ -45,6 +44,7 @@ import fr.cph.chicago.util.Util
  * @version 1
  */
 class TrainOnClickListener(private val context: Context,
+                           private val activity: Activity,
                            private val stationId: Int,
                            private val trainLines: Set<TrainLine>) : OnClickListener {
 
@@ -91,7 +91,7 @@ class TrainOnClickListener(private val context: Context,
             val dialog = builder.create()
             dialog.show()
             if (dialog.window != null) {
-                dialog.window!!.setLayout((App.screenWidth * 0.7).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
+                dialog.window!!.setLayout(((activity.application as App).screenWidth * 0.7).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
             }
         }
     }

@@ -23,12 +23,13 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.graphics.Point
+import android.view.WindowManager
 import com.google.android.gms.analytics.GoogleAnalytics
 import com.google.android.gms.analytics.Tracker
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.BaseActivity
 import fr.cph.chicago.data.DataHolder
-import fr.cph.chicago.util.Util
 import java.util.*
 
 /**
@@ -39,8 +40,9 @@ import java.util.*
  */
 class App : Application() {
 
+    var lastUpdate: Date = Date()
+
     val tracker: Tracker by lazy {
-        println("Load tracker")
         val analytics = GoogleAnalytics.getInstance(applicationContext)
         val key = applicationContext.getString(R.string.google_analytics_key)
         val tracker = analytics.newTracker(key)
@@ -48,14 +50,29 @@ class App : Application() {
         tracker
     }
 
-    companion object {
+    val screenWidth: Int by lazy {
+        screenSize[0]
+    }
 
-        /**
-         * Last update of favorites
-         */
-        var lastUpdate: Date = Date()
-        var screenWidth: Int = 0
-        var lineWidth: Float = 0.toFloat()
+    val lineWidth: Float by lazy {
+        if (screenWidth > 1080) 7f else if (screenWidth > 480) 4f else 2f
+    }
+
+    fun setupApiKeys() {
+        ctaTrainKey = applicationContext.getString(R.string.cta_train_key)
+        ctaBusKey = applicationContext.getString(R.string.cta_bus_key)
+        googleStreetKey = applicationContext.getString(R.string.google_maps_api_key)
+    }
+
+    private val screenSize: IntArray by lazy {
+        val wm = applicationContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val display = wm.defaultDisplay
+        val point = Point()
+        display.getSize(point)
+        intArrayOf(point.x, point.y)
+    }
+
+    companion object {
         var ctaTrainKey: String? = null
         var ctaBusKey: String? = null
         var googleStreetKey: String? = null
@@ -80,15 +97,6 @@ class App : Application() {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
             activity.startActivity(intent)
             activity.finish()
-        }
-
-        fun setupContextData(context: Context) {
-            val screenSize = Util.getScreenSize(context)
-            screenWidth = screenSize[0]
-            lineWidth = if (screenWidth > 1080) 7f else if (screenWidth > 480) 4f else 2f
-            ctaTrainKey = context.getString(R.string.cta_train_key)
-            ctaBusKey = context.getString(R.string.cta_bus_key)
-            googleStreetKey = context.getString(R.string.google_maps_api_key)
         }
     }
 }

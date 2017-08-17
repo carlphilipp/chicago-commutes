@@ -190,14 +190,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             if (Util.INSTANCE.isNetworkAvailable(getApplicationContext())) {
                 final DataHolder dataHolder = DataHolder.INSTANCE;
-                if (dataHolder.getBusData() == null
-                    || dataHolder.getBusData().getBusRoutes() == null
-                    || dataHolder.getBusData().getBusRoutes().size() == 0
+                if (dataHolder.getBusData().getBusRoutes().size() == 0
                     || getIntent().getParcelableArrayListExtra(bundleBikeStations) == null
                     || getIntent().getParcelableArrayListExtra(bundleBikeStations).size() == 0) {
                     loadFirstData();
                 }
-                final Observable<FavoritesDTO> zipped = ObservableUtil.INSTANCE.createAllDataObservable(getApplicationContext());
+                final Observable<FavoritesDTO> zipped = ObservableUtil.INSTANCE.createAllDataObservable(getApplication());
                 zipped.subscribe(
                     favoritesResult -> favoritesFragment.reloadData(favoritesResult),
                     onError -> {

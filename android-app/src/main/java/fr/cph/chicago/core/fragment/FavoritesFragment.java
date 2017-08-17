@@ -167,16 +167,14 @@ public class FavoritesFragment extends AbstractFragment {
                 Util.INSTANCE.trackAction((App) getActivity().getApplication(), R.string.analytics_category_ui, R.string.analytics_action_press, getContext().getString(R.string.analytics_action_refresh_fav));
 
                 final DataHolder dataHolder = DataHolder.INSTANCE;
-                if (dataHolder.getBusData() == null
-                    || dataHolder.getBusData().getBusRoutes() == null
-                    || dataHolder.getBusData().getBusRoutes().size() == 0
+                if (dataHolder.getBusData().getBusRoutes().size() == 0
                     || activity.getIntent().getParcelableArrayListExtra(bundleBikeStation) == null
                     || activity.getIntent().getParcelableArrayListExtra(bundleBikeStation).size() == 0) {
                     activity.loadFirstData();
                 }
 
                 if (Util.INSTANCE.isNetworkAvailable(getContext())) {
-                    final Observable<FavoritesDTO> zipped = ObservableUtil.INSTANCE.createAllDataObservable(getContext());
+                    final Observable<FavoritesDTO> zipped = ObservableUtil.INSTANCE.createAllDataObservable(getActivity().getApplication());
                     zipped.subscribe(
                         this::reloadData,
                         onError -> {

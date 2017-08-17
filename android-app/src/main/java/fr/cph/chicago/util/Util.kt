@@ -209,14 +209,6 @@ object Util {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected
     }
 
-    fun getScreenSize(context: Context): IntArray {
-        val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val display = wm.defaultDisplay
-        val point = Point()
-        display.getSize(point)
-        return intArrayOf(point.x, point.y)
-    }
-
     /**
      * Google analytics track screen
      *

@@ -213,7 +213,7 @@ public class TrainMapActivity extends AbstractMapActivity {
     private void drawLine(@NonNull final List<Position> positions) {
         if (drawLine) {
             final PolylineOptions poly = new PolylineOptions();
-            poly.width(App.Companion.getLineWidth());
+            poly.width(((App) getApplication()).getLineWidth());
             poly.geodesic(true).color(TrainLine.Companion.fromXmlString(line).getColor());
             Stream.of(positions)
                 .map(position -> new LatLng(position.getLatitude(), position.getLongitude()))

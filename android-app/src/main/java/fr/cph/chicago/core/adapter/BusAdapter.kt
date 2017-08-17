@@ -28,6 +28,7 @@ import android.widget.BaseAdapter
 import android.widget.LinearLayout
 import android.widget.TextView
 import fr.cph.chicago.R
+import fr.cph.chicago.core.App
 import fr.cph.chicago.data.DataHolder
 import fr.cph.chicago.entity.BusRoute
 import fr.cph.chicago.rx.BusDirectionObserver
@@ -40,7 +41,7 @@ import fr.cph.chicago.util.Util
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BusAdapter(private val view: View) : BaseAdapter() {
+class BusAdapter(private val app: App, private val view: View) : BaseAdapter() {
     private var busRoutes: List<BusRoute> = DataHolder.busData.busRoutes
 
     override fun getCount(): Int {
@@ -85,7 +86,7 @@ class BusAdapter(private val view: View) : BaseAdapter() {
                     Util.handleConnectOrParserException(throwable, null, this.view, holder.detailsLayout)
                     Log.e(TAG, throwable.message, throwable)
                 }
-                .subscribe(BusDirectionObserver(parent, holder.detailsLayout, route))
+                .subscribe(BusDirectionObserver(app, parent, holder.detailsLayout, route))
         }
         return view
     }
@@ -100,7 +101,7 @@ class BusAdapter(private val view: View) : BaseAdapter() {
      * @author Carl-Philipp Harmant
      * @version 1
      */
-    private class ViewHolder (
+    private class ViewHolder(
         val routeNameView: TextView,
         val routeNumberView: TextView,
         val detailsLayout: LinearLayout

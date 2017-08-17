@@ -93,7 +93,7 @@ public class BusFragment extends AbstractFragment {
     }
 
     private void addView() {
-        busAdapter = new BusAdapter(listView);
+        busAdapter = new BusAdapter((App) activity.getApplication(), listView);
         listView.setAdapter(busAdapter);
         textFilter.setVisibility(TextView.VISIBLE);
         textFilter.addTextChangedListener(new TextWatcher() {

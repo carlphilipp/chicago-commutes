@@ -83,7 +83,7 @@ public class BaseActivity extends Activity {
         setContentView(R.layout.loading);
         ButterKnife.bind(this);
 
-        App.Companion.setupContextData(getApplicationContext());
+        ((App) getApplication()).setupApiKeys();
         setUpRealm();
         loadLocalAndFavoritesData();
         trackWithGoogleAnalytics();
@@ -130,7 +130,7 @@ public class BaseActivity extends Activity {
             .doOnComplete(() ->
                 Observable.zip(trainOnlineFavorites, busOnlineFavorites, (trainArrivalsDTO, busArrivalsDTO) -> {
                         DataHolder.INSTANCE.setError(false);
-                        App.Companion.setLastUpdate(Calendar.getInstance().getTime());
+                        ((App) getApplication()).setLastUpdate(Calendar.getInstance().getTime());
                         return new FavoritesDTO(trainArrivalsDTO, busArrivalsDTO, false, Collections.emptyList());
                     }
                 ).subscribe(this::startMainActivity, onError -> {

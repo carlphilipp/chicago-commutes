@@ -21,7 +21,7 @@ import fr.cph.chicago.util.Util
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 
-class BusDirectionObserver(private val parent: ViewGroup, private val convertView: View, private val busRoute: BusRoute) : Observer<BusDirections> {
+class BusDirectionObserver(private val app: App, private val parent: ViewGroup, private val convertView: View, private val busRoute: BusRoute) : Observer<BusDirections> {
 
     override fun onSubscribe(d: Disposable) {}
 
@@ -68,7 +68,8 @@ class BusDirectionObserver(private val parent: ViewGroup, private val convertVie
         val dialog = builder.create()
         dialog.show()
         if (dialog.window != null) {
-            dialog.window.setLayout((App.screenWidth * 0.7).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
+
+            dialog.window.setLayout((app.screenWidth * 0.7).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
         }
     }
 
