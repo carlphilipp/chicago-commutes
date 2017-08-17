@@ -34,6 +34,7 @@ import com.annimon.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindString;
@@ -122,7 +123,7 @@ public class BikeFragment extends AbstractFragment {
         if (bikeAdapter == null) {
             List<BikeStation> bikeStations = activity.getIntent().getExtras().getParcelableArrayList(bundleBikeStations);
             if (bikeStations == null) {
-                bikeStations = new ArrayList<>();
+                bikeStations = Collections.emptyList();
             }
             bikeAdapter = new BikeAdapter(bikeStations);
         }

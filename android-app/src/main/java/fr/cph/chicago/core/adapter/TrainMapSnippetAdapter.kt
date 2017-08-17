@@ -50,35 +50,33 @@ class TrainMapSnippetAdapter(private val etas: List<Eta>) : BaseAdapter() {
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        var convertView = convertView
+        var view = convertView
         val eta = getItem(position) as Eta
 
         val holder: ViewHolder
 
-        if (convertView == null) {
+        if (view == null) {
             val vi = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            convertView = vi.inflate(R.layout.list_map_train, parent, false)
+            view = vi.inflate(R.layout.list_map_train, parent, false)
 
-            holder = ViewHolder()
-            holder.name = convertView!!.findViewById(R.id.station_name)
-            holder.time = convertView.findViewById(R.id.time)
+            holder = ViewHolder(
+                view!!.findViewById(R.id.station_name),
+                view.findViewById(R.id.time)
+            )
 
-            convertView.tag = holder
+            view.tag = holder
         } else {
-            holder = convertView.tag as ViewHolder
+            holder = view.tag as ViewHolder
         }
-        holder.name!!.text = eta.station.name
+        holder.name.text = eta.station.name
         if (!(position == etas.size - 1 && "0 min" == eta.timeLeftDueDelay)) {
-            holder.time!!.text = eta.timeLeftDueDelay
+            holder.time.text = eta.timeLeftDueDelay
         } else {
-            holder.name!!.setTextColor(ContextCompat.getColor(parent.context, R.color.grey))
-            holder.name!!.gravity = Gravity.CENTER
+            holder.name.setTextColor(ContextCompat.getColor(parent.context, R.color.grey))
+            holder.name.gravity = Gravity.CENTER
         }
-        return convertView
+        return view
     }
 
-    private class ViewHolder {
-        internal var name: TextView? = null
-        internal var time: TextView? = null
-    }
+    private class ViewHolder(val name: TextView, val time: TextView)
 }

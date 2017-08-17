@@ -51,37 +51,35 @@ class BusMapSnippetAdapter(private val arrivals: List<BusArrival>) : BaseAdapter
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        var convertView = convertView
+        var view = convertView
         val arrival = getItem(position) as BusArrival
 
         val viewHolder: ViewHolder
 
-        if (convertView == null) {
+        if (view == null) {
             val vi = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            convertView = vi.inflate(R.layout.list_map_train, parent, false)
+            view = vi.inflate(R.layout.list_map_train, parent, false)
 
-            viewHolder = ViewHolder()
-            viewHolder.stationName = convertView!!.findViewById(R.id.station_name)
-            viewHolder.time = convertView.findViewById(R.id.time)
+            viewHolder = ViewHolder(
+                view!!.findViewById(R.id.station_name),
+                view.findViewById(R.id.time)
+            )
 
-            convertView.tag = viewHolder
+            view.tag = viewHolder
         } else {
-            viewHolder = convertView.tag as ViewHolder
+            viewHolder = view.tag as ViewHolder
         }
 
-        viewHolder.stationName!!.text = arrival.stopName
+        viewHolder.stationName.text = arrival.stopName
         if (!(position == arrivals.size - 1 && "No service" == arrival.timeLeftDueDelay)) {
-            viewHolder.time!!.text = arrival.timeLeftDueDelay
+            viewHolder.time.text = arrival.timeLeftDueDelay
         } else {
-            viewHolder.stationName!!.text = arrival.stopName
-            viewHolder.stationName!!.setTextColor(ContextCompat.getColor(parent.context, R.color.grey))
-            viewHolder.stationName!!.gravity = Gravity.CENTER
+            viewHolder.stationName.text = arrival.stopName
+            viewHolder.stationName.setTextColor(ContextCompat.getColor(parent.context, R.color.grey))
+            viewHolder.stationName.gravity = Gravity.CENTER
         }
-        return convertView
+        return view
     }
 
-    private class ViewHolder {
-        internal var stationName: TextView? = null
-        internal var time: TextView? = null
-    }
+    private class ViewHolder(val stationName: TextView, val time: TextView)
 }

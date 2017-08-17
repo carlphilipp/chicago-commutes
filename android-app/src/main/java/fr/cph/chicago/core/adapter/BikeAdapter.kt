@@ -36,14 +36,14 @@ import fr.cph.chicago.entity.BikeStation
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BikeAdapter(private var bikeStations: List<BikeStation>?) : BaseAdapter() {
+class BikeAdapter(private var bikeStations: List<BikeStation>) : BaseAdapter() {
 
     override fun getCount(): Int {
-        return bikeStations!!.size
+        return bikeStations.size
     }
 
     override fun getItem(position: Int): Any {
-        return bikeStations!![position]
+        return bikeStations[position]
     }
 
     override fun getItemId(position: Int): Long {
@@ -51,26 +51,27 @@ class BikeAdapter(private var bikeStations: List<BikeStation>?) : BaseAdapter() 
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        var convertView = convertView
+        var view = convertView
         val station = getItem(position) as BikeStation
 
         val holder: ViewHolder
 
-        if (convertView == null) {
+        if (view == null) {
             val vi = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            convertView = vi.inflate(R.layout.list_bike, parent, false)
+            view = vi.inflate(R.layout.list_bike, parent, false)
 
-            holder = ViewHolder()
-            holder.stationNameView = convertView!!.findViewById<View>(R.id.station_name) as TextView
+            holder = ViewHolder(
+                view!!.findViewById<View>(R.id.station_name) as TextView
+            )
 
-            convertView.tag = holder
+            view.tag = holder
         } else {
-            holder = convertView.tag as ViewHolder
+            holder = view.tag as ViewHolder
         }
-        holder.stationNameView!!.text = station.name
+        holder.stationNameView.text = station.name
 
-        convertView.setOnClickListener(BikeStationOnClickListener(station))
-        return convertView
+        view.setOnClickListener(BikeStationOnClickListener(station))
+        return view
     }
 
     fun setBikeStations(bikeStations: List<BikeStation>) {
@@ -83,7 +84,5 @@ class BikeAdapter(private var bikeStations: List<BikeStation>?) : BaseAdapter() 
      * @author Carl-Philipp Harmant
      * @version 1
      */
-    private class ViewHolder {
-        internal var stationNameView: TextView? = null
-    }
+    private class ViewHolder(val stationNameView: TextView)
 }
