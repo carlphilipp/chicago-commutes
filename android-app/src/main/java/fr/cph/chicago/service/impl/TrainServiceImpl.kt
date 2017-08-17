@@ -73,8 +73,8 @@ object TrainServiceImpl : TrainService {
     }
 
     override fun loadLocalTrainData(context: Context): TrainData {
-        TrainData.INSTANCE.read(context)
-        return TrainData.INSTANCE
+        TrainData.read(context)
+        return TrainData
     }
 
     override fun loadStationTrainArrival(context: Context, stationId: Int): TrainArrival {
@@ -83,7 +83,7 @@ object TrainServiceImpl : TrainService {
             params.put(context.getString(R.string.request_map_id), Integer.toString(stationId))
 
             val xmlResult = CtaClient.connect(TRAIN_ARRIVALS, params)
-            val arrivals = XmlParser.parseArrivals(xmlResult, TrainData.INSTANCE)
+            val arrivals = XmlParser.parseArrivals(xmlResult, TrainData)
             return if (arrivals.size() == 1)
                 arrivals.get(stationId)
             else

@@ -26,6 +26,7 @@ package fr.cph.chicago.data
  * @version 1
  */
 object DataHolder {
-    var trainData: TrainData = TrainData.INSTANCE
+    var trainData: TrainData = TrainData
     var busData: BusData = BusData
+    var error: Boolean = false
 }

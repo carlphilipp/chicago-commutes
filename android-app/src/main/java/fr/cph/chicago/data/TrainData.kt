@@ -40,8 +40,12 @@ import java.util.*
  * @author Carl-Philipp Harmant
  * @version 1
  */
-enum class TrainData constructor() {
-    INSTANCE;
+object TrainData {
+
+    private val TAG = TrainData::class.java.simpleName
+    private val DEFAULT_RANGE = 0.008
+    // https://data.cityofchicago.org/Transportation/CTA-System-Information-List-of-L-Stops/8pix-ypme
+    private val TRAIN_FILE_PATH = "train_stops.csv"
 
     private val stations: SparseArray<Station>?
     private val stops: SparseArray<Stop>?
@@ -266,15 +270,5 @@ enum class TrainData constructor() {
                 }
             }
         }
-    }
-
-    companion object {
-
-        private val TAG = TrainData::class.java.simpleName
-
-        private val DEFAULT_RANGE = 0.008
-
-        // https://data.cityofchicago.org/Transportation/CTA-System-Information-List-of-L-Stops/8pix-ypme
-        private val TRAIN_FILE_PATH = "train_stops.csv"
     }
 }

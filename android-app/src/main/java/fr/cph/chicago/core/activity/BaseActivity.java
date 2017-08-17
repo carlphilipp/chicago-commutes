@@ -129,6 +129,7 @@ public class BaseActivity extends Activity {
         Observable.zip(trainLocalData, busLocalData, (trainData, busData) -> true)
             .doOnComplete(() ->
                 Observable.zip(trainOnlineFavorites, busOnlineFavorites, (trainArrivalsDTO, busArrivalsDTO) -> {
+                        DataHolder.INSTANCE.setError(false);
                         App.Companion.setLastUpdate(Calendar.getInstance().getTime());
                         return new FavoritesDTO(trainArrivalsDTO, busArrivalsDTO, false, Collections.emptyList());
                     }
@@ -165,9 +166,8 @@ public class BaseActivity extends Activity {
     }
 
     private void startErrorActivity() {
-        // Reset data
-        DataHolder.INSTANCE.setTrainData(null);
-        DataHolder.INSTANCE.setBusData(null);
+        // Set Error
+        DataHolder.INSTANCE.setError(true);
 
         // Start error activity
         final Intent intent = new Intent(this, ErrorActivity.class);

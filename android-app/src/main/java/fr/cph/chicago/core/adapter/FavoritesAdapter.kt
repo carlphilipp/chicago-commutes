@@ -316,7 +316,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         get() {
             val lastUpdateInMinutes = StringBuilder()
             val currentDate = Calendar.getInstance().time
-            val diff = getTimeDifference(App.lastUpdate!!, currentDate)
+            val diff = getTimeDifference(App.lastUpdate, currentDate)
             val hours = diff[0]
             val minutes = diff[1]
             if (hours == 0L && minutes == 0L) {
