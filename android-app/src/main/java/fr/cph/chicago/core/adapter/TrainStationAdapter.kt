@@ -52,7 +52,7 @@ class TrainStationAdapter : BaseAdapter() {
     }
 
     @SuppressLint("ViewHolder")
-    override fun getView(position: Int, convertView: View, parent: ViewGroup): View {
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var convertView = convertView
         val vi = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         convertView = vi.inflate(R.layout.list_train_line, parent, false)

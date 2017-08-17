@@ -217,7 +217,7 @@ public class BusBoundActivity extends ListActivity {
             ObservableUtil.INSTANCE.createBusPatternObservable(getApplicationContext(), busRouteId, bound)
                 .subscribe(
                     busPattern -> {
-                        if (busPattern.getDirection().equals("error")) {
+                        if (!busPattern.getDirection().equals("error")) {
                             final int center = busPattern.getPoints().size() / 2;
                             final Position position = busPattern.getPoints().get(center).getPosition();
                             if (position.getLatitude() == 0 && position.getLongitude() == 0) {
