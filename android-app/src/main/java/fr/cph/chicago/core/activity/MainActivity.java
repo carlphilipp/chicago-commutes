@@ -40,6 +40,7 @@ import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import fr.cph.chicago.R;
+import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.fragment.BikeFragment;
 import fr.cph.chicago.core.fragment.BusFragment;
 import fr.cph.chicago.core.fragment.CtaMapFragment;
@@ -182,10 +183,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // Favorite fragment
             favoritesFragment.startRefreshing();
 
-            Util.INSTANCE.trackAction(getApplicationContext(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
-            Util.INSTANCE.trackAction(getApplicationContext(), R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
-            Util.INSTANCE.trackAction(getApplicationContext(), R.string.analytics_category_req, R.string.analytics_action_get_divvy, getApplicationContext().getString(R.string.analytics_action_get_divvy_all));
-            Util.INSTANCE.trackAction(getApplicationContext(), R.string.analytics_category_ui, R.string.analytics_action_press, getApplicationContext().getString(R.string.analytics_action_refresh_fav));
+            Util.INSTANCE.trackAction((App) getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
+            Util.INSTANCE.trackAction((App) getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
+            Util.INSTANCE.trackAction((App) getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_divvy, getApplicationContext().getString(R.string.analytics_action_get_divvy_all));
+            Util.INSTANCE.trackAction((App) getApplication(), R.string.analytics_category_ui, R.string.analytics_action_press, getApplicationContext().getString(R.string.analytics_action_refresh_fav));
 
             if (Util.INSTANCE.isNetworkAvailable(getApplicationContext())) {
                 final DataHolder dataHolder = DataHolder.INSTANCE;
@@ -228,8 +229,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             },
             onError -> Util.INSTANCE.showSnackBar(this, R.string.message_something_went_wrong),
             () -> {
-                Util.INSTANCE.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ROUTES_URL);
-                Util.INSTANCE.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_divvy, getApplicationContext().getString(R.string.analytics_action_get_divvy_all));
+                Util.INSTANCE.trackAction((App) getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ROUTES_URL);
+                Util.INSTANCE.trackAction((App) getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_divvy, getApplicationContext().getString(R.string.analytics_action_get_divvy_all));
             }
         );
     }

@@ -19,6 +19,7 @@ import java.util.Random;
 
 import butterknife.BindView;
 import fr.cph.chicago.R;
+import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.activity.BaseActivity;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.data.PreferencesImpl;
@@ -45,7 +46,7 @@ public class SettingsFragment extends AbstractFragment {
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         preferences = PreferencesImpl.INSTANCE;
-        Util.INSTANCE.trackScreen(getContext(), getString(R.string.analytics_settings_fragment));
+        Util.INSTANCE.trackScreen((App) getActivity().getApplication(), getString(R.string.analytics_settings_fragment));
     }
 
     @Override

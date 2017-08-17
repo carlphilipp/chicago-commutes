@@ -26,6 +26,7 @@ import android.widget.ListView;
 import butterknife.BindString;
 import butterknife.BindView;
 import fr.cph.chicago.R;
+import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.activity.TrainListStationActivity;
 import fr.cph.chicago.core.adapter.TrainStationAdapter;
 import fr.cph.chicago.entity.enumeration.TrainLine;
@@ -58,7 +59,7 @@ public final class TrainFragment extends AbstractFragment {
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Util.INSTANCE.trackScreen(getContext(), getString(R.string.analytics_train_fragment));
+        Util.INSTANCE.trackScreen((App) getActivity().getApplication(), getString(R.string.analytics_train_fragment));
     }
 
     @Override

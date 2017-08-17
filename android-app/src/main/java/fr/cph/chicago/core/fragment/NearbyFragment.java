@@ -120,7 +120,7 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
         super.onCreate(savedInstanceState);
         App.Companion.checkTrainData(activity);
         App.Companion.checkBusData(activity);
-        Util.INSTANCE.trackScreen(getContext(), getString(R.string.analytics_nearby_fragment));
+        Util.INSTANCE.trackScreen((App) getActivity().getApplication(), getString(R.string.analytics_nearby_fragment));
     }
 
     @Override

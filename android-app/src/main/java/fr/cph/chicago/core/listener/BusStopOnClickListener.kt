@@ -41,23 +41,23 @@ import io.reactivex.Observable
 
 import fr.cph.chicago.Constants.Companion.BUSES_STOP_URL
 
-class BusStopOnClickListener(private val context: Context, private val parent: ViewGroup, private val busDetailsDTOs: List<BusDetailsDTO>) : View.OnClickListener {
+class BusStopOnClickListener(private val app: App, private val parent: ViewGroup, private val busDetailsDTOs: List<BusDetailsDTO>) : View.OnClickListener {
 
     override fun onClick(view: View) {
         if (busDetailsDTOs.size == 1) {
             val busDetails = busDetailsDTOs[0]
             loadBusDetails(view, busDetails)
         } else {
-            val ada = PopupBusDetailsFavoritesAdapter(context, busDetailsDTOs)
+            val ada = PopupBusDetailsFavoritesAdapter(app.applicationContext, busDetailsDTOs)
             val vi = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val popupView = vi.inflate(R.layout.popup_bus, parent, false)
             val listView = popupView.findViewById<ListView>(R.id.details)
             listView.adapter = ada
-            val builder = AlertDialog.Builder(context)
+            val builder = AlertDialog.Builder(app.applicationContext)
             builder.setAdapter(ada) { _, position ->
                 val busDetails = busDetailsDTOs[position]
                 loadBusDetails(view, busDetails)
-                Util.trackAction(context, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_STOP_URL)
+                Util.trackAction(app, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_STOP_URL)
             }
             val dialog = builder.create()
             dialog.show()
@@ -68,26 +68,26 @@ class BusStopOnClickListener(private val context: Context, private val parent: V
     }
 
     private fun loadBusDetails(view: View, busDetails: BusDetailsDTO) {
-        ObservableUtil.createBusStopBoundObservable(context.applicationContext, busDetails.busRouteId, busDetails.boundTitle)
+        ObservableUtil.createBusStopBoundObservable(app.applicationContext, busDetails.busRouteId, busDetails.boundTitle)
                 .subscribe({ onNext ->
                     Observable.fromIterable(onNext)
                             .filter { busStop -> Integer.toString(busStop.id) == busDetails.stopId }
                             .firstElement()
                             .subscribe({ busStop: BusStop ->
-                                val intent = Intent(context.applicationContext, BusActivity::class.java)
+                                val intent = Intent(app.applicationContext, BusActivity::class.java)
                                 val extras = Bundle()
-                                extras.putInt(context.getString(R.string.bundle_bus_stop_id), busStop.id)
-                                extras.putString(context.getString(R.string.bundle_bus_stop_name), busStop.name)
-                                extras.putString(context.getString(R.string.bundle_bus_route_id), busDetails.busRouteId)
-                                extras.putString(context.getString(R.string.bundle_bus_route_name), busDetails.routeName)
-                                extras.putString(context.getString(R.string.bundle_bus_bound), busDetails.bound)
-                                extras.putString(context.getString(R.string.bundle_bus_bound_title), busDetails.boundTitle)
-                                extras.putDouble(context.getString(R.string.bundle_bus_latitude), busStop.position.latitude)
-                                extras.putDouble(context.getString(R.string.bundle_bus_longitude), busStop.position.longitude)
+                                extras.putInt(app.getString(R.string.bundle_bus_stop_id), busStop.id)
+                                extras.putString(app.getString(R.string.bundle_bus_stop_name), busStop.name)
+                                extras.putString(app.getString(R.string.bundle_bus_route_id), busDetails.busRouteId)
+                                extras.putString(app.getString(R.string.bundle_bus_route_name), busDetails.routeName)
+                                extras.putString(app.getString(R.string.bundle_bus_bound), busDetails.bound)
+                                extras.putString(app.getString(R.string.bundle_bus_bound_title), busDetails.boundTitle)
+                                extras.putDouble(app.getString(R.string.bundle_bus_latitude), busStop.position.latitude)
+                                extras.putDouble(app.getString(R.string.bundle_bus_longitude), busStop.position.longitude)
 
                                 intent.putExtras(extras)
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                context.startActivity(intent)
+                                app.startActivity(intent)
                             }
                             ) { onError ->
                                 Log.e(TAG, onError.message, onError)

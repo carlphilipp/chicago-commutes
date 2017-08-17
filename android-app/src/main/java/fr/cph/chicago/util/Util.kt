@@ -222,18 +222,17 @@ object Util {
      *
      * @param screen the screen name
      */
-    fun trackScreen(context: Context, screen: String) {
-        val t = App.getTracker(context)
-        t.setScreenName(screen)
-        t.send(HitBuilders.ScreenViewBuilder().build())
+    fun trackScreen(app: App, screen: String) {
+        val tracker = app.tracker
+        tracker.setScreenName(screen)
+        tracker.send(HitBuilders.ScreenViewBuilder().build())
     }
 
-    fun trackAction(context: Context, category: Int, action: Int, label: String) {
+    fun trackAction(app: App, category: Int, action: Int, label: String) {
         Thread {
-            val tracker = App.getTracker(context.applicationContext)
-            tracker.send(HitBuilders.EventBuilder()
-                .setCategory(context.getString(category))
-                .setAction(context.getString(action))
+            app.tracker.send(HitBuilders.EventBuilder()
+                .setCategory(app.applicationContext.getString(category))
+                .setAction(app.applicationContext.getString(action))
                 .setLabel(label)
                 .setValue(0).build())
         }.start()

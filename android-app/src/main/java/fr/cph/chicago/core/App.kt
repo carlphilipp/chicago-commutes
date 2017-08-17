@@ -38,15 +38,22 @@ import java.util.*
  * @version 1
  */
 class App : Application() {
+
+    val tracker: Tracker by lazy {
+        println("Load tracker")
+        val analytics = GoogleAnalytics.getInstance(applicationContext)
+        val key = applicationContext.getString(R.string.google_analytics_key)
+        val tracker = analytics.newTracker(key)
+        tracker.enableAutoActivityTracking(true)
+        tracker
+    }
+
     companion object {
 
         /**
          * Last update of favorites
          */
-        var lastUpdate: Date? = null
-        private var tracker: Tracker? = null
-
-
+        var lastUpdate: Date = Date()
         var screenWidth: Int = 0
         var lineWidth: Float = 0.toFloat()
         var ctaTrainKey: String? = null
@@ -54,7 +61,7 @@ class App : Application() {
         var googleStreetKey: String? = null
 
         fun checkTrainData(activity: Activity): Boolean {
-            if (DataHolder.trainData == null) {
+            if (DataHolder.error) {
                 startErrorActivity(activity)
                 return false
             }
@@ -62,7 +69,7 @@ class App : Application() {
         }
 
         fun checkBusData(activity: Activity) {
-            if (DataHolder.busData == null) {
+            if (DataHolder.error) {
                 startErrorActivity(activity)
             }
         }
@@ -73,16 +80,6 @@ class App : Application() {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
             activity.startActivity(intent)
             activity.finish()
-        }
-
-        fun getTracker(context: Context): Tracker {
-            if (tracker == null) {
-                val analytics = GoogleAnalytics.getInstance(context)
-                val key = context.getString(R.string.google_analytics_key)
-                tracker = analytics.newTracker(key)
-                tracker!!.enableAutoActivityTracking(true)
-            }
-            return tracker as Tracker
         }
 
         fun setupContextData(context: Context) {

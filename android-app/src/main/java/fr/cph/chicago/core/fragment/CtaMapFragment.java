@@ -13,6 +13,7 @@ import com.github.chrisbanes.photoview.PhotoView;
 
 import butterknife.BindView;
 import fr.cph.chicago.R;
+import fr.cph.chicago.core.App;
 import fr.cph.chicago.util.Util;
 
 @SuppressWarnings("WeakerAccess")
@@ -30,7 +31,7 @@ public class CtaMapFragment extends AbstractFragment {
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Util.INSTANCE.trackScreen(getContext(), getString(R.string.analytics_cta_map_fragment));
+        Util.INSTANCE.trackScreen((App) getActivity().getApplication(), getString(R.string.analytics_cta_map_fragment));
     }
 
     @Override

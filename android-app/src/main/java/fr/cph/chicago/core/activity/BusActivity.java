@@ -180,7 +180,7 @@ public class BusActivity extends AbstractStationActivity {
             setToolBar();
 
             // Google analytics
-            Util.INSTANCE.trackScreen(getApplicationContext(), analyticsBusDetails);
+            Util.INSTANCE.trackScreen((App) getApplication(), analyticsBusDetails);
         }
     }
 
@@ -309,7 +309,7 @@ public class BusActivity extends AbstractStationActivity {
             } catch (final ParserException | ConnectException e) {
                 this.trackerException = e;
             }
-            Util.INSTANCE.trackAction(BusActivity.this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL);
+            Util.INSTANCE.trackAction((App) BusActivity.this.getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL);
             return null;
         }
 

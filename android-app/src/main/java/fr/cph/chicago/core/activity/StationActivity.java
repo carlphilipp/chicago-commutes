@@ -186,7 +186,7 @@ public class StationActivity extends AbstractStationActivity {
                 swipeRefreshLayout.setColorSchemeColors(randomTrainLine.getColor());
                 setToolBar(randomTrainLine);
 
-                Util.INSTANCE.trackScreen(getApplicationContext(), trainDetails);
+                Util.INSTANCE.trackScreen((App) getApplication(), trainDetails);
             }
         }
     }

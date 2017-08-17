@@ -121,7 +121,7 @@ public class FavoritesFragment extends AbstractFragment {
         if (bikeStations == null) {
             bikeStations = new ArrayList<>();
         }
-        Util.INSTANCE.trackScreen(getContext(), getString(R.string.analytics_favorites_fragment));
+        Util.INSTANCE.trackScreen((App) getActivity().getApplication(), getString(R.string.analytics_favorites_fragment));
     }
 
     @Override
@@ -161,10 +161,10 @@ public class FavoritesFragment extends AbstractFragment {
 
             swipeRefreshLayout.setOnRefreshListener(() -> {
                 swipeRefreshLayout.setColorSchemeColors(Util.INSTANCE.getRandomColor());
-                Util.INSTANCE.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
-                Util.INSTANCE.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
-                Util.INSTANCE.trackAction(activity, R.string.analytics_category_req, R.string.analytics_action_get_divvy, getContext().getString(R.string.analytics_action_get_divvy_all));
-                Util.INSTANCE.trackAction(activity, R.string.analytics_category_ui, R.string.analytics_action_press, getContext().getString(R.string.analytics_action_refresh_fav));
+                Util.INSTANCE.trackAction((App) getActivity().getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
+                Util.INSTANCE.trackAction((App) getActivity().getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
+                Util.INSTANCE.trackAction((App) getActivity().getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_divvy, getContext().getString(R.string.analytics_action_get_divvy_all));
+                Util.INSTANCE.trackAction((App) getActivity().getApplication(), R.string.analytics_category_ui, R.string.analytics_action_press, getContext().getString(R.string.analytics_action_refresh_fav));
 
                 final DataHolder dataHolder = DataHolder.INSTANCE;
                 if (dataHolder.getBusData() == null

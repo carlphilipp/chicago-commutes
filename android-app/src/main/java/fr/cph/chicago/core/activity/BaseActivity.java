@@ -142,8 +142,8 @@ public class BaseActivity extends Activity {
     }
 
     private void trackWithGoogleAnalytics() {
-        Util.INSTANCE.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
-        Util.INSTANCE.trackAction(this, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
+        Util.INSTANCE.trackAction((App) this.getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
+        Util.INSTANCE.trackAction((App) this.getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
     }
 
     /**

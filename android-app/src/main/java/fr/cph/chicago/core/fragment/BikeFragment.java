@@ -40,6 +40,7 @@ import java.util.List;
 import butterknife.BindString;
 import butterknife.BindView;
 import fr.cph.chicago.R;
+import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.adapter.BikeAdapter;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.util.Util;
@@ -87,7 +88,7 @@ public class BikeFragment extends AbstractFragment {
 
         setHasOptionsMenu(true);
 
-        Util.INSTANCE.trackScreen(getContext(), getString(R.string.analytics_bike_fragment));
+        Util.INSTANCE.trackScreen((App) getActivity().getApplication(), getString(R.string.analytics_bike_fragment));
     }
 
     @NonNull
