@@ -121,7 +121,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
 
         holder.favoriteImage.setImageResource(R.drawable.ic_train_white_24dp)
         holder.stationNameTextView.text = station.name
-        holder.detailsButton.setOnClickListener { v ->
+        holder.detailsButton.setOnClickListener { _ ->
             if (!Util.isNetworkAvailable(context)) {
                 Util.showNetworkErrorMessage(activity)
             } else {
@@ -135,7 +135,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         }
 
         holder.mapButton.text = activity.getString(R.string.favorites_view_trains)
-        holder.mapButton.setOnClickListener { v ->
+        holder.mapButton.setOnClickListener { _ ->
             if (!Util.isNetworkAvailable(context)) {
                 Util.showNetworkErrorMessage(activity)
             } else {
@@ -161,7 +161,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
                     val dialog = builder.create()
                     dialog.show()
                     if (dialog.window != null) {
-                        dialog.window!!.setLayout(((activity.application as App).screenWidth * 0.7).toInt(), LayoutParams.WRAP_CONTENT)
+                        dialog.window.setLayout(((activity.application as App).screenWidth * 0.7).toInt(), LayoutParams.WRAP_CONTENT)
                     }
                 }
             }

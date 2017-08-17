@@ -42,9 +42,10 @@ import kotlin.collections.HashMap
 // TODO to analyze and refactor
 object FavoritesData {
 
-    private val trainData: TrainData
-    private val busData: BusData
+    private val trainData: TrainData = DataHolder.trainData
+    private val busData: BusData = DataHolder.busData
 
+    // FIXME: what is that??
     fun setTrainArrivals(trainArrivals: SparseArray<TrainArrival>) {
         this.trainArrivals = trainArrivals
     }
@@ -65,29 +66,14 @@ object FavoritesData {
         this.preferences = preferences
     }
 
-
-    private var trainArrivals: SparseArray<TrainArrival>? = null
-    private var busArrivals: List<BusArrival>? = null
-    private var bikeStations: List<BikeStation>? = null
-    private var trainFavorites: List<Int>? = null
-    private var busFavorites: List<String>? = null
-    private val bikeFavorites: MutableList<String>
-    private var fakeBusFavorites: List<String>? = null
-    private var preferences: Preferences? = null
-
-    init {
-        this.trainArrivals = SparseArray()
-        this.busArrivals = ArrayList()
-        this.bikeStations = ArrayList()
-        this.trainFavorites = ArrayList()
-        this.busFavorites = ArrayList()
-        this.fakeBusFavorites = ArrayList()
-        this.bikeFavorites = ArrayList()
-
-        this.trainData = DataHolder.trainData
-        this.busData = DataHolder.busData
-        this.preferences = PreferencesImpl
-    }
+    private var trainArrivals: SparseArray<TrainArrival> = SparseArray()
+    private var busArrivals: List<BusArrival> = ArrayList()
+    private var bikeStations: List<BikeStation> = ArrayList()
+    private var trainFavorites: List<Int> = ArrayList()
+    private var busFavorites: List<String> = ArrayList()
+    private val bikeFavorites: MutableList<String> = ArrayList()
+    private var fakeBusFavorites: List<String> = ArrayList()
+    private var preferences: Preferences = PreferencesImpl
 
     /**
      * Get the size of the current model
@@ -95,7 +81,7 @@ object FavoritesData {
      * @return a size
      */
     fun size(): Int {
-        return trainFavorites!!.size + fakeBusFavorites!!.size + bikeFavorites.size
+        return trainFavorites!!.size + fakeBusFavorites.size + bikeFavorites.size
     }
 
     /**
@@ -105,25 +91,25 @@ object FavoritesData {
      * @return an object, station or bus route
      */
     fun getObject(position: Int, context: Context): Parcelable {
-        if (position < trainFavorites!!.size) {
-            val stationId = trainFavorites!![position]
+        if (position < trainFavorites.size) {
+            val stationId = trainFavorites[position]
             return trainData.getStation(stationId)
-        } else if (position < trainFavorites!!.size + fakeBusFavorites!!.size && position - trainFavorites!!.size < fakeBusFavorites!!.size) {
-            val index = position - trainFavorites!!.size
-            val routeId = fakeBusFavorites!![index]
+        } else if (position < trainFavorites.size + fakeBusFavorites.size && position - trainFavorites.size < fakeBusFavorites.size) {
+            val index = position - trainFavorites.size
+            val routeId = fakeBusFavorites[index]
             val busDataRoute = busData.getRoute(routeId)
             if (busDataRoute.name != "error") {
                 return busDataRoute
             } else {
                 // Get name in the preferences if null
-                val routeName = preferences!!.getBusRouteNameMapping(context, routeId)
+                val routeName = preferences.getBusRouteNameMapping(context, routeId)
                 val busRoute = BusRoute(routeId, routeName ?: "")
                 return busRoute
             }
         } else {
-            val index = position - (trainFavorites!!.size + fakeBusFavorites!!.size)
+            val index = position - (trainFavorites.size + fakeBusFavorites.size)
             if (bikeStations != null) {
-                val found = bikeStations!!
+                val found = bikeStations
                     .filter { bikeStation -> Integer.toString(bikeStation.id) == bikeFavorites[index] }
                     .getOrNull(0)
                 return if (found != null) found else createEmptyBikeStation(index, context)
@@ -134,7 +120,7 @@ object FavoritesData {
     }
 
     private fun createEmptyBikeStation(index: Int, context: Context): BikeStation {
-        val stationName = preferences!!.getBikeRouteNameMapping(context, bikeFavorites[index])
+        val stationName = preferences.getBikeRouteNameMapping(context, bikeFavorites[index])
         return BikeStation.buildDefaultBikeStationWithName(stationName ?: StringUtils.EMPTY)
     }
 
@@ -145,7 +131,7 @@ object FavoritesData {
      * @return a train arrival
      */
     private fun getTrainArrival(stationId: Int): TrainArrival {
-        return trainArrivals!!.get(stationId, TrainArrival.buildEmptyTrainArrival())
+        return trainArrivals.get(stationId, TrainArrival.buildEmptyTrainArrival())
     }
 
     fun getTrainArrivalByLine(stationId: Int, trainLine: TrainLine): Map<String, String> {
@@ -182,12 +168,12 @@ object FavoritesData {
     }
 
     private fun addNoServiceBusIfNeeded(busArrivalDTO: BusArrivalStopMappedDTO, routeId: String, context: Context) {
-        for (bus in busFavorites!!) {
+        for (bus in busFavorites) {
             val (routeIdFav, stopId1, bound) = Util.decodeBusFavorite(bus)
             if (routeIdFav == routeId) {
                 val stopId = Integer.valueOf(stopId1)
 
-                var stopName = preferences!!.getBusStopNameMapping(context, stopId!!.toString())
+                var stopName = preferences.getBusStopNameMapping(context, stopId!!.toString())
                 stopName = if (stopName != null) stopName else stopId.toString()
 
                 // FIXME check if that logic works. I think it does not. In what case do we show that bus arrival?
@@ -208,7 +194,7 @@ object FavoritesData {
      * @return a boolean
      */
     private fun isInFavorites(routeId: String, stopId: Int, bound: String): Boolean {
-        return busFavorites!!
+        return busFavorites
             .map { Util.decodeBusFavorite(it) }
             // TODO: Is that correct ? maybe remove stopId
             .filter { (routeId1, stopId1, bound1) -> routeId == routeId1 && Integer.toString(stopId) == stopId1 && bound == bound1 }
@@ -216,14 +202,14 @@ object FavoritesData {
     }
 
     fun setFavorites(context: Context) {
-        trainFavorites = preferences!!.getTrainFavorites(context)
-        busFavorites = preferences!!.getBusFavorites(context)
+        trainFavorites = preferences.getTrainFavorites(context)
+        busFavorites = preferences.getBusFavorites(context)
         fakeBusFavorites = calculateActualRouteNumberBusFavorites()
         bikeFavorites.clear()
-        val bikeFavoritesTemp = preferences!!.getBikeFavorites(context)
-        if (bikeStations != null && bikeStations!!.size != 0) {
+        val bikeFavoritesTemp = preferences.getBikeFavorites(context)
+        if (bikeStations.isNotEmpty()) {
             bikeFavoritesTemp
-                .flatMap { bikeStationId -> bikeStations!!.filter { station -> Integer.toString(station.id) == bikeStationId } }
+                .flatMap { bikeStationId -> bikeStations.filter { station -> Integer.toString(station.id) == bikeStationId } }
                 .sortedWith(Util.BIKE_COMPARATOR_NAME)
                 .map { station -> Integer.toString(station.id) }
                 .forEach({ bikeFavorites.add(it) })
@@ -233,7 +219,7 @@ object FavoritesData {
     }
 
     private fun calculateActualRouteNumberBusFavorites(): List<String> {
-        return busFavorites!!
+        return busFavorites
             .map { Util.decodeBusFavorite(it) }
             .map { it.routeId }
             .distinct()

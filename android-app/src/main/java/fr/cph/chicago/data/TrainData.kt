@@ -47,14 +47,12 @@ object TrainData {
     // https://data.cityofchicago.org/Transportation/CTA-System-Information-List-of-L-Stops/8pix-ypme
     private val TRAIN_FILE_PATH = "train_stops.csv"
 
-    private val stations: SparseArray<Station>?
-    private val stops: SparseArray<Stop>?
+    private val stations: SparseArray<Station> = SparseArray()
+    private val stops: SparseArray<Stop> = SparseArray()
     private val parser: CsvParser
-    private var stationsOrderByLineMap: MutableMap<TrainLine, MutableList<Station>>? = null
+    private var stationsOrderByLineMap: MutableMap<TrainLine, MutableList<Station>> = mutableMapOf()
 
     init {
-        this.stations = SparseArray()
-        this.stops = SparseArray()
         val settings = CsvParserSettings()
         settings.format.setLineSeparator("\n")
         this.parser = CsvParser(settings)
@@ -64,12 +62,12 @@ object TrainData {
      * Read train data from CSV file.
      */
     fun read(context: Context) {
-        if (stations!!.size() == 0 && stops!!.size() == 0) {
+        if (stations.size() == 0 && stops.size() == 0) {
             var inputStreamReader: InputStreamReader? = null
             try {
                 inputStreamReader = InputStreamReader(context.assets.open(TRAIN_FILE_PATH))
                 val allRows = parser.parseAll(inputStreamReader)
-                for (i in 1..allRows.size - 1) {
+                for (i in 1 until allRows.size) {
                     val row = allRows[i]
                     val stopId = Integer.parseInt(row[0]) // STOP_ID
                     val direction = TrainDirection.fromString(row[1]) // DIRECTION_ID
@@ -139,7 +137,7 @@ object TrainData {
                         currentStation.stops.add(stop)
                     }
                 }
-                sort()
+                stationsOrderByLineMap = sortStation()
             } catch (e: IOException) {
                 Log.e(TAG, e.message, e)
             } finally {
@@ -153,8 +151,9 @@ object TrainData {
      *
      * @return a map containing all the stations ordered line
      */
-    val allStations: MutableMap<TrainLine, MutableList<Station>>?
+    val allStations: MutableMap<TrainLine, MutableList<Station>>
         get() = stationsOrderByLineMap
+
 
     /**
      * Get a list of station for a given line
@@ -162,8 +161,9 @@ object TrainData {
      * @param line the train line
      * @return a list of station
      */
+
     fun getStationsForLine(line: TrainLine): List<Station>? {
-        return stationsOrderByLineMap!![line]
+        return stationsOrderByLineMap[line]
     }
 
     /**
@@ -173,12 +173,9 @@ object TrainData {
      * @return the station
      */
     fun getStation(id: Int): Station { // FIXME should be Station? ??
-        val station = stations!!.get(id)
+        val station = stations.get(id)
         return station ?: Station.buildEmptyStation()
     }
-
-    val isStationNull: Boolean
-        get() = stations == null
 
     val isStopsNull: Boolean
         get() = stops == null
@@ -189,8 +186,8 @@ object TrainData {
      * @param id the id of the stop
      * @return a stop
      */
-    fun getStop(id: Int?): Stop {
-        return if (stops!!.size() != 0) stops.get(id!!) else Stop.buildEmptyStop()
+    fun getStop(id: Int): Stop {
+        return stops.get(id, Stop.buildEmptyStop())
     }
 
     /**
@@ -209,7 +206,7 @@ object TrainData {
         val lonMin = longitude - DEFAULT_RANGE
 
         val nearByStations = ArrayList<Station>()
-        for (i in 0 until stations!!.size()) {
+        for (i in 0 until stations.size()) {
             val station = stations.valueAt(i)
             station.stopsPosition
                 .filter { stopPosition ->
@@ -250,25 +247,23 @@ object TrainData {
         }
     }
 
-    /**
-     * Order stations
-     */
-    private fun sort() {
-        stationsOrderByLineMap = TreeMap()
-        for (i in 0..stations!!.size() - 1) {
+    private fun sortStation(): MutableMap<TrainLine, MutableList<Station>> {
+        val result = TreeMap<TrainLine, MutableList<Station>>()
+        for (i in 0 until stations.size()) {
             val station = stations.valueAt(i)
             val trainLines = station.lines
             for (trainLine in trainLines) {
-                if (stationsOrderByLineMap!!.containsKey(trainLine)) {
-                    val stations = stationsOrderByLineMap!![trainLine]
+                if (result.containsKey(trainLine)) {
+                    val stations = result[trainLine]
                     stations!!.add(station)
                     Collections.sort(stations)
                 } else {
                     val stations = ArrayList<Station>()
-                    stationsOrderByLineMap!!.put(trainLine, stations)
+                    result.put(trainLine, stations)
                     stations.add(station)
                 }
             }
         }
+        return result
     }
 }

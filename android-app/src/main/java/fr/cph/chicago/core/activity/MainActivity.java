@@ -254,7 +254,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void reloadData() {
         final DataHolder dataHolder = DataHolder.INSTANCE;
         final TrainData trainData = TrainData.INSTANCE;
-        if (trainData.isStationNull() || trainData.isStopsNull()) {
+        if (trainData.getAllStations().isEmpty() || trainData.isStopsNull()) {
             trainData.read(getApplicationContext());
             dataHolder.setTrainData(trainData);
         }

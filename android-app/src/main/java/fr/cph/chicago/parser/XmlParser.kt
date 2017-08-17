@@ -71,7 +71,7 @@ object XmlParser {
             var tagName: String? = null
 
             var stationId: Int? = null
-            var stopId: Int? = null
+            var stopId: Int = 0
             var stationName: String? = null
             var stopDestination: String? = null
             var routeName: TrainLine? = null
