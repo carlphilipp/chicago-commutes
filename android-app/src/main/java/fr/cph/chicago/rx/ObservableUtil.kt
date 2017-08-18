@@ -79,7 +79,7 @@ object ObservableUtil {
         }
             .onErrorReturn { throwable ->
                 Log.e(TAG, throwable.message, throwable)
-                ArrayList()
+                listOf()
             }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -94,7 +94,7 @@ object ObservableUtil {
         }
             .onErrorReturn { throwable ->
                 Log.e(TAG, throwable.message, throwable)
-                ArrayList()
+                listOf()
             }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -174,7 +174,7 @@ object ObservableUtil {
         }
             .onErrorReturn { throwable ->
                 Log.e(TAG, throwable.message, throwable)
-                ArrayList()
+                listOf()
             }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

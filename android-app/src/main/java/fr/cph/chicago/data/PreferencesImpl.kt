@@ -58,10 +58,10 @@ object PreferencesImpl : Preferences {
      * @param context   the context
      * @param favorites the favorites
      */
-    override fun saveTrainFavorites(context: Context, favorites: MutableList<Int>) {
+    override fun saveTrainFavorites(context: Context, favorites: List<Int>) {
         val sharedPref = getPrivatePreferences(context)
         val editor = sharedPref.edit()
-        val set = favorites.map { it.toString() }.toMutableSet()
+        val set = favorites.map { it.toString() }.toSet()
         Log.v(TAG, "Put train favorites: " + favorites.toString())
         editor.putStringSet(PREFERENCE_FAVORITES_TRAIN, set)
         editor.apply()
@@ -81,10 +81,10 @@ object PreferencesImpl : Preferences {
         return !((setPref1 == null || setPref1.size == 0) && (setPref2 == null || setPref2.size == 0) && (setPref3 == null || setPref3.size == 0))
     }
 
-    override fun saveBikeFavorites(context: Context, favorites: MutableList<String>) {
+    override fun saveBikeFavorites(context: Context, favorites: List<String>) {
         val sharedPref = getPrivatePreferences(context)
         val editor = sharedPref.edit()
-        val set = favorites.toMutableSet()
+        val set = favorites.toSet()
         Log.v(TAG, "Put bike favorites: " + set.toString())
         editor.putStringSet(PREFERENCE_FAVORITES_BIKE, set)
         editor.apply()
@@ -118,12 +118,12 @@ object PreferencesImpl : Preferences {
      * @param context   the context
      * @param favorites the list of favorites to save
      */
-    override fun saveBusFavorites(context: Context, favorites: MutableList<String>) {
+    override fun saveBusFavorites(context: Context, favorites: List<String>) {
         val sharedPref = getPrivatePreferences(context)
         val editor = sharedPref.edit()
         val set = LinkedHashSet<String>()
         set.addAll(favorites)
-        Log.v(TAG, "Put bus favorites: " + favorites.toString())
+        Log.v(TAG, "Put bus favorites: $favorites")
         editor.putStringSet(PREFERENCE_FAVORITES_BUS, set)
         editor.apply()
     }
@@ -192,7 +192,7 @@ object PreferencesImpl : Preferences {
     override fun getTrainFavorites(context: Context): MutableList<Int> {
         val sharedPref = getPrivatePreferences(context)
         val setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_TRAIN, LinkedHashSet())
-        Log.v(TAG, "Read train favorites : " + setPref!!)
+        Log.v(TAG, "Read train favorites : " + setPref)
         return setPref
             .map { Integer.valueOf(it) }
             .map { favorite -> DataHolder.trainData.getStation(favorite!!) }
@@ -209,7 +209,7 @@ object PreferencesImpl : Preferences {
      * @param direction the direction
      * @param value     the value
      */
-    override fun saveTrainFilter(context: Context, stationId: Int?, line: TrainLine, direction: TrainDirection, value: Boolean) {
+    override fun saveTrainFilter(context: Context, stationId: Int, line: TrainLine, direction: TrainDirection, value: Boolean) {
         val sharedPref = getPrivatePreferences(context)
         val editor = sharedPref.edit()
         editor.putBoolean(stationId.toString() + "_" + line + "_" + direction, value)
@@ -224,7 +224,7 @@ object PreferencesImpl : Preferences {
      * @param direction the direction
      * @return if a train is filtered
      */
-    override fun getTrainFilter(context: Context, stationId: Int?, line: TrainLine, direction: TrainDirection): Boolean {
+    override fun getTrainFilter(context: Context, stationId: Int, line: TrainLine, direction: TrainDirection): Boolean {
         val sharedPref = getPrivatePreferences(context)
         return sharedPref.getBoolean(stationId.toString() + "_" + line + "_" + direction, true)
     }

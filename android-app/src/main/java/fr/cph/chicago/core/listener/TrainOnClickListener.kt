@@ -52,46 +52,39 @@ class TrainOnClickListener(private val context: Context,
         if (!Util.isNetworkAvailable(view.context)) {
             Util.showNetworkErrorMessage(view)
         } else {
-            val values = ArrayList<String>()
-            val colors = ArrayList<Int>()
-            values.add(view.context.getString(R.string.message_open_details))
+            val values = mutableListOf<String>(view.context.getString(R.string.message_open_details))
+            val colors = mutableListOf<Int>()
             for (line in trainLines) {
                 values.add(line.toString() + " line - See trains")
-                if (line !== TrainLine.YELLOW) {
-                    colors.add(line.color)
-                } else {
-                    colors.add(ContextCompat.getColor(view.context, R.color.yellowLine))
-                }
+                colors.add(if (line !== TrainLine.YELLOW) line.color else ContextCompat.getColor(view.context, R.color.yellowLine))
             }
             val ada = PopupTrainAdapter(view.context, values, colors)
 
-            val lines = ArrayList<TrainLine>()
+            val lines = mutableListOf<TrainLine>()
             lines.addAll(trainLines)
 
             val builder = AlertDialog.Builder(context)
             builder.setAdapter(ada) { _, position ->
                 val extras = Bundle()
+                val intent : Intent
                 if (position == 0) {
                     // Start station activity
-                    val intent = Intent(view.context, StationActivity::class.java)
+                    intent = Intent(view.context, StationActivity::class.java)
                     extras.putInt(view.context.getString(R.string.bundle_train_stationId), stationId)
-                    intent.putExtras(extras)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    view.context.startActivity(intent)
                 } else {
                     // Follow all trains from given line on google map view
-                    val intent = Intent(view.context, TrainMapActivity::class.java)
+                    intent = Intent(view.context, TrainMapActivity::class.java)
                     extras.putString(view.context.getString(R.string.bundle_train_line), lines[position - 1].toTextString())
-                    intent.putExtras(extras)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    view.context.startActivity(intent)
                 }
+                intent.putExtras(extras)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                view.context.startActivity(intent)
             }
 
             val dialog = builder.create()
             dialog.show()
             if (dialog.window != null) {
-                dialog.window!!.setLayout(((activity.application as App).screenWidth * 0.7).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
+                dialog.window.setLayout(((activity.application as App).screenWidth * 0.7).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
             }
         }
     }

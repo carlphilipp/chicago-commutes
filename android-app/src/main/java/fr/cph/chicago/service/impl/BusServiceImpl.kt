@@ -21,12 +21,12 @@ object BusServiceImpl : BusService {
         val paramBus = Util.getFavoritesBusParams(context)
         // Load bus
         try {
-            val rts = ArrayList<String>()
-            val stpids = ArrayList<String>()
+            val rts = mutableListOf<String>()
+            val stpids = mutableListOf<String>()
             for ((key, value) in paramBus.asMap()) {
                 var str = StringBuilder()
                 var i = 0
-                val values = value as List<String>
+                val values = value as List<*>
                 for (v in values) {
                     str.append(v).append(",")
                     if (i == 9 || i == values.size - 1) {

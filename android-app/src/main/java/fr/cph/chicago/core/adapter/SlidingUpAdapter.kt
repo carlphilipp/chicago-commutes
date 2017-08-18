@@ -66,7 +66,7 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
             //if (trainArrivalOptional.isPresent()) {
             for (trainLine in TrainLine.values()) {
                 val etaResult = trainArrival.getEtas(trainLine)
-                val etas = etaResult.fold(HashMap(), { accumulator: HashMap<String, String>, eta ->
+                val etas = etaResult.fold(mutableMapOf<String, String>(), { accumulator, eta ->
                     val stopNameData = eta.destName
                     val timingData = eta.timeLeftDueDelay
                     val value = if (accumulator.containsKey(stopNameData))

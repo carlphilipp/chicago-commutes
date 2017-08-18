@@ -9,11 +9,11 @@ import fr.cph.chicago.entity.enumeration.TrainLine
 
 interface Preferences {
 
-    fun saveTrainFavorites(context: Context, favorites: MutableList<Int>)
+    fun saveTrainFavorites(context: Context, favorites: List<Int>)
 
     fun hasFavorites(context: Context): Boolean
 
-    fun saveBikeFavorites(context: Context, favorites: MutableList<String>)
+    fun saveBikeFavorites(context: Context, favorites: List<String>)
 
     fun getBikeFavorites(context: Context): MutableList<String>
 
@@ -21,7 +21,7 @@ interface Preferences {
 
     fun getBikeRouteNameMapping(context: Context, bikeId: String): String?
 
-    fun saveBusFavorites(context: Context, favorites: MutableList<String>)
+    fun saveBusFavorites(context: Context, favorites: List<String>)
 
     fun getBusFavorites(context: Context): MutableList<String>
 
@@ -35,9 +35,9 @@ interface Preferences {
 
     fun getTrainFavorites(context: Context): MutableList<Int>
 
-    fun saveTrainFilter(context: Context, stationId: Int?, line: TrainLine, direction: TrainDirection, value: Boolean)
+    fun saveTrainFilter(context: Context, stationId: Int, line: TrainLine, direction: TrainDirection, value: Boolean)
 
-    fun getTrainFilter(context: Context, stationId: Int?, line: TrainLine, direction: TrainDirection): Boolean
+    fun getTrainFilter(context: Context, stationId: Int, line: TrainLine, direction: TrainDirection): Boolean
 
     fun getRateLastSeen(context: Context): Date
 

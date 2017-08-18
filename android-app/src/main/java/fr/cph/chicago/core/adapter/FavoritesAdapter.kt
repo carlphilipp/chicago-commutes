@@ -223,7 +223,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
 
         holder.mapButton.text = activity.getString(R.string.favorites_view_buses)
         holder.detailsButton.setOnClickListener(BusStopOnClickListener(activity, holder.parent, busDetailsDTOs))
-        holder.mapButton.setOnClickListener { v ->
+        holder.mapButton.setOnClickListener { _ ->
             if (!Util.isNetworkAvailable(context)) {
                 Util.showNetworkErrorMessage(activity)
             } else {

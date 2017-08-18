@@ -46,7 +46,7 @@ class Station(
         get() {
             return stops
                 .map { it.lines }
-                .fold(TreeSet<TrainLine>(), { accumulator, item -> accumulator.addAll(item); accumulator })
+                .fold(TreeSet(), { accumulator, item -> accumulator.addAll(item); accumulator })
         }
 
     val stopByLines: Map<TrainLine, List<Stop>>

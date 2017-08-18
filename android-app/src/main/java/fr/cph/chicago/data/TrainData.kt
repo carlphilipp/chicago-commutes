@@ -198,7 +198,7 @@ object TrainData {
         val lonMax = longitude + DEFAULT_RANGE
         val lonMin = longitude - DEFAULT_RANGE
 
-        val nearByStations = ArrayList<Station>()
+        val nearByStations = mutableListOf<Station>()
         for (i in 0 until stations.size()) {
             val station = stations.valueAt(i)
             station.stopsPosition
@@ -234,7 +234,7 @@ object TrainData {
                 .toMutableList()
         } catch (e: IOException) {
             Log.e(TAG, e.message, e)
-            return ArrayList()
+            return listOf()
         } finally {
             IOUtils.closeQuietly(inputStreamReader)
         }
@@ -251,7 +251,7 @@ object TrainData {
                     stations!!.add(station)
                     Collections.sort(stations)
                 } else {
-                    val stations = ArrayList<Station>()
+                    val stations = mutableListOf<Station>()
                     result.put(trainLine, stations)
                     stations.add(station)
                 }

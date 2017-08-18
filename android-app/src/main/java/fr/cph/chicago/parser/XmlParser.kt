@@ -151,7 +151,7 @@ object XmlParser {
      */
     @Synchronized @Throws(ParserException::class)
     fun parseBusRoutes(xml: InputStream): List<BusRoute> {
-        val result = ArrayList<BusRoute>()
+        val result = mutableListOf<BusRoute>()
         try {
 
             parser.setInput(xml, "UTF-8")
@@ -242,7 +242,7 @@ object XmlParser {
      */
     @Synchronized @Throws(ParserException::class)
     fun parseBusBounds(xml: InputStream): List<BusStop> {
-        val result = ArrayList<BusStop>()
+        val result = mutableListOf<BusStop>()
         try {
             parser.setInput(xml, "UTF-8")
             var eventType = parser.eventType
@@ -365,7 +365,7 @@ object XmlParser {
      */
     @Synchronized @Throws(ParserException::class)
     fun parsePatterns(xml: InputStream): List<BusPattern> {
-        val result = ArrayList<BusPattern>()
+        val result = mutableListOf<BusPattern>()
         try {
             parser.setInput(xml, "UTF-8")
             var eventType = parser.eventType
@@ -373,7 +373,7 @@ object XmlParser {
 
             // Pattern
             var direction: String? = null
-            var points: MutableList<PatternPoint> = ArrayList()
+            var points: MutableList<PatternPoint> = mutableListOf()
             // Point
             var latitude = 0.0
             var longitude = 0.0
@@ -389,7 +389,7 @@ object XmlParser {
                         val busPattern = BusPattern(direction!!, ArrayList(points))
                         result.add(busPattern)
 
-                        points = ArrayList()
+                        points = mutableListOf()
                     } else if (StringUtils.isNotBlank(current) && "pt" == current) {
                         val patternPoint = PatternPoint(
                             Position(latitude, longitude), type!!, stopName!!
@@ -427,7 +427,7 @@ object XmlParser {
 
     @Synchronized @Throws(ParserException::class)
     fun parseVehicles(inputStream: InputStream): List<Bus> {
-        val buses = ArrayList<Bus>()
+        val buses = mutableListOf<Bus>()
         try {
             parser.setInput(inputStream, "UTF-8")
             var eventType = parser.eventType
@@ -477,7 +477,7 @@ object XmlParser {
 
     @Synchronized @Throws(ParserException::class)
     fun parseTrainsLocation(inputStream: InputStream): List<Train> {
-        val trains = ArrayList<Train>()
+        val trains = mutableListOf<Train>()
         try {
             parser.setInput(inputStream, "UTF-8")
             var tagName: String? = null
@@ -528,7 +528,7 @@ object XmlParser {
     @Synchronized @Throws(ParserException::class)
     fun parseTrainsFollow(inputStream: InputStream, data: TrainData): List<Eta> {
         val arrivals = parseArrivals(inputStream, data)
-        val res = ArrayList<Eta>()
+        val res = mutableListOf<Eta>()
         var index = 0
         while (index < arrivals.size()) {
             val (etas) = arrivals.valueAt(index++)
