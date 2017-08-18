@@ -161,6 +161,7 @@ android {
     }
 }
 
+// FIXME Deactivate lint for now, it fails with Kotlin
 tasks.whenTaskAdded { task ->
     if (task.name.equals("lint")) {
         task.enabled = false
