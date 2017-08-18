@@ -214,8 +214,8 @@ object XmlParser {
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 if (eventType == XmlPullParser.TEXT) {
                     val text = parser.text
-                    val busDirection = BusDirection(text)
-                    if (busDirection.isOk) {
+                    val busDirection = BusDirection.fromString(text)
+                    if (busDirection != BusDirection.UNKNOWN) {
                         result.addBusDirection(busDirection)
                     }
                 }
@@ -333,7 +333,7 @@ object XmlParser {
                             "stpid" -> stopId = text.toInt()
                             "vid" -> busId = text.toInt()
                             "rt" -> routeId = text
-                            "rtdir" -> routeDirection = BusDirection.BusDirectionEnum.fromString(text).toString()
+                            "rtdir" -> routeDirection = BusDirection.fromString(text).text
                             "des" -> busDestination = text
                             "prdtm" -> predictionTime = simpleDateFormatBus.parse(text)
                             "dly" -> isDelay = text.toBoolean()
@@ -405,7 +405,7 @@ object XmlParser {
                     val text = parser.text
                     if (tagName != null) {
                         when (tagName) {
-                            "rtdir" -> direction = BusDirection.BusDirectionEnum.fromString(text).toString()
+                            "rtdir" -> direction = BusDirection.fromString(text).text
                             "lat" -> latitude = text.toDouble()
                             "lon" -> longitude = text.toDouble()
                             "typ" -> type = text

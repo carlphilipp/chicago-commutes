@@ -199,7 +199,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
 
                 // Build data for button outside of the loop
                 val (_, _, _, stopId, _, routeId, boundTitle) = value[0]
-                val busDirectionEnum = BusDirection.BusDirectionEnum.fromString(boundTitle)
+                val busDirectionEnum: BusDirection = BusDirection.fromString(boundTitle)
                 val busDetails = BusDetailsDTO(
                     routeId,
                     busDirectionEnum.shortUpperCase,
@@ -212,7 +212,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
 
                 // Build UI
                 val containParams = LayoutUtil.getInsideParams(activity.applicationContext, newLine, i == boundMap.size - 1)
-                val container = LayoutUtil.createBusArrivalsLayout(activity.applicationContext, containParams, stopNameTrimmed, BusDirection.BusDirectionEnum.fromString(key), value as MutableList<out BusArrival>)
+                val container = LayoutUtil.createBusArrivalsLayout(activity.applicationContext, containParams, stopNameTrimmed, BusDirection.fromString(key), value as MutableList<out BusArrival>)
 
                 holder.mainLayout.addView(container)
 

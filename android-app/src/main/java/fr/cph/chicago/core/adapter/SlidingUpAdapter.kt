@@ -114,7 +114,7 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
 
                 for ((i, entry2) in boundMap.entries.withIndex()) {
                     val containParams = LayoutUtil.getInsideParams(nearbyFragment.context, newLine, i == boundMap.size - 1)
-                    val container = LayoutUtil.createBusArrivalsLayout(nearbyFragment.context, containParams, stopNameTrimmed, BusDirection.BusDirectionEnum.fromString(entry2.key), entry2.value as MutableList<out BusArrival>)
+                    val container = LayoutUtil.createBusArrivalsLayout(nearbyFragment.context, containParams, stopNameTrimmed, BusDirection.fromString(entry2.key), entry2.value as MutableList<out BusArrival>)
 
                     linearLayout.addView(container)
                     newLine = false

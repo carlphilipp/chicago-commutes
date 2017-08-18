@@ -89,7 +89,7 @@ object LayoutUtil {
     }
 
     // TODO Create XML files instead of doing all those methods in Java
-    fun createBusArrivalsLayout(context: Context, containParams: LinearLayout.LayoutParams, stopNameTrimmed: String, busDirection: BusDirection.BusDirectionEnum?, buses: MutableList<out BusArrival>): LinearLayout {
+    fun createBusArrivalsLayout(context: Context, containParams: LinearLayout.LayoutParams, stopNameTrimmed: String, busDirection: BusDirection?, buses: MutableList<out BusArrival>): LinearLayout {
         val pixels = Util.convertDpToPixel(context, 16)
         val pixelsHalf = pixels / 2
         val marginLeftPixel = Util.convertDpToPixel(context, 10)

@@ -29,51 +29,30 @@ import java.util.*
  * @version 1
  */
 
-class BusDirection(val busTextReceived: String) {
-    var busDirectionEnum: BusDirectionEnum? = null
-        private set
+enum class BusDirection constructor(val text: String, val shortUpperCase: String, val shortLowerCase: String) {
 
-    val isOk: Boolean
-        get() {
-            try {
-                busDirectionEnum = BusDirectionEnum.fromString(busTextReceived)
-                return true
-            } catch (e: Exception) {
-                return false
-            }
-        }
-
-    enum class BusDirectionEnum constructor(private val text: String, val shortUpperCase: String, val shortLowerCase: String) {
-
-        NORTHBOUND("Northbound", "NORTH", "North"),
-        WESTBOUND("Westbound", "WEST", "West"),
-        SOUTHBOUND("Southbound", "SOUTH", "South"),
-        EASTBOUND("Eastbound", "EAST", "East");
-
-        override fun toString(): String {
-            return text
-        }
-
-        companion object {
-
-            fun fromString(text: String): BusDirectionEnum {
-                for (busDirectionEnum in BusDirectionEnum.values()) {
-                    if (text.equals(busDirectionEnum.text, ignoreCase = true)) {
-                        return busDirectionEnum
-                    } else if (text.equals(busDirectionEnum.shortUpperCase, ignoreCase = true)) {
-                        return busDirectionEnum
-                    } else if (busDirectionEnum.text.toLowerCase(Locale.US).contains(text.toLowerCase(Locale.US))) {
-                        return busDirectionEnum
-                    }
-                }
-                Log.w(TAG, "Bus direction enum not found: " + text)
-                throw IllegalStateException()
-            }
-        }
-    }
+    NORTHBOUND("Northbound", "NORTH", "North"),
+    WESTBOUND("Westbound", "WEST", "West"),
+    SOUTHBOUND("Southbound", "SOUTH", "South"),
+    EASTBOUND("Eastbound", "EAST", "East"),
+    UNKNOWN("Unknown", "UNKNOWN", "Unknown");
 
     companion object {
         private val TAG = BusDirection::class.java.simpleName
+
+        fun fromString(text: String): BusDirection {
+            for (busDirectionEnum in BusDirection.values()) {
+                if (text.equals(busDirectionEnum.text, ignoreCase = true)) {
+                    return busDirectionEnum
+                } else if (text.equals(busDirectionEnum.shortUpperCase, ignoreCase = true)) {
+                    return busDirectionEnum
+                } else if (busDirectionEnum.text.toLowerCase(Locale.US).contains(text.toLowerCase(Locale.US))) {
+                    return busDirectionEnum
+                }
+            }
+            Log.w(TAG, "Bus direction enum not found: " + text)
+            return UNKNOWN
+        }
     }
 }
 

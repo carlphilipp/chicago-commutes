@@ -28,7 +28,7 @@ class BusDirectionObserver(private val app: App, private val parent: ViewGroup, 
     override fun onNext(busDirections: BusDirections) {
         val lBusDirections = busDirections.busDirections
         val data = lBusDirections
-            .map { busDir -> busDir.busDirectionEnum.toString() }
+            .map { busDir -> busDir.text }
             .toMutableList()
         data.add(parent.context.getString(R.string.message_see_all_buses_on_line) + busDirections.id)
 
@@ -38,15 +38,15 @@ class BusDirectionObserver(private val app: App, private val parent: ViewGroup, 
         val ada = PopupBusAdapter(parent.context.applicationContext, data)
         listView.adapter = ada
 
-        val builder = AlertDialog.Builder(parent.context)
-        builder.setAdapter(ada) { _, pos ->
+        val alertDialog = AlertDialog.Builder(parent.context)
+        alertDialog.setAdapter(ada) { _, pos ->
             val extras = Bundle()
             if (pos != data.size - 1) {
                 val intent = Intent(parent.context, BusBoundActivity::class.java)
                 extras.putString(parent.context.getString(R.string.bundle_bus_route_id), busRoute.id)
                 extras.putString(parent.context.getString(R.string.bundle_bus_route_name), busRoute.name)
-                extras.putString(parent.context.getString(R.string.bundle_bus_bound), lBusDirections[pos].busTextReceived)
-                extras.putString(parent.context.getString(R.string.bundle_bus_bound_title), lBusDirections[pos].busDirectionEnum.toString())
+                extras.putString(parent.context.getString(R.string.bundle_bus_bound), lBusDirections[pos].text)
+                extras.putString(parent.context.getString(R.string.bundle_bus_bound_title), lBusDirections[pos].text)
                 intent.putExtras(extras)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 parent.context.applicationContext.startActivity(intent)
@@ -54,7 +54,7 @@ class BusDirectionObserver(private val app: App, private val parent: ViewGroup, 
                 val busDirectionArray = arrayOfNulls<String>(lBusDirections.size)
                 var i = 0
                 for (busDir in lBusDirections) {
-                    busDirectionArray[i++] = busDir.busDirectionEnum.toString()
+                    busDirectionArray[i++] = busDir.text
                 }
                 val intent = Intent(parent.context, BusMapActivity::class.java)
                 extras.putString(parent.context.getString(R.string.bundle_bus_route_id), busDirections.id)
@@ -64,8 +64,8 @@ class BusDirectionObserver(private val app: App, private val parent: ViewGroup, 
                 parent.context.applicationContext.startActivity(intent)
             }
         }
-        builder.setOnCancelListener { _ -> convertView.visibility = LinearLayout.GONE }
-        val dialog = builder.create()
+        alertDialog.setOnCancelListener { _ -> convertView.visibility = LinearLayout.GONE }
+        val dialog = alertDialog.create()
         dialog.show()
         if (dialog.window != null) {
 
