@@ -77,7 +77,7 @@ object TrainData {
                     // String stationDescription = row[4];//STATION_DESCRIPTIVE_NAME
                     val parentStopId = row[5].toInt()// MAP_ID (old PARENT_STOP_ID)
                     val ada = row[6].toBoolean()// ADA
-                    val lines = ArrayList<TrainLine>()
+                    val lines = mutableSetOf<TrainLine>()
                     val red = row[7].toBoolean()// Red
                     val blue = row[8].toBoolean()// Blue
                     val green = row[9].toBoolean()// G
@@ -99,17 +99,9 @@ object TrainData {
                     if (green) {
                         lines.add(TrainLine.GREEN)
                     }
-                    if (purple) {
-                        // PURPLE_EXPRESS MOD
-                        if (!lines.contains(TrainLine.PURPLE)) {
-                            lines.add(TrainLine.PURPLE)
-                        }
-                    }
-                    if (purpleExp) {
-                        // PURPLE_EXPRESS MOD
-                        if (!lines.contains(TrainLine.PURPLE)) {
-                            lines.add(TrainLine.PURPLE)
-                        }
+                    if (purple || purpleExp) {
+                        // Handle both purple and purple express
+                        lines.add(TrainLine.PURPLE)
                     }
                     if (yellow) {
                         lines.add(TrainLine.YELLOW)

@@ -38,7 +38,7 @@ data class Stop(
     var direction: TrainDirection,
     var position: Position,
     var ada: Boolean,
-    var lines: MutableList<TrainLine>) : Comparable<Stop>, Parcelable {
+    var lines: Set<TrainLine>) : Comparable<Stop>, Parcelable {
 
     private constructor(source: Parcel) : this(
         id = source.readInt(),
@@ -46,7 +46,7 @@ data class Stop(
         direction = TrainDirection.fromString(source.readString()),
         position = source.readParcelable<Position>(Position::class.java.classLoader),
         ada = source.readString().toBoolean(),
-        lines = source.createStringArrayList().map { TrainLine.fromXmlString(it) }.toMutableList()
+        lines = source.createStringArrayList().map { TrainLine.fromXmlString(it) }.toSet()
     )
 
     override fun compareTo(other: Stop): Int {
@@ -70,7 +70,7 @@ data class Stop(
     companion object {
 
         fun buildEmptyStop(): Stop {
-            return Stop(0, StringUtils.EMPTY, TrainDirection.UNKNOWN, Position(), false, mutableListOf())
+            return Stop(0, StringUtils.EMPTY, TrainDirection.UNKNOWN, Position(), false, setOf())
         }
 
         @JvmField

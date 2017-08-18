@@ -58,7 +58,8 @@ class App : Application() {
         if (screenWidth > 1080) 7f else if (screenWidth > 480) 4f else 2f
     }
 
-    fun setupApiKeys() {
+    override fun onCreate() {
+        super.onCreate()
         ctaTrainKey = applicationContext.getString(R.string.cta_train_key)
         ctaBusKey = applicationContext.getString(R.string.cta_bus_key)
         googleStreetKey = applicationContext.getString(R.string.google_maps_api_key)
@@ -73,9 +74,9 @@ class App : Application() {
     }
 
     companion object {
-        var ctaTrainKey: String? = null
-        var ctaBusKey: String? = null
-        var googleStreetKey: String? = null
+        lateinit var ctaTrainKey: String
+        lateinit var ctaBusKey: String
+        lateinit var googleStreetKey: String
 
         fun checkTrainData(activity: Activity): Boolean {
             if (DataHolder.error) {

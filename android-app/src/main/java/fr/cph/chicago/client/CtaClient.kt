@@ -61,17 +61,17 @@ object CtaClient {
         val ctaTrainKey = App.ctaTrainKey
         val ctaBusKey = App.ctaBusKey
         val address: StringBuilder
-        when (requestType) {
-            TRAIN_ARRIVALS -> address = StringBuilder(TRAINS_ARRIVALS_URL + QUERY_PARAM_KEY + ctaTrainKey)
-            TRAIN_FOLLOW -> address = StringBuilder(TRAINS_FOLLOW_URL + QUERY_PARAM_KEY + ctaTrainKey)
-            TRAIN_LOCATION -> address = StringBuilder(TRAINS_LOCATION_URL + QUERY_PARAM_KEY + ctaTrainKey)
-            BUS_ROUTES -> address = StringBuilder(BUSES_ROUTES_URL + QUERY_PARAM_KEY + ctaBusKey)
-            BUS_DIRECTION -> address = StringBuilder(BUSES_DIRECTION_URL + QUERY_PARAM_KEY + ctaBusKey)
-            BUS_STOP_LIST -> address = StringBuilder(BUSES_STOP_URL + QUERY_PARAM_KEY + ctaBusKey)
-            BUS_VEHICLES -> address = StringBuilder(BUSES_VEHICLES_URL + QUERY_PARAM_KEY + ctaBusKey)
-            BUS_ARRIVALS -> address = StringBuilder(BUSES_ARRIVAL_URL + QUERY_PARAM_KEY + ctaBusKey)
-            BUS_PATTERN -> address = StringBuilder(BUSES_PATTERN_URL + QUERY_PARAM_KEY + ctaBusKey)
-            else -> address = StringBuilder()
+        address = when (requestType) {
+            TRAIN_ARRIVALS -> StringBuilder(TRAINS_ARRIVALS_URL + QUERY_PARAM_KEY + ctaTrainKey)
+            TRAIN_FOLLOW -> StringBuilder(TRAINS_FOLLOW_URL + QUERY_PARAM_KEY + ctaTrainKey)
+            TRAIN_LOCATION -> StringBuilder(TRAINS_LOCATION_URL + QUERY_PARAM_KEY + ctaTrainKey)
+            BUS_ROUTES -> StringBuilder(BUSES_ROUTES_URL + QUERY_PARAM_KEY + ctaBusKey)
+            BUS_DIRECTION -> StringBuilder(BUSES_DIRECTION_URL + QUERY_PARAM_KEY + ctaBusKey)
+            BUS_STOP_LIST -> StringBuilder(BUSES_STOP_URL + QUERY_PARAM_KEY + ctaBusKey)
+            BUS_VEHICLES -> StringBuilder(BUSES_VEHICLES_URL + QUERY_PARAM_KEY + ctaBusKey)
+            BUS_ARRIVALS -> StringBuilder(BUSES_ARRIVAL_URL + QUERY_PARAM_KEY + ctaBusKey)
+            BUS_PATTERN -> StringBuilder(BUSES_PATTERN_URL + QUERY_PARAM_KEY + ctaBusKey)
+            else -> StringBuilder()
         }
         params.asMap()
             .flatMap { entry -> entry.value.map { value -> StringBuilder().append("&").append(entry.key).append("=").append(value) } }

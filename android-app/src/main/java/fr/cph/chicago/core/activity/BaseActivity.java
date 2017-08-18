@@ -83,7 +83,6 @@ public class BaseActivity extends Activity {
         setContentView(R.layout.loading);
         ButterKnife.bind(this);
 
-        ((App) getApplication()).setupApiKeys();
         setUpRealm();
         loadLocalAndFavoritesData();
         trackWithGoogleAnalytics();
