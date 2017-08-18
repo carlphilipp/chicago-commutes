@@ -178,8 +178,8 @@ object TrainData {
         return station ?: Station.buildEmptyStation()
     }
 
-    val isStopsNull: Boolean
-        get() = stops == null
+    val isStopsEmpty: Boolean
+        get() = stops.size() == 0
 
     /**
      * Get a stop

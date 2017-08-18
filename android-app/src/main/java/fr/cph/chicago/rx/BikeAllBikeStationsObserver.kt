@@ -15,7 +15,7 @@ class BikeAllBikeStationsObserver(private val activity: BikeStationActivity, pri
 
     override fun onNext(bikeStations: List<BikeStation>) {
         bikeStations
-            .filter { station -> bikeStationId == station.id }
+            .filter { (id) -> bikeStationId == id }
             .elementAtOrElse(0, { BikeStation.buildDefaultBikeStationWithName("error") })
             .also { station ->
                 if (station.name != "error") {

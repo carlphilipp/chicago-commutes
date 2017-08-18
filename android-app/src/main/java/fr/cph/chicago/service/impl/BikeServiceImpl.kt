@@ -20,7 +20,7 @@ object BikeServiceImpl : BikeService {
 
     override fun loadBikes(id: Int): BikeStation {
         try {
-            return loadAllBikes().first { value -> value.id == id }
+            return loadAllBikes().first { (bikeId) -> bikeId == id }
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }

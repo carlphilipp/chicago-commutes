@@ -50,7 +50,7 @@ public class FavoritesDataTest {
     public void testGetBusArrivalsMappedEmptyNoFavorites() {
         // Given
         favoritesData.setBusArrivals(Collections.emptyList());
-        favoritesData.setBusFavorites(Collections.emptyList());
+        //favoritesData.setBusFavorites(Collections.emptyList());
 
         // When
        /* Map<String, Map<String, List<BusArrival>>> actual = favoritesData.getBusArrivalsMapped(ROUTE_ID, context);

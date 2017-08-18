@@ -228,7 +228,7 @@ public class BusMapActivity extends AbstractMapActivity {
                     // Potential null sent, if stream api change, it could fail
                     return marker;
                 })
-                .filter(Objects::nonNull)
+                .filter(marker -> marker != null)
                 .forEach(busStationMarkers::add);
             getGoogleMap().addPolyline(poly);
             index[0]++;

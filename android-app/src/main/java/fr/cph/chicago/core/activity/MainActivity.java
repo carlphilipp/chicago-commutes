@@ -252,11 +252,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void reloadData() {
-        final DataHolder dataHolder = DataHolder.INSTANCE;
         final TrainData trainData = TrainData.INSTANCE;
-        if (trainData.getAllStations().isEmpty() || trainData.isStopsNull()) {
+        if (trainData.getAllStations().isEmpty() || trainData.isStopsEmpty()) {
             trainData.read(getApplicationContext());
-            dataHolder.setTrainData(trainData);
         }
     }
 

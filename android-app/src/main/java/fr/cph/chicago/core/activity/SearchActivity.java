@@ -102,8 +102,8 @@ public class SearchActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(final Menu menu) {
         final MenuItem searchItem = menu.add(android.R.string.search_go);
         searchItem.setIcon(R.drawable.ic_search_white_24dp);
-        MenuItemCompat.setActionView(searchItem, searchView);
-        MenuItemCompat.setShowAsAction(searchItem, MenuItemCompat.SHOW_AS_ACTION_ALWAYS | MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+        searchItem.setActionView(searchView);
+        searchItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
         searchItem.expandActionView();
         return super.onCreateOptionsMenu(menu);
     }

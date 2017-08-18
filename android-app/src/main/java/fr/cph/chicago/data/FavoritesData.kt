@@ -44,30 +44,13 @@ object FavoritesData {
     private val trainData: TrainData = DataHolder.trainData
     private val busData: BusData = DataHolder.busData
 
-    // FIXME: what is that??
-    fun setTrainArrivals(trainArrivals: SparseArray<TrainArrival>) {
-        this.trainArrivals = trainArrivals
-    }
-
-    fun setBusArrivals(busArrivals: List<BusArrival>) {
-        this.busArrivals = busArrivals
-    }
-
-    fun setBikeStations(bikeStations: List<BikeStation>) {
-        this.bikeStations = bikeStations
-    }
-
-    fun setBusFavorites(busFavorites: List<String>) {
-        this.busFavorites = busFavorites
-    }
-
-    private var trainArrivals: SparseArray<TrainArrival> = SparseArray()
-    private var busArrivals: List<BusArrival> = ArrayList()
-    private var bikeStations: List<BikeStation> = ArrayList()
-    private var trainFavorites: List<Int> = ArrayList()
-    private var busFavorites: List<String> = ArrayList()
-    private val bikeFavorites: MutableList<String> = ArrayList()
-    private var fakeBusFavorites: List<String> = ArrayList()
+    var trainArrivals: SparseArray<TrainArrival> = SparseArray()
+    var busArrivals: List<BusArrival> = listOf()
+    var bikeStations: List<BikeStation> = listOf()
+    private var trainFavorites: List<Int> = listOf()
+    private var busFavorites: List<String> = listOf()
+    private var fakeBusFavorites: List<String> = listOf()
+    private val bikeFavorites: MutableList<String> = mutableListOf()
     private var preferences: Preferences = PreferencesImpl
 
     /**
@@ -103,14 +86,9 @@ object FavoritesData {
             }
         } else {
             val index = position - (trainFavorites.size + fakeBusFavorites.size)
-            if (bikeStations != null) {
-                val found = bikeStations
-                    .filter { bikeStation -> Integer.toString(bikeStation.id) == bikeFavorites[index] }
-                    .getOrNull(0)
-                return found ?: createEmptyBikeStation(index, context)
-            } else {
-                return createEmptyBikeStation(index, context)
-            }
+            return bikeStations
+                .filter { (id) -> Integer.toString(id) == bikeFavorites[index] }
+                .getOrElse(0, { createEmptyBikeStation(index, context) })
         }
     }
 
@@ -204,9 +182,9 @@ object FavoritesData {
         val bikeFavoritesTemp = preferences.getBikeFavorites(context)
         if (bikeStations.isNotEmpty()) {
             bikeFavoritesTemp
-                .flatMap { bikeStationId -> bikeStations.filter { station -> Integer.toString(station.id) == bikeStationId } }
+                .flatMap { bikeStationId -> bikeStations.filter { (id) -> Integer.toString(id) == bikeStationId } }
                 .sortedWith(Util.BIKE_COMPARATOR_NAME)
-                .map { station -> Integer.toString(station.id) }
+                .map { (id) -> Integer.toString(id) }
                 .forEach({ bikeFavorites.add(it) })
         } else {
             bikeFavorites.addAll(bikeFavoritesTemp)
@@ -218,6 +196,6 @@ object FavoritesData {
             .map { Util.decodeBusFavorite(it) }
             .map { it.routeId }
             .distinct()
-            .toMutableList()
+            .toList()
     }
 }

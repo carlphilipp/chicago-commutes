@@ -190,7 +190,7 @@ object Util {
      * Decode bus favorites
      *
      * @param favorite the favorites
-     * @return a tab containing the route id, the stop id and the bound
+     * @return a dto containing the route id, the stop id and the bound
      */
     fun decodeBusFavorite(favorite: String): BusFavoriteDTO {
         val first = favorite.indexOf('_')
