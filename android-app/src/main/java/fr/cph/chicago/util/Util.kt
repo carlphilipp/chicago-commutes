@@ -324,7 +324,7 @@ object Util {
     }
 
     fun showNetworkErrorMessage(activity: Activity) {
-        showSnackBar(activity, R.string.message_network_error)
+        showSnackBar(activity, R.string.message_network_error, Snackbar.LENGTH_SHORT)
     }
 
     fun showNetworkErrorMessage(view: View) {
@@ -332,16 +332,16 @@ object Util {
     }
 
     fun showMessage(activity: Activity, message: Int) {
-        showSnackBar(activity, message)
+        showSnackBar(activity, message, Snackbar.LENGTH_SHORT)
     }
 
     fun showMessage(view: View, message: Int) {
         showSnackBar(view, message)
     }
 
-    fun showSnackBar(activity: Activity, message: Int) {
+    fun showSnackBar(activity: Activity, message: Int, length: Int) {
         if (activity.currentFocus != null) {
-            Snackbar.make(activity.currentFocus!!, activity.getString(message), Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(activity.currentFocus!!, activity.getString(message), length).show()
         } else {
             Toast.makeText(activity, activity.getString(message), Toast.LENGTH_LONG).show()
         }

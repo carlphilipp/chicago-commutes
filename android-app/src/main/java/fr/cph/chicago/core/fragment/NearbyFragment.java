@@ -25,8 +25,10 @@ import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,6 +83,8 @@ import static fr.cph.chicago.Constants.GPS_ACCESS;
  */
 @SuppressWarnings("WeakerAccess")
 public class NearbyFragment extends AbstractFragment implements EasyPermissions.PermissionCallbacks {
+
+    private static final String TAG = NearbyFragment.class.getSimpleName();
 
     @BindView(R.id.activity_bar)
     ProgressBar progressBar;
@@ -271,7 +275,7 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
 
             final GPSUtil gpsUtil = new GPSUtil(googleApiClient);
             final Position position = gpsUtil.getLocation();
-            if (position != null) {
+            if (position.getLongitude() != 0 && position.getLatitude() != 0) {
                 final Realm realm = Realm.getDefaultInstance();
                 busStops = busData.readNearbyStops(realm, position);
                 realm.close();
@@ -285,9 +289,15 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
         }
 
         @Override
-        protected final void onPostExecute(final Position result) {
-            Util.INSTANCE.centerMap(mapFragment, result);
-            updateMarkersAndModel(busStops, trainStations, bikeStations);
+        protected final void onPostExecute(final Position position) {
+            if (position.getLongitude() != 0 && position.getLatitude() != 0) {
+                Util.INSTANCE.centerMap(mapFragment, position);
+                updateMarkersAndModel(busStops, trainStations, bikeStations);
+            } else {
+                Log.e(TAG, "Could not get current user location");
+                showProgress(false);
+                Util.INSTANCE.showSnackBar(activity, R.string.message_cant_find_location, Snackbar.LENGTH_LONG);
+            }
         }
     }
 

@@ -166,6 +166,7 @@
     <string name="message_too_fast">You are a bit fast! Try again in a second!</string>
     <string name="message_not_ready">Not ready yet. Please try again in few seconds!</string>
     <string name="message_something_went_wrong">Oops, something went wrong!</string>
+    <string name="message_cant_find_location">Sorry, could not find your location</string>
     <string name="message_error_could_not_load_path">Sorry, could not load the path!</string>
     <string name="message_error_train_favorites">Could not load trains :(</string>
     <string name="message_error_bus_favorites">Could not load buses :(</string>

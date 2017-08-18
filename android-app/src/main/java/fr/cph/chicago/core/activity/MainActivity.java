@@ -21,6 +21,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -148,12 +149,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         final boolean isBusError = getIntent().getBooleanExtra(getString(R.string.bundle_bus_error), false);
         // FIXME The snackbar does not move up the search button
         if (isTrainError && isBusError) {
-            Util.INSTANCE.showSnackBar(this, R.string.message_something_went_wrong);
+            Util.INSTANCE.showSnackBar(this, R.string.message_something_went_wrong, Snackbar.LENGTH_SHORT);
         } else {
             if (isTrainError) {
-                Util.INSTANCE.showSnackBar(this, R.string.message_error_train_favorites);
+                Util.INSTANCE.showSnackBar(this, R.string.message_error_train_favorites, Snackbar.LENGTH_SHORT);
             } else if (isBusError) {
-                Util.INSTANCE.showSnackBar(this, R.string.message_error_bus_favorites);
+                Util.INSTANCE.showSnackBar(this, R.string.message_error_bus_favorites, Snackbar.LENGTH_SHORT);
             }
         }
     }
@@ -222,10 +223,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 dataHolder.getBusData().setBusRoutes(onNext.getBusRoutes());
                 refreshFirstLoadData(dataHolder.getBusData(), onNext.getBikeStations());
                 if (onNext.getBikeStationsError() || onNext.getBusRoutesError()) {
-                    Util.INSTANCE.showSnackBar(this, R.string.message_something_went_wrong);
+                    Util.INSTANCE.showSnackBar(this, R.string.message_something_went_wrong, Snackbar.LENGTH_SHORT);
                 }
             },
-            onError -> Util.INSTANCE.showSnackBar(this, R.string.message_something_went_wrong),
+            onError -> Util.INSTANCE.showSnackBar(this, R.string.message_something_went_wrong, Snackbar.LENGTH_SHORT),
             () -> {
                 Util.INSTANCE.trackAction((App) getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ROUTES_URL);
                 Util.INSTANCE.trackAction((App) getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_divvy, getApplicationContext().getString(R.string.analytics_action_get_divvy_all));

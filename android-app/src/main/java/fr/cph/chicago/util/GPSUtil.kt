@@ -17,12 +17,12 @@ class GPSUtil(private val googleApiClient: GoogleApiClient) {
     }
 
     // Getting GPS status
-    val location: Position?
+    val location: Position
         @Throws(SecurityException::class)
         get() {
             LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, {}, Looper.getMainLooper())
             val location: Location? = LocationServices.FusedLocationApi.getLastLocation(googleApiClient)
-            return if (location == null) null else Position(location.latitude, location.longitude)
+            return if (location == null) Position() else Position(location.latitude, location.longitude)
         }
 
     companion object {
