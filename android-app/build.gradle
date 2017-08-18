@@ -6,7 +6,7 @@ apply plugin: 'realm-android'
 dependencies {
 
     compile(
-        [group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: "$kotlin_version"],
+        [group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jre8', version: "$kotlin_version"],
         [group: 'com.google.android.gms', name: 'play-services-maps', version: google_play_version],
         [group: 'com.google.android.gms', name: 'play-services-analytics', version: google_play_version],
         [group: 'com.google.android.gms', name: 'play-services-location', version: google_play_version],
@@ -63,7 +63,7 @@ android {
 
     defaultConfig {
         applicationId 'fr.cph.chicago'
-        versionCode 129
+        versionCode 130
         versionName '5.0.0'
 
         minSdkVersion 14
