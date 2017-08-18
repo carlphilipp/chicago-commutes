@@ -282,7 +282,7 @@ public class FavoritesFragment extends AbstractFragment {
      * Start refreshBusAndStation task
      */
     private void startRefreshTask() {
-        refreshTimingTask = (RefreshTimingTask) new RefreshTimingTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        refreshTimingTask = (RefreshTimingTask) new RefreshTimingTask(favoritesAdapter).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         favoritesAdapter.refreshUpdatedView();
     }
 
@@ -301,12 +301,18 @@ public class FavoritesFragment extends AbstractFragment {
      * @author Carl-Philipp Harmant
      * @version 1
      */
-    private class RefreshTimingTask extends AsyncTask<Void, Void, Void> {
+    private static class RefreshTimingTask extends AsyncTask<Void, Void, Void> {
+
+        private FavoritesAdapter favoritesAdapter;
+
+        public RefreshTimingTask(final FavoritesAdapter favoritesAdapter) {
+            this.favoritesAdapter = favoritesAdapter;
+        }
 
         @Override
         protected final void onProgressUpdate(final Void... values) {
             super.onProgressUpdate();
-            favoritesAdapter.refreshUpdatedView();
+            this.favoritesAdapter.refreshUpdatedView();
         }
 
         @Override

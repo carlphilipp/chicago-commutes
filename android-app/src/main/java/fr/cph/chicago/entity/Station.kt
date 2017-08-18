@@ -24,7 +24,6 @@ import android.os.Parcelable
 import fr.cph.chicago.entity.enumeration.TrainLine
 import org.apache.commons.lang3.StringUtils
 import java.util.*
-import kotlin.collections.HashSet
 
 /**
  * Station entity
@@ -47,7 +46,7 @@ class Station(
         get() {
             return stops
                 .map { it.lines }
-                .fold(LinkedHashSet(), { accumulator, item -> accumulator.addAll(item); accumulator })
+                .fold(TreeSet<TrainLine>(), { accumulator, item -> accumulator.addAll(item); accumulator })
         }
 
     val stopByLines: Map<TrainLine, List<Stop>>
