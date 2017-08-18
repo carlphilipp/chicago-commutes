@@ -25,9 +25,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
-
-import java.util.ArrayList
-
 import fr.cph.chicago.R
 import fr.cph.chicago.entity.BusStop
 
@@ -39,45 +36,35 @@ import fr.cph.chicago.entity.BusStop
  */
 class BusBoundAdapter : BaseAdapter() {
 
-    private var busStops: List<BusStop>? = null
-
-    init {
-        this.busStops = ArrayList()
-    }
+    var busStops: List<BusStop> = listOf()
 
     override fun getCount(): Int {
-        return busStops!!.size
+        return busStops.size
     }
 
     override fun getItem(position: Int): Any {
-        return busStops!![position]
+        return busStops[position]
     }
 
     override fun getItemId(position: Int): Long {
-        return busStops!![position].id.toLong()
+        return busStops[position].id.toLong()
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var view = convertView
-        val busStop = busStops!![position]
+        val busStop = busStops[position]
 
-        val routNameView: TextView?
+        val holder: ViewHolder
 
         if (view == null) {
             val vi = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             view = vi.inflate(R.layout.list_bus_bounds, parent, false)
-
-            val holder = ViewHolder()
-
-            routNameView = view!!.findViewById<View>(R.id.station_name) as TextView
-            holder.routNameView = routNameView
-
+            holder = ViewHolder(view!!.findViewById<View>(R.id.station_name) as TextView)
             view.tag = holder
         } else {
-            val viewHolder = view.tag as ViewHolder
-            routNameView = viewHolder.routNameView
+            holder = view.tag as ViewHolder
         }
-        routNameView!!.text = busStop.name
+        holder.routNameView.text = busStop.name
 
         return view
     }
@@ -88,14 +75,5 @@ class BusBoundAdapter : BaseAdapter() {
      * @author Carl-Philipp Harmant
      * @version 1
      */
-    private class ViewHolder {
-        internal var routNameView: TextView? = null
-    }
-
-    /**
-     * Update of the bus stops
-     */
-    fun update(busStops: List<BusStop>) {
-        this.busStops = busStops
-    }
+    private class ViewHolder(var routNameView: TextView)
 }

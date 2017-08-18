@@ -161,7 +161,7 @@ public class BusBoundActivity extends ListActivity {
 
                 @Override
                 public void afterTextChanged(final Editable s) {
-                    busBoundAdapter.update(busStopsFiltered);
+                    busBoundAdapter.setBusStops(busStopsFiltered);
                     busBoundAdapter.notifyDataSetChanged();
                 }
             });
@@ -176,7 +176,7 @@ public class BusBoundActivity extends ListActivity {
             ObservableUtil.INSTANCE.createBusStopBoundObservable(getApplicationContext(), busRouteId, bound)
                 .subscribe(onNext -> {
                         busStops = onNext;
-                        busBoundAdapter.update(onNext);
+                        busBoundAdapter.setBusStops(onNext);
                         busBoundAdapter.notifyDataSetChanged();
                     },
                     onError -> {
