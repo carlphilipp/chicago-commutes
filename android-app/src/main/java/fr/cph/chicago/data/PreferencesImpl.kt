@@ -230,14 +230,13 @@ object PreferencesImpl : Preferences {
     }
 
     override fun getRateLastSeen(context: Context): Date {
-        try {
+        return try {
             val sharedPref = getPrivatePreferences(context)
             val defaultDate = FORMAT.format(Date())
-            return FORMAT.parse(sharedPref.getString("rateLastSeen", defaultDate))
+            FORMAT.parse(sharedPref.getString("rateLastSeen", defaultDate))
         } catch (e: ParseException) {
-            return Date()
+            Date()
         }
-
     }
 
     override fun setRateLastSeen(context: Context) {

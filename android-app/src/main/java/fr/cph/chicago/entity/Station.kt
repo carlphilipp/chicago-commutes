@@ -49,18 +49,15 @@ class Station(
                 .fold(TreeSet(), { accumulator, item -> accumulator.addAll(item); accumulator })
         }
 
-    val stopByLines: Map<TrainLine, List<Stop>>
+    val stopByLines: Map<TrainLine, MutableList<Stop>>
         get() {
-            val result = TreeMap<TrainLine, List<Stop>>()
+            val result = TreeMap<TrainLine, MutableList<Stop>>()
             for (stop in stops) {
-                val lines = stop.lines
-                for (tl in lines) {
-                    val stopss: MutableList<Stop> = mutableListOf()
-                    if (result.containsKey(tl)) {
-                        stopss.add(stop)
+                for (trainLine in stop.lines) {
+                    if (result.containsKey(trainLine)) {
+                        result[trainLine]!!.add(stop)
                     } else {
-                        stopss.add(stop)
-                        result.put(tl, stopss)
+                        result.put(trainLine, mutableListOf(stop))
                     }
                 }
             }

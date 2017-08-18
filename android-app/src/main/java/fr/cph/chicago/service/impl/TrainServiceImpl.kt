@@ -58,13 +58,13 @@ object TrainServiceImpl : TrainService {
             while (index < trainArrivals.size()) {
                 val trainArrival = trainArrivals.valueAt(index++)
                 val etas = trainArrival.etas
-                trainArrival.etas =
-                    etas.filter { (station, stop, line) ->
+                trainArrival.etas = etas
+                    .filter { (station, stop, line) ->
                         val direction = stop.direction
                         PreferencesImpl.getTrainFilter(context, station.id, line, direction)
                     }
-                        .sorted()
-                        .toMutableList()
+                    .sorted()
+                    .toMutableList()
             }
         } catch (e: Throwable) {
             throw Exceptions.propagate(e)
