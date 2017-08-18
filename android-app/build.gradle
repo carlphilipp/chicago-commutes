@@ -4,11 +4,9 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'realm-android'
 
 dependencies {
-    repositories {
-        jcenter()
-    }
 
     compile(
+        [group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: "$kotlin_version"],
         [group: 'com.google.android.gms', name: 'play-services-maps', version: google_play_version],
         [group: 'com.google.android.gms', name: 'play-services-analytics', version: google_play_version],
         [group: 'com.google.android.gms', name: 'play-services-location', version: google_play_version],
@@ -57,7 +55,6 @@ dependencies {
         // Optional -- UI testing with UI Automator
         [group: 'com.android.support.test.uiautomator', name: 'uiautomator-v18', version: google_support_version_test_uiautomator]
     )
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 }
 
 android {
@@ -163,6 +160,9 @@ android {
         exclude 'META-INF/LGPL2.1'
     }
 }
-repositories {
-    mavenCentral()
+
+tasks.whenTaskAdded { task ->
+    if (task.name.equals("lint")) {
+        task.enabled = false
+    }
 }

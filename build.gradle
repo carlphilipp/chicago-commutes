@@ -13,11 +13,11 @@ buildscript {
             [group: 'org.jetbrains.kotlin', name: 'kotlin-gradle-plugin', version: "$kotlin_version"]
         )
     }
-    configurations.classpath.exclude group: 'com.android.tools.external.lombok'
 }
 
 allprojects {
     repositories {
+        mavenCentral()
         jcenter()
         google()
         // Needed for PhotoView
