@@ -42,14 +42,14 @@ import fr.cph.chicago.util.LayoutUtil
  */
 class TrainAdapter(line: TrainLine, private val activity: Activity) : BaseAdapter() {
 
-    private val stations: List<Station>? = DataHolder.trainData.getStationsForLine(line)
+    private val stations: List<Station> = DataHolder.trainData.getStationsForLine(line)
 
     override fun getCount(): Int {
-        return stations!!.size
+        return stations.size
     }
 
     override fun getItem(position: Int): Any {
-        return stations!![position]
+        return stations[position]
     }
 
     override fun getItemId(position: Int): Long {

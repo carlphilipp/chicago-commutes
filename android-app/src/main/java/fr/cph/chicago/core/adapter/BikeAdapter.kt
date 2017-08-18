@@ -58,8 +58,8 @@ class BikeAdapter(var bikeStations: List<BikeStation>) : BaseAdapter() {
 
         if (view == null) {
             val vi = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            view = vi.inflate(R.layout.list_bike, parent, false)
-            holder = ViewHolder(view!!.findViewById(R.id.station_name))
+            view = vi.inflate(R.layout.list_bike, parent, false)!!
+            holder = ViewHolder(view.findViewById(R.id.station_name))
             view.tag = holder
         } else {
             holder = view.tag as ViewHolder

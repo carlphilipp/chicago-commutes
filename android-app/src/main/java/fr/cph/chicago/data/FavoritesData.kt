@@ -146,7 +146,7 @@ object FavoritesData {
             if (routeIdFav == routeId) {
                 val stopId = Integer.valueOf(stopId1)
 
-                var stopName = preferences.getBusStopNameMapping(context, stopId!!.toString())
+                var stopName = preferences.getBusStopNameMapping(context, stopId.toString())
                 stopName = if (stopName != null) stopName else stopId.toString()
 
                 // FIXME check if that logic works. I think it does not. In what case do we show that bus arrival?

@@ -42,10 +42,9 @@ class BusArrivalStopMappedDTO : TreeMap<String, MutableMap<String, List<BusArriv
 
     fun addBusArrival(busArrival: BusArrival) {
         if (containsKey(busArrival.stopName)) {
-            val tempMap: MutableMap<String, List<BusArrival>>? = get(busArrival.stopName)
-            if (tempMap!!.containsKey(busArrival.routeDirection)) {
-                val arrivals: MutableList<BusArrival> = tempMap[busArrival.routeDirection]!!.toMutableList()
-                arrivals.add(busArrival)
+            val tempMap: MutableMap<String, List<BusArrival>> = get(busArrival.stopName)!!
+            if (tempMap.containsKey(busArrival.routeDirection)) {
+                tempMap[busArrival.routeDirection]!!.toMutableList().add(busArrival)
             } else {
                 tempMap.put(busArrival.routeDirection, mutableListOf(busArrival))
             }
@@ -67,13 +66,11 @@ class BusArrivalRouteDTO : TreeMap<String, MutableMap<String, List<BusArrival>>>
 
     fun addBusArrival(busArrival: BusArrival) {
         if (containsKey(busArrival.routeId)) {
-            val tempMap: MutableMap<String, List<BusArrival>>? = get(busArrival.routeId)
-            if (tempMap!!.containsKey(busArrival.routeDirection)) {
-                val arrivals: MutableList<BusArrival> = tempMap[busArrival.routeDirection]!!.toMutableList()
-                arrivals.add(busArrival)
+            val tempMap: MutableMap<String, List<BusArrival>> = get(busArrival.routeId)!!
+            if (tempMap.containsKey(busArrival.routeDirection)) {
+                tempMap[busArrival.routeDirection]!!.toMutableList().add(busArrival)
             } else {
-                val arrivals = mutableListOf(busArrival)
-                tempMap.put(busArrival.routeDirection, arrivals)
+                tempMap.put(busArrival.routeDirection, mutableListOf(busArrival))
             }
         } else {
             val tempMap = TreeMap<String, List<BusArrival>>()

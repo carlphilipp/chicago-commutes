@@ -56,9 +56,9 @@ class BusMapSnippetAdapter(private val arrivals: List<BusArrival>) : BaseAdapter
         val viewHolder: ViewHolder
         if (view == null) {
             val vi = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            view = vi.inflate(R.layout.list_map_train, parent, false)
+            view = vi.inflate(R.layout.list_map_train, parent, false)!!
             viewHolder = ViewHolder(
-                view!!.findViewById(R.id.station_name),
+                view.findViewById(R.id.station_name),
                 view.findViewById(R.id.time)
             )
             view.tag = viewHolder

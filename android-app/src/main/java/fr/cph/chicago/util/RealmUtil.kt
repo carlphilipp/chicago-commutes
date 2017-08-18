@@ -19,9 +19,9 @@ object RealmUtil {
 
     private fun getRealmConfiguration(context: Context): RealmConfiguration {
         Realm.init(context)
-        val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+        val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)!!
         return RealmConfiguration.Builder()
-            .schemaVersion(packageInfo!!.versionCode.toLong())
+            .schemaVersion(packageInfo.versionCode.toLong())
             .deleteRealmIfMigrationNeeded()
             .build()
     }

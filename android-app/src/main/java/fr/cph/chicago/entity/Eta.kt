@@ -39,10 +39,10 @@ data class Eta(
     val stop: Stop,
     val routeName: TrainLine,
     val destName: String,
-    val predictionDate: Date,
-    val arrivalDepartureDate: Date,
-    val isApp: Boolean,
-    var isDly: Boolean,
+    private val predictionDate: Date,
+    private val arrivalDepartureDate: Date,
+    private val isApp: Boolean,
+    private var isDly: Boolean,
     val position: Position) : Comparable<Eta>, Parcelable, Serializable {
 
     constructor(source: Parcel) : this(
@@ -65,17 +65,11 @@ data class Eta(
 
     val timeLeftDueDelay: String
         get() {
-            val result: String
-            if (isDly) {
-                result = "Delay"
+            return if (isDly) {
+                "Delay"
             } else {
-                if (isApp) {
-                    result = "Due"
-                } else {
-                    result = timeLeft
-                }
+                if (isApp) "Due" else timeLeft
             }
-            return result
         }
 
     override fun compareTo(other: Eta): Int {
@@ -112,7 +106,8 @@ data class Eta(
             return Eta(station, Stop.buildEmptyStop(), TrainLine.NA, StringUtils.EMPTY, predictionDate, arrivalDepartureDate, app, delay, Position())
         }
 
-        @JvmField val CREATOR: Parcelable.Creator<Eta> = object : Parcelable.Creator<Eta> {
+        @JvmField
+        val CREATOR: Parcelable.Creator<Eta> = object : Parcelable.Creator<Eta> {
             override fun createFromParcel(source: Parcel): Eta {
                 return Eta(source)
             }

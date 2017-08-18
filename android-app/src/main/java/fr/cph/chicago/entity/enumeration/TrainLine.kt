@@ -74,9 +74,9 @@ enum class TrainLine constructor(private val text: String, val fullText: String,
          * @param text the text
          * @return a train line
          */
-        fun fromString(text: String?): TrainLine {
+        fun fromString(text: String): TrainLine {
             return TrainLine.values()
-                .filter { trainLine -> trainLine.name.equals(text!!, ignoreCase = true) }
+                .filter { trainLine -> trainLine.name.equals(text, ignoreCase = true) }
                 .getOrElse(0, { NA })
         }
 

@@ -57,10 +57,10 @@ class TrainMapSnippetAdapter(private val etas: List<Eta>) : BaseAdapter() {
 
         if (view == null) {
             val vi = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            view = vi.inflate(R.layout.list_map_train, parent, false)
+            view = vi.inflate(R.layout.list_map_train, parent, false)!!
 
             holder = ViewHolder(
-                view!!.findViewById(R.id.station_name),
+                view.findViewById(R.id.station_name),
                 view.findViewById(R.id.time)
             )
 

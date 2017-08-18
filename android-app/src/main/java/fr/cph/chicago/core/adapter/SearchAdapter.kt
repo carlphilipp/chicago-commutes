@@ -53,24 +53,24 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
 
     private val context: Context = activity.applicationContext
 
-    private var trains: List<Station>? = null
-    private var busRoutes: List<BusRoute>? = null
-    private var bikeStations: List<BikeStation>? = null
+    private var trains: List<Station> = listOf()
+    private var busRoutes: List<BusRoute> = listOf()
+    private var bikeStations: List<BikeStation> = listOf()
 
     override fun getCount(): Int {
-        return trains!!.size + busRoutes!!.size + bikeStations!!.size
+        return trains.size + busRoutes.size + bikeStations.size
     }
 
     override fun getItem(position: Int): Any {
-        val `object`: Any
-        if (position < trains!!.size) {
-            `object` = trains!![position]
-        } else if (position < trains!!.size + busRoutes!!.size) {
-            `object` = busRoutes!![position - trains!!.size]
+        val result: Any
+        if (position < trains.size) {
+            result = trains[position]
+        } else if (position < trains.size + busRoutes.size) {
+            result = busRoutes[position - trains.size]
         } else {
-            `object` = bikeStations!![position - (trains!!.size + busRoutes!!.size)]
+            result = bikeStations[position - (trains.size + busRoutes.size)]
         }
-        return `object`
+        return result
     }
 
     override fun getItemId(position: Int): Long {
@@ -84,7 +84,7 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
 
         val routeName: TextView = view.findViewById(R.id.station_name)
 
-        if (position < trains!!.size) {
+        if (position < trains.size) {
             val station = getItem(position) as Station
             routeName.text = station.name
 
@@ -95,13 +95,13 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
                 .forEach { stationColorView.addView(it) }
 
             view.setOnClickListener(TrainOnClickListener(parent.context, activity, station.id, station.lines))
-        } else if (position < trains!!.size + busRoutes!!.size) {
+        } else if (position < trains.size + busRoutes.size) {
             val busRoute = getItem(position) as BusRoute
 
             val icon: ImageView = view.findViewById(R.id.icon)
             icon.setImageDrawable(ContextCompat.getDrawable(parent.context, R.drawable.ic_directions_bus_white_24dp))
 
-            val name = busRoute.id + " " + busRoute.name
+            val name = "${busRoute.id} ${busRoute.name}"
             routeName.text = name
 
             val loadingTextView: TextView = view.findViewById(R.id.loading_text_view)

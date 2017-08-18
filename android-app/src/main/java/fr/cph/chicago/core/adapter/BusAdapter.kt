@@ -65,9 +65,9 @@ class BusAdapter(private val app: App) : BaseAdapter() {
         val holder: ViewHolder
         if (view == null) {
             val vi = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            view = vi.inflate(R.layout.list_bus, parent, false)
+            view = vi.inflate(R.layout.list_bus, parent, false)!!
             holder = ViewHolder(
-                routeNameView = view!!.findViewById(R.id.route_name),
+                routeNameView = view.findViewById(R.id.route_name),
                 routeNumberView = view.findViewById(R.id.route_number),
                 detailsLayout = view.findViewById(R.id.route_details)
             )

@@ -85,7 +85,7 @@ object PreferencesImpl : Preferences {
         val sharedPref = getPrivatePreferences(context)
         val editor = sharedPref.edit()
         val set = favorites.toSet()
-        Log.v(TAG, "Put bike favorites: " + set.toString())
+        Log.v(TAG, "Put bike favorites: $set")
         editor.putStringSet(PREFERENCE_FAVORITES_BIKE, set)
         editor.apply()
     }
@@ -93,7 +93,7 @@ object PreferencesImpl : Preferences {
     override fun getBikeFavorites(context: Context): MutableList<String> {
         val sharedPref = getPrivatePreferences(context)
         val setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_BIKE, LinkedHashSet())
-        Log.v(TAG, "Read bike favorites : " + setPref!!.toString())
+        Log.v(TAG, "Read bike favorites : $setPref")
         return setPref.sorted().toMutableList()
     }
 
@@ -195,7 +195,7 @@ object PreferencesImpl : Preferences {
         Log.v(TAG, "Read train favorites : " + setPref)
         return setPref
             .map { Integer.valueOf(it) }
-            .map { favorite -> DataHolder.trainData.getStation(favorite!!) }
+            .map { favorite -> DataHolder.trainData.getStation(favorite) }
             .sorted()
             .map { it.id }
             .toMutableList()

@@ -155,8 +155,8 @@ object TrainData {
      * @return a list of station
      */
 
-    fun getStationsForLine(line: TrainLine): List<Station>? {
-        return stationsOrderByLineMap[line]
+    fun getStationsForLine(line: TrainLine): List<Station> {
+        return stationsOrderByLineMap[line]!!.toList()
     }
 
     /**
@@ -247,8 +247,8 @@ object TrainData {
             val trainLines = station.lines
             for (trainLine in trainLines) {
                 if (result.containsKey(trainLine)) {
-                    val stations = result[trainLine]
-                    stations!!.add(station)
+                    val stations = result[trainLine]!!
+                    stations.add(station)
                     Collections.sort(stations)
                 } else {
                     val stations = mutableListOf<Station>()
