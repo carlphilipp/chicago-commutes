@@ -5,7 +5,6 @@ import android.support.annotation.DrawableRes
 import android.support.v4.content.ContextCompat
 import android.text.TextUtils
 import android.view.LayoutInflater
-import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
@@ -42,8 +41,8 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
         val vi = nearbyFragment.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val convertView = vi.inflate(R.layout.nearby_station_main, nearbyFragment.slidingUpPanelLayout, false)
 
-        val stationNameView = convertView.findViewById<TextView>(R.id.station_name)
-        val imageView = convertView.findViewById<ImageView>(R.id.icon)
+        val stationNameView: TextView = convertView.findViewById(R.id.station_name)
+        val imageView: ImageView = convertView.findViewById(R.id.icon)
 
         stationNameView.text = title
         stationNameView.maxLines = 1
@@ -71,7 +70,7 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
                     val stopNameData = eta.destName
                     val timingData = eta.timeLeftDueDelay
                     val value = if (accumulator.containsKey(stopNameData))
-                        accumulator.get(stopNameData) + " " + timingData
+                        accumulator[stopNameData] + " " + timingData
                     else
                         timingData
                     accumulator.put(stopNameData, value)
@@ -79,16 +78,14 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
                 })
 
                 var newLine = true
-                var i = 0
-                for (entry in etas.entries) {
+                for ((i, entry) in etas.entries.withIndex()) {
                     val containParams = LayoutUtil.getInsideParams(nearbyFragment.context, newLine, i == etas.size - 1)
                     val container = LayoutUtil.createTrainArrivalsLayout(nearbyFragment.context, containParams, entry, trainLine)
 
                     linearLayout.addView(container)
                     newLine = false
-                    i++
                 }
-                nbOfLine = nbOfLine + etas.size
+                nbOfLine += etas.size
             }
             //} else {
             //    handleNoResults(linearLayout);
@@ -114,15 +111,13 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
                 val boundMap = entry.value
 
                 var newLine = true
-                var i = 0
 
-                for (entry2 in boundMap.entries) {
+                for ((i, entry2) in boundMap.entries.withIndex()) {
                     val containParams = LayoutUtil.getInsideParams(nearbyFragment.context, newLine, i == boundMap.size - 1)
                     val container = LayoutUtil.createBusArrivalsLayout(nearbyFragment.context, containParams, stopNameTrimmed, BusDirection.BusDirectionEnum.fromString(entry2.key), entry2.value as MutableList<out BusArrival>)
 
                     linearLayout.addView(container)
                     newLine = false
-                    i++
                 }
                 nbOfLine[0] = nbOfLine[0] + boundMap.size
             }
@@ -154,7 +149,7 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
     private val nearbyResultsView: LinearLayout
         get() {
             val relativeLayout = nearbyFragment.layoutContainer.getChildAt(0) as RelativeLayout
-            return relativeLayout.findViewById<View>(R.id.nearby_results) as LinearLayout
+            return relativeLayout.findViewById(R.id.nearby_results)
         }
 
     private fun handleNoResults(linearLayout: LinearLayout) {

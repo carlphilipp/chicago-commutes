@@ -198,7 +198,7 @@ public class StationActivity extends AbstractStationActivity {
             final List<Stop> stops = entry.getValue();
             final View lineTitleView = getLayoutInflater().inflate(R.layout.activity_station_line_title, viewGroup, false);
 
-            final TextView testView = (TextView) lineTitleView.findViewById(R.id.train_line_title);
+            final TextView testView = lineTitleView.findViewById(R.id.train_line_title);
             testView.setText(line.toStringWithLine());
             testView.setBackgroundColor(line.getColor());
             if (line == TrainLine.YELLOW) {
@@ -317,7 +317,7 @@ public class StationActivity extends AbstractStationActivity {
             .forEach(key -> {
                 if (ids.containsKey(key)) {
                     final int id = ids.get(key);
-                    final LinearLayout line3View = (LinearLayout) findViewById(id);
+                    final LinearLayout line3View = findViewById(id);
                     if (line3View != null) {
                         line3View.setVisibility(View.GONE);
                         if (line3View.getChildCount() > 0) {
@@ -346,7 +346,7 @@ public class StationActivity extends AbstractStationActivity {
         // viewId might be not there if CTA API provide wrong data
         if (ids.containsKey(key)) {
             final int viewId = ids.get(key);
-            final LinearLayout line3View = (LinearLayout) findViewById(viewId);
+            final LinearLayout line3View = findViewById(viewId);
             final Integer id = ids.get(line.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName());
             if (id == null) {
                 final LinearLayout insideLayout = new LinearLayout(this);
@@ -373,7 +373,7 @@ public class StationActivity extends AbstractStationActivity {
 
                 line3View.addView(insideLayout);
             } else {
-                final LinearLayout insideLayout = (LinearLayout) findViewById(id);
+                final LinearLayout insideLayout = findViewById(id);
                 final TextView timing = (TextView) insideLayout.getChildAt(1);
                 final String timingData = timing.getText() + eta.getTimeLeftDueDelay() + " ";
                 timing.setText(timingData);

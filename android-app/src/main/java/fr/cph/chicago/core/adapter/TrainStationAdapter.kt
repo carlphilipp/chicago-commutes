@@ -53,15 +53,14 @@ class TrainStationAdapter : BaseAdapter() {
 
     @SuppressLint("ViewHolder")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        var convertView = convertView
         val vi = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        convertView = vi.inflate(R.layout.list_train_line, parent, false)
+        val view = vi.inflate(R.layout.list_train_line, parent, false)
 
-        val color = convertView.findViewById<View>(R.id.station_color_value) as LinearLayout
+        val color: LinearLayout = view.findViewById(R.id.station_color_value)
         color.setBackgroundColor(TrainLine.values()[position].color)
 
-        val stationName = convertView.findViewById<View>(R.id.station_name_value) as TextView
+        val stationName: TextView = view.findViewById(R.id.station_name_value)
         stationName.text = TrainLine.values()[position].toString()
-        return convertView
+        return view
     }
 }

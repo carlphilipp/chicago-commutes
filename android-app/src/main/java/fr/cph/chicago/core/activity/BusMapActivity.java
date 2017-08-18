@@ -46,6 +46,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import butterknife.BindString;
 import butterknife.ButterKnife;
@@ -190,7 +191,7 @@ public class BusMapActivity extends AbstractMapActivity {
 
             final LayoutInflater layoutInflater = (LayoutInflater) BusMapActivity.this.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             final View view = layoutInflater.inflate(R.layout.marker, viewGroup, false);
-            final TextView title = (TextView) view.findViewById(R.id.title);
+            final TextView title = view.findViewById(R.id.title);
             title.setText(marker.getTitle());
 
             views.put(marker, view);
@@ -227,7 +228,7 @@ public class BusMapActivity extends AbstractMapActivity {
                     // Potential null sent, if stream api change, it could fail
                     return marker;
                 })
-                .filter(marker -> marker != null)
+                .filter(Objects::nonNull)
                 .forEach(busStationMarkers::add);
             getGoogleMap().addPolyline(poly);
             index[0]++;

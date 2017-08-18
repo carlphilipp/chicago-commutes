@@ -59,7 +59,7 @@ class BusBoundAdapter : BaseAdapter() {
         if (view == null) {
             val vi = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             view = vi.inflate(R.layout.list_bus_bounds, parent, false)
-            holder = ViewHolder(view!!.findViewById<View>(R.id.station_name) as TextView)
+            holder = ViewHolder(view!!.findViewById(R.id.station_name))
             view.tag = holder
         } else {
             holder = view.tag as ViewHolder

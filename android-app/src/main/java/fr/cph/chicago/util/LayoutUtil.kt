@@ -175,7 +175,7 @@ object LayoutUtil {
         val destination = entry.key
         val destinationTextView = TextView(context)
         destinationTextView.setTextColor(grey5)
-        destinationTextView.setText(destination)
+        destinationTextView.text = destination
         destinationTextView.setLines(1)
         destinationTextView.layoutParams = destinationParams
 
@@ -191,7 +191,7 @@ object LayoutUtil {
 
         val currentEtas = entry.value
         val arrivalText = TextView(context)
-        arrivalText.setText(currentEtas)
+        arrivalText.text = currentEtas
         arrivalText.gravity = Gravity.END
         arrivalText.setSingleLine(true)
         arrivalText.setTextColor(grey5)

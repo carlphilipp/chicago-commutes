@@ -41,8 +41,11 @@ import fr.cph.chicago.util.Util
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BusAdapter(private val app: App, private val view: View) : BaseAdapter() {
-    private var busRoutes: List<BusRoute> = DataHolder.busData.busRoutes
+class BusAdapter(private val app: App) : BaseAdapter() {
+
+    private val TAG = BusAdapter::class.java.simpleName
+
+    var busRoutes: List<BusRoute> = DataHolder.busData.busRoutes
 
     override fun getCount(): Int {
         return busRoutes.size
@@ -59,19 +62,15 @@ class BusAdapter(private val app: App, private val view: View) : BaseAdapter() {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var view = convertView
         val route = getItem(position) as BusRoute
-
         val holder: ViewHolder
-
         if (view == null) {
             val vi = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             view = vi.inflate(R.layout.list_bus, parent, false)
-
             holder = ViewHolder(
                 routeNameView = view!!.findViewById(R.id.route_name),
                 routeNumberView = view.findViewById(R.id.route_number),
                 detailsLayout = view.findViewById(R.id.route_details)
             )
-
             view.tag = holder
         } else {
             holder = view.tag as ViewHolder
@@ -79,11 +78,11 @@ class BusAdapter(private val app: App, private val view: View) : BaseAdapter() {
         holder.routeNameView.text = route.name
         holder.routeNumberView.text = route.id
 
-        view.setOnClickListener { v ->
+        view.setOnClickListener { _ ->
             holder.detailsLayout.visibility = LinearLayout.VISIBLE
             ObservableUtil.createBusDirectionsObservable(parent.context, route.id)
                 .doOnError { throwable: Throwable ->
-                    Util.handleConnectOrParserException(throwable, null, this.view, holder.detailsLayout)
+                    Util.handleConnectOrParserException(throwable, null, view, holder.detailsLayout)
                     Log.e(TAG, throwable.message, throwable)
                 }
                 .subscribe(BusDirectionObserver(app, parent, holder.detailsLayout, route))
@@ -91,23 +90,9 @@ class BusAdapter(private val app: App, private val view: View) : BaseAdapter() {
         return view
     }
 
-    fun setRoutes(busRoutes: List<BusRoute>) {
-        this.busRoutes = busRoutes
-    }
-
-    /**
-     * DP view holder
-     *
-     * @author Carl-Philipp Harmant
-     * @version 1
-     */
     private class ViewHolder(
         val routeNameView: TextView,
         val routeNumberView: TextView,
         val detailsLayout: LinearLayout
     )
-
-    companion object {
-        private val TAG = BusAdapter::class.java.simpleName
-    }
 }

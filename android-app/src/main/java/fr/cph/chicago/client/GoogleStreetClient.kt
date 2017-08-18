@@ -70,7 +70,7 @@ object GoogleStreetClient {
         } catch (e: Exception) {
             Log.e(TAG, e.message, e)
             // TODO add a temporary image here
-            return ColorDrawable(Color.TRANSPARENT);
+            return ColorDrawable(Color.TRANSPARENT)
         } finally {
             IOUtils.closeQuietly(inputStream)
         }

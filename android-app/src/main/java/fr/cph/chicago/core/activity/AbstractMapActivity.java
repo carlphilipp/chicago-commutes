@@ -120,19 +120,11 @@ public class AbstractMapActivity extends FragmentActivity implements EasyPermiss
         googleMap.setMyLocationEnabled(true);
     }
 
-    public Marker getSelectedMarker() {
-        return selectedMarker;
-    }
-
     public void setSelectedMarker(Marker selectedMarker) {
         this.selectedMarker = selectedMarker;
     }
 
     public GoogleMap getGoogleMap() {
         return googleMap;
-    }
-
-    public void setGoogleMap(GoogleMap googleMap) {
-        this.googleMap = googleMap;
     }
 }

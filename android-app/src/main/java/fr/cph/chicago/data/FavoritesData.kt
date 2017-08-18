@@ -31,7 +31,6 @@ import fr.cph.chicago.entity.enumeration.TrainLine
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
 import java.util.*
-import kotlin.collections.HashMap
 
 /**
  * Vehicle Arrival. Hold data for favorites adapter.
@@ -60,10 +59,6 @@ object FavoritesData {
 
     fun setBusFavorites(busFavorites: List<String>) {
         this.busFavorites = busFavorites
-    }
-
-    fun setPreferences(preferences: Preferences) {
-        this.preferences = preferences
     }
 
     private var trainArrivals: SparseArray<TrainArrival> = SparseArray()
@@ -112,7 +107,7 @@ object FavoritesData {
                 val found = bikeStations
                     .filter { bikeStation -> Integer.toString(bikeStation.id) == bikeFavorites[index] }
                     .getOrNull(0)
-                return if (found != null) found else createEmptyBikeStation(index, context)
+                return found ?: createEmptyBikeStation(index, context)
             } else {
                 return createEmptyBikeStation(index, context)
             }

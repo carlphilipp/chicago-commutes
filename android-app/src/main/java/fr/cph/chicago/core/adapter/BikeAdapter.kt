@@ -36,7 +36,7 @@ import fr.cph.chicago.entity.BikeStation
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BikeAdapter(private var bikeStations: List<BikeStation>) : BaseAdapter() {
+class BikeAdapter(var bikeStations: List<BikeStation>) : BaseAdapter() {
 
     override fun getCount(): Int {
         return bikeStations.size
@@ -59,11 +59,7 @@ class BikeAdapter(private var bikeStations: List<BikeStation>) : BaseAdapter() {
         if (view == null) {
             val vi = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             view = vi.inflate(R.layout.list_bike, parent, false)
-
-            holder = ViewHolder(
-                view!!.findViewById<View>(R.id.station_name) as TextView
-            )
-
+            holder = ViewHolder(view!!.findViewById(R.id.station_name))
             view.tag = holder
         } else {
             holder = view.tag as ViewHolder
@@ -72,10 +68,6 @@ class BikeAdapter(private var bikeStations: List<BikeStation>) : BaseAdapter() {
 
         view.setOnClickListener(BikeStationOnClickListener(station))
         return view
-    }
-
-    fun setBikeStations(bikeStations: List<BikeStation>) {
-        this.bikeStations = bikeStations
     }
 
     /**

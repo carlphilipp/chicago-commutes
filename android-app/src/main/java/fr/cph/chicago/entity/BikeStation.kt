@@ -33,7 +33,7 @@ import org.apache.commons.lang3.StringUtils
  * @version 1
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-class BikeStation(
+data class BikeStation(
     @JsonProperty("id")
     val id: Int,
     @JsonProperty("stationName")
@@ -74,33 +74,6 @@ class BikeStation(
         dest.writeDouble(longitude)
         dest.writeInt(availableBikes)
         dest.writeString(stAddress1)
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other)
-            return true
-        if (other == null)
-            return false
-        if (javaClass != other.javaClass)
-            return false
-        val otherCast = other as BikeStation?
-        return id == otherCast!!.id
-    }
-
-    override fun hashCode(): Int {
-        var result: Int
-        var temp: Long
-        result = id
-        result = 31 * result + name.hashCode()
-        result = 31 * result + availableDocks
-        result = 31 * result + totalDocks
-        temp = java.lang.Double.doubleToLongBits(latitude)
-        result = 31 * result + (temp xor temp.ushr(32)).toInt()
-        temp = java.lang.Double.doubleToLongBits(longitude)
-        result = 31 * result + (temp xor temp.ushr(32)).toInt()
-        result = 31 * result + availableBikes
-        result = 31 * result + stAddress1.hashCode()
-        return result
     }
 
     companion object {

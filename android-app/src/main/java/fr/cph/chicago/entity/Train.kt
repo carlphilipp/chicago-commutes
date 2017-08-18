@@ -34,30 +34,30 @@ data class Train(
             var minLatitude: Double = 0.0
             var maxLongitude: Double = 0.0
             var minLongitude: Double = 0.0
-            var i = 0
-            for (train in trains) {
-                val temp = train.position
-                if (i == 0) {
-                    maxLatitude = temp.latitude
-                    minLatitude = temp.latitude
-                    maxLongitude = temp.longitude
-                    minLongitude = temp.longitude
-                } else {
-                    if (temp.latitude > maxLatitude) {
+            trains
+                .asSequence()
+                .map { it.position }
+                .forEachIndexed { i, temp ->
+                    if (i == 0) {
                         maxLatitude = temp.latitude
-                    }
-                    if (temp.latitude < minLatitude) {
                         minLatitude = temp.latitude
-                    }
-                    if (temp.longitude > maxLongitude) {
                         maxLongitude = temp.longitude
-                    }
-                    if (temp.longitude < minLongitude) {
                         minLongitude = temp.longitude
+                    } else {
+                        if (temp.latitude > maxLatitude) {
+                            maxLatitude = temp.latitude
+                        }
+                        if (temp.latitude < minLatitude) {
+                            minLatitude = temp.latitude
+                        }
+                        if (temp.longitude > maxLongitude) {
+                            maxLongitude = temp.longitude
+                        }
+                        if (temp.longitude < minLongitude) {
+                            minLongitude = temp.longitude
+                        }
                     }
                 }
-                i++
-            }
             position.latitude = (maxLatitude + minLatitude) / 2
             position.longitude = (maxLongitude + minLongitude) / 2
             return position

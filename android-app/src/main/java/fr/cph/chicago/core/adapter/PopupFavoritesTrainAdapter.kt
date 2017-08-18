@@ -38,9 +38,9 @@ internal class PopupFavoritesTrainAdapter(private val activity: Activity, privat
     @SuppressLint("ViewHolder")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val rowView = activity.layoutInflater.inflate(R.layout.popup_train_cell, parent, false)
-        val imageView = rowView.findViewById<View>(R.id.popup_train_map) as ImageView
+        val imageView: ImageView = rowView.findViewById(R.id.popup_train_map)
         imageView.setColorFilter(colors[position])
-        val textView = rowView.findViewById<View>(R.id.label) as TextView
+        val textView: TextView = rowView.findViewById(R.id.label)
         textView.text = values[position]
         return rowView
     }

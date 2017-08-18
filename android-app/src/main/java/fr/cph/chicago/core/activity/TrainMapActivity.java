@@ -198,7 +198,7 @@ public class TrainMapActivity extends AbstractMapActivity {
             markers.add(marker);
 
             final View view = getLayoutInflater().inflate(R.layout.marker, viewGroup, false);
-            final TextView title2 = (TextView) view.findViewById(R.id.title);
+            final TextView title2 = view.findViewById(R.id.title);
             title2.setText(title);
 
             views.put(marker, view);

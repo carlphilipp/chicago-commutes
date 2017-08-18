@@ -66,28 +66,19 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
     private var lastUpdate: String? = null
 
     class FavoritesViewHolder(view: View, val parent: ViewGroup) : RecyclerView.ViewHolder(view) {
-        val mainLayout: LinearLayout
-        val lastUpdateTextView: TextView
-        val stationNameTextView: TextView
-        val favoriteImage: ImageView
-        val detailsButton: Button
-        val mapButton: Button
+        val mainLayout: LinearLayout = view.findViewById(R.id.favorites_arrival_layout)
+        val lastUpdateTextView: TextView = view.findViewById(R.id.last_update)
+        val stationNameTextView: TextView = view.findViewById(R.id.favorites_station_name)
+        val favoriteImage: ImageView = view.findViewById(R.id.favorites_icon)
+        val detailsButton: Button = view.findViewById(R.id.details_button)
+        val mapButton: Button = view.findViewById(R.id.view_map_button)
 
         init {
-            this.mainLayout = view.findViewById(R.id.favorites_arrival_layout)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 this.mainLayout.background = ContextCompat.getDrawable(parent.context, R.drawable.any_selector)
             }
-            this.favoriteImage = view.findViewById(R.id.favorites_icon)
-
-            this.stationNameTextView = view.findViewById(R.id.favorites_station_name)
             this.stationNameTextView.setLines(1)
             this.stationNameTextView.ellipsize = TextUtils.TruncateAt.END
-
-            this.lastUpdateTextView = view.findViewById(R.id.last_update)
-
-            this.detailsButton = view.findViewById(R.id.details_button)
-            this.mapButton = view.findViewById(R.id.view_map_button)
         }
     }
 
@@ -142,7 +133,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
                 if (trainLines.size == 1) {
                     startActivity(trainLines.iterator().next())
                 } else {
-                    val colors = ArrayList<Int>()
+                    val colors = mutableListOf<Int>()
                     val values = trainLines
                         .flatMap { line ->
                             val color = if (line !== TrainLine.YELLOW) line.color else ContextCompat.getColor(context, R.color.yellowLine)
@@ -152,7 +143,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
 
                     val ada = PopupFavoritesTrainAdapter(activity, values, colors)
 
-                    val lines = ArrayList<TrainLine>()
+                    val lines = mutableListOf<TrainLine>()
                     lines.addAll(trainLines)
 
                     val builder = AlertDialog.Builder(activity)
@@ -169,16 +160,14 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
 
         trainLines.forEach { trainLine ->
             var newLine = true
-            var i = 0
             val etas = FavoritesData.getTrainArrivalByLine(stationId, trainLine)
-            for (entry in etas.entries) {
+            for ((i, entry) in etas.entries.withIndex()) {
                 val containParams = LayoutUtil.getInsideParams(activity.applicationContext, newLine, i == etas.size - 1)
                 val container = LayoutUtil.createTrainArrivalsLayout(context, containParams, entry, trainLine)
 
                 holder.mainLayout.addView(container)
 
                 newLine = false
-                i++
             }
         }
     }
@@ -195,7 +184,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         holder.stationNameTextView.text = busRoute.id
         holder.favoriteImage.setImageResource(R.drawable.ic_directions_bus_white_24dp)
 
-        val busDetailsDTOs = ArrayList<BusDetailsDTO>()
+        val busDetailsDTOs = mutableListOf<BusDetailsDTO>()
 
         val busArrivalDTO = FavoritesData.getBusArrivalsMapped(busRoute.id, context)
         val entrySet = busArrivalDTO.entries
@@ -253,7 +242,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         holder.stationNameTextView.text = bikeStation.name
         holder.favoriteImage.setImageResource(R.drawable.ic_directions_bike_white_24dp)
 
-        holder.detailsButton.setOnClickListener { v ->
+        holder.detailsButton.setOnClickListener { _ ->
             if (!Util.isNetworkAvailable(context)) {
                 Util.showNetworkErrorMessage(activity)
             } else if (bikeStation.latitude != 0.0 && bikeStation.longitude != 0.0) {

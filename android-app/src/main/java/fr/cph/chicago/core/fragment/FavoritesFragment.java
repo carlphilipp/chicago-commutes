@@ -303,7 +303,7 @@ public class FavoritesFragment extends AbstractFragment {
      */
     private static class RefreshTimingTask extends AsyncTask<Void, Void, Void> {
 
-        private FavoritesAdapter favoritesAdapter;
+        private final FavoritesAdapter favoritesAdapter;
 
         public RefreshTimingTask(final FavoritesAdapter favoritesAdapter) {
             this.favoritesAdapter = favoritesAdapter;

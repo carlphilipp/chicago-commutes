@@ -66,8 +66,8 @@ class TrainAdapter(line: TrainLine, private val activity: Activity) : BaseAdapte
             view = vi.inflate(R.layout.list_train, parent, false)
 
             holder = ViewHolder(
-                view!!.findViewById<View>(R.id.station_name_value) as TextView,
-                view.findViewById<View>(R.id.station_color) as LinearLayout
+                view!!.findViewById(R.id.station_name_value),
+                view.findViewById(R.id.station_color)
             )
             view.tag = holder
         } else {

@@ -25,8 +25,8 @@ class BusFollowObserver(private val activity: BusMapActivity, private val layout
             val busArrival = BusArrival(Date(), "added bus", view.context.getString(R.string.bus_all_results), 0, 0, "", "", StringUtils.EMPTY, Date(), false)
             busArrivals.add(busArrival)
         }
-        val arrivals = view.findViewById<ListView>(R.id.arrivals)
-        val error = view.findViewById<TextView>(R.id.error)
+        val arrivals: ListView = view.findViewById(R.id.arrivals)
+        val error: TextView = view.findViewById(R.id.error)
         if (busArrivals.size != 0) {
             val ada = BusMapSnippetAdapter(busArrivals)
             arrivals.adapter = ada

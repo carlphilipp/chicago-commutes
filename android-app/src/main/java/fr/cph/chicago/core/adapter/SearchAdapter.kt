@@ -83,32 +83,30 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
         val vi = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         view = vi.inflate(R.layout.list_search, parent, false)
 
-        val routeName = view.findViewById<TextView>(R.id.station_name)
+        val routeName: TextView = view.findViewById(R.id.station_name)
 
         if (position < trains!!.size) {
             val station = getItem(position) as Station
             routeName.text = station.name
 
-            val stationColorView = view.findViewById<LinearLayout>(R.id.station_color)
+            val stationColorView: LinearLayout = view.findViewById(R.id.station_color)
 
-            val lines = station.lines
-            for (tl in lines) {
-                val layout = LayoutUtil.createColoredRoundForMultiple(context, tl)
-                stationColorView.addView(layout)
-            }
+            station.lines
+                .map { LayoutUtil.createColoredRoundForMultiple(context, it) }
+                .forEach { stationColorView.addView(it) }
 
-            view.setOnClickListener(TrainOnClickListener(parent.context, activity, station.id, lines))
+            view.setOnClickListener(TrainOnClickListener(parent.context, activity, station.id, station.lines))
         } else if (position < trains!!.size + busRoutes!!.size) {
             val busRoute = getItem(position) as BusRoute
 
-            val icon = view.findViewById<ImageView>(R.id.icon)
+            val icon: ImageView = view.findViewById(R.id.icon)
             icon.setImageDrawable(ContextCompat.getDrawable(parent.context, R.drawable.ic_directions_bus_white_24dp))
 
             val name = busRoute.id + " " + busRoute.name
             routeName.text = name
 
-            val loadingTextView = view.findViewById<TextView>(R.id.loading_text_view)
-            view.setOnClickListener { v ->
+            val loadingTextView: TextView = view.findViewById(R.id.loading_text_view)
+            view.setOnClickListener { _ ->
                 loadingTextView.visibility = LinearLayout.VISIBLE
                 ObservableUtil.createBusDirectionsObservable(parent.context, busRoute.id)
                     .doOnError { throwable ->
@@ -119,7 +117,7 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
         } else {
             val bikeStation = getItem(position) as BikeStation
 
-            val icon = view.findViewById<ImageView>(R.id.icon)
+            val icon: ImageView = view.findViewById(R.id.icon)
             icon.setImageDrawable(ContextCompat.getDrawable(parent.context, R.drawable.ic_directions_bike_white_24dp))
 
             routeName.text = bikeStation.name

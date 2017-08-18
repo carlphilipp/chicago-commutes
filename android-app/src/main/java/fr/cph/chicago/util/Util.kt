@@ -22,7 +22,6 @@ package fr.cph.chicago.util
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.Point
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
@@ -32,7 +31,6 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.widget.Toolbar
 import android.util.TypedValue
 import android.view.View
-import android.view.WindowManager
 import android.widget.Toast
 import com.google.android.gms.analytics.HitBuilders
 import com.google.android.gms.maps.CameraUpdateFactory

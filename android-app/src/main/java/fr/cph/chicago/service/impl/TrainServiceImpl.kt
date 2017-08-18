@@ -46,7 +46,7 @@ object TrainServiceImpl : TrainService {
                             if (end + 3 >= size - 1 && end != size) {
                                 end = size
                             } else {
-                                end = end + 3
+                                end += 3
                             }
                         }
                     }

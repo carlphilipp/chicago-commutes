@@ -41,14 +41,11 @@ class PopupBusDetailsFavoritesAdapter(context: Context, private val values: List
         if (view == null) {
             val vi = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             view = vi.inflate(R.layout.popup_bus_cell_0, parent, false)
-
             holder = ViewHolder(view!!.findViewById(R.id.label))
-
             view.tag = holder
         } else {
             holder = view.tag as ViewHolder
         }
-
         val label = values[position].stopName + " (" + WordUtils.capitalize(values[position].bound.toLowerCase()) + ")"
         holder.label.text = label
         return view

@@ -30,7 +30,7 @@ abstract class RefreshMarkers(context: Context, @DrawableRes drawable: Int) {
     }
 
     fun isIn(num: Float, sup: Float, inf: Float): Boolean {
-        return num >= inf && num <= sup
+        return num in inf..sup
     }
 
     fun refresh(position: CameraPosition, markers: List<Marker>) {

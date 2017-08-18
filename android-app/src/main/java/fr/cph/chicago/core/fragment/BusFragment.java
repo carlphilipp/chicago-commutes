@@ -93,7 +93,7 @@ public class BusFragment extends AbstractFragment {
     }
 
     private void addView() {
-        busAdapter = new BusAdapter((App) activity.getApplication(), listView);
+        busAdapter = new BusAdapter((App) activity.getApplication());
         listView.setAdapter(busAdapter);
         textFilter.setVisibility(TextView.VISIBLE);
         textFilter.addTextChangedListener(new TextWatcher() {
@@ -119,7 +119,7 @@ public class BusFragment extends AbstractFragment {
 
             @Override
             public void afterTextChanged(final Editable s) {
-                busAdapter.setRoutes(busRoutes);
+                busAdapter.setBusRoutes(busRoutes);
                 busAdapter.notifyDataSetChanged();
             }
         });
