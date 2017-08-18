@@ -115,3 +115,8 @@
 -dontnote org.androidannotations.api.view.HasViews
 
 -dontwarn java.lang.invoke.*
+
+-keepclassmembers class * {
+     @com.fasterxml.jackson.annotation.JsonCreator *;
+     @com.fasterxml.jackson.annotation.JsonProperty *;
+}
