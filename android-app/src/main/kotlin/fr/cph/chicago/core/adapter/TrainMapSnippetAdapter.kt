@@ -71,6 +71,8 @@ class TrainMapSnippetAdapter(private val etas: List<Eta>) : BaseAdapter() {
         holder.name.text = eta.station.name
         if (!(position == etas.size - 1 && "0 min" == eta.timeLeftDueDelay)) {
             holder.time.text = eta.timeLeftDueDelay
+            holder.name.setTextColor(ContextCompat.getColor(parent.context, R.color.grey_5))
+            holder.name.gravity = Gravity.START
         } else {
             holder.name.setTextColor(ContextCompat.getColor(parent.context, R.color.grey))
             holder.name.gravity = Gravity.CENTER
