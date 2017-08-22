@@ -70,7 +70,7 @@ object BusData {
      * @param position the position
      * @return a list of bus stop
      */
-    fun readNearbyStops(realm: Realm, position: Position): List<BusStop> {
+    fun readNearbyStops(position: Position): List<BusStop> {
         val latitude = position.latitude
         val longitude = position.longitude
 
@@ -79,7 +79,8 @@ object BusData {
         val lonMax = longitude + DEFAULT_RANGE
         val lonMin = longitude - DEFAULT_RANGE
 
-        return realm.where(BusStop::class.java)
+        val realm = Realm.getDefaultInstance()
+        val result = realm.where(BusStop::class.java)
             // TODO use between when child object is supported by Realm
             .greaterThan("position.latitude", latMin)
             .lessThan("position.latitude", latMax)
@@ -98,5 +99,7 @@ object BusData {
                 busStop
             }
             .toList()
+        realm.close()
+        return result
     }
 }

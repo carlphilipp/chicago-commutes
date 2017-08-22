@@ -7,18 +7,16 @@ import io.realm.RealmConfiguration
 object RealmUtil {
 
     fun setUpRealm(context: Context) {
+        Realm.init(context)
         val realmConfig = getRealmConfiguration(context)
         Realm.setDefaultConfiguration(realmConfig)
     }
 
-
     fun cleanRealm(context: Context) {
-        val realmConfig = getRealmConfiguration(context)
-        Realm.deleteRealm(realmConfig)
+        Realm.deleteRealm(getRealmConfiguration(context))
     }
 
     private fun getRealmConfiguration(context: Context): RealmConfiguration {
-        Realm.init(context)
         val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)!!
         return RealmConfiguration.Builder()
             .schemaVersion(packageInfo.versionCode.toLong())

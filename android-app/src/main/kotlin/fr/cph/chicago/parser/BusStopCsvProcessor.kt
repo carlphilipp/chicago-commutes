@@ -13,9 +13,11 @@ import java.util.*
 internal class BusStopCsvProcessor : RowProcessor {
 
     private val rows: MutableList<BusStop> = ArrayList(12000)
-    private val realm: Realm = Realm.getDefaultInstance()
 
     override fun processStarted(context: ParsingContext) {
+        if (rows.isNotEmpty()) {
+            rows.clear()
+        }
     }
 
     /**
@@ -45,9 +47,9 @@ internal class BusStopCsvProcessor : RowProcessor {
     }
 
     override fun processEnded(context: ParsingContext) {
+        val realm = Realm.getDefaultInstance()
         realm.beginTransaction()
-        rows.forEach { busStop -> realm.copyToRealm(busStop) }
-        realm.commitTransaction()
+        rows.forEach { busStop -> realm.copyToRealmOrUpdate(busStop) }
         realm.close()
     }
 }

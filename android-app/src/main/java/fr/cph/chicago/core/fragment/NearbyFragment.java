@@ -67,7 +67,6 @@ import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.util.GPSUtil;
 import fr.cph.chicago.util.Util;
-import io.realm.Realm;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -276,9 +275,7 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
             final GPSUtil gpsUtil = new GPSUtil(googleApiClient);
             final Position position = gpsUtil.getLocation();
             if (position.getLongitude() != 0 && position.getLatitude() != 0) {
-                final Realm realm = Realm.getDefaultInstance();
-                busStops = busData.readNearbyStops(realm, position);
-                realm.close();
+                busStops = busData.readNearbyStops(position);
                 trainStations = trainData.readNearbyStation(position);
                 // FIXME: wait for bike stations to be loaded
                 bikeStations = bikeStations != null
