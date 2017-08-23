@@ -57,7 +57,7 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.adapter.SlidingUpAdapter;
 import fr.cph.chicago.core.listener.OnMarkerClickListener;
-import fr.cph.chicago.data.MarkerDataHolder;
+import fr.cph.chicago.marker.MarkerDataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusStop;

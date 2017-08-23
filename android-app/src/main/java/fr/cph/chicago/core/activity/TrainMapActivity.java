@@ -60,7 +60,7 @@ import fr.cph.chicago.entity.Train;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
-import fr.cph.chicago.map.RefreshTrainMarkers;
+import fr.cph.chicago.marker.RefreshTrainMarkers;
 import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.util.Util;
 

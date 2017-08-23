@@ -1,4 +1,4 @@
-package fr.cph.chicago.map
+package fr.cph.chicago.marker
 
 import android.content.Context
 import android.graphics.Bitmap

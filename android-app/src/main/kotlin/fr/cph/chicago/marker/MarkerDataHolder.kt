@@ -1,4 +1,4 @@
-package fr.cph.chicago.data
+package fr.cph.chicago.marker
 
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker

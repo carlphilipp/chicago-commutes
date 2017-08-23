@@ -4,7 +4,7 @@ import android.util.Log
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
 import fr.cph.chicago.core.fragment.NearbyFragment
-import fr.cph.chicago.data.MarkerDataHolder
+import fr.cph.chicago.marker.MarkerDataHolder
 import fr.cph.chicago.entity.AStation
 import fr.cph.chicago.entity.BikeStation
 import fr.cph.chicago.entity.BusStop

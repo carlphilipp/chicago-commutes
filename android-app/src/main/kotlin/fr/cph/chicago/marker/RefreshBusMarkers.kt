@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.map
+package fr.cph.chicago.marker
 
 import android.content.Context
 import com.google.android.gms.maps.model.CameraPosition
