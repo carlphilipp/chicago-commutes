@@ -8,8 +8,7 @@ object RealmConfig {
 
     fun setUpRealm(context: Context) {
         Realm.init(context)
-        val realmConfig = getRealmConfiguration(context)
-        Realm.setDefaultConfiguration(realmConfig)
+        Realm.setDefaultConfiguration(getRealmConfiguration(context))
     }
 
     fun cleanRealm(context: Context) {

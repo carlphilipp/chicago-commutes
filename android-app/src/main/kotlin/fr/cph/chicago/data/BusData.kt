@@ -39,7 +39,7 @@ object BusData {
     private val DEFAULT_RANGE = 0.008
     private val TAG = BusData::class.java.simpleName
 
-    var busRoutes: List<BusRoute> = mutableListOf()
+    lateinit var busRoutes: List<BusRoute>
 
     /**
      * Method that read bus stops from CSV
