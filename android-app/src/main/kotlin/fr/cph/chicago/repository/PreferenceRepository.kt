@@ -17,12 +17,13 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.data
+package fr.cph.chicago.repository
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.util.Log
+import fr.cph.chicago.data.TrainData
 import fr.cph.chicago.entity.enumeration.TrainDirection
 import fr.cph.chicago.entity.enumeration.TrainLine
 import fr.cph.chicago.util.Util
@@ -37,9 +38,9 @@ import java.util.regex.Pattern
  * @author Carl-Philipp Harmant
  * @version 1
  */
-object PreferencesImpl : Preferences {
+object PreferenceRepository {
 
-    private val TAG = PreferencesImpl::class.java.simpleName
+    private val TAG = PreferenceRepository::class.java.simpleName
 
     private val PATTERN = Pattern.compile("(\\d{1,3})")
     private val FORMAT = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
@@ -58,7 +59,7 @@ object PreferencesImpl : Preferences {
      * @param context   the context
      * @param favorites the favorites
      */
-    override fun saveTrainFavorites(context: Context, favorites: List<Int>) {
+    fun saveTrainFavorites(context: Context, favorites: List<Int>) {
         val sharedPref = getPrivatePreferences(context)
         val editor = sharedPref.edit()
         val set = favorites.map { it.toString() }.toSet()
@@ -73,7 +74,7 @@ object PreferencesImpl : Preferences {
      * @param context the context
      * @return a boolean
      */
-    override fun hasFavorites(context: Context): Boolean {
+    fun hasFavorites(context: Context): Boolean {
         val sharedPref = getPrivatePreferences(context)
         val setPref1 = sharedPref.getStringSet(PREFERENCE_FAVORITES_TRAIN, null)
         val setPref2 = sharedPref.getStringSet(PREFERENCE_FAVORITES_BUS, null)
@@ -81,7 +82,7 @@ object PreferencesImpl : Preferences {
         return !((setPref1 == null || setPref1.size == 0) && (setPref2 == null || setPref2.size == 0) && (setPref3 == null || setPref3.size == 0))
     }
 
-    override fun saveBikeFavorites(context: Context, favorites: List<String>) {
+    fun saveBikeFavorites(context: Context, favorites: List<String>) {
         val sharedPref = getPrivatePreferences(context)
         val editor = sharedPref.edit()
         val set = favorites.toSet()
@@ -90,14 +91,14 @@ object PreferencesImpl : Preferences {
         editor.apply()
     }
 
-    override fun getBikeFavorites(context: Context): MutableList<String> {
+    fun getBikeFavorites(context: Context): MutableList<String> {
         val sharedPref = getPrivatePreferences(context)
         val setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_BIKE, LinkedHashSet())
         Log.v(TAG, "Read bike favorites : $setPref")
         return setPref.sorted().toMutableList()
     }
 
-    override fun addBikeRouteNameMapping(context: Context, bikeId: String, bikeName: String) {
+    fun addBikeRouteNameMapping(context: Context, bikeId: String, bikeName: String) {
         val sharedPref = getPrivatePreferencesBikeMapping(context)
         val editor = sharedPref.edit()
         editor.putString(bikeId, bikeName)
@@ -105,7 +106,7 @@ object PreferencesImpl : Preferences {
         editor.apply()
     }
 
-    override fun getBikeRouteNameMapping(context: Context, bikeId: String): String? {
+    fun getBikeRouteNameMapping(context: Context, bikeId: String): String? {
         val sharedPref = getPrivatePreferencesBikeMapping(context)
         val bikeName = sharedPref.getString(bikeId, null)
         Log.v(TAG, "Get bike name mapping : $bikeId => $bikeName")
@@ -118,7 +119,7 @@ object PreferencesImpl : Preferences {
      * @param context   the context
      * @param favorites the list of favorites to save
      */
-    override fun saveBusFavorites(context: Context, favorites: List<String>) {
+    fun saveBusFavorites(context: Context, favorites: List<String>) {
         val sharedPref = getPrivatePreferences(context)
         val editor = sharedPref.edit()
         val set = LinkedHashSet<String>()
@@ -134,7 +135,7 @@ object PreferencesImpl : Preferences {
      * @param context the context
      * @return a list of favorites bus
      */
-    override fun getBusFavorites(context: Context): MutableList<String> {
+    fun getBusFavorites(context: Context): MutableList<String> {
         val sharedPref = getPrivatePreferences(context)
         val setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_BUS, LinkedHashSet())
         Log.v(TAG, "Read bus favorites : " + setPref!!.toString())
@@ -153,7 +154,7 @@ object PreferencesImpl : Preferences {
         }).toMutableList()
     }
 
-    override fun addBusRouteNameMapping(context: Context, busStopId: String, routeName: String) {
+    fun addBusRouteNameMapping(context: Context, busStopId: String, routeName: String) {
         val sharedPref = getPrivatePreferencesBusRouteMapping(context)
         val editor = sharedPref.edit()
         editor.putString(busStopId, routeName)
@@ -161,14 +162,14 @@ object PreferencesImpl : Preferences {
         editor.apply()
     }
 
-    override fun getBusRouteNameMapping(context: Context, busStopId: String): String? {
+    fun getBusRouteNameMapping(context: Context, busStopId: String): String? {
         val sharedPref = getPrivatePreferencesBusRouteMapping(context)
         val routeName = sharedPref.getString(busStopId, null)
         Log.v(TAG, "Get bus route name mapping : $busStopId => $routeName")
         return routeName
     }
 
-    override fun addBusStopNameMapping(context: Context, busStopId: String, stopName: String) {
+    fun addBusStopNameMapping(context: Context, busStopId: String, stopName: String) {
         val sharedPref = getPrivatePreferencesBusStopMapping(context)
         val editor = sharedPref.edit()
         editor.putString(busStopId, stopName)
@@ -176,7 +177,7 @@ object PreferencesImpl : Preferences {
         editor.apply()
     }
 
-    override fun getBusStopNameMapping(context: Context, busStopId: String): String? {
+    fun getBusStopNameMapping(context: Context, busStopId: String): String? {
         val sharedPref = getPrivatePreferencesBusStopMapping(context)
         val stopName = sharedPref.getString(busStopId, null)
         Log.v(TAG, "Get bus stop name mapping : $busStopId => $stopName")
@@ -189,7 +190,7 @@ object PreferencesImpl : Preferences {
      * @param context the context
      * @return the favorites
      */
-    override fun getTrainFavorites(context: Context): MutableList<Int> {
+    fun getTrainFavorites(context: Context): MutableList<Int> {
         val sharedPref = getPrivatePreferences(context)
         val setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_TRAIN, LinkedHashSet())
         Log.v(TAG, "Read train favorites : " + setPref)
@@ -209,7 +210,7 @@ object PreferencesImpl : Preferences {
      * @param direction the direction
      * @param value     the value
      */
-    override fun saveTrainFilter(context: Context, stationId: Int, line: TrainLine, direction: TrainDirection, value: Boolean) {
+    fun saveTrainFilter(context: Context, stationId: Int, line: TrainLine, direction: TrainDirection, value: Boolean) {
         val sharedPref = getPrivatePreferences(context)
         val editor = sharedPref.edit()
         editor.putBoolean(stationId.toString() + "_" + line + "_" + direction, value)
@@ -224,12 +225,12 @@ object PreferencesImpl : Preferences {
      * @param direction the direction
      * @return if a train is filtered
      */
-    override fun getTrainFilter(context: Context, stationId: Int, line: TrainLine, direction: TrainDirection): Boolean {
+    fun getTrainFilter(context: Context, stationId: Int, line: TrainLine, direction: TrainDirection): Boolean {
         val sharedPref = getPrivatePreferences(context)
         return sharedPref.getBoolean(stationId.toString() + "_" + line + "_" + direction, true)
     }
 
-    override fun getRateLastSeen(context: Context): Date {
+    fun getRateLastSeen(context: Context): Date {
         return try {
             val sharedPref = getPrivatePreferences(context)
             val defaultDate = FORMAT.format(Date())
@@ -239,14 +240,14 @@ object PreferencesImpl : Preferences {
         }
     }
 
-    override fun setRateLastSeen(context: Context) {
+    fun setRateLastSeen(context: Context) {
         val sharedPref = getPrivatePreferences(context)
         val editor = sharedPref.edit()
         editor.putString("rateLastSeen", FORMAT.format(Date()))
         editor.apply()
     }
 
-    override fun clearPreferences(context: Context) {
+    fun clearPreferences(context: Context) {
         getPrivatePreferences(context).edit().clear().apply()
     }
 

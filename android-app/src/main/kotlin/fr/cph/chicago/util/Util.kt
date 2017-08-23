@@ -38,7 +38,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.data.PreferencesImpl
+import fr.cph.chicago.repository.PreferenceRepository
 import fr.cph.chicago.entity.BikeStation
 import fr.cph.chicago.entity.BusRoute
 import fr.cph.chicago.entity.Position
@@ -115,10 +115,10 @@ object Util {
      * @param view      the view
      */
     fun addToTrainFavorites(stationId: Int, view: View) {
-        val favorites = PreferencesImpl.getTrainFavorites(view.context)
+        val favorites = PreferenceRepository.getTrainFavorites(view.context)
         if (!favorites.contains(stationId)) {
             favorites.add(stationId)
-            PreferencesImpl.saveTrainFavorites(view.context, favorites)
+            PreferenceRepository.saveTrainFavorites(view.context, favorites)
             showSnackBar(view, R.string.message_add_fav)
         }
     }
@@ -130,9 +130,9 @@ object Util {
      * @param view      the view
      */
     fun removeFromTrainFavorites(stationId: Int, view: View) {
-        val favorites = PreferencesImpl.getTrainFavorites(view.context)
+        val favorites = PreferenceRepository.getTrainFavorites(view.context)
         favorites.remove(stationId)
-        PreferencesImpl.saveTrainFavorites(view.context, favorites)
+        PreferenceRepository.saveTrainFavorites(view.context, favorites)
         showSnackBar(view, R.string.message_remove_fav)
     }
 
@@ -146,9 +146,9 @@ object Util {
      */
     fun removeFromBusFavorites(busRouteId: String, busStopId: String, bound: String, view: View) {
         val id = busRouteId + "_" + busStopId + "_" + bound
-        val favorites = PreferencesImpl.getBusFavorites(view.context)
+        val favorites = PreferenceRepository.getBusFavorites(view.context)
         favorites.remove(id)
-        PreferencesImpl.saveBusFavorites(view.context, favorites)
+        PreferenceRepository.saveBusFavorites(view.context, favorites)
         showSnackBar(view, R.string.message_remove_fav)
     }
 
@@ -162,27 +162,27 @@ object Util {
      */
     fun addToBusFavorites(busRouteId: String, busStopId: String, bound: String, view: View) {
         val id = busRouteId + "_" + busStopId + "_" + bound
-        val favorites = PreferencesImpl.getBusFavorites(view.context)
+        val favorites = PreferenceRepository.getBusFavorites(view.context)
         if (!favorites.contains(id)) {
             favorites.add(id)
-            PreferencesImpl.saveBusFavorites(view.context, favorites)
+            PreferenceRepository.saveBusFavorites(view.context, favorites)
             showSnackBar(view, R.string.message_add_fav)
         }
     }
 
     fun addToBikeFavorites(stationId: Int, view: View) {
-        val favorites = PreferencesImpl.getBikeFavorites(view.context)
+        val favorites = PreferenceRepository.getBikeFavorites(view.context)
         if (!favorites.contains(Integer.toString(stationId))) {
             favorites.add(Integer.toString(stationId))
-            PreferencesImpl.saveBikeFavorites(view.context, favorites)
+            PreferenceRepository.saveBikeFavorites(view.context, favorites)
             showSnackBar(view, R.string.message_add_fav)
         }
     }
 
     fun removeFromBikeFavorites(stationId: Int, view: View) {
-        val favorites = PreferencesImpl.getBikeFavorites(view.context)
+        val favorites = PreferenceRepository.getBikeFavorites(view.context)
         favorites.remove(Integer.toString(stationId))
-        PreferencesImpl.saveBikeFavorites(view.context, favorites)
+        PreferenceRepository.saveBikeFavorites(view.context, favorites)
         showSnackBar(view, R.string.message_remove_fav)
     }
 
@@ -301,14 +301,14 @@ object Util {
 
     fun getFavoritesTrainParams(context: Context): MultiValuedMap<String, String> {
         val paramsTrain = ArrayListValuedHashMap<String, String>()
-        val favorites = PreferencesImpl.getTrainFavorites(context)
+        val favorites = PreferenceRepository.getTrainFavorites(context)
         favorites.forEach { favorite -> paramsTrain.put(context.getString(R.string.request_map_id), favorite.toString()) }
         return paramsTrain
     }
 
     fun getFavoritesBusParams(context: Context): MultiValuedMap<String, String> {
         val paramsBus = ArrayListValuedHashMap<String, String>()
-        val busFavorites = PreferencesImpl.getBusFavorites(context)
+        val busFavorites = PreferenceRepository.getBusFavorites(context)
         busFavorites
             .map { decodeBusFavorite(it) }
             .forEach { (routeId, stopId) ->
@@ -374,11 +374,11 @@ object Util {
         val handler = Handler()
         val r = {
             val now = Date()
-            val lastSeen = PreferencesImpl.getRateLastSeen(view.context)
+            val lastSeen = PreferenceRepository.getRateLastSeen(view.context)
             // if it has been more than 30 days or if it's the first time
             if (now.time - lastSeen.time > 2592000000L || now.time - lastSeen.time < 1000L) {
                 showRateSnackBar(view, activity)
-                PreferencesImpl.setRateLastSeen(view.context)
+                PreferenceRepository.setRateLastSeen(view.context)
             }
         }
         handler.postDelayed(r, 2500L)

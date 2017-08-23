@@ -2,25 +2,18 @@ package fr.cph.chicago.data;
 
 import android.content.Context;
 
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import fr.cph.chicago.entity.BusArrival;
+import fr.cph.chicago.repository.PreferenceRepository;
 
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.BDDMockito.given;
 
 @Ignore
 @RunWith(MockitoJUnitRunner.class)
@@ -31,7 +24,7 @@ public class FavoritesDataTest {
     private static final String ROUTE_ID = "4";
 
     @Mock
-    private Preferences preferences;
+    private PreferenceRepository preferences;
 
     @Mock
     private Context context;

@@ -38,7 +38,7 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener;
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener;
-import fr.cph.chicago.data.PreferencesImpl;
+import fr.cph.chicago.repository.PreferenceRepository;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.enumeration.TrainLine;
@@ -219,7 +219,7 @@ public class BikeStationActivity extends AbstractStationActivity {
      */
     @Override
     protected boolean isFavorite() {
-        final List<String> favorites = PreferencesImpl.INSTANCE.getBikeFavorites(getApplicationContext());
+        final List<String> favorites = PreferenceRepository.INSTANCE.getBikeFavorites(getApplicationContext());
         return Stream.of(favorites)
             .filter(favorite -> Integer.valueOf(favorite) == bikeStation.getId())
             .findFirst()
@@ -241,7 +241,7 @@ public class BikeStationActivity extends AbstractStationActivity {
             isFavorite = false;
         } else {
             Util.INSTANCE.addToBikeFavorites(bikeStation.getId(), swipeRefreshLayout);
-            PreferencesImpl.INSTANCE.addBikeRouteNameMapping(getApplicationContext(), Integer.toString(bikeStation.getId()), bikeStation.getName());
+            PreferenceRepository.INSTANCE.addBikeRouteNameMapping(getApplicationContext(), Integer.toString(bikeStation.getId()), bikeStation.getName());
             favoritesImage.setColorFilter(yellowLineDark);
             isFavorite = true;
         }

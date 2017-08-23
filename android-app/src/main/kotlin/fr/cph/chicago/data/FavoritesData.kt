@@ -28,6 +28,7 @@ import fr.cph.chicago.entity.BusRoute
 import fr.cph.chicago.entity.TrainArrival
 import fr.cph.chicago.entity.dto.BusArrivalStopMappedDTO
 import fr.cph.chicago.entity.enumeration.TrainLine
+import fr.cph.chicago.repository.PreferenceRepository
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
 import java.util.*
@@ -48,7 +49,6 @@ object FavoritesData {
     private var busFavorites: List<String> = listOf()
     private var fakeBusFavorites: List<String> = listOf()
     private val bikeFavorites: MutableList<String> = mutableListOf()
-    private var preferences: Preferences = PreferencesImpl
 
     /**
      * Get the size of the current model
@@ -77,7 +77,7 @@ object FavoritesData {
                 return busDataRoute
             } else {
                 // Get name in the preferences if null
-                val routeName = preferences.getBusRouteNameMapping(context, routeId)
+                val routeName = PreferenceRepository.getBusRouteNameMapping(context, routeId)
                 return BusRoute(routeId, routeName ?: "")
             }
         } else {
@@ -89,7 +89,7 @@ object FavoritesData {
     }
 
     private fun createEmptyBikeStation(index: Int, context: Context): BikeStation {
-        val stationName = preferences.getBikeRouteNameMapping(context, bikeFavorites[index])
+        val stationName = PreferenceRepository.getBikeRouteNameMapping(context, bikeFavorites[index])
         return BikeStation.buildDefaultBikeStationWithName(stationName ?: StringUtils.EMPTY)
     }
 
@@ -142,7 +142,7 @@ object FavoritesData {
             if (routeIdFav == routeId) {
                 val stopId = Integer.valueOf(stopId1)
 
-                var stopName = preferences.getBusStopNameMapping(context, stopId.toString())
+                var stopName = PreferenceRepository.getBusStopNameMapping(context, stopId.toString())
                 stopName = if (stopName != null) stopName else stopId.toString()
 
                 // FIXME check if that logic works. I think it does not. In what case do we show that bus arrival?
@@ -171,11 +171,11 @@ object FavoritesData {
     }
 
     fun setFavorites(context: Context) {
-        trainFavorites = preferences.getTrainFavorites(context)
-        busFavorites = preferences.getBusFavorites(context)
+        trainFavorites = PreferenceRepository.getTrainFavorites(context)
+        busFavorites = PreferenceRepository.getBusFavorites(context)
         fakeBusFavorites = calculateActualRouteNumberBusFavorites()
         bikeFavorites.clear()
-        val bikeFavoritesTemp = preferences.getBikeFavorites(context)
+        val bikeFavoritesTemp = PreferenceRepository.getBikeFavorites(context)
         if (bikeStations.isNotEmpty()) {
             bikeFavoritesTemp
                 .flatMap { bikeStationId -> bikeStations.filter { (id) -> Integer.toString(id) == bikeStationId } }

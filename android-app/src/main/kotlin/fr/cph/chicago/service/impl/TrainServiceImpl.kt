@@ -5,7 +5,7 @@ import android.util.SparseArray
 import fr.cph.chicago.R
 import fr.cph.chicago.client.CtaClient
 import fr.cph.chicago.client.CtaRequestType.TRAIN_ARRIVALS
-import fr.cph.chicago.data.PreferencesImpl
+import fr.cph.chicago.repository.PreferenceRepository
 import fr.cph.chicago.data.TrainData
 import fr.cph.chicago.entity.TrainArrival
 import fr.cph.chicago.parser.XmlParser
@@ -60,7 +60,7 @@ object TrainServiceImpl : TrainService {
                 trainArrival.etas = etas
                     .filter { (station, stop, line) ->
                         val direction = stop.direction
-                        PreferencesImpl.getTrainFilter(context, station.id, line, direction)
+                        PreferenceRepository.getTrainFilter(context, station.id, line, direction)
                     }
                     .sorted()
                     .toMutableList()

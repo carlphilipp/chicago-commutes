@@ -43,7 +43,7 @@ import fr.cph.chicago.core.activity.SearchActivity;
 import fr.cph.chicago.core.adapter.FavoritesAdapter;
 import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.FavoritesData;
-import fr.cph.chicago.data.PreferencesImpl;
+import fr.cph.chicago.repository.PreferenceRepository;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
@@ -224,7 +224,7 @@ public class FavoritesFragment extends AbstractFragment {
         if (refreshTimingTask.getStatus() == Status.FINISHED) {
             startRefreshTask();
         }
-        boolean hasFav = PreferencesImpl.INSTANCE.hasFavorites(getContext());
+        boolean hasFav = PreferenceRepository.INSTANCE.hasFavorites(getContext());
         welcomeLayout.setVisibility(hasFav ? View.GONE : View.VISIBLE);
     }
 

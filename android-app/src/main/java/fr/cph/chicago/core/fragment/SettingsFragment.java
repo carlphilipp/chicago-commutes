@@ -21,8 +21,7 @@ import butterknife.BindView;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.activity.BaseActivity;
-import fr.cph.chicago.data.Preferences;
-import fr.cph.chicago.data.PreferencesImpl;
+import fr.cph.chicago.repository.PreferenceRepository;
 import fr.cph.chicago.repository.RealmConfig;
 import fr.cph.chicago.util.Util;
 
@@ -35,8 +34,6 @@ public class SettingsFragment extends AbstractFragment {
     @BindView(R.id.version_number)
     TextView versionNumber;
 
-    private Preferences preferences;
-
     @NonNull
     public static SettingsFragment newInstance(final int sectionNumber) {
         return (SettingsFragment) fragmentWithBundle(new SettingsFragment(), sectionNumber);
@@ -45,7 +42,6 @@ public class SettingsFragment extends AbstractFragment {
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        preferences = PreferencesImpl.INSTANCE;
         Util.INSTANCE.trackScreen((App) getActivity().getApplication(), getString(R.string.analytics_settings_fragment));
     }
 
@@ -89,7 +85,7 @@ public class SettingsFragment extends AbstractFragment {
 
     private void cleanLocalData() {
         deleteCache(getContext());
-        preferences.clearPreferences(getContext());
+        PreferenceRepository.INSTANCE.clearPreferences(getContext());
         RealmConfig.INSTANCE.cleanRealm(getContext());
     }
 
