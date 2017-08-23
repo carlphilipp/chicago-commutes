@@ -104,7 +104,7 @@
                     android:id="@+id/activity_bus_stops"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="horizontal">
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>

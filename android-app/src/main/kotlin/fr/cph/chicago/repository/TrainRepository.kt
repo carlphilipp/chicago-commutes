@@ -136,7 +136,7 @@ object TrainRepository {
                 val latitude = coordinates[1].toDouble()
 
                 val station = Station(parentStopId, stationName, mutableListOf())
-                val stop = Stop(stopId, stopName, direction, Position(longitude, latitude), ada, lines)
+                val stop = Stop(stopId, stopName, direction, Position(latitude, longitude), ada, lines)
                 stops.append(stopId, stop)
 
                 val currentStation = stations.get(parentStopId, null)

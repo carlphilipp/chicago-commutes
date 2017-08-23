@@ -16,6 +16,7 @@
 
 package fr.cph.chicago.core.activity;
 
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,6 +33,8 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +49,6 @@ import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener;
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener;
-import fr.cph.chicago.repository.PreferenceRepository;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.enumeration.TrainLine;
@@ -54,6 +56,7 @@ import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.parser.XmlParser;
+import fr.cph.chicago.repository.PreferenceRepository;
 import fr.cph.chicago.util.Util;
 
 import static fr.cph.chicago.Constants.BUSES_PATTERN_URL;
@@ -234,33 +237,38 @@ public class BusActivity extends AbstractStationActivity {
      * Draw arrivals in current main.java.fr.cph.chicago.res.layout
      */
     public void drawArrivals() {
-        final Map<String, TextView> tempMap = new HashMap<>();
+        final Map<String, List<TextView>> tempMap = new HashMap<>();
         if (busArrivals.size() != 0) {
             Stream.of(busArrivals)
                 .filter(arrival -> arrival.getRouteDirection().equals(bound) || arrival.getRouteDirection().equals(boundTitle))
                 .forEach(arrival -> {
                     final String destination = arrival.getBusDestination();
-                    final String arrivalText;
                     if (tempMap.containsKey(destination)) {
-                        final TextView arrivalView = tempMap.get(destination);
-                        arrivalText = arrival.isDelay() ? arrivalView.getText() + " Delay" : arrivalView.getText() + " " + arrival.getTimeLeft();
-                        arrivalView.setText(arrivalText);
-                    } else {
+                        final List<TextView> textViews = tempMap.get(destination);
                         final TextView arrivalView = new TextView(getApplicationContext());
-                        arrivalText = arrival.isDelay() ? arrival.getBusDestination() + " Delay" : arrival.getBusDestination() + " " + arrival.getTimeLeft();
-                        arrivalView.setText(arrivalText);
-                        arrivalView.setTextColor(grey);
-                        tempMap.put(destination, arrivalView);
+                        arrivalView.setText(arrival.isDelay() ? " Delay" : " " + arrival.getTimeLeft());
+                        textViews.add(arrivalView);
+                    } else {
+                        final List<TextView> textViews = new ArrayList<>();
+                        final TextView destinationView = new TextView(getApplicationContext());
+                        destinationView.setText(destination + ":   ");
+                        destinationView.setTextColor(grey);
+                        destinationView.setTypeface(null, Typeface.BOLD);
+                        final TextView arrivalView = new TextView(getApplicationContext());
+                        arrivalView.setText(arrival.isDelay() ? " Delay" : " " + arrival.getTimeLeft());
+                        textViews.add(destinationView);
+                        textViews.add(arrivalView);
+                        tempMap.put(destination, textViews);
                     }
                 });
         } else {
             final TextView arrivalView = new TextView(getApplicationContext());
             arrivalView.setTextColor(grey);
             arrivalView.setText(busActivityNoService);
-            tempMap.put("", arrivalView);
+            tempMap.put("", Collections.singletonList(arrivalView));
         }
         stopsView.removeAllViews();
-        Stream.of(tempMap.entrySet()).forEach(entry -> stopsView.addView(entry.getValue()));
+        Stream.of(tempMap.entrySet()).flatMap(stringListEntry -> Stream.of(stringListEntry.getValue())).forEach(textView -> stopsView.addView(textView));
     }
 
     @Override
