@@ -54,7 +54,7 @@ import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener;
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener;
 import fr.cph.chicago.repository.PreferenceRepository;
-import fr.cph.chicago.data.TrainData;
+import fr.cph.chicago.repository.TrainRepository;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
@@ -146,7 +146,7 @@ public class StationActivity extends AbstractStationActivity {
             stationId = getIntent().getExtras().getInt(bundleTrainStationId, 0);
             if (stationId != 0) {
                 // Get station
-                final TrainData trainData = TrainData.INSTANCE;
+                final TrainRepository trainData = TrainRepository.INSTANCE;
                 station = trainData.getStation(stationId);
 
                 paramsStop = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);

@@ -52,7 +52,7 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.client.CtaClient;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.adapter.TrainMapSnippetAdapter;
-import fr.cph.chicago.data.TrainData;
+import fr.cph.chicago.repository.TrainRepository;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
@@ -92,7 +92,7 @@ public class TrainMapActivity extends AbstractMapActivity {
     private String line;
     private Map<Marker, Boolean> status;
     private List<Marker> markers;
-    private TrainData trainData;
+    private TrainRepository trainData;
     private RefreshTrainMarkers refreshTrainMarkers;
 
     private boolean centerMap = true;
@@ -129,7 +129,7 @@ public class TrainMapActivity extends AbstractMapActivity {
     @Override
     protected void initData() {
         super.initData();
-        trainData = TrainData.INSTANCE;
+        trainData = TrainRepository.INSTANCE;
         markers = new ArrayList<>();
         status = new HashMap<>();
         refreshTrainMarkers = new RefreshTrainMarkers(getApplicationContext());
@@ -281,7 +281,7 @@ public class TrainMapActivity extends AbstractMapActivity {
 
         private final String TAG = LoadTrainFollowTask.class.getSimpleName();
 
-        private final TrainData trainData;
+        private final TrainRepository trainData;
         private final View view;
         private final boolean loadAll;
 
@@ -291,7 +291,7 @@ public class TrainMapActivity extends AbstractMapActivity {
          * @param view    the view
          * @param loadAll a boolean to load everything
          */
-        private LoadTrainFollowTask(@NonNull final View view, final boolean loadAll, @NonNull final TrainData trainData) {
+        private LoadTrainFollowTask(@NonNull final View view, final boolean loadAll, @NonNull final TrainRepository trainData) {
             this.trainData = trainData;
             this.view = view;
             this.loadAll = loadAll;
@@ -344,12 +344,12 @@ public class TrainMapActivity extends AbstractMapActivity {
         private final String TAG = LoadTrainPositionTask.class.getSimpleName();
 
         private final String line;
-        private TrainData trainData;
+        private TrainRepository trainData;
 
         private boolean centerMap;
         private List<Position> positions;
 
-        private LoadTrainPositionTask(@NonNull final String line, @NonNull final TrainData trainData) {
+        private LoadTrainPositionTask(@NonNull final String line, @NonNull final TrainRepository trainData) {
             this.line = line;
             this.trainData = trainData;
         }
@@ -358,7 +358,7 @@ public class TrainMapActivity extends AbstractMapActivity {
         protected List<Train> doInBackground(final Boolean... params) {
             // Make sure that trainData is not null
             if (trainData == null) {
-                trainData = TrainData.INSTANCE;
+                trainData = TrainRepository.INSTANCE;
             }
             centerMap = params[0];
 

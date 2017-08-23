@@ -50,10 +50,11 @@ import fr.cph.chicago.core.fragment.NearbyFragment;
 import fr.cph.chicago.core.fragment.SettingsFragment;
 import fr.cph.chicago.core.fragment.TrainFragment;
 import fr.cph.chicago.data.BusData;
-import fr.cph.chicago.data.TrainData;
+import fr.cph.chicago.repository.TrainRepository;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.dto.FavoritesDTO;
 import fr.cph.chicago.rx.ObservableUtil;
+import fr.cph.chicago.service.impl.TrainServiceImpl;
 import fr.cph.chicago.util.Util;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -246,10 +247,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void reloadData() {
-        final TrainData trainData = TrainData.INSTANCE;
-        if (trainData.getAllStations().isEmpty() || trainData.isStopsEmpty()) {
-            trainData.read(getApplicationContext());
-        }
+        TrainServiceImpl.INSTANCE.loadLocalTrainDataIdNeeded(getApplicationContext());
     }
 
     private void setBarTitle(@NonNull final String title) {

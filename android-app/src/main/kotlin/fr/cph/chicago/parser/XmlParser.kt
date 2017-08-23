@@ -20,7 +20,7 @@
 package fr.cph.chicago.parser
 
 import android.util.SparseArray
-import fr.cph.chicago.data.TrainData
+import fr.cph.chicago.repository.TrainRepository
 import fr.cph.chicago.entity.*
 import fr.cph.chicago.entity.enumeration.BusDirection
 import fr.cph.chicago.entity.enumeration.TrainLine
@@ -62,7 +62,7 @@ object XmlParser {
      * @throws ParserException the parser exception
      */
     @Synchronized @Throws(ParserException::class)
-    fun parseArrivals(inputStream: InputStream, data: TrainData): SparseArray<TrainArrival> {
+    fun parseArrivals(inputStream: InputStream, data: TrainRepository): SparseArray<TrainArrival> {
         val result = SparseArray<TrainArrival>()
         try {
 
@@ -526,7 +526,7 @@ object XmlParser {
     }
 
     @Synchronized @Throws(ParserException::class)
-    fun parseTrainsFollow(inputStream: InputStream, data: TrainData): List<Eta> {
+    fun parseTrainsFollow(inputStream: InputStream, data: TrainRepository): List<Eta> {
         val arrivals = parseArrivals(inputStream, data)
         val res = mutableListOf<Eta>()
         var index = 0

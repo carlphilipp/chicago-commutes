@@ -29,6 +29,7 @@ import fr.cph.chicago.entity.TrainArrival
 import fr.cph.chicago.entity.dto.BusArrivalStopMappedDTO
 import fr.cph.chicago.entity.enumeration.TrainLine
 import fr.cph.chicago.repository.PreferenceRepository
+import fr.cph.chicago.repository.TrainRepository
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
 import java.util.*
@@ -68,7 +69,7 @@ object FavoritesData {
     fun getObject(position: Int, context: Context): Parcelable {
         if (position < trainFavorites.size) {
             val stationId = trainFavorites[position]
-            return TrainData.getStation(stationId)
+            return TrainRepository.getStation(stationId)
         } else if (position < trainFavorites.size + fakeBusFavorites.size && position - trainFavorites.size < fakeBusFavorites.size) {
             val index = position - trainFavorites.size
             val routeId = fakeBusFavorites[index]

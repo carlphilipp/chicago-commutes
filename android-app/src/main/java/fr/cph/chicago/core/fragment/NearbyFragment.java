@@ -58,7 +58,7 @@ import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.adapter.SlidingUpAdapter;
 import fr.cph.chicago.core.listener.OnMarkerClickListener;
 import fr.cph.chicago.marker.MarkerDataHolder;
-import fr.cph.chicago.data.TrainData;
+import fr.cph.chicago.repository.TrainRepository;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Position;
@@ -268,7 +268,7 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
                 googleApiClient.blockingConnect();
             }
 
-            final TrainData trainData = TrainData.INSTANCE;
+            final TrainRepository trainData = TrainRepository.INSTANCE;
 
             final GPSUtil gpsUtil = new GPSUtil(googleApiClient);
             final Position position = gpsUtil.getLocation();

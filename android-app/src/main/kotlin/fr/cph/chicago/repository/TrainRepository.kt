@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.data
+package fr.cph.chicago.repository
 
 import android.content.Context
 import android.util.Log
@@ -40,9 +40,9 @@ import java.util.*
  * @author Carl-Philipp Harmant
  * @version 1
  */
-object TrainData {
+object TrainRepository {
 
-    private val TAG = TrainData::class.java.simpleName
+    private val TAG = TrainRepository::class.java.simpleName
     private val DEFAULT_RANGE = 0.008
     // https://data.cityofchicago.org/Transportation/CTA-System-Information-List-of-L-Stops/8pix-ypme
     private val TRAIN_FILE_PATH = "train_stops.csv"
@@ -57,86 +57,90 @@ object TrainData {
     init {
         val settings = CsvParserSettings()
         settings.format.setLineSeparator("\n")
-        this.parser = CsvParser(settings)
+        parser = CsvParser(settings)
     }
 
     /**
      * Read train data from CSV file.
      */
-    fun read(context: Context) {
+    fun loadInMemoryStationsAndStopsIfNeeded(context: Context) {
         if (stations.size() == 0 && stops.size() == 0) {
-            var inputStreamReader: InputStreamReader? = null
-            try {
-                inputStreamReader = InputStreamReader(context.assets.open(TRAIN_FILE_PATH))
-                val allRows = parser.parseAll(inputStreamReader)
-                for (i in 1 until allRows.size) {
-                    val row = allRows[i]
-                    val stopId = row[0].toInt() // STOP_ID
-                    val direction = TrainDirection.fromString(row[1]) // DIRECTION_ID
-                    val stopName = row[2] // STOP_NAME
-                    val stationName = row[3]// STATION_NAME
-                    // String stationDescription = row[4];//STATION_DESCRIPTIVE_NAME
-                    val parentStopId = row[5].toInt()// MAP_ID (old PARENT_STOP_ID)
-                    val ada = row[6].toBoolean()// ADA
-                    val lines = mutableSetOf<TrainLine>()
-                    val red = row[7].toBoolean()// Red
-                    val blue = row[8].toBoolean()// Blue
-                    val green = row[9].toBoolean()// G
-                    val brown = row[10].toBoolean()// Brn
-                    val purple = row[11].toBoolean()// P
-                    val purpleExp = row[12].toBoolean()// Pexp
-                    val yellow = row[13].toBoolean()// Y
-                    val pink = row[14].toBoolean()// Pink
-                    val orange = row[15].toBoolean()// Org
-                    if (red) {
-                        lines.add(TrainLine.RED)
-                    }
-                    if (blue) {
-                        lines.add(TrainLine.BLUE)
-                    }
-                    if (brown) {
-                        lines.add(TrainLine.BROWN)
-                    }
-                    if (green) {
-                        lines.add(TrainLine.GREEN)
-                    }
-                    if (purple || purpleExp) {
-                        // Handle both purple and purple express
-                        lines.add(TrainLine.PURPLE)
-                    }
-                    if (yellow) {
-                        lines.add(TrainLine.YELLOW)
-                    }
-                    if (pink) {
-                        lines.add(TrainLine.PINK)
-                    }
-                    if (orange) {
-                        lines.add(TrainLine.ORANGE)
-                    }
-                    val location = row[16]// Location
-                    val locationTrunk = location.substring(1)
-                    val coordinates = locationTrunk.substring(0, locationTrunk.length - 1).split(", ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                    val longitude = java.lang.Double.parseDouble(coordinates[0])
-                    val latitude = java.lang.Double.parseDouble(coordinates[1])
+            loadInMemoryStationsAndStops(context)
+        }
+    }
 
-                    val station = Station(parentStopId, stationName, mutableListOf())
-                    val stop = Stop(stopId, stopName, direction, Position(longitude, latitude), ada, lines)
-                    stops.append(stopId, stop)
-
-                    val currentStation = stations.get(parentStopId, null)
-                    if (currentStation == null) {
-                        station.stops = mutableListOf(stop)
-                        stations.append(parentStopId, station)
-                    } else {
-                        currentStation.stops.add(stop)
-                    }
+    fun loadInMemoryStationsAndStops(context: Context) {
+        var inputStreamReader: InputStreamReader? = null
+        try {
+            inputStreamReader = InputStreamReader(context.assets.open(TRAIN_FILE_PATH))
+            val allRows = parser.parseAll(inputStreamReader)
+            for (i in 1 until allRows.size) {
+                val row = allRows[i]
+                val stopId = row[0].toInt() // STOP_ID
+                val direction = TrainDirection.fromString(row[1]) // DIRECTION_ID
+                val stopName = row[2] // STOP_NAME
+                val stationName = row[3]// STATION_NAME
+                // String stationDescription = row[4];//STATION_DESCRIPTIVE_NAME
+                val parentStopId = row[5].toInt()// MAP_ID (old PARENT_STOP_ID)
+                val ada = row[6].toBoolean()// ADA
+                val lines = mutableSetOf<TrainLine>()
+                val red = row[7].toBoolean()// Red
+                val blue = row[8].toBoolean()// Blue
+                val green = row[9].toBoolean()// G
+                val brown = row[10].toBoolean()// Brn
+                val purple = row[11].toBoolean()// P
+                val purpleExp = row[12].toBoolean()// Pexp
+                val yellow = row[13].toBoolean()// Y
+                val pink = row[14].toBoolean()// Pink
+                val orange = row[15].toBoolean()// Org
+                if (red) {
+                    lines.add(TrainLine.RED)
                 }
-                stationsOrderByLineMap = sortStation()
-            } catch (e: IOException) {
-                Log.e(TAG, e.message, e)
-            } finally {
-                IOUtils.closeQuietly(inputStreamReader)
+                if (blue) {
+                    lines.add(TrainLine.BLUE)
+                }
+                if (brown) {
+                    lines.add(TrainLine.BROWN)
+                }
+                if (green) {
+                    lines.add(TrainLine.GREEN)
+                }
+                if (purple || purpleExp) {
+                    // Handle both purple and purple express
+                    lines.add(TrainLine.PURPLE)
+                }
+                if (yellow) {
+                    lines.add(TrainLine.YELLOW)
+                }
+                if (pink) {
+                    lines.add(TrainLine.PINK)
+                }
+                if (orange) {
+                    lines.add(TrainLine.ORANGE)
+                }
+                val location = row[16]// Location
+                val locationTrunk = location.substring(1)
+                val coordinates = locationTrunk.substring(0, locationTrunk.length - 1).split(", ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+                val longitude = java.lang.Double.parseDouble(coordinates[0])
+                val latitude = java.lang.Double.parseDouble(coordinates[1])
+
+                val station = Station(parentStopId, stationName, mutableListOf())
+                val stop = Stop(stopId, stopName, direction, Position(longitude, latitude), ada, lines)
+                stops.append(stopId, stop)
+
+                val currentStation = stations.get(parentStopId, null)
+                if (currentStation == null) {
+                    station.stops = mutableListOf(stop)
+                    stations.append(parentStopId, station)
+                } else {
+                    currentStation.stops.add(stop)
+                }
             }
+            stationsOrderByLineMap = sortStation()
+        } catch (e: IOException) {
+            Log.e(TAG, e.message, e)
+        } finally {
+            IOUtils.closeQuietly(inputStreamReader)
         }
     }
 
@@ -157,7 +161,7 @@ object TrainData {
      */
 
     fun getStationsForLine(line: TrainLine): List<Station> {
-        return stationsOrderByLineMap[line]!!.toList()
+        return stationsOrderByLineMap[line]!!
     }
 
     /**
@@ -170,9 +174,6 @@ object TrainData {
         val station = stations.get(id)
         return station ?: Station.buildEmptyStation()
     }
-
-    val isStopsEmpty: Boolean
-        get() = stops.size() == 0
 
     /**
      * Get a stop
@@ -232,7 +233,6 @@ object TrainData {
                     position.longitude = longitude
                     position
                 }
-                .toMutableList()
         } catch (e: IOException) {
             Log.e(TAG, e.message, e)
             return listOf()

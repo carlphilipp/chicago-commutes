@@ -31,7 +31,7 @@ import butterknife.ButterKnife;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.data.BusData;
-import fr.cph.chicago.data.TrainData;
+import fr.cph.chicago.repository.TrainRepository;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.dto.BusArrivalDTO;
 import fr.cph.chicago.entity.dto.FavoritesDTO;
@@ -94,8 +94,8 @@ public class BaseActivity extends Activity {
     private void loadLocalAndFavoritesData() {
 
         // Train local data
-        final Observable<TrainData> trainLocalData = Observable.create(
-            (ObservableEmitter<TrainData> observableOnSubscribe) -> {
+        final Observable<Object> trainLocalData = Observable.create(
+            (ObservableEmitter<Object> observableOnSubscribe) -> {
                 if (!observableOnSubscribe.isDisposed()) {
                     observableOnSubscribe.onNext(trainService.loadLocalTrainData(getApplicationContext()));
                     observableOnSubscribe.onComplete();
@@ -125,7 +125,7 @@ public class BaseActivity extends Activity {
         Observable.zip(trainLocalData, busLocalData, (trainData, busData) -> true)
             .doOnComplete(() ->
                 Observable.zip(trainOnlineFavorites, busOnlineFavorites, (trainArrivalsDTO, busArrivalsDTO) -> {
-                        TrainData.INSTANCE.setError(false);
+                        TrainRepository.INSTANCE.setError(false);
                         BusData.INSTANCE.setError(false);
                         ((App) getApplication()).setLastUpdate(Calendar.getInstance().getTime());
                         return new FavoritesDTO(trainArrivalsDTO, busArrivalsDTO, false, Collections.emptyList());
@@ -164,7 +164,7 @@ public class BaseActivity extends Activity {
 
     private void startErrorActivity() {
         // Set Error
-        TrainData.INSTANCE.setError(true);
+        TrainRepository.INSTANCE.setError(true);
         BusData.INSTANCE.setError(true);
 
         // Start error activity

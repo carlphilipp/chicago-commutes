@@ -23,7 +23,6 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.util.Log
-import fr.cph.chicago.data.TrainData
 import fr.cph.chicago.entity.enumeration.TrainDirection
 import fr.cph.chicago.entity.enumeration.TrainLine
 import fr.cph.chicago.util.Util
@@ -196,7 +195,7 @@ object PreferenceRepository {
         Log.v(TAG, "Read train favorites : " + setPref)
         return setPref
             .map { Integer.valueOf(it) }
-            .map { favorite -> TrainData.getStation(favorite) }
+            .map { favorite -> TrainRepository.getStation(favorite) }
             .sorted()
             .map { it.id }
             .toMutableList()
