@@ -6,7 +6,9 @@ import fr.cph.chicago.entity.BikeStation
 import fr.cph.chicago.entity.BusArrival
 import fr.cph.chicago.entity.BusRoute
 import fr.cph.chicago.entity.TrainArrival
+import org.apache.commons.lang3.StringUtils
 import java.util.*
+import kotlin.Comparator
 
 data class BusArrivalDTO(val busArrivals: List<BusArrival>, val error: Boolean)
 
@@ -61,7 +63,7 @@ class BusArrivalStopMappedDTO : TreeMap<String, MutableMap<String, MutableList<B
     }
 }
 
-class BusArrivalRouteDTO : TreeMap<String, MutableMap<String, MutableList<BusArrival>>>() {
+class BusArrivalRouteDTO(comparator: Comparator<String>) : TreeMap<String, MutableMap<String, MutableList<BusArrival>>>(comparator) {
     // route => { bound => BusArrival }
 
     fun addBusArrival(busArrival: BusArrival) {
@@ -76,6 +78,19 @@ class BusArrivalRouteDTO : TreeMap<String, MutableMap<String, MutableList<BusArr
             val tempMap = TreeMap<String, MutableList<BusArrival>>()
             tempMap.put(busArrival.routeDirection, mutableListOf(busArrival))
             put(busArrival.routeId, tempMap)
+        }
+    }
+
+    companion object {
+
+        private val busRouteIdRegex = Regex("[^0-9]+")
+
+        val busComparator: Comparator<String> = Comparator { key1: String, key2: String ->
+            if (key1.matches(busRouteIdRegex) && key2.matches(busRouteIdRegex)) {
+                key1.toInt().compareTo(key2.toInt())
+            } else {
+                key1.replace(busRouteIdRegex, StringUtils.EMPTY).toInt().compareTo(key2.replace(busRouteIdRegex, StringUtils.EMPTY).toInt())
+            }
         }
     }
 }

@@ -4,12 +4,12 @@ import android.util.Log
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
 import fr.cph.chicago.core.fragment.NearbyFragment
-import fr.cph.chicago.marker.MarkerDataHolder
 import fr.cph.chicago.entity.AStation
 import fr.cph.chicago.entity.BikeStation
 import fr.cph.chicago.entity.BusStop
 import fr.cph.chicago.entity.Station
 import fr.cph.chicago.entity.dto.BusArrivalRouteDTO
+import fr.cph.chicago.marker.MarkerDataHolder
 import fr.cph.chicago.rx.ObservableUtil
 
 class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, private val nearbyFragment: NearbyFragment) : GoogleMap.OnMarkerClickListener {
@@ -46,7 +46,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
         ObservableUtil.createBusArrivalsObservable(nearbyFragment.context, busStop)
             .subscribe(
                 { result ->
-                    val busArrivalRouteDTO = BusArrivalRouteDTO()
+                    val busArrivalRouteDTO = BusArrivalRouteDTO(BusArrivalRouteDTO.busComparator)
                     result.forEach({ busArrivalRouteDTO.addBusArrival(it) })
                     nearbyFragment.slidingUpAdapter.addBusArrival(busArrivalRouteDTO)
                 }
@@ -62,5 +62,6 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
 
     companion object {
         private val TAG = OnMarkerClickListener::class.java.simpleName
+        private val busRouteIdRegex = Regex("[^0-9]+")
     }
 }

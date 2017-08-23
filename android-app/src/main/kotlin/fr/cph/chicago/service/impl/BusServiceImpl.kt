@@ -154,8 +154,8 @@ object BusServiceImpl : BusService {
             val busStopId = busStop.id
             val reqParams = ArrayListValuedHashMap<String, String>(1, 1)
             reqParams.put(context.getString(R.string.request_stop_id), Integer.toString(busStopId))
-            val `is` = CtaClient.connect(BUS_ARRIVALS, reqParams)
-            return XmlParser.parseBusArrivals(`is`)
+            val inputStream = CtaClient.connect(BUS_ARRIVALS, reqParams)
+            return XmlParser.parseBusArrivals(inputStream)
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }
