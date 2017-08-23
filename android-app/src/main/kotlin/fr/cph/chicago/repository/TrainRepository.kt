@@ -132,8 +132,8 @@ object TrainRepository {
                 val location = row[16]// Location
                 val locationTrunk = location.substring(1)
                 val coordinates = locationTrunk.substring(0, locationTrunk.length - 1).split(", ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                val longitude = coordinates[0].toDouble()
-                val latitude = coordinates[1].toDouble()
+                val latitude = coordinates[0].toDouble()
+                val longitude = coordinates[1].toDouble()
 
                 val station = Station(parentStopId, stationName, mutableListOf())
                 val stop = Stop(stopId, stopName, direction, Position(latitude, longitude), ada, lines)
