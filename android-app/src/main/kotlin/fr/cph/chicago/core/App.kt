@@ -23,6 +23,7 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.graphics.Point
 import android.view.WindowManager
 import com.google.android.gms.analytics.GoogleAnalytics
@@ -64,6 +65,7 @@ class App : Application() {
         ctaTrainKey = applicationContext.getString(R.string.cta_train_key)
         ctaBusKey = applicationContext.getString(R.string.cta_bus_key)
         googleStreetKey = applicationContext.getString(R.string.google_maps_api_key)
+        appResources = applicationContext.resources
     }
 
     private val screenSize: IntArray by lazy {
@@ -78,6 +80,7 @@ class App : Application() {
         lateinit var ctaTrainKey: String
         lateinit var ctaBusKey: String
         lateinit var googleStreetKey: String
+        lateinit var appResources: Resources
 
         fun checkTrainData(activity: Activity): Boolean {
             if (TrainRepository.error) {

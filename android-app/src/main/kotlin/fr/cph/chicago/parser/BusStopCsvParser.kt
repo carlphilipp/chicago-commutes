@@ -1,9 +1,9 @@
 package fr.cph.chicago.parser
 
-import android.content.Context
 import android.util.Log
 import com.univocity.parsers.csv.CsvParser
 import com.univocity.parsers.csv.CsvParserSettings
+import fr.cph.chicago.core.App
 import org.apache.commons.io.IOUtils
 import java.io.IOException
 import java.io.InputStreamReader
@@ -23,10 +23,10 @@ object BusStopCsvParser {
         this.parser = CsvParser(settings)
     }
 
-    fun parse(context: Context) {
+    fun parse() {
         var inputStreamReader: InputStreamReader? = null
         try {
-            inputStreamReader = InputStreamReader(context.assets.open(STOP_FILE_PATH))
+            inputStreamReader = InputStreamReader(App.appResources.assets.open(STOP_FILE_PATH))
             parser.parse(inputStreamReader)
         } catch (e: IOException) {
             Log.e(TAG, e.message, e)

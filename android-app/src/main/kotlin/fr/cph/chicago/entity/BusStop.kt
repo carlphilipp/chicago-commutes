@@ -47,7 +47,7 @@ open class BusStop(
         position = source.readParcelable<Position>(Position::class.java.classLoader))
 
     override fun toString(): String {
-        return "[id:$id;name:$name;position:$position]"
+        return "[id:$id;name:$name;description:$description;position:$position]"
     }
 
     override fun compareTo(other: BusStop): Int {

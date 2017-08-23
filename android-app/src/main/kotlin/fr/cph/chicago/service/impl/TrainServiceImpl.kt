@@ -5,10 +5,11 @@ import android.util.SparseArray
 import fr.cph.chicago.R
 import fr.cph.chicago.client.CtaClient
 import fr.cph.chicago.client.CtaRequestType.TRAIN_ARRIVALS
-import fr.cph.chicago.repository.PreferenceRepository
-import fr.cph.chicago.repository.TrainRepository
+import fr.cph.chicago.entity.Station
 import fr.cph.chicago.entity.TrainArrival
 import fr.cph.chicago.parser.XmlParser
+import fr.cph.chicago.repository.PreferenceRepository
+import fr.cph.chicago.repository.TrainRepository
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
 import io.reactivex.exceptions.Exceptions
@@ -71,13 +72,9 @@ object TrainServiceImpl : TrainService {
         return trainArrivals
     }
 
-    override fun loadLocalTrainData(context: Context): Any {
-        TrainRepository.loadInMemoryStationsAndStops(context)
-        return Any()
-    }
-
-    override fun loadLocalTrainDataIdNeeded(context: Context) {
-        TrainRepository.loadInMemoryStationsAndStopsIfNeeded(context)
+    override fun loadLocalTrainData(context: Context): SparseArray<Station> {
+        // Force loading train from CSV toi avoid doing it later
+        return TrainRepository.stations
     }
 
     override fun loadStationTrainArrival(context: Context, stationId: Int): TrainArrival {

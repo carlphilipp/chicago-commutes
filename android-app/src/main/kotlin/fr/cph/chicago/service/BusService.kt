@@ -10,7 +10,7 @@ interface BusService {
 
     fun loadOneBusStop(context: Context, stopId: String, bound: String): List<BusStop>
 
-    fun loadLocalBusData(context: Context): BusData
+    fun loadLocalBusData(): BusData
 
     fun loadBusDirections(context: Context, busRouteId: String): BusDirections
 

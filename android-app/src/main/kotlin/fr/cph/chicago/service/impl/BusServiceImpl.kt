@@ -72,10 +72,10 @@ object BusServiceImpl : BusService {
 
     }
 
-    override fun loadLocalBusData(context: Context): BusData {
+    override fun loadLocalBusData(): BusData {
         if (BusStopRepository.isEmpty()) {
             Log.d(TAG, "Load bus stop from CSV")
-            BusStopCsvParser.parse(context)
+            BusStopCsvParser.parse()
         }
         return BusData
     }

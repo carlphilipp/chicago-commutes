@@ -247,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void reloadData() {
-        TrainServiceImpl.INSTANCE.loadLocalTrainDataIdNeeded(getApplicationContext());
+        // Might want to reload train csv data if needed here
     }
 
     private void setBarTitle(@NonNull final String title) {

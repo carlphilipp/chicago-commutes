@@ -24,6 +24,7 @@ import android.util.Log
 import android.util.SparseArray
 import com.univocity.parsers.csv.CsvParser
 import com.univocity.parsers.csv.CsvParserSettings
+import fr.cph.chicago.core.App
 import fr.cph.chicago.entity.Position
 import fr.cph.chicago.entity.Station
 import fr.cph.chicago.entity.Stop
@@ -48,9 +49,6 @@ object TrainRepository {
     private val TRAIN_FILE_PATH = "train_stops.csv"
 
     var error: Boolean = false
-    private val stations: SparseArray<Station> = SparseArray()
-    private val stops: SparseArray<Stop> = SparseArray()
-    private var stationsOrderByLineMap: TreeMap<TrainLine, MutableList<Station>> = TreeMap()
 
     private val parser: CsvParser
 
@@ -60,19 +58,32 @@ object TrainRepository {
         parser = CsvParser(settings)
     }
 
-    /**
-     * Read train data from CSV file.
-     */
-    fun loadInMemoryStationsAndStopsIfNeeded(context: Context) {
-        if (stations.size() == 0 && stops.size() == 0) {
-            loadInMemoryStationsAndStops(context)
-        }
+    private val inMemoryData: Triple<SparseArray<Station>, SparseArray<Stop>, TreeMap<TrainLine, MutableList<Station>>> by lazy {
+        loadInMemoryStationsAndStops()
     }
 
-    fun loadInMemoryStationsAndStops(context: Context) {
+    val stations: SparseArray<Station>
+        get() = inMemoryData.first
+
+    private val stops: SparseArray<Stop>
+        get() = inMemoryData.second
+
+    /**
+     * Get all stations
+     *
+     * @return a map containing all the stations ordered line
+     */
+    val allStations: MutableMap<TrainLine, MutableList<Station>>
+        get() = inMemoryData.third
+
+    private fun loadInMemoryStationsAndStops(): Triple<SparseArray<Station>, SparseArray<Stop>, TreeMap<TrainLine, MutableList<Station>>> {
+        val stations: SparseArray<Station> = SparseArray()
+        val stops: SparseArray<Stop> = SparseArray()
+        val stationsOrderByLineMap: TreeMap<TrainLine, MutableList<Station>> = TreeMap()
+
         var inputStreamReader: InputStreamReader? = null
         try {
-            inputStreamReader = InputStreamReader(context.assets.open(TRAIN_FILE_PATH))
+            inputStreamReader = InputStreamReader(App.appResources.assets.open(TRAIN_FILE_PATH))
             val allRows = parser.parseAll(inputStreamReader)
             for (i in 1 until allRows.size) {
                 val row = allRows[i]
@@ -121,8 +132,8 @@ object TrainRepository {
                 val location = row[16]// Location
                 val locationTrunk = location.substring(1)
                 val coordinates = locationTrunk.substring(0, locationTrunk.length - 1).split(", ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                val longitude = java.lang.Double.parseDouble(coordinates[0])
-                val latitude = java.lang.Double.parseDouble(coordinates[1])
+                val longitude = coordinates[0].toDouble()
+                val latitude = coordinates[1].toDouble()
 
                 val station = Station(parentStopId, stationName, mutableListOf())
                 val stop = Stop(stopId, stopName, direction, Position(longitude, latitude), ada, lines)
@@ -135,23 +146,16 @@ object TrainRepository {
                 } else {
                     currentStation.stops.add(stop)
                 }
+                Log.d(TAG, "Load $station")
             }
-            stationsOrderByLineMap = sortStation()
+            stationsOrderByLineMap.putAll(sortStation(stations))
         } catch (e: IOException) {
             Log.e(TAG, e.message, e)
         } finally {
             IOUtils.closeQuietly(inputStreamReader)
         }
+        return Triple(stations, stops, stationsOrderByLineMap)
     }
-
-    /**
-     * Get all stations
-     *
-     * @return a map containing all the stations ordered line
-     */
-    val allStations: MutableMap<TrainLine, MutableList<Station>>
-        get() = stationsOrderByLineMap
-
 
     /**
      * Get a list of station for a given line
@@ -159,9 +163,8 @@ object TrainRepository {
      * @param line the train line
      * @return a list of station
      */
-
     fun getStationsForLine(line: TrainLine): List<Station> {
-        return stationsOrderByLineMap[line]!!
+        return allStations[line]!!
     }
 
     /**
@@ -226,12 +229,9 @@ object TrainRepository {
             val allRows = parser.parseAll(inputStreamReader)
             return allRows
                 .map { row ->
-                    val longitude = java.lang.Double.parseDouble(row[0])
-                    val latitude = java.lang.Double.parseDouble(row[1])
-                    val position = Position()
-                    position.latitude = latitude
-                    position.longitude = longitude
-                    position
+                    val longitude = row[0].toDouble()
+                    val latitude = row[1].toDouble()
+                    Position(latitude, longitude)
                 }
         } catch (e: IOException) {
             Log.e(TAG, e.message, e)
@@ -241,10 +241,10 @@ object TrainRepository {
         }
     }
 
-    private fun sortStation(): TreeMap<TrainLine, MutableList<Station>> {
+    private fun sortStation(stationNotSorted: SparseArray<Station>): TreeMap<TrainLine, MutableList<Station>> {
         val result = TreeMap<TrainLine, MutableList<Station>>()
-        for (i in 0 until stations.size()) {
-            val station = stations.valueAt(i)
+        for (i in 0 until stationNotSorted.size()) {
+            val station = stationNotSorted.valueAt(i)
             val trainLines = station.lines
             for (trainLine in trainLines) {
                 if (result.containsKey(trainLine)) {

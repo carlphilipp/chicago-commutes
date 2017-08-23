@@ -32,7 +32,7 @@ import java.util.*
  * *
  * @version 1
  */
-class Station(
+data class Station(
     var id: Int,
     var name: String,
     var stops: MutableList<Stop>) : Comparable<Station>, Parcelable, AStation {

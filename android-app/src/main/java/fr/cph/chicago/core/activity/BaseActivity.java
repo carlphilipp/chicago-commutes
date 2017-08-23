@@ -108,7 +108,7 @@ public class BaseActivity extends Activity {
         final Observable<BusData> busLocalData = Observable.create(
             (ObservableEmitter<BusData> observableOnSubscribe) -> {
                 if (!observableOnSubscribe.isDisposed()) {
-                    observableOnSubscribe.onNext(busService.loadLocalBusData(getApplicationContext()));
+                    observableOnSubscribe.onNext(busService.loadLocalBusData());
                     observableOnSubscribe.onComplete();
                 }
             })

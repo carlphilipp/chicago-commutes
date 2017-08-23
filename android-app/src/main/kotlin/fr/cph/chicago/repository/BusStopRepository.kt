@@ -1,11 +1,14 @@
 package fr.cph.chicago.repository
 
+import android.util.Log
 import fr.cph.chicago.entity.BusStop
 import fr.cph.chicago.entity.Position
+import fr.cph.chicago.parser.BusStopCsvParser
 import io.realm.Realm
 
 object BusStopRepository {
 
+    private val TAG = BusStopRepository::class.java.simpleName
     private val DEFAULT_RANGE = 0.008
 
     fun isEmpty(): Boolean {
@@ -18,7 +21,12 @@ object BusStopRepository {
     fun saveBuses(busStops: List<BusStop>) {
         val realm = Realm.getDefaultInstance()
         realm.use {
-            it.executeTransaction { busStops.forEach { busStop -> it.copyToRealm(busStop) } }
+            it.executeTransaction {
+                busStops.forEach { busStop ->
+                    Log.d(TAG, "Save bus stop $busStop")
+                    it.copyToRealm(busStop)
+                }
+            }
         }
     }
 
