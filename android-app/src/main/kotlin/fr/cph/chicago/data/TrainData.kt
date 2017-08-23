@@ -47,6 +47,7 @@ object TrainData {
     // https://data.cityofchicago.org/Transportation/CTA-System-Information-List-of-L-Stops/8pix-ypme
     private val TRAIN_FILE_PATH = "train_stops.csv"
 
+    var error: Boolean = false
     private val stations: SparseArray<Station> = SparseArray()
     private val stops: SparseArray<Stop> = SparseArray()
     private var stationsOrderByLineMap: TreeMap<TrainLine, MutableList<Station>> = TreeMap()

@@ -195,7 +195,7 @@ object PreferencesImpl : Preferences {
         Log.v(TAG, "Read train favorites : " + setPref)
         return setPref
             .map { Integer.valueOf(it) }
-            .map { favorite -> DataHolder.trainData.getStation(favorite) }
+            .map { favorite -> TrainData.getStation(favorite) }
             .sorted()
             .map { it.id }
             .toMutableList()

@@ -50,7 +50,6 @@ import fr.cph.chicago.core.fragment.NearbyFragment;
 import fr.cph.chicago.core.fragment.SettingsFragment;
 import fr.cph.chicago.core.fragment.TrainFragment;
 import fr.cph.chicago.data.BusData;
-import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.dto.FavoritesDTO;
@@ -190,8 +189,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Util.INSTANCE.trackAction((App) getApplication(), R.string.analytics_category_ui, R.string.analytics_action_press, getApplicationContext().getString(R.string.analytics_action_refresh_fav));
 
             if (Util.INSTANCE.isNetworkAvailable(getApplicationContext())) {
-                final DataHolder dataHolder = DataHolder.INSTANCE;
-                if (dataHolder.getBusData().getBusRoutes().size() == 0
+                if (BusData.INSTANCE.getBusRoutes().size() == 0
                     || getIntent().getParcelableArrayListExtra(bundleBikeStations) == null
                     || getIntent().getParcelableArrayListExtra(bundleBikeStations).size() == 0) {
                     loadFirstData();
@@ -219,9 +217,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void loadFirstData() {
         ObservableUtil.INSTANCE.createOnFirstLoadObservable().subscribe(
             onNext -> {
-                final DataHolder dataHolder = DataHolder.INSTANCE;
-                dataHolder.getBusData().setBusRoutes(onNext.getBusRoutes());
-                refreshFirstLoadData(dataHolder.getBusData(), onNext.getBikeStations());
+                BusData.INSTANCE.setBusRoutes(onNext.getBusRoutes());
+                refreshFirstLoadData(onNext.getBikeStations());
                 if (onNext.getBikeStationsError() || onNext.getBusRoutesError()) {
                     Util.INSTANCE.showSnackBar(this, R.string.message_something_went_wrong, Snackbar.LENGTH_SHORT);
                 }
@@ -234,11 +231,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         );
     }
 
-    private void refreshFirstLoadData(@NonNull final BusData busData, @NonNull final List<BikeStation> bikeStations) {
-        // Put data into data holder
-        final DataHolder dataHolder = DataHolder.INSTANCE;
-        dataHolder.setBusData(busData);
-
+    private void refreshFirstLoadData(@NonNull final List<BikeStation> bikeStations) {
         getIntent().putParcelableArrayListExtra(bundleBikeStations, (ArrayList<BikeStation>) bikeStations);
         onNewIntent(getIntent());
         if (favoritesFragment != null) {

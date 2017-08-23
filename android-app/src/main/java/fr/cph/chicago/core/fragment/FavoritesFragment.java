@@ -41,7 +41,7 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.activity.SearchActivity;
 import fr.cph.chicago.core.adapter.FavoritesAdapter;
-import fr.cph.chicago.data.DataHolder;
+import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.FavoritesData;
 import fr.cph.chicago.data.PreferencesImpl;
 import fr.cph.chicago.entity.BikeStation;
@@ -166,8 +166,7 @@ public class FavoritesFragment extends AbstractFragment {
                 Util.INSTANCE.trackAction((App) getActivity().getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_divvy, getContext().getString(R.string.analytics_action_get_divvy_all));
                 Util.INSTANCE.trackAction((App) getActivity().getApplication(), R.string.analytics_category_ui, R.string.analytics_action_press, getContext().getString(R.string.analytics_action_refresh_fav));
 
-                final DataHolder dataHolder = DataHolder.INSTANCE;
-                if (dataHolder.getBusData().getBusRoutes().size() == 0
+                if (BusData.INSTANCE.getBusRoutes().size() == 0
                     || activity.getIntent().getParcelableArrayListExtra(bundleBikeStation) == null
                     || activity.getIntent().getParcelableArrayListExtra(bundleBikeStation).size() == 0) {
                     activity.loadFirstData();

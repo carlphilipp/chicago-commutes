@@ -31,7 +31,6 @@ import butterknife.ButterKnife;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.data.BusData;
-import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.dto.BusArrivalDTO;
@@ -102,7 +101,6 @@ public class BaseActivity extends Activity {
                     observableOnSubscribe.onComplete();
                 }
             })
-            .doOnNext(DataHolder.INSTANCE::setTrainData)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
 
@@ -114,7 +112,6 @@ public class BaseActivity extends Activity {
                     observableOnSubscribe.onComplete();
                 }
             })
-            .doOnNext(DataHolder.INSTANCE::setBusData)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
 
@@ -128,7 +125,8 @@ public class BaseActivity extends Activity {
         Observable.zip(trainLocalData, busLocalData, (trainData, busData) -> true)
             .doOnComplete(() ->
                 Observable.zip(trainOnlineFavorites, busOnlineFavorites, (trainArrivalsDTO, busArrivalsDTO) -> {
-                        DataHolder.INSTANCE.setError(false);
+                        TrainData.INSTANCE.setError(false);
+                        BusData.INSTANCE.setError(false);
                         ((App) getApplication()).setLastUpdate(Calendar.getInstance().getTime());
                         return new FavoritesDTO(trainArrivalsDTO, busArrivalsDTO, false, Collections.emptyList());
                     }
@@ -166,7 +164,8 @@ public class BaseActivity extends Activity {
 
     private void startErrorActivity() {
         // Set Error
-        DataHolder.INSTANCE.setError(true);
+        TrainData.INSTANCE.setError(true);
+        BusData.INSTANCE.setError(true);
 
         // Start error activity
         final Intent intent = new Intent(this, ErrorActivity.class);

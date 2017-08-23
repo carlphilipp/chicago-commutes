@@ -52,7 +52,6 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.client.CtaClient;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.adapter.TrainMapSnippetAdapter;
-import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Position;
@@ -130,7 +129,7 @@ public class TrainMapActivity extends AbstractMapActivity {
     @Override
     protected void initData() {
         super.initData();
-        trainData = DataHolder.INSTANCE.getTrainData();
+        trainData = TrainData.INSTANCE;
         markers = new ArrayList<>();
         status = new HashMap<>();
         refreshTrainMarkers = new RefreshTrainMarkers(getApplicationContext());
@@ -359,7 +358,7 @@ public class TrainMapActivity extends AbstractMapActivity {
         protected List<Train> doInBackground(final Boolean... params) {
             // Make sure that trainData is not null
             if (trainData == null) {
-                trainData = DataHolder.INSTANCE.getTrainData();
+                trainData = TrainData.INSTANCE;
             }
             centerMap = params[0];
 

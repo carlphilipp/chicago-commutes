@@ -57,14 +57,13 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.adapter.SlidingUpAdapter;
 import fr.cph.chicago.core.listener.OnMarkerClickListener;
-import fr.cph.chicago.data.BusData;
-import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.MarkerDataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusStop;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
+import fr.cph.chicago.repository.BusStopRepository;
 import fr.cph.chicago.util.GPSUtil;
 import fr.cph.chicago.util.Util;
 import pub.devrel.easypermissions.AfterPermissionGranted;
@@ -269,13 +268,12 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
                 googleApiClient.blockingConnect();
             }
 
-            final BusData busData = DataHolder.INSTANCE.getBusData();
-            final TrainData trainData = DataHolder.INSTANCE.getTrainData();
+            final TrainData trainData = TrainData.INSTANCE;
 
             final GPSUtil gpsUtil = new GPSUtil(googleApiClient);
             final Position position = gpsUtil.getLocation();
             if (position.getLongitude() != 0 && position.getLatitude() != 0) {
-                busStops = busData.readNearbyStops(position);
+                busStops = BusStopRepository.INSTANCE.getStopsAround(position);
                 trainStations = trainData.readNearbyStation(position);
                 // FIXME: wait for bike stations to be loaded
                 bikeStations = bikeStations != null

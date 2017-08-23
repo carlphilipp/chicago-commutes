@@ -6,6 +6,8 @@ import io.realm.Realm
 
 object BusStopRepository {
 
+    private val DEFAULT_RANGE = 0.008
+
     fun isEmpty(): Boolean {
         val realm = Realm.getDefaultInstance()
         return realm.use {
@@ -20,7 +22,17 @@ object BusStopRepository {
         }
     }
 
-    fun getStopsAround(position: Position, range: Double): List<BusStop> {
+    fun getStopsAround(position: Position): List<BusStop> {
+        return getStopsAround(position, DEFAULT_RANGE)
+    }
+
+    /**
+     * Get a list of bus stop within a a distance and position
+     *
+     * @param position the position
+     * @return a list of bus stop
+     */
+    private fun getStopsAround(position: Position, range: Double): List<BusStop> {
         val realm = Realm.getDefaultInstance()
 
         val latitude = position.latitude
@@ -39,6 +51,7 @@ object BusStopRepository {
                 .greaterThan("position.longitude", lonMin)
                 .lessThan("position.longitude", lonMax)
                 .findAllSorted("name")
+                // Need to map and create objects to close realm stream
                 .map { currentBusStop ->
                     val busStop = BusStop()
                     busStop.name = currentBusStop.name

@@ -29,7 +29,8 @@ import com.google.android.gms.analytics.GoogleAnalytics
 import com.google.android.gms.analytics.Tracker
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.BaseActivity
-import fr.cph.chicago.data.DataHolder
+import fr.cph.chicago.data.BusData
+import fr.cph.chicago.data.TrainData
 import java.util.*
 
 /**
@@ -79,7 +80,7 @@ class App : Application() {
         lateinit var googleStreetKey: String
 
         fun checkTrainData(activity: Activity): Boolean {
-            if (DataHolder.error) {
+            if (TrainData.error) {
                 startErrorActivity(activity)
                 return false
             }
@@ -87,7 +88,7 @@ class App : Application() {
         }
 
         fun checkBusData(activity: Activity) {
-            if (DataHolder.error) {
+            if (BusData.error) {
                 startErrorActivity(activity)
             }
         }

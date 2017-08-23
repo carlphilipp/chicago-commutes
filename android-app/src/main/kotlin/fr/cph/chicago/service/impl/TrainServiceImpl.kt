@@ -5,7 +5,6 @@ import android.util.SparseArray
 import fr.cph.chicago.R
 import fr.cph.chicago.client.CtaClient
 import fr.cph.chicago.client.CtaRequestType.TRAIN_ARRIVALS
-import fr.cph.chicago.data.DataHolder
 import fr.cph.chicago.data.PreferencesImpl
 import fr.cph.chicago.data.TrainData
 import fr.cph.chicago.entity.TrainArrival
@@ -26,7 +25,7 @@ object TrainServiceImpl : TrainService {
                     val list = value as List<String>
                     if (list.size < 5) {
                         val xmlResult = CtaClient.connect(TRAIN_ARRIVALS, trainParams)
-                        trainArrivals = XmlParser.parseArrivals(xmlResult, DataHolder.trainData)
+                        trainArrivals = XmlParser.parseArrivals(xmlResult, TrainData)
                     } else {
                         val size = list.size
                         var start = 0
@@ -38,7 +37,7 @@ object TrainServiceImpl : TrainService {
                                 paramsTemp.put(key, sub)
                             }
                             val xmlResult = CtaClient.connect(TRAIN_ARRIVALS, paramsTemp)
-                            val temp = XmlParser.parseArrivals(xmlResult, DataHolder.trainData)
+                            val temp = XmlParser.parseArrivals(xmlResult, TrainData)
                             for (j in 0..temp.size() - 1) {
                                 trainArrivals.put(temp.keyAt(j), temp.valueAt(j))
                             }

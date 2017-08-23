@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -30,7 +29,6 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.adapter.SearchAdapter;
 import fr.cph.chicago.data.BusData;
-import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.data.TrainData;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusRoute;
@@ -167,8 +165,8 @@ public class SearchActivity extends AppCompatActivity {
 
     private void handleIntent(@NonNull final Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            final BusData busData = DataHolder.INSTANCE.getBusData();
-            final TrainData trainData = DataHolder.INSTANCE.getTrainData();
+            final BusData busData = BusData.INSTANCE;
+            final TrainData trainData = TrainData.INSTANCE;
 
             final String query = intent.getStringExtra(SearchManager.QUERY).trim();
 

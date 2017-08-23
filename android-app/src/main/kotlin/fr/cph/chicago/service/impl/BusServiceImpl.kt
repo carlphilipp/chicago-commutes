@@ -1,12 +1,15 @@
 package fr.cph.chicago.service.impl
 
 import android.content.Context
+import android.util.Log
 import fr.cph.chicago.R
 import fr.cph.chicago.client.CtaClient
 import fr.cph.chicago.client.CtaRequestType.*
 import fr.cph.chicago.data.BusData
 import fr.cph.chicago.entity.*
+import fr.cph.chicago.parser.BusStopCsvParser
 import fr.cph.chicago.parser.XmlParser
+import fr.cph.chicago.repository.BusStopRepository
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.Util
 import io.reactivex.exceptions.Exceptions
@@ -14,6 +17,8 @@ import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import java.util.*
 
 object BusServiceImpl : BusService {
+
+    private val TAG = BusServiceImpl::class.java.simpleName
 
     override fun loadFavoritesBuses(context: Context): List<BusArrival> {
         // FIXME to refactor
@@ -68,7 +73,10 @@ object BusServiceImpl : BusService {
     }
 
     override fun loadLocalBusData(context: Context): BusData {
-        BusData.readBusStopsIfNeeded(context)
+        if (BusStopRepository.isEmpty()) {
+            Log.d(TAG, "Load bus stop from CSV")
+            BusStopCsvParser.parse(context)
+        }
         return BusData
     }
 
@@ -92,7 +100,6 @@ object BusServiceImpl : BusService {
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }
-
     }
 
     override fun loadFollowBus(context: Context, busId: String): List<BusArrival> {
@@ -152,6 +159,5 @@ object BusServiceImpl : BusService {
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }
-
     }
 }

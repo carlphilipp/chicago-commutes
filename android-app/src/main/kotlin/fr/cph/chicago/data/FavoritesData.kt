@@ -41,9 +41,6 @@ import java.util.*
 // TODO to analyze and refactor
 object FavoritesData {
 
-    private val trainData: TrainData = DataHolder.trainData
-    private val busData: BusData = DataHolder.busData
-
     var trainArrivals: SparseArray<TrainArrival> = SparseArray()
     var busArrivals: List<BusArrival> = listOf()
     var bikeStations: List<BikeStation> = listOf()
@@ -71,18 +68,17 @@ object FavoritesData {
     fun getObject(position: Int, context: Context): Parcelable {
         if (position < trainFavorites.size) {
             val stationId = trainFavorites[position]
-            return trainData.getStation(stationId)
+            return TrainData.getStation(stationId)
         } else if (position < trainFavorites.size + fakeBusFavorites.size && position - trainFavorites.size < fakeBusFavorites.size) {
             val index = position - trainFavorites.size
             val routeId = fakeBusFavorites[index]
-            val busDataRoute = busData.getRoute(routeId)
+            val busDataRoute = BusData.getRoute(routeId)
             if (busDataRoute.name != "error") {
                 return busDataRoute
             } else {
                 // Get name in the preferences if null
                 val routeName = preferences.getBusRouteNameMapping(context, routeId)
-                val busRoute = BusRoute(routeId, routeName ?: "")
-                return busRoute
+                return BusRoute(routeId, routeName ?: "")
             }
         } else {
             val index = position - (trainFavorites.size + fakeBusFavorites.size)

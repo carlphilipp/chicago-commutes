@@ -19,14 +19,7 @@
 
 package fr.cph.chicago.data
 
-import android.content.Context
-import android.util.Log
 import fr.cph.chicago.entity.BusRoute
-import fr.cph.chicago.entity.BusStop
-import fr.cph.chicago.entity.Position
-import fr.cph.chicago.parser.BusStopCsvParser
-import fr.cph.chicago.repository.BusStopRepository
-import io.realm.Realm
 
 /**
  * Class that handle bus data. Singleton
@@ -36,20 +29,8 @@ import io.realm.Realm
  */
 object BusData {
 
-    private val DEFAULT_RANGE = 0.008
-    private val TAG = BusData::class.java.simpleName
-
-    lateinit var busRoutes: List<BusRoute>
-
-    /**
-     * Method that read bus stops from CSV
-     */
-    fun readBusStopsIfNeeded(context: Context) {
-        if (BusStopRepository.isEmpty()) {
-            Log.d(TAG, "Load bus stop from CSV")
-            BusStopCsvParser.parse(context)
-        }
-    }
+    var error: Boolean = false
+    var busRoutes: List<BusRoute> = mutableListOf()
 
     /**
      * Get a route
@@ -61,15 +42,5 @@ object BusData {
         return busRoutes
             .filter { (id) -> id == routeId }
             .getOrElse(0, { BusRoute("0", "error") })
-    }
-
-    /**
-     * Get a list of bus stop within a a distance and position
-     *
-     * @param position the position
-     * @return a list of bus stop
-     */
-    fun readNearbyStops(position: Position): List<BusStop> {
-        return BusStopRepository.getStopsAround(position, DEFAULT_RANGE)
     }
 }

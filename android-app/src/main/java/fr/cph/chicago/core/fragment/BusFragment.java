@@ -40,7 +40,6 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.adapter.BusAdapter;
 import fr.cph.chicago.data.BusData;
-import fr.cph.chicago.data.DataHolder;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.util.Util;
 
@@ -98,7 +97,7 @@ public class BusFragment extends AbstractFragment {
         textFilter.setVisibility(TextView.VISIBLE);
         textFilter.addTextChangedListener(new TextWatcher() {
 
-            final BusData busData = DataHolder.INSTANCE.getBusData();
+            final BusData busData = BusData.INSTANCE;
             List<BusRoute> busRoutes = null;
 
             @Override
