@@ -25,6 +25,7 @@ import fr.cph.chicago.entity.BusRoute
 import fr.cph.chicago.entity.BusStop
 import fr.cph.chicago.entity.Position
 import fr.cph.chicago.parser.BusStopCsvParser
+import fr.cph.chicago.repository.BusStopRepository
 import io.realm.Realm
 
 /**
@@ -44,12 +45,10 @@ object BusData {
      * Method that read bus stops from CSV
      */
     fun readBusStopsIfNeeded(context: Context) {
-        val realm = Realm.getDefaultInstance()
-        if (realm.where(BusStop::class.java).findFirst() == null) {
+        if (BusStopRepository.isEmpty()) {
             Log.d(TAG, "Load bus stop from CSV")
             BusStopCsvParser.parse(context)
         }
-        realm.close()
     }
 
     /**
@@ -71,35 +70,6 @@ object BusData {
      * @return a list of bus stop
      */
     fun readNearbyStops(position: Position): List<BusStop> {
-        val latitude = position.latitude
-        val longitude = position.longitude
-
-        val latMax = latitude + DEFAULT_RANGE
-        val latMin = latitude - DEFAULT_RANGE
-        val lonMax = longitude + DEFAULT_RANGE
-        val lonMin = longitude - DEFAULT_RANGE
-
-        val realm = Realm.getDefaultInstance()
-        val result = realm.where(BusStop::class.java)
-            // TODO use between when child object is supported by Realm
-            .greaterThan("position.latitude", latMin)
-            .lessThan("position.latitude", latMax)
-            .greaterThan("position.longitude", lonMin)
-            .lessThan("position.longitude", lonMax)
-            .findAllSorted("name")
-            .map { currentBusStop ->
-                val busStop = BusStop()
-                busStop.name = currentBusStop.name
-                busStop.description = currentBusStop.description
-                val pos = Position()
-                pos.latitude = currentBusStop.position.latitude
-                pos.longitude = currentBusStop.position.longitude
-                busStop.position = pos
-                busStop.id = currentBusStop.id
-                busStop
-            }
-            .toList()
-        realm.close()
-        return result
+        return BusStopRepository.getStopsAround(position, DEFAULT_RANGE)
     }
 }

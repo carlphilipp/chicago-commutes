@@ -23,7 +23,7 @@ import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.activity.BaseActivity;
 import fr.cph.chicago.data.Preferences;
 import fr.cph.chicago.data.PreferencesImpl;
-import fr.cph.chicago.util.RealmUtil;
+import fr.cph.chicago.repository.RealmConfig;
 import fr.cph.chicago.util.Util;
 
 @SuppressWarnings("WeakerAccess")
@@ -90,7 +90,7 @@ public class SettingsFragment extends AbstractFragment {
     private void cleanLocalData() {
         deleteCache(getContext());
         preferences.clearPreferences(getContext());
-        RealmUtil.INSTANCE.cleanRealm(getContext());
+        RealmConfig.INSTANCE.cleanRealm(getContext());
     }
 
     private void deleteCache(final Context context) {

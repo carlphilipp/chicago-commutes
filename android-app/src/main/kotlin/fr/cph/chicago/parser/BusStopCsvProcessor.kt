@@ -6,11 +6,13 @@ import com.univocity.parsers.common.ParsingContext
 import com.univocity.parsers.common.processor.RowProcessor
 import fr.cph.chicago.entity.BusStop
 import fr.cph.chicago.entity.Position
-import io.realm.Realm
+import fr.cph.chicago.repository.BusStopRepository
 import org.apache.commons.lang3.StringUtils
 import java.util.*
 
 internal class BusStopCsvProcessor : RowProcessor {
+
+    private val repository = BusStopRepository
 
     private val rows: MutableList<BusStop> = ArrayList(12000)
 
@@ -47,9 +49,6 @@ internal class BusStopCsvProcessor : RowProcessor {
     }
 
     override fun processEnded(context: ParsingContext) {
-        val realm = Realm.getDefaultInstance()
-        realm.beginTransaction()
-        rows.forEach { busStop -> realm.copyToRealmOrUpdate(busStop) }
-        realm.close()
+        repository.saveBuses(rows)
     }
 }

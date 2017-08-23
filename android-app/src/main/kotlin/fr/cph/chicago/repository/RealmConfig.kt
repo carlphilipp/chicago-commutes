@@ -1,10 +1,10 @@
-package fr.cph.chicago.util
+package fr.cph.chicago.repository
 
 import android.content.Context
 import io.realm.Realm
 import io.realm.RealmConfiguration
 
-object RealmUtil {
+object RealmConfig {
 
     fun setUpRealm(context: Context) {
         Realm.init(context)
