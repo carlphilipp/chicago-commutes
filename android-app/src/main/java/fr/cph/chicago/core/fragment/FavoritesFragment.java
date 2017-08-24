@@ -257,8 +257,8 @@ public class FavoritesFragment extends AbstractFragment {
         favoritesData.setTrainArrivals(favoritesDTO.getTrainArrivalDTO().getTrainArrivalSparseArray());
 
         favoritesAdapter.refreshFavorites();
-        favoritesAdapter.refreshUpdated();
-        favoritesAdapter.refreshUpdatedView();
+        favoritesAdapter.resetLastUpdate();
+        favoritesAdapter.updateModel();
         favoritesAdapter.notifyDataSetChanged();
 
         rootView.setBackgroundResource(R.drawable.highlight_selector);
@@ -296,7 +296,7 @@ public class FavoritesFragment extends AbstractFragment {
      */
     private void startRefreshTask() {
         refreshTimingTask = (RefreshTimingTask) new RefreshTimingTask(favoritesAdapter).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        favoritesAdapter.refreshUpdatedView();
+        favoritesAdapter.updateModel();
     }
 
     public void startRefreshing() {
@@ -325,13 +325,13 @@ public class FavoritesFragment extends AbstractFragment {
         @Override
         protected final void onProgressUpdate(final Void... values) {
             super.onProgressUpdate();
-            this.favoritesAdapter.refreshUpdatedView();
+            this.favoritesAdapter.updateModel();
         }
 
         @Override
         protected final Void doInBackground(final Void... params) {
             while (!this.isCancelled()) {
-                Log.v(TAG, "Updated of time " + Thread.currentThread().getId());
+                Log.v(TAG, "Update time. Thread id: " + Thread.currentThread().getId());
                 try {
                     publishProgress();
                     Thread.sleep(10000);

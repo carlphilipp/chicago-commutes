@@ -281,14 +281,15 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
     /**
      * Refresh date update
      */
-    fun refreshUpdated() {
+    fun resetLastUpdate() {
         (activity.application as App).lastUpdate = Calendar.getInstance().time
     }
 
     /**
      * Refresh updated view
      */
-    fun refreshUpdatedView() {
+    fun updateModel() {
+        (activity.application as App).lastUpdate = Calendar.getInstance().time
         lastUpdate = lastUpdateInMinutes
         notifyDataSetChanged()
     }
