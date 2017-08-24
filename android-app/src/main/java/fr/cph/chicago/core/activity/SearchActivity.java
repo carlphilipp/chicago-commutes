@@ -51,12 +51,19 @@ public class SearchActivity extends AppCompatActivity {
     @BindString(R.string.bundle_bike_stations)
     String bundleBikeStations;
 
+    private final TrainService trainService;
+    private final BusService busService;
+    private final Util util;
+
     private SearchView searchView;
     private SearchAdapter searchAdapter;
     private List<BikeStation> bikeStations;
 
     public SearchActivity() {
         this.bikeStations = new ArrayList<>();
+        this.trainService = TrainService.INSTANCE;
+        this.busService = BusService.INSTANCE;
+        this.util = Util.INSTANCE;
     }
 
     @Override
@@ -147,7 +154,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void setupToolbar() {
-        Util.INSTANCE.setWindowsColor(this, toolbar, TrainLine.NA);
+        util.setWindowsColor(this, toolbar, TrainLine.NA);
         setSupportActionBar(toolbar);
         final ActionBar actionBar = getSupportActionBarNotNull();
         actionBar.setDisplayShowHomeEnabled(true);
@@ -168,23 +175,23 @@ public class SearchActivity extends AppCompatActivity {
             final String query = intent.getStringExtra(SearchManager.QUERY).trim();
 
             // TODO Move that logic to service layer
-            final List<Station> foundStations = Stream.of(TrainService.INSTANCE.getAllStations().entrySet())
+            final List<Station> foundStations = Stream.of(trainService.getAllStations().entrySet())
                 .flatMap(entry -> Stream.of(entry.getValue()))
                 .filter(station -> containsIgnoreCase(station.getName(), query))
                 .distinct()
                 .sorted()
                 .collect(Collectors.toList());
 
-            final List<BusRoute> foundBusRoutes = Stream.of(BusService.INSTANCE.getBusRoutes())
+            final List<BusRoute> foundBusRoutes = Stream.of(busService.getBusRoutes())
                 .filter(busRoute -> containsIgnoreCase(busRoute.getId(), query) || containsIgnoreCase(busRoute.getName(), query))
                 .distinct()
-                .sorted(Util.INSTANCE.getBUS_STOP_COMPARATOR_NAME())
+                .sorted(util.getBUS_STOP_COMPARATOR_NAME())
                 .collect(Collectors.toList());
 
             final List<BikeStation> foundBikeStations = Stream.of(bikeStations)
                 .filter(bikeStation -> containsIgnoreCase(bikeStation.getName(), query) || containsIgnoreCase(bikeStation.getStAddress1(), query))
                 .distinct()
-                .sorted(Util.INSTANCE.getBIKE_COMPARATOR_NAME())
+                .sorted(util.getBIKE_COMPARATOR_NAME())
                 .collect(Collectors.toList());
             searchAdapter.updateData(foundStations, foundBusRoutes, foundBikeStations);
             searchAdapter.notifyDataSetChanged();

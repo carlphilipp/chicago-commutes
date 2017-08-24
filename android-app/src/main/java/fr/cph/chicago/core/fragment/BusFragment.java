@@ -57,10 +57,18 @@ public class BusFragment extends AbstractFragment {
     @BindView(R.id.bus_list)
     ListView listView;
 
+    private final Util util;
+    private final BusService busService;
+
     private BusAdapter busAdapter;
 
+    public BusFragment() {
+        util = Util.INSTANCE;
+        busService = BusService.INSTANCE;
+    }
+
     /**
-     * Returns a new INSTANCE of this fragment for the given section number.
+     * Returns a new trainService of this fragment for the given section number.
      *
      * @param sectionNumber the section number
      * @return the fragment
@@ -74,7 +82,7 @@ public class BusFragment extends AbstractFragment {
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         App.Companion.checkBusData(activity);
-        Util.INSTANCE.trackScreen((App) getActivity().getApplication(), getString(R.string.analytics_bus_fragment));
+        util.trackScreen((App) getActivity().getApplication(), getString(R.string.analytics_bus_fragment));
     }
 
     @Override
@@ -106,7 +114,7 @@ public class BusFragment extends AbstractFragment {
 
             @Override
             public void onTextChanged(final CharSequence c, final int start, final int before, final int count) {
-                final List<BusRoute> busRoutes = BusService.INSTANCE.getBusRoutes();
+                final List<BusRoute> busRoutes = busService.getBusRoutes();
                 final CharSequence trimmed = c.toString().trim();
                 this.busRoutes.addAll(
                     Stream.of(busRoutes)

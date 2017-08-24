@@ -62,7 +62,6 @@ import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.marker.RefreshTrainMarkers;
 import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.service.TrainService;
-import fr.cph.chicago.util.Util;
 
 import static fr.cph.chicago.Constants.TRAINS_FOLLOW_URL;
 import static fr.cph.chicago.Constants.TRAINS_LOCATION_URL;
@@ -87,6 +86,7 @@ public class TrainMapActivity extends AbstractMapActivity {
     @BindString(R.string.request_rt)
     String requestRt;
 
+    private final XmlParser xmlParser;
 
     private Map<Marker, View> views;
     private String line;
@@ -99,6 +99,7 @@ public class TrainMapActivity extends AbstractMapActivity {
 
     public TrainMapActivity() {
         this.views = new HashMap<>();
+        xmlParser = XmlParser.INSTANCE;
     }
 
     @Override
@@ -121,7 +122,7 @@ public class TrainMapActivity extends AbstractMapActivity {
             setToolbar();
 
             // Google analytics
-            Util.INSTANCE.trackScreen((App) getApplication(), analyticsTrainMap);
+            util.trackScreen((App) getApplication(), analyticsTrainMap);
         }
     }
 
@@ -142,7 +143,7 @@ public class TrainMapActivity extends AbstractMapActivity {
         }));
 
         final TrainLine trainLine = TrainLine.Companion.fromXmlString(line);
-        Util.INSTANCE.setWindowsColor(this, toolbar, trainLine);
+        util.setWindowsColor(this, toolbar, trainLine);
         toolbar.setTitle(trainLine.toStringWithLine());
     }
 
@@ -268,10 +269,10 @@ public class TrainMapActivity extends AbstractMapActivity {
     }
 
     private void loadActivityData() {
-        if (Util.INSTANCE.isNetworkAvailable(getApplicationContext())) {
+        if (util.isNetworkAvailable(getApplicationContext())) {
             new LoadTrainPositionTask(line).execute(centerMap, true);
         } else {
-            Util.INSTANCE.showNetworkErrorMessage(layout);
+            util.showNetworkErrorMessage(layout);
         }
     }
 
@@ -281,6 +282,8 @@ public class TrainMapActivity extends AbstractMapActivity {
 
         private final View view;
         private final boolean loadAll;
+        private final CtaClient ctaClient;
+        private final XmlParser xmlParser;
 
         /**
          * Constructor
@@ -291,6 +294,8 @@ public class TrainMapActivity extends AbstractMapActivity {
         private LoadTrainFollowTask(@NonNull final View view, final boolean loadAll) {
             this.view = view;
             this.loadAll = loadAll;
+            this.ctaClient = CtaClient.INSTANCE;
+            this.xmlParser = XmlParser.INSTANCE;
         }
 
         @Override
@@ -300,12 +305,12 @@ public class TrainMapActivity extends AbstractMapActivity {
             try {
                 final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
                 connectParam.put(requestRunNumber, runNumber);
-                final InputStream content = CtaClient.INSTANCE.connect(TRAIN_FOLLOW, connectParam);
-                etas = XmlParser.INSTANCE.parseTrainsFollow(content);
+                final InputStream content = ctaClient.connect(TRAIN_FOLLOW, connectParam);
+                etas = xmlParser.parseTrainsFollow(content);
             } catch (final ConnectException | ParserException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
-            Util.INSTANCE.trackAction((App) TrainMapActivity.this.getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_FOLLOW_URL);
+            util.trackAction((App) TrainMapActivity.this.getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_FOLLOW_URL);
             if (!loadAll && etas.size() > 7) {
                 etas = etas.subList(0, 6);
                 final Date currentDate = Calendar.getInstance().getTime();
@@ -343,8 +348,12 @@ public class TrainMapActivity extends AbstractMapActivity {
 
         private boolean centerMap;
         private List<Position> positions;
+        private TrainService trainService;
+        private CtaClient ctaClient;
 
         private LoadTrainPositionTask(@NonNull final String line) {
+            this.trainService = TrainService.INSTANCE;
+            this.ctaClient = CtaClient.INSTANCE;
             this.line = line;
         }
 
@@ -354,7 +363,7 @@ public class TrainMapActivity extends AbstractMapActivity {
 
 
             final List<Train> trains = getTrainData();
-            positions = TrainService.INSTANCE.readPattern(getApplicationContext(), TrainLine.Companion.fromXmlString(line));
+            positions = trainService.readPattern(getApplicationContext(), TrainLine.Companion.fromXmlString(line));
             return trains;
         }
 
@@ -368,10 +377,10 @@ public class TrainMapActivity extends AbstractMapActivity {
                         centerMapOnTrain(trains);
                     }
                 } else {
-                    Util.INSTANCE.showMessage(TrainMapActivity.this, R.string.message_no_train_found);
+                    util.showMessage(TrainMapActivity.this, R.string.message_no_train_found);
                 }
             } else {
-                Util.INSTANCE.showMessage(TrainMapActivity.this, R.string.message_error_while_loading_data);
+                util.showMessage(TrainMapActivity.this, R.string.message_error_while_loading_data);
             }
         }
 
@@ -380,9 +389,9 @@ public class TrainMapActivity extends AbstractMapActivity {
             try {
                 final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
                 connectParam.put(requestRt, line);
-                final InputStream content = CtaClient.INSTANCE.connect(TRAIN_LOCATION, connectParam);
-                trains = XmlParser.INSTANCE.parseTrainsLocation(content);
-                Util.INSTANCE.trackAction((App) TrainMapActivity.this.getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_LOCATION_URL);
+                final InputStream content = ctaClient.connect(TRAIN_LOCATION, connectParam);
+                trains = xmlParser.parseTrainsLocation(content);
+                util.trackAction((App) TrainMapActivity.this.getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_LOCATION_URL);
             } catch (final ConnectException | ParserException e) {
                 Log.e(TAG, e.getMessage(), e);
             }

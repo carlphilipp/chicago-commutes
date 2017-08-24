@@ -46,6 +46,7 @@ import java.util.*
 // TODO to refactor and optimize
 object XmlParser {
 
+    private val trainService: TrainService = TrainService
     private val parser: XmlPullParser = XmlPullParserFactory.newInstance().newPullParser()
     private val simpleDateFormatTrain: SimpleDateFormat = SimpleDateFormat("yyyyMMdd HH:mm:ss", Locale.US)
     private val simpleDateFormatBus: SimpleDateFormat = SimpleDateFormat("yyyyMMdd HH:mm", Locale.US)
@@ -91,9 +92,9 @@ object XmlParser {
                     val etaName = parser.name
                     if (StringUtils.isNotBlank(etaName) && "eta" == etaName) {
                         // FIXME analyze why we have that train service here. Should not.
-                        val station = TrainService.getStation(stationId!!)
+                        val station = trainService.getStation(stationId!!)
                         station.name = stationName!!
-                        val stop = TrainService.getStop(stopId)
+                        val stop = trainService.getStop(stopId)
                         stop.description = stopDestination!!
                         val position = Position(latitude, longitude)
                         // FIXME that should not be done here

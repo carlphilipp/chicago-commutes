@@ -94,11 +94,17 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
     @BindString(R.string.bundle_bike_stations)
     String bundleBikeStations;
 
+    private final Util util;
+
     private SupportMapFragment mapFragment;
 
     private GoogleApiClient googleApiClient;
     private SlidingUpAdapter slidingUpAdapter;
     private MarkerDataHolder markerDataHolder;
+
+    public NearbyFragment() {
+        this.util = Util.INSTANCE;
+    }
 
     public SlidingUpPanelLayout getSlidingUpPanelLayout() {
         return slidingUpPanelLayout;
@@ -122,7 +128,7 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
         super.onCreate(savedInstanceState);
         App.Companion.checkTrainData(activity);
         App.Companion.checkBusData(activity);
-        Util.INSTANCE.trackScreen((App) getActivity().getApplication(), getString(R.string.analytics_nearby_fragment));
+        util.trackScreen((App) getActivity().getApplication(), getString(R.string.analytics_nearby_fragment));
     }
 
     @Override
@@ -144,7 +150,7 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
             .addApi(LocationServices.API)
             .build();
         final GoogleMapOptions options = new GoogleMapOptions();
-        final CameraPosition camera = new CameraPosition(Util.INSTANCE.chicago(), 7, 0, 0);
+        final CameraPosition camera = new CameraPosition(util.chicago(), 7, 0, 0);
         options.camera(camera);
         mapFragment = SupportMapFragment.newInstance(options);
         mapFragment.setRetainInstance(true);
@@ -254,10 +260,14 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
         private List<BusStop> busStops;
         private List<Station> trainStations;
         private List<BikeStation> bikeStations;
+        private final TrainService trainService;
+        private final BusService busService;
 
         private LoadNearbyTask() {
             busStops = new ArrayList<>();
             trainStations = new ArrayList<>();
+            this.trainService = TrainService.INSTANCE;
+            this.busService = BusService.INSTANCE;
         }
 
         @Override
@@ -268,13 +278,13 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
                 googleApiClient.blockingConnect();
             }
 
-            //final TrainRepository trainData = TrainRepository.INSTANCE;
+            //final TrainRepository trainData = TrainRepository.trainService;
 
             final GPSUtil gpsUtil = new GPSUtil(googleApiClient);
             final Position position = gpsUtil.getLocation();
             if (position.getLongitude() != 0 && position.getLatitude() != 0) {
-                busStops = BusService.INSTANCE.getBusStopsAround(position);
-                trainStations = TrainService.INSTANCE.readNearbyStation(position);
+                busStops = busService.getBusStopsAround(position);
+                trainStations = trainService.readNearbyStation(position);
                 // FIXME: wait for bike stations to be loaded
                 bikeStations = bikeStations != null
                     ? BikeStation.Companion.readNearbyStation(bikeStations, position)
@@ -286,12 +296,12 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
         @Override
         protected final void onPostExecute(final Position position) {
             if (position.getLongitude() != 0 && position.getLatitude() != 0) {
-                Util.INSTANCE.centerMap(mapFragment, position);
+                util.centerMap(mapFragment, position);
                 updateMarkersAndModel(busStops, trainStations, bikeStations);
             } else {
                 Log.e(TAG, "Could not get current user location");
                 showProgress(false);
-                Util.INSTANCE.showSnackBar(activity, R.string.message_cant_find_location, Snackbar.LENGTH_LONG);
+                util.showSnackBar(activity, R.string.message_cant_find_location, Snackbar.LENGTH_LONG);
             }
         }
     }
@@ -321,11 +331,11 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
     }
 
     private void startLoadingNearby() {
-        if (Util.INSTANCE.isNetworkAvailable(getContext())) {
+        if (util.isNetworkAvailable(getContext())) {
             showProgress(true);
             new LoadNearbyTask().execute();
         } else {
-            Util.INSTANCE.showNetworkErrorMessage(activity);
+            util.showNetworkErrorMessage(activity);
             showProgress(false);
         }
     }

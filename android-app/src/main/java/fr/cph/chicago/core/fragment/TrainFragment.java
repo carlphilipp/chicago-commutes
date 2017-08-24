@@ -46,6 +46,12 @@ public final class TrainFragment extends AbstractFragment {
     @BindString(R.string.bundle_train_line)
     String bundleTrainLine;
 
+    private final Util util;
+
+    public TrainFragment() {
+        util = Util.INSTANCE;
+    }
+
     /**
      * Returns a new instance of this fragment for the given section number.
      *
@@ -59,7 +65,7 @@ public final class TrainFragment extends AbstractFragment {
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Util.INSTANCE.trackScreen((App) getActivity().getApplication(), getString(R.string.analytics_train_fragment));
+        util.trackScreen((App) getActivity().getApplication(), getString(R.string.analytics_train_fragment));
     }
 
     @Override

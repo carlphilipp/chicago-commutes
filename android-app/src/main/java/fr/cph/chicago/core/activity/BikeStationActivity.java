@@ -38,12 +38,12 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener;
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener;
-import fr.cph.chicago.repository.PreferenceRepository;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.rx.ObservableUtil;
+import fr.cph.chicago.repository.PreferenceRepository;
 import fr.cph.chicago.rx.BikeAllBikeStationsObserver;
+import fr.cph.chicago.rx.ObservableUtil;
 import fr.cph.chicago.util.Util;
 
 /**
@@ -87,6 +87,10 @@ public class BikeStationActivity extends AbstractStationActivity {
     @BindString(R.string.bike_available_docks)
     String bikeAvailableDocks;
 
+    private final ObservableUtil observableUtil;
+    private final Util util;
+    private final PreferenceRepository preferenceRepository;
+
     @BindColor(R.color.grey_5)
     int grey_5;
     @BindColor(R.color.red)
@@ -98,6 +102,12 @@ public class BikeStationActivity extends AbstractStationActivity {
 
     private BikeStation bikeStation;
     private boolean isFavorite;
+
+    public BikeStationActivity() {
+        observableUtil = ObservableUtil.INSTANCE;
+        util = Util.INSTANCE;
+        preferenceRepository = PreferenceRepository.INSTANCE;
+    }
 
     @Override
     protected final void onCreate(final Bundle savedInstanceState) {
@@ -111,7 +121,7 @@ public class BikeStationActivity extends AbstractStationActivity {
                 final double longitude = bikeStation.getLongitude();
 
                 swipeRefreshLayout.setOnRefreshListener(
-                    () -> ObservableUtil.INSTANCE.createAllBikeStationsObservable()
+                    () -> observableUtil.createAllBikeStationsObservable()
                         .subscribe(new BikeAllBikeStationsObserver(this, bikeStation.getId(), swipeRefreshLayout))
                 );
 
@@ -145,11 +155,11 @@ public class BikeStationActivity extends AbstractStationActivity {
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener((item -> {
             swipeRefreshLayout.setRefreshing(true);
-            ObservableUtil.INSTANCE.createAllBikeStationsObservable()
+            observableUtil.createAllBikeStationsObservable()
                 .subscribe(new BikeAllBikeStationsObserver(BikeStationActivity.this, bikeStation.getId(), swipeRefreshLayout));
             return false;
         }));
-        Util.INSTANCE.setWindowsColor(this, toolbar, TrainLine.NA);
+        util.setWindowsColor(this, toolbar, TrainLine.NA);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.setElevation(4);
         }
@@ -219,7 +229,7 @@ public class BikeStationActivity extends AbstractStationActivity {
      */
     @Override
     protected boolean isFavorite() {
-        final List<String> favorites = PreferenceRepository.INSTANCE.getBikeFavorites(getApplicationContext());
+        final List<String> favorites = preferenceRepository.getBikeFavorites(getApplicationContext());
         return Stream.of(favorites)
             .filter(favorite -> Integer.valueOf(favorite) == bikeStation.getId())
             .findFirst()
@@ -236,12 +246,12 @@ public class BikeStationActivity extends AbstractStationActivity {
      */
     private void switchFavorite() {
         if (isFavorite) {
-            Util.INSTANCE.removeFromBikeFavorites(bikeStation.getId(), swipeRefreshLayout);
+            util.removeFromBikeFavorites(bikeStation.getId(), swipeRefreshLayout);
             favoritesImage.setColorFilter(grey_5);
             isFavorite = false;
         } else {
-            Util.INSTANCE.addToBikeFavorites(bikeStation.getId(), swipeRefreshLayout);
-            PreferenceRepository.INSTANCE.addBikeRouteNameMapping(getApplicationContext(), Integer.toString(bikeStation.getId()), bikeStation.getName());
+            util.addToBikeFavorites(bikeStation.getId(), swipeRefreshLayout);
+            preferenceRepository.addBikeRouteNameMapping(getApplicationContext(), Integer.toString(bikeStation.getId()), bikeStation.getName());
             favoritesImage.setColorFilter(yellowLineDark);
             isFavorite = true;
         }

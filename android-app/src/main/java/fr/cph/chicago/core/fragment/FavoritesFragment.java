@@ -82,6 +82,12 @@ public class FavoritesFragment extends AbstractFragment {
     @BindString(R.string.bundle_train_arrivals)
     String bundleTrainArrivals;
 
+    private final Util util;
+    private final ObservableUtil observableUtil;
+    private final FavoritesData favoritesData;
+    private final BusService busService;
+    private final PreferenceRepository preferenceRepository;
+
     private FavoritesAdapter favoritesAdapter;
     private List<BusArrival> busArrivals;
     private SparseArray<TrainArrival> trainArrivals;
@@ -90,8 +96,16 @@ public class FavoritesFragment extends AbstractFragment {
 
     private View rootView;
 
+    public FavoritesFragment() {
+        observableUtil = ObservableUtil.INSTANCE;
+        util = Util.INSTANCE;
+        favoritesData = FavoritesData.INSTANCE;
+        busService = BusService.INSTANCE;
+        preferenceRepository = PreferenceRepository.INSTANCE;
+    }
+
     /**
-     * Returns a new INSTANCE of this fragment for the given section number.
+     * Returns a new trainService of this fragment for the given section number.
      *
      * @param sectionNumber the section number
      * @return a favorite fragment
@@ -121,7 +135,7 @@ public class FavoritesFragment extends AbstractFragment {
         if (bikeStations == null) {
             bikeStations = new ArrayList<>();
         }
-        Util.INSTANCE.trackScreen((App) getActivity().getApplication(), getString(R.string.analytics_favorites_fragment));
+        util.trackScreen((App) getActivity().getApplication(), getString(R.string.analytics_favorites_fragment));
     }
 
     @Override
@@ -131,9 +145,9 @@ public class FavoritesFragment extends AbstractFragment {
             setBinder(rootView);
             if (favoritesAdapter == null) {
                 favoritesAdapter = new FavoritesAdapter(activity);
-                FavoritesData.INSTANCE.setTrainArrivals(trainArrivals);
-                FavoritesData.INSTANCE.setBusArrivals(busArrivals);
-                FavoritesData.INSTANCE.setBikeStations(bikeStations);
+                favoritesData.setTrainArrivals(trainArrivals);
+                favoritesData.setBusArrivals(busArrivals);
+                favoritesData.setBikeStations(bikeStations);
                 favoritesAdapter.setFavorites();
             }
             final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(activity);
@@ -141,7 +155,7 @@ public class FavoritesFragment extends AbstractFragment {
             listView.setLayoutManager(mLayoutManager);
             floatingButton.setOnClickListener(v -> {
                 if (bikeStations.isEmpty()) {
-                    Util.INSTANCE.showMessage(activity, R.string.message_too_fast);
+                    util.showMessage(activity, R.string.message_too_fast);
                 } else {
                     final Intent intent = new Intent(activity, SearchActivity.class);
                     intent.putParcelableArrayListExtra(bundleBikeStation, (ArrayList<BikeStation>) bikeStations);
@@ -160,20 +174,20 @@ public class FavoritesFragment extends AbstractFragment {
             });
 
             swipeRefreshLayout.setOnRefreshListener(() -> {
-                swipeRefreshLayout.setColorSchemeColors(Util.INSTANCE.getRandomColor());
-                Util.INSTANCE.trackAction((App) getActivity().getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
-                Util.INSTANCE.trackAction((App) getActivity().getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
-                Util.INSTANCE.trackAction((App) getActivity().getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_divvy, getContext().getString(R.string.analytics_action_get_divvy_all));
-                Util.INSTANCE.trackAction((App) getActivity().getApplication(), R.string.analytics_category_ui, R.string.analytics_action_press, getContext().getString(R.string.analytics_action_refresh_fav));
+                swipeRefreshLayout.setColorSchemeColors(util.getRandomColor());
+                util.trackAction((App) getActivity().getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
+                util.trackAction((App) getActivity().getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
+                util.trackAction((App) getActivity().getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_divvy, getContext().getString(R.string.analytics_action_get_divvy_all));
+                util.trackAction((App) getActivity().getApplication(), R.string.analytics_category_ui, R.string.analytics_action_press, getContext().getString(R.string.analytics_action_refresh_fav));
 
-                if (BusService.INSTANCE.getBusRoutes().isEmpty()
+                if (busService.getBusRoutes().isEmpty()
                     || activity.getIntent().getParcelableArrayListExtra(bundleBikeStation) == null
                     || activity.getIntent().getParcelableArrayListExtra(bundleBikeStation).size() == 0) {
                     activity.loadFirstData();
                 }
 
-                if (Util.INSTANCE.isNetworkAvailable(getContext())) {
-                    final Observable<FavoritesDTO> zipped = ObservableUtil.INSTANCE.createAllDataObservable(getActivity().getApplication());
+                if (util.isNetworkAvailable(getContext())) {
+                    final Observable<FavoritesDTO> zipped = observableUtil.createAllDataObservable(getActivity().getApplication());
                     zipped.subscribe(
                         this::reloadData,
                         onError -> {
@@ -187,7 +201,7 @@ public class FavoritesFragment extends AbstractFragment {
             });
 
             startRefreshTask();
-            Util.INSTANCE.displayRateSnackBarIfNeeded(swipeRefreshLayout, activity);
+            util.displayRateSnackBarIfNeeded(swipeRefreshLayout, activity);
         }
         return rootView;
     }
@@ -224,7 +238,7 @@ public class FavoritesFragment extends AbstractFragment {
         if (refreshTimingTask.getStatus() == Status.FINISHED) {
             startRefreshTask();
         }
-        boolean hasFav = PreferenceRepository.INSTANCE.hasFavorites(getContext());
+        boolean hasFav = preferenceRepository.hasFavorites(getContext());
         welcomeLayout.setVisibility(hasFav ? View.GONE : View.VISIBLE);
     }
 
@@ -239,8 +253,8 @@ public class FavoritesFragment extends AbstractFragment {
     public final void reloadData(final FavoritesDTO favoritesDTO) {
         activity.getIntent().putParcelableArrayListExtra(bundleBikeStation, (ArrayList<BikeStation>) favoritesDTO.getBikeStations());
         bikeStations = favoritesDTO.getBikeStations();
-        FavoritesData.INSTANCE.setBusArrivals(favoritesDTO.getBusArrivalDTO().getBusArrivals());
-        FavoritesData.INSTANCE.setTrainArrivals(favoritesDTO.getTrainArrivalDTO().getTrainArrivalSparseArray());
+        favoritesData.setBusArrivals(favoritesDTO.getBusArrivalDTO().getBusArrivals());
+        favoritesData.setTrainArrivals(favoritesDTO.getTrainArrivalDTO().getTrainArrivalSparseArray());
 
         favoritesAdapter.setFavorites();
         favoritesAdapter.refreshUpdated();
@@ -250,14 +264,14 @@ public class FavoritesFragment extends AbstractFragment {
         rootView.setBackgroundResource(R.drawable.highlight_selector);
         rootView.postDelayed(() -> rootView.setBackgroundResource(R.drawable.bg_selector), 100);
         stopRefreshing();
-        if (Util.INSTANCE.isAtLeastTwoErrors(favoritesDTO.getTrainArrivalDTO().getError(), favoritesDTO.getBusArrivalDTO().getError(), favoritesDTO.getBikeError())) {
-            Util.INSTANCE.showMessage(activity, R.string.message_something_went_wrong);
+        if (util.isAtLeastTwoErrors(favoritesDTO.getTrainArrivalDTO().getError(), favoritesDTO.getBusArrivalDTO().getError(), favoritesDTO.getBikeError())) {
+            util.showMessage(activity, R.string.message_something_went_wrong);
         } else if (favoritesDTO.getTrainArrivalDTO().getError()) {
-            Util.INSTANCE.showMessage(activity, R.string.message_error_train_favorites);
+            util.showMessage(activity, R.string.message_error_train_favorites);
         } else if (favoritesDTO.getBusArrivalDTO().getError()) {
-            Util.INSTANCE.showMessage(activity, R.string.message_error_bus_favorites);
+            util.showMessage(activity, R.string.message_error_bus_favorites);
         } else if (favoritesDTO.getBikeError()) {
-            Util.INSTANCE.showMessage(activity, R.string.message_error_bike_favorites);
+            util.showMessage(activity, R.string.message_error_bike_favorites);
         }
     }
 
@@ -267,13 +281,13 @@ public class FavoritesFragment extends AbstractFragment {
      * @param message the message
      */
     public final void displayError(final int message) {
-        Util.INSTANCE.showMessage(activity, message);
+        util.showMessage(activity, message);
         stopRefreshing();
     }
 
     public final void setBikeStations(final List<BikeStation> bikeStations) {
         this.bikeStations = bikeStations;
-        FavoritesData.INSTANCE.setBikeStations(bikeStations);
+        favoritesData.setBikeStations(bikeStations);
         favoritesAdapter.notifyDataSetChanged();
     }
 
@@ -286,7 +300,7 @@ public class FavoritesFragment extends AbstractFragment {
     }
 
     public void startRefreshing() {
-        swipeRefreshLayout.setColorSchemeColors(Util.INSTANCE.getRandomColor());
+        swipeRefreshLayout.setColorSchemeColors(util.getRandomColor());
         swipeRefreshLayout.setRefreshing(true);
     }
 

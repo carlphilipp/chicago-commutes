@@ -66,11 +66,17 @@ public class BikeFragment extends AbstractFragment {
     @BindString(R.string.bundle_bike_stations)
     String bundleBikeStations;
 
+    private final Util util;
+
     private BikeAdapter bikeAdapter;
     private List<BikeStation> bikeStations;
 
+    public BikeFragment() {
+        util = Util.INSTANCE;
+    }
+
     /**
-     * Returns a new INSTANCE of this fragment for the given section number.
+     * Returns a new trainService of this fragment for the given section number.
      *
      * @param sectionNumber the section number
      * @return the fragment
@@ -88,7 +94,7 @@ public class BikeFragment extends AbstractFragment {
 
         setHasOptionsMenu(true);
 
-        Util.INSTANCE.trackScreen((App) getActivity().getApplication(), getString(R.string.analytics_bike_fragment));
+        util.trackScreen((App) getActivity().getApplication(), getString(R.string.analytics_bike_fragment));
     }
 
     @NonNull

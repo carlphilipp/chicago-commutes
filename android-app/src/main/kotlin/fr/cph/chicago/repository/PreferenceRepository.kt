@@ -53,6 +53,8 @@ object PreferenceRepository {
     private val PREFERENCE_FAVORITES_BIKE = "ChicagoTrackerFavoritesBike"
     private val PREFERENCE_FAVORITES_BIKE_NAME_MAPPING = "ChicagoTrackerFavoritesBikeNameMapping"
 
+    private val trainService: TrainService = TrainService
+
     /**
      * Save train favorites
      *
@@ -196,7 +198,7 @@ object PreferenceRepository {
         Log.v(TAG, "Read train favorites : " + setPref)
         return setPref
             .map { Integer.valueOf(it) }
-            .map { favorite -> TrainService.getStation(favorite) }
+            .map { favorite -> trainService.getStation(favorite) }
             .sorted()
             .map { it.id }
             .toMutableList()

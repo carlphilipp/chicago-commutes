@@ -128,12 +128,20 @@ public class BusActivity extends AbstractStationActivity {
     @BindColor(R.color.yellowLineDark)
     int yellowLineDark;
 
+    private final PreferenceRepository preferenceRepository;
+    private final Util util;
+
     private List<BusArrival> busArrivals;
     private String busRouteId, bound, boundTitle;
     private Integer busStopId;
     private String busStopName, busRouteName;
     private double latitude, longitude;
     private boolean isFavorite;
+
+    public BusActivity(){
+        preferenceRepository = PreferenceRepository.INSTANCE;
+        util = Util.INSTANCE;
+    }
 
     @Override
     protected final void onCreate(final Bundle savedInstanceState) {
@@ -183,7 +191,7 @@ public class BusActivity extends AbstractStationActivity {
             setToolBar();
 
             // Google analytics
-            Util.INSTANCE.trackScreen((App) getApplication(), analyticsBusDetails);
+            util.trackScreen((App) getApplication(), analyticsBusDetails);
         }
     }
 
@@ -194,7 +202,7 @@ public class BusActivity extends AbstractStationActivity {
             new LoadStationDataTask().execute();
             return false;
         }));
-        Util.INSTANCE.setWindowsColor(this, toolbar, TrainLine.NA);
+        util.setWindowsColor(this, toolbar, TrainLine.NA);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.setElevation(4);
         }
@@ -273,7 +281,7 @@ public class BusActivity extends AbstractStationActivity {
 
     @Override
     protected boolean isFavorite() {
-        final List<String> favorites = PreferenceRepository.INSTANCE.getBusFavorites(getApplicationContext());
+        final List<String> favorites = preferenceRepository.getBusFavorites(getApplicationContext());
         return Stream.of(favorites)
             .filter(favorite -> favorite.equals(busRouteId + "_" + busStopId + "_" + boundTitle))
             .findFirst()
@@ -285,13 +293,13 @@ public class BusActivity extends AbstractStationActivity {
      */
     private void switchFavorite() {
         if (isFavorite) {
-            Util.INSTANCE.removeFromBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, scrollView);
+            util.removeFromBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, scrollView);
             favoritesImage.setColorFilter(grey_5);
             isFavorite = false;
         } else {
-            Util.INSTANCE.addToBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, scrollView);
-            PreferenceRepository.INSTANCE.addBusRouteNameMapping(getApplicationContext(), String.valueOf(busStopId), busRouteName);
-            PreferenceRepository.INSTANCE.addBusStopNameMapping(getApplicationContext(), String.valueOf(busStopId), busStopName);
+            util.addToBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, scrollView);
+            preferenceRepository.addBusRouteNameMapping(getApplicationContext(), String.valueOf(busStopId), busRouteName);
+            preferenceRepository.addBusStopNameMapping(getApplicationContext(), String.valueOf(busStopId), busStopName);
             favoritesImage.setColorFilter(yellowLineDark);
             isFavorite = true;
         }
@@ -300,8 +308,12 @@ public class BusActivity extends AbstractStationActivity {
     private class LoadStationDataTask extends AsyncTask<Void, Void, List<BusArrival>> {
 
         private TrackerException trackerException;
+        private final CtaClient ctaClient;
+        private final XmlParser xmlParser;
 
         private LoadStationDataTask() {
+            ctaClient = CtaClient.INSTANCE;
+            xmlParser = XmlParser.INSTANCE;
         }
 
         @Override
@@ -311,13 +323,13 @@ public class BusActivity extends AbstractStationActivity {
             reqParams.put(requestStopId, Integer.toString(busStopId));
             try {
                 // HttpClient to CTA API bus to get XML result of inc buses
-                final InputStream xmlResult = CtaClient.INSTANCE.connect(BUS_ARRIVALS, reqParams);
+                final InputStream xmlResult = ctaClient.connect(BUS_ARRIVALS, reqParams);
                 // Parse and return arrival buses
-                return XmlParser.INSTANCE.parseBusArrivals(xmlResult);
+                return xmlParser.parseBusArrivals(xmlResult);
             } catch (final ParserException | ConnectException e) {
                 this.trackerException = e;
             }
-            Util.INSTANCE.trackAction((App) BusActivity.this.getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL);
+           util.trackAction((App) BusActivity.this.getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL);
             return null;
         }
 
@@ -331,7 +343,7 @@ public class BusActivity extends AbstractStationActivity {
                 setBusArrivals(result);
                 drawArrivals();
             } else {
-                Util.INSTANCE.showNetworkErrorMessage(scrollView);
+                util.showNetworkErrorMessage(scrollView);
             }
             scrollView.setRefreshing(false);
         }

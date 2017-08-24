@@ -25,10 +25,12 @@ object ObservableUtil {
 
     private val TAG = ObservableUtil::class.java.simpleName
 
+    private val trainService: TrainService = TrainService
+
     fun createFavoritesTrainArrivalsObservable(context: Context): Observable<TrainArrivalDTO> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<TrainArrivalDTO> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(TrainArrivalDTO(TrainService.loadFavoritesTrain(context), false))
+                observableOnSubscribe.onNext(TrainArrivalDTO(trainService.loadFavoritesTrain(context), false))
                 observableOnSubscribe.onComplete()
             }
         }
@@ -43,7 +45,7 @@ object ObservableUtil {
     fun createTrainArrivalsObservable(context: Context, station: Station): Observable<TrainArrival> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<TrainArrival> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(TrainService.loadStationTrainArrival(context, station.id))
+                observableOnSubscribe.onNext(trainService.loadStationTrainArrival(context, station.id))
                 observableOnSubscribe.onComplete()
             }
         }

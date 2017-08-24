@@ -34,6 +34,16 @@ public class SettingsFragment extends AbstractFragment {
     @BindView(R.id.version_number)
     TextView versionNumber;
 
+    private final Util util;
+    private final PreferenceRepository preferenceRepository;
+    private final RealmConfig realmConfig;
+
+    public SettingsFragment() {
+        util = Util.INSTANCE;
+        preferenceRepository = PreferenceRepository.INSTANCE;
+        realmConfig = RealmConfig.INSTANCE;
+    }
+
     @NonNull
     public static SettingsFragment newInstance(final int sectionNumber) {
         return (SettingsFragment) fragmentWithBundle(new SettingsFragment(), sectionNumber);
@@ -42,7 +52,7 @@ public class SettingsFragment extends AbstractFragment {
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Util.INSTANCE.trackScreen((App) getActivity().getApplication(), getString(R.string.analytics_settings_fragment));
+        util.trackScreen((App) getActivity().getApplication(), getString(R.string.analytics_settings_fragment));
     }
 
     @Override
@@ -50,7 +60,7 @@ public class SettingsFragment extends AbstractFragment {
         final View rootView = inflater.inflate(R.layout.fragment_settings, container, false);
         if (!activity.isFinishing()) {
             setBinder(rootView);
-            final String version = "Version " + Util.INSTANCE.getCurrentVersion(getContext());
+            final String version = "Version " + util.getCurrentVersion(getContext());
             versionNumber.setText(version);
             clearCache.setOnClickListener(view -> {
                 final DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
@@ -85,8 +95,8 @@ public class SettingsFragment extends AbstractFragment {
 
     private void cleanLocalData() {
         deleteCache(getContext());
-        PreferenceRepository.INSTANCE.clearPreferences(getContext());
-        RealmConfig.INSTANCE.cleanRealm(getContext());
+        preferenceRepository.clearPreferences(getContext());
+        realmConfig.cleanRealm(getContext());
     }
 
     private void deleteCache(final Context context) {

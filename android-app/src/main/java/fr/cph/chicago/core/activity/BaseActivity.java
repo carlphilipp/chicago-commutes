@@ -66,10 +66,16 @@ public class BaseActivity extends Activity {
 
     private final TrainService trainService;
     private final BusService busService;
+    private final RealmConfig realmConfig;
+    private final ObservableUtil observableUtil;
+    private final Util util;
 
     public BaseActivity() {
         trainService = TrainService.INSTANCE;
         busService = BusService.INSTANCE;
+        realmConfig = RealmConfig.INSTANCE;
+        observableUtil = ObservableUtil.INSTANCE;
+        util = Util.INSTANCE;
     }
 
     @Override
@@ -84,7 +90,7 @@ public class BaseActivity extends Activity {
     }
 
     private void setUpRealm() {
-        RealmConfig.INSTANCE.setUpRealm(getApplicationContext());
+        realmConfig.setUpRealm(getApplicationContext());
     }
 
     private void loadLocalAndFavoritesData() {
@@ -112,17 +118,17 @@ public class BaseActivity extends Activity {
             .observeOn(AndroidSchedulers.mainThread());
 
         // Train online favorites
-        final Observable<TrainArrivalDTO> trainOnlineFavorites = ObservableUtil.INSTANCE.createFavoritesTrainArrivalsObservable(getApplicationContext());
+        final Observable<TrainArrivalDTO> trainOnlineFavorites = observableUtil.createFavoritesTrainArrivalsObservable(getApplicationContext());
 
         // Bus online favorites
-        final Observable<BusArrivalDTO> busOnlineFavorites = ObservableUtil.INSTANCE.createFavoritesBusArrivalsObservable(getApplicationContext());
+        final Observable<BusArrivalDTO> busOnlineFavorites = observableUtil.createFavoritesBusArrivalsObservable(getApplicationContext());
 
         // Run local first and then online: Ensure that local data is loaded first
         Observable.zip(trainLocalData, busLocalData, (trainData, busData) -> true)
             .doOnComplete(() ->
                 Observable.zip(trainOnlineFavorites, busOnlineFavorites, (trainArrivalsDTO, busArrivalsDTO) -> {
-                        TrainService.INSTANCE.setStationError(false);
-                        BusService.INSTANCE.setBusRouteError(false);
+                        trainService.setStationError(false);
+                        busService.setBusRouteError(false);
                         ((App) getApplication()).setLastUpdate(Calendar.getInstance().getTime());
                         return new FavoritesDTO(trainArrivalsDTO, busArrivalsDTO, false, Collections.emptyList());
                     }
@@ -135,8 +141,8 @@ public class BaseActivity extends Activity {
     }
 
     private void trackWithGoogleAnalytics() {
-        Util.INSTANCE.trackAction((App) this.getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
-        Util.INSTANCE.trackAction((App) this.getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
+        util.trackAction((App) this.getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
+        util.trackAction((App) this.getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
     }
 
     /**
@@ -160,8 +166,8 @@ public class BaseActivity extends Activity {
 
     private void startErrorActivity() {
         // Set Error
-        TrainService.INSTANCE.setStationError(true);
-        BusService.INSTANCE.setBusRouteError(true);
+        trainService.setStationError(true);
+        busService.setBusRouteError(true);
 
         // Start error activity
         final Intent intent = new Intent(this, ErrorActivity.class);
