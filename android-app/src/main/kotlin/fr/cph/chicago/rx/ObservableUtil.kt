@@ -10,9 +10,9 @@ import fr.cph.chicago.entity.dto.BusArrivalDTO
 import fr.cph.chicago.entity.dto.FavoritesDTO
 import fr.cph.chicago.entity.dto.FirstLoadDTO
 import fr.cph.chicago.entity.dto.TrainArrivalDTO
-import fr.cph.chicago.service.impl.BikeServiceImpl
-import fr.cph.chicago.service.impl.BusServiceImpl
-import fr.cph.chicago.service.impl.TrainServiceImpl
+import fr.cph.chicago.service.BikeService
+import fr.cph.chicago.service.BusService
+import fr.cph.chicago.service.TrainService
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -25,14 +25,10 @@ object ObservableUtil {
 
     private val TAG = ObservableUtil::class.java.simpleName
 
-    private val TRAIN_SERVICE = TrainServiceImpl
-    private val BUS_SERVICE = BusServiceImpl
-    private val BIKE_SERVICE = BikeServiceImpl
-
     fun createFavoritesTrainArrivalsObservable(context: Context): Observable<TrainArrivalDTO> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<TrainArrivalDTO> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(TrainArrivalDTO(TRAIN_SERVICE.loadFavoritesTrain(context), false))
+                observableOnSubscribe.onNext(TrainArrivalDTO(TrainService.loadFavoritesTrain(context), false))
                 observableOnSubscribe.onComplete()
             }
         }
@@ -47,7 +43,7 @@ object ObservableUtil {
     fun createTrainArrivalsObservable(context: Context, station: Station): Observable<TrainArrival> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<TrainArrival> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(TRAIN_SERVICE.loadStationTrainArrival(context, station.id))
+                observableOnSubscribe.onNext(TrainService.loadStationTrainArrival(context, station.id))
                 observableOnSubscribe.onComplete()
             }
         }
@@ -58,7 +54,7 @@ object ObservableUtil {
     fun createFavoritesBusArrivalsObservable(context: Context): Observable<BusArrivalDTO> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<BusArrivalDTO> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(BusArrivalDTO(BUS_SERVICE.loadFavoritesBuses(context), false))
+                observableOnSubscribe.onNext(BusArrivalDTO(BusService.loadFavoritesBuses(context), false))
                 observableOnSubscribe.onComplete()
             }
         }
@@ -73,7 +69,7 @@ object ObservableUtil {
     fun createBusArrivalsObservable(context: Context, busStop: BusStop): Observable<List<BusArrival>> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<List<BusArrival>> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(BUS_SERVICE.loadAroundBusArrivals(context, busStop))
+                observableOnSubscribe.onNext(BusService.loadAroundBusArrivals(context, busStop))
                 observableOnSubscribe.onComplete()
             }
         }
@@ -88,7 +84,7 @@ object ObservableUtil {
     fun createAllBikeStationsObservable(): Observable<List<BikeStation>> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<List<BikeStation>> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(BIKE_SERVICE.loadAllBikes())
+                observableOnSubscribe.onNext(BikeService.loadAllBikes())
                 observableOnSubscribe.onComplete()
             }
         }
@@ -103,7 +99,7 @@ object ObservableUtil {
     fun createBikeStationsObservable(bikeStation: BikeStation): Observable<BikeStation> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<BikeStation> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(BIKE_SERVICE.loadBikes(bikeStation.id))
+                observableOnSubscribe.onNext(BikeService.loadBikes(bikeStation.id))
                 observableOnSubscribe.onComplete()
             }
         }
@@ -133,7 +129,7 @@ object ObservableUtil {
     fun createBusStopBoundObservable(context: Context, stopId: String, bound: String): Observable<List<BusStop>> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<List<BusStop>> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(BUS_SERVICE.loadOneBusStop(context, stopId, bound))
+                observableOnSubscribe.onNext(BusService.loadOneBusStop(context, stopId, bound))
                 observableOnSubscribe.onComplete()
             }
         }
@@ -144,7 +140,7 @@ object ObservableUtil {
     fun createBusDirectionsObservable(context: Context, busRouteId: String): Observable<BusDirections> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<BusDirections> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(BUS_SERVICE.loadBusDirections(context, busRouteId))
+                observableOnSubscribe.onNext(BusService.loadBusDirections(context, busRouteId))
                 observableOnSubscribe.onComplete()
             }
         }
@@ -155,7 +151,7 @@ object ObservableUtil {
     fun createOnFirstLoadObservable(): Observable<FirstLoadDTO> {
         val busRoutesObs = Observable.create { observableOnSubscribe: ObservableEmitter<List<BusRoute>> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(BUS_SERVICE.loadBusRoutes())
+                observableOnSubscribe.onNext(BusService.loadBusRoutes())
                 observableOnSubscribe.onComplete()
             }
         }
@@ -168,7 +164,7 @@ object ObservableUtil {
 
         val bikeStationsObs = Observable.create { observableOnSubscribe: ObservableEmitter<List<BikeStation>> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(BIKE_SERVICE.loadAllBikes())
+                observableOnSubscribe.onNext(BikeService.loadAllBikes())
                 observableOnSubscribe.onComplete()
             }
         }
@@ -185,7 +181,7 @@ object ObservableUtil {
     fun createFollowBusObservable(context: Context, busId: String): Observable<List<BusArrival>> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<List<BusArrival>> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(BUS_SERVICE.loadFollowBus(context, busId))
+                observableOnSubscribe.onNext(BusService.loadFollowBus(context, busId))
                 observableOnSubscribe.onComplete()
             }
         }
@@ -196,7 +192,7 @@ object ObservableUtil {
     fun createBusPatternObservable(context: Context, busRouteId: String, bound: String): Observable<BusPattern> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<BusPattern> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(BUS_SERVICE.loadBusPattern(context, busRouteId, bound))
+                observableOnSubscribe.onNext(BusService.loadBusPattern(context, busRouteId, bound))
                 observableOnSubscribe.onComplete()
             }
         }
@@ -207,7 +203,7 @@ object ObservableUtil {
     fun createBusListObservable(context: Context, busId: Int, busRouteId: String): Observable<List<Bus>> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<List<Bus>> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(BUS_SERVICE.loadBus(context, busId, busRouteId))
+                observableOnSubscribe.onNext(BusService.loadBus(context, busId, busRouteId))
                 observableOnSubscribe.onComplete()
             }
         }

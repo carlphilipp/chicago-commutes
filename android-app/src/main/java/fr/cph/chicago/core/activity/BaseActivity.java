@@ -40,8 +40,6 @@ import fr.cph.chicago.repository.RealmConfig;
 import fr.cph.chicago.rx.ObservableUtil;
 import fr.cph.chicago.service.BusService;
 import fr.cph.chicago.service.TrainService;
-import fr.cph.chicago.service.impl.BusServiceImpl;
-import fr.cph.chicago.service.impl.TrainServiceImpl;
 import fr.cph.chicago.util.Util;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -72,8 +70,8 @@ public class BaseActivity extends Activity {
     private final BusService busService;
 
     public BaseActivity() {
-        trainService = TrainServiceImpl.INSTANCE;
-        busService = BusServiceImpl.INSTANCE;
+        trainService = TrainService.INSTANCE;
+        busService = BusService.INSTANCE;
     }
 
     @Override
