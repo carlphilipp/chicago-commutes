@@ -49,6 +49,7 @@ import fr.cph.chicago.entity.dto.FavoritesDTO;
 import fr.cph.chicago.repository.PreferenceRepository;
 import fr.cph.chicago.rx.ObservableUtil;
 import fr.cph.chicago.service.BusService;
+import fr.cph.chicago.task.RefreshTimingTask;
 import fr.cph.chicago.util.Util;
 import io.reactivex.Observable;
 
@@ -150,9 +151,9 @@ public class FavoritesFragment extends AbstractFragment {
                 favoritesData.setBikeStations(bikeStations);
                 favoritesAdapter.refreshFavorites();
             }
-            final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(activity);
+            final RecyclerView.LayoutManager linearLayoutManager = new LinearLayoutManager(activity);
             listView.setAdapter(favoritesAdapter);
-            listView.setLayoutManager(mLayoutManager);
+            listView.setLayoutManager(linearLayoutManager);
             floatingButton.setOnClickListener(v -> {
                 if (bikeStations.isEmpty()) {
                     util.showMessage(activity, R.string.message_too_fast);
@@ -306,40 +307,5 @@ public class FavoritesFragment extends AbstractFragment {
 
     private void stopRefreshing() {
         swipeRefreshLayout.setRefreshing(false);
-    }
-
-    /**
-     * RefreshTask
-     *
-     * @author Carl-Philipp Harmant
-     * @version 1
-     */
-    private static class RefreshTimingTask extends AsyncTask<Void, Void, Void> {
-
-        private final FavoritesAdapter favoritesAdapter;
-
-        public RefreshTimingTask(final FavoritesAdapter favoritesAdapter) {
-            this.favoritesAdapter = favoritesAdapter;
-        }
-
-        @Override
-        protected final void onProgressUpdate(final Void... values) {
-            super.onProgressUpdate();
-            this.favoritesAdapter.updateModel();
-        }
-
-        @Override
-        protected final Void doInBackground(final Void... params) {
-            while (!this.isCancelled()) {
-                Log.v(TAG, "Update time. Thread id: " + Thread.currentThread().getId());
-                try {
-                    publishProgress();
-                    Thread.sleep(10000);
-                } catch (final InterruptedException e) {
-                    Log.v(TAG, "Stopping thread. Normal Behavior");
-                }
-            }
-            return null;
-        }
     }
 }
