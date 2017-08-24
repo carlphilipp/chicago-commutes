@@ -5,8 +5,11 @@ import android.util.SparseArray
 import fr.cph.chicago.R
 import fr.cph.chicago.client.CtaClient
 import fr.cph.chicago.client.CtaRequestType.TRAIN_ARRIVALS
+import fr.cph.chicago.entity.Position
 import fr.cph.chicago.entity.Station
+import fr.cph.chicago.entity.Stop
 import fr.cph.chicago.entity.TrainArrival
+import fr.cph.chicago.entity.enumeration.TrainLine
 import fr.cph.chicago.parser.XmlParser
 import fr.cph.chicago.repository.PreferenceRepository
 import fr.cph.chicago.repository.TrainRepository
@@ -25,7 +28,7 @@ object TrainService {
                     val list = value as List<String>
                     if (list.size < 5) {
                         val xmlResult = CtaClient.connect(TRAIN_ARRIVALS, trainParams)
-                        trainArrivals = XmlParser.parseArrivals(xmlResult, TrainRepository)
+                        trainArrivals = XmlParser.parseArrivals(xmlResult)
                     } else {
                         val size = list.size
                         var start = 0
@@ -37,7 +40,7 @@ object TrainService {
                                 paramsTemp.put(key, sub)
                             }
                             val xmlResult = CtaClient.connect(TRAIN_ARRIVALS, paramsTemp)
-                            val temp = XmlParser.parseArrivals(xmlResult, TrainRepository)
+                            val temp = XmlParser.parseArrivals(xmlResult)
                             for (j in 0..temp.size() - 1) {
                                 trainArrivals.put(temp.keyAt(j), temp.valueAt(j))
                             }
@@ -71,7 +74,7 @@ object TrainService {
         return trainArrivals
     }
 
-    fun loadLocalTrainData(context: Context): SparseArray<Station> {
+    fun loadLocalTrainData(): SparseArray<Station> {
         // Force loading train from CSV toi avoid doing it later
         return TrainRepository.stations
     }
@@ -82,7 +85,7 @@ object TrainService {
             params.put(context.getString(R.string.request_map_id), Integer.toString(stationId))
 
             val xmlResult = CtaClient.connect(TRAIN_ARRIVALS, params)
-            val arrivals = XmlParser.parseArrivals(xmlResult, TrainRepository)
+            val arrivals = XmlParser.parseArrivals(xmlResult)
             return if (arrivals.size() == 1)
                 arrivals.get(stationId)
             else
@@ -90,5 +93,37 @@ object TrainService {
         } catch (e: Throwable) {
             throw Exceptions.propagate(e)
         }
+    }
+
+    fun getAllStations(): MutableMap<TrainLine, MutableList<Station>> {
+        return TrainRepository.allStations
+    }
+
+    fun setStationError(value: Boolean) {
+        TrainRepository.error = value
+    }
+
+    fun getStationError(): Boolean {
+        return TrainRepository.error
+    }
+
+    fun getStation(id: Int): Station {
+        return TrainRepository.getStation(id)
+    }
+
+    fun readPattern(context: Context, line: TrainLine): List<Position> {
+        return TrainRepository.readPattern(context, line)
+    }
+
+    fun getStop(id: Int): Stop {
+        return TrainRepository.getStop(id)
+    }
+
+    fun readNearbyStation(position: Position): List<Station> {
+        return TrainRepository.readNearbyStation(position)
+    }
+
+    fun getStationsForLine(line: TrainLine): List<Station> {
+        return TrainRepository.allStations[line]!!
     }
 }

@@ -32,8 +32,8 @@ import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.repository.TrainRepository;
 import fr.cph.chicago.service.BusService;
+import fr.cph.chicago.service.TrainService;
 import fr.cph.chicago.util.Util;
 
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
@@ -165,12 +165,10 @@ public class SearchActivity extends AppCompatActivity {
 
     private void handleIntent(@NonNull final Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            final TrainRepository trainData = TrainRepository.INSTANCE;
-
             final String query = intent.getStringExtra(SearchManager.QUERY).trim();
 
             // TODO Move that logic to service layer
-            final List<Station> foundStations = Stream.of(trainData.getAllStations().entrySet())
+            final List<Station> foundStations = Stream.of(TrainService.INSTANCE.getAllStations().entrySet())
                 .flatMap(entry -> Stream.of(entry.getValue()))
                 .filter(station -> containsIgnoreCase(station.getName(), query))
                 .distinct()

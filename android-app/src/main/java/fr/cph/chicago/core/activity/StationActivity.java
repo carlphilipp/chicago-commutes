@@ -53,8 +53,6 @@ import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener;
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener;
-import fr.cph.chicago.repository.PreferenceRepository;
-import fr.cph.chicago.repository.TrainRepository;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
@@ -62,8 +60,10 @@ import fr.cph.chicago.entity.Stop;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.TrainDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
+import fr.cph.chicago.repository.PreferenceRepository;
 import fr.cph.chicago.rx.ObservableUtil;
 import fr.cph.chicago.rx.TrainArrivalObserver;
+import fr.cph.chicago.service.TrainService;
 import fr.cph.chicago.util.Util;
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
@@ -146,8 +146,7 @@ public class StationActivity extends AbstractStationActivity {
             stationId = getIntent().getExtras().getInt(bundleTrainStationId, 0);
             if (stationId != 0) {
                 // Get station
-                final TrainRepository trainData = TrainRepository.INSTANCE;
-                station = trainData.getStation(stationId);
+                station = TrainService.INSTANCE.getStation(stationId);
 
                 paramsStop = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 

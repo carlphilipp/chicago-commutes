@@ -35,7 +35,6 @@ import fr.cph.chicago.entity.dto.BusArrivalDTO;
 import fr.cph.chicago.entity.dto.FavoritesDTO;
 import fr.cph.chicago.entity.dto.TrainArrivalDTO;
 import fr.cph.chicago.repository.RealmConfig;
-import fr.cph.chicago.repository.TrainRepository;
 import fr.cph.chicago.rx.ObservableUtil;
 import fr.cph.chicago.service.BusService;
 import fr.cph.chicago.service.TrainService;
@@ -94,7 +93,7 @@ public class BaseActivity extends Activity {
         final Observable<Object> trainLocalData = Observable.create(
             (ObservableEmitter<Object> observableOnSubscribe) -> {
                 if (!observableOnSubscribe.isDisposed()) {
-                    observableOnSubscribe.onNext(trainService.loadLocalTrainData(getApplicationContext()));
+                    observableOnSubscribe.onNext(trainService.loadLocalTrainData());
                     observableOnSubscribe.onComplete();
                 }
             })
@@ -122,7 +121,7 @@ public class BaseActivity extends Activity {
         Observable.zip(trainLocalData, busLocalData, (trainData, busData) -> true)
             .doOnComplete(() ->
                 Observable.zip(trainOnlineFavorites, busOnlineFavorites, (trainArrivalsDTO, busArrivalsDTO) -> {
-                        TrainRepository.INSTANCE.setError(false);
+                        TrainService.INSTANCE.setStationError(false);
                         BusService.INSTANCE.setBusRouteError(false);
                         ((App) getApplication()).setLastUpdate(Calendar.getInstance().getTime());
                         return new FavoritesDTO(trainArrivalsDTO, busArrivalsDTO, false, Collections.emptyList());
@@ -161,7 +160,7 @@ public class BaseActivity extends Activity {
 
     private void startErrorActivity() {
         // Set Error
-        TrainRepository.INSTANCE.setError(true);
+        TrainService.INSTANCE.setStationError(true);
         BusService.INSTANCE.setBusRouteError(true);
 
         // Start error activity

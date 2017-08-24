@@ -158,16 +158,6 @@ object TrainRepository {
     }
 
     /**
-     * Get a list of station for a given line
-     *
-     * @param line the train line
-     * @return a list of station
-     */
-    fun getStationsForLine(line: TrainLine): List<Station> {
-        return allStations[line]!!
-    }
-
-    /**
      * get a station
      *
      * @param id the id of the station

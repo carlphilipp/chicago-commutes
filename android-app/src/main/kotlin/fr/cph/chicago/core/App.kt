@@ -30,8 +30,8 @@ import com.google.android.gms.analytics.GoogleAnalytics
 import com.google.android.gms.analytics.Tracker
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.BaseActivity
-import fr.cph.chicago.repository.TrainRepository
 import fr.cph.chicago.service.BusService
+import fr.cph.chicago.service.TrainService
 import java.util.*
 
 /**
@@ -83,7 +83,7 @@ class App : Application() {
         lateinit var appResources: Resources
 
         fun checkTrainData(activity: Activity): Boolean {
-            if (TrainRepository.error) {
+            if (TrainService.getStationError()) {
                 startErrorActivity(activity)
                 return false
             }

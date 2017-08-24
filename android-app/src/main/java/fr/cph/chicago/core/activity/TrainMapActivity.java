@@ -52,7 +52,6 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.client.CtaClient;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.adapter.TrainMapSnippetAdapter;
-import fr.cph.chicago.repository.TrainRepository;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
@@ -62,6 +61,7 @@ import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.marker.RefreshTrainMarkers;
 import fr.cph.chicago.parser.XmlParser;
+import fr.cph.chicago.service.TrainService;
 import fr.cph.chicago.util.Util;
 
 import static fr.cph.chicago.Constants.TRAINS_FOLLOW_URL;
@@ -92,7 +92,6 @@ public class TrainMapActivity extends AbstractMapActivity {
     private String line;
     private Map<Marker, Boolean> status;
     private List<Marker> markers;
-    private TrainRepository trainData;
     private RefreshTrainMarkers refreshTrainMarkers;
 
     private boolean centerMap = true;
@@ -129,7 +128,6 @@ public class TrainMapActivity extends AbstractMapActivity {
     @Override
     protected void initData() {
         super.initData();
-        trainData = TrainRepository.INSTANCE;
         markers = new ArrayList<>();
         status = new HashMap<>();
         refreshTrainMarkers = new RefreshTrainMarkers(getApplicationContext());
@@ -139,7 +137,7 @@ public class TrainMapActivity extends AbstractMapActivity {
     protected void setToolbar() {
         super.setToolbar();
         toolbar.setOnMenuItemClickListener((item -> {
-            new LoadTrainPositionTask(line, trainData).execute(false, true);
+            new LoadTrainPositionTask(line).execute(false, true);
             return false;
         }));
 
@@ -245,7 +243,7 @@ public class TrainMapActivity extends AbstractMapActivity {
                     if (!refreshingInfoWindow) {
                         setSelectedMarker(marker);
                         final String runNumber = marker.getSnippet();
-                        new LoadTrainFollowTask(view, false, trainData).execute(runNumber);
+                        new LoadTrainFollowTask(view, false).execute(runNumber);
                         status.put(marker, false);
                     }
                     return view;
@@ -261,7 +259,7 @@ public class TrainMapActivity extends AbstractMapActivity {
                     setSelectedMarker(marker);
                     final String runNumber = marker.getSnippet();
                     final Boolean current = status.get(marker);
-                    new LoadTrainFollowTask(view, !current, trainData).execute(runNumber);
+                    new LoadTrainFollowTask(view, !current).execute(runNumber);
                     status.put(marker, !current);
                 }
             }
@@ -271,7 +269,7 @@ public class TrainMapActivity extends AbstractMapActivity {
 
     private void loadActivityData() {
         if (Util.INSTANCE.isNetworkAvailable(getApplicationContext())) {
-            new LoadTrainPositionTask(line, trainData).execute(centerMap, true);
+            new LoadTrainPositionTask(line).execute(centerMap, true);
         } else {
             Util.INSTANCE.showNetworkErrorMessage(layout);
         }
@@ -281,7 +279,6 @@ public class TrainMapActivity extends AbstractMapActivity {
 
         private final String TAG = LoadTrainFollowTask.class.getSimpleName();
 
-        private final TrainRepository trainData;
         private final View view;
         private final boolean loadAll;
 
@@ -291,8 +288,7 @@ public class TrainMapActivity extends AbstractMapActivity {
          * @param view    the view
          * @param loadAll a boolean to load everything
          */
-        private LoadTrainFollowTask(@NonNull final View view, final boolean loadAll, @NonNull final TrainRepository trainData) {
-            this.trainData = trainData;
+        private LoadTrainFollowTask(@NonNull final View view, final boolean loadAll) {
             this.view = view;
             this.loadAll = loadAll;
         }
@@ -305,7 +301,7 @@ public class TrainMapActivity extends AbstractMapActivity {
                 final MultiValuedMap<String, String> connectParam = new ArrayListValuedHashMap<>();
                 connectParam.put(requestRunNumber, runNumber);
                 final InputStream content = CtaClient.INSTANCE.connect(TRAIN_FOLLOW, connectParam);
-                etas = XmlParser.INSTANCE.parseTrainsFollow(content, trainData);
+                etas = XmlParser.INSTANCE.parseTrainsFollow(content);
             } catch (final ConnectException | ParserException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
@@ -344,27 +340,21 @@ public class TrainMapActivity extends AbstractMapActivity {
         private final String TAG = LoadTrainPositionTask.class.getSimpleName();
 
         private final String line;
-        private TrainRepository trainData;
 
         private boolean centerMap;
         private List<Position> positions;
 
-        private LoadTrainPositionTask(@NonNull final String line, @NonNull final TrainRepository trainData) {
+        private LoadTrainPositionTask(@NonNull final String line) {
             this.line = line;
-            this.trainData = trainData;
         }
 
         @Override
         protected List<Train> doInBackground(final Boolean... params) {
-            // Make sure that trainData is not null
-            if (trainData == null) {
-                trainData = TrainRepository.INSTANCE;
-            }
             centerMap = params[0];
 
 
             final List<Train> trains = getTrainData();
-            positions = trainData.readPattern(getApplicationContext(), TrainLine.Companion.fromXmlString(line));
+            positions = TrainService.INSTANCE.readPattern(getApplicationContext(), TrainLine.Companion.fromXmlString(line));
             return trains;
         }
 
