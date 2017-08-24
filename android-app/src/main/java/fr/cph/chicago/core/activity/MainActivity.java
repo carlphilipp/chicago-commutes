@@ -49,10 +49,10 @@ import fr.cph.chicago.core.fragment.FavoritesFragment;
 import fr.cph.chicago.core.fragment.NearbyFragment;
 import fr.cph.chicago.core.fragment.SettingsFragment;
 import fr.cph.chicago.core.fragment.TrainFragment;
-import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.dto.FavoritesDTO;
 import fr.cph.chicago.rx.ObservableUtil;
+import fr.cph.chicago.service.BusService;
 import fr.cph.chicago.util.Util;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -188,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Util.INSTANCE.trackAction((App) getApplication(), R.string.analytics_category_ui, R.string.analytics_action_press, getApplicationContext().getString(R.string.analytics_action_refresh_fav));
 
             if (Util.INSTANCE.isNetworkAvailable(getApplicationContext())) {
-                if (BusData.INSTANCE.getBusRoutes().size() == 0
+                if (BusService.INSTANCE.getBusRoutes().size() == 0
                     || getIntent().getParcelableArrayListExtra(bundleBikeStations) == null
                     || getIntent().getParcelableArrayListExtra(bundleBikeStations).size() == 0) {
                     loadFirstData();
@@ -216,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void loadFirstData() {
         ObservableUtil.INSTANCE.createOnFirstLoadObservable().subscribe(
             onNext -> {
-                BusData.INSTANCE.setBusRoutes(onNext.getBusRoutes());
+                BusService.INSTANCE.setBusRoutes(onNext.getBusRoutes());
                 refreshFirstLoadData(onNext.getBikeStations());
                 if (onNext.getBikeStationsError() || onNext.getBusRoutesError()) {
                     Util.INSTANCE.showSnackBar(this, R.string.message_something_went_wrong, Snackbar.LENGTH_SHORT);

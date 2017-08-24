@@ -6,13 +6,11 @@ import com.univocity.parsers.common.ParsingContext
 import com.univocity.parsers.common.processor.RowProcessor
 import fr.cph.chicago.entity.BusStop
 import fr.cph.chicago.entity.Position
-import fr.cph.chicago.repository.BusStopRepository
+import fr.cph.chicago.service.BusService
 import org.apache.commons.lang3.StringUtils
 import java.util.*
 
 internal class BusStopCsvProcessor : RowProcessor {
-
-    private val repository = BusStopRepository
 
     private val rows: MutableList<BusStop> = ArrayList(12000)
 
@@ -49,6 +47,6 @@ internal class BusStopCsvProcessor : RowProcessor {
     }
 
     override fun processEnded(context: ParsingContext) {
-        repository.saveBuses(rows)
+        BusService.saveBusStops(rows)
     }
 }

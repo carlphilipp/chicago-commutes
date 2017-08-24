@@ -39,8 +39,8 @@ import butterknife.BindView;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.adapter.BusAdapter;
-import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.entity.BusRoute;
+import fr.cph.chicago.service.BusService;
 import fr.cph.chicago.util.Util;
 
 /**
@@ -97,7 +97,6 @@ public class BusFragment extends AbstractFragment {
         textFilter.setVisibility(TextView.VISIBLE);
         textFilter.addTextChangedListener(new TextWatcher() {
 
-            final BusData busData = BusData.INSTANCE;
             List<BusRoute> busRoutes = null;
 
             @Override
@@ -107,7 +106,7 @@ public class BusFragment extends AbstractFragment {
 
             @Override
             public void onTextChanged(final CharSequence c, final int start, final int before, final int count) {
-                final List<BusRoute> busRoutes = busData.getBusRoutes();
+                final List<BusRoute> busRoutes = BusService.INSTANCE.getBusRoutes();
                 final CharSequence trimmed = c.toString().trim();
                 this.busRoutes.addAll(
                     Stream.of(busRoutes)

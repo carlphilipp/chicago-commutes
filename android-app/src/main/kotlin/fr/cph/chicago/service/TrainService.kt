@@ -10,14 +10,13 @@ import fr.cph.chicago.entity.TrainArrival
 import fr.cph.chicago.parser.XmlParser
 import fr.cph.chicago.repository.PreferenceRepository
 import fr.cph.chicago.repository.TrainRepository
-import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
 import io.reactivex.exceptions.Exceptions
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 
-object TrainService : TrainService {
+object TrainService {
 
-    override fun loadFavoritesTrain(context: Context): SparseArray<TrainArrival> {
+    fun loadFavoritesTrain(context: Context): SparseArray<TrainArrival> {
         val trainParams = Util.getFavoritesTrainParams(context)
         var trainArrivals = SparseArray<TrainArrival>()
         try {
@@ -72,12 +71,12 @@ object TrainService : TrainService {
         return trainArrivals
     }
 
-    override fun loadLocalTrainData(context: Context): SparseArray<Station> {
+    fun loadLocalTrainData(context: Context): SparseArray<Station> {
         // Force loading train from CSV toi avoid doing it later
         return TrainRepository.stations
     }
 
-    override fun loadStationTrainArrival(context: Context, stationId: Int): TrainArrival {
+    fun loadStationTrainArrival(context: Context, stationId: Int): TrainArrival {
         try {
             val params = ArrayListValuedHashMap<String, String>()
             params.put(context.getString(R.string.request_map_id), Integer.toString(stationId))

@@ -5,21 +5,20 @@ import android.util.Log
 import fr.cph.chicago.R
 import fr.cph.chicago.client.CtaClient
 import fr.cph.chicago.client.CtaRequestType.*
-import fr.cph.chicago.data.BusData
 import fr.cph.chicago.entity.*
 import fr.cph.chicago.parser.BusStopCsvParser
 import fr.cph.chicago.parser.XmlParser
-import fr.cph.chicago.repository.BusStopRepository
+import fr.cph.chicago.repository.BusRepository
 import fr.cph.chicago.util.Util
 import io.reactivex.exceptions.Exceptions
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import java.util.*
 
-object BusService : BusService {
+object BusService {
 
     private val TAG = BusService::class.java.simpleName
 
-    override fun loadFavoritesBuses(context: Context): List<BusArrival> {
+    fun loadFavoritesBuses(context: Context): List<BusArrival> {
         // FIXME to refactor
         val busArrivals = LinkedHashSet<BusArrival>()
         val paramBus = Util.getFavoritesBusParams(context)
@@ -58,7 +57,7 @@ object BusService : BusService {
         return busArrivals.toMutableList()
     }
 
-    override fun loadOneBusStop(context: Context, stopId: String, bound: String): List<BusStop> {
+    fun loadOneBusStop(context: Context, stopId: String, bound: String): List<BusStop> {
         try {
             val params = ArrayListValuedHashMap<String, String>()
             params.put(context.getString(R.string.request_rt), stopId)
@@ -71,15 +70,15 @@ object BusService : BusService {
 
     }
 
-    override fun loadLocalBusData(): BusData {
-        if (BusStopRepository.isEmpty()) {
+    fun loadLocalBusData(): Any {
+        if (BusRepository.hasBusStopsEmpty()) {
             Log.d(TAG, "Load bus stop from CSV")
             BusStopCsvParser.parse()
         }
-        return BusData
+        return Any()
     }
 
-    override fun loadBusDirections(context: Context, busRouteId: String): BusDirections {
+    fun loadBusDirections(context: Context, busRouteId: String): BusDirections {
         try {
             val reqParams = ArrayListValuedHashMap<String, String>()
             reqParams.put(context.getString(R.string.request_rt), busRouteId)
@@ -91,7 +90,7 @@ object BusService : BusService {
 
     }
 
-    override fun loadBusRoutes(): List<BusRoute> {
+    fun loadBusRoutes(): List<BusRoute> {
         try {
             val params = ArrayListValuedHashMap<String, String>()
             val xmlResult = CtaClient.connect(BUS_ROUTES, params)
@@ -101,7 +100,7 @@ object BusService : BusService {
         }
     }
 
-    override fun loadFollowBus(context: Context, busId: String): List<BusArrival> {
+    fun loadFollowBus(context: Context, busId: String): List<BusArrival> {
         try {
             val connectParam = ArrayListValuedHashMap<String, String>()
             connectParam.put(context.getString(R.string.request_vid), busId)
@@ -110,10 +109,9 @@ object BusService : BusService {
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }
-
     }
 
-    override fun loadBusPattern(context: Context, busRouteId: String, bound: String): BusPattern {
+    fun loadBusPattern(context: Context, busRouteId: String, bound: String): BusPattern {
         val connectParam = ArrayListValuedHashMap<String, String>()
         connectParam.put(context.getString(R.string.request_rt), busRouteId)
         val boundIgnoreCase = bound.toLowerCase(Locale.US)
@@ -129,10 +127,9 @@ object BusService : BusService {
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }
-
     }
 
-    override fun loadBus(context: Context, busId: Int, busRouteId: String): List<Bus> {
+    fun loadBus(context: Context, busId: Int, busRouteId: String): List<Bus> {
         val connectParam = ArrayListValuedHashMap<String, String>()
         if (busId != 0) {
             connectParam.put(context.getString(R.string.request_vid), Integer.toString(busId))
@@ -145,10 +142,9 @@ object BusService : BusService {
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }
-
     }
 
-    override fun loadAroundBusArrivals(context: Context, busStop: BusStop): List<BusArrival> {
+    fun loadAroundBusArrivals(context: Context, busStop: BusStop): List<BusArrival> {
         try {
             val busStopId = busStop.id
             val reqParams = ArrayListValuedHashMap<String, String>(1, 1)
@@ -158,5 +154,33 @@ object BusService : BusService {
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }
+    }
+
+    fun getBusStopsAround(position: Position): List<BusStop> {
+        return BusRepository.getBusStopsAround(position)
+    }
+
+    fun saveBusStops(busStops: List<BusStop>) {
+        return BusRepository.saveBusStops(busStops)
+    }
+
+    fun getBusRoutes(): MutableList<BusRoute> {
+        return BusRepository.busRoutes
+    }
+
+    fun setBusRoutes(busRoutes: List<BusRoute>) {
+        BusRepository.setBusRoutes(busRoutes)
+    }
+
+    fun getBusRoute(routeId: String): BusRoute {
+        return BusRepository.getBusRoute(routeId)
+    }
+
+    fun busRouteError(): Boolean {
+        return BusRepository.busRouteError
+    }
+
+    fun setBusRouteError(value: Boolean) {
+        BusRepository.busRouteError = value
     }
 }

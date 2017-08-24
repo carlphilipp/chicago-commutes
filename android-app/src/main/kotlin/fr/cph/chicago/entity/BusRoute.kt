@@ -31,7 +31,10 @@ import android.os.Parcelable
  */
 data class BusRoute(val id: String, val name: String) : Parcelable {
 
-    private constructor(source: Parcel) : this(source.readString(), source.readString())
+    private constructor(source: Parcel) : this(
+        id = source.readString(),
+        name = source.readString()
+    )
 
     override fun describeContents(): Int {
         return 0
@@ -44,7 +47,8 @@ data class BusRoute(val id: String, val name: String) : Parcelable {
 
     companion object {
 
-        @JvmField val CREATOR: Parcelable.Creator<BusRoute> = object : Parcelable.Creator<BusRoute> {
+        @JvmField
+        val CREATOR: Parcelable.Creator<BusRoute> = object : Parcelable.Creator<BusRoute> {
             override fun createFromParcel(source: Parcel): BusRoute {
                 return BusRoute(source)
             }

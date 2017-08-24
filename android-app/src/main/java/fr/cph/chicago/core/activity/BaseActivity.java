@@ -30,13 +30,12 @@ import butterknife.BindString;
 import butterknife.ButterKnife;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.App;
-import fr.cph.chicago.data.BusData;
-import fr.cph.chicago.repository.TrainRepository;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.dto.BusArrivalDTO;
 import fr.cph.chicago.entity.dto.FavoritesDTO;
 import fr.cph.chicago.entity.dto.TrainArrivalDTO;
 import fr.cph.chicago.repository.RealmConfig;
+import fr.cph.chicago.repository.TrainRepository;
 import fr.cph.chicago.rx.ObservableUtil;
 import fr.cph.chicago.service.BusService;
 import fr.cph.chicago.service.TrainService;
@@ -103,8 +102,8 @@ public class BaseActivity extends Activity {
             .observeOn(AndroidSchedulers.mainThread());
 
         // Bus local data
-        final Observable<BusData> busLocalData = Observable.create(
-            (ObservableEmitter<BusData> observableOnSubscribe) -> {
+        final Observable<Object> busLocalData = Observable.create(
+            (ObservableEmitter<Object> observableOnSubscribe) -> {
                 if (!observableOnSubscribe.isDisposed()) {
                     observableOnSubscribe.onNext(busService.loadLocalBusData());
                     observableOnSubscribe.onComplete();
@@ -124,7 +123,7 @@ public class BaseActivity extends Activity {
             .doOnComplete(() ->
                 Observable.zip(trainOnlineFavorites, busOnlineFavorites, (trainArrivalsDTO, busArrivalsDTO) -> {
                         TrainRepository.INSTANCE.setError(false);
-                        BusData.INSTANCE.setError(false);
+                        BusService.INSTANCE.setBusRouteError(false);
                         ((App) getApplication()).setLastUpdate(Calendar.getInstance().getTime());
                         return new FavoritesDTO(trainArrivalsDTO, busArrivalsDTO, false, Collections.emptyList());
                     }
@@ -163,7 +162,7 @@ public class BaseActivity extends Activity {
     private void startErrorActivity() {
         // Set Error
         TrainRepository.INSTANCE.setError(true);
-        BusData.INSTANCE.setError(true);
+        BusService.INSTANCE.setBusRouteError(true);
 
         // Start error activity
         final Intent intent = new Intent(this, ErrorActivity.class);

@@ -41,14 +41,14 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.activity.SearchActivity;
 import fr.cph.chicago.core.adapter.FavoritesAdapter;
-import fr.cph.chicago.data.BusData;
 import fr.cph.chicago.data.FavoritesData;
-import fr.cph.chicago.repository.PreferenceRepository;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.dto.FavoritesDTO;
+import fr.cph.chicago.repository.PreferenceRepository;
 import fr.cph.chicago.rx.ObservableUtil;
+import fr.cph.chicago.service.BusService;
 import fr.cph.chicago.util.Util;
 import io.reactivex.Observable;
 
@@ -166,7 +166,7 @@ public class FavoritesFragment extends AbstractFragment {
                 Util.INSTANCE.trackAction((App) getActivity().getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_divvy, getContext().getString(R.string.analytics_action_get_divvy_all));
                 Util.INSTANCE.trackAction((App) getActivity().getApplication(), R.string.analytics_category_ui, R.string.analytics_action_press, getContext().getString(R.string.analytics_action_refresh_fav));
 
-                if (BusData.INSTANCE.getBusRoutes().size() == 0
+                if (BusService.INSTANCE.getBusRoutes().isEmpty()
                     || activity.getIntent().getParcelableArrayListExtra(bundleBikeStation) == null
                     || activity.getIntent().getParcelableArrayListExtra(bundleBikeStation).size() == 0) {
                     activity.loadFirstData();

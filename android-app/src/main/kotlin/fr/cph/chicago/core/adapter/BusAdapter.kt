@@ -29,10 +29,10 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.data.BusData
 import fr.cph.chicago.entity.BusRoute
 import fr.cph.chicago.rx.BusDirectionObserver
 import fr.cph.chicago.rx.ObservableUtil
+import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.Util
 
 /**
@@ -45,7 +45,7 @@ class BusAdapter(private val app: App) : BaseAdapter() {
 
     private val TAG = BusAdapter::class.java.simpleName
 
-    var busRoutes: List<BusRoute> = BusData.busRoutes
+    var busRoutes: List<BusRoute> = BusService.getBusRoutes()
 
     override fun getCount(): Int {
         return busRoutes.size
