@@ -115,7 +115,7 @@ object Util {
      * @param view      the view
      */
     fun addToTrainFavorites(stationId: Int, view: View) {
-        val favorites = PreferenceRepository.getTrainFavorites(view.context)
+        val favorites = PreferenceRepository.getTrainFavorites(view.context).toMutableList()
         if (!favorites.contains(stationId)) {
             favorites.add(stationId)
             PreferenceRepository.saveTrainFavorites(view.context, favorites)
@@ -130,7 +130,7 @@ object Util {
      * @param view      the view
      */
     fun removeFromTrainFavorites(stationId: Int, view: View) {
-        val favorites = PreferenceRepository.getTrainFavorites(view.context)
+        val favorites = PreferenceRepository.getTrainFavorites(view.context).toMutableList()
         favorites.remove(stationId)
         PreferenceRepository.saveTrainFavorites(view.context, favorites)
         showSnackBar(view, R.string.message_remove_fav)

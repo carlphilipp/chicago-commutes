@@ -192,16 +192,16 @@ object PreferenceRepository {
      * @param context the context
      * @return the favorites
      */
-    fun getTrainFavorites(context: Context): MutableList<Int> {
+    fun getTrainFavorites(context: Context): List<Int> {
         val sharedPref = getPrivatePreferences(context)
         val setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_TRAIN, LinkedHashSet())
         Log.v(TAG, "Read train favorites : " + setPref)
         return setPref
-            .map { Integer.valueOf(it) }
-            .map { favorite -> trainService.getStation(favorite) }
+            .map { it.toInt() }
+            .map { trainService.getStation(it) }
             .sorted()
             .map { it.id }
-            .toMutableList()
+            .toList()
     }
 
     /**
