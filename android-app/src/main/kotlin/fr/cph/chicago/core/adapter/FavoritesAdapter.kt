@@ -61,6 +61,7 @@ import java.util.*
 // TODO to analyze and refactor
 class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder>() {
 
+    private val favoritesData = FavoritesData
     private val context: Context = activity.applicationContext
 
     private var lastUpdate: String? = null
@@ -90,7 +91,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
 
     override fun onBindViewHolder(holder: FavoritesViewHolder, position: Int) {
         resetData(holder)
-        val model = FavoritesData.getObject(position, context)
+        val model = favoritesData.getObject(position, context)
         holder.lastUpdateTextView.text = lastUpdate
         when (model) {
             is Station -> handleStation(holder, model)
@@ -160,7 +161,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
 
         trainLines.forEach { trainLine ->
             var newLine = true
-            val etas = FavoritesData.getTrainArrivalByLine(stationId, trainLine)
+            val etas = favoritesData.getTrainArrivalByLine(stationId, trainLine)
             for ((i, entry) in etas.entries.withIndex()) {
                 val containParams = LayoutUtil.getInsideParams(activity.applicationContext, newLine, i == etas.size - 1)
                 val container = LayoutUtil.createTrainArrivalsLayout(context, containParams, entry, trainLine)
@@ -186,7 +187,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
 
         val busDetailsDTOs = mutableListOf<BusDetailsDTO>()
 
-        val busArrivalDTO = FavoritesData.getBusArrivalsMapped(busRoute.id, context)
+        val busArrivalDTO = favoritesData.getBusArrivalsMapped(busRoute.id, context)
         val entrySet = busArrivalDTO.entries
 
         for ((stopName, boundMap) in entrySet) {
@@ -269,15 +270,12 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
     }
 
     override fun getItemCount(): Int {
-        return FavoritesData.size()
+        return favoritesData.size()
     }
 
-    /**
-     * Set favoritesData
-     */
-    fun setFavorites() {
+    fun refreshFavorites() {
         // TODO delete that method but see if we can pass context properly
-        FavoritesData.setFavorites(context)
+        favoritesData.refreshFavorites(context)
     }
 
     /**

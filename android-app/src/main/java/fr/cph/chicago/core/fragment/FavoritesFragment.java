@@ -148,7 +148,7 @@ public class FavoritesFragment extends AbstractFragment {
                 favoritesData.setTrainArrivals(trainArrivals);
                 favoritesData.setBusArrivals(busArrivals);
                 favoritesData.setBikeStations(bikeStations);
-                favoritesAdapter.setFavorites();
+                favoritesAdapter.refreshFavorites();
             }
             final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(activity);
             listView.setAdapter(favoritesAdapter);
@@ -233,7 +233,7 @@ public class FavoritesFragment extends AbstractFragment {
     @Override
     public final void onResume() {
         super.onResume();
-        favoritesAdapter.setFavorites();
+        favoritesAdapter.refreshFavorites();
         favoritesAdapter.notifyDataSetChanged();
         if (refreshTimingTask.getStatus() == Status.FINISHED) {
             startRefreshTask();
@@ -256,7 +256,7 @@ public class FavoritesFragment extends AbstractFragment {
         favoritesData.setBusArrivals(favoritesDTO.getBusArrivalDTO().getBusArrivals());
         favoritesData.setTrainArrivals(favoritesDTO.getTrainArrivalDTO().getTrainArrivalSparseArray());
 
-        favoritesAdapter.setFavorites();
+        favoritesAdapter.refreshFavorites();
         favoritesAdapter.refreshUpdated();
         favoritesAdapter.refreshUpdatedView();
         favoritesAdapter.notifyDataSetChanged();
