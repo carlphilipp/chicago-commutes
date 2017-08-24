@@ -173,21 +173,9 @@ public class SearchActivity extends AppCompatActivity {
     private void handleIntent(@NonNull final Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             final String query = intent.getStringExtra(SearchManager.QUERY).trim();
-
-            // TODO Move that logic to service layer
-            final List<Station> foundStations = Stream.of(trainService.getAllStations().entrySet())
-                .flatMap(entry -> Stream.of(entry.getValue()))
-                .filter(station -> containsIgnoreCase(station.getName(), query))
-                .distinct()
-                .sorted()
-                .collect(Collectors.toList());
-
-            final List<BusRoute> foundBusRoutes = Stream.of(busService.getBusRoutes())
-                .filter(busRoute -> containsIgnoreCase(busRoute.getId(), query) || containsIgnoreCase(busRoute.getName(), query))
-                .distinct()
-                .sorted(util.getBUS_STOP_COMPARATOR_NAME())
-                .collect(Collectors.toList());
-
+            final List<Station> foundStations = trainService.searchStations(query);
+            final List<BusRoute> foundBusRoutes = busService.searchBusRoutes(query);
+            // TODO Consider doing in a different way how bikeStations is stored
             final List<BikeStation> foundBikeStations = Stream.of(bikeStations)
                 .filter(bikeStation -> containsIgnoreCase(bikeStation.getName(), query) || containsIgnoreCase(bikeStation.getStAddress1(), query))
                 .distinct()

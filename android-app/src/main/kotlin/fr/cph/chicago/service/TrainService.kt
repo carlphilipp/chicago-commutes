@@ -16,6 +16,7 @@ import fr.cph.chicago.repository.TrainRepository
 import fr.cph.chicago.util.Util
 import io.reactivex.exceptions.Exceptions
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
+import org.apache.commons.lang3.StringUtils
 
 object TrainService {
 
@@ -125,5 +126,13 @@ object TrainService {
 
     fun getStationsForLine(line: TrainLine): List<Station> {
         return TrainRepository.allStations[line]!!
+    }
+
+    fun searchStations(query: String): List<Station> {
+        return getAllStations().entries
+            .flatMap { mutableEntry -> mutableEntry.value }
+            .filter { station -> StringUtils.containsIgnoreCase(station.name, query) }
+            .distinct()
+            .sorted()
     }
 }

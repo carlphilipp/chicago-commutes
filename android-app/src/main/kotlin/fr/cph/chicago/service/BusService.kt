@@ -12,6 +12,7 @@ import fr.cph.chicago.repository.BusRepository
 import fr.cph.chicago.util.Util
 import io.reactivex.exceptions.Exceptions
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
+import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 import java.util.*
 
 object BusService {
@@ -182,5 +183,12 @@ object BusService {
 
     fun setBusRouteError(value: Boolean) {
         BusRepository.busRouteError = value
+    }
+
+    fun searchBusRoutes(query: String): List<BusRoute> {
+        return getBusRoutes()
+            .filter { (id, name) -> containsIgnoreCase(id, query) || containsIgnoreCase(name, query) }
+            .distinct()
+            .sortedWith(Util.BUS_STOP_COMPARATOR_NAME)
     }
 }
