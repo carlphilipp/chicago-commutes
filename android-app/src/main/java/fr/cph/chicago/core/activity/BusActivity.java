@@ -56,7 +56,7 @@ import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
 import fr.cph.chicago.parser.XmlParser;
-import fr.cph.chicago.repository.PreferenceRepository;
+import fr.cph.chicago.service.PreferenceService;
 import fr.cph.chicago.util.Util;
 
 import static fr.cph.chicago.Constants.BUSES_PATTERN_URL;
@@ -128,8 +128,8 @@ public class BusActivity extends AbstractStationActivity {
     @BindColor(R.color.yellowLineDark)
     int yellowLineDark;
 
-    private final PreferenceRepository preferenceRepository;
     private final Util util;
+    private final PreferenceService preferenceService;
 
     private List<BusArrival> busArrivals;
     private String busRouteId, bound, boundTitle;
@@ -138,9 +138,9 @@ public class BusActivity extends AbstractStationActivity {
     private double latitude, longitude;
     private boolean isFavorite;
 
-    public BusActivity(){
-        preferenceRepository = PreferenceRepository.INSTANCE;
+    public BusActivity() {
         util = Util.INSTANCE;
+        preferenceService = PreferenceService.INSTANCE;
     }
 
     @Override
@@ -281,11 +281,7 @@ public class BusActivity extends AbstractStationActivity {
 
     @Override
     protected boolean isFavorite() {
-        final List<String> favorites = preferenceRepository.getBusFavorites(getApplicationContext());
-        return Stream.of(favorites)
-            .filter(favorite -> favorite.equals(busRouteId + "_" + busStopId + "_" + boundTitle))
-            .findFirst()
-            .isPresent();
+        return preferenceService.isStopFavorite(getApplicationContext(), busRouteId, busStopId, boundTitle);
     }
 
     /**
@@ -293,13 +289,13 @@ public class BusActivity extends AbstractStationActivity {
      */
     private void switchFavorite() {
         if (isFavorite) {
-            util.removeFromBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, scrollView);
+            preferenceService.removeFromBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, scrollView);
             favoritesImage.setColorFilter(grey_5);
             isFavorite = false;
         } else {
-            util.addToBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, scrollView);
-            preferenceRepository.addBusRouteNameMapping(getApplicationContext(), String.valueOf(busStopId), busRouteName);
-            preferenceRepository.addBusStopNameMapping(getApplicationContext(), String.valueOf(busStopId), busStopName);
+            preferenceService.addToBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, scrollView);
+            preferenceService.addBusRouteNameMapping(getApplicationContext(), String.valueOf(busStopId), busRouteName);
+            preferenceService.addBusStopNameMapping(getApplicationContext(), String.valueOf(busStopId), busStopName);
             favoritesImage.setColorFilter(yellowLineDark);
             isFavorite = true;
         }
@@ -329,7 +325,7 @@ public class BusActivity extends AbstractStationActivity {
             } catch (final ParserException | ConnectException e) {
                 this.trackerException = e;
             }
-           util.trackAction((App) BusActivity.this.getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL);
+            util.trackAction((App) BusActivity.this.getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL);
             return null;
         }
 

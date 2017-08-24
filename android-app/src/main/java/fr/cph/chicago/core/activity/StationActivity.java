@@ -60,9 +60,9 @@ import fr.cph.chicago.entity.Stop;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.enumeration.TrainDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.repository.PreferenceRepository;
 import fr.cph.chicago.rx.ObservableUtil;
 import fr.cph.chicago.rx.TrainArrivalObserver;
+import fr.cph.chicago.service.PreferenceService;
 import fr.cph.chicago.service.TrainService;
 import fr.cph.chicago.util.Util;
 import io.reactivex.Observable;
@@ -135,13 +135,13 @@ public class StationActivity extends AbstractStationActivity {
     private Observable<TrainArrival> trainArrivalObservable;
 
     private final TrainService trainService;
-    private final PreferenceRepository preferenceRepository;
+    private final PreferenceService preferenceService;
     private final ObservableUtil observableUtil;
     private final Util util;
 
     public StationActivity() {
         this.trainService = TrainService.INSTANCE;
-        this.preferenceRepository = PreferenceRepository.INSTANCE;
+        this.preferenceService = PreferenceService.INSTANCE;
         this.observableUtil = ObservableUtil.INSTANCE;
         this.util = Util.INSTANCE;
     }
@@ -223,13 +223,13 @@ public class StationActivity extends AbstractStationActivity {
                 linearLayout.setLayoutParams(paramsStop);
 
                 final AppCompatCheckBox checkBox = new AppCompatCheckBox(this);
-                checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> preferenceRepository.saveTrainFilter(getApplicationContext(), stationId, line, stop.getDirection(), isChecked));
+                checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> preferenceService.saveTrainFilter(getApplicationContext(), stationId, line, stop.getDirection(), isChecked));
                 checkBox.setOnClickListener(v -> {
                     if (checkBox.isChecked()) {
                         trainArrivalObservable.subscribe(new TrainArrivalObserver(this, swipeRefreshLayout));
                     }
                 });
-                checkBox.setChecked(preferenceRepository.getTrainFilter(getApplicationContext(), stationId, line, stop.getDirection()));
+                checkBox.setChecked(preferenceService.getTrainFilter(getApplicationContext(), stationId, line, stop.getDirection()));
                 checkBox.setTypeface(checkBox.getTypeface(), Typeface.BOLD);
                 checkBox.setText(stop.getDirection().toString());
                 checkBox.setTextColor(grey);
@@ -310,11 +310,12 @@ public class StationActivity extends AbstractStationActivity {
      */
     @Override
     protected boolean isFavorite() {
-        final List<Integer> favorites = preferenceRepository.getTrainFavorites(getApplicationContext());
+        return PreferenceService.INSTANCE.isTrainStationFavorite(getApplicationContext(), stationId);
+/*        final List<Integer> favorites = preferenceRepository.getTrainFavorites(getApplicationContext());
         return Stream.of(favorites)
             .filter(favorite -> favorite == stationId)
             .findFirst()
-            .isPresent();
+            .isPresent();*/
     }
 
     // FIXME: delete view instead of hiding it
@@ -397,11 +398,11 @@ public class StationActivity extends AbstractStationActivity {
      */
     private void switchFavorite() {
         if (isFavorite) {
-            util.removeFromTrainFavorites(stationId, scrollView);
+            preferenceService.removeFromTrainFavorites(stationId, scrollView);
             isFavorite = false;
             favoritesImage.setColorFilter(grey);
         } else {
-            util.addToTrainFavorites(stationId, scrollView);
+            preferenceService.addToTrainFavorites(stationId, scrollView);
             isFavorite = true;
             favoritesImage.setColorFilter(yellowLineDark);
         }

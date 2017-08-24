@@ -46,9 +46,9 @@ import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusArrival;
 import fr.cph.chicago.entity.TrainArrival;
 import fr.cph.chicago.entity.dto.FavoritesDTO;
-import fr.cph.chicago.repository.PreferenceRepository;
 import fr.cph.chicago.rx.ObservableUtil;
 import fr.cph.chicago.service.BusService;
+import fr.cph.chicago.service.PreferenceService;
 import fr.cph.chicago.task.RefreshTimingTask;
 import fr.cph.chicago.util.Util;
 import io.reactivex.Observable;
@@ -87,7 +87,7 @@ public class FavoritesFragment extends AbstractFragment {
     private final ObservableUtil observableUtil;
     private final FavoritesData favoritesData;
     private final BusService busService;
-    private final PreferenceRepository preferenceRepository;
+    private final PreferenceService preferenceService;
 
     private FavoritesAdapter favoritesAdapter;
     private List<BusArrival> busArrivals;
@@ -102,7 +102,7 @@ public class FavoritesFragment extends AbstractFragment {
         util = Util.INSTANCE;
         favoritesData = FavoritesData.INSTANCE;
         busService = BusService.INSTANCE;
-        preferenceRepository = PreferenceRepository.INSTANCE;
+        preferenceService = PreferenceService.INSTANCE;
     }
 
     /**
@@ -239,7 +239,7 @@ public class FavoritesFragment extends AbstractFragment {
         if (refreshTimingTask.getStatus() == Status.FINISHED) {
             startRefreshTask();
         }
-        boolean hasFav = preferenceRepository.hasFavorites(getContext());
+        boolean hasFav = preferenceService.hasFavorites(getContext());
         welcomeLayout.setVisibility(hasFav ? View.GONE : View.VISIBLE);
     }
 

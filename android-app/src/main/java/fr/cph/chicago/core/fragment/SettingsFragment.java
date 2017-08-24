@@ -21,8 +21,8 @@ import butterknife.BindView;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.activity.BaseActivity;
-import fr.cph.chicago.repository.PreferenceRepository;
 import fr.cph.chicago.repository.RealmConfig;
+import fr.cph.chicago.service.PreferenceService;
 import fr.cph.chicago.util.Util;
 
 @SuppressWarnings("WeakerAccess")
@@ -35,12 +35,12 @@ public class SettingsFragment extends AbstractFragment {
     TextView versionNumber;
 
     private final Util util;
-    private final PreferenceRepository preferenceRepository;
+    private final PreferenceService preferenceService;
     private final RealmConfig realmConfig;
 
     public SettingsFragment() {
         util = Util.INSTANCE;
-        preferenceRepository = PreferenceRepository.INSTANCE;
+        preferenceService = PreferenceService.INSTANCE;
         realmConfig = RealmConfig.INSTANCE;
     }
 
@@ -95,7 +95,7 @@ public class SettingsFragment extends AbstractFragment {
 
     private void cleanLocalData() {
         deleteCache(getContext());
-        preferenceRepository.clearPreferences(getContext());
+        preferenceService.clearPreferences(getContext());
         realmConfig.cleanRealm(getContext());
     }
 

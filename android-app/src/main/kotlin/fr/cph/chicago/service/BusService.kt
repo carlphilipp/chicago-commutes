@@ -18,11 +18,12 @@ import java.util.*
 object BusService {
 
     private val TAG = BusService::class.java.simpleName
+    private val preferenceService = PreferenceService
 
     fun loadFavoritesBuses(context: Context): List<BusArrival> {
         // FIXME to refactor
         val busArrivals = LinkedHashSet<BusArrival>()
-        val paramBus = Util.getFavoritesBusParams(context)
+        val paramBus = preferenceService.getFavoritesBusParams(context)
         // Load bus
         try {
             val rts = mutableListOf<String>()

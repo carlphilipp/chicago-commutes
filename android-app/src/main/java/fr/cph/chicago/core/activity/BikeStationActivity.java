@@ -26,10 +26,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.annimon.stream.Stream;
-
-import java.util.List;
-
 import butterknife.BindColor;
 import butterknife.BindString;
 import butterknife.BindView;
@@ -41,9 +37,9 @@ import fr.cph.chicago.core.listener.GoogleStreetOnClickListener;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.repository.PreferenceRepository;
 import fr.cph.chicago.rx.BikeAllBikeStationsObserver;
 import fr.cph.chicago.rx.ObservableUtil;
+import fr.cph.chicago.service.PreferenceService;
 import fr.cph.chicago.util.Util;
 
 /**
@@ -89,7 +85,7 @@ public class BikeStationActivity extends AbstractStationActivity {
 
     private final ObservableUtil observableUtil;
     private final Util util;
-    private final PreferenceRepository preferenceRepository;
+    private final PreferenceService preferenceService;
 
     @BindColor(R.color.grey_5)
     int grey_5;
@@ -106,7 +102,7 @@ public class BikeStationActivity extends AbstractStationActivity {
     public BikeStationActivity() {
         observableUtil = ObservableUtil.INSTANCE;
         util = Util.INSTANCE;
-        preferenceRepository = PreferenceRepository.INSTANCE;
+        preferenceService = PreferenceService.INSTANCE;
     }
 
     @Override
@@ -229,11 +225,7 @@ public class BikeStationActivity extends AbstractStationActivity {
      */
     @Override
     protected boolean isFavorite() {
-        final List<String> favorites = preferenceRepository.getBikeFavorites(getApplicationContext());
-        return Stream.of(favorites)
-            .filter(favorite -> Integer.valueOf(favorite) == bikeStation.getId())
-            .findFirst()
-            .isPresent();
+        return preferenceService.isBikeStationFavorite(getApplicationContext(), bikeStation.getId());
     }
 
     public void refreshStation(@NonNull final BikeStation station) {
@@ -246,12 +238,12 @@ public class BikeStationActivity extends AbstractStationActivity {
      */
     private void switchFavorite() {
         if (isFavorite) {
-            util.removeFromBikeFavorites(bikeStation.getId(), swipeRefreshLayout);
+            preferenceService.removeFromBikeFavorites(bikeStation.getId(), swipeRefreshLayout);
             favoritesImage.setColorFilter(grey_5);
             isFavorite = false;
         } else {
-            util.addToBikeFavorites(bikeStation.getId(), swipeRefreshLayout);
-            preferenceRepository.addBikeRouteNameMapping(getApplicationContext(), Integer.toString(bikeStation.getId()), bikeStation.getName());
+            preferenceService.addToBikeFavorites(bikeStation.getId(), swipeRefreshLayout);
+            preferenceService.addBikeRouteNameMapping(getApplicationContext(), Integer.toString(bikeStation.getId()), bikeStation.getName());
             favoritesImage.setColorFilter(yellowLineDark);
             isFavorite = true;
         }

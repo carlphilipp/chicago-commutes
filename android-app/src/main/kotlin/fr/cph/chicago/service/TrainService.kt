@@ -11,17 +11,17 @@ import fr.cph.chicago.entity.Stop
 import fr.cph.chicago.entity.TrainArrival
 import fr.cph.chicago.entity.enumeration.TrainLine
 import fr.cph.chicago.parser.XmlParser
-import fr.cph.chicago.repository.PreferenceRepository
 import fr.cph.chicago.repository.TrainRepository
-import fr.cph.chicago.util.Util
 import io.reactivex.exceptions.Exceptions
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import org.apache.commons.lang3.StringUtils
 
 object TrainService {
 
+    private val preferencesService = PreferenceService
+
     fun loadFavoritesTrain(context: Context): SparseArray<TrainArrival> {
-        val trainParams = Util.getFavoritesTrainParams(context)
+        val trainParams = preferencesService.getFavoritesTrainParams(context)
         var trainArrivals = SparseArray<TrainArrival>()
         try {
             for ((key, value) in trainParams.asMap()) {
@@ -64,7 +64,7 @@ object TrainService {
                 trainArrival.etas = etas
                     .filter { (station, stop, line) ->
                         val direction = stop.direction
-                        PreferenceRepository.getTrainFilter(context, station.id, line, direction)
+                        preferencesService.getTrainFilter(context, station.id, line, direction)
                     }
                     .sorted()
                     .toMutableList()
