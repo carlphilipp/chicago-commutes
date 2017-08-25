@@ -21,7 +21,6 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -37,30 +36,21 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import butterknife.BindString;
 import butterknife.ButterKnife;
 import fr.cph.chicago.R;
-import fr.cph.chicago.client.CtaClient;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.entity.Bus;
 import fr.cph.chicago.entity.BusDirections;
 import fr.cph.chicago.entity.BusPattern;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.exception.ConnectException;
-import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.marker.RefreshBusMarkers;
-import fr.cph.chicago.parser.XmlParser;
 import fr.cph.chicago.rx.BusFollowObserver;
 import fr.cph.chicago.rx.BusObserver;
 import fr.cph.chicago.rx.ObservableUtil;
@@ -70,7 +60,6 @@ import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;
 import static fr.cph.chicago.Constants.BUSES_DIRECTION_URL;
 import static fr.cph.chicago.Constants.BUSES_PATTERN_URL;
 import static fr.cph.chicago.Constants.BUSES_VEHICLES_URL;
-import static fr.cph.chicago.client.CtaRequestType.BUS_PATTERN;
 
 /**
  * @author Carl-Philipp Harmant
@@ -327,44 +316,19 @@ public class BusMapActivity extends AbstractMapActivity {
          **/
         private List<BusPattern> patterns;
 
-        private final CtaClient ctaClient;
-        private final XmlParser xmlParser;
-
-        public LoadPattern() {
-            this.ctaClient = CtaClient.INSTANCE;
-            this.xmlParser = XmlParser.INSTANCE;
-        }
-
         @Override
         protected final List<BusPattern> doInBackground(final Void... params) {
             this.patterns = new ArrayList<>();
-            try {
-                if (busId == 0) {
-                    // Search for directions
-                    final BusDirections busDirections = busService.loadBusDirections(busRouteId);
-                    bounds = new String[busDirections.getBusDirections().size()];
-                    for (int i = 0; i < busDirections.getBusDirections().size(); i++) {
-                        bounds[i] = busDirections.getBusDirections().get(i).getText();
-                    }
-                    util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_DIRECTION_URL);
+            if (busId == 0) {
+                // Search for directions
+                final BusDirections busDirections = busService.loadBusDirections(busRouteId);
+                bounds = new String[busDirections.getBusDirections().size()];
+                for (int i = 0; i < busDirections.getBusDirections().size(); i++) {
+                    bounds[i] = busDirections.getBusDirections().get(i).getText();
                 }
-
-                //Stream.of(busService.loadBusPattern(busRouteId, bounds)).forEach(this.patterns::add);
-
-                final MultiValuedMap<String, String> routeIdParam = new ArrayListValuedHashMap<>();
-                routeIdParam.put(requestRt, busRouteId);
-                final InputStream content = ctaClient.connect(BUS_PATTERN, routeIdParam);
-                final List<BusPattern> patterns = xmlParser.parsePatterns(content);
-                Stream.of(patterns)
-                    .flatMap(pattern ->
-                        Stream.of(bounds)
-                            .filter(bound -> pattern.getDirection().equals(bound) || bound.toLowerCase(Locale.US).contains(pattern.getDirection().toLowerCase(Locale.US)))
-                            .map(value -> pattern)
-                    )
-                    .forEach(this.patterns::add);
-            } catch (final ConnectException | ParserException e) {
-                Log.e(TAG, e.getMessage(), e);
+                util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_DIRECTION_URL);
             }
+            Stream.of(busService.loadBusPattern(busRouteId, bounds)).forEach(this.patterns::add);
             util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL);
             return this.patterns;
         }

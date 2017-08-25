@@ -53,7 +53,6 @@ class BusMapSnippetAdapter(private val arrivals: List<BusArrival>) : BaseAdapter
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var view = convertView
         val arrival = getItem(position) as BusArrival
-        println("${arrivals.size - 1} $position $arrival")
         val viewHolder: ViewHolder
         if (view == null) {
             val vi = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -67,7 +66,6 @@ class BusMapSnippetAdapter(private val arrivals: List<BusArrival>) : BaseAdapter
             viewHolder = view.tag as ViewHolder
         }
         viewHolder.stationName.text = arrival.stopName
-        println("${position == (arrivals.size - 1)}")
         if (position == (arrivals.size - 1) && "No service" == arrival.timeLeftDueDelay) {
             viewHolder.stationName.setTextColor(ContextCompat.getColor(parent.context, R.color.grey))
             viewHolder.stationName.gravity = Gravity.CENTER
