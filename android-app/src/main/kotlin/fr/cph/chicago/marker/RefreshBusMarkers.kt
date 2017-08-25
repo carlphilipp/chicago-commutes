@@ -30,7 +30,7 @@ import fr.cph.chicago.R
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class RefreshBusMarkers(context: Context) : RefreshMarkers(context, R.drawable.bus) {
+class RefreshBusMarkers : RefreshMarkers(R.drawable.bus) {
 
     fun refreshBusAndStation(position: CameraPosition,
                              busMarkers: List<Marker>,

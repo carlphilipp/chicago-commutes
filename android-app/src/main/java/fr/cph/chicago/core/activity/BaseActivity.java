@@ -90,7 +90,7 @@ public class BaseActivity extends Activity {
     }
 
     private void setUpRealm() {
-        realmConfig.setUpRealm(getApplicationContext());
+        realmConfig.setUpRealm();
     }
 
     private void loadLocalAndFavoritesData() {

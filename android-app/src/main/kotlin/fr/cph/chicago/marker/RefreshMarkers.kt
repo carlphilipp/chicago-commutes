@@ -8,8 +8,9 @@ import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.Marker
+import fr.cph.chicago.core.App
 
-abstract class RefreshMarkers(context: Context, @DrawableRes drawable: Int) {
+abstract class RefreshMarkers(@DrawableRes drawable: Int) {
 
     val bitmapDescrSmall: BitmapDescriptor
     val bitmapDescrMedium: BitmapDescriptor
@@ -17,7 +18,7 @@ abstract class RefreshMarkers(context: Context, @DrawableRes drawable: Int) {
     var currentDescriptor: BitmapDescriptor? = null
 
     init {
-        val icon = BitmapFactory.decodeResource(context.resources, drawable)
+        val icon = BitmapFactory.decodeResource(App.appResources, drawable)
         bitmapDescrSmall = createBitMapDescriptor(icon, 9)
         bitmapDescrMedium = createBitMapDescriptor(icon, 5)
         bitmapDescrLarge = createBitMapDescriptor(icon, 3)

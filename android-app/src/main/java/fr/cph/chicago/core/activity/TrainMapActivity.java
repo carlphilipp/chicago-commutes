@@ -131,7 +131,7 @@ public class TrainMapActivity extends AbstractMapActivity {
         super.initData();
         markers = new ArrayList<>();
         status = new HashMap<>();
-        refreshTrainMarkers = new RefreshTrainMarkers(getApplicationContext());
+        refreshTrainMarkers = new RefreshTrainMarkers();
     }
 
     @Override
@@ -363,7 +363,7 @@ public class TrainMapActivity extends AbstractMapActivity {
 
 
             final List<Train> trains = getTrainData();
-            positions = trainService.readPattern(getApplicationContext(), TrainLine.Companion.fromXmlString(line));
+            positions = trainService.readPattern(TrainLine.Companion.fromXmlString(line));
             return trains;
         }
 

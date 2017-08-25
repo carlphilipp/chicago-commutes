@@ -43,7 +43,7 @@ private constructor(message: String, e: Exception) : TrackerException(message, e
         /**
          * The error string
          */
-        private val ERROR = "Can't connect, please check your connection"
+        private val ERROR = "Can't getBikeStations, please check your connection"
 
         fun defaultException(e: Exception): ConnectException {
             return ConnectException(ERROR, e)

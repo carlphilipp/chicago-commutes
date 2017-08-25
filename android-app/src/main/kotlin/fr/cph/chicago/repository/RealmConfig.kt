@@ -1,21 +1,22 @@
 package fr.cph.chicago.repository
 
-import android.content.Context
+import fr.cph.chicago.core.App
 import io.realm.Realm
 import io.realm.RealmConfiguration
 
 object RealmConfig {
 
-    fun setUpRealm(context: Context) {
-        Realm.init(context)
-        Realm.setDefaultConfiguration(getRealmConfiguration(context))
+    fun setUpRealm() {
+        Realm.init(App.instance.applicationContext)
+        Realm.setDefaultConfiguration(getRealmConfiguration())
     }
 
-    fun cleanRealm(context: Context) {
-        Realm.deleteRealm(getRealmConfiguration(context))
+    fun cleanRealm() {
+        Realm.deleteRealm(getRealmConfiguration())
     }
 
-    private fun getRealmConfiguration(context: Context): RealmConfiguration {
+    private fun getRealmConfiguration(): RealmConfiguration {
+        val context = App.instance.applicationContext
         val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)!!
         return RealmConfiguration.Builder()
             .schemaVersion(packageInfo.versionCode.toLong())

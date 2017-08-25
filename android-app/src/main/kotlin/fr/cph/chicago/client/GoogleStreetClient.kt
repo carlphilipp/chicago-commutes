@@ -57,7 +57,7 @@ object GoogleStreetClient {
     /**
      * HttpClient to the API and get the MAP
 
-     * @param address the address to connect to
+     * @param address the address to getBikeStations to
      * *
      * @return a drawable map
      */

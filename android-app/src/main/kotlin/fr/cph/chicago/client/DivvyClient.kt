@@ -24,7 +24,7 @@ import fr.cph.chicago.exception.ConnectException
 import java.io.InputStream
 
 /**
- * Class that build url and connect to Divvy API.
+ * Class that build url and getBikeStations to Divvy API.
 
  * @author Carl-Philipp Harmant
  * *
@@ -33,7 +33,7 @@ import java.io.InputStream
 object DivvyClient {
 
     @Throws(ConnectException::class)
-    fun connect(): InputStream {
+    fun getBikeStations(): InputStream {
         return HttpClient.connect(DIVYY_URL)
     }
 }

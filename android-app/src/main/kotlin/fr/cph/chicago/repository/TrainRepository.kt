@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.repository
 
-import android.content.Context
 import android.util.Log
 import android.util.SparseArray
 import com.univocity.parsers.csv.CsvParser
@@ -212,10 +211,10 @@ object TrainRepository {
         return nearByStations
     }
 
-    fun readPattern(context: Context, line: TrainLine): List<Position> {
+    fun readPattern(line: TrainLine): List<Position> {
         var inputStreamReader: InputStreamReader? = null
         try {
-            inputStreamReader = InputStreamReader(context.assets.open("train_pattern/" + line.toTextString() + "_pattern.csv"))
+            inputStreamReader = InputStreamReader(App.appResources.assets.open("train_pattern/" + line.toTextString() + "_pattern.csv"))
             val allRows = parser.parseAll(inputStreamReader)
             return allRows
                 .map { row ->

@@ -91,7 +91,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
 
     override fun onBindViewHolder(holder: FavoritesViewHolder, position: Int) {
         resetData(holder)
-        val model = favoritesData.getObject(position, context)
+        val model = favoritesData.getObject(position)
         holder.lastUpdateTextView.text = lastUpdate
         when (model) {
             is Station -> handleStation(holder, model)
@@ -187,7 +187,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
 
         val busDetailsDTOs = mutableListOf<BusDetailsDTO>()
 
-        val busArrivalDTO = favoritesData.getBusArrivalsMapped(busRoute.id, context)
+        val busArrivalDTO = favoritesData.getBusArrivalsMapped(busRoute.id)
         val entrySet = busArrivalDTO.entries
 
         for ((stopName, boundMap) in entrySet) {
@@ -275,7 +275,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
 
     fun refreshFavorites() {
         // TODO delete that method but see if we can pass context properly
-        favoritesData.refreshFavorites(context)
+        favoritesData.refreshFavorites()
     }
 
     /**

@@ -111,7 +111,7 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
                     .doOnError { throwable ->
                         Util.handleConnectOrParserException(throwable, activity, null, loadingTextView)
                         Log.e(TAG, throwable.message, throwable)
-                    }.subscribe(BusDirectionObserver(activity.application as App, parent, loadingTextView, busRoute))
+                    }.subscribe(BusDirectionObserver(App.instance.screenWidth, parent, loadingTextView, busRoute))
             }
         } else {
             val bikeStation = getItem(position) as BikeStation

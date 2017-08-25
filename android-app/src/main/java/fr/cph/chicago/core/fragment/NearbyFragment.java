@@ -150,7 +150,7 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
             .addApi(LocationServices.API)
             .build();
         final GoogleMapOptions options = new GoogleMapOptions();
-        final CameraPosition camera = new CameraPosition(util.chicago(), 7, 0, 0);
+        final CameraPosition camera = new CameraPosition(util.getChicago(), 7, 0, 0);
         options.camera(camera);
         mapFragment = SupportMapFragment.newInstance(options);
         mapFragment.setRetainInstance(true);

@@ -7,19 +7,21 @@ import io.reactivex.exceptions.Exceptions
 
 object BikeService {
 
-    fun loadAllBikes(): List<BikeStation> {
+    private val client = DivvyClient
+    private val jsonParser = JsonParser
+
+    fun loadAllBikeStations(): List<BikeStation> {
         try {
-            val bikeContent = DivvyClient.connect()
-            val bikeStations = JsonParser.parseStations(bikeContent)
-            return bikeStations.sortedWith(compareBy(BikeStation::name)).toList()
+            val bikeStationsInputStream = client.getBikeStations()
+            return jsonParser.parseStations(bikeStationsInputStream).sortedWith(compareBy(BikeStation::name)).toList()
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }
     }
 
-    fun loadBikes(id: Int): BikeStation {
+    fun findBikeStation(id: Int): BikeStation {
         try {
-            return loadAllBikes().first { (bikeId) -> bikeId == id }
+            return loadAllBikeStations().first { (bikeId) -> bikeId == id }
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }

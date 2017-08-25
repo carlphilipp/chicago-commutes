@@ -18,7 +18,11 @@ import java.util.*
 object BusService {
 
     private val TAG = BusService::class.java.simpleName
+    private val busStopCsvParser = BusStopCsvParser
     private val preferenceService = PreferenceService
+    private val busRepository = BusRepository
+    private val ctaClient = CtaClient
+    private val xmlParser = XmlParser
 
     fun loadFavoritesBuses(context: Context): List<BusArrival> {
         // FIXME to refactor
@@ -50,8 +54,8 @@ object BusService {
                 val para = ArrayListValuedHashMap<String, String>()
                 para.put(context.getString(R.string.request_rt), rts[i])
                 para.put(context.getString(R.string.request_stop_id), stpids[i])
-                val xmlResult = CtaClient.connect(BUS_ARRIVALS, para)
-                busArrivals.addAll(XmlParser.parseBusArrivals(xmlResult))
+                val xmlResult = ctaClient.connect(BUS_ARRIVALS, para)
+                busArrivals.addAll(xmlParser.parseBusArrivals(xmlResult))
             }
         } catch (e: Throwable) {
             throw Exceptions.propagate(e)
@@ -64,8 +68,8 @@ object BusService {
             val params = ArrayListValuedHashMap<String, String>()
             params.put(context.getString(R.string.request_rt), stopId)
             params.put(context.getString(R.string.request_dir), bound)
-            val xmlResult = CtaClient.connect(BUS_STOP_LIST, params)
-            return XmlParser.parseBusBounds(xmlResult)
+            val xmlResult = ctaClient.connect(BUS_STOP_LIST, params)
+            return xmlParser.parseBusBounds(xmlResult)
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }
@@ -73,9 +77,9 @@ object BusService {
     }
 
     fun loadLocalBusData(): Any {
-        if (BusRepository.hasBusStopsEmpty()) {
+        if (busRepository.hasBusStopsEmpty()) {
             Log.d(TAG, "Load bus stop from CSV")
-            BusStopCsvParser.parse()
+            busStopCsvParser.parse()
         }
         return Any()
     }
@@ -84,8 +88,8 @@ object BusService {
         try {
             val reqParams = ArrayListValuedHashMap<String, String>()
             reqParams.put(context.getString(R.string.request_rt), busRouteId)
-            val xmlResult = CtaClient.connect(BUS_DIRECTION, reqParams)
-            return XmlParser.parseBusDirections(xmlResult, busRouteId)
+            val xmlResult = ctaClient.connect(BUS_DIRECTION, reqParams)
+            return xmlParser.parseBusDirections(xmlResult, busRouteId)
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }
@@ -95,8 +99,8 @@ object BusService {
     fun loadBusRoutes(): List<BusRoute> {
         try {
             val params = ArrayListValuedHashMap<String, String>()
-            val xmlResult = CtaClient.connect(BUS_ROUTES, params)
-            return XmlParser.parseBusRoutes(xmlResult)
+            val xmlResult = ctaClient.connect(BUS_ROUTES, params)
+            return xmlParser.parseBusRoutes(xmlResult)
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }
@@ -106,8 +110,8 @@ object BusService {
         try {
             val connectParam = ArrayListValuedHashMap<String, String>()
             connectParam.put(context.getString(R.string.request_vid), busId)
-            val content = CtaClient.connect(BUS_ARRIVALS, connectParam)
-            return XmlParser.parseBusArrivals(content)
+            val content = ctaClient.connect(BUS_ARRIVALS, connectParam)
+            return xmlParser.parseBusArrivals(content)
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }
@@ -118,8 +122,8 @@ object BusService {
         connectParam.put(context.getString(R.string.request_rt), busRouteId)
         val boundIgnoreCase = bound.toLowerCase(Locale.US)
         try {
-            val content = CtaClient.connect(BUS_PATTERN, connectParam)
-            val patterns = XmlParser.parsePatterns(content)
+            val content = ctaClient.connect(BUS_PATTERN, connectParam)
+            val patterns = xmlParser.parsePatterns(content)
             return patterns
                 .filter { pattern ->
                     val directionIgnoreCase = pattern.direction.toLowerCase(Locale.US)
@@ -139,8 +143,8 @@ object BusService {
             connectParam.put(context.getString(R.string.request_rt), busRouteId)
         }
         try {
-            val content = CtaClient.connect(BUS_VEHICLES, connectParam)
-            return XmlParser.parseVehicles(content)
+            val content = ctaClient.connect(BUS_VEHICLES, connectParam)
+            return xmlParser.parseVehicles(content)
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }
@@ -151,45 +155,45 @@ object BusService {
             val busStopId = busStop.id
             val reqParams = ArrayListValuedHashMap<String, String>(1, 1)
             reqParams.put(context.getString(R.string.request_stop_id), Integer.toString(busStopId))
-            val inputStream = CtaClient.connect(BUS_ARRIVALS, reqParams)
-            return XmlParser.parseBusArrivals(inputStream)
+            val inputStream = ctaClient.connect(BUS_ARRIVALS, reqParams)
+            return xmlParser.parseBusArrivals(inputStream)
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }
     }
 
     fun getBusStopsAround(position: Position): List<BusStop> {
-        return BusRepository.getBusStopsAround(position)
+        return busRepository.getBusStopsAround(position)
     }
 
     fun saveBusStops(busStops: List<BusStop>) {
-        return BusRepository.saveBusStops(busStops)
+        return busRepository.saveBusStops(busStops)
     }
 
     fun getBusRoutes(): MutableList<BusRoute> {
-        return BusRepository.busRoutes
+        return busRepository.busRoutes
     }
 
     fun setBusRoutes(busRoutes: List<BusRoute>) {
-        BusRepository.setBusRoutes(busRoutes)
+        busRepository.setBusRoutes(busRoutes)
     }
 
     fun getBusRoute(routeId: String): BusRoute {
-        return BusRepository.getBusRoute(routeId)
+        return busRepository.getBusRoute(routeId)
     }
 
     fun busRouteError(): Boolean {
-        return BusRepository.busRouteError
+        return busRepository.busRouteError
     }
 
     fun setBusRouteError(value: Boolean) {
-        BusRepository.busRouteError = value
+        busRepository.busRouteError = value
     }
 
     fun searchBusRoutes(query: String): List<BusRoute> {
         return getBusRoutes()
             .filter { (id, name) -> containsIgnoreCase(id, query) || containsIgnoreCase(name, query) }
             .distinct()
-            .sortedWith(Util.BUS_STOP_COMPARATOR_NAME)
+            .sortedWith(Util.busStopComparatorByName)
     }
 }

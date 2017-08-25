@@ -35,7 +35,7 @@ import org.apache.commons.collections4.MultiValuedMap
 import java.io.InputStream
 
 /**
- * Class that build url and connect to CTA API
+ * Class that build url and getBikeStations to CTA API
 
  * @author Carl-Philipp Harmant
  * *

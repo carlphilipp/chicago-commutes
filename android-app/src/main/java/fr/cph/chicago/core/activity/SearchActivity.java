@@ -179,7 +179,7 @@ public class SearchActivity extends AppCompatActivity {
             final List<BikeStation> foundBikeStations = Stream.of(bikeStations)
                 .filter(bikeStation -> containsIgnoreCase(bikeStation.getName(), query) || containsIgnoreCase(bikeStation.getStAddress1(), query))
                 .distinct()
-                .sorted(util.getBIKE_COMPARATOR_NAME())
+                .sorted(util.getBikeComparatorByName())
                 .collect(Collectors.toList());
             searchAdapter.updateData(foundStations, foundBusRoutes, foundBikeStations);
             searchAdapter.notifyDataSetChanged();

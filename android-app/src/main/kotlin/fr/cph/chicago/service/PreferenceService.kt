@@ -13,94 +13,95 @@ import java.util.*
 
 object PreferenceService {
 
-    private val repo: PreferenceRepository = PreferenceRepository
+    private val repo = PreferenceRepository
+    private val util = Util
 
-    fun isTrainStationFavorite(context: Context, trainStationId: Int): Boolean {
-        return repo.getTrainFavorites(context).any({ it == trainStationId })
+    fun isTrainStationFavorite(trainStationId: Int): Boolean {
+        return repo.getTrainFavorites().any({ it == trainStationId })
     }
 
-    fun getTrainFilter(context: Context, stationId: Int, line: TrainLine, direction: TrainDirection): Boolean {
-        return repo.getTrainFilter(context, stationId, line, direction)
+    fun getTrainFilter(stationId: Int, line: TrainLine, direction: TrainDirection): Boolean {
+        return repo.getTrainFilter(stationId, line, direction)
     }
 
-    fun saveTrainFilter(context: Context, stationId: Int, line: TrainLine, direction: TrainDirection, value: Boolean) {
-        repo.saveTrainFilter(context, stationId, line, direction, value)
+    fun saveTrainFilter(stationId: Int, line: TrainLine, direction: TrainDirection, value: Boolean) {
+        repo.saveTrainFilter(stationId, line, direction, value)
     }
 
-    fun addBikeRouteNameMapping(context: Context, bikeId: String, bikeName: String) {
-        repo.addBikeRouteNameMapping(context, bikeId, bikeName)
+    fun addBikeRouteNameMapping(bikeId: String, bikeName: String) {
+        repo.addBikeRouteNameMapping(bikeId, bikeName)
     }
 
-    fun addBusRouteNameMapping(context: Context, busStopId: String, routeName: String) {
-        repo.addBikeRouteNameMapping(context, busStopId, routeName)
+    fun addBusRouteNameMapping(busStopId: String, routeName: String) {
+        repo.addBikeRouteNameMapping(busStopId, routeName)
     }
 
-    fun addBusStopNameMapping(context: Context, busStopId: String, stopName: String) {
-        repo.addBusStopNameMapping(context, busStopId, stopName)
+    fun addBusStopNameMapping(busStopId: String, stopName: String) {
+        repo.addBusStopNameMapping(busStopId, stopName)
     }
 
-    fun hasFavorites(context: Context): Boolean {
-        return repo.hasFavorites(context)
+    fun hasFavorites(): Boolean {
+        return repo.hasFavorites()
     }
 
-    fun clearPreferences(context: Context) {
-        repo.clearPreferences(context)
+    fun clearPreferences() {
+        repo.clearPreferences()
     }
 
-    fun getRateLastSeen(context: Context): Date {
-        return repo.getRateLastSeen(context)
+    fun getRateLastSeen(): Date {
+        return repo.getRateLastSeen()
     }
 
-    fun setRateLastSeen(context: Context) {
-        repo.setRateLastSeen(context)
+    fun setRateLastSeen() {
+        repo.setRateLastSeen()
     }
 
     // Favorites
-    fun isStopFavorite(context: Context, busRouteId: String, busStopId: Int, boundTitle: String): Boolean {
-        return !repo.getBusFavorites(context)
+    fun isStopFavorite(busRouteId: String, busStopId: Int, boundTitle: String): Boolean {
+        return !repo.getBusFavorites()
             .firstOrNull({ favorite -> favorite == busRouteId + "_" + busStopId + "_" + boundTitle })
             .isNullOrBlank()
     }
 
-    fun isBikeStationFavorite(context: Context, bikeStationId: Int): Boolean {
-        return !repo.getBikeFavorites(context)
+    fun isBikeStationFavorite(bikeStationId: Int): Boolean {
+        return !repo.getBikeFavorites()
             .firstOrNull({ it.toInt() == bikeStationId })
             .isNullOrBlank()
     }
 
     fun addToBikeFavorites(stationId: Int, view: View) {
-        val favorites = repo.getBikeFavorites(view.context)
+        val favorites = repo.getBikeFavorites()
         if (!favorites.contains(stationId.toString())) {
             favorites.add(stationId.toString())
-            repo.saveBikeFavorites(view.context, favorites)
-            Util.showSnackBar(view, R.string.message_add_fav)
+            repo.saveBikeFavorites(favorites)
+            util.showSnackBar(view, R.string.message_add_fav)
         }
     }
 
     fun addToBusFavorites(busRouteId: String, busStopId: String, bound: String, view: View) {
         val id = busRouteId + "_" + busStopId + "_" + bound
-        val favorites = repo.getBusFavorites(view.context)
+        val favorites = repo.getBusFavorites()
         if (!favorites.contains(id)) {
             favorites.add(id)
-            repo.saveBusFavorites(view.context, favorites)
-            Util.showSnackBar(view, R.string.message_add_fav)
+            repo.saveBusFavorites(favorites)
+            util.showSnackBar(view, R.string.message_add_fav)
         }
     }
 
     fun addToTrainFavorites(stationId: Int, view: View) {
-        val favorites = repo.getTrainFavorites(view.context).toMutableList()
+        val favorites = repo.getTrainFavorites().toMutableList()
         if (!favorites.contains(stationId)) {
             favorites.add(stationId)
-            repo.saveTrainFavorites(view.context, favorites)
-            Util.showSnackBar(view, R.string.message_add_fav)
+            repo.saveTrainFavorites(favorites)
+            util.showSnackBar(view, R.string.message_add_fav)
         }
     }
 
     fun getFavoritesBusParams(context: Context): MultiValuedMap<String, String> {
         val paramsBus = ArrayListValuedHashMap<String, String>()
-        val busFavorites = repo.getBusFavorites(context)
+        val busFavorites = repo.getBusFavorites()
         busFavorites
-            .map { Util.decodeBusFavorite(it) }
+            .map { util.decodeBusFavorite(it) }
             .forEach { (routeId, stopId) ->
                 paramsBus.put(context.getString(R.string.request_rt), routeId)
                 paramsBus.put(context.getString(R.string.request_stop_id), stopId)
@@ -110,30 +111,30 @@ object PreferenceService {
 
     fun getFavoritesTrainParams(context: Context): MultiValuedMap<String, String> {
         val paramsTrain = ArrayListValuedHashMap<String, String>()
-        val favorites = repo.getTrainFavorites(context)
+        val favorites = repo.getTrainFavorites()
         favorites.forEach { favorite -> paramsTrain.put(context.getString(R.string.request_map_id), favorite.toString()) }
         return paramsTrain
     }
 
     fun removeFromBusFavorites(busRouteId: String, busStopId: String, bound: String, view: View) {
         val id = busRouteId + "_" + busStopId + "_" + bound
-        val favorites = repo.getBusFavorites(view.context)
+        val favorites = repo.getBusFavorites()
         favorites.remove(id)
-        repo.saveBusFavorites(view.context, favorites)
-        Util.showSnackBar(view, R.string.message_remove_fav)
+        repo.saveBusFavorites(favorites)
+        util.showSnackBar(view, R.string.message_remove_fav)
     }
 
     fun removeFromBikeFavorites(stationId: Int, view: View) {
-        val favorites = repo.getBikeFavorites(view.context)
+        val favorites = repo.getBikeFavorites()
         favorites.remove(Integer.toString(stationId))
-        repo.saveBikeFavorites(view.context, favorites)
-        Util.showSnackBar(view, R.string.message_remove_fav)
+        repo.saveBikeFavorites(favorites)
+        util.showSnackBar(view, R.string.message_remove_fav)
     }
 
     fun removeFromTrainFavorites(stationId: Int, view: View) {
-        val favorites = repo.getTrainFavorites(view.context).toMutableList()
+        val favorites = repo.getTrainFavorites().toMutableList()
         favorites.remove(stationId)
-        repo.saveTrainFavorites(view.context, favorites)
-        Util.showSnackBar(view, R.string.message_remove_fav)
+        repo.saveTrainFavorites(favorites)
+        util.showSnackBar(view, R.string.message_remove_fav)
     }
 }

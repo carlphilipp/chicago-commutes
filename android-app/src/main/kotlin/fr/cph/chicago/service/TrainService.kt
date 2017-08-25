@@ -18,7 +18,10 @@ import org.apache.commons.lang3.StringUtils
 
 object TrainService {
 
+    private val trainRepository = TrainRepository
     private val preferencesService = PreferenceService
+    private val ctaClient = CtaClient
+    private val xmlParser = XmlParser
 
     fun loadFavoritesTrain(context: Context): SparseArray<TrainArrival> {
         val trainParams = preferencesService.getFavoritesTrainParams(context)
@@ -28,8 +31,8 @@ object TrainService {
                 if ("mapid" == key) {
                     val list = value as List<String>
                     if (list.size < 5) {
-                        val xmlResult = CtaClient.connect(TRAIN_ARRIVALS, trainParams)
-                        trainArrivals = XmlParser.parseArrivals(xmlResult)
+                        val xmlResult = ctaClient.connect(TRAIN_ARRIVALS, trainParams)
+                        trainArrivals = xmlParser.parseArrivals(xmlResult)
                     } else {
                         val size = list.size
                         var start = 0
@@ -40,8 +43,8 @@ object TrainService {
                             for (sub in subList) {
                                 paramsTemp.put(key, sub)
                             }
-                            val xmlResult = CtaClient.connect(TRAIN_ARRIVALS, paramsTemp)
-                            val temp = XmlParser.parseArrivals(xmlResult)
+                            val xmlResult = ctaClient.connect(TRAIN_ARRIVALS, paramsTemp)
+                            val temp = xmlParser.parseArrivals(xmlResult)
                             for (j in 0..temp.size() - 1) {
                                 trainArrivals.put(temp.keyAt(j), temp.valueAt(j))
                             }
@@ -62,10 +65,7 @@ object TrainService {
                 val trainArrival = trainArrivals.valueAt(index++)
                 val etas = trainArrival.etas
                 trainArrival.etas = etas
-                    .filter { (station, stop, line) ->
-                        val direction = stop.direction
-                        preferencesService.getTrainFilter(context, station.id, line, direction)
-                    }
+                    .filter { (station, stop, line) -> preferencesService.getTrainFilter(station.id, line, stop.direction) }
                     .sorted()
                     .toMutableList()
             }
@@ -77,7 +77,7 @@ object TrainService {
 
     fun loadLocalTrainData(): SparseArray<Station> {
         // Force loading train from CSV toi avoid doing it later
-        return TrainRepository.stations
+        return trainRepository.stations
     }
 
     fun loadStationTrainArrival(context: Context, stationId: Int): TrainArrival {
@@ -85,8 +85,8 @@ object TrainService {
             val params = ArrayListValuedHashMap<String, String>()
             params.put(context.getString(R.string.request_map_id), Integer.toString(stationId))
 
-            val xmlResult = CtaClient.connect(TRAIN_ARRIVALS, params)
-            val arrivals = XmlParser.parseArrivals(xmlResult)
+            val xmlResult = ctaClient.connect(TRAIN_ARRIVALS, params)
+            val arrivals = xmlParser.parseArrivals(xmlResult)
             return if (arrivals.size() == 1)
                 arrivals.get(stationId)
             else
@@ -96,36 +96,36 @@ object TrainService {
         }
     }
 
-    fun getAllStations(): MutableMap<TrainLine, MutableList<Station>> {
-        return TrainRepository.allStations
+    private fun getAllStations(): MutableMap<TrainLine, MutableList<Station>> {
+        return trainRepository.allStations
     }
 
     fun setStationError(value: Boolean) {
-        TrainRepository.error = value
+        trainRepository.error = value
     }
 
     fun getStationError(): Boolean {
-        return TrainRepository.error
+        return trainRepository.error
     }
 
     fun getStation(id: Int): Station {
-        return TrainRepository.getStation(id)
+        return trainRepository.getStation(id)
     }
 
-    fun readPattern(context: Context, line: TrainLine): List<Position> {
-        return TrainRepository.readPattern(context, line)
+    fun readPattern(line: TrainLine): List<Position> {
+        return trainRepository.readPattern(line)
     }
 
     fun getStop(id: Int): Stop {
-        return TrainRepository.getStop(id)
+        return trainRepository.getStop(id)
     }
 
     fun readNearbyStation(position: Position): List<Station> {
-        return TrainRepository.readNearbyStation(position)
+        return trainRepository.readNearbyStation(position)
     }
 
     fun getStationsForLine(line: TrainLine): List<Station> {
-        return TrainRepository.allStations[line]!!
+        return trainRepository.allStations[line]!!
     }
 
     fun searchStations(query: String): List<Station> {

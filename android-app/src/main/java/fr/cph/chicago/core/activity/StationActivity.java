@@ -223,13 +223,13 @@ public class StationActivity extends AbstractStationActivity {
                 linearLayout.setLayoutParams(paramsStop);
 
                 final AppCompatCheckBox checkBox = new AppCompatCheckBox(this);
-                checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> preferenceService.saveTrainFilter(getApplicationContext(), stationId, line, stop.getDirection(), isChecked));
+                checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> preferenceService.saveTrainFilter(stationId, line, stop.getDirection(), isChecked));
                 checkBox.setOnClickListener(v -> {
                     if (checkBox.isChecked()) {
                         trainArrivalObservable.subscribe(new TrainArrivalObserver(this, swipeRefreshLayout));
                     }
                 });
-                checkBox.setChecked(preferenceService.getTrainFilter(getApplicationContext(), stationId, line, stop.getDirection()));
+                checkBox.setChecked(preferenceService.getTrainFilter(stationId, line, stop.getDirection()));
                 checkBox.setTypeface(checkBox.getTypeface(), Typeface.BOLD);
                 checkBox.setText(stop.getDirection().toString());
                 checkBox.setTextColor(grey);
@@ -310,12 +310,7 @@ public class StationActivity extends AbstractStationActivity {
      */
     @Override
     protected boolean isFavorite() {
-        return PreferenceService.INSTANCE.isTrainStationFavorite(getApplicationContext(), stationId);
-/*        final List<Integer> favorites = preferenceRepository.getTrainFavorites(getApplicationContext());
-        return Stream.of(favorites)
-            .filter(favorite -> favorite == stationId)
-            .findFirst()
-            .isPresent();*/
+        return preferenceService.isTrainStationFavorite(stationId);
     }
 
     // FIXME: delete view instead of hiding it

@@ -225,7 +225,7 @@ public class BikeStationActivity extends AbstractStationActivity {
      */
     @Override
     protected boolean isFavorite() {
-        return preferenceService.isBikeStationFavorite(getApplicationContext(), bikeStation.getId());
+        return preferenceService.isBikeStationFavorite(bikeStation.getId());
     }
 
     public void refreshStation(@NonNull final BikeStation station) {
@@ -243,7 +243,7 @@ public class BikeStationActivity extends AbstractStationActivity {
             isFavorite = false;
         } else {
             preferenceService.addToBikeFavorites(bikeStation.getId(), swipeRefreshLayout);
-            preferenceService.addBikeRouteNameMapping(getApplicationContext(), Integer.toString(bikeStation.getId()), bikeStation.getName());
+            preferenceService.addBikeRouteNameMapping(Integer.toString(bikeStation.getId()), bikeStation.getName());
             favoritesImage.setColorFilter(yellowLineDark);
             isFavorite = true;
         }

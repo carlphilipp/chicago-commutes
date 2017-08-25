@@ -95,8 +95,8 @@ public class SettingsFragment extends AbstractFragment {
 
     private void cleanLocalData() {
         deleteCache(getContext());
-        preferenceService.clearPreferences(getContext());
-        realmConfig.cleanRealm(getContext());
+        preferenceService.clearPreferences();
+        realmConfig.cleanRealm();
     }
 
     private void deleteCache(final Context context) {

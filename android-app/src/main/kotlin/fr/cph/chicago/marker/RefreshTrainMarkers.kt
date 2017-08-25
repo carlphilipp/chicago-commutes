@@ -29,4 +29,4 @@ import fr.cph.chicago.R
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class RefreshTrainMarkers(context: Context) : RefreshMarkers(context, R.drawable.train)
+class RefreshTrainMarkers : RefreshMarkers(R.drawable.train)

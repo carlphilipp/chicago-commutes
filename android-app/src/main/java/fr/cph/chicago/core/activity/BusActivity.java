@@ -281,7 +281,7 @@ public class BusActivity extends AbstractStationActivity {
 
     @Override
     protected boolean isFavorite() {
-        return preferenceService.isStopFavorite(getApplicationContext(), busRouteId, busStopId, boundTitle);
+        return preferenceService.isStopFavorite(busRouteId, busStopId, boundTitle);
     }
 
     /**
@@ -294,8 +294,8 @@ public class BusActivity extends AbstractStationActivity {
             isFavorite = false;
         } else {
             preferenceService.addToBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, scrollView);
-            preferenceService.addBusRouteNameMapping(getApplicationContext(), String.valueOf(busStopId), busRouteName);
-            preferenceService.addBusStopNameMapping(getApplicationContext(), String.valueOf(busStopId), busStopName);
+            preferenceService.addBusRouteNameMapping(String.valueOf(busStopId), busRouteName);
+            preferenceService.addBusStopNameMapping(String.valueOf(busStopId), busStopName);
             favoritesImage.setColorFilter(yellowLineDark);
             isFavorite = true;
         }

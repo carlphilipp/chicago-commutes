@@ -1,6 +1,5 @@
 package fr.cph.chicago.repository
 
-import android.util.Log
 import fr.cph.chicago.entity.BusRoute
 import fr.cph.chicago.entity.BusStop
 import fr.cph.chicago.entity.Position
@@ -8,7 +7,6 @@ import io.realm.Realm
 
 object BusRepository {
 
-    private val TAG = BusRepository::class.java.simpleName
     private val DEFAULT_RANGE = 0.008
 
     var busRouteError: Boolean = false
@@ -40,10 +38,7 @@ object BusRepository {
         val realm = Realm.getDefaultInstance()
         realm.use {
             it.executeTransaction {
-                busStops.forEach { busStop ->
-                    Log.d(TAG, "Save bus stop $busStop")
-                    it.copyToRealm(busStop)
-                }
+                busStops.forEach { busStop -> it.copyToRealm(busStop) }
             }
         }
     }

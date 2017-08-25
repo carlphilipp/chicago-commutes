@@ -13,6 +13,7 @@ import java.util.*
 internal class BusStopCsvProcessor : RowProcessor {
 
     private val rows: MutableList<BusStop> = ArrayList(12000)
+    private val busService = BusService
 
     override fun processStarted(context: ParsingContext) {
         if (rows.isNotEmpty()) {
@@ -47,6 +48,6 @@ internal class BusStopCsvProcessor : RowProcessor {
     }
 
     override fun processEnded(context: ParsingContext) {
-        BusService.saveBusStops(rows)
+        busService.saveBusStops(rows)
     }
 }

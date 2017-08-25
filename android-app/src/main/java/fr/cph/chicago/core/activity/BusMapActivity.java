@@ -155,7 +155,7 @@ public class BusMapActivity extends AbstractMapActivity {
         busStationMarkers = new ArrayList<>();
         views = new HashMap<>();
         status = new HashMap<>();
-        refreshBusesBitmap = new RefreshBusMarkers(getApplicationContext());
+        refreshBusesBitmap = new RefreshBusMarkers();
     }
 
     @Override

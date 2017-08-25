@@ -46,7 +46,7 @@ import fr.cph.chicago.entity.enumeration.TrainLine
 object LayoutUtil {
 
     // FIXME Find a way to not use context everywhere here
-    fun createColoredRoundForFavorites(context: Context, trainLine: TrainLine): RelativeLayout {
+    private fun createColoredRoundForFavorites(context: Context, trainLine: TrainLine): RelativeLayout {
         val lineIndication = RelativeLayout(context)
         val params = RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
         params.height = context.resources.getDimensionPixelSize(R.dimen.layout_round_height)

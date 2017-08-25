@@ -19,10 +19,12 @@
 
 package fr.cph.chicago.data
 
-import android.content.Context
 import android.os.Parcelable
 import android.util.SparseArray
-import fr.cph.chicago.entity.*
+import fr.cph.chicago.entity.BikeStation
+import fr.cph.chicago.entity.BusArrival
+import fr.cph.chicago.entity.BusRoute
+import fr.cph.chicago.entity.TrainArrival
 import fr.cph.chicago.entity.dto.BusArrivalStopMappedDTO
 import fr.cph.chicago.entity.enumeration.TrainLine
 import fr.cph.chicago.repository.PreferenceRepository
@@ -41,8 +43,9 @@ import java.util.*
 // TODO to analyze and refactor
 object FavoritesData {
 
-    private val trainService: TrainService = TrainService
-    private val preferenceRepository: PreferenceRepository = PreferenceRepository
+    private val trainService = TrainService
+    private val busService = BusService
+    private val preferenceRepository = PreferenceRepository
 
     var trainArrivals: SparseArray<TrainArrival> = SparseArray()
     var busArrivals: List<BusArrival> = listOf()
@@ -67,26 +70,26 @@ object FavoritesData {
      * @param position the position
      * @return an object, station or bus route
      */
-    fun getObject(position: Int, context: Context): Parcelable {
+    fun getObject(position: Int): Parcelable {
         if (position < trainFavorites.size) {
             val stationId = trainFavorites[position]
             return trainService.getStation(stationId)
         } else if (position < trainFavorites.size + fakeBusFavorites.size && position - trainFavorites.size < fakeBusFavorites.size) {
             val index = position - trainFavorites.size
             val routeId = fakeBusFavorites[index]
-            val busDataRoute = BusService.getBusRoute(routeId)
+            val busDataRoute = busService.getBusRoute(routeId)
             if (busDataRoute.name != "error") {
                 return busDataRoute
             } else {
                 // Get name in the preferences if null
-                val routeName = preferenceRepository.getBusRouteNameMapping(context, routeId)
+                val routeName = preferenceRepository.getBusRouteNameMapping(routeId)
                 return BusRoute(routeId, routeName ?: "")
             }
         } else {
             val index = position - (trainFavorites.size + fakeBusFavorites.size)
             return bikeStations
                 .filter { (id) -> Integer.toString(id) == bikeFavorites[index] }
-                .getOrElse(0, { createEmptyBikeStation(index, context) })
+                .getOrElse(0, { createEmptyBikeStation(index) })
         }
     }
 
@@ -112,7 +115,7 @@ object FavoritesData {
      * @param routeId the route id
      * @return a nice map
      */
-    fun getBusArrivalsMapped(routeId: String, context: Context): BusArrivalStopMappedDTO {
+    fun getBusArrivalsMapped(routeId: String): BusArrivalStopMappedDTO {
         val busArrivalDTO = BusArrivalStopMappedDTO()
         busArrivals
             .filter { (_, _, _, _, _, routeId1) -> routeId1 == routeId }
@@ -120,20 +123,20 @@ object FavoritesData {
             .forEach({ busArrivalDTO.addBusArrival(it) })
 
         // Put empty buses if one of the stop is missing from the response
-        addNoServiceBusIfNeeded(busArrivalDTO, routeId, context)
+        addNoServiceBusIfNeeded(busArrivalDTO, routeId)
         return busArrivalDTO
     }
 
-    fun refreshFavorites(context: Context) {
-        trainFavorites = preferenceRepository.getTrainFavorites(context)
-        busFavorites = preferenceRepository.getBusFavorites(context)
+    fun refreshFavorites() {
+        trainFavorites = preferenceRepository.getTrainFavorites()
+        busFavorites = preferenceRepository.getBusFavorites()
         fakeBusFavorites = calculateActualRouteNumberBusFavorites(busFavorites)
         bikeFavorites.clear()
-        val bikeFavoritesTemp = preferenceRepository.getBikeFavorites(context)
+        val bikeFavoritesTemp = preferenceRepository.getBikeFavorites()
         if (bikeStations.isNotEmpty()) {
             bikeFavoritesTemp
                 .flatMap { bikeStationId -> bikeStations.filter { (id) -> Integer.toString(id) == bikeStationId } }
-                .sortedWith(Util.BIKE_COMPARATOR_NAME)
+                .sortedWith(Util.bikeComparatorByName)
                 .map { (id) -> Integer.toString(id) }
                 .forEach({ bikeFavorites.add(it) })
         } else {
@@ -141,8 +144,8 @@ object FavoritesData {
         }
     }
 
-    private fun createEmptyBikeStation(index: Int, context: Context): BikeStation {
-        val stationName = preferenceRepository.getBikeRouteNameMapping(context, bikeFavorites[index])
+    private fun createEmptyBikeStation(index: Int): BikeStation {
+        val stationName = preferenceRepository.getBikeRouteNameMapping(bikeFavorites[index])
         return BikeStation.buildDefaultBikeStationWithName(stationName ?: StringUtils.EMPTY)
     }
 
@@ -169,13 +172,13 @@ object FavoritesData {
             .isNotEmpty()
     }
 
-    private fun addNoServiceBusIfNeeded(busArrivalDTO: BusArrivalStopMappedDTO, routeId: String, context: Context) {
+    private fun addNoServiceBusIfNeeded(busArrivalDTO: BusArrivalStopMappedDTO, routeId: String) {
         for (bus in busFavorites) {
             val (routeIdFav, stopId1, bound) = Util.decodeBusFavorite(bus)
             if (routeIdFav == routeId) {
                 val stopId = Integer.valueOf(stopId1)
 
-                var stopName = preferenceRepository.getBusStopNameMapping(context, stopId.toString())
+                var stopName = preferenceRepository.getBusStopNameMapping(stopId.toString())
                 stopName = if (stopName != null) stopName else stopId.toString()
 
                 // FIXME check if that logic works. I think it does not. In what case do we show that bus arrival?

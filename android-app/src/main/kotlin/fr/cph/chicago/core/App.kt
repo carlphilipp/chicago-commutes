@@ -60,12 +60,14 @@ class App : Application() {
         if (screenWidth > 1080) 7f else if (screenWidth > 480) 4f else 2f
     }
 
+
     override fun onCreate() {
         super.onCreate()
         ctaTrainKey = applicationContext.getString(R.string.cta_train_key)
         ctaBusKey = applicationContext.getString(R.string.cta_bus_key)
         googleStreetKey = applicationContext.getString(R.string.google_maps_api_key)
         appResources = applicationContext.resources
+        instance = this
     }
 
     private val screenSize: IntArray by lazy {
@@ -81,9 +83,13 @@ class App : Application() {
         lateinit var ctaBusKey: String
         lateinit var googleStreetKey: String
         lateinit var appResources: Resources
+        lateinit var instance: App
+
+        val trainService = TrainService
+        val busService = BusService
 
         fun checkTrainData(activity: Activity): Boolean {
-            if (TrainService.getStationError()) {
+            if (trainService.getStationError()) {
                 startErrorActivity(activity)
                 return false
             }
@@ -91,7 +97,7 @@ class App : Application() {
         }
 
         fun checkBusData(activity: Activity) {
-            if (BusService.busRouteError()) {
+            if (busService.busRouteError()) {
                 startErrorActivity(activity)
             }
         }

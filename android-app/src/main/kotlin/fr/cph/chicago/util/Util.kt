@@ -58,15 +58,15 @@ import java.util.regex.Pattern
  */
 object Util {
 
-    val BIKE_COMPARATOR_NAME: Comparator<BikeStation> = BikeStationComparator()
-    val BUS_STOP_COMPARATOR_NAME: Comparator<BusRoute> = BusStopComparator()
+    val bikeComparatorByName: Comparator<BikeStation> = BikeStationComparator()
+    val busStopComparatorByName: Comparator<BusRoute> = BusStopComparator()
     private val preferenceService = PreferenceService
 
     private val PATTERN = Pattern.compile("(\\d{1,3})")
     private val sNextGeneratedId = AtomicInteger(1)
 
-    fun chicago(): LatLng {
-        return LatLng(41.8819, -87.6278)
+    val chicago: LatLng by lazy {
+         LatLng(41.8819, -87.6278)
     }
 
     fun generateViewId(): Int {
@@ -215,7 +215,7 @@ object Util {
                 val latLng = LatLng(position.latitude, position.longitude)
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
             } else {
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(chicago(), 10f))
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(chicago, 10f))
             }
         }
     }
@@ -276,11 +276,11 @@ object Util {
         val handler = Handler()
         val r = {
             val now = Date()
-            val lastSeen = preferenceService.getRateLastSeen(view.context)
+            val lastSeen = preferenceService.getRateLastSeen()
             // if it has been more than 30 days or if it's the first time
             if (now.time - lastSeen.time > 2592000000L || now.time - lastSeen.time < 1000L) {
                 showRateSnackBar(view, activity)
-                preferenceService.setRateLastSeen(view.context)
+                preferenceService.setRateLastSeen()
             }
         }
         handler.postDelayed(r, 2500L)

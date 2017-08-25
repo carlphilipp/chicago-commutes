@@ -85,7 +85,7 @@ class BusAdapter(private val app: App) : BaseAdapter() {
                     Util.handleConnectOrParserException(throwable, null, view, holder.detailsLayout)
                     Log.e(TAG, throwable.message, throwable)
                 }
-                .subscribe(BusDirectionObserver(app, parent, holder.detailsLayout, route))
+                .subscribe(BusDirectionObserver(app.screenWidth, parent, holder.detailsLayout, route))
         }
         return view
     }

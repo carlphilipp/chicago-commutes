@@ -206,7 +206,7 @@ public class BusBoundActivity extends ListActivity {
         if (mapFragment == null) {
             final android.app.FragmentManager fm = getFragmentManager();
             final GoogleMapOptions options = new GoogleMapOptions();
-            final CameraPosition camera = new CameraPosition(util.chicago(), 7, 0, 0);
+            final CameraPosition camera = new CameraPosition(util.getChicago(), 7, 0, 0);
             options.camera(camera);
             mapFragment = MapFragment.newInstance(options);
             mapFragment.setRetainInstance(true);
@@ -229,7 +229,7 @@ public class BusBoundActivity extends ListActivity {
                             final int center = busPattern.getPoints().size() / 2;
                             final Position position = busPattern.getPoints().get(center).getPosition();
                             if (position.getLatitude() == 0 && position.getLongitude() == 0) {
-                                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(util.chicago(), 10));
+                                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(util.getChicago(), 10));
                             } else {
                                 final LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
                                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));

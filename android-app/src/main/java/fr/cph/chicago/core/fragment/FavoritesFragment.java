@@ -239,7 +239,7 @@ public class FavoritesFragment extends AbstractFragment {
         if (refreshTimingTask.getStatus() == Status.FINISHED) {
             startRefreshTask();
         }
-        boolean hasFav = preferenceService.hasFavorites(getContext());
+        boolean hasFav = preferenceService.hasFavorites();
         welcomeLayout.setVisibility(hasFav ? View.GONE : View.VISIBLE);
     }
 
