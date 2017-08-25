@@ -6,6 +6,8 @@ import fr.cph.chicago.R
 import fr.cph.chicago.client.CtaClient
 import fr.cph.chicago.client.CtaRequestType.*
 import fr.cph.chicago.entity.*
+import fr.cph.chicago.exception.ConnectException
+import fr.cph.chicago.exception.ParserException
 import fr.cph.chicago.parser.BusStopCsvParser
 import fr.cph.chicago.parser.XmlParser
 import fr.cph.chicago.repository.BusRepository
@@ -138,7 +140,7 @@ object BusService {
     fun loadBus(context: Context, busId: Int, busRouteId: String): List<Bus> {
         val connectParam = ArrayListValuedHashMap<String, String>()
         if (busId != 0) {
-            connectParam.put(context.getString(R.string.request_vid), Integer.toString(busId))
+            connectParam.put(context.getString(R.string.request_vid), busId.toString())
         } else {
             connectParam.put(context.getString(R.string.request_rt), busRouteId)
         }
@@ -195,5 +197,14 @@ object BusService {
             .filter { (id, name) -> containsIgnoreCase(id, query) || containsIgnoreCase(name, query) }
             .distinct()
             .sortedWith(Util.busStopComparatorByName)
+    }
+
+    @Throws(ParserException::class, ConnectException::class)
+    fun loadBusArrivals(requestRt: String, busRouteId: String, requestStopId: String, busStopId: Int, predicate: (BusArrival) -> (Boolean) ): List<BusArrival> {
+        val reqParams = ArrayListValuedHashMap<String, String>()
+        reqParams.put(requestRt, busRouteId)
+        reqParams.put(requestStopId, busStopId.toString())
+        val xmlResult = ctaClient.connect(BUS_ARRIVALS, reqParams)
+        return xmlParser.parseBusArrivals(xmlResult).filter(predicate)
     }
 }

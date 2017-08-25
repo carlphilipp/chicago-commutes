@@ -29,10 +29,6 @@ import android.widget.TextView;
 
 import com.annimon.stream.Stream;
 
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,7 +40,6 @@ import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import fr.cph.chicago.R;
-import fr.cph.chicago.client.CtaClient;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener;
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener;
@@ -55,12 +50,11 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
-import fr.cph.chicago.parser.XmlParser;
+import fr.cph.chicago.service.BusService;
 import fr.cph.chicago.service.PreferenceService;
 import fr.cph.chicago.util.Util;
 
 import static fr.cph.chicago.Constants.BUSES_PATTERN_URL;
-import static fr.cph.chicago.client.CtaRequestType.BUS_ARRIVALS;
 
 /**
  * Activity that represents the bus stop
@@ -130,6 +124,7 @@ public class BusActivity extends AbstractStationActivity {
 
     private final Util util;
     private final PreferenceService preferenceService;
+    private final BusService busService;
 
     private List<BusArrival> busArrivals;
     private String busRouteId, bound, boundTitle;
@@ -141,6 +136,7 @@ public class BusActivity extends AbstractStationActivity {
     public BusActivity() {
         util = Util.INSTANCE;
         preferenceService = PreferenceService.INSTANCE;
+        busService = BusService.INSTANCE;
     }
 
     @Override
@@ -242,13 +238,17 @@ public class BusActivity extends AbstractStationActivity {
     }
 
     /**
-     * Draw arrivals in current main.java.fr.cph.chicago.res.layout
+     * Draw arrivals in current layout
      */
     public void drawArrivals() {
         final Map<String, List<TextView>> tempMap = new HashMap<>();
-        if (busArrivals.size() != 0) {
+        if (busArrivals.isEmpty()) {
+            final TextView arrivalView = new TextView(getApplicationContext());
+            arrivalView.setTextColor(grey);
+            arrivalView.setText(busActivityNoService);
+            tempMap.put("", Collections.singletonList(arrivalView));
+        } else {
             Stream.of(busArrivals)
-                .filter(arrival -> arrival.getRouteDirection().equals(bound) || arrival.getRouteDirection().equals(boundTitle))
                 .forEach(arrival -> {
                     final String destination = arrival.getBusDestination();
                     if (tempMap.containsKey(destination)) {
@@ -269,11 +269,6 @@ public class BusActivity extends AbstractStationActivity {
                         tempMap.put(destination, textViews);
                     }
                 });
-        } else {
-            final TextView arrivalView = new TextView(getApplicationContext());
-            arrivalView.setTextColor(grey);
-            arrivalView.setText(busActivityNoService);
-            tempMap.put("", Collections.singletonList(arrivalView));
         }
         stopsView.removeAllViews();
         Stream.of(tempMap.entrySet()).flatMap(stringListEntry -> Stream.of(stringListEntry.getValue())).forEach(textView -> stopsView.addView(textView));
@@ -304,24 +299,12 @@ public class BusActivity extends AbstractStationActivity {
     private class LoadStationDataTask extends AsyncTask<Void, Void, List<BusArrival>> {
 
         private TrackerException trackerException;
-        private final CtaClient ctaClient;
-        private final XmlParser xmlParser;
-
-        private LoadStationDataTask() {
-            ctaClient = CtaClient.INSTANCE;
-            xmlParser = XmlParser.INSTANCE;
-        }
 
         @Override
         protected List<BusArrival> doInBackground(final Void... params) {
-            final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-            reqParams.put(requestRt, busRouteId);
-            reqParams.put(requestStopId, Integer.toString(busStopId));
             try {
-                // HttpClient to CTA API bus to get XML result of inc buses
-                final InputStream xmlResult = ctaClient.connect(BUS_ARRIVALS, reqParams);
-                // Parse and return arrival buses
-                return xmlParser.parseBusArrivals(xmlResult);
+                return busService.loadBusArrivals(requestRt, busRouteId, requestStopId, busStopId,
+                    arrival -> arrival.getRouteDirection().equals(bound) || arrival.getRouteDirection().equals(boundTitle));
             } catch (final ParserException | ConnectException e) {
                 this.trackerException = e;
             }
