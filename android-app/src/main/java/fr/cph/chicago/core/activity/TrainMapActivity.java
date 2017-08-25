@@ -52,10 +52,14 @@ import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.Train;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.marker.RefreshTrainMarkers;
+import fr.cph.chicago.rx.ObservableUtil;
 import fr.cph.chicago.service.TrainService;
+import io.reactivex.Observable;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 import static fr.cph.chicago.Constants.TRAINS_FOLLOW_URL;
-import static fr.cph.chicago.Constants.TRAINS_LOCATION_URL;
 
 /**
  * @author Carl-Philipp Harmant
@@ -76,6 +80,7 @@ public class TrainMapActivity extends AbstractMapActivity {
     String requestRt;
 
     private final TrainService trainService;
+    private final ObservableUtil observableUtil;
 
     private Map<Marker, View> views;
     private String line;
@@ -89,6 +94,7 @@ public class TrainMapActivity extends AbstractMapActivity {
     public TrainMapActivity() {
         this.views = new HashMap<>();
         trainService = TrainService.INSTANCE;
+        observableUtil = ObservableUtil.INSTANCE;
     }
 
     @Override
@@ -127,7 +133,8 @@ public class TrainMapActivity extends AbstractMapActivity {
     protected void setToolbar() {
         super.setToolbar();
         toolbar.setOnMenuItemClickListener((item -> {
-            new LoadTrainPositionTask(line).execute(false, true);
+            centerMap = false;
+            loadActivityData();
             return false;
         }));
 
@@ -198,17 +205,15 @@ public class TrainMapActivity extends AbstractMapActivity {
     }
 
     private void drawLine(@NonNull final List<Position> positions) {
-        if (drawLine) {
-            final PolylineOptions poly = new PolylineOptions();
-            poly.width(((App) getApplication()).getLineWidth());
-            poly.geodesic(true).color(TrainLine.Companion.fromXmlString(line).getColor());
-            Stream.of(positions)
-                .map(position -> new LatLng(position.getLatitude(), position.getLongitude()))
-                .forEach(poly::add);
+        final PolylineOptions poly = new PolylineOptions();
+        poly.width(((App) getApplication()).getLineWidth());
+        poly.geodesic(true).color(TrainLine.Companion.fromXmlString(line).getColor());
+        Stream.of(positions)
+            .map(position -> new LatLng(position.getLatitude(), position.getLongitude()))
+            .forEach(poly::add);
 
-            getGoogleMap().addPolyline(poly);
-            drawLine = false;
-        }
+        getGoogleMap().addPolyline(poly);
+        drawLine = false;
     }
 
     @Override
@@ -259,7 +264,40 @@ public class TrainMapActivity extends AbstractMapActivity {
 
     private void loadActivityData() {
         if (util.isNetworkAvailable()) {
-            new LoadTrainPositionTask(line).execute(centerMap, true);
+            // Load train location
+            final Observable<List<Train>> trainsObservable = observableUtil.createTrainLocationObservable(line);
+            // Load pattern from local file
+            final Observable<List<Position>> positionsObservable = observableUtil.createTrainPatternObservable(line);
+
+            if (drawLine) {
+                Observable.zip(trainsObservable, positionsObservable, (trains, positions) -> {
+                    if (trains != null) {
+                        drawTrains(trains);
+                        drawLine(positions);
+                        if (trains.size() != 0) {
+                            if (centerMap) {
+                                centerMapOnTrain(trains);
+                            }
+                        } else {
+                            util.showMessage(TrainMapActivity.this, R.string.message_no_train_found);
+                        }
+                    } else {
+                        util.showMessage(TrainMapActivity.this, R.string.message_error_while_loading_data);
+                    }
+                    return new Object();
+                }).subscribe();
+            } else {
+                trainsObservable.subscribe(trains -> {
+                    if (trains != null) {
+                        drawTrains(trains);
+                        if (trains.size() == 0) {
+                            util.showMessage(TrainMapActivity.this, R.string.message_no_train_found);
+                        }
+                    } else {
+                        util.showMessage(TrainMapActivity.this, R.string.message_error_while_loading_data);
+                    }
+                });
+            }
         } else {
             util.showNetworkErrorMessage(layout);
         }
@@ -312,42 +350,6 @@ public class TrainMapActivity extends AbstractMapActivity {
                 error.setVisibility(TextView.VISIBLE);
             }
             refreshInfoWindow();
-        }
-    }
-
-    private class LoadTrainPositionTask extends AsyncTask<Boolean, Void, List<Train>> {
-
-        private final String line;
-
-        private boolean centerMap;
-        private List<Position> positions;
-
-        private LoadTrainPositionTask(@NonNull final String line) {
-            this.line = line;
-        }
-
-        @Override
-        protected List<Train> doInBackground(final Boolean... params) {
-            centerMap = params[0];
-            final List<Train> trains = trainService.getTrainLocation(line);
-            util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_LOCATION_URL);
-            positions = trainService.readPattern(TrainLine.Companion.fromXmlString(line));
-            return trains;
-        }
-
-        @Override
-        protected final void onPostExecute(final List<Train> trains) {
-            if (trains != null) {
-                drawTrains(trains);
-                drawLine(positions);
-                if (trains.size() != 0 && centerMap) {
-                    centerMapOnTrain(trains);
-                } else {
-                    util.showMessage(TrainMapActivity.this, R.string.message_no_train_found);
-                }
-            } else {
-                util.showMessage(TrainMapActivity.this, R.string.message_error_while_loading_data);
-            }
         }
     }
 }

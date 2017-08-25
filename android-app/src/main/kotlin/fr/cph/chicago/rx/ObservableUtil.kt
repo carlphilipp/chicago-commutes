@@ -1,7 +1,6 @@
 package fr.cph.chicago.rx
 
 import android.app.Application
-import android.content.Context
 import android.util.Log
 import android.util.SparseArray
 import fr.cph.chicago.core.App
@@ -10,6 +9,7 @@ import fr.cph.chicago.entity.dto.BusArrivalDTO
 import fr.cph.chicago.entity.dto.FavoritesDTO
 import fr.cph.chicago.entity.dto.FirstLoadDTO
 import fr.cph.chicago.entity.dto.TrainArrivalDTO
+import fr.cph.chicago.entity.enumeration.TrainLine
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
@@ -213,5 +213,27 @@ object ObservableUtil {
         }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    fun createTrainLocationObservable(line: String): Observable<List<Train>> {
+        return Observable.create { observableOnSubscribe: ObservableEmitter<List<Train>> ->
+            if (!observableOnSubscribe.isDisposed) {
+                observableOnSubscribe.onNext(trainService.getTrainLocation(line))
+                observableOnSubscribe.onComplete()
+            }
+        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    fun createTrainPatternObservable(line: String): Observable<List<Position>> {
+        return Observable.create { observableOnSubscribe: ObservableEmitter<List<Position>> ->
+            if (!observableOnSubscribe.isDisposed) {
+                observableOnSubscribe.onNext(trainService.readPattern(TrainLine.fromXmlString(line)))
+                observableOnSubscribe.onComplete()
+            }
+        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread());
     }
 }
