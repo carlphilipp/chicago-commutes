@@ -175,7 +175,7 @@ public class BusMapActivity extends AbstractMapActivity {
     public void centerMapOnBus(@NonNull final List<Bus> result) {
         final boolean sizeIsOne = result.size() == 1;
         final Position position = sizeIsOne ? result.get(0).getPosition() : Bus.Companion.getBestPosition(result);
-        final int zoom = sizeIsOne ? 15 : 11;
+        final int zoom = sizeIsOne ? 15 : 11; // FIXME magic numbers
         centerMapOn(position.getLatitude(), position.getLongitude(), zoom);
     }
 
@@ -185,7 +185,8 @@ public class BusMapActivity extends AbstractMapActivity {
         Stream.of(buses).forEach(bus -> {
             final LatLng point = new LatLng(bus.getPosition().getLatitude(), bus.getPosition().getLongitude());
             final Marker marker = getGoogleMap().addMarker(
-                new MarkerOptions().position(point)
+                new MarkerOptions()
+                    .position(point)
                     .title("To " + bus.getDestination())
                     .snippet(bus.getId() + "")
                     .icon(bitmapDescr)
@@ -274,7 +275,7 @@ public class BusMapActivity extends AbstractMapActivity {
 
             @Override
             public View getInfoContents(final Marker marker) {
-                if (!"".equals(marker.getSnippet())) {
+                if (marker.getTitle().startsWith("To ")) {
                     final View view = views.get(marker);
                     if (!refreshingInfoWindow) {
                         setSelectedMarker(marker);
@@ -292,7 +293,7 @@ public class BusMapActivity extends AbstractMapActivity {
         });
 
         getGoogleMap().setOnInfoWindowClickListener(marker -> {
-            if (!"".equals(marker.getSnippet())) {
+            if (marker.getTitle().startsWith("To ")) {
                 final View view = views.get(marker);
                 if (!refreshingInfoWindow) {
                     setSelectedMarker(marker);
@@ -347,6 +348,8 @@ public class BusMapActivity extends AbstractMapActivity {
                     }
                     util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_DIRECTION_URL);
                 }
+
+                //Stream.of(busService.loadBusPattern(busRouteId, bounds)).forEach(this.patterns::add);
 
                 final MultiValuedMap<String, String> routeIdParam = new ArrayListValuedHashMap<>();
                 routeIdParam.put(requestRt, busRouteId);

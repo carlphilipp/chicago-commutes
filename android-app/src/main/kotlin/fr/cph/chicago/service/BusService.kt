@@ -121,7 +121,7 @@ object BusService {
     }
 
     fun loadBusPattern(busRouteId: String, bound: String): BusPattern {
-        val connectParam = ArrayListValuedHashMap<String, String>()
+/*        val connectParam = ArrayListValuedHashMap<String, String>()
         connectParam.put(App.instance.getString(R.string.request_rt), busRouteId)
         val boundIgnoreCase = bound.toLowerCase(Locale.US)
         try {
@@ -133,6 +133,25 @@ object BusService {
                     pattern.direction == bound || boundIgnoreCase.contains(directionIgnoreCase)
                 }
                 .getOrElse(0, { BusPattern("error", mutableListOf()) })
+        } catch (throwable: Throwable) {
+            throw Exceptions.propagate(throwable)
+        }*/
+        return loadBusPattern(busRouteId, arrayOf(bound)).getOrElse(0, { BusPattern("error", mutableListOf()) })
+    }
+
+    @Throws(ParserException::class, ConnectException::class)
+    fun loadBusPattern(busRouteId: String, bounds: Array<String>): List<BusPattern> {
+        val connectParam = ArrayListValuedHashMap<String, String>()
+        connectParam.put(App.instance.getString(R.string.request_rt), busRouteId)
+        val boundIgnoreCase = bounds.map { bound -> bound.toLowerCase(Locale.US) }
+        try {
+            val content = ctaClient.connect(BUS_PATTERN, connectParam)
+            val patterns = xmlParser.parsePatterns(content)
+            return patterns
+                .filter { pattern ->
+                    val directionIgnoreCase = pattern.direction.toLowerCase(Locale.US)
+                    boundIgnoreCase.contains(directionIgnoreCase)
+                }
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }
