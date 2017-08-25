@@ -37,7 +37,7 @@ public class CtaMapFragment extends AbstractFragment {
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        util.trackScreen((App) getActivity().getApplication(), getString(R.string.analytics_cta_map_fragment));
+        util.trackScreen(getString(R.string.analytics_cta_map_fragment));
     }
 
     @Override

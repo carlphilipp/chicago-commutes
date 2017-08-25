@@ -122,7 +122,7 @@ public class TrainMapActivity extends AbstractMapActivity {
             setToolbar();
 
             // Google analytics
-            util.trackScreen((App) getApplication(), analyticsTrainMap);
+            util.trackScreen(analyticsTrainMap);
         }
     }
 
@@ -269,7 +269,7 @@ public class TrainMapActivity extends AbstractMapActivity {
     }
 
     private void loadActivityData() {
-        if (util.isNetworkAvailable(getApplicationContext())) {
+        if (util.isNetworkAvailable()) {
             new LoadTrainPositionTask(line).execute(centerMap, true);
         } else {
             util.showNetworkErrorMessage(layout);
@@ -310,7 +310,7 @@ public class TrainMapActivity extends AbstractMapActivity {
             } catch (final ConnectException | ParserException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
-            util.trackAction((App) TrainMapActivity.this.getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_FOLLOW_URL);
+            util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_FOLLOW_URL);
             if (!loadAll && etas.size() > 7) {
                 etas = etas.subList(0, 6);
                 final Date currentDate = Calendar.getInstance().getTime();
@@ -391,7 +391,7 @@ public class TrainMapActivity extends AbstractMapActivity {
                 connectParam.put(requestRt, line);
                 final InputStream content = ctaClient.connect(TRAIN_LOCATION, connectParam);
                 trains = xmlParser.parseTrainsLocation(content);
-                util.trackAction((App) TrainMapActivity.this.getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_LOCATION_URL);
+                util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_LOCATION_URL);
             } catch (final ConnectException | ParserException e) {
                 Log.e(TAG, e.getMessage(), e);
             }

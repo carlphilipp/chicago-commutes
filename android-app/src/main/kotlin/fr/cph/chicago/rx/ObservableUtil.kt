@@ -29,10 +29,10 @@ object ObservableUtil {
     private val busService = BusService
     private val bikeService = BikeService
 
-    fun createFavoritesTrainArrivalsObservable(context: Context): Observable<TrainArrivalDTO> {
+    fun createFavoritesTrainArrivalsObservable(): Observable<TrainArrivalDTO> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<TrainArrivalDTO> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(TrainArrivalDTO(trainService.loadFavoritesTrain(context), false))
+                observableOnSubscribe.onNext(TrainArrivalDTO(trainService.loadFavoritesTrain(), false))
                 observableOnSubscribe.onComplete()
             }
         }
@@ -44,10 +44,10 @@ object ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun createTrainArrivalsObservable(context: Context, station: Station): Observable<TrainArrival> {
+    fun createTrainArrivalsObservable(station: Station): Observable<TrainArrival> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<TrainArrival> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(trainService.loadStationTrainArrival(context, station.id))
+                observableOnSubscribe.onNext(trainService.loadStationTrainArrival(station.id))
                 observableOnSubscribe.onComplete()
             }
         }
@@ -55,10 +55,10 @@ object ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun createFavoritesBusArrivalsObservable(context: Context): Observable<BusArrivalDTO> {
+    fun createFavoritesBusArrivalsObservable(): Observable<BusArrivalDTO> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<BusArrivalDTO> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(BusArrivalDTO(busService.loadFavoritesBuses(context), false))
+                observableOnSubscribe.onNext(BusArrivalDTO(busService.loadFavoritesBuses(), false))
                 observableOnSubscribe.onComplete()
             }
         }
@@ -70,10 +70,10 @@ object ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun createBusArrivalsObservable(context: Context, busStop: BusStop): Observable<List<BusArrival>> {
+    fun createBusArrivalsObservable(busStop: BusStop): Observable<List<BusArrival>> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<List<BusArrival>> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(busService.loadAroundBusArrivals(context, busStop))
+                observableOnSubscribe.onNext(busService.loadAroundBusArrivals(busStop))
                 observableOnSubscribe.onComplete()
             }
         }
@@ -117,9 +117,9 @@ object ObservableUtil {
 
     fun createAllDataObservable(application: Application): Observable<FavoritesDTO> {
         // Train online favorites
-        val trainArrivalsObservable = createFavoritesTrainArrivalsObservable(application)
+        val trainArrivalsObservable = createFavoritesTrainArrivalsObservable()
         // Bus online favorites
-        val busArrivalsObservable = createFavoritesBusArrivalsObservable(application)
+        val busArrivalsObservable = createFavoritesBusArrivalsObservable()
         // Bikes online all stations
         val bikeStationsObservable = createAllBikeStationsObservable()
         return Observable.zip(busArrivalsObservable, trainArrivalsObservable, bikeStationsObservable,
@@ -130,10 +130,10 @@ object ObservableUtil {
             })
     }
 
-    fun createBusStopBoundObservable(context: Context, stopId: String, bound: String): Observable<List<BusStop>> {
+    fun createBusStopBoundObservable(stopId: String, bound: String): Observable<List<BusStop>> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<List<BusStop>> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(busService.loadOneBusStop(context, stopId, bound))
+                observableOnSubscribe.onNext(busService.loadOneBusStop(stopId, bound))
                 observableOnSubscribe.onComplete()
             }
         }
@@ -141,10 +141,10 @@ object ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun createBusDirectionsObservable(context: Context, busRouteId: String): Observable<BusDirections> {
+    fun createBusDirectionsObservable(busRouteId: String): Observable<BusDirections> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<BusDirections> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(busService.loadBusDirections(context, busRouteId))
+                observableOnSubscribe.onNext(busService.loadBusDirections(busRouteId))
                 observableOnSubscribe.onComplete()
             }
         }
@@ -182,10 +182,10 @@ object ObservableUtil {
         return Observable.zip(busRoutesObs, bikeStationsObs, BiFunction { busRoutes, bikeStations -> FirstLoadDTO(busRoutes.isEmpty(), bikeStations.isEmpty(), busRoutes, bikeStations) })
     }
 
-    fun createFollowBusObservable(context: Context, busId: String): Observable<List<BusArrival>> {
+    fun createFollowBusObservable(busId: String): Observable<List<BusArrival>> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<List<BusArrival>> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(busService.loadFollowBus(context, busId))
+                observableOnSubscribe.onNext(busService.loadFollowBus(busId))
                 observableOnSubscribe.onComplete()
             }
         }
@@ -193,10 +193,10 @@ object ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun createBusPatternObservable(context: Context, busRouteId: String, bound: String): Observable<BusPattern> {
+    fun createBusPatternObservable(busRouteId: String, bound: String): Observable<BusPattern> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<BusPattern> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(busService.loadBusPattern(context, busRouteId, bound))
+                observableOnSubscribe.onNext(busService.loadBusPattern(busRouteId, bound))
                 observableOnSubscribe.onComplete()
             }
         }
@@ -204,10 +204,10 @@ object ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun createBusListObservable(context: Context, busId: Int, busRouteId: String): Observable<List<Bus>> {
+    fun createBusListObservable(busId: Int, busRouteId: String): Observable<List<Bus>> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<List<Bus>> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(busService.loadBus(context, busId, busRouteId))
+                observableOnSubscribe.onNext(busService.loadBus(busId, busRouteId))
                 observableOnSubscribe.onComplete()
             }
         }

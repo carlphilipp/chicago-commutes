@@ -18,7 +18,7 @@ abstract class RefreshMarkers(@DrawableRes drawable: Int) {
     var currentDescriptor: BitmapDescriptor? = null
 
     init {
-        val icon = BitmapFactory.decodeResource(App.appResources, drawable)
+        val icon = BitmapFactory.decodeResource(App.instance.resources, drawable)
         bitmapDescrSmall = createBitMapDescriptor(icon, 9)
         bitmapDescrMedium = createBitMapDescriptor(icon, 5)
         bitmapDescrLarge = createBitMapDescriptor(icon, 3)

@@ -66,7 +66,6 @@ class App : Application() {
         ctaTrainKey = applicationContext.getString(R.string.cta_train_key)
         ctaBusKey = applicationContext.getString(R.string.cta_bus_key)
         googleStreetKey = applicationContext.getString(R.string.google_maps_api_key)
-        appResources = applicationContext.resources
         instance = this
     }
 
@@ -82,7 +81,6 @@ class App : Application() {
         lateinit var ctaTrainKey: String
         lateinit var ctaBusKey: String
         lateinit var googleStreetKey: String
-        lateinit var appResources: Resources
         lateinit var instance: App
 
         val trainService = TrainService

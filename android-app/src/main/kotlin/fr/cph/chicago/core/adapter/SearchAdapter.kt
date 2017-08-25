@@ -91,7 +91,7 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
             val stationColorView: LinearLayout = view.findViewById(R.id.station_color)
 
             station.lines
-                .map { layoutUtil.createColoredRoundForMultiple(context, it) }
+                .map { layoutUtil.createColoredRoundForMultiple(it) }
                 .forEach { stationColorView.addView(it) }
 
             view.setOnClickListener(TrainOnClickListener(parent.context, station.id, station.lines))
@@ -107,7 +107,7 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
             val loadingTextView: TextView = view.findViewById(R.id.loading_text_view)
             view.setOnClickListener { _ ->
                 loadingTextView.visibility = LinearLayout.VISIBLE
-                observableUtil.createBusDirectionsObservable(parent.context, busRoute.id)
+                observableUtil.createBusDirectionsObservable(busRoute.id)
                     .doOnError { throwable ->
                         util.handleConnectOrParserException(throwable, activity, null, loadingTextView)
                         Log.e(TAG, throwable.message, throwable)

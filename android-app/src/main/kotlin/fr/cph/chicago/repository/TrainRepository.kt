@@ -82,7 +82,7 @@ object TrainRepository {
 
         var inputStreamReader: InputStreamReader? = null
         try {
-            inputStreamReader = InputStreamReader(App.appResources.assets.open(TRAIN_FILE_PATH))
+            inputStreamReader = InputStreamReader(App.instance.resources.assets.open(TRAIN_FILE_PATH))
             val allRows = parser.parseAll(inputStreamReader)
             for (i in 1 until allRows.size) {
                 val row = allRows[i]
@@ -214,7 +214,7 @@ object TrainRepository {
     fun readPattern(line: TrainLine): List<Position> {
         var inputStreamReader: InputStreamReader? = null
         try {
-            inputStreamReader = InputStreamReader(App.appResources.assets.open("train_pattern/" + line.toTextString() + "_pattern.csv"))
+            inputStreamReader = InputStreamReader(App.instance.resources.assets.open("train_pattern/" + line.toTextString() + "_pattern.csv"))
             val allRows = parser.parseAll(inputStreamReader)
             return allRows
                 .map { row ->

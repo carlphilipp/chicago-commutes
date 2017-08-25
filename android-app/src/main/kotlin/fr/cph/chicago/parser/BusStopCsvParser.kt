@@ -26,7 +26,7 @@ object BusStopCsvParser {
     fun parse() {
         var inputStreamReader: InputStreamReader? = null
         try {
-            inputStreamReader = InputStreamReader(App.appResources.assets.open(STOP_FILE_PATH))
+            inputStreamReader = InputStreamReader(App.instance.assets.open(STOP_FILE_PATH))
             parser.parse(inputStreamReader)
         } catch (e: IOException) {
             Log.e(TAG, e.message, e)

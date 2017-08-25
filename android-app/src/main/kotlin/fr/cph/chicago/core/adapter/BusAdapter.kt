@@ -80,7 +80,7 @@ class BusAdapter(private val app: App) : BaseAdapter() {
 
         view.setOnClickListener { _ ->
             holder.detailsLayout.visibility = LinearLayout.VISIBLE
-            observableUtil.createBusDirectionsObservable(parent.context, route.id)
+            observableUtil.createBusDirectionsObservable(route.id)
                 .doOnError { throwable: Throwable ->
                     util.handleConnectOrParserException(throwable, null, view, holder.detailsLayout)
                     Log.e(TAG, throwable.message, throwable)

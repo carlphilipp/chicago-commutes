@@ -1,10 +1,10 @@
 package fr.cph.chicago.service
 
-import android.content.Context
 import android.util.SparseArray
 import fr.cph.chicago.R
 import fr.cph.chicago.client.CtaClient
 import fr.cph.chicago.client.CtaRequestType.TRAIN_ARRIVALS
+import fr.cph.chicago.core.App
 import fr.cph.chicago.entity.Position
 import fr.cph.chicago.entity.Station
 import fr.cph.chicago.entity.Stop
@@ -23,8 +23,8 @@ object TrainService {
     private val ctaClient = CtaClient
     private val xmlParser = XmlParser
 
-    fun loadFavoritesTrain(context: Context): SparseArray<TrainArrival> {
-        val trainParams = preferencesService.getFavoritesTrainParams(context)
+    fun loadFavoritesTrain(): SparseArray<TrainArrival> {
+        val trainParams = preferencesService.getFavoritesTrainParams()
         var trainArrivals = SparseArray<TrainArrival>()
         try {
             for ((key, value) in trainParams.asMap()) {
@@ -80,10 +80,10 @@ object TrainService {
         return trainRepository.stations
     }
 
-    fun loadStationTrainArrival(context: Context, stationId: Int): TrainArrival {
+    fun loadStationTrainArrival(stationId: Int): TrainArrival {
         try {
             val params = ArrayListValuedHashMap<String, String>()
-            params.put(context.getString(R.string.request_map_id), Integer.toString(stationId))
+            params.put(App.instance.applicationContext.getString(R.string.request_map_id), Integer.toString(stationId))
 
             val xmlResult = ctaClient.connect(TRAIN_ARRIVALS, params)
             val arrivals = xmlParser.parseArrivals(xmlResult)

@@ -56,7 +56,7 @@ class BusStopOnClickListener(private val activity: Activity, private val parent:
             builder.setAdapter(ada) { _, position ->
                 val busDetails = busDetailsDTOs[position]
                 loadBusDetails(view, busDetails)
-                util.trackAction(activity.application as App, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_STOP_URL)
+                util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_STOP_URL)
             }
             val dialog = builder.create()
             dialog.show()
@@ -67,7 +67,7 @@ class BusStopOnClickListener(private val activity: Activity, private val parent:
     }
 
     private fun loadBusDetails(view: View, busDetails: BusDetailsDTO) {
-        observableUtil.createBusStopBoundObservable(activity, busDetails.busRouteId, busDetails.boundTitle)
+        observableUtil.createBusStopBoundObservable(busDetails.busRouteId, busDetails.boundTitle)
             .subscribe({ onNext ->
                 Observable.fromIterable(onNext)
                     .filter { busStop -> Integer.toString(busStop.id) == busDetails.stopId }

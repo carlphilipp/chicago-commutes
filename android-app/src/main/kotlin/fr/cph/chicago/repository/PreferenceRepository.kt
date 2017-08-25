@@ -107,7 +107,6 @@ object PreferenceRepository {
     /**
      * Save bus into favorites
      *
-     * @param context   the context
      * @param favorites the list of favorites to save
      */
     fun saveBusFavorites(favorites: List<String>) {
@@ -215,18 +214,18 @@ object PreferenceRepository {
     }
 
     private fun getPrivatePreferences(): SharedPreferences {
-        return App.instance.applicationContext.getSharedPreferences(PREFERENCE_FAVORITES, MODE_PRIVATE)
+        return App.instance.getSharedPreferences(PREFERENCE_FAVORITES, MODE_PRIVATE)
     }
 
     private fun getPrivatePreferencesBusStopMapping(): SharedPreferences {
-        return App.instance.applicationContext.getSharedPreferences(PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING, MODE_PRIVATE)
+        return App.instance.getSharedPreferences(PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING, MODE_PRIVATE)
     }
 
     private fun getPrivatePreferencesBusRouteMapping(): SharedPreferences {
-        return App.instance.applicationContext.getSharedPreferences(PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING, MODE_PRIVATE)
+        return App.instance.getSharedPreferences(PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING, MODE_PRIVATE)
     }
 
     private fun getPrivatePreferencesBikeMapping(): SharedPreferences {
-        return App.instance.applicationContext.getSharedPreferences(PREFERENCE_FAVORITES_BIKE_NAME_MAPPING, MODE_PRIVATE)
+        return App.instance.getSharedPreferences(PREFERENCE_FAVORITES_BIKE_NAME_MAPPING, MODE_PRIVATE)
     }
 }

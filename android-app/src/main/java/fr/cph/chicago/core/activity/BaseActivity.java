@@ -118,10 +118,10 @@ public class BaseActivity extends Activity {
             .observeOn(AndroidSchedulers.mainThread());
 
         // Train online favorites
-        final Observable<TrainArrivalDTO> trainOnlineFavorites = observableUtil.createFavoritesTrainArrivalsObservable(getApplicationContext());
+        final Observable<TrainArrivalDTO> trainOnlineFavorites = observableUtil.createFavoritesTrainArrivalsObservable();
 
         // Bus online favorites
-        final Observable<BusArrivalDTO> busOnlineFavorites = observableUtil.createFavoritesBusArrivalsObservable(getApplicationContext());
+        final Observable<BusArrivalDTO> busOnlineFavorites = observableUtil.createFavoritesBusArrivalsObservable();
 
         // Run local first and then online: Ensure that local data is loaded first
         Observable.zip(trainLocalData, busLocalData, (trainData, busData) -> true)
@@ -141,8 +141,8 @@ public class BaseActivity extends Activity {
     }
 
     private void trackWithGoogleAnalytics() {
-        util.trackAction((App) this.getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
-        util.trackAction((App) this.getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
+        util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
+        util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
     }
 
     /**

@@ -187,7 +187,7 @@ public class BusActivity extends AbstractStationActivity {
             setToolBar();
 
             // Google analytics
-            util.trackScreen((App) getApplication(), analyticsBusDetails);
+            util.trackScreen(analyticsBusDetails);
         }
     }
 
@@ -308,7 +308,7 @@ public class BusActivity extends AbstractStationActivity {
             } catch (final ParserException | ConnectException e) {
                 this.trackerException = e;
             }
-            util.trackAction((App) BusActivity.this.getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL);
+            util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL);
             return null;
         }
 

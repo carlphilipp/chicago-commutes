@@ -46,7 +46,7 @@ class TrainOnClickListener(private val context: Context,
                            private val trainLines: Set<TrainLine>) : OnClickListener {
 
     override fun onClick(view: View) {
-        if (!util.isNetworkAvailable(view.context)) {
+        if (!util.isNetworkAvailable()) {
             util.showNetworkErrorMessage(view)
         } else {
             val values = mutableListOf<String>(view.context.getString(R.string.message_open_details))

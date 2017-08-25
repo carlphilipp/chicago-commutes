@@ -116,7 +116,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         holder.favoriteImage.setImageResource(R.drawable.ic_train_white_24dp)
         holder.stationNameTextView.text = station.name
         holder.detailsButton.setOnClickListener { _ ->
-            if (!util.isNetworkAvailable(context)) {
+            if (!util.isNetworkAvailable()) {
                 util.showNetworkErrorMessage(activity)
             } else {
                 // Start station activity
@@ -130,7 +130,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
 
         holder.mapButton.text = activity.getString(R.string.favorites_view_trains)
         holder.mapButton.setOnClickListener { _ ->
-            if (!util.isNetworkAvailable(context)) {
+            if (!util.isNetworkAvailable()) {
                 util.showNetworkErrorMessage(activity)
             } else {
                 if (trainLines.size == 1) {
@@ -165,8 +165,8 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
             var newLine = true
             val etas = favoritesData.getTrainArrivalByLine(stationId, trainLine)
             for ((i, entry) in etas.entries.withIndex()) {
-                val containParams = layoutUtil.getInsideParams(activity.applicationContext, newLine, i == etas.size - 1)
-                val container = layoutUtil.createTrainArrivalsLayout(context, containParams, entry, trainLine)
+                val containParams = layoutUtil.getInsideParams(newLine, i == etas.size - 1)
+                val container = layoutUtil.createTrainArrivalsLayout(containParams, entry, trainLine)
 
                 holder.mainLayout.addView(container)
 
@@ -214,8 +214,8 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
                 busDetailsDTOs.add(busDetails)
 
                 // Build UI
-                val containParams = layoutUtil.getInsideParams(activity.applicationContext, newLine, i == boundMap.size - 1)
-                val container = layoutUtil.createBusArrivalsLayout(activity.applicationContext, containParams, stopNameTrimmed, BusDirection.fromString(key), value as MutableList<out BusArrival>)
+                val containParams = layoutUtil.getInsideParams(newLine, i == boundMap.size - 1)
+                val container = layoutUtil.createBusArrivalsLayout(containParams, stopNameTrimmed, BusDirection.fromString(key), value as MutableList<out BusArrival>)
 
                 holder.mainLayout.addView(container)
 
@@ -227,7 +227,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         holder.mapButton.text = activity.getString(R.string.favorites_view_buses)
         holder.detailsButton.setOnClickListener(BusStopOnClickListener(activity, holder.parent, busDetailsDTOs))
         holder.mapButton.setOnClickListener { _ ->
-            if (!util.isNetworkAvailable(context)) {
+            if (!util.isNetworkAvailable()) {
                 util.showNetworkErrorMessage(activity)
             } else {
                 val bounds = busDetailsDTOs.map { it.bound }.toSet()
@@ -246,7 +246,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         holder.favoriteImage.setImageResource(R.drawable.ic_directions_bike_white_24dp)
 
         holder.detailsButton.setOnClickListener { _ ->
-            if (!util.isNetworkAvailable(context)) {
+            if (!util.isNetworkAvailable()) {
                 util.showNetworkErrorMessage(activity)
             } else if (bikeStation.latitude != 0.0 && bikeStation.longitude != 0.0) {
                 val intent = Intent(activity.applicationContext, BikeStationActivity::class.java)
@@ -262,7 +262,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         holder.mapButton.text = activity.getString(R.string.favorites_view_station)
         holder.mapButton.setOnClickListener(GoogleMapOnClickListener(bikeStation.latitude, bikeStation.longitude))
 
-        val bikeResultLayout = layoutUtil.createBikeLayout(activity.applicationContext, bikeStation)
+        val bikeResultLayout = layoutUtil.createBikeLayout(bikeStation)
 
         holder.mainLayout.addView(bikeResultLayout)
     }

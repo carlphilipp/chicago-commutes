@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.util
 
-import android.content.Context
 import android.support.v4.content.ContextCompat
 import android.text.SpannableString
 import android.text.TextUtils
@@ -32,6 +31,7 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import fr.cph.chicago.R
+import fr.cph.chicago.core.App
 import fr.cph.chicago.entity.BikeStation
 import fr.cph.chicago.entity.BusArrival
 import fr.cph.chicago.entity.enumeration.BusDirection
@@ -48,30 +48,31 @@ object LayoutUtil {
     private val util = Util
 
     // FIXME Find a way to not use context everywhere here
-    private fun createColoredRoundForFavorites(context: Context, trainLine: TrainLine): RelativeLayout {
-        val lineIndication = RelativeLayout(context)
+    private fun createColoredRoundForFavorites(trainLine: TrainLine): RelativeLayout {
+        val lineIndication = RelativeLayout(App.instance)
         val params = RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
-        params.height = context.resources.getDimensionPixelSize(R.dimen.layout_round_height)
-        params.width = context.resources.getDimensionPixelSize(R.dimen.layout_round_width)
+        params.height = App.instance.resources.getDimensionPixelSize(R.dimen.layout_round_height)
+        params.width = App.instance.resources.getDimensionPixelSize(R.dimen.layout_round_width)
         params.addRule(RelativeLayout.CENTER_VERTICAL)
         lineIndication.setBackgroundColor(trainLine.color)
+        lineIndication.layoutParams = params
         lineIndication.layoutParams = params
         return lineIndication
     }
 
-    fun createColoredRoundForMultiple(context: Context, trainLine: TrainLine): LinearLayout {
-        val lineIndication = LinearLayout(context)
+    fun createColoredRoundForMultiple(trainLine: TrainLine): LinearLayout {
+        val lineIndication = LinearLayout(App.instance)
         val params = LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
-        params.height = context.resources.getDimensionPixelSize(R.dimen.layout_round_height)
-        params.width = context.resources.getDimensionPixelSize(R.dimen.layout_round_width)
+        params.height = App.instance.resources.getDimensionPixelSize(R.dimen.layout_round_height)
+        params.width = App.instance.resources.getDimensionPixelSize(R.dimen.layout_round_width)
         params.setMargins(10, 0, 0, 0)
         lineIndication.setBackgroundColor(trainLine.color)
         lineIndication.layoutParams = params
         return lineIndication
     }
 
-    fun getInsideParams(context: Context, newLine: Boolean, lastLine: Boolean): LinearLayout.LayoutParams {
-        val pixels = util.convertDpToPixel(context, 16)
+    fun getInsideParams(newLine: Boolean, lastLine: Boolean): LinearLayout.LayoutParams {
+        val pixels = util.convertDpToPixel(16)
         val pixelsQuarter = pixels / 4
         val paramsLeft = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         if (newLine && lastLine) {
@@ -86,27 +87,27 @@ object LayoutUtil {
         return paramsLeft
     }
 
-    fun createBusArrivalsNoResult(context: Context, containParams: LinearLayout.LayoutParams): LinearLayout {
-        return createBusArrivalsLayout(context, containParams, "No Results", null, mutableListOf())
+    fun createBusArrivalsNoResult(containParams: LinearLayout.LayoutParams): LinearLayout {
+        return createBusArrivalsLayout(containParams, "No Results", null, mutableListOf())
     }
 
     // TODO Create XML files instead of doing all those methods in Java
-    fun createBusArrivalsLayout(context: Context, containParams: LinearLayout.LayoutParams, stopNameTrimmed: String, busDirection: BusDirection?, buses: MutableList<out BusArrival>): LinearLayout {
-        val pixels = util.convertDpToPixel(context, 16)
+    fun createBusArrivalsLayout(containParams: LinearLayout.LayoutParams, stopNameTrimmed: String, busDirection: BusDirection?, buses: MutableList<out BusArrival>): LinearLayout {
+        val pixels = util.convertDpToPixel(16)
         val pixelsHalf = pixels / 2
-        val marginLeftPixel = util.convertDpToPixel(context, 10)
-        val grey5 = ContextCompat.getColor(context, R.color.grey_5)
+        val marginLeftPixel = util.convertDpToPixel(10)
+        val grey5 = ContextCompat.getColor(App.instance, R.color.grey_5)
 
-        val container = LinearLayout(context)
+        val container = LinearLayout(App.instance)
         container.orientation = LinearLayout.HORIZONTAL
         container.layoutParams = containParams
 
         // Left
         val leftParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        val left = RelativeLayout(context)
+        val left = RelativeLayout(App.instance)
         left.layoutParams = leftParams
 
-        val lineIndication = createColoredRoundForFavorites(context, TrainLine.NA)
+        val lineIndication = createColoredRoundForFavorites(TrainLine.NA)
         val lineId = util.generateViewId()
         lineIndication.id = lineId
 
@@ -119,7 +120,7 @@ object LayoutUtil {
         destinationSpannable.setSpan(RelativeSizeSpan(0.65f), stopNameTrimmed.length, leftString.length, 0) // set size
         destinationSpannable.setSpan(ForegroundColorSpan(grey5), 0, leftString.length, 0) // set color
 
-        val boundCustomTextView = TextView(context)
+        val boundCustomTextView = TextView(App.instance)
         boundCustomTextView.text = destinationSpannable
         boundCustomTextView.setSingleLine(true)
         boundCustomTextView.layoutParams = destinationParams
@@ -130,14 +131,14 @@ object LayoutUtil {
         // Right
         val rightParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         rightParams.setMargins(marginLeftPixel, 0, 0, 0)
-        val right = LinearLayout(context)
+        val right = LinearLayout(App.instance)
         right.orientation = LinearLayout.VERTICAL
         right.layoutParams = rightParams
 
         val currentEtas = StringBuilder()
         buses.forEach { arri -> currentEtas.append(" ").append(arri.timeLeftDueDelay) }
 
-        val arrivalText = TextView(context)
+        val arrivalText = TextView(App.instance)
         arrivalText.text = currentEtas
         arrivalText.gravity = Gravity.END
         arrivalText.setSingleLine(true)
@@ -151,22 +152,22 @@ object LayoutUtil {
         return container
     }
 
-    fun createTrainArrivalsLayout(context: Context, containParams: LinearLayout.LayoutParams, entry: Map.Entry<String, String>, trainLine: TrainLine): LinearLayout {
-        val pixels = util.convertDpToPixel(context, 16)
+    fun createTrainArrivalsLayout(containParams: LinearLayout.LayoutParams, entry: Map.Entry<String, String>, trainLine: TrainLine): LinearLayout {
+        val pixels = util.convertDpToPixel(16)
         val pixelsHalf = pixels / 2
-        val marginLeftPixel = util.convertDpToPixel(context, 10)
-        val grey5 = ContextCompat.getColor(context, R.color.grey_5)
+        val marginLeftPixel = util.convertDpToPixel(10)
+        val grey5 = ContextCompat.getColor(App.instance, R.color.grey_5)
 
-        val container = LinearLayout(context)
+        val container = LinearLayout(App.instance)
         container.orientation = LinearLayout.HORIZONTAL
         container.layoutParams = containParams
 
         // Left
         val leftParam = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        val left = RelativeLayout(context)
+        val left = RelativeLayout(App.instance)
         left.layoutParams = leftParam
 
-        val lineIndication = createColoredRoundForFavorites(context, trainLine)
+        val lineIndication = createColoredRoundForFavorites(trainLine)
         val lineId = util.generateViewId()
         lineIndication.id = lineId
 
@@ -175,7 +176,7 @@ object LayoutUtil {
         destinationParams.setMargins(pixelsHalf, 0, 0, 0)
 
         val destination = entry.key
-        val destinationTextView = TextView(context)
+        val destinationTextView = TextView(App.instance)
         destinationTextView.setTextColor(grey5)
         destinationTextView.text = destination
         destinationTextView.setLines(1)
@@ -187,12 +188,12 @@ object LayoutUtil {
         // Right
         val rightParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         rightParams.setMargins(marginLeftPixel, 0, 0, 0)
-        val right = LinearLayout(context)
+        val right = LinearLayout(App.instance)
         right.orientation = LinearLayout.VERTICAL
         right.layoutParams = rightParams
 
         val currentEtas = entry.value
-        val arrivalText = TextView(context)
+        val arrivalText = TextView(App.instance)
         arrivalText.text = currentEtas
         arrivalText.gravity = Gravity.END
         arrivalText.setSingleLine(true)
@@ -207,38 +208,38 @@ object LayoutUtil {
         return container
     }
 
-    fun createBikeLayout(context: Context, bikeStation: BikeStation): LinearLayout {
-        val containerParams = getInsideParams(context, true, true)
-        val container = LinearLayout(context)
+    fun createBikeLayout(bikeStation: BikeStation): LinearLayout {
+        val containerParams = getInsideParams(true, true)
+        val container = LinearLayout(App.instance)
         container.orientation = LinearLayout.VERTICAL
         container.layoutParams = containerParams
 
-        val linearLayout = LinearLayout(context)
+        val linearLayout = LinearLayout(App.instance)
         linearLayout.orientation = LinearLayout.VERTICAL
-        linearLayout.addView(createBikeLine(context, bikeStation, true))
-        linearLayout.addView(createBikeLine(context, bikeStation, false))
+        linearLayout.addView(createBikeLine(bikeStation, true))
+        linearLayout.addView(createBikeLine(bikeStation, false))
 
         container.addView(linearLayout)
         return container
     }
 
-    private fun createBikeLine(context: Context, bikeStation: BikeStation, firstLine: Boolean): LinearLayout {
-        val pixels = util.convertDpToPixel(context, 16)
+    private fun createBikeLine(bikeStation: BikeStation, firstLine: Boolean): LinearLayout {
+        val pixels = util.convertDpToPixel(16)
         val pixelsHalf = pixels / 2
-        val grey5 = ContextCompat.getColor(context, R.color.grey_5)
+        val grey5 = ContextCompat.getColor(App.instance, R.color.grey_5)
 
 
         val lineParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        val line = LinearLayout(context)
+        val line = LinearLayout(App.instance)
         line.orientation = LinearLayout.HORIZONTAL
         line.layoutParams = lineParams
 
         // Left
         val leftParam = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        val left = RelativeLayout(context)
+        val left = RelativeLayout(App.instance)
         left.layoutParams = leftParam
 
-        val lineIndication = createColoredRoundForFavorites(context, TrainLine.NA)
+        val lineIndication = createColoredRoundForFavorites(TrainLine.NA)
         val lineId = util.generateViewId()
         lineIndication.id = lineId
 
@@ -246,8 +247,8 @@ object LayoutUtil {
         availableParam.addRule(RelativeLayout.RIGHT_OF, lineId)
         availableParam.setMargins(pixelsHalf, 0, 0, 0)
 
-        val boundCustomTextView = TextView(context)
-        boundCustomTextView.text = context.getString(R.string.bike_available_docks)
+        val boundCustomTextView = TextView(App.instance)
+        boundCustomTextView.text = App.instance.resources.getString(R.string.bike_available_docks)
         boundCustomTextView.setSingleLine(true)
         boundCustomTextView.layoutParams = availableParam
         boundCustomTextView.setTextColor(grey5)
@@ -258,17 +259,17 @@ object LayoutUtil {
         availableValueParam.addRule(RelativeLayout.RIGHT_OF, availableId)
         availableValueParam.setMargins(pixelsHalf, 0, 0, 0)
 
-        val amountBike = TextView(context)
-        val text = if (firstLine) context.getString(R.string.bike_available_bikes) else context.getString(R.string.bike_available_docks)
+        val amountBike = TextView(App.instance)
+        val text = if (firstLine) App.instance.resources.getString(R.string.bike_available_bikes) else App.instance.resources.getString(R.string.bike_available_docks)
         boundCustomTextView.text = text
         val data = if (firstLine) bikeStation.availableBikes else bikeStation.availableDocks
         if (data == -1) {
             amountBike.text = "?"
-            amountBike.setTextColor(ContextCompat.getColor(context, R.color.orange))
+            amountBike.setTextColor(ContextCompat.getColor(App.instance, R.color.orange))
         } else {
             amountBike.text = data.toString()
             val color = if (data == 0) R.color.red else R.color.green
-            amountBike.setTextColor(ContextCompat.getColor(context, color))
+            amountBike.setTextColor(ContextCompat.getColor(App.instance, color))
         }
         amountBike.layoutParams = availableValueParam
 

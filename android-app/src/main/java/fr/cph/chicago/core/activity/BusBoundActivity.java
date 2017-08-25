@@ -181,7 +181,7 @@ public class BusBoundActivity extends ListActivity {
             toolbar.setNavigationIcon(arrowBackWhite);
             toolbar.setOnClickListener(v -> finish());
 
-            observableUtil.createBusStopBoundObservable(getApplicationContext(), busRouteId, bound)
+            observableUtil.createBusStopBoundObservable(busRouteId, bound)
                 .subscribe(onNext -> {
                         busStops = onNext;
                         busBoundAdapter.setBusStops(onNext);
@@ -193,7 +193,7 @@ public class BusBoundActivity extends ListActivity {
                     }
                 );
 
-            util.trackAction((App) getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_STOP_URL);
+            util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_STOP_URL);
 
             // Preventing keyboard from moving background when showing up
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
@@ -221,8 +221,8 @@ public class BusBoundActivity extends ListActivity {
             googleMap.getUiSettings().setMyLocationButtonEnabled(false);
             googleMap.getUiSettings().setZoomControlsEnabled(false);
             googleMap.getUiSettings().setMapToolbarEnabled(false);
-            util.trackAction((App) getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL);
-            observableUtil.createBusPatternObservable(getApplicationContext(), busRouteId, bound)
+            util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL);
+            observableUtil.createBusPatternObservable(busRouteId, bound)
                 .subscribe(
                     busPattern -> {
                         if (!busPattern.getDirection().equals("error")) {

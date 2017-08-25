@@ -65,7 +65,7 @@ public final class TrainFragment extends AbstractFragment {
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        util.trackScreen((App) getActivity().getApplication(), getString(R.string.analytics_train_fragment));
+        util.trackScreen(getString(R.string.analytics_train_fragment));
     }
 
     @Override

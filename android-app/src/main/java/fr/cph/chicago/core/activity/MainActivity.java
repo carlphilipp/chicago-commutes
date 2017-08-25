@@ -192,12 +192,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // Favorite fragment
             favoritesFragment.startRefreshing();
 
-            util.trackAction((App) getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
-            util.trackAction((App) getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
-            util.trackAction((App) getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_divvy, getApplicationContext().getString(R.string.analytics_action_get_divvy_all));
-            util.trackAction((App) getApplication(), R.string.analytics_category_ui, R.string.analytics_action_press, getApplicationContext().getString(R.string.analytics_action_refresh_fav));
+            util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
+            util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
+            util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_divvy, getApplicationContext().getString(R.string.analytics_action_get_divvy_all));
+            util.trackAction(R.string.analytics_category_ui, R.string.analytics_action_press, getApplicationContext().getString(R.string.analytics_action_refresh_fav));
 
-            if (util.isNetworkAvailable(getApplicationContext())) {
+            if (util.isNetworkAvailable()) {
                 if (busService.getBusRoutes().size() == 0
                     || getIntent().getParcelableArrayListExtra(bundleBikeStations) == null
                     || getIntent().getParcelableArrayListExtra(bundleBikeStations).size() == 0) {
@@ -234,8 +234,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             },
             onError -> util.showSnackBar(this, R.string.message_something_went_wrong, Snackbar.LENGTH_SHORT),
             () -> {
-                util.trackAction((App) getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ROUTES_URL);
-                util.trackAction((App) getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_divvy, getApplicationContext().getString(R.string.analytics_action_get_divvy_all));
+                util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ROUTES_URL);
+                util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_divvy, getApplicationContext().getString(R.string.analytics_action_get_divvy_all));
             }
         );
     }

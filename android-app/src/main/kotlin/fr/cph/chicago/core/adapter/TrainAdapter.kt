@@ -80,7 +80,7 @@ class TrainAdapter(line: TrainLine, private val activity: Activity) : BaseAdapte
         holder.stationNameView.text = station.name
         holder.stationColorView.removeAllViews()
         station.lines
-            .map { line -> layoutUtil.createColoredRoundForMultiple(activity.applicationContext, line) }
+            .map { line -> layoutUtil.createColoredRoundForMultiple(line) }
             .forEach { layout -> holder.stationColorView.addView(layout) }
 
         view.setOnClickListener(TrainOnClickListener(parent.context, station.id, station.lines))

@@ -136,7 +136,7 @@ public class FavoritesFragment extends AbstractFragment {
         if (bikeStations == null) {
             bikeStations = new ArrayList<>();
         }
-        util.trackScreen((App) getActivity().getApplication(), getString(R.string.analytics_favorites_fragment));
+        util.trackScreen(getString(R.string.analytics_favorites_fragment));
     }
 
     @Override
@@ -176,10 +176,10 @@ public class FavoritesFragment extends AbstractFragment {
 
             swipeRefreshLayout.setOnRefreshListener(() -> {
                 swipeRefreshLayout.setColorSchemeColors(util.getRandomColor());
-                util.trackAction((App) getActivity().getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
-                util.trackAction((App) getActivity().getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
-                util.trackAction((App) getActivity().getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_divvy, getContext().getString(R.string.analytics_action_get_divvy_all));
-                util.trackAction((App) getActivity().getApplication(), R.string.analytics_category_ui, R.string.analytics_action_press, getContext().getString(R.string.analytics_action_refresh_fav));
+                util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
+                util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
+                util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_divvy, getContext().getString(R.string.analytics_action_get_divvy_all));
+                util.trackAction(R.string.analytics_category_ui, R.string.analytics_action_press, getContext().getString(R.string.analytics_action_refresh_fav));
 
                 if (busService.getBusRoutes().isEmpty()
                     || activity.getIntent().getParcelableArrayListExtra(bundleBikeStation) == null
@@ -187,7 +187,7 @@ public class FavoritesFragment extends AbstractFragment {
                     activity.loadFirstData();
                 }
 
-                if (util.isNetworkAvailable(getContext())) {
+                if (util.isNetworkAvailable()) {
                     final Observable<FavoritesDTO> zipped = observableUtil.createAllDataObservable(getActivity().getApplication());
                     zipped.subscribe(
                         this::reloadData,

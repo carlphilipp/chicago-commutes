@@ -196,7 +196,7 @@ public class StationActivity extends AbstractStationActivity {
                 swipeRefreshLayout.setColorSchemeColors(randomTrainLine.getColor());
                 setToolBar(randomTrainLine);
 
-                util.trackScreen((App) getApplication(), trainDetails);
+                util.trackScreen(trainDetails);
             }
         }
     }
@@ -410,7 +410,7 @@ public class StationActivity extends AbstractStationActivity {
     }
 
     private void createTrainArrivalObservableAndSubscribe() {
-        trainArrivalObservable = observableUtil.createTrainArrivalsObservable(getApplicationContext(), station);
+        trainArrivalObservable = observableUtil.createTrainArrivalsObservable(station);
         trainArrivalObservable.subscribe(new TrainArrivalObserver(this, swipeRefreshLayout));
     }
 }

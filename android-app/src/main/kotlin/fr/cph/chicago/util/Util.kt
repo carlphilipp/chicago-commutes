@@ -122,8 +122,8 @@ object Util {
         return BusFavoriteDTO(routeId, stopId, bound)
     }
 
-    fun isNetworkAvailable(context: Context): Boolean {
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    fun isNetworkAvailable(): Boolean {
+        val connectivityManager = App.instance.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetworkInfo = connectivityManager.activeNetworkInfo
         return activeNetworkInfo != null && activeNetworkInfo.isConnected
     }
@@ -133,17 +133,16 @@ object Util {
      *
      * @param screen the screen name
      */
-    fun trackScreen(app: App, screen: String) {
-        val tracker = app.tracker
-        tracker.setScreenName(screen)
-        tracker.send(HitBuilders.ScreenViewBuilder().build())
+    fun trackScreen(screen: String) {
+        App.instance.tracker.setScreenName(screen)
+        App.instance.tracker.send(HitBuilders.ScreenViewBuilder().build())
     }
 
-    fun trackAction(app: App, category: Int, action: Int, label: String) {
+    fun trackAction(category: Int, action: Int, label: String) {
         Thread {
-            app.tracker.send(HitBuilders.EventBuilder()
-                .setCategory(app.applicationContext.getString(category))
-                .setAction(app.applicationContext.getString(action))
+            App.instance.tracker.send(HitBuilders.EventBuilder()
+                .setCategory(App.instance.getString(category))
+                .setAction(App.instance.getString(action))
                 .setLabel(label)
                 .setValue(0).build())
         }.start()
@@ -192,8 +191,8 @@ object Util {
                 statusBarColor = R.color.primaryColorDark
             }
         }
-        toolbar.setBackgroundColor(ContextCompat.getColor(activity.applicationContext, backgroundColor))
-        toolbar.setTitleTextColor(ContextCompat.getColor(activity.applicationContext, textTitleColor))
+        toolbar.setBackgroundColor(ContextCompat.getColor(App.instance, backgroundColor))
+        toolbar.setTitleTextColor(ContextCompat.getColor(App.instance, textTitleColor))
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             activity.window.statusBarColor = ContextCompat.getColor(activity, statusBarColor)
             activity.window.navigationBarColor = ContextCompat.getColor(activity, R.color.primaryColorDarker)
@@ -220,8 +219,8 @@ object Util {
         }
     }
 
-    fun convertDpToPixel(context: Context, dp: Int): Int {
-        val pixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp.toFloat(), context.resources.displayMetrics)
+    fun convertDpToPixel(dp: Int): Int {
+        val pixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp.toFloat(), App.instance.resources.displayMetrics)
         return pixels.toInt()
     }
 
@@ -250,15 +249,15 @@ object Util {
     }
 
     fun showSnackBar(view: View, message: Int) {
-        Snackbar.make(view, view.context.getString(message), Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(view, App.instance.getString(message), Snackbar.LENGTH_SHORT).show()
     }
 
     fun showOopsSomethingWentWrong(view: View) {
-        Snackbar.make(view, view.context.getString(R.string.message_something_went_wrong), Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(view, App.instance.getString(R.string.message_something_went_wrong), Snackbar.LENGTH_SHORT).show()
     }
 
     private fun showRateSnackBar(view: View, activity: Activity) {
-        val textColor = ContextCompat.getColor(view.context, R.color.greenLineDark)
+        val textColor = ContextCompat.getColor(App.instance, R.color.greenLineDark)
         val snackBar1 = Snackbar.make(view, "Do you like this app?", Snackbar.LENGTH_LONG)
             .setAction("YES") { view1 ->
                 val snackBar2 = Snackbar.make(view1, "Rate this app on the market", Snackbar.LENGTH_LONG)
@@ -311,8 +310,8 @@ object Util {
             name
     }
 
-    fun getCurrentVersion(context: Context): String {
-        val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+    fun getCurrentVersion(): String {
+        val packageInfo = App.instance.packageManager.getPackageInfo(App.instance.packageName, 0)
         return packageInfo.versionName
     }
 }

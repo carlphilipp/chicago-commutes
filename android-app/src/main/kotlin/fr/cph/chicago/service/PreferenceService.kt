@@ -1,8 +1,8 @@
 package fr.cph.chicago.service
 
-import android.content.Context
 import android.view.View
 import fr.cph.chicago.R
+import fr.cph.chicago.core.App
 import fr.cph.chicago.entity.enumeration.TrainDirection
 import fr.cph.chicago.entity.enumeration.TrainLine
 import fr.cph.chicago.repository.PreferenceRepository
@@ -97,22 +97,22 @@ object PreferenceService {
         }
     }
 
-    fun getFavoritesBusParams(context: Context): MultiValuedMap<String, String> {
+    fun getFavoritesBusParams(): MultiValuedMap<String, String> {
         val paramsBus = ArrayListValuedHashMap<String, String>()
         val busFavorites = repo.getBusFavorites()
         busFavorites
             .map { util.decodeBusFavorite(it) }
             .forEach { (routeId, stopId) ->
-                paramsBus.put(context.getString(R.string.request_rt), routeId)
-                paramsBus.put(context.getString(R.string.request_stop_id), stopId)
+                paramsBus.put(App.instance.getString(R.string.request_rt), routeId)
+                paramsBus.put(App.instance.getString(R.string.request_stop_id), stopId)
             }
         return paramsBus
     }
 
-    fun getFavoritesTrainParams(context: Context): MultiValuedMap<String, String> {
+    fun getFavoritesTrainParams(): MultiValuedMap<String, String> {
         val paramsTrain = ArrayListValuedHashMap<String, String>()
         val favorites = repo.getTrainFavorites()
-        favorites.forEach { favorite -> paramsTrain.put(context.getString(R.string.request_map_id), favorite.toString()) }
+        favorites.forEach { favorite -> paramsTrain.put(App.instance.getString(R.string.request_map_id), favorite.toString()) }
         return paramsTrain
     }
 

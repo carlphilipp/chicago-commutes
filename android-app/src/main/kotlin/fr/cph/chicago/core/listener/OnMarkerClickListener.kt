@@ -36,14 +36,14 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
 
     private fun loadTrainArrivals(trainStation: Station) {
         nearbyFragment.slidingUpAdapter.updateTitleTrain(trainStation.name)
-        observableUtil.createTrainArrivalsObservable(nearbyFragment.context, trainStation)
+        observableUtil.createTrainArrivalsObservable(trainStation)
             .subscribe({ nearbyFragment.slidingUpAdapter.addTrainStation(it) })
             { onError -> Log.e(TAG, onError.message, onError) }
     }
 
     private fun loadBusArrivals(busStop: BusStop) {
         nearbyFragment.slidingUpAdapter.updateTitleBus(busStop.name)
-        observableUtil.createBusArrivalsObservable(nearbyFragment.context, busStop)
+        observableUtil.createBusArrivalsObservable(busStop)
             .subscribe(
                 { result ->
                     val busArrivalRouteDTO = BusArrivalRouteDTO(BusArrivalRouteDTO.busComparator)
