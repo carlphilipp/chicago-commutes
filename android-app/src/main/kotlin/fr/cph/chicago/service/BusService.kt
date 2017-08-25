@@ -25,6 +25,7 @@ object BusService {
     private val busRepository = BusRepository
     private val ctaClient = CtaClient
     private val xmlParser = XmlParser
+    private val util = Util
 
     fun loadFavoritesBuses(context: Context): List<BusArrival> {
         // FIXME to refactor
@@ -196,15 +197,15 @@ object BusService {
         return getBusRoutes()
             .filter { (id, name) -> containsIgnoreCase(id, query) || containsIgnoreCase(name, query) }
             .distinct()
-            .sortedWith(Util.busStopComparatorByName)
+            .sortedWith(util.busStopComparatorByName)
     }
 
     @Throws(ParserException::class, ConnectException::class)
     fun loadBusArrivals(requestRt: String, busRouteId: String, requestStopId: String, busStopId: Int, predicate: (BusArrival) -> (Boolean) ): List<BusArrival> {
-        val reqParams = ArrayListValuedHashMap<String, String>()
-        reqParams.put(requestRt, busRouteId)
-        reqParams.put(requestStopId, busStopId.toString())
-        val xmlResult = ctaClient.connect(BUS_ARRIVALS, reqParams)
+        val params = ArrayListValuedHashMap<String, String>()
+        params.put(requestRt, busRouteId)
+        params.put(requestStopId, busStopId.toString())
+        val xmlResult = ctaClient.connect(BUS_ARRIVALS, params)
         return xmlParser.parseBusArrivals(xmlResult).filter(predicate)
     }
 }

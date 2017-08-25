@@ -91,10 +91,10 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
             val stationColorView: LinearLayout = view.findViewById(R.id.station_color)
 
             station.lines
-                .map { LayoutUtil.createColoredRoundForMultiple(context, it) }
+                .map { layoutUtil.createColoredRoundForMultiple(context, it) }
                 .forEach { stationColorView.addView(it) }
 
-            view.setOnClickListener(TrainOnClickListener(parent.context, activity, station.id, station.lines))
+            view.setOnClickListener(TrainOnClickListener(parent.context, station.id, station.lines))
         } else if (position < trains.size + busRoutes.size) {
             val busRoute = getItem(position) as BusRoute
 
@@ -107,9 +107,9 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
             val loadingTextView: TextView = view.findViewById(R.id.loading_text_view)
             view.setOnClickListener { _ ->
                 loadingTextView.visibility = LinearLayout.VISIBLE
-                ObservableUtil.createBusDirectionsObservable(parent.context, busRoute.id)
+                observableUtil.createBusDirectionsObservable(parent.context, busRoute.id)
                     .doOnError { throwable ->
-                        Util.handleConnectOrParserException(throwable, activity, null, loadingTextView)
+                        util.handleConnectOrParserException(throwable, activity, null, loadingTextView)
                         Log.e(TAG, throwable.message, throwable)
                     }.subscribe(BusDirectionObserver(App.instance.screenWidth, parent, loadingTextView, busRoute))
             }
@@ -141,5 +141,8 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
 
     companion object {
         private val TAG = SearchAdapter::class.java.simpleName
+        private val util = Util
+        private val observableUtil = ObservableUtil
+        private val layoutUtil = LayoutUtil
     }
 }

@@ -53,7 +53,8 @@ object PreferenceRepository {
     private val PREFERENCE_FAVORITES_BIKE = "ChicagoTrackerFavoritesBike"
     private val PREFERENCE_FAVORITES_BIKE_NAME_MAPPING = "ChicagoTrackerFavoritesBikeNameMapping"
 
-    private val trainService: TrainService = TrainService
+    private val trainService = TrainService
+    private val util = Util
 
     fun saveTrainFavorites(favorites: List<Int>) {
         val sharedPref = getPrivatePreferences()
@@ -124,8 +125,8 @@ object PreferenceRepository {
         val setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_BUS, LinkedHashSet())
         Log.v(TAG, "Read bus favorites : " + setPref!!.toString())
         return setPref.sortedWith(Comparator { str1, str2 ->
-            val str1Decoded = Util.decodeBusFavorite(str1).routeId
-            val str2Decoded = Util.decodeBusFavorite(str2).routeId
+            val str1Decoded = util.decodeBusFavorite(str1).routeId
+            val str2Decoded = util.decodeBusFavorite(str2).routeId
             val matcher1 = PATTERN.matcher(str1Decoded)
             val matcher2 = PATTERN.matcher(str2Decoded)
             if (matcher1.find() && matcher2.find()) {

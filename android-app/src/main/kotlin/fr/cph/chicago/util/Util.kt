@@ -58,25 +58,25 @@ import java.util.regex.Pattern
  */
 object Util {
 
-    val bikeComparatorByName: Comparator<BikeStation> = BikeStationComparator()
-    val busStopComparatorByName: Comparator<BusRoute> = BusStopComparator()
+    val bikeComparatorByName: Comparator<BikeStation> by lazy { BikeStationComparator() }
+    val busStopComparatorByName: Comparator<BusRoute> by lazy { BusStopComparator() }
     private val preferenceService = PreferenceService
 
     private val PATTERN = Pattern.compile("(\\d{1,3})")
-    private val sNextGeneratedId = AtomicInteger(1)
+    private val nextGeneratedId = AtomicInteger(1)
 
     val chicago: LatLng by lazy {
-         LatLng(41.8819, -87.6278)
+        LatLng(41.8819, -87.6278)
     }
 
     fun generateViewId(): Int {
         while (true) {
-            val result = sNextGeneratedId.get()
+            val result = nextGeneratedId.get()
             // aapt-generated IDs have the high byte nonzero; clamp to the range under that.
             var newValue = result + 1
             if (newValue > 0x00FFFFFF)
                 newValue = 1 // Roll over to 1, not 0.
-            if (sNextGeneratedId.compareAndSet(result, newValue)) {
+            if (nextGeneratedId.compareAndSet(result, newValue)) {
                 return result
             }
         }

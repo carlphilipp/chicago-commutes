@@ -42,7 +42,8 @@ import fr.cph.chicago.util.LayoutUtil
  */
 class TrainAdapter(line: TrainLine, private val activity: Activity) : BaseAdapter() {
 
-    private val trainService: TrainService = TrainService
+    private val trainService = TrainService
+    private val layoutUtil = LayoutUtil
 
     private val stations: List<Station> = trainService.getStationsForLine(line)
 
@@ -79,10 +80,10 @@ class TrainAdapter(line: TrainLine, private val activity: Activity) : BaseAdapte
         holder.stationNameView.text = station.name
         holder.stationColorView.removeAllViews()
         station.lines
-            .map { line -> LayoutUtil.createColoredRoundForMultiple(activity.applicationContext, line) }
+            .map { line -> layoutUtil.createColoredRoundForMultiple(activity.applicationContext, line) }
             .forEach { layout -> holder.stationColorView.addView(layout) }
 
-        view.setOnClickListener(TrainOnClickListener(parent.context, activity, station.id, station.lines))
+        view.setOnClickListener(TrainOnClickListener(parent.context, station.id, station.lines))
         return view
     }
 

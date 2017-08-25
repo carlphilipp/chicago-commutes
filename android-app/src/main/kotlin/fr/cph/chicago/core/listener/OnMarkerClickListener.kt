@@ -36,14 +36,14 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
 
     private fun loadTrainArrivals(trainStation: Station) {
         nearbyFragment.slidingUpAdapter.updateTitleTrain(trainStation.name)
-        ObservableUtil.createTrainArrivalsObservable(nearbyFragment.context, trainStation)
+        observableUtil.createTrainArrivalsObservable(nearbyFragment.context, trainStation)
             .subscribe({ nearbyFragment.slidingUpAdapter.addTrainStation(it) })
             { onError -> Log.e(TAG, onError.message, onError) }
     }
 
     private fun loadBusArrivals(busStop: BusStop) {
         nearbyFragment.slidingUpAdapter.updateTitleBus(busStop.name)
-        ObservableUtil.createBusArrivalsObservable(nearbyFragment.context, busStop)
+        observableUtil.createBusArrivalsObservable(nearbyFragment.context, busStop)
             .subscribe(
                 { result ->
                     val busArrivalRouteDTO = BusArrivalRouteDTO(BusArrivalRouteDTO.busComparator)
@@ -55,13 +55,13 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
 
     private fun loadBikes(bikeStation: BikeStation) {
         nearbyFragment.slidingUpAdapter.updateTitleBike(bikeStation.name)
-        ObservableUtil.createBikeStationsObservable(bikeStation)
+        observableUtil.createBikeStationsObservable(bikeStation)
             .subscribe({ nearbyFragment.slidingUpAdapter.addBike(it) })
             { onError -> Log.e(TAG, onError.message, onError) }
     }
 
     companion object {
         private val TAG = OnMarkerClickListener::class.java.simpleName
-        private val busRouteIdRegex = Regex("[^0-9]+")
+        private val observableUtil = ObservableUtil
     }
 }

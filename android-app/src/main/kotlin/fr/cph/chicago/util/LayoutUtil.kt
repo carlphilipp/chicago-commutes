@@ -45,6 +45,8 @@ import fr.cph.chicago.entity.enumeration.TrainLine
  */
 object LayoutUtil {
 
+    private val util = Util
+
     // FIXME Find a way to not use context everywhere here
     private fun createColoredRoundForFavorites(context: Context, trainLine: TrainLine): RelativeLayout {
         val lineIndication = RelativeLayout(context)
@@ -69,7 +71,7 @@ object LayoutUtil {
     }
 
     fun getInsideParams(context: Context, newLine: Boolean, lastLine: Boolean): LinearLayout.LayoutParams {
-        val pixels = Util.convertDpToPixel(context, 16)
+        val pixels = util.convertDpToPixel(context, 16)
         val pixelsQuarter = pixels / 4
         val paramsLeft = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         if (newLine && lastLine) {
@@ -90,9 +92,9 @@ object LayoutUtil {
 
     // TODO Create XML files instead of doing all those methods in Java
     fun createBusArrivalsLayout(context: Context, containParams: LinearLayout.LayoutParams, stopNameTrimmed: String, busDirection: BusDirection?, buses: MutableList<out BusArrival>): LinearLayout {
-        val pixels = Util.convertDpToPixel(context, 16)
+        val pixels = util.convertDpToPixel(context, 16)
         val pixelsHalf = pixels / 2
-        val marginLeftPixel = Util.convertDpToPixel(context, 10)
+        val marginLeftPixel = util.convertDpToPixel(context, 10)
         val grey5 = ContextCompat.getColor(context, R.color.grey_5)
 
         val container = LinearLayout(context)
@@ -104,8 +106,8 @@ object LayoutUtil {
         val left = RelativeLayout(context)
         left.layoutParams = leftParams
 
-        val lineIndication = LayoutUtil.createColoredRoundForFavorites(context, TrainLine.NA)
-        val lineId = Util.generateViewId()
+        val lineIndication = createColoredRoundForFavorites(context, TrainLine.NA)
+        val lineId = util.generateViewId()
         lineIndication.id = lineId
 
         val destinationParams = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -150,9 +152,9 @@ object LayoutUtil {
     }
 
     fun createTrainArrivalsLayout(context: Context, containParams: LinearLayout.LayoutParams, entry: Map.Entry<String, String>, trainLine: TrainLine): LinearLayout {
-        val pixels = Util.convertDpToPixel(context, 16)
+        val pixels = util.convertDpToPixel(context, 16)
         val pixelsHalf = pixels / 2
-        val marginLeftPixel = Util.convertDpToPixel(context, 10)
+        val marginLeftPixel = util.convertDpToPixel(context, 10)
         val grey5 = ContextCompat.getColor(context, R.color.grey_5)
 
         val container = LinearLayout(context)
@@ -164,8 +166,8 @@ object LayoutUtil {
         val left = RelativeLayout(context)
         left.layoutParams = leftParam
 
-        val lineIndication = LayoutUtil.createColoredRoundForFavorites(context, trainLine)
-        val lineId = Util.generateViewId()
+        val lineIndication = createColoredRoundForFavorites(context, trainLine)
+        val lineId = util.generateViewId()
         lineIndication.id = lineId
 
         val destinationParams = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -221,7 +223,7 @@ object LayoutUtil {
     }
 
     private fun createBikeLine(context: Context, bikeStation: BikeStation, firstLine: Boolean): LinearLayout {
-        val pixels = Util.convertDpToPixel(context, 16)
+        val pixels = util.convertDpToPixel(context, 16)
         val pixelsHalf = pixels / 2
         val grey5 = ContextCompat.getColor(context, R.color.grey_5)
 
@@ -237,7 +239,7 @@ object LayoutUtil {
         left.layoutParams = leftParam
 
         val lineIndication = createColoredRoundForFavorites(context, TrainLine.NA)
-        val lineId = Util.generateViewId()
+        val lineId = util.generateViewId()
         lineIndication.id = lineId
 
         val availableParam = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -249,7 +251,7 @@ object LayoutUtil {
         boundCustomTextView.setSingleLine(true)
         boundCustomTextView.layoutParams = availableParam
         boundCustomTextView.setTextColor(grey5)
-        val availableId = Util.generateViewId()
+        val availableId = util.generateViewId()
         boundCustomTextView.id = availableId
 
         val availableValueParam = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)

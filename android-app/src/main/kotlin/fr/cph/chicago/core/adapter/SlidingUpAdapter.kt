@@ -79,8 +79,8 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
 
                 var newLine = true
                 for ((i, entry) in etas.entries.withIndex()) {
-                    val containParams = LayoutUtil.getInsideParams(nearbyFragment.context, newLine, i == etas.size - 1)
-                    val container = LayoutUtil.createTrainArrivalsLayout(nearbyFragment.context, containParams, entry, trainLine)
+                    val containParams = layoutUtil.getInsideParams(nearbyFragment.context, newLine, i == etas.size - 1)
+                    val container = layoutUtil.createTrainArrivalsLayout(nearbyFragment.context, containParams, entry, trainLine)
 
                     linearLayout.addView(container)
                     newLine = false
@@ -107,14 +107,14 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
             nbOfLine = intArrayOf(0)
 
             busArrivalRouteDTO.entries.forEach { entry ->
-                val stopNameTrimmed = Util.trimBusStopNameIfNeeded(entry.key)
+                val stopNameTrimmed = util.trimBusStopNameIfNeeded(entry.key)
                 val boundMap = entry.value
 
                 var newLine = true
 
                 for ((i, entry2) in boundMap.entries.withIndex()) {
-                    val containParams = LayoutUtil.getInsideParams(nearbyFragment.context, newLine, i == boundMap.size - 1)
-                    val container = LayoutUtil.createBusArrivalsLayout(nearbyFragment.context, containParams, stopNameTrimmed, BusDirection.fromString(entry2.key), entry2.value as MutableList<out BusArrival>)
+                    val containParams = layoutUtil.getInsideParams(nearbyFragment.context, newLine, i == boundMap.size - 1)
+                    val container = layoutUtil.createBusArrivalsLayout(nearbyFragment.context, containParams, stopNameTrimmed, BusDirection.fromString(entry2.key), entry2.value as MutableList<out BusArrival>)
 
                     linearLayout.addView(container)
                     newLine = false
@@ -139,7 +139,7 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
          * it just mean that the view has been updated already with a faster request.
          */
         if (linearLayout.childCount == 0 || "error" == bikeStation.name) {
-            val bikeResultLayout = LayoutUtil.createBikeLayout(nearbyFragment.context, bikeStation)
+            val bikeResultLayout = layoutUtil.createBikeLayout(nearbyFragment.context, bikeStation)
             linearLayout.addView(bikeResultLayout)
             nearbyFragment.slidingUpPanelLayout.panelHeight = getSlidingPanelHeight(2)
             updatePanelState()
@@ -153,14 +153,14 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
         }
 
     private fun handleNoResults(linearLayout: LinearLayout) {
-        val containParams = LayoutUtil.getInsideParams(nearbyFragment.context, true, true)
-        val container = LayoutUtil.createBusArrivalsNoResult(nearbyFragment.context, containParams)
+        val containParams = layoutUtil.getInsideParams(nearbyFragment.context, true, true)
+        val container = layoutUtil.createBusArrivalsNoResult(nearbyFragment.context, containParams)
         linearLayout.addView(container)
     }
 
     private fun getSlidingPanelHeight(nbLine: Int): Int {
-        val line = Util.convertDpToPixel(nearbyFragment.context, LINE_HEIGHT)
-        val header = Util.convertDpToPixel(nearbyFragment.context, HEADER_HEIGHT)
+        val line = util.convertDpToPixel(nearbyFragment.context, LINE_HEIGHT)
+        val header = util.convertDpToPixel(nearbyFragment.context, HEADER_HEIGHT)
         return line * nbLine + header
     }
 
@@ -174,5 +174,7 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
     companion object {
         private val LINE_HEIGHT = 27
         private val HEADER_HEIGHT = 40
+        private val util = Util
+        private val layoutUtil = LayoutUtil
     }
 }

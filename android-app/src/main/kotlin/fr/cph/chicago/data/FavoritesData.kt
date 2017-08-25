@@ -46,6 +46,7 @@ object FavoritesData {
     private val trainService = TrainService
     private val busService = BusService
     private val preferenceRepository = PreferenceRepository
+    private val util = Util
 
     var trainArrivals: SparseArray<TrainArrival> = SparseArray()
     var busArrivals: List<BusArrival> = listOf()
@@ -136,7 +137,7 @@ object FavoritesData {
         if (bikeStations.isNotEmpty()) {
             bikeFavoritesTemp
                 .flatMap { bikeStationId -> bikeStations.filter { (id) -> Integer.toString(id) == bikeStationId } }
-                .sortedWith(Util.bikeComparatorByName)
+                .sortedWith(util.bikeComparatorByName)
                 .map { (id) -> Integer.toString(id) }
                 .forEach({ bikeFavorites.add(it) })
         } else {
@@ -151,7 +152,7 @@ object FavoritesData {
 
     private fun calculateActualRouteNumberBusFavorites(busFavorites: List<String>): List<String> {
         return busFavorites
-            .map { Util.decodeBusFavorite(it) }
+            .map { util.decodeBusFavorite(it) }
             .map { it.routeId }
             .distinct()
     }
@@ -166,7 +167,7 @@ object FavoritesData {
      */
     private fun isInFavorites(routeId: String, stopId: Int, bound: String): Boolean {
         return busFavorites
-            .map { Util.decodeBusFavorite(it) }
+            .map { util.decodeBusFavorite(it) }
             // TODO: Is that correct ? maybe remove stopId
             .filter { (routeId1, stopId1, bound1) -> routeId == routeId1 && Integer.toString(stopId) == stopId1 && bound == bound1 }
             .isNotEmpty()
@@ -174,7 +175,7 @@ object FavoritesData {
 
     private fun addNoServiceBusIfNeeded(busArrivalDTO: BusArrivalStopMappedDTO, routeId: String) {
         for (bus in busFavorites) {
-            val (routeIdFav, stopId1, bound) = Util.decodeBusFavorite(bus)
+            val (routeIdFav, stopId1, bound) = util.decodeBusFavorite(bus)
             if (routeIdFav == routeId) {
                 val stopId = Integer.valueOf(stopId1)
 
