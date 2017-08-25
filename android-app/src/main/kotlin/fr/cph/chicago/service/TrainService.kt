@@ -3,13 +3,12 @@ package fr.cph.chicago.service
 import android.util.SparseArray
 import fr.cph.chicago.R
 import fr.cph.chicago.client.CtaClient
-import fr.cph.chicago.client.CtaRequestType.TRAIN_ARRIVALS
+import fr.cph.chicago.client.CtaRequestType.*
 import fr.cph.chicago.core.App
-import fr.cph.chicago.entity.Position
-import fr.cph.chicago.entity.Station
-import fr.cph.chicago.entity.Stop
-import fr.cph.chicago.entity.TrainArrival
+import fr.cph.chicago.entity.*
 import fr.cph.chicago.entity.enumeration.TrainLine
+import fr.cph.chicago.exception.ConnectException
+import fr.cph.chicago.exception.ParserException
 import fr.cph.chicago.parser.XmlParser
 import fr.cph.chicago.repository.TrainRepository
 import io.reactivex.exceptions.Exceptions
@@ -92,6 +91,32 @@ object TrainService {
             else
                 TrainArrival.buildEmptyTrainArrival()
         } catch (e: Throwable) {
+            throw Exceptions.propagate(e)
+        }
+    }
+
+    fun loadTrainEta(runNumber: String): List<Eta> {
+        try {
+            val connectParam = ArrayListValuedHashMap<String, String>()
+            connectParam.put(App.instance.applicationContext.getString(R.string.request_runnumber), runNumber)
+            val content = ctaClient.connect(TRAIN_FOLLOW, connectParam)
+            return xmlParser.parseTrainsFollow(content)
+        } catch (e: ConnectException) {
+            throw Exceptions.propagate(e)
+        } catch (e: ParserException) {
+            throw Exceptions.propagate(e)
+        }
+    }
+
+    fun getTrainLocation(line: String): List<Train> {
+        try {
+            val connectParam = ArrayListValuedHashMap<String, String>()
+            connectParam.put(App.instance.applicationContext.getString(R.string.request_rt), line)
+            val content = ctaClient.connect(TRAIN_LOCATION, connectParam)
+            return xmlParser.parseTrainsLocation(content)
+        } catch (e: ConnectException) {
+            throw Exceptions.propagate(e)
+        } catch (e: ParserException) {
             throw Exceptions.propagate(e)
         }
     }
