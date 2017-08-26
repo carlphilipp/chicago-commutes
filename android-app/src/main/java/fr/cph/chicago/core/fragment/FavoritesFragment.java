@@ -119,17 +119,19 @@ public class FavoritesFragment extends AbstractFragment {
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState == null) {
-            final Bundle bundle = activity.getIntent().getExtras();
-            busArrivals = bundle.getParcelableArrayList(getString(R.string.bundle_bus_arrivals));
-            trainArrivals = bundle.getSparseParcelableArray(getString(R.string.bundle_train_arrivals));
-            bikeStations = bundle.getParcelableArrayList(getString(R.string.bundle_bike_stations));
-        } else {
-            busArrivals = savedInstanceState.getParcelableArrayList(getString(R.string.bundle_bus_arrivals));
-            trainArrivals = savedInstanceState.getSparseParcelableArray(getString(R.string.bundle_train_arrivals));
-            bikeStations = savedInstanceState.getParcelableArrayList(getString(R.string.bundle_bike_stations));
-            boolean boolTrain = App.Companion.checkTrainData(activity);
-            if (boolTrain) {
+        final Bundle bundle = activity.getIntent().getExtras();
+        busArrivals = bundle == null
+            ? savedInstanceState.getParcelableArrayList(getString(R.string.bundle_bus_arrivals))
+            :  bundle.getParcelableArrayList(getString(R.string.bundle_bus_arrivals));
+        trainArrivals = bundle == null
+            ? savedInstanceState.getSparseParcelableArray(getString(R.string.bundle_train_arrivals))
+            : bundle.getSparseParcelableArray(getString(R.string.bundle_train_arrivals));
+        bikeStations = bundle == null
+            ? savedInstanceState.getParcelableArrayList(getString(R.string.bundle_bike_stations))
+            : bundle.getParcelableArrayList(getString(R.string.bundle_bike_stations));
+
+        if (savedInstanceState != null) {
+            if (App.Companion.checkTrainData(activity)) {
                 App.Companion.checkBusData(activity);
             }
         }
