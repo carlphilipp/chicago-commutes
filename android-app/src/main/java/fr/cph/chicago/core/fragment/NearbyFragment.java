@@ -20,7 +20,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -48,7 +47,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindString;
@@ -59,13 +57,9 @@ import fr.cph.chicago.core.adapter.SlidingUpAdapter;
 import fr.cph.chicago.core.listener.OnMarkerClickListener;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusStop;
-import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.marker.MarkerDataHolder;
 import fr.cph.chicago.rx.ObservableUtil;
-import fr.cph.chicago.service.BusService;
-import fr.cph.chicago.service.TrainService;
-import fr.cph.chicago.util.GPSUtil;
 import fr.cph.chicago.util.Util;
 import io.reactivex.Observable;
 import pub.devrel.easypermissions.AfterPermissionGranted;
@@ -98,8 +92,6 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
 
     private final Util util;
     private final ObservableUtil observableUtil;
-    private final TrainService trainService;
-    private final BusService busService;
 
     private SupportMapFragment mapFragment;
 
@@ -110,8 +102,6 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
     public NearbyFragment() {
         this.util = Util.INSTANCE;
         this.observableUtil = ObservableUtil.INSTANCE;
-        this.trainService = TrainService.INSTANCE;
-        this.busService = BusService.INSTANCE;
     }
 
     public SlidingUpPanelLayout getSlidingUpPanelLayout() {
@@ -259,55 +249,6 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
                 progressBar.setProgress(50);
             } else {
                 progressBar.setVisibility(View.GONE);
-            }
-        }
-    }
-
-    private class LoadNearbyTask extends AsyncTask<Void, Void, Position> {
-
-        private List<BusStop> busStops;
-        private List<Station> trainStations;
-        private List<BikeStation> bikeStations;
-        private final TrainService trainService;
-        private final BusService busService;
-
-        private LoadNearbyTask() {
-            busStops = new ArrayList<>();
-            trainStations = new ArrayList<>();
-            this.trainService = TrainService.INSTANCE;
-            this.busService = BusService.INSTANCE;
-        }
-
-        @Override
-        protected final Position doInBackground(final Void... params) {
-            bikeStations = activity.getIntent().getExtras().getParcelableArrayList(bundleBikeStations);
-
-            if (!googleApiClient.isConnected()) {
-                googleApiClient.blockingConnect();
-            }
-
-            final GPSUtil gpsUtil = new GPSUtil(googleApiClient);
-            final Position position = gpsUtil.getLocation();
-            if (position.getLongitude() != 0 && position.getLatitude() != 0) {
-                busStops = busService.getBusStopsAround(position);
-                trainStations = trainService.readNearbyStation(position);
-                // FIXME: wait for bike stations to be loaded
-                bikeStations = bikeStations != null
-                    ? BikeStation.Companion.readNearbyStation(bikeStations, position)
-                    : new ArrayList<>();
-            }
-            return position;
-        }
-
-        @Override
-        protected final void onPostExecute(final Position position) {
-            if (position.getLongitude() != 0 && position.getLatitude() != 0) {
-                util.centerMap(mapFragment, position);
-                updateMarkersAndModel(busStops, trainStations, bikeStations);
-            } else {
-                Log.e(TAG, "Could not get current user location");
-                showProgress(false);
-                util.showSnackBar(activity, R.string.message_cant_find_location, Snackbar.LENGTH_LONG);
             }
         }
     }
