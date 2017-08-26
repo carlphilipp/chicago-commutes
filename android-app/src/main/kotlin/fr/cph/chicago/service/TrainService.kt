@@ -28,7 +28,7 @@ object TrainService {
         try {
             for ((key, value) in trainParams.asMap()) {
                 if ("mapid" == key) {
-                    val list = value as List<String>
+                    val list = value as MutableList<String>
                     if (list.size < 5) {
                         val xmlResult = ctaClient.connect(TRAIN_ARRIVALS, trainParams)
                         trainArrivals = xmlParser.parseArrivals(xmlResult)
