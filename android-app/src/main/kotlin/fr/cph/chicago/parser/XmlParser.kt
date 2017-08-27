@@ -537,7 +537,7 @@ object XmlParser {
 
     @Synchronized
     @Throws(ParserException::class)
-    fun parseTrainsFollow(inputStream: InputStream): List<Eta> {
+    fun parseTrainsFollow(inputStream: InputStream): MutableList<Eta> {
         val arrivals = parseArrivals(inputStream)
         val res = mutableListOf<Eta>()
         var index = 0

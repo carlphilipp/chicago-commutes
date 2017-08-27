@@ -334,4 +334,16 @@ object ObservableUtil {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
+
+    fun createLoadTrainEtaObservable(runNumber: String, loadAll: Boolean): Observable<List<Eta>> {
+        return Observable.create { observableOnSubscribe: ObservableEmitter<List<Eta>> ->
+            if (!observableOnSubscribe.isDisposed) {
+                observableOnSubscribe.onNext(trainService.loadTrainEta(runNumber, loadAll))
+                observableOnSubscribe.onComplete()
+            }
+        }
+            .onErrorReturn { ArrayList() }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
 }

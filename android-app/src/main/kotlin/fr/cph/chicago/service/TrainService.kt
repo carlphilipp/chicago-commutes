@@ -14,6 +14,7 @@ import fr.cph.chicago.repository.TrainRepository
 import io.reactivex.exceptions.Exceptions
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import org.apache.commons.lang3.StringUtils
+import java.util.*
 
 object TrainService {
 
@@ -95,12 +96,22 @@ object TrainService {
         }
     }
 
-    fun loadTrainEta(runNumber: String): List<Eta> {
+    fun loadTrainEta(runNumber: String, loadAll: Boolean): List<Eta> {
         try {
             val connectParam = ArrayListValuedHashMap<String, String>()
             connectParam.put(App.instance.applicationContext.getString(R.string.request_runnumber), runNumber)
             val content = ctaClient.connect(TRAIN_FOLLOW, connectParam)
-            return xmlParser.parseTrainsFollow(content)
+            var etas = xmlParser.parseTrainsFollow(content)
+
+            if (!loadAll && etas.size > 7) {
+                etas = etas.subList(0, 6)
+                val currentDate = Calendar.getInstance().time
+                val fakeStation = Station(0, App.instance.getString(R.string.bus_all_results), ArrayList())
+                // Add a fake Eta cell to alert the user about the fact that only a part of the result is displayed
+                val eta = Eta.buildFakeEtaWith(fakeStation, currentDate, currentDate, false, false)
+                etas.add(eta)
+            }
+            return etas
         } catch (e: ConnectException) {
             throw Exceptions.propagate(e)
         } catch (e: ParserException) {

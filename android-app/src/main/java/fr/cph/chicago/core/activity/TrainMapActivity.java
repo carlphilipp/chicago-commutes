@@ -34,9 +34,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,16 +45,13 @@ import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.adapter.TrainMapSnippetAdapter;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Position;
-import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.Train;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.marker.RefreshTrainMarkers;
 import fr.cph.chicago.rx.ObservableUtil;
+import fr.cph.chicago.rx.TrainEtaObserver;
 import fr.cph.chicago.service.TrainService;
 import io.reactivex.Observable;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 import static fr.cph.chicago.Constants.TRAINS_FOLLOW_URL;
 
@@ -74,8 +68,6 @@ public class TrainMapActivity extends AbstractMapActivity {
     String analyticsTrainMap;
     @BindString(R.string.request_runnumber)
     String requestRunNumber;
-    @BindString(R.string.bus_all_results)
-    String busAllResults;
     @BindString(R.string.request_rt)
     String requestRt;
 
@@ -238,7 +230,8 @@ public class TrainMapActivity extends AbstractMapActivity {
                     if (!refreshingInfoWindow) {
                         setSelectedMarker(marker);
                         final String runNumber = marker.getSnippet();
-                        new LoadTrainFollowTask(view, false).execute(runNumber);
+                        observableUtil.createLoadTrainEtaObservable(runNumber, false)
+                            .subscribe(new TrainEtaObserver(view, TrainMapActivity.this));
                         status.put(marker, false);
                     }
                     return view;
@@ -254,7 +247,8 @@ public class TrainMapActivity extends AbstractMapActivity {
                     setSelectedMarker(marker);
                     final String runNumber = marker.getSnippet();
                     final Boolean current = status.get(marker);
-                    new LoadTrainFollowTask(view, !current).execute(runNumber);
+                    observableUtil.createLoadTrainEtaObservable(runNumber, !current)
+                        .subscribe(new TrainEtaObserver(view, TrainMapActivity.this));
                     status.put(marker, !current);
                 }
             }
@@ -300,56 +294,6 @@ public class TrainMapActivity extends AbstractMapActivity {
             }
         } else {
             util.showNetworkErrorMessage(layout);
-        }
-    }
-
-    private class LoadTrainFollowTask extends AsyncTask<String, Void, List<Eta>> {
-
-        private final View view;
-        private final boolean loadAll;
-
-        /**
-         * Constructor
-         *
-         * @param view    the view
-         * @param loadAll a boolean to load everything
-         */
-        private LoadTrainFollowTask(@NonNull final View view, final boolean loadAll) {
-            this.view = view;
-            this.loadAll = loadAll;
-        }
-
-        @Override
-        protected final List<Eta> doInBackground(final String... params) {
-            final String runNumber = params[0];
-            List<Eta> etas = trainService.loadTrainEta(runNumber);
-            util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_FOLLOW_URL);
-            if (!loadAll && etas.size() > 7) {
-                etas = etas.subList(0, 6);
-                final Date currentDate = Calendar.getInstance().getTime();
-                final Station fakeStation = new Station(0, busAllResults, Collections.emptyList());
-                // Add a fake Eta cell to alert the user about the fact that only a part of the result is displayed
-                final Eta eta = Eta.Companion.buildFakeEtaWith(fakeStation, currentDate, currentDate, false, false);
-                etas.add(eta);
-            }
-            return etas;
-        }
-
-        @Override
-        protected final void onPostExecute(final List<Eta> result) {
-            // View can be null
-            final ListView arrivals = view.findViewById(R.id.arrivals);
-            final TextView error = view.findViewById(R.id.error);
-            if (result.size() != 0) {
-                final TrainMapSnippetAdapter ada = new TrainMapSnippetAdapter(result);
-                arrivals.setAdapter(ada);
-                arrivals.setVisibility(ListView.VISIBLE);
-                error.setVisibility(TextView.GONE);
-            } else {
-                arrivals.setVisibility(ListView.GONE);
-                error.setVisibility(TextView.VISIBLE);
-            }
-            refreshInfoWindow();
         }
     }
 }
