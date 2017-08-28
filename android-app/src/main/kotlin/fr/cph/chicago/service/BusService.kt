@@ -96,7 +96,6 @@ object BusService {
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }
-
     }
 
     fun loadBusRoutes(): List<BusRoute> {

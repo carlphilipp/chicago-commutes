@@ -213,10 +213,10 @@ object TrainRepository {
 
     fun readPattern(line: TrainLine): List<Position> {
         var inputStreamReader: InputStreamReader? = null
-        try {
+        return try {
             inputStreamReader = InputStreamReader(App.instance.resources.assets.open("train_pattern/" + line.toTextString() + "_pattern.csv"))
             val allRows = parser.parseAll(inputStreamReader)
-            return allRows
+            allRows
                 .map { row ->
                     val longitude = row[0].toDouble()
                     val latitude = row[1].toDouble()
@@ -224,7 +224,7 @@ object TrainRepository {
                 }
         } catch (e: IOException) {
             Log.e(TAG, e.message, e)
-            return listOf()
+            listOf()
         } finally {
             IOUtils.closeQuietly(inputStreamReader)
         }

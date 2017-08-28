@@ -64,13 +64,13 @@ object GoogleStreetClient {
     private fun connectUrl(address: String): Drawable {
         Log.v(TAG, "Address: " + address)
         var inputStream: InputStream? = null
-        try {
+        return try {
             inputStream = URL(address).content as InputStream
-            return Drawable.createFromStream(inputStream, "src name")
+            Drawable.createFromStream(inputStream, "src name")
         } catch (e: Exception) {
             Log.e(TAG, e.message, e)
             // TODO add a temporary image here
-            return ColorDrawable(Color.TRANSPARENT)
+            ColorDrawable(Color.TRANSPARENT)
         } finally {
             IOUtils.closeQuietly(inputStream)
         }

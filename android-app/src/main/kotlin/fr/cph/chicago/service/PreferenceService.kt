@@ -70,7 +70,7 @@ object PreferenceService {
     }
 
     fun addToBikeFavorites(stationId: Int, view: View) {
-        val favorites = repo.getBikeFavorites()
+        val favorites = repo.getBikeFavorites().toMutableList()
         if (!favorites.contains(stationId.toString())) {
             favorites.add(stationId.toString())
             repo.saveBikeFavorites(favorites)
@@ -80,7 +80,7 @@ object PreferenceService {
 
     fun addToBusFavorites(busRouteId: String, busStopId: String, bound: String, view: View) {
         val id = busRouteId + "_" + busStopId + "_" + bound
-        val favorites = repo.getBusFavorites()
+        val favorites = repo.getBusFavorites().toMutableList()
         if (!favorites.contains(id)) {
             favorites.add(id)
             repo.saveBusFavorites(favorites)
@@ -118,14 +118,14 @@ object PreferenceService {
 
     fun removeFromBusFavorites(busRouteId: String, busStopId: String, bound: String, view: View) {
         val id = busRouteId + "_" + busStopId + "_" + bound
-        val favorites = repo.getBusFavorites()
+        val favorites = repo.getBusFavorites().toMutableList()
         favorites.remove(id)
         repo.saveBusFavorites(favorites)
         util.showSnackBar(view, R.string.message_remove_fav)
     }
 
     fun removeFromBikeFavorites(stationId: Int, view: View) {
-        val favorites = repo.getBikeFavorites()
+        val favorites = repo.getBikeFavorites().toMutableList()
         favorites.remove(Integer.toString(stationId))
         repo.saveBikeFavorites(favorites)
         util.showSnackBar(view, R.string.message_remove_fav)
@@ -136,5 +136,29 @@ object PreferenceService {
         favorites.remove(stationId)
         repo.saveTrainFavorites(favorites)
         util.showSnackBar(view, R.string.message_remove_fav)
+    }
+
+    fun getBikeFavorites(): List<String> {
+        return repo.getBikeFavorites()
+    }
+
+    fun getTrainFavorites(): List<Int> {
+        return repo.getTrainFavorites()
+    }
+
+    fun getBusFavorites(): List<String> {
+        return repo.getBusFavorites()
+    }
+
+    fun getBusRouteNameMapping(busStopId: String): String? {
+        return repo.getBusRouteNameMapping(busStopId)
+    }
+
+    fun getBikeRouteNameMapping(bikeId: String): String? {
+        return repo.getBikeRouteNameMapping(bikeId)
+    }
+
+    fun getBusStopNameMapping(busStopId: String): String? {
+        return repo.getBusStopNameMapping(busStopId)
     }
 }

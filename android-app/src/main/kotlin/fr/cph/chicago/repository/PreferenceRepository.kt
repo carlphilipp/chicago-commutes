@@ -82,11 +82,11 @@ object PreferenceRepository {
         editor.apply()
     }
 
-    fun getBikeFavorites(): MutableList<String> {
+    fun getBikeFavorites(): List<String> {
         val sharedPref = getPrivatePreferences()
         val setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_BIKE, LinkedHashSet())
         Log.v(TAG, "Read bike favorites : $setPref")
-        return setPref.sorted().toMutableList()
+        return setPref.sorted()
     }
 
     fun addBikeRouteNameMapping(bikeId: String, bikeName: String) {
@@ -119,7 +119,7 @@ object PreferenceRepository {
         editor.apply()
     }
 
-    fun getBusFavorites(): MutableList<String> {
+    fun getBusFavorites(): List<String> {
         val sharedPref = getPrivatePreferences()
         val setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_BUS, LinkedHashSet())
         Log.v(TAG, "Read bus favorites : " + setPref!!.toString())
@@ -135,7 +135,7 @@ object PreferenceRepository {
             } else {
                 str1Decoded.compareTo(str2Decoded)
             }
-        }).toMutableList()
+        })
     }
 
     fun addBusRouteNameMapping(busStopId: String, routeName: String) {

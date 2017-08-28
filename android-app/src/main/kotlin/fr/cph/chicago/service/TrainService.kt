@@ -132,10 +132,6 @@ object TrainService {
         }
     }
 
-    private fun getAllStations(): MutableMap<TrainLine, MutableList<Station>> {
-        return trainRepository.allStations
-    }
-
     fun setStationError(value: Boolean) {
         trainRepository.error = value
     }
@@ -170,5 +166,9 @@ object TrainService {
             .filter { station -> StringUtils.containsIgnoreCase(station.name, query) }
             .distinct()
             .sorted()
+    }
+
+    private fun getAllStations(): MutableMap<TrainLine, MutableList<Station>> {
+        return trainRepository.allStations
     }
 }

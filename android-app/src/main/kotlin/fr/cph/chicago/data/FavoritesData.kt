@@ -27,8 +27,8 @@ import fr.cph.chicago.entity.BusRoute
 import fr.cph.chicago.entity.TrainArrival
 import fr.cph.chicago.entity.dto.BusArrivalStopMappedDTO
 import fr.cph.chicago.entity.enumeration.TrainLine
-import fr.cph.chicago.repository.PreferenceRepository
 import fr.cph.chicago.service.BusService
+import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
@@ -45,7 +45,7 @@ object FavoritesData {
 
     private val trainService = TrainService
     private val busService = BusService
-    private val preferenceRepository = PreferenceRepository
+    private val preferenceService = PreferenceService
     private val util = Util
 
     var trainArrivals: SparseArray<TrainArrival> = SparseArray()
@@ -83,7 +83,7 @@ object FavoritesData {
                 return busDataRoute
             } else {
                 // Get name in the preferences if null
-                val routeName = preferenceRepository.getBusRouteNameMapping(routeId)
+                val routeName = preferenceService.getBusRouteNameMapping(routeId)
                 return BusRoute(routeId, routeName ?: "")
             }
         } else {
@@ -129,11 +129,11 @@ object FavoritesData {
     }
 
     fun refreshFavorites() {
-        trainFavorites = preferenceRepository.getTrainFavorites()
-        busFavorites = preferenceRepository.getBusFavorites()
+        trainFavorites = preferenceService.getTrainFavorites()
+        busFavorites = preferenceService.getBusFavorites()
         fakeBusFavorites = calculateActualRouteNumberBusFavorites(busFavorites)
         bikeFavorites.clear()
-        val bikeFavoritesTemp = preferenceRepository.getBikeFavorites()
+        val bikeFavoritesTemp = preferenceService.getBikeFavorites()
         if (bikeStations.isNotEmpty()) {
             bikeFavoritesTemp
                 .flatMap { bikeStationId -> bikeStations.filter { (id) -> Integer.toString(id) == bikeStationId } }
@@ -146,7 +146,7 @@ object FavoritesData {
     }
 
     private fun createEmptyBikeStation(index: Int): BikeStation {
-        val stationName = preferenceRepository.getBikeRouteNameMapping(bikeFavorites[index])
+        val stationName = preferenceService.getBikeRouteNameMapping(bikeFavorites[index])
         return BikeStation.buildDefaultBikeStationWithName(stationName ?: StringUtils.EMPTY)
     }
 
@@ -179,7 +179,7 @@ object FavoritesData {
             if (routeIdFav == routeId) {
                 val stopId = Integer.valueOf(stopId1)
 
-                var stopName = preferenceRepository.getBusStopNameMapping(stopId.toString())
+                var stopName = preferenceService.getBusStopNameMapping(stopId.toString())
                 stopName = if (stopName != null) stopName else stopId.toString()
 
                 // FIXME check if that logic works. I think it does not. In what case do we show that bus arrival?
