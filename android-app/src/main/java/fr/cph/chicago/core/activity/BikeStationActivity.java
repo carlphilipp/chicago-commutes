@@ -26,10 +26,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.annimon.stream.Stream;
-
-import java.util.List;
-
 import butterknife.BindColor;
 import butterknife.BindString;
 import butterknife.BindView;
@@ -38,12 +34,12 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener;
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener;
-import fr.cph.chicago.repository.PreferenceRepository;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.enumeration.TrainLine;
-import fr.cph.chicago.rx.ObservableUtil;
 import fr.cph.chicago.rx.BikeAllBikeStationsObserver;
+import fr.cph.chicago.rx.ObservableUtil;
+import fr.cph.chicago.service.PreferenceService;
 import fr.cph.chicago.util.Util;
 
 /**
@@ -87,6 +83,10 @@ public class BikeStationActivity extends AbstractStationActivity {
     @BindString(R.string.bike_available_docks)
     String bikeAvailableDocks;
 
+    private final ObservableUtil observableUtil;
+    private final Util util;
+    private final PreferenceService preferenceService;
+
     @BindColor(R.color.grey_5)
     int grey_5;
     @BindColor(R.color.red)
@@ -98,6 +98,12 @@ public class BikeStationActivity extends AbstractStationActivity {
 
     private BikeStation bikeStation;
     private boolean isFavorite;
+
+    public BikeStationActivity() {
+        observableUtil = ObservableUtil.INSTANCE;
+        util = Util.INSTANCE;
+        preferenceService = PreferenceService.INSTANCE;
+    }
 
     @Override
     protected final void onCreate(final Bundle savedInstanceState) {
@@ -111,7 +117,7 @@ public class BikeStationActivity extends AbstractStationActivity {
                 final double longitude = bikeStation.getLongitude();
 
                 swipeRefreshLayout.setOnRefreshListener(
-                    () -> ObservableUtil.INSTANCE.createAllBikeStationsObservable()
+                    () -> observableUtil.createAllBikeStationsObservable()
                         .subscribe(new BikeAllBikeStationsObserver(this, bikeStation.getId(), swipeRefreshLayout))
                 );
 
@@ -145,11 +151,11 @@ public class BikeStationActivity extends AbstractStationActivity {
         toolbar.inflateMenu(R.menu.main);
         toolbar.setOnMenuItemClickListener((item -> {
             swipeRefreshLayout.setRefreshing(true);
-            ObservableUtil.INSTANCE.createAllBikeStationsObservable()
+            observableUtil.createAllBikeStationsObservable()
                 .subscribe(new BikeAllBikeStationsObserver(BikeStationActivity.this, bikeStation.getId(), swipeRefreshLayout));
             return false;
         }));
-        Util.INSTANCE.setWindowsColor(this, toolbar, TrainLine.NA);
+        util.setWindowsColor(this, toolbar, TrainLine.NA);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.setElevation(4);
         }
@@ -219,11 +225,7 @@ public class BikeStationActivity extends AbstractStationActivity {
      */
     @Override
     protected boolean isFavorite() {
-        final List<String> favorites = PreferenceRepository.INSTANCE.getBikeFavorites(getApplicationContext());
-        return Stream.of(favorites)
-            .filter(favorite -> Integer.valueOf(favorite) == bikeStation.getId())
-            .findFirst()
-            .isPresent();
+        return preferenceService.isBikeStationFavorite(bikeStation.getId());
     }
 
     public void refreshStation(@NonNull final BikeStation station) {
@@ -236,12 +238,12 @@ public class BikeStationActivity extends AbstractStationActivity {
      */
     private void switchFavorite() {
         if (isFavorite) {
-            Util.INSTANCE.removeFromBikeFavorites(bikeStation.getId(), swipeRefreshLayout);
+            preferenceService.removeFromBikeFavorites(bikeStation.getId(), swipeRefreshLayout);
             favoritesImage.setColorFilter(grey_5);
             isFavorite = false;
         } else {
-            Util.INSTANCE.addToBikeFavorites(bikeStation.getId(), swipeRefreshLayout);
-            PreferenceRepository.INSTANCE.addBikeRouteNameMapping(getApplicationContext(), Integer.toString(bikeStation.getId()), bikeStation.getName());
+            preferenceService.addToBikeFavorites(bikeStation.getId(), swipeRefreshLayout);
+            preferenceService.addBikeRouteNameMapping(Integer.toString(bikeStation.getId()), bikeStation.getName());
             favoritesImage.setColorFilter(yellowLineDark);
             isFavorite = true;
         }

@@ -61,7 +61,10 @@ import java.util.*
 // TODO to analyze and refactor
 class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder>() {
 
+    private val util = Util
+    private val favoritesData = FavoritesData
     private val context: Context = activity.applicationContext
+    private val layoutUtil = LayoutUtil
 
     private var lastUpdate: String? = null
 
@@ -90,7 +93,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
 
     override fun onBindViewHolder(holder: FavoritesViewHolder, position: Int) {
         resetData(holder)
-        val model = FavoritesData.getObject(position, context)
+        val model = favoritesData.getObject(position)
         holder.lastUpdateTextView.text = lastUpdate
         when (model) {
             is Station -> handleStation(holder, model)
@@ -113,8 +116,8 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         holder.favoriteImage.setImageResource(R.drawable.ic_train_white_24dp)
         holder.stationNameTextView.text = station.name
         holder.detailsButton.setOnClickListener { _ ->
-            if (!Util.isNetworkAvailable(context)) {
-                Util.showNetworkErrorMessage(activity)
+            if (!util.isNetworkAvailable()) {
+                util.showNetworkErrorMessage(activity)
             } else {
                 // Start station activity
                 val extras = Bundle()
@@ -127,8 +130,8 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
 
         holder.mapButton.text = activity.getString(R.string.favorites_view_trains)
         holder.mapButton.setOnClickListener { _ ->
-            if (!Util.isNetworkAvailable(context)) {
-                Util.showNetworkErrorMessage(activity)
+            if (!util.isNetworkAvailable()) {
+                util.showNetworkErrorMessage(activity)
             } else {
                 if (trainLines.size == 1) {
                     startActivity(trainLines.iterator().next())
@@ -160,10 +163,10 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
 
         trainLines.forEach { trainLine ->
             var newLine = true
-            val etas = FavoritesData.getTrainArrivalByLine(stationId, trainLine)
+            val etas = favoritesData.getTrainArrivalByLine(stationId, trainLine)
             for ((i, entry) in etas.entries.withIndex()) {
-                val containParams = LayoutUtil.getInsideParams(activity.applicationContext, newLine, i == etas.size - 1)
-                val container = LayoutUtil.createTrainArrivalsLayout(context, containParams, entry, trainLine)
+                val containParams = layoutUtil.getInsideParams(newLine, i == etas.size - 1)
+                val container = layoutUtil.createTrainArrivalsLayout(containParams, entry, trainLine)
 
                 holder.mainLayout.addView(container)
 
@@ -186,11 +189,11 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
 
         val busDetailsDTOs = mutableListOf<BusDetailsDTO>()
 
-        val busArrivalDTO = FavoritesData.getBusArrivalsMapped(busRoute.id, context)
+        val busArrivalDTO = favoritesData.getBusArrivalsMapped(busRoute.id)
         val entrySet = busArrivalDTO.entries
 
         for ((stopName, boundMap) in entrySet) {
-            val stopNameTrimmed = Util.trimBusStopNameIfNeeded(stopName)
+            val stopNameTrimmed = util.trimBusStopNameIfNeeded(stopName)
 
             var newLine = true
             var i = 0
@@ -211,8 +214,8 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
                 busDetailsDTOs.add(busDetails)
 
                 // Build UI
-                val containParams = LayoutUtil.getInsideParams(activity.applicationContext, newLine, i == boundMap.size - 1)
-                val container = LayoutUtil.createBusArrivalsLayout(activity.applicationContext, containParams, stopNameTrimmed, BusDirection.fromString(key), value as MutableList<out BusArrival>)
+                val containParams = layoutUtil.getInsideParams(newLine, i == boundMap.size - 1)
+                val container = layoutUtil.createBusArrivalsLayout(containParams, stopNameTrimmed, BusDirection.fromString(key), value as MutableList<out BusArrival>)
 
                 holder.mainLayout.addView(container)
 
@@ -224,8 +227,8 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         holder.mapButton.text = activity.getString(R.string.favorites_view_buses)
         holder.detailsButton.setOnClickListener(BusStopOnClickListener(activity, holder.parent, busDetailsDTOs))
         holder.mapButton.setOnClickListener { _ ->
-            if (!Util.isNetworkAvailable(context)) {
-                Util.showNetworkErrorMessage(activity)
+            if (!util.isNetworkAvailable()) {
+                util.showNetworkErrorMessage(activity)
             } else {
                 val bounds = busDetailsDTOs.map { it.bound }.toSet()
                 val intent = Intent(activity.applicationContext, BusMapActivity::class.java)
@@ -243,8 +246,8 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         holder.favoriteImage.setImageResource(R.drawable.ic_directions_bike_white_24dp)
 
         holder.detailsButton.setOnClickListener { _ ->
-            if (!Util.isNetworkAvailable(context)) {
-                Util.showNetworkErrorMessage(activity)
+            if (!util.isNetworkAvailable()) {
+                util.showNetworkErrorMessage(activity)
             } else if (bikeStation.latitude != 0.0 && bikeStation.longitude != 0.0) {
                 val intent = Intent(activity.applicationContext, BikeStationActivity::class.java)
                 val extras = Bundle()
@@ -252,14 +255,14 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
                 intent.putExtras(extras)
                 activity.startActivity(intent)
             } else {
-                Util.showMessage(activity, R.string.message_not_ready)
+                util.showMessage(activity, R.string.message_not_ready)
             }
         }
 
         holder.mapButton.text = activity.getString(R.string.favorites_view_station)
         holder.mapButton.setOnClickListener(GoogleMapOnClickListener(bikeStation.latitude, bikeStation.longitude))
 
-        val bikeResultLayout = LayoutUtil.createBikeLayout(activity.applicationContext, bikeStation)
+        val bikeResultLayout = layoutUtil.createBikeLayout(bikeStation)
 
         holder.mainLayout.addView(bikeResultLayout)
     }
@@ -269,28 +272,25 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
     }
 
     override fun getItemCount(): Int {
-        return FavoritesData.size()
+        return favoritesData.size()
     }
 
-    /**
-     * Set favoritesData
-     */
-    fun setFavorites() {
+    fun refreshFavorites() {
         // TODO delete that method but see if we can pass context properly
-        FavoritesData.setFavorites(context)
+        favoritesData.refreshFavorites()
     }
 
     /**
      * Refresh date update
      */
-    fun refreshUpdated() {
+    fun resetLastUpdate() {
         (activity.application as App).lastUpdate = Calendar.getInstance().time
     }
 
     /**
      * Refresh updated view
      */
-    fun refreshUpdatedView() {
+    fun updateModel() {
         lastUpdate = lastUpdateInMinutes
         notifyDataSetChanged()
     }

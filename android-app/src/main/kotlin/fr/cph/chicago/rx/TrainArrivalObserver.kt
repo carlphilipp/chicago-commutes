@@ -22,7 +22,7 @@ class TrainArrivalObserver(private val activity: StationActivity, private val sw
         if (swipeRefreshLayout.isRefreshing) {
             swipeRefreshLayout.isRefreshing = false
         }
-        Util.showNetworkErrorMessage(swipeRefreshLayout)
+        util.showNetworkErrorMessage(swipeRefreshLayout)
     }
 
     override fun onComplete() {
@@ -33,5 +33,6 @@ class TrainArrivalObserver(private val activity: StationActivity, private val sw
 
     companion object {
         private val TAG = TrainArrivalObserver::class.java.simpleName
+        private val util = Util
     }
 }

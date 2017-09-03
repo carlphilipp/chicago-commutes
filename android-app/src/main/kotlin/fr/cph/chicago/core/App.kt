@@ -30,8 +30,8 @@ import com.google.android.gms.analytics.GoogleAnalytics
 import com.google.android.gms.analytics.Tracker
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.BaseActivity
-import fr.cph.chicago.data.BusData
-import fr.cph.chicago.repository.TrainRepository
+import fr.cph.chicago.service.BusService
+import fr.cph.chicago.service.TrainService
 import java.util.*
 
 /**
@@ -60,12 +60,13 @@ class App : Application() {
         if (screenWidth > 1080) 7f else if (screenWidth > 480) 4f else 2f
     }
 
+
     override fun onCreate() {
         super.onCreate()
         ctaTrainKey = applicationContext.getString(R.string.cta_train_key)
         ctaBusKey = applicationContext.getString(R.string.cta_bus_key)
         googleStreetKey = applicationContext.getString(R.string.google_maps_api_key)
-        appResources = applicationContext.resources
+        instance = this
     }
 
     private val screenSize: IntArray by lazy {
@@ -80,10 +81,13 @@ class App : Application() {
         lateinit var ctaTrainKey: String
         lateinit var ctaBusKey: String
         lateinit var googleStreetKey: String
-        lateinit var appResources: Resources
+        lateinit var instance: App
+
+        val trainService = TrainService
+        val busService = BusService
 
         fun checkTrainData(activity: Activity): Boolean {
-            if (TrainRepository.error) {
+            if (trainService.getStationError()) {
                 startErrorActivity(activity)
                 return false
             }
@@ -91,7 +95,7 @@ class App : Application() {
         }
 
         fun checkBusData(activity: Activity) {
-            if (BusData.error) {
+            if (busService.busRouteError()) {
                 startErrorActivity(activity)
             }
         }

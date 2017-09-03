@@ -20,11 +20,11 @@
 package fr.cph.chicago.parser
 
 import android.util.SparseArray
-import fr.cph.chicago.repository.TrainRepository
 import fr.cph.chicago.entity.*
 import fr.cph.chicago.entity.enumeration.BusDirection
 import fr.cph.chicago.entity.enumeration.TrainLine
 import fr.cph.chicago.exception.ParserException
+import fr.cph.chicago.service.TrainService
 import org.apache.commons.io.IOUtils
 import org.apache.commons.lang3.StringUtils
 import org.xmlpull.v1.XmlPullParser
@@ -46,6 +46,7 @@ import java.util.*
 // TODO to refactor and optimize
 object XmlParser {
 
+    private val trainService: TrainService = TrainService
     private val parser: XmlPullParser = XmlPullParserFactory.newInstance().newPullParser()
     private val simpleDateFormatTrain: SimpleDateFormat = SimpleDateFormat("yyyyMMdd HH:mm:ss", Locale.US)
     private val simpleDateFormatBus: SimpleDateFormat = SimpleDateFormat("yyyyMMdd HH:mm", Locale.US)
@@ -61,8 +62,9 @@ object XmlParser {
      * *
      * @throws ParserException the parser exception
      */
-    @Synchronized @Throws(ParserException::class)
-    fun parseArrivals(inputStream: InputStream, data: TrainRepository): SparseArray<TrainArrival> {
+    @Synchronized
+    @Throws(ParserException::class)
+    fun parseArrivals(inputStream: InputStream): SparseArray<TrainArrival> {
         val result = SparseArray<TrainArrival>()
         try {
 
@@ -71,7 +73,7 @@ object XmlParser {
             var tagName: String? = null
 
             var stationId: Int? = null
-            var stopId: Int = 0
+            var stopId = 0
             var stationName: String? = null
             var stopDestination: String? = null
             var routeName: TrainLine? = null
@@ -89,9 +91,10 @@ object XmlParser {
                 } else if (eventType == XmlPullParser.END_TAG) {
                     val etaName = parser.name
                     if (StringUtils.isNotBlank(etaName) && "eta" == etaName) {
-                        val station = data.getStation(stationId!!)
+                        // FIXME analyze why we have that train service here. Should not.
+                        val station = trainService.getStation(stationId!!)
                         station.name = stationName!!
-                        val stop = data.getStop(stopId)
+                        val stop = trainService.getStop(stopId)
                         stop.description = stopDestination!!
                         val position = Position(latitude, longitude)
                         // FIXME that should not be done here
@@ -149,7 +152,8 @@ object XmlParser {
      * *
      * @throws ParserException a parser exception
      */
-    @Synchronized @Throws(ParserException::class)
+    @Synchronized
+    @Throws(ParserException::class)
     fun parseBusRoutes(xml: InputStream): List<BusRoute> {
         val result = mutableListOf<BusRoute>()
         try {
@@ -205,7 +209,8 @@ object XmlParser {
      * *
      * @throws ParserException a parser exception
      */
-    @Synchronized @Throws(ParserException::class)
+    @Synchronized
+    @Throws(ParserException::class)
     fun parseBusDirections(xml: InputStream, id: String): BusDirections {
         val result = BusDirections(id)
         try {
@@ -240,7 +245,8 @@ object XmlParser {
      * *
      * @throws ParserException a parser exception
      */
-    @Synchronized @Throws(ParserException::class)
+    @Synchronized
+    @Throws(ParserException::class)
     fun parseBusBounds(xml: InputStream): List<BusStop> {
         val result = mutableListOf<BusStop>()
         try {
@@ -296,7 +302,8 @@ object XmlParser {
      * *
      * @throws ParserException a parser exception
      */
-    @Synchronized @Throws(ParserException::class)
+    @Synchronized
+    @Throws(ParserException::class)
     fun parseBusArrivals(xml: InputStream): List<BusArrival> {
         val result = ArrayList<BusArrival>()
         try {
@@ -363,7 +370,8 @@ object XmlParser {
      * *
      * @throws ParserException a parser exception
      */
-    @Synchronized @Throws(ParserException::class)
+    @Synchronized
+    @Throws(ParserException::class)
     fun parsePatterns(xml: InputStream): List<BusPattern> {
         val result = mutableListOf<BusPattern>()
         try {
@@ -425,7 +433,8 @@ object XmlParser {
         return result
     }
 
-    @Synchronized @Throws(ParserException::class)
+    @Synchronized
+    @Throws(ParserException::class)
     fun parseVehicles(inputStream: InputStream): List<Bus> {
         val buses = mutableListOf<Bus>()
         try {
@@ -475,7 +484,8 @@ object XmlParser {
         return buses
     }
 
-    @Synchronized @Throws(ParserException::class)
+    @Synchronized
+    @Throws(ParserException::class)
     fun parseTrainsLocation(inputStream: InputStream): List<Train> {
         val trains = mutableListOf<Train>()
         try {
@@ -525,9 +535,10 @@ object XmlParser {
         return trains
     }
 
-    @Synchronized @Throws(ParserException::class)
-    fun parseTrainsFollow(inputStream: InputStream, data: TrainRepository): List<Eta> {
-        val arrivals = parseArrivals(inputStream, data)
+    @Synchronized
+    @Throws(ParserException::class)
+    fun parseTrainsFollow(inputStream: InputStream): MutableList<Eta> {
+        val arrivals = parseArrivals(inputStream)
         val res = mutableListOf<Eta>()
         var index = 0
         while (index < arrivals.size()) {

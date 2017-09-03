@@ -1,37 +1,50 @@
 package fr.cph.chicago.repository
 
-import android.util.Log
+import fr.cph.chicago.entity.BusRoute
 import fr.cph.chicago.entity.BusStop
 import fr.cph.chicago.entity.Position
-import fr.cph.chicago.parser.BusStopCsvParser
 import io.realm.Realm
 
-object BusStopRepository {
+object BusRepository {
 
-    private val TAG = BusStopRepository::class.java.simpleName
     private val DEFAULT_RANGE = 0.008
 
-    fun isEmpty(): Boolean {
+    var busRouteError: Boolean = false
+
+    val busRoutes: MutableList<BusRoute> = mutableListOf()
+        get() {
+            return field
+        }
+
+    fun setBusRoutes(busRoutes: List<BusRoute>) {
+        this.busRoutes.clear()
+        this.busRoutes.addAll(busRoutes)
+    }
+
+    fun getBusRoute(routeId: String): BusRoute {
+        return this.busRoutes
+            .filter { (id) -> id == routeId }
+            .getOrElse(0, { BusRoute("0", "error") })
+    }
+
+    fun hasBusStopsEmpty(): Boolean {
         val realm = Realm.getDefaultInstance()
         return realm.use {
             it.where(BusStop::class.java).findFirst() == null
         }
     }
 
-    fun saveBuses(busStops: List<BusStop>) {
+    fun saveBusStops(busStops: List<BusStop>) {
         val realm = Realm.getDefaultInstance()
         realm.use {
             it.executeTransaction {
-                busStops.forEach { busStop ->
-                    Log.d(TAG, "Save bus stop $busStop")
-                    it.copyToRealm(busStop)
-                }
+                busStops.forEach { busStop -> it.copyToRealm(busStop) }
             }
         }
     }
 
-    fun getStopsAround(position: Position): List<BusStop> {
-        return getStopsAround(position, DEFAULT_RANGE)
+    fun getBusStopsAround(position: Position): List<BusStop> {
+        return getBusStopsAround(position, DEFAULT_RANGE)
     }
 
     /**
@@ -40,7 +53,7 @@ object BusStopRepository {
      * @param position the position
      * @return a list of bus stop
      */
-    private fun getStopsAround(position: Position, range: Double): List<BusStop> {
+    private fun getBusStopsAround(position: Position, range: Double): List<BusStop> {
         val realm = Realm.getDefaultInstance()
 
         val latitude = position.latitude

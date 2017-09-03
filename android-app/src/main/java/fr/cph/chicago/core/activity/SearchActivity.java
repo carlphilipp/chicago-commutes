@@ -28,12 +28,12 @@ import butterknife.ButterKnife;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.adapter.SearchAdapter;
-import fr.cph.chicago.data.BusData;
-import fr.cph.chicago.repository.TrainRepository;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.entity.enumeration.TrainLine;
+import fr.cph.chicago.service.BusService;
+import fr.cph.chicago.service.TrainService;
 import fr.cph.chicago.util.Util;
 
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
@@ -51,12 +51,19 @@ public class SearchActivity extends AppCompatActivity {
     @BindString(R.string.bundle_bike_stations)
     String bundleBikeStations;
 
+    private final TrainService trainService;
+    private final BusService busService;
+    private final Util util;
+
     private SearchView searchView;
     private SearchAdapter searchAdapter;
     private List<BikeStation> bikeStations;
 
     public SearchActivity() {
         this.bikeStations = new ArrayList<>();
+        this.trainService = TrainService.INSTANCE;
+        this.busService = BusService.INSTANCE;
+        this.util = Util.INSTANCE;
     }
 
     @Override
@@ -147,7 +154,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void setupToolbar() {
-        Util.INSTANCE.setWindowsColor(this, toolbar, TrainLine.NA);
+        util.setWindowsColor(this, toolbar, TrainLine.NA);
         setSupportActionBar(toolbar);
         final ActionBar actionBar = getSupportActionBarNotNull();
         actionBar.setDisplayShowHomeEnabled(true);
@@ -165,28 +172,14 @@ public class SearchActivity extends AppCompatActivity {
 
     private void handleIntent(@NonNull final Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            final BusData busData = BusData.INSTANCE;
-            final TrainRepository trainData = TrainRepository.INSTANCE;
-
             final String query = intent.getStringExtra(SearchManager.QUERY).trim();
-
-            final List<Station> foundStations = Stream.of(trainData.getAllStations().entrySet())
-                .flatMap(entry -> Stream.of(entry.getValue()))
-                .filter(station -> containsIgnoreCase(station.getName(), query))
-                .distinct()
-                .sorted()
-                .collect(Collectors.toList());
-
-            final List<BusRoute> foundBusRoutes = Stream.of(busData.getBusRoutes())
-                .filter(busRoute -> containsIgnoreCase(busRoute.getId(), query) || containsIgnoreCase(busRoute.getName(), query))
-                .distinct()
-                .sorted(Util.INSTANCE.getBUS_STOP_COMPARATOR_NAME())
-                .collect(Collectors.toList());
-
+            final List<Station> foundStations = trainService.searchStations(query);
+            final List<BusRoute> foundBusRoutes = busService.searchBusRoutes(query);
+            // TODO Consider doing in a different way how bikeStations is stored
             final List<BikeStation> foundBikeStations = Stream.of(bikeStations)
                 .filter(bikeStation -> containsIgnoreCase(bikeStation.getName(), query) || containsIgnoreCase(bikeStation.getStAddress1(), query))
                 .distinct()
-                .sorted(Util.INSTANCE.getBIKE_COMPARATOR_NAME())
+                .sorted(util.getBikeComparatorByName())
                 .collect(Collectors.toList());
             searchAdapter.updateData(foundStations, foundBusRoutes, foundBikeStations);
             searchAdapter.notifyDataSetChanged();

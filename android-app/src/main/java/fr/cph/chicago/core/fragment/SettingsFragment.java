@@ -21,8 +21,8 @@ import butterknife.BindView;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.activity.BaseActivity;
-import fr.cph.chicago.repository.PreferenceRepository;
 import fr.cph.chicago.repository.RealmConfig;
+import fr.cph.chicago.service.PreferenceService;
 import fr.cph.chicago.util.Util;
 
 @SuppressWarnings("WeakerAccess")
@@ -34,6 +34,16 @@ public class SettingsFragment extends AbstractFragment {
     @BindView(R.id.version_number)
     TextView versionNumber;
 
+    private final Util util;
+    private final PreferenceService preferenceService;
+    private final RealmConfig realmConfig;
+
+    public SettingsFragment() {
+        util = Util.INSTANCE;
+        preferenceService = PreferenceService.INSTANCE;
+        realmConfig = RealmConfig.INSTANCE;
+    }
+
     @NonNull
     public static SettingsFragment newInstance(final int sectionNumber) {
         return (SettingsFragment) fragmentWithBundle(new SettingsFragment(), sectionNumber);
@@ -42,7 +52,7 @@ public class SettingsFragment extends AbstractFragment {
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Util.INSTANCE.trackScreen((App) getActivity().getApplication(), getString(R.string.analytics_settings_fragment));
+        util.trackScreen(getString(R.string.analytics_settings_fragment));
     }
 
     @Override
@@ -50,7 +60,7 @@ public class SettingsFragment extends AbstractFragment {
         final View rootView = inflater.inflate(R.layout.fragment_settings, container, false);
         if (!activity.isFinishing()) {
             setBinder(rootView);
-            final String version = "Version " + Util.INSTANCE.getCurrentVersion(getContext());
+            final String version = "Version " + util.getCurrentVersion();
             versionNumber.setText(version);
             clearCache.setOnClickListener(view -> {
                 final DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
@@ -85,8 +95,8 @@ public class SettingsFragment extends AbstractFragment {
 
     private void cleanLocalData() {
         deleteCache(getContext());
-        PreferenceRepository.INSTANCE.clearPreferences(getContext());
-        RealmConfig.INSTANCE.cleanRealm(getContext());
+        preferenceService.clearPreferences();
+        realmConfig.cleanRealm();
     }
 
     private void deleteCache(final Context context) {

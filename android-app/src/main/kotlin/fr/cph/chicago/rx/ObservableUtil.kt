@@ -1,18 +1,20 @@
 package fr.cph.chicago.rx
 
 import android.app.Application
-import android.content.Context
 import android.util.Log
 import android.util.SparseArray
+import com.google.android.gms.common.api.GoogleApiClient
 import fr.cph.chicago.core.App
 import fr.cph.chicago.entity.*
 import fr.cph.chicago.entity.dto.BusArrivalDTO
 import fr.cph.chicago.entity.dto.FavoritesDTO
 import fr.cph.chicago.entity.dto.FirstLoadDTO
 import fr.cph.chicago.entity.dto.TrainArrivalDTO
-import fr.cph.chicago.service.impl.BikeServiceImpl
-import fr.cph.chicago.service.impl.BusServiceImpl
-import fr.cph.chicago.service.impl.TrainServiceImpl
+import fr.cph.chicago.entity.enumeration.TrainLine
+import fr.cph.chicago.service.BikeService
+import fr.cph.chicago.service.BusService
+import fr.cph.chicago.service.TrainService
+import fr.cph.chicago.util.GPSUtil
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -20,19 +22,20 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function3
 import io.reactivex.schedulers.Schedulers
 import java.util.*
+import kotlin.collections.ArrayList
 
 object ObservableUtil {
 
     private val TAG = ObservableUtil::class.java.simpleName
 
-    private val TRAIN_SERVICE = TrainServiceImpl
-    private val BUS_SERVICE = BusServiceImpl
-    private val BIKE_SERVICE = BikeServiceImpl
+    private val trainService = TrainService
+    private val busService = BusService
+    private val bikeService = BikeService
 
-    fun createFavoritesTrainArrivalsObservable(context: Context): Observable<TrainArrivalDTO> {
+    fun createFavoritesTrainArrivalsObservable(): Observable<TrainArrivalDTO> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<TrainArrivalDTO> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(TrainArrivalDTO(TRAIN_SERVICE.loadFavoritesTrain(context), false))
+                observableOnSubscribe.onNext(TrainArrivalDTO(trainService.loadFavoritesTrain(), false))
                 observableOnSubscribe.onComplete()
             }
         }
@@ -44,10 +47,10 @@ object ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun createTrainArrivalsObservable(context: Context, station: Station): Observable<TrainArrival> {
+    fun createTrainArrivalsObservable(station: Station): Observable<TrainArrival> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<TrainArrival> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(TRAIN_SERVICE.loadStationTrainArrival(context, station.id))
+                observableOnSubscribe.onNext(trainService.loadStationTrainArrival(station.id))
                 observableOnSubscribe.onComplete()
             }
         }
@@ -55,31 +58,31 @@ object ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun createFavoritesBusArrivalsObservable(context: Context): Observable<BusArrivalDTO> {
+    fun createFavoritesBusArrivalsObservable(): Observable<BusArrivalDTO> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<BusArrivalDTO> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(BusArrivalDTO(BUS_SERVICE.loadFavoritesBuses(context), false))
+                observableOnSubscribe.onNext(BusArrivalDTO(busService.loadFavoritesBuses(), false))
                 observableOnSubscribe.onComplete()
             }
         }
             .onErrorReturn { throwable ->
                 Log.e(TAG, throwable.message, throwable)
-                BusArrivalDTO(emptyList(), true)
+                BusArrivalDTO(ArrayList(), true)
             }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun createBusArrivalsObservable(context: Context, busStop: BusStop): Observable<List<BusArrival>> {
+    fun createBusArrivalsObservable(busStop: BusStop): Observable<List<BusArrival>> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<List<BusArrival>> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(BUS_SERVICE.loadAroundBusArrivals(context, busStop))
+                observableOnSubscribe.onNext(busService.loadAroundBusArrivals(busStop))
                 observableOnSubscribe.onComplete()
             }
         }
             .onErrorReturn { throwable ->
                 Log.e(TAG, throwable.message, throwable)
-                listOf()
+                ArrayList()
             }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -88,13 +91,13 @@ object ObservableUtil {
     fun createAllBikeStationsObservable(): Observable<List<BikeStation>> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<List<BikeStation>> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(BIKE_SERVICE.loadAllBikes())
+                observableOnSubscribe.onNext(bikeService.loadAllBikeStations())
                 observableOnSubscribe.onComplete()
             }
         }
             .onErrorReturn { throwable ->
                 Log.e(TAG, throwable.message, throwable)
-                listOf()
+                ArrayList()
             }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -103,7 +106,7 @@ object ObservableUtil {
     fun createBikeStationsObservable(bikeStation: BikeStation): Observable<BikeStation> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<BikeStation> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(BIKE_SERVICE.loadBikes(bikeStation.id))
+                observableOnSubscribe.onNext(bikeService.findBikeStation(bikeStation.id))
                 observableOnSubscribe.onComplete()
             }
         }
@@ -117,9 +120,9 @@ object ObservableUtil {
 
     fun createAllDataObservable(application: Application): Observable<FavoritesDTO> {
         // Train online favorites
-        val trainArrivalsObservable = createFavoritesTrainArrivalsObservable(application)
+        val trainArrivalsObservable = createFavoritesTrainArrivalsObservable()
         // Bus online favorites
-        val busArrivalsObservable = createFavoritesBusArrivalsObservable(application)
+        val busArrivalsObservable = createFavoritesBusArrivalsObservable()
         // Bikes online all stations
         val bikeStationsObservable = createAllBikeStationsObservable()
         return Observable.zip(busArrivalsObservable, trainArrivalsObservable, bikeStationsObservable,
@@ -130,10 +133,10 @@ object ObservableUtil {
             })
     }
 
-    fun createBusStopBoundObservable(context: Context, stopId: String, bound: String): Observable<List<BusStop>> {
+    fun createBusStopBoundObservable(stopId: String, bound: String): Observable<List<BusStop>> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<List<BusStop>> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(BUS_SERVICE.loadOneBusStop(context, stopId, bound))
+                observableOnSubscribe.onNext(busService.loadOneBusStop(stopId, bound))
                 observableOnSubscribe.onComplete()
             }
         }
@@ -141,10 +144,10 @@ object ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun createBusDirectionsObservable(context: Context, busRouteId: String): Observable<BusDirections> {
+    fun createBusDirectionsObservable(busRouteId: String): Observable<BusDirections> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<BusDirections> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(BUS_SERVICE.loadBusDirections(context, busRouteId))
+                observableOnSubscribe.onNext(busService.loadBusDirections(busRouteId))
                 observableOnSubscribe.onComplete()
             }
         }
@@ -155,26 +158,28 @@ object ObservableUtil {
     fun createOnFirstLoadObservable(): Observable<FirstLoadDTO> {
         val busRoutesObs = Observable.create { observableOnSubscribe: ObservableEmitter<List<BusRoute>> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(BUS_SERVICE.loadBusRoutes())
+                observableOnSubscribe.onNext(busService.loadBusRoutes())
                 observableOnSubscribe.onComplete()
             }
         }
             .onErrorReturn { throwable ->
                 Log.e(TAG, throwable.message, throwable)
-                emptyList()
+                ArrayList()
             }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
 
         val bikeStationsObs = Observable.create { observableOnSubscribe: ObservableEmitter<List<BikeStation>> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(BIKE_SERVICE.loadAllBikes())
+                observableOnSubscribe.onNext(bikeService.loadAllBikeStations())
                 observableOnSubscribe.onComplete()
             }
         }
             .onErrorReturn { throwable ->
                 Log.e(TAG, throwable.message, throwable)
-                listOf()
+                // Do not change that to listOf().
+                // It needs to be ArrayList for being parcelable
+                ArrayList()
             }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -182,21 +187,27 @@ object ObservableUtil {
         return Observable.zip(busRoutesObs, bikeStationsObs, BiFunction { busRoutes, bikeStations -> FirstLoadDTO(busRoutes.isEmpty(), bikeStations.isEmpty(), busRoutes, bikeStations) })
     }
 
-    fun createFollowBusObservable(context: Context, busId: String): Observable<List<BusArrival>> {
+    fun createFollowBusObservable(busId: String): Observable<List<BusArrival>> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<List<BusArrival>> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(BUS_SERVICE.loadFollowBus(context, busId))
+                observableOnSubscribe.onNext(busService.loadFollowBus(busId))
                 observableOnSubscribe.onComplete()
             }
         }
+            .onErrorReturn { throwable ->
+                Log.e(TAG, throwable.message, throwable)
+                // Do not change that to listOf().
+                // It needs to be ArrayList for being parcelable
+                ArrayList()
+            }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun createBusPatternObservable(context: Context, busRouteId: String, bound: String): Observable<BusPattern> {
+    fun createBusPatternObservable(busRouteId: String, bound: String): Observable<BusPattern> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<BusPattern> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(BUS_SERVICE.loadBusPattern(context, busRouteId, bound))
+                observableOnSubscribe.onNext(busService.loadBusPattern(busRouteId, bound))
                 observableOnSubscribe.onComplete()
             }
         }
@@ -204,13 +215,134 @@ object ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun createBusListObservable(context: Context, busId: Int, busRouteId: String): Observable<List<Bus>> {
+    fun createBusListObservable(busId: Int, busRouteId: String): Observable<List<Bus>> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<List<Bus>> ->
             if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(BUS_SERVICE.loadBus(context, busId, busRouteId))
+                observableOnSubscribe.onNext(busService.loadBus(busId, busRouteId))
                 observableOnSubscribe.onComplete()
             }
         }
+            .onErrorReturn { throwable ->
+                Log.e(TAG, throwable.message, throwable)
+                // Do not change that to listOf().
+                // It needs to be ArrayList for being parcelable
+                ArrayList()
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    fun createTrainLocationObservable(line: String): Observable<List<Train>> {
+        return Observable.create { observableOnSubscribe: ObservableEmitter<List<Train>> ->
+            if (!observableOnSubscribe.isDisposed) {
+                observableOnSubscribe.onNext(trainService.getTrainLocation(line))
+                observableOnSubscribe.onComplete()
+            }
+        }
+            .onErrorReturn { throwable ->
+                Log.e(TAG, throwable.message, throwable)
+                // Do not change that to listOf().
+                // It needs to be ArrayList for being parcelable
+                ArrayList()
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    fun createTrainPatternObservable(line: String): Observable<List<Position>> {
+        return Observable.create { observableOnSubscribe: ObservableEmitter<List<Position>> ->
+            if (!observableOnSubscribe.isDisposed) {
+                observableOnSubscribe.onNext(trainService.readPattern(TrainLine.fromXmlString(line)))
+                observableOnSubscribe.onComplete()
+            }
+        }
+            .onErrorReturn { throwable ->
+                Log.e(TAG, throwable.message, throwable)
+                // Do not change that to listOf().
+                // It needs to be ArrayList for being parcelable
+                ArrayList()
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    fun createPositionObservable(googleApiClient: GoogleApiClient): Observable<Position> {
+        return Observable.create { observableOnSubscribe: ObservableEmitter<Position> ->
+            if (!observableOnSubscribe.isDisposed) {
+                if (!googleApiClient.isConnected) {
+                    googleApiClient.blockingConnect()
+                }
+                observableOnSubscribe.onNext(GPSUtil(googleApiClient).location)
+                observableOnSubscribe.onComplete()
+            }
+        }
+            .onErrorReturn { throwable ->
+                Log.e(TAG, throwable.message, throwable)
+                Position()
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    fun createTrainStationAroundObservable(position: Position): Observable<List<Station>> {
+        return Observable.create { observableOnSubscribe: ObservableEmitter<List<Station>> ->
+            if (!observableOnSubscribe.isDisposed) {
+                observableOnSubscribe.onNext(trainService.readNearbyStation(position))
+                observableOnSubscribe.onComplete()
+            }
+        }
+            .onErrorReturn { throwable ->
+                Log.e(TAG, throwable.message, throwable)
+                // Do not change that to listOf().
+                // It needs to be ArrayList for being parcelable
+                ArrayList()
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    fun createBusStopsAroundObservable(position: Position): Observable<List<BusStop>> {
+        return Observable.create { observableOnSubscribe: ObservableEmitter<List<BusStop>> ->
+            if (!observableOnSubscribe.isDisposed) {
+                observableOnSubscribe.onNext(busService.getBusStopsAround(position))
+                observableOnSubscribe.onComplete()
+            }
+        }
+            .onErrorReturn { throwable ->
+                Log.e(TAG, throwable.message, throwable)
+                // Do not change that to listOf().
+                // It needs to be ArrayList for being parcelable
+                ArrayList()
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    fun createBikeStationAroundObservable(position: Position, bikeStations: List<BikeStation>): Observable<List<BikeStation>> {
+        return Observable.create { observableOnSubscribe: ObservableEmitter<List<BikeStation>> ->
+            if (!observableOnSubscribe.isDisposed) {
+                observableOnSubscribe.onNext(BikeStation.readNearbyStation(bikeStations, position))
+                observableOnSubscribe.onComplete()
+            }
+        }
+            .onErrorReturn { throwable ->
+                Log.e(TAG, throwable.message, throwable)
+                // Do not change that to listOf().
+                // It needs to be ArrayList for being parcelable
+                ArrayList()
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    fun createLoadTrainEtaObservable(runNumber: String, loadAll: Boolean): Observable<List<Eta>> {
+        return Observable.create { observableOnSubscribe: ObservableEmitter<List<Eta>> ->
+            if (!observableOnSubscribe.isDisposed) {
+                observableOnSubscribe.onNext(trainService.loadTrainEta(runNumber, loadAll))
+                observableOnSubscribe.onComplete()
+            }
+        }
+            .onErrorReturn { ArrayList() }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }

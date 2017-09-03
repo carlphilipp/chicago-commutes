@@ -28,7 +28,7 @@ class BikeAllBikeStationsObserver(private val activity: BikeStationActivity, pri
     }
 
     override fun onError(throwable: Throwable) {
-        Util.showOopsSomethingWentWrong(swipeRefreshLayout)
+        util.showOopsSomethingWentWrong(swipeRefreshLayout)
     }
 
     override fun onComplete() {
@@ -37,5 +37,6 @@ class BikeAllBikeStationsObserver(private val activity: BikeStationActivity, pri
 
     companion object {
         private val TAG = BikeAllBikeStationsObserver::class.java.simpleName
+        private val util = Util
     }
 }

@@ -44,10 +44,16 @@ public class AbstractMapActivity extends FragmentActivity implements EasyPermiss
     @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
     Drawable arrowBackWhite;
 
+    protected final Util util;
+
     private Marker selectedMarker;
     private GoogleMap googleMap;
 
     boolean refreshingInfoWindow = false;
+
+    public AbstractMapActivity() {
+        util = Util.INSTANCE;
+    }
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -103,7 +109,7 @@ public class AbstractMapActivity extends FragmentActivity implements EasyPermiss
     public void onMapReady(final GoogleMap googleMap) {
         this.googleMap = googleMap;
         this.googleMap.setOnCameraIdleListener(this);
-        this.googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Util.INSTANCE.chicago(), 10));
+        this.googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(util.getChicago(), 10));
         enableMyLocationOnMapIfAllowed();
     }
 

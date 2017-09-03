@@ -29,9 +29,9 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.listener.TrainOnClickListener
-import fr.cph.chicago.repository.TrainRepository
 import fr.cph.chicago.entity.Station
 import fr.cph.chicago.entity.enumeration.TrainLine
+import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.LayoutUtil
 
 /**
@@ -42,7 +42,10 @@ import fr.cph.chicago.util.LayoutUtil
  */
 class TrainAdapter(line: TrainLine, private val activity: Activity) : BaseAdapter() {
 
-    private val stations: List<Station> = TrainRepository.getStationsForLine(line)
+    private val trainService = TrainService
+    private val layoutUtil = LayoutUtil
+
+    private val stations: List<Station> = trainService.getStationsForLine(line)
 
     override fun getCount(): Int {
         return stations.size
@@ -77,10 +80,10 @@ class TrainAdapter(line: TrainLine, private val activity: Activity) : BaseAdapte
         holder.stationNameView.text = station.name
         holder.stationColorView.removeAllViews()
         station.lines
-            .map { line -> LayoutUtil.createColoredRoundForMultiple(activity.applicationContext, line) }
+            .map { line -> layoutUtil.createColoredRoundForMultiple(line) }
             .forEach { layout -> holder.stationColorView.addView(layout) }
 
-        view.setOnClickListener(TrainOnClickListener(parent.context, activity, station.id, station.lines))
+        view.setOnClickListener(TrainOnClickListener(parent.context, station.id, station.lines))
         return view
     }
 

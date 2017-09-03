@@ -46,8 +46,14 @@ public class TrainListStationActivity extends ListActivity {
     @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
     Drawable arrowBackWhite;
 
+    private final Util util;
+
     private TrainLine trainLine;
     private String lineParam;
+
+    public TrainListStationActivity() {
+        util = Util.INSTANCE;
+    }
 
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
@@ -62,7 +68,7 @@ public class TrainListStationActivity extends ListActivity {
             trainLine = TrainLine.Companion.fromString(lineParam);
             setTitle(trainLine.toStringWithLine());
 
-            Util.INSTANCE.setWindowsColor(this, toolbar, trainLine);
+            util.setWindowsColor(this, toolbar, trainLine);
             toolbar.setTitle(trainLine.toStringWithLine());
 
             toolbar.setNavigationIcon(arrowBackWhite);

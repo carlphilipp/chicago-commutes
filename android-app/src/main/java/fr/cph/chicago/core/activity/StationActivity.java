@@ -53,8 +53,6 @@ import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener;
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener;
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener;
-import fr.cph.chicago.repository.PreferenceRepository;
-import fr.cph.chicago.repository.TrainRepository;
 import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
@@ -64,6 +62,8 @@ import fr.cph.chicago.entity.enumeration.TrainDirection;
 import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.rx.ObservableUtil;
 import fr.cph.chicago.rx.TrainArrivalObserver;
+import fr.cph.chicago.service.PreferenceService;
+import fr.cph.chicago.service.TrainService;
 import fr.cph.chicago.util.Util;
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
@@ -134,6 +134,18 @@ public class StationActivity extends AbstractStationActivity {
     private Map<String, Integer> ids;
     private Observable<TrainArrival> trainArrivalObservable;
 
+    private final TrainService trainService;
+    private final PreferenceService preferenceService;
+    private final ObservableUtil observableUtil;
+    private final Util util;
+
+    public StationActivity() {
+        this.trainService = TrainService.INSTANCE;
+        this.preferenceService = PreferenceService.INSTANCE;
+        this.observableUtil = ObservableUtil.INSTANCE;
+        this.util = Util.INSTANCE;
+    }
+
     @Override
     protected final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -146,8 +158,7 @@ public class StationActivity extends AbstractStationActivity {
             stationId = getIntent().getExtras().getInt(bundleTrainStationId, 0);
             if (stationId != 0) {
                 // Get station
-                final TrainRepository trainData = TrainRepository.INSTANCE;
-                station = trainData.getStation(stationId);
+                station = trainService.getStation(stationId);
 
                 paramsStop = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
@@ -185,7 +196,7 @@ public class StationActivity extends AbstractStationActivity {
                 swipeRefreshLayout.setColorSchemeColors(randomTrainLine.getColor());
                 setToolBar(randomTrainLine);
 
-                Util.INSTANCE.trackScreen((App) getApplication(), trainDetails);
+                util.trackScreen(trainDetails);
             }
         }
     }
@@ -212,13 +223,13 @@ public class StationActivity extends AbstractStationActivity {
                 linearLayout.setLayoutParams(paramsStop);
 
                 final AppCompatCheckBox checkBox = new AppCompatCheckBox(this);
-                checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> PreferenceRepository.INSTANCE.saveTrainFilter(getApplicationContext(), stationId, line, stop.getDirection(), isChecked));
+                checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> preferenceService.saveTrainFilter(stationId, line, stop.getDirection(), isChecked));
                 checkBox.setOnClickListener(v -> {
                     if (checkBox.isChecked()) {
                         trainArrivalObservable.subscribe(new TrainArrivalObserver(this, swipeRefreshLayout));
                     }
                 });
-                checkBox.setChecked(PreferenceRepository.INSTANCE.getTrainFilter(getApplicationContext(), stationId, line, stop.getDirection()));
+                checkBox.setChecked(preferenceService.getTrainFilter(stationId, line, stop.getDirection()));
                 checkBox.setTypeface(checkBox.getTypeface(), Typeface.BOLD);
                 checkBox.setText(stop.getDirection().toString());
                 checkBox.setTextColor(grey);
@@ -242,7 +253,7 @@ public class StationActivity extends AbstractStationActivity {
                 final LinearLayout arrivalTrainsLayout = new LinearLayout(this);
                 arrivalTrainsLayout.setOrientation(LinearLayout.VERTICAL);
                 arrivalTrainsLayout.setLayoutParams(paramsStop);
-                int id = Util.INSTANCE.generateViewId();
+                int id = util.generateViewId();
                 arrivalTrainsLayout.setId(id);
                 ids.put(line.toString() + "_" + stop.getDirection().toString(), id);
 
@@ -264,7 +275,7 @@ public class StationActivity extends AbstractStationActivity {
             toolbar.setElevation(4);
         }
 
-        Util.INSTANCE.setWindowsColor(this, toolbar, randomTrainLine);
+        util.setWindowsColor(this, toolbar, randomTrainLine);
 
         toolbar.setTitle(station.getName());
         toolbar.setNavigationIcon(arrowBackWhite);
@@ -299,11 +310,7 @@ public class StationActivity extends AbstractStationActivity {
      */
     @Override
     protected boolean isFavorite() {
-        final List<Integer> favorites = PreferenceRepository.INSTANCE.getTrainFavorites(getApplicationContext());
-        return Stream.of(favorites)
-            .filter(favorite -> favorite == stationId)
-            .findFirst()
-            .isPresent();
+        return preferenceService.isTrainStationFavorite(stationId);
     }
 
     // FIXME: delete view instead of hiding it
@@ -351,7 +358,7 @@ public class StationActivity extends AbstractStationActivity {
                 final LinearLayout insideLayout = new LinearLayout(this);
                 insideLayout.setOrientation(LinearLayout.HORIZONTAL);
                 insideLayout.setLayoutParams(paramsStop);
-                final int newId = Util.INSTANCE.generateViewId();
+                final int newId = util.generateViewId();
                 insideLayout.setId(newId);
                 ids.put(line.toString() + "_" + stop.getDirection().toString() + "_" + eta.getDestName(), newId);
 
@@ -386,11 +393,11 @@ public class StationActivity extends AbstractStationActivity {
      */
     private void switchFavorite() {
         if (isFavorite) {
-            Util.INSTANCE.removeFromTrainFavorites(stationId, scrollView);
+            preferenceService.removeFromTrainFavorites(stationId, scrollView);
             isFavorite = false;
             favoritesImage.setColorFilter(grey);
         } else {
-            Util.INSTANCE.addToTrainFavorites(stationId, scrollView);
+            preferenceService.addToTrainFavorites(stationId, scrollView);
             isFavorite = true;
             favoritesImage.setColorFilter(yellowLineDark);
         }
@@ -403,7 +410,7 @@ public class StationActivity extends AbstractStationActivity {
     }
 
     private void createTrainArrivalObservableAndSubscribe() {
-        trainArrivalObservable = ObservableUtil.INSTANCE.createTrainArrivalsObservable(getApplicationContext(), station);
+        trainArrivalObservable = observableUtil.createTrainArrivalsObservable(station);
         trainArrivalObservable.subscribe(new TrainArrivalObserver(this, swipeRefreshLayout));
     }
 }

@@ -49,12 +49,10 @@ import fr.cph.chicago.core.fragment.FavoritesFragment;
 import fr.cph.chicago.core.fragment.NearbyFragment;
 import fr.cph.chicago.core.fragment.SettingsFragment;
 import fr.cph.chicago.core.fragment.TrainFragment;
-import fr.cph.chicago.data.BusData;
-import fr.cph.chicago.repository.TrainRepository;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.dto.FavoritesDTO;
 import fr.cph.chicago.rx.ObservableUtil;
-import fr.cph.chicago.service.impl.TrainServiceImpl;
+import fr.cph.chicago.service.BusService;
 import fr.cph.chicago.util.Util;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -101,6 +99,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @BindColor(R.color.primaryColorDarker)
     int primaryColorDarker;
 
+    private final ObservableUtil observableUtil;
+    private final Util util;
+    private final BusService busService;
+
     private int currentPosition;
 
     private ActionBarDrawerToggle drawerToggle;
@@ -115,6 +117,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private SettingsFragment settingsFragment;
 
     private String title;
+
+    public MainActivity() {
+        observableUtil = ObservableUtil.INSTANCE;
+        util = Util.INSTANCE;
+        busService = BusService.INSTANCE;
+    }
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -149,12 +157,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         final boolean isBusError = getIntent().getBooleanExtra(getString(R.string.bundle_bus_error), false);
         // FIXME The snackbar does not move up the search button
         if (isTrainError && isBusError) {
-            Util.INSTANCE.showSnackBar(this, R.string.message_something_went_wrong, Snackbar.LENGTH_SHORT);
+            util.showSnackBar(this, R.string.message_something_went_wrong, Snackbar.LENGTH_SHORT);
         } else {
             if (isTrainError) {
-                Util.INSTANCE.showSnackBar(this, R.string.message_error_train_favorites, Snackbar.LENGTH_SHORT);
+                util.showSnackBar(this, R.string.message_error_train_favorites, Snackbar.LENGTH_SHORT);
             } else if (isBusError) {
-                Util.INSTANCE.showSnackBar(this, R.string.message_error_bus_favorites, Snackbar.LENGTH_SHORT);
+                util.showSnackBar(this, R.string.message_error_bus_favorites, Snackbar.LENGTH_SHORT);
             }
         }
     }
@@ -184,18 +192,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // Favorite fragment
             favoritesFragment.startRefreshing();
 
-            Util.INSTANCE.trackAction((App) getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
-            Util.INSTANCE.trackAction((App) getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
-            Util.INSTANCE.trackAction((App) getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_divvy, getApplicationContext().getString(R.string.analytics_action_get_divvy_all));
-            Util.INSTANCE.trackAction((App) getApplication(), R.string.analytics_category_ui, R.string.analytics_action_press, getApplicationContext().getString(R.string.analytics_action_refresh_fav));
+            util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
+            util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
+            util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_divvy, getApplicationContext().getString(R.string.analytics_action_get_divvy_all));
+            util.trackAction(R.string.analytics_category_ui, R.string.analytics_action_press, getApplicationContext().getString(R.string.analytics_action_refresh_fav));
 
-            if (Util.INSTANCE.isNetworkAvailable(getApplicationContext())) {
-                if (BusData.INSTANCE.getBusRoutes().size() == 0
+            if (util.isNetworkAvailable()) {
+                if (busService.getBusRoutes().size() == 0
                     || getIntent().getParcelableArrayListExtra(bundleBikeStations) == null
                     || getIntent().getParcelableArrayListExtra(bundleBikeStations).size() == 0) {
                     loadFirstData();
                 }
-                final Observable<FavoritesDTO> zipped = ObservableUtil.INSTANCE.createAllDataObservable(getApplication());
+                final Observable<FavoritesDTO> zipped = observableUtil.createAllDataObservable(getApplication());
                 zipped.subscribe(
                     favoritesResult -> favoritesFragment.reloadData(favoritesResult),
                     onError -> {
@@ -216,18 +224,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void loadFirstData() {
-        ObservableUtil.INSTANCE.createOnFirstLoadObservable().subscribe(
+        observableUtil.createOnFirstLoadObservable().subscribe(
             onNext -> {
-                BusData.INSTANCE.setBusRoutes(onNext.getBusRoutes());
+                busService.setBusRoutes(onNext.getBusRoutes());
                 refreshFirstLoadData(onNext.getBikeStations());
                 if (onNext.getBikeStationsError() || onNext.getBusRoutesError()) {
-                    Util.INSTANCE.showSnackBar(this, R.string.message_something_went_wrong, Snackbar.LENGTH_SHORT);
+                    util.showSnackBar(this, R.string.message_something_went_wrong, Snackbar.LENGTH_SHORT);
                 }
             },
-            onError -> Util.INSTANCE.showSnackBar(this, R.string.message_something_went_wrong, Snackbar.LENGTH_SHORT),
+            onError -> util.showSnackBar(this, R.string.message_something_went_wrong, Snackbar.LENGTH_SHORT),
             () -> {
-                Util.INSTANCE.trackAction((App) getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ROUTES_URL);
-                Util.INSTANCE.trackAction((App) getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_divvy, getApplicationContext().getString(R.string.analytics_action_get_divvy_all));
+                util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ROUTES_URL);
+                util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_divvy, getApplicationContext().getString(R.string.analytics_action_get_divvy_all));
             }
         );
     }
@@ -306,7 +314,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 closeDrawerAndUpdateActionBar(false);
                 break;
             case R.id.rate_this_app:
-                Util.INSTANCE.rateThisApp(this);
+                util.rateThisApp(this);
                 break;
             case R.id.settings:
                 setBarTitle(settings);

@@ -20,7 +20,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -48,7 +47,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindString;
@@ -57,15 +55,13 @@ import fr.cph.chicago.R;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.adapter.SlidingUpAdapter;
 import fr.cph.chicago.core.listener.OnMarkerClickListener;
-import fr.cph.chicago.marker.MarkerDataHolder;
-import fr.cph.chicago.repository.TrainRepository;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusStop;
-import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
-import fr.cph.chicago.repository.BusStopRepository;
-import fr.cph.chicago.util.GPSUtil;
+import fr.cph.chicago.marker.MarkerDataHolder;
+import fr.cph.chicago.rx.ObservableUtil;
 import fr.cph.chicago.util.Util;
+import io.reactivex.Observable;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -94,11 +90,19 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
     @BindString(R.string.bundle_bike_stations)
     String bundleBikeStations;
 
+    private final Util util;
+    private final ObservableUtil observableUtil;
+
     private SupportMapFragment mapFragment;
 
     private GoogleApiClient googleApiClient;
     private SlidingUpAdapter slidingUpAdapter;
     private MarkerDataHolder markerDataHolder;
+
+    public NearbyFragment() {
+        this.util = Util.INSTANCE;
+        this.observableUtil = ObservableUtil.INSTANCE;
+    }
 
     public SlidingUpPanelLayout getSlidingUpPanelLayout() {
         return slidingUpPanelLayout;
@@ -122,7 +126,7 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
         super.onCreate(savedInstanceState);
         App.Companion.checkTrainData(activity);
         App.Companion.checkBusData(activity);
-        Util.INSTANCE.trackScreen((App) getActivity().getApplication(), getString(R.string.analytics_nearby_fragment));
+        util.trackScreen(getString(R.string.analytics_nearby_fragment));
     }
 
     @Override
@@ -144,7 +148,7 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
             .addApi(LocationServices.API)
             .build();
         final GoogleMapOptions options = new GoogleMapOptions();
-        final CameraPosition camera = new CameraPosition(Util.INSTANCE.chicago(), 7, 0, 0);
+        final CameraPosition camera = new CameraPosition(util.getChicago(), 7, 0, 0);
         options.camera(camera);
         mapFragment = SupportMapFragment.newInstance(options);
         mapFragment.setRetainInstance(true);
@@ -249,53 +253,6 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
         }
     }
 
-    private class LoadNearbyTask extends AsyncTask<Void, Void, Position> {
-
-        private List<BusStop> busStops;
-        private List<Station> trainStations;
-        private List<BikeStation> bikeStations;
-
-        private LoadNearbyTask() {
-            busStops = new ArrayList<>();
-            trainStations = new ArrayList<>();
-        }
-
-        @Override
-        protected final Position doInBackground(final Void... params) {
-            bikeStations = activity.getIntent().getExtras().getParcelableArrayList(bundleBikeStations);
-
-            if (!googleApiClient.isConnected()) {
-                googleApiClient.blockingConnect();
-            }
-
-            final TrainRepository trainData = TrainRepository.INSTANCE;
-
-            final GPSUtil gpsUtil = new GPSUtil(googleApiClient);
-            final Position position = gpsUtil.getLocation();
-            if (position.getLongitude() != 0 && position.getLatitude() != 0) {
-                busStops = BusStopRepository.INSTANCE.getStopsAround(position);
-                trainStations = trainData.readNearbyStation(position);
-                // FIXME: wait for bike stations to be loaded
-                bikeStations = bikeStations != null
-                    ? BikeStation.Companion.readNearbyStation(bikeStations, position)
-                    : new ArrayList<>();
-            }
-            return position;
-        }
-
-        @Override
-        protected final void onPostExecute(final Position position) {
-            if (position.getLongitude() != 0 && position.getLatitude() != 0) {
-                Util.INSTANCE.centerMap(mapFragment, position);
-                updateMarkersAndModel(busStops, trainStations, bikeStations);
-            } else {
-                Log.e(TAG, "Could not get current user location");
-                showProgress(false);
-                Util.INSTANCE.showSnackBar(activity, R.string.message_cant_find_location, Snackbar.LENGTH_LONG);
-            }
-        }
-    }
-
     @AfterPermissionGranted(GPS_ACCESS)
     private void loadNearbyIfAllowed() {
         if (EasyPermissions.hasPermissions(getContext(), ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)) {
@@ -321,11 +278,31 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
     }
 
     private void startLoadingNearby() {
-        if (Util.INSTANCE.isNetworkAvailable(getContext())) {
+        if (util.isNetworkAvailable()) {
             showProgress(true);
-            new LoadNearbyTask().execute();
+            Thread thread = new Thread(() -> {
+                final List<BikeStation> bikeStations = activity.getIntent().getExtras().getParcelableArrayList(bundleBikeStations);
+                observableUtil.createPositionObservable(googleApiClient)
+                    .subscribe(position -> {
+                        if (position.getLongitude() != 0 && position.getLatitude() != 0) {
+                            final Observable<List<Station>> trainStationAroundObservable = observableUtil.createTrainStationAroundObservable(position);
+                            final Observable<List<BusStop>> busStopsAroundObservable = observableUtil.createBusStopsAroundObservable(position);
+                            final Observable<List<BikeStation>> bikeStationsObservable = observableUtil.createBikeStationAroundObservable(position, bikeStations);
+                            Observable.zip(trainStationAroundObservable, busStopsAroundObservable, bikeStationsObservable, (trains, buses, bikes) -> {
+                                util.centerMap(mapFragment, position);
+                                updateMarkersAndModel(buses, trains, bikes);
+                                return new Object();
+                            }).subscribe();
+                        } else {
+                            Log.e(TAG, "Could not get current user location");
+                            showProgress(false);
+                            util.showSnackBar(activity, R.string.message_cant_find_location, Snackbar.LENGTH_LONG);
+                        }
+                    });
+            });
+            thread.start();
         } else {
-            Util.INSTANCE.showNetworkErrorMessage(activity);
+            util.showNetworkErrorMessage(activity);
             showProgress(false);
         }
     }

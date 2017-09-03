@@ -57,20 +57,20 @@ object GoogleStreetClient {
     /**
      * HttpClient to the API and get the MAP
 
-     * @param address the address to connect to
+     * @param address the address to getBikeStations to
      * *
      * @return a drawable map
      */
     private fun connectUrl(address: String): Drawable {
         Log.v(TAG, "Address: " + address)
         var inputStream: InputStream? = null
-        try {
+        return try {
             inputStream = URL(address).content as InputStream
-            return Drawable.createFromStream(inputStream, "src name")
+            Drawable.createFromStream(inputStream, "src name")
         } catch (e: Exception) {
             Log.e(TAG, e.message, e)
             // TODO add a temporary image here
-            return ColorDrawable(Color.TRANSPARENT)
+            ColorDrawable(Color.TRANSPARENT)
         } finally {
             IOUtils.closeQuietly(inputStream)
         }

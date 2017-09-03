@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.core.listener
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -35,7 +34,6 @@ import fr.cph.chicago.core.activity.TrainMapActivity
 import fr.cph.chicago.core.adapter.PopupTrainAdapter
 import fr.cph.chicago.entity.enumeration.TrainLine
 import fr.cph.chicago.util.Util
-import java.util.*
 
 /**
  * FavoritesData train on click listener
@@ -44,13 +42,12 @@ import java.util.*
  * @version 1
  */
 class TrainOnClickListener(private val context: Context,
-                           private val activity: Activity,
                            private val stationId: Int,
                            private val trainLines: Set<TrainLine>) : OnClickListener {
 
     override fun onClick(view: View) {
-        if (!Util.isNetworkAvailable(view.context)) {
-            Util.showNetworkErrorMessage(view)
+        if (!util.isNetworkAvailable()) {
+            util.showNetworkErrorMessage(view)
         } else {
             val values = mutableListOf<String>(view.context.getString(R.string.message_open_details))
             val colors = mutableListOf<Int>()
@@ -66,7 +63,7 @@ class TrainOnClickListener(private val context: Context,
             val builder = AlertDialog.Builder(context)
             builder.setAdapter(ada) { _, position ->
                 val extras = Bundle()
-                val intent : Intent
+                val intent: Intent
                 if (position == 0) {
                     // Start station activity
                     intent = Intent(view.context, StationActivity::class.java)
@@ -84,8 +81,12 @@ class TrainOnClickListener(private val context: Context,
             val dialog = builder.create()
             dialog.show()
             if (dialog.window != null) {
-                dialog.window.setLayout(((activity.application as App).screenWidth * 0.7).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
+                dialog.window.setLayout((App.instance.screenWidth * 0.7).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
             }
         }
+    }
+
+    companion object {
+        private val util = Util
     }
 }

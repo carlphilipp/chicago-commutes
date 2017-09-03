@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.ListView
 import fr.cph.chicago.R
-import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.BusBoundActivity
 import fr.cph.chicago.core.activity.BusMapActivity
 import fr.cph.chicago.core.adapter.PopupBusAdapter
@@ -21,7 +20,10 @@ import fr.cph.chicago.util.Util
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 
-class BusDirectionObserver(private val app: App, private val parent: ViewGroup, private val convertView: View, private val busRoute: BusRoute) : Observer<BusDirections> {
+class BusDirectionObserver(private val screenWidth: Int, private val parent: ViewGroup, private val convertView: View, private val busRoute: BusRoute) : Observer<BusDirections> {
+
+    private val TAG = BusDirectionObserver::class.java.simpleName
+    private val util = Util
 
     override fun onSubscribe(d: Disposable) {}
 
@@ -68,22 +70,17 @@ class BusDirectionObserver(private val app: App, private val parent: ViewGroup, 
         val dialog = alertDialog.create()
         dialog.show()
         if (dialog.window != null) {
-
-            dialog.window.setLayout((app.screenWidth * 0.7).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
+            dialog.window.setLayout((screenWidth * 0.7).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
         }
     }
 
     override fun onError(throwable: Throwable) {
-        Util.showOopsSomethingWentWrong(convertView)
+        util.showOopsSomethingWentWrong(convertView)
         convertView.visibility = LinearLayout.GONE
         Log.e(TAG, throwable.message, throwable)
     }
 
     override fun onComplete() {
         convertView.visibility = LinearLayout.GONE
-    }
-
-    companion object {
-        private val TAG = BusDirectionObserver::class.java.simpleName
     }
 }

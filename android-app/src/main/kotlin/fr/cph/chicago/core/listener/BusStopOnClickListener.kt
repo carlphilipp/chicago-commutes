@@ -29,7 +29,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ListView
-
+import fr.cph.chicago.Constants.Companion.BUSES_STOP_URL
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.BusActivity
@@ -39,8 +39,6 @@ import fr.cph.chicago.entity.dto.BusDetailsDTO
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable
-
-import fr.cph.chicago.Constants.Companion.BUSES_STOP_URL
 
 class BusStopOnClickListener(private val activity: Activity, private val parent: ViewGroup, private val busDetailsDTOs: List<BusDetailsDTO>) : View.OnClickListener {
 
@@ -58,7 +56,7 @@ class BusStopOnClickListener(private val activity: Activity, private val parent:
             builder.setAdapter(ada) { _, position ->
                 val busDetails = busDetailsDTOs[position]
                 loadBusDetails(view, busDetails)
-                Util.trackAction(activity.application as App, R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_STOP_URL)
+                util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_STOP_URL)
             }
             val dialog = builder.create()
             dialog.show()
@@ -69,40 +67,41 @@ class BusStopOnClickListener(private val activity: Activity, private val parent:
     }
 
     private fun loadBusDetails(view: View, busDetails: BusDetailsDTO) {
-        ObservableUtil.createBusStopBoundObservable(activity, busDetails.busRouteId, busDetails.boundTitle)
-                .subscribe({ onNext ->
-                    Observable.fromIterable(onNext)
-                            .filter { busStop -> Integer.toString(busStop.id) == busDetails.stopId }
-                            .firstElement()
-                            .subscribe({ busStop: BusStop ->
-                                val intent = Intent(activity, BusActivity::class.java)
-                                val extras = Bundle()
-                                extras.putInt(activity.getString(R.string.bundle_bus_stop_id), busStop.id)
-                                extras.putString(activity.getString(R.string.bundle_bus_stop_name), busStop.name)
-                                extras.putString(activity.getString(R.string.bundle_bus_route_id), busDetails.busRouteId)
-                                extras.putString(activity.getString(R.string.bundle_bus_route_name), busDetails.routeName)
-                                extras.putString(activity.getString(R.string.bundle_bus_bound), busDetails.bound)
-                                extras.putString(activity.getString(R.string.bundle_bus_bound_title), busDetails.boundTitle)
-                                extras.putDouble(activity.getString(R.string.bundle_bus_latitude), busStop.position.latitude)
-                                extras.putDouble(activity.getString(R.string.bundle_bus_longitude), busStop.position.longitude)
+        observableUtil.createBusStopBoundObservable(busDetails.busRouteId, busDetails.boundTitle)
+            .subscribe({ onNext ->
+                Observable.fromIterable(onNext)
+                    .filter { busStop -> Integer.toString(busStop.id) == busDetails.stopId }
+                    .firstElement()
+                    .subscribe({ busStop: BusStop ->
+                        val intent = Intent(activity, BusActivity::class.java)
+                        val extras = Bundle()
+                        extras.putInt(activity.getString(R.string.bundle_bus_stop_id), busStop.id)
+                        extras.putString(activity.getString(R.string.bundle_bus_stop_name), busStop.name)
+                        extras.putString(activity.getString(R.string.bundle_bus_route_id), busDetails.busRouteId)
+                        extras.putString(activity.getString(R.string.bundle_bus_route_name), busDetails.routeName)
+                        extras.putString(activity.getString(R.string.bundle_bus_bound), busDetails.bound)
+                        extras.putString(activity.getString(R.string.bundle_bus_bound_title), busDetails.boundTitle)
+                        extras.putDouble(activity.getString(R.string.bundle_bus_latitude), busStop.position.latitude)
+                        extras.putDouble(activity.getString(R.string.bundle_bus_longitude), busStop.position.longitude)
 
-                                intent.putExtras(extras)
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                activity.startActivity(intent)
-                            }
-                            ) { onError ->
-                                Log.e(TAG, onError.message, onError)
-                                Util.showOopsSomethingWentWrong(parent)
-                            }
-                }
-                ) { onError ->
-                    Log.e(TAG, onError.message, onError)
-                    Util.showNetworkErrorMessage(view)
-                }
+                        intent.putExtras(extras)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        activity.startActivity(intent)
+                    }
+                    ) { onError ->
+                        Log.e(TAG, onError.message, onError)
+                        util.showOopsSomethingWentWrong(parent)
+                    }
+            }
+            ) { onError ->
+                Log.e(TAG, onError.message, onError)
+                util.showNetworkErrorMessage(view)
+            }
     }
 
     companion object {
-
         private val TAG = BusStopOnClickListener::class.java.simpleName
+        private val util = Util
+        private val observableUtil = ObservableUtil
     }
 }

@@ -29,10 +29,6 @@ import android.widget.TextView;
 
 import com.annimon.stream.Stream;
 
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,7 +40,6 @@ import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import fr.cph.chicago.R;
-import fr.cph.chicago.client.CtaClient;
 import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener;
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener;
@@ -55,12 +50,11 @@ import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.exception.ConnectException;
 import fr.cph.chicago.exception.ParserException;
 import fr.cph.chicago.exception.TrackerException;
-import fr.cph.chicago.parser.XmlParser;
-import fr.cph.chicago.repository.PreferenceRepository;
+import fr.cph.chicago.service.BusService;
+import fr.cph.chicago.service.PreferenceService;
 import fr.cph.chicago.util.Util;
 
 import static fr.cph.chicago.Constants.BUSES_PATTERN_URL;
-import static fr.cph.chicago.client.CtaRequestType.BUS_ARRIVALS;
 
 /**
  * Activity that represents the bus stop
@@ -128,12 +122,22 @@ public class BusActivity extends AbstractStationActivity {
     @BindColor(R.color.yellowLineDark)
     int yellowLineDark;
 
+    private final Util util;
+    private final PreferenceService preferenceService;
+    private final BusService busService;
+
     private List<BusArrival> busArrivals;
     private String busRouteId, bound, boundTitle;
     private Integer busStopId;
     private String busStopName, busRouteName;
     private double latitude, longitude;
     private boolean isFavorite;
+
+    public BusActivity() {
+        util = Util.INSTANCE;
+        preferenceService = PreferenceService.INSTANCE;
+        busService = BusService.INSTANCE;
+    }
 
     @Override
     protected final void onCreate(final Bundle savedInstanceState) {
@@ -183,7 +187,7 @@ public class BusActivity extends AbstractStationActivity {
             setToolBar();
 
             // Google analytics
-            Util.INSTANCE.trackScreen((App) getApplication(), analyticsBusDetails);
+            util.trackScreen(analyticsBusDetails);
         }
     }
 
@@ -194,7 +198,7 @@ public class BusActivity extends AbstractStationActivity {
             new LoadStationDataTask().execute();
             return false;
         }));
-        Util.INSTANCE.setWindowsColor(this, toolbar, TrainLine.NA);
+        util.setWindowsColor(this, toolbar, TrainLine.NA);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.setElevation(4);
         }
@@ -234,13 +238,17 @@ public class BusActivity extends AbstractStationActivity {
     }
 
     /**
-     * Draw arrivals in current main.java.fr.cph.chicago.res.layout
+     * Draw arrivals in current layout
      */
     public void drawArrivals() {
         final Map<String, List<TextView>> tempMap = new HashMap<>();
-        if (busArrivals.size() != 0) {
+        if (busArrivals.isEmpty()) {
+            final TextView arrivalView = new TextView(getApplicationContext());
+            arrivalView.setTextColor(grey);
+            arrivalView.setText(busActivityNoService);
+            tempMap.put("", Collections.singletonList(arrivalView));
+        } else {
             Stream.of(busArrivals)
-                .filter(arrival -> arrival.getRouteDirection().equals(bound) || arrival.getRouteDirection().equals(boundTitle))
                 .forEach(arrival -> {
                     final String destination = arrival.getBusDestination();
                     if (tempMap.containsKey(destination)) {
@@ -261,11 +269,6 @@ public class BusActivity extends AbstractStationActivity {
                         tempMap.put(destination, textViews);
                     }
                 });
-        } else {
-            final TextView arrivalView = new TextView(getApplicationContext());
-            arrivalView.setTextColor(grey);
-            arrivalView.setText(busActivityNoService);
-            tempMap.put("", Collections.singletonList(arrivalView));
         }
         stopsView.removeAllViews();
         Stream.of(tempMap.entrySet()).flatMap(stringListEntry -> Stream.of(stringListEntry.getValue())).forEach(textView -> stopsView.addView(textView));
@@ -273,11 +276,7 @@ public class BusActivity extends AbstractStationActivity {
 
     @Override
     protected boolean isFavorite() {
-        final List<String> favorites = PreferenceRepository.INSTANCE.getBusFavorites(getApplicationContext());
-        return Stream.of(favorites)
-            .filter(favorite -> favorite.equals(busRouteId + "_" + busStopId + "_" + boundTitle))
-            .findFirst()
-            .isPresent();
+        return preferenceService.isStopFavorite(busRouteId, busStopId, boundTitle);
     }
 
     /**
@@ -285,13 +284,13 @@ public class BusActivity extends AbstractStationActivity {
      */
     private void switchFavorite() {
         if (isFavorite) {
-            Util.INSTANCE.removeFromBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, scrollView);
+            preferenceService.removeFromBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, scrollView);
             favoritesImage.setColorFilter(grey_5);
             isFavorite = false;
         } else {
-            Util.INSTANCE.addToBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, scrollView);
-            PreferenceRepository.INSTANCE.addBusRouteNameMapping(getApplicationContext(), String.valueOf(busStopId), busRouteName);
-            PreferenceRepository.INSTANCE.addBusStopNameMapping(getApplicationContext(), String.valueOf(busStopId), busStopName);
+            preferenceService.addToBusFavorites(busRouteId, String.valueOf(busStopId), boundTitle, scrollView);
+            preferenceService.addBusRouteNameMapping(String.valueOf(busStopId), busRouteName);
+            preferenceService.addBusStopNameMapping(String.valueOf(busStopId), busStopName);
             favoritesImage.setColorFilter(yellowLineDark);
             isFavorite = true;
         }
@@ -301,23 +300,15 @@ public class BusActivity extends AbstractStationActivity {
 
         private TrackerException trackerException;
 
-        private LoadStationDataTask() {
-        }
-
         @Override
         protected List<BusArrival> doInBackground(final Void... params) {
-            final MultiValuedMap<String, String> reqParams = new ArrayListValuedHashMap<>();
-            reqParams.put(requestRt, busRouteId);
-            reqParams.put(requestStopId, Integer.toString(busStopId));
             try {
-                // HttpClient to CTA API bus to get XML result of inc buses
-                final InputStream xmlResult = CtaClient.INSTANCE.connect(BUS_ARRIVALS, reqParams);
-                // Parse and return arrival buses
-                return XmlParser.INSTANCE.parseBusArrivals(xmlResult);
+                return busService.loadBusArrivals(requestRt, busRouteId, requestStopId, busStopId,
+                    arrival -> arrival.getRouteDirection().equals(bound) || arrival.getRouteDirection().equals(boundTitle));
             } catch (final ParserException | ConnectException e) {
                 this.trackerException = e;
             }
-            Util.INSTANCE.trackAction((App) BusActivity.this.getApplication(), R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL);
+            util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL);
             return null;
         }
 
@@ -331,7 +322,7 @@ public class BusActivity extends AbstractStationActivity {
                 setBusArrivals(result);
                 drawArrivals();
             } else {
-                Util.INSTANCE.showNetworkErrorMessage(scrollView);
+                util.showNetworkErrorMessage(scrollView);
             }
             scrollView.setRefreshing(false);
         }

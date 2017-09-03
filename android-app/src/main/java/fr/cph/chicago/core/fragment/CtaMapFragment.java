@@ -23,6 +23,12 @@ public class CtaMapFragment extends AbstractFragment {
     PhotoView ctaMap;
     private Bitmap bitmapCache;
 
+    private final Util util;
+
+    public CtaMapFragment() {
+        util = Util.INSTANCE;
+    }
+
     @NonNull
     public static CtaMapFragment newInstance(final int sectionNumber) {
         return (CtaMapFragment) fragmentWithBundle(new CtaMapFragment(), sectionNumber);
@@ -31,7 +37,7 @@ public class CtaMapFragment extends AbstractFragment {
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Util.INSTANCE.trackScreen((App) getActivity().getApplication(), getString(R.string.analytics_cta_map_fragment));
+        util.trackScreen(getString(R.string.analytics_cta_map_fragment));
     }
 
     @Override

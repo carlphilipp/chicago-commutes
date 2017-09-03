@@ -29,10 +29,10 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.data.BusData
 import fr.cph.chicago.entity.BusRoute
 import fr.cph.chicago.rx.BusDirectionObserver
 import fr.cph.chicago.rx.ObservableUtil
+import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.Util
 
 /**
@@ -45,7 +45,7 @@ class BusAdapter(private val app: App) : BaseAdapter() {
 
     private val TAG = BusAdapter::class.java.simpleName
 
-    var busRoutes: List<BusRoute> = BusData.busRoutes
+    var busRoutes: List<BusRoute> = BusService.getBusRoutes()
 
     override fun getCount(): Int {
         return busRoutes.size
@@ -80,14 +80,19 @@ class BusAdapter(private val app: App) : BaseAdapter() {
 
         view.setOnClickListener { _ ->
             holder.detailsLayout.visibility = LinearLayout.VISIBLE
-            ObservableUtil.createBusDirectionsObservable(parent.context, route.id)
+            observableUtil.createBusDirectionsObservable(route.id)
                 .doOnError { throwable: Throwable ->
-                    Util.handleConnectOrParserException(throwable, null, view, holder.detailsLayout)
+                    util.handleConnectOrParserException(throwable, null, view, holder.detailsLayout)
                     Log.e(TAG, throwable.message, throwable)
                 }
-                .subscribe(BusDirectionObserver(app, parent, holder.detailsLayout, route))
+                .subscribe(BusDirectionObserver(app.screenWidth, parent, holder.detailsLayout, route))
         }
         return view
+    }
+
+    companion object {
+        private val util = Util
+        private val observableUtil = ObservableUtil
     }
 
     private class ViewHolder(

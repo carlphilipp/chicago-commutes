@@ -40,7 +40,7 @@ class BusFollowObserver(private val activity: BusMapActivity, private val layout
     }
 
     override fun onError(throwable: Throwable) {
-        Util.handleConnectOrParserException(throwable, null, layout, layout)
+        util.handleConnectOrParserException(throwable, null, layout, layout)
         Log.e(TAG, throwable.message, throwable)
     }
 
@@ -48,5 +48,6 @@ class BusFollowObserver(private val activity: BusMapActivity, private val layout
 
     companion object {
         private val TAG = BusFollowObserver::class.java.simpleName
+        private val util = Util
     }
 }
