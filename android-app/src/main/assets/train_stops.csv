@@ -279,6 +279,8 @@ STOP_ID,DIRECTION_ID,STOP_NAME,STATION_NAME,STATION_DESCRIPTIVE_NAME,MAP_ID,ADA,
 30068,E,UIC-Halsted (O'Hare-bound),UIC-Halsted,UIC-Halsted (Blue Line),40350,true,false,true,false,false,false,false,false,false,false,"(41.875474, -87.649707)"
 30073,S,Washington (Forest Pk-bound),Washington,Washington (Blue Line),40370,false,false,true,false,false,false,false,false,false,false,"(41.883164, -87.62944)"
 30072,N,Washington (O'Hare-bound),Washington,Washington (Blue Line),40370,false,false,true,false,false,false,false,false,false,false,"(41.883164, -87.62944)"
+30383,N,Washington/Wabash (Outer Loop),Washington/Wabash,"Washington/Wabash (Brown, Green, Orange, Purple & Pink Lines)",41700,false,false,false,true,true,false,false,false,false,false,"(41.88322, -87.626189)"
+30384,S,Washington/Wabash (Inner Loop),Washington/Wabash,"Washington/Wabash (Brown, Green, Orange, Purple & Pink Lines)",41700,false,false,false,true,false,false,true,false,true,true,"(41.88322, -87.626189)"
 30141,N,Washington/Wells (Inner Loop),Washington/Wells,"Washington/Wells (Brown, Orange, Purple & Pink Lines)",40730,true,false,false,false,false,false,true,false,true,true,"(41.882695, -87.63378)"
 30142,S,Washington/Wells (Outer Loop),Washington/Wells,"Washington/Wells (Brown, Orange, Purple & Pink Lines)",40730,true,false,false,false,true,false,false,false,false,false,"(41.882695, -87.63378)"
 30231,N,Wellington (Kimball-Linden-bound),Wellington,Wellington (Brown & Purple Lines),41210,true,false,false,false,true,false,true,false,false,false,"(41.936033, -87.653266)"
