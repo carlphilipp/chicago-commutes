@@ -193,21 +193,22 @@ object TrainRepository {
         val lonMin = longitude - DEFAULT_RANGE
 
         val nearByStations = mutableListOf<Station>()
-        for (i in 0 until stations.size()) {
-            val station = stations.valueAt(i)
-            station.stopsPosition
-                .filter { stopPosition ->
-                    val trainLatitude = stopPosition.latitude
-                    val trainLongitude = stopPosition.longitude
-                    trainLatitude in latMin..latMax && trainLongitude <= lonMax && trainLongitude >= lonMin
-                }
-                .getOrElse(0, { Position() })
-                .also {
-                    if (position.latitude != 0.0 && position.longitude != 0.0) {
-                        nearByStations.add(station)
+        (0 until stations.size())
+            .map { stations.valueAt(it) }
+            .forEach {
+                it.stopsPosition
+                    .filter { stopPosition ->
+                        val trainLatitude = stopPosition.latitude
+                        val trainLongitude = stopPosition.longitude
+                        trainLatitude in latMin..latMax && trainLongitude <= lonMax && trainLongitude >= lonMin
                     }
-                }
-        }
+                    .getOrElse(0, { Position() })
+                    .also { pos ->
+                        if (pos.latitude != 0.0 && pos.longitude != 0.0) {
+                            nearByStations.add(it)
+                        }
+                    }
+            }
         return nearByStations
     }
 
