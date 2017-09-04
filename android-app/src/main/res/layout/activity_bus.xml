@@ -19,13 +19,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <include
         layout="@layout/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/activity_bus_stop_swipe_refresh_layout"
@@ -34,7 +34,7 @@
         android:elevation="3dp"
         tools:targetApi="lollipop">
 
-        <!-- Scroll view wrapping the main.java.fr.cph.chicago.res.layout to allow to scroll -->
+        <!-- Scroll view wrapping the layout to allow to scroll -->
         <ScrollView
             android:id="@+id/scrollViewBusStop"
             android:layout_width="match_parent"
@@ -47,7 +47,7 @@
             android:paddingStart="@dimen/activity_train_line_padding_left"
             android:paddingTop="@dimen/activity_train_line_padding_top">
 
-            <!-- Main container. Vertical main.java.fr.cph.chicago.res.layout -->
+            <!-- Main container. Vertical layout -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -59,34 +59,40 @@
                 android:paddingStart="@dimen/activity_train_line_padding_left"
                 android:paddingTop="@dimen/activity_train_line_padding_top">
 
-                <RelativeLayout
-                    android:id="@+id/activity_bus_streetview_container"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingTop="@dimen/activity_train_line_padding_top">
+                    android:background="#fff"
+                    android:elevation="10dp"
+                    android:orientation="vertical">
 
-                    <ImageView
-                        android:id="@+id/activity_bus_streetview_image"
+                    <RelativeLayout
+                        android:id="@+id/activity_bus_streetview_container"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/activity_station_street_map_height"
-                        android:contentDescription="@string/bus_activity_google_map_link_desc"
-                        android:scaleType="centerCrop">
-                    </ImageView>
+                        android:layout_height="wrap_content">
 
-                    <TextView
-                        android:id="@+id/activity_bus_steetview_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
-                        android:layout_marginLeft="4dp"
-                        android:layout_marginStart="4dp"
-                        android:textColor="@color/white"/>
-                </RelativeLayout>
+                        <ImageView
+                            android:id="@+id/activity_bus_streetview_image"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/activity_station_street_map_height"
+                            android:contentDescription="@string/bus_activity_google_map_link_desc"
+                            android:scaleType="centerCrop" />
 
-                <include
-                    layout="@layout/activity_header_fav_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                        <TextView
+                            android:id="@+id/activity_bus_steetview_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginLeft="4dp"
+                            android:layout_marginStart="4dp"
+                            android:textColor="@color/white" />
+                    </RelativeLayout>
+
+                    <include
+                        layout="@layout/activity_header_fav_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/activity_bus_station_value"
@@ -98,14 +104,13 @@
                     android:scrollHorizontally="true"
                     android:textColor="@color/black"
                     android:textIsSelectable="false"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:id="@+id/activity_bus_stops"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                </LinearLayout>
+                    android:orientation="horizontal" />
             </LinearLayout>
         </ScrollView>
     </android.support.v4.widget.SwipeRefreshLayout>

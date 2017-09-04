@@ -5,10 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:layout_marginEnd="15dp"
-    android:layout_marginLeft="15dp"
-    android:layout_marginRight="15dp"
-    android:layout_marginStart="15dp"
     android:baselineAligned="false"
     android:orientation="horizontal">
 
@@ -16,7 +12,7 @@
         android:id="@+id/favorites_container"
         android:layout_width="0px"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+
         android:layout_weight="1"
         android:background="@drawable/any_selector"
         android:clickable="true"
@@ -29,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="15dp"
             android:contentDescription="@string/station_activity_google_map_link_desc"
             android:src="@drawable/ic_favorite_white_24dp" />
 
@@ -37,9 +33,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="5dp"
+            android:layout_marginBottom="15dp"
             android:text="@string/station_activity_favorite_icon"
-            android:textStyle="bold" />
+            android:textSize="12sp"
+            android:textStyle="normal" />
 
     </LinearLayout>
 
@@ -47,7 +44,7 @@
         android:id="@+id/map_container"
         android:layout_width="0px"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+
         android:layout_weight="1"
         android:background="@drawable/any_selector"
         android:focusable="true"
@@ -60,7 +57,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="15dp"
             android:clickable="true"
             android:contentDescription="@string/station_activity_google_map_link_desc"
             android:focusable="true"
@@ -70,16 +67,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="5dp"
+            android:layout_marginBottom="15dp"
             android:text="@string/station_activity_map_icon"
-            android:textStyle="bold" />
+            android:textSize="12sp"
+            android:textStyle="normal" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/walk_container"
         android:layout_width="0px"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+
         android:layout_weight="1"
         android:background="@drawable/any_selector"
         android:clickable="true"
@@ -92,7 +90,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="15dp"
             android:contentDescription="@string/station_activity_google_map_link_desc"
             android:src="@drawable/ic_directions_walk_white_24dp" />
 
@@ -100,8 +98,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="5dp"
+            android:layout_marginBottom="15dp"
             android:text="@string/station_activity_walk_icon"
-            android:textStyle="bold" />
+            android:textSize="12sp"
+            android:textStyle="normal" />
     </LinearLayout>
 </LinearLayout>
