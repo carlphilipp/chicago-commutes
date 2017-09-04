@@ -95,6 +95,9 @@
     <!-- Bus Bound -->
     <string name="bus_bound_activity">Bus Bound</string>
 
+    <!-- Nearby -->
+    <string name="search_area">Search this area</string>
+
     <!-- Error -->
     <string name="error_desc">Error</string>
     <string name="error_retry">Retry</string>

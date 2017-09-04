@@ -31,6 +31,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
@@ -57,6 +58,7 @@ import fr.cph.chicago.core.adapter.SlidingUpAdapter;
 import fr.cph.chicago.core.listener.OnMarkerClickListener;
 import fr.cph.chicago.entity.BikeStation;
 import fr.cph.chicago.entity.BusStop;
+import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Station;
 import fr.cph.chicago.marker.MarkerDataHolder;
 import fr.cph.chicago.rx.ObservableUtil;
@@ -86,6 +88,8 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
     SlidingUpPanelLayout slidingUpPanelLayout;
     @BindView(R.id.loading_layout_container)
     LinearLayout layoutContainer;
+    @BindView(R.id.search_area)
+    Button searchAreaButton;
 
     @BindString(R.string.bundle_bike_stations)
     String bundleBikeStations;
@@ -136,6 +140,16 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
             setBinder(rootView);
             slidingUpAdapter = new SlidingUpAdapter(this);
             markerDataHolder = new MarkerDataHolder();
+            searchAreaButton.setOnClickListener(view -> {
+                view.setVisibility(View.INVISIBLE);
+                mapFragment.getMapAsync(googleMap -> {
+                    googleMap.clear();
+                    markerDataHolder.clear();
+
+                    final LatLng target = googleMap.getCameraPosition().target;
+                    handleNearbyData(new Position(target.latitude, target.longitude));
+                });
+            });
             showProgress(true);
         }
         return rootView;
@@ -181,8 +195,6 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
                 googleMap.getUiSettings().setZoomControlsEnabled(false);
                 googleMap.getUiSettings().setMapToolbarEnabled(false);
 
-                markerDataHolder.clear();
-
                 final BitmapDescriptor bitmapDescriptorBus = createStop(getContext(), R.drawable.bus_stop_icon);
                 final BitmapDescriptor bitmapDescriptorTrain = createStop(getContext(), R.drawable.train_station_icon);
                 final BitmapDescriptor bitmapDescriptorBike = createStop(getContext(), R.drawable.bike_station_icon);
@@ -224,6 +236,9 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
 
                 showProgress(false);
                 googleMap.setOnMarkerClickListener(new OnMarkerClickListener(markerDataHolder, NearbyFragment.this));
+                googleMap.setOnCameraMoveListener(() -> {
+                    searchAreaButton.setVisibility(View.VISIBLE);
+                });
             });
         }
     }
@@ -280,30 +295,33 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
     private void startLoadingNearby() {
         if (util.isNetworkAvailable()) {
             showProgress(true);
-            Thread thread = new Thread(() -> {
-                final List<BikeStation> bikeStations = activity.getIntent().getExtras().getParcelableArrayList(bundleBikeStations);
-                observableUtil.createPositionObservable(googleApiClient)
-                    .subscribe(position -> {
-                        if (position.getLongitude() != 0 && position.getLatitude() != 0) {
-                            final Observable<List<Station>> trainStationAroundObservable = observableUtil.createTrainStationAroundObservable(position);
-                            final Observable<List<BusStop>> busStopsAroundObservable = observableUtil.createBusStopsAroundObservable(position);
-                            final Observable<List<BikeStation>> bikeStationsObservable = observableUtil.createBikeStationAroundObservable(position, bikeStations);
-                            Observable.zip(trainStationAroundObservable, busStopsAroundObservable, bikeStationsObservable, (trains, buses, bikes) -> {
-                                util.centerMap(mapFragment, position);
-                                updateMarkersAndModel(buses, trains, bikes);
-                                return new Object();
-                            }).subscribe();
-                        } else {
-                            Log.e(TAG, "Could not get current user location");
-                            showProgress(false);
-                            util.showSnackBar(activity, R.string.message_cant_find_location, Snackbar.LENGTH_LONG);
-                        }
-                    });
-            });
+            final Thread thread = new Thread(() -> observableUtil
+                .createPositionObservable(googleApiClient)
+                .subscribe(this::handleNearbyData));
             thread.start();
         } else {
             util.showNetworkErrorMessage(activity);
             showProgress(false);
         }
+    }
+
+    private void handleNearbyData(final Position position) {
+        final List<BikeStation> bikeStations = activity.getIntent().getExtras().getParcelableArrayList(bundleBikeStations);
+        Position chicago = null;
+        if (position.getLongitude() == 0 && position.getLatitude() == 0) {
+            Log.w(TAG, "Could not get current user location");
+            chicago = new Position(util.getChicago().latitude, util.getChicago().longitude);
+            util.showSnackBar(activity, R.string.message_cant_find_location, Snackbar.LENGTH_LONG);
+        }
+
+        final Position finalPosition = chicago == null ? position : chicago;
+        final Observable<List<Station>> trainStationAroundObservable = observableUtil.createTrainStationAroundObservable(finalPosition);
+        final Observable<List<BusStop>> busStopsAroundObservable = observableUtil.createBusStopsAroundObservable(finalPosition);
+        final Observable<List<BikeStation>> bikeStationsObservable = observableUtil.createBikeStationAroundObservable(finalPosition, bikeStations);
+        Observable.zip(trainStationAroundObservable, busStopsAroundObservable, bikeStationsObservable, (trains, buses, bikes) -> {
+            util.centerMap(mapFragment, finalPosition);
+            updateMarkersAndModel(buses, trains, bikes);
+            return new Object();
+        }).subscribe();
     }
 }
