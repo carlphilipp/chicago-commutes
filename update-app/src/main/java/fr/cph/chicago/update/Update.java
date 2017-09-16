@@ -31,7 +31,6 @@ abstract class Update {
             System.out.println("Start downloading file...");
             FileUtils.copyInputStreamToFile(url.openStream(), file);
             System.out.println("Done downloading file! " + file.getAbsolutePath());
-            System.out.println("Make sure Madison/Wabash is not part of the file");
             return Optional.ofNullable(file);
         } catch (final IOException e) {
             e.printStackTrace();
