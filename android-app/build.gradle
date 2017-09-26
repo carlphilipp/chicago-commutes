@@ -5,7 +5,7 @@ apply plugin: 'realm-android'
 
 dependencies {
 
-    compile(
+    implementation(
         [group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jre8', version: "$kotlin_version"],
         [group: 'com.google.android.gms', name: 'play-services-maps', version: google_play_version],
         [group: 'com.google.android.gms', name: 'play-services-analytics', version: google_play_version],
@@ -34,22 +34,22 @@ dependencies {
         [group: 'com.jakewharton', name: 'butterknife-compiler', version: butterknife_version],
     )
 
-    testCompile(
-        testCompile(group: 'junit', name: 'junit', version: junit_version) {
+    testImplementation(
+        testImplementation(group: 'junit', name: 'junit', version: junit_version) {
             exclude group: 'org.hamcrest', module: 'hamcrest-core'
         },
-        testCompile(group: 'org.mockito', name: 'mockito-core', version: mockito_version) {
+        testImplementation(group: 'org.mockito', name: 'mockito-core', version: mockito_version) {
             exclude group: 'org.hamcrest', module: 'hamcrest-core'
         },
         [group: 'org.hamcrest', name: 'hamcrest-all', version: hamcrect_version]
     )
 
-    androidTestCompile(
+    androidTestImplementation(
         [group: 'com.android.support', name: 'support-annotations', version: google_support_version],
         [group: 'com.android.support.test', name: 'runner', version: google_support_version_test],
         [group: 'com.android.support.test', name: 'rules', version: google_support_version_test],
         // Optional -- UI testing with Espresso
-        androidTestCompile(group: 'com.android.support.test.espresso', name: 'espresso-core', version: google_support_version_test_espresso) {
+        androidTestImplementation(group: 'com.android.support.test.espresso', name: 'espresso-core', version: google_support_version_test_espresso) {
             exclude group: 'com.android.support', module: 'support-annotations'
         },
         // Optional -- UI testing with UI Automator
