@@ -6,7 +6,7 @@ apply plugin: 'realm-android'
 dependencies {
 
     implementation(
-        [group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jre8', version: "$kotlin_version"],
+        [group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jre8', version: kotlin_version],
         [group: 'com.google.android.gms', name: 'play-services-maps', version: google_play_version],
         [group: 'com.google.android.gms', name: 'play-services-analytics', version: google_play_version],
         [group: 'com.google.android.gms', name: 'play-services-location', version: google_play_version],
@@ -59,7 +59,7 @@ dependencies {
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '26.0.1'
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
         applicationId 'fr.cph.chicago'
