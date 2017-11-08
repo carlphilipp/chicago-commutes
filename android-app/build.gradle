@@ -58,8 +58,8 @@ dependencies {
 }
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.1'
 
     defaultConfig {
         applicationId 'fr.cph.chicago'
@@ -67,7 +67,7 @@ android {
         versionName '5.1.1'
 
         minSdkVersion 14
-        targetSdkVersion 26
+        targetSdkVersion 27
         multiDexEnabled true
 
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
