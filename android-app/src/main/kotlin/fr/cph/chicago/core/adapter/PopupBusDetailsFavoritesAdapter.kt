@@ -27,7 +27,7 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import fr.cph.chicago.R
 import fr.cph.chicago.entity.dto.BusDetailsDTO
-import org.apache.commons.lang3.text.WordUtils
+import org.apache.commons.text.WordUtils
 
 /**
  * @author Carl-Philipp Harmant

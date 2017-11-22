@@ -11,7 +11,7 @@ dependencies {
         [group: 'com.google.android.gms', name: 'play-services-analytics', version: google_play_version],
         [group: 'com.google.android.gms', name: 'play-services-location', version: google_play_version],
         [group: 'org.apache.commons', name: 'commons-collections4', version: commons_collections4_version],
-        [group: 'org.apache.commons', name: 'commons-lang3', version: commons_lang3_version],
+        [group: 'org.apache.commons', name: 'commons-text', version: commons_text],
         [group: 'commons-io', name: 'commons-io', version: commons_io_version],
         [group: 'com.univocity', name: 'univocity-parsers', version: univocity_parsers_version],
         [group: 'com.android.support', name: 'appcompat-v7', version: google_support_version],
