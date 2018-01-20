@@ -38,7 +38,7 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
     }
 
     private fun createStationHeaderView(title: String, @DrawableRes drawable: Int) {
-        val vi = nearbyFragment.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val vi = nearbyFragment.context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val convertView = vi.inflate(R.layout.nearby_station_main, nearbyFragment.slidingUpPanelLayout, false)
 
         val stationNameView: TextView = convertView.findViewById(R.id.station_name)
@@ -47,7 +47,7 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
         stationNameView.text = title
         stationNameView.maxLines = 1
         stationNameView.ellipsize = TextUtils.TruncateAt.END
-        imageView.setImageDrawable(ContextCompat.getDrawable(nearbyFragment.context, drawable))
+        imageView.setImageDrawable(ContextCompat.getDrawable(nearbyFragment.context!!, drawable))
 
         nearbyFragment.layoutContainer.addView(convertView)
     }
