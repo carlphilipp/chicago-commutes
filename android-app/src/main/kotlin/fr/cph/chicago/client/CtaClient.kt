@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.client
 
+import fr.cph.chicago.Constants.Companion.ALERTS_ROUTES_URL
 import fr.cph.chicago.Constants.Companion.BUSES_ARRIVAL_URL
 import fr.cph.chicago.Constants.Companion.BUSES_DIRECTION_URL
 import fr.cph.chicago.Constants.Companion.BUSES_PATTERN_URL
@@ -44,6 +45,7 @@ import java.io.InputStream
 object CtaClient {
 
     private val QUERY_PARAM_KEY = "?key="
+    private val QUERY_PARAM_JSON = "?outputType=json"
 
     /**
      * HttpClient
@@ -71,6 +73,7 @@ object CtaClient {
             BUS_VEHICLES -> StringBuilder(BUSES_VEHICLES_URL + QUERY_PARAM_KEY + ctaBusKey)
             BUS_ARRIVALS -> StringBuilder(BUSES_ARRIVAL_URL + QUERY_PARAM_KEY + ctaBusKey)
             BUS_PATTERN -> StringBuilder(BUSES_PATTERN_URL + QUERY_PARAM_KEY + ctaBusKey)
+            ALERTS_ROUTES -> StringBuilder(ALERTS_ROUTES_URL+ QUERY_PARAM_JSON)
             else -> StringBuilder()
         }
         params.asMap()

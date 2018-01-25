@@ -24,6 +24,10 @@
             android:id="@+id/navigation_cta_map"
             android:icon="@drawable/ic_map_white_24dp"
             android:title="@string/menu_cta_map" />
+        <item
+            android:id="@+id/alert_cta"
+            android:icon="@drawable/ic_action_alert_warning"
+            android:title="@string/menu_cta_alert" />
     </group>
     <group android:checkableBehavior="single" android:id="@+id/group_more">
         <item

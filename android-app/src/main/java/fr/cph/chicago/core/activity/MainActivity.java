@@ -42,6 +42,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.App;
+import fr.cph.chicago.core.fragment.AlertFragment;
 import fr.cph.chicago.core.fragment.BikeFragment;
 import fr.cph.chicago.core.fragment.BusFragment;
 import fr.cph.chicago.core.fragment.CtaMapFragment;
@@ -93,6 +94,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     String nearby;
     @BindString(R.string.cta_map)
     String ctaMap;
+    @BindString(R.string.cta_alert)
+    String ctaAlert;
     @BindString(R.string.settings)
     String settings;
 
@@ -114,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private BikeFragment bikeFragment;
     private NearbyFragment nearbyFragment;
     private CtaMapFragment ctaMapFragment;
+    private AlertFragment alertFragment;
     private SettingsFragment settingsFragment;
 
     private String title;
@@ -311,6 +315,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 setBarTitle(ctaMap);
                 ctaMapFragment = ctaMapFragment == null ? CtaMapFragment.newInstance(position + 1) : ctaMapFragment;
                 fragmentManager.beginTransaction().replace(R.id.container, ctaMapFragment).commit();
+                closeDrawerAndUpdateActionBar(false);
+                break;
+            case R.id.alert_cta:
+                setBarTitle(ctaAlert);
+                alertFragment = alertFragment == null ? AlertFragment.newInstance(position + 1) : alertFragment;
+                fragmentManager.beginTransaction().replace(R.id.container, alertFragment).commit();
                 closeDrawerAndUpdateActionBar(false);
                 break;
             case R.id.rate_this_app:

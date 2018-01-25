@@ -6,11 +6,9 @@ import android.util.SparseArray
 import com.google.android.gms.common.api.GoogleApiClient
 import fr.cph.chicago.core.App
 import fr.cph.chicago.entity.*
-import fr.cph.chicago.entity.dto.BusArrivalDTO
-import fr.cph.chicago.entity.dto.FavoritesDTO
-import fr.cph.chicago.entity.dto.FirstLoadDTO
-import fr.cph.chicago.entity.dto.TrainArrivalDTO
+import fr.cph.chicago.entity.dto.*
 import fr.cph.chicago.entity.enumeration.TrainLine
+import fr.cph.chicago.service.AlertService
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
@@ -22,7 +20,6 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function3
 import io.reactivex.schedulers.Schedulers
 import java.util.*
-import kotlin.collections.ArrayList
 
 object ObservableUtil {
 
@@ -31,6 +28,7 @@ object ObservableUtil {
     private val trainService = TrainService
     private val busService = BusService
     private val bikeService = BikeService
+    private val alertService = AlertService
 
     fun createFavoritesTrainArrivalsObservable(): Observable<TrainArrivalDTO> {
         return Observable.create { observableOnSubscribe: ObservableEmitter<TrainArrivalDTO> ->
@@ -343,6 +341,21 @@ object ObservableUtil {
             }
         }
             .onErrorReturn { ArrayList() }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    fun createAlertRoutesObservable(): Observable<List<RouteAlertsDTO>> {
+        return Observable.create { observableOnSubscribe: ObservableEmitter<List<RouteAlertsDTO>> ->
+            if (!observableOnSubscribe.isDisposed) {
+                observableOnSubscribe.onNext(alertService.getAlerts())
+                observableOnSubscribe.onComplete()
+            }
+        }
+            .onErrorReturn { throwable ->
+                Log.e(TAG, throwable.message, throwable)
+                ArrayList()
+            }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }

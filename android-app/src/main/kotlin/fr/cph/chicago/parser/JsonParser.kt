@@ -43,6 +43,17 @@ object JsonParser {
     }
 
     @Throws(ParserException::class)
+    fun <T> parse(stream: InputStream, clazz: Class<T>): T {
+        try {
+            return mapper.readValue(stream, clazz)
+        } catch (e: Exception) {
+            throw ParserException(e)
+        } finally {
+            IOUtils.closeQuietly(stream)
+        }
+    }
+
+    @Throws(ParserException::class)
     fun parseStations(stream: InputStream): List<BikeStation> {
         try {
             val (stations) = mapper.readValue<DivvyDTO>(stream, object : TypeReference<DivvyDTO>() {})
