@@ -40,6 +40,7 @@ object JsonParser {
 
     init {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
     }
 
     @Throws(ParserException::class)

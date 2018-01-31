@@ -345,10 +345,25 @@ object ObservableUtil {
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun createAlertRoutesObservable(): Observable<List<RouteAlertsDTO>> {
-        return Observable.create { observableOnSubscribe: ObservableEmitter<List<RouteAlertsDTO>> ->
+    fun createAlertRoutesObservable(): Observable<List<RoutesAlertsDTO>> {
+        return Observable.create { observableOnSubscribe: ObservableEmitter<List<RoutesAlertsDTO>> ->
             if (!observableOnSubscribe.isDisposed) {
                 observableOnSubscribe.onNext(alertService.getAlerts())
+                observableOnSubscribe.onComplete()
+            }
+        }
+            .onErrorReturn { throwable ->
+                Log.e(TAG, throwable.message, throwable)
+                ArrayList()
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    fun createAlertRouteObservable(id: String): Observable<List<RouteAlertsDTO>> {
+        return Observable.create { observableOnSubscribe: ObservableEmitter<List<RouteAlertsDTO>> ->
+            if (!observableOnSubscribe.isDisposed) {
+                observableOnSubscribe.onNext(alertService.getRouteAlert(id))
                 observableOnSubscribe.onComplete()
             }
         }

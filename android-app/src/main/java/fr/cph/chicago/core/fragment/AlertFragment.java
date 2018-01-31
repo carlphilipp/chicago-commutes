@@ -30,7 +30,10 @@ import android.widget.ListView;
 import butterknife.BindString;
 import butterknife.BindView;
 import fr.cph.chicago.R;
+import fr.cph.chicago.core.activity.AlertActivity;
 import fr.cph.chicago.core.adapter.AlertAdapter;
+import fr.cph.chicago.entity.dto.RoutesAlertsDTO;
+import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.rx.ObservableUtil;
 import fr.cph.chicago.util.Util;
 
@@ -45,8 +48,6 @@ public final class AlertFragment extends AbstractFragment {
 
     @BindView(R.id.alert_list)
     ListView listView;
-    @BindString(R.string.bundle_train_line)
-    String bundleTrainLine;
 
     private final Util util;
 
@@ -80,36 +81,16 @@ public final class AlertFragment extends AbstractFragment {
                 final AlertAdapter ada = new AlertAdapter(routeAlertsDTOS);
                 listView.setAdapter(ada);
                 listView.setOnItemClickListener((parentView, childView, position, id) -> {
-                    AlertDialog.Builder builder;
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        builder = new AlertDialog.Builder(this.getContext(), android.R.style.Theme);
-                    } else {
-                        builder = new AlertDialog.Builder(this.getContext());
+                    final RoutesAlertsDTO routesAlertsDTO = ada.getItem(position);
+                    if(!"Normal Service".equals(routesAlertsDTO.getRouteStatus())){
+                        final Intent intent = new Intent(getContext(), AlertActivity.class);
+                        final Bundle extras = new Bundle();
+                        extras.putString("routeId", ada.getItem(position).getId());
+                        intent.putExtras(extras);
+                        startActivity(intent);
                     }
-                    builder.setTitle("Delete entry")
-                        .setMessage("Are you sure you want to delete this entry?")
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                // continue with delete
-                            }
-                        })
-                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                // do nothing
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
                 });
             });
-/*        listView.setOnItemClickListener((parentView, childView, position, id) -> {
-            final Intent intent = new Intent(getContext(), TrainListStationActivity.class);
-            final Bundle extras = new Bundle();
-            final String line = TrainLine.values()[position].toString();
-            extras.putString(bundleTrainLine, line);
-            intent.putExtras(extras);
-            startActivity(intent);
-        });*/
         return rootView;
     }
 }

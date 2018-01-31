@@ -20,6 +20,7 @@
 package fr.cph.chicago.client
 
 import fr.cph.chicago.Constants.Companion.ALERTS_ROUTES_URL
+import fr.cph.chicago.Constants.Companion.ALERT_ROUTES_URL
 import fr.cph.chicago.Constants.Companion.BUSES_ARRIVAL_URL
 import fr.cph.chicago.Constants.Companion.BUSES_DIRECTION_URL
 import fr.cph.chicago.Constants.Companion.BUSES_PATTERN_URL
@@ -74,6 +75,7 @@ object CtaClient {
             BUS_ARRIVALS -> StringBuilder(BUSES_ARRIVAL_URL + QUERY_PARAM_KEY + ctaBusKey)
             BUS_PATTERN -> StringBuilder(BUSES_PATTERN_URL + QUERY_PARAM_KEY + ctaBusKey)
             ALERTS_ROUTES -> StringBuilder(ALERTS_ROUTES_URL+ QUERY_PARAM_JSON)
+            ALERTS_ROUTE -> StringBuilder(ALERT_ROUTES_URL+ QUERY_PARAM_JSON)
             else -> StringBuilder()
         }
         params.asMap()

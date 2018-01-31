@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.*
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder("CTARoutes")
-class AlertRoutes {
+class AlertsRoutes {
 
     @JsonProperty("CTARoutes")
     @get:JsonProperty("CTARoutes")

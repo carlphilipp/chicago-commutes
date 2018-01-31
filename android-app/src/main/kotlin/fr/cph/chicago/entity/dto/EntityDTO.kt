@@ -95,7 +95,7 @@ class BusArrivalRouteDTO(comparator: Comparator<String>) : TreeMap<String, Mutab
     }
 }
 
-data class RouteAlertsDTO(
+data class RoutesAlertsDTO(
     val id: String,
     val routeName: String,
     val routeBackgroundColor: String,
@@ -108,3 +108,11 @@ data class RouteAlertsDTO(
 enum class AlertType {
     TRAIN, BUS
 }
+
+data class RouteAlertsDTO(
+    val id: String,
+    val headLine: String,
+    val description: String,
+    val impact: String,
+    val start: String
+)

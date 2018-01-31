@@ -37,5 +37,6 @@ enum class CtaRequestType {
     BUS_PATTERN,
     BUS_VEHICLES,
     ALERTS_GENERAL,
-    ALERTS_ROUTES
+    ALERTS_ROUTES,
+    ALERTS_ROUTE
 }

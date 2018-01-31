@@ -108,6 +108,10 @@
             android:name=".core.activity.TrainMapActivity"
             android:label="@string/map_activity"
             android:screenOrientation="portrait"/>
+        <activity
+            android:name=".core.activity.AlertActivity"
+            android:label="@string/cta_alert"
+            android:screenOrientation="portrait"/>
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"

@@ -11,7 +11,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import fr.cph.chicago.R
 import fr.cph.chicago.entity.dto.AlertType
-import fr.cph.chicago.entity.dto.RouteAlertsDTO
+import fr.cph.chicago.entity.dto.RoutesAlertsDTO
 
 /**
  * Adapter that will handle Train station list
@@ -19,14 +19,14 @@ import fr.cph.chicago.entity.dto.RouteAlertsDTO
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class AlertAdapter(private val routeAlertsDTOS: List<RouteAlertsDTO>) : BaseAdapter() {
+class AlertAdapter(private val routesAlertsDTOS: List<RoutesAlertsDTO>) : BaseAdapter() {
 
     override fun getCount(): Int {
-        return routeAlertsDTOS.size - 1
+        return routesAlertsDTOS.size - 1
     }
 
-    override fun getItem(position: Int): RouteAlertsDTO {
-        return routeAlertsDTOS[position]
+    override fun getItem(position: Int): RoutesAlertsDTO {
+        return routesAlertsDTOS[position]
     }
 
     override fun getItemId(position: Int): Long {
