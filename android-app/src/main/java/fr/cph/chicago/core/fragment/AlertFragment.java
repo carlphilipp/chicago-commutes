@@ -28,6 +28,7 @@ import butterknife.BindView;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.activity.AlertActivity;
 import fr.cph.chicago.core.adapter.AlertAdapter;
+import fr.cph.chicago.entity.dto.AlertType;
 import fr.cph.chicago.entity.dto.RoutesAlertsDTO;
 import fr.cph.chicago.rx.ObservableUtil;
 import fr.cph.chicago.util.Util;
@@ -77,13 +78,14 @@ public final class AlertFragment extends AbstractFragment {
                 listView.setAdapter(ada);
                 listView.setOnItemClickListener((parentView, childView, position, id) -> {
                     final RoutesAlertsDTO routesAlertsDTO = ada.getItem(position);
-                    if (!"Normal Service".equals(routesAlertsDTO.getRouteStatus())) {
-                        final Intent intent = new Intent(getContext(), AlertActivity.class);
-                        final Bundle extras = new Bundle();
-                        extras.putString("routeId", ada.getItem(position).getId());
-                        intent.putExtras(extras);
-                        startActivity(intent);
-                    }
+                    final Intent intent = new Intent(getContext(), AlertActivity.class);
+                    final Bundle extras = new Bundle();
+                    extras.putString("routeId", routesAlertsDTO.getId());
+                    extras.putString("title", routesAlertsDTO.getAlertType() == AlertType.TRAIN
+                        ? routesAlertsDTO.getRouteName()
+                        : routesAlertsDTO.getId() + " - " + routesAlertsDTO.getRouteName());
+                    intent.putExtras(extras);
+                    startActivity(intent);
                 });
             });
         return rootView;
