@@ -46,7 +46,7 @@ class Alert {
     @JsonProperty("EventEnd")
     @get:JsonProperty("EventEnd")
     @set:JsonProperty("EventEnd")
-    var eventEnd: Any? = null
+    var eventEnd: String? = null
     @JsonProperty("TBD")
     @get:JsonProperty("TBD")
     @set:JsonProperty("TBD")

@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import fr.cph.chicago.R
@@ -40,8 +41,6 @@ class AlertAdapter(private val routesAlertsDTOS: List<RoutesAlertsDTO>) : BaseAd
         val view = vi.inflate(R.layout.list_alerts, parent, false)
         val item = getItem(position)
 
-        Log.i("DERP", item.routeName + " " + item.routeBackgroundColor)
-
         val color: LinearLayout = view.findViewById(R.id.station_color_value)
         color.setBackgroundColor(
             if (item.alertType == AlertType.TRAIN)
@@ -59,6 +58,11 @@ class AlertAdapter(private val routesAlertsDTOS: List<RoutesAlertsDTO>) : BaseAd
 
         val status: TextView = view.findViewById(R.id.status)
         status.text = item.routeStatus
+
+        if("Normal Service" != item.routeStatus){
+            val imageView: ImageView = view.findViewById(R.id.alert_warning)
+            imageView.visibility = View.VISIBLE
+        }
         return view
     }
 }

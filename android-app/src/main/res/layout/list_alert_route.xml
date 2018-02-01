@@ -31,24 +31,30 @@
         android:id="@+id/headline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/black" />
+        android:textColor="@color/grey_M_B"
+        android:textSize="15sp"
+        android:textStyle="bold"/>
 
     <TextView
         android:id="@+id/description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/black" />
+        android:textColor="@color/grey_M_B"
+        android:textSize="15sp"
+        android:textStyle="normal"/>
 
     <TextView
         android:id="@+id/impact"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/black" />
+        android:textColor="@color/grey_M_B"
+        android:textSize="15sp"
+        android:textStyle="italic"/>
 
     <TextView
         android:id="@+id/start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/black" />
+        android:textColor="@color/grey_M_B" />
 
 </LinearLayout>
