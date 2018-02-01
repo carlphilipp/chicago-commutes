@@ -37,7 +37,7 @@ class AlertAdapter(private val routesAlertsDTOS: List<RoutesAlertsDTO>) : BaseAd
     @SuppressLint("ViewHolder")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val vi = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val view = vi.inflate(R.layout.list_train_line, parent, false)
+        val view = vi.inflate(R.layout.list_alerts, parent, false)
         val item = getItem(position)
 
         Log.i("DERP", item.routeName + " " + item.routeBackgroundColor)
