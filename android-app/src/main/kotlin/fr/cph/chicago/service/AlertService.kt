@@ -22,16 +22,19 @@ object AlertService {
         params.put("type", "rail,bus")
         val inputStream = ctaClient.connect(CtaRequestType.ALERTS_ROUTES, params)
         val alertRoutes = jsonParser.parse(inputStream, AlertsRoutes::class.java)
-        return alertRoutes.ctaRoutes?.routeInfo?.map { routeInfo ->
-            RoutesAlertsDTO(
-                id = routeInfo.serviceId!!,
-                routeName = routeInfo.route!!,
-                routeBackgroundColor = if (routeInfo.routeColorCode!!.length == 6) "#" + routeInfo.routeColorCode!! else "#000000",
-                routeTextColor = "#" + routeInfo.routeTextColor!!,
-                routeStatus = routeInfo.routeStatus!!,
-                routeStatusColor = "#" + routeInfo.routeStatusColor!!,
-                alertType = if (routeInfo.route!!.contains("Line")) AlertType.TRAIN else AlertType.BUS)
-        }?.toList()!!
+        return alertRoutes.ctaRoutes?.routeInfo
+            ?.filter { routeInfo -> routeInfo.serviceId!! != "Pexp" }
+            ?.map { routeInfo ->
+                RoutesAlertsDTO(
+                    id = routeInfo.serviceId!!,
+                    routeName = routeInfo.route!!,
+                    routeBackgroundColor = if (routeInfo.routeColorCode!!.length == 6) "#" + routeInfo.routeColorCode!! else "#000000",
+                    routeTextColor = "#" + routeInfo.routeTextColor!!,
+                    routeStatus = routeInfo.routeStatus!!,
+                    routeStatusColor = "#" + routeInfo.routeStatusColor!!,
+                    alertType = if (routeInfo.route!!.contains("Line")) AlertType.TRAIN else AlertType.BUS)
+            }
+            ?.toList()!!
     }
 
     fun getRouteAlert(id: String): List<RouteAlertsDTO> {
@@ -46,9 +49,10 @@ object AlertService {
                     headLine = alert.headline!!,
                     description = alert.shortDescription!!,
                     impact = alert.impact!!,
+                    severityScore = alert.severityScore!!.toInt(),
                     start = format.parse(alert.eventStart!!))
             }
-            .sortedByDescending { routeAlertsDTO -> routeAlertsDTO.start }
+            .sortedByDescending { it.severityScore }
             .toList()
     }
 }

@@ -44,6 +44,9 @@ class AlertRouteAdapter(private val routeAlertsDTOS: List<RouteAlertsDTO>) : Bas
         val description: TextView = view.findViewById(R.id.description)
         description.text = item.description
 
+        val impact: TextView = view.findViewById(R.id.impact)
+        impact.text = item.impact
+
         val start: TextView = view.findViewById(R.id.start)
         start.text = item.start.toString()
 

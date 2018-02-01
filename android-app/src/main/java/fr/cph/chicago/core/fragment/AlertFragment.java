@@ -45,12 +45,6 @@ public final class AlertFragment extends AbstractFragment {
     @BindView(R.id.alert_list)
     ListView listView;
 
-    private final Util util;
-
-    public AlertFragment() {
-        util = Util.INSTANCE;
-    }
-
     /**
      * Returns a new instance of this fragment for the given section number.
      *
@@ -64,7 +58,7 @@ public final class AlertFragment extends AbstractFragment {
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        util.trackScreen(getString(R.string.analytics_cta_alert_fragment));
+        Util.INSTANCE.trackScreen(getString(R.string.analytics_cta_alert_fragment));
     }
 
     @Override
