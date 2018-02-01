@@ -16,10 +16,7 @@
 
 package fr.cph.chicago.core.fragment;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,13 +24,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import butterknife.BindString;
 import butterknife.BindView;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.activity.AlertActivity;
 import fr.cph.chicago.core.adapter.AlertAdapter;
 import fr.cph.chicago.entity.dto.RoutesAlertsDTO;
-import fr.cph.chicago.entity.enumeration.TrainLine;
 import fr.cph.chicago.rx.ObservableUtil;
 import fr.cph.chicago.util.Util;
 
@@ -82,7 +77,7 @@ public final class AlertFragment extends AbstractFragment {
                 listView.setAdapter(ada);
                 listView.setOnItemClickListener((parentView, childView, position, id) -> {
                     final RoutesAlertsDTO routesAlertsDTO = ada.getItem(position);
-                    if(!"Normal Service".equals(routesAlertsDTO.getRouteStatus())){
+                    if (!"Normal Service".equals(routesAlertsDTO.getRouteStatus())) {
                         final Intent intent = new Intent(getContext(), AlertActivity.class);
                         final Bundle extras = new Bundle();
                         extras.putString("routeId", ada.getItem(position).getId());

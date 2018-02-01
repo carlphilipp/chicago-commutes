@@ -14,7 +14,7 @@ import fr.cph.chicago.entity.dto.AlertType
 import fr.cph.chicago.entity.dto.RoutesAlertsDTO
 
 /**
- * Adapter that will handle Train station list
+ * Adapter that handle alert lists
  *
  * @author Carl-Philipp Harmant
  * @version 1

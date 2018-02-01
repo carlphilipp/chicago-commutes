@@ -181,6 +181,7 @@
 
     <!-- Description -->
     <string name="description">Description</string>
+    <string name="headline">Headline</string>
 
     <!-- Preferences -->
     <string name="preferences_data_cache_title">Data cache</string>

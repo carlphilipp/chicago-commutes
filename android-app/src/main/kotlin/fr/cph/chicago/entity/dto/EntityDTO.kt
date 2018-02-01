@@ -7,6 +7,7 @@ import fr.cph.chicago.entity.BusArrival
 import fr.cph.chicago.entity.BusRoute
 import fr.cph.chicago.entity.TrainArrival
 import org.apache.commons.lang3.StringUtils
+import java.time.LocalDateTime
 import java.util.*
 import kotlin.Comparator
 
@@ -114,5 +115,5 @@ data class RouteAlertsDTO(
     val headLine: String,
     val description: String,
     val impact: String,
-    val start: String
+    val start: Date
 )
