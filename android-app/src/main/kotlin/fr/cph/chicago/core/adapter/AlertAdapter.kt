@@ -3,7 +3,6 @@ package fr.cph.chicago.core.adapter
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,7 +20,11 @@ import fr.cph.chicago.entity.dto.RoutesAlertsDTO
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class AlertAdapter(private val routesAlertsDTOS: List<RoutesAlertsDTO>) : BaseAdapter() {
+class AlertAdapter(private var routesAlertsDTOS: List<RoutesAlertsDTO>) : BaseAdapter() {
+
+    fun setAlerts(routesAlertsDTOS: List<RoutesAlertsDTO>) {
+        this.routesAlertsDTOS = routesAlertsDTOS
+    }
 
     override fun getCount(): Int {
         return routesAlertsDTOS.size
@@ -59,7 +62,7 @@ class AlertAdapter(private val routesAlertsDTOS: List<RoutesAlertsDTO>) : BaseAd
         val status: TextView = view.findViewById(R.id.status)
         status.text = item.routeStatus
 
-        if("Normal Service" != item.routeStatus){
+        if ("Normal Service" != item.routeStatus) {
             val imageView: ImageView = view.findViewById(R.id.alert_warning)
             imageView.visibility = View.VISIBLE
         }

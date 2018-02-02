@@ -20,12 +20,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
+    <EditText
+        android:id="@+id/alert_filter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/bus_fragment_filter"
+        android:paddingEnd="@dimen/activity_train_line_padding_right"
+        android:paddingLeft="16dp"
+        android:paddingRight="@dimen/activity_train_line_padding_right"
+        android:paddingStart="16dp">
+    </EditText>
+
     <ListView
         android:id="@+id/alert_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true">
+        android:layout_below="@+id/alert_filter">
     </ListView>
 </RelativeLayout>

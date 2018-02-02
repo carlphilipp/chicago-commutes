@@ -18,16 +18,28 @@ package fr.cph.chicago.core.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ListView;
+
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
+
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.activity.AlertActivity;
 import fr.cph.chicago.core.adapter.AlertAdapter;
+import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.dto.AlertType;
 import fr.cph.chicago.entity.dto.RoutesAlertsDTO;
 import fr.cph.chicago.rx.ObservableUtil;
@@ -42,8 +54,13 @@ import fr.cph.chicago.util.Util;
 @SuppressWarnings("WeakerAccess")
 public final class AlertFragment extends AbstractFragment {
 
+    @BindView(R.id.alert_filter)
+    EditText textFilter;
     @BindView(R.id.alert_list)
     ListView listView;
+
+    private AlertAdapter alertAdapter;
+    private List<RoutesAlertsDTO> routesAlertsDTOS;
 
     /**
      * Returns a new instance of this fragment for the given section number.
@@ -66,12 +83,15 @@ public final class AlertFragment extends AbstractFragment {
         final View rootView = inflater.inflate(R.layout.fragment_alert, container, false);
         setBinder(rootView);
         ObservableUtil.INSTANCE.createAlertRoutesObservable()
-            .subscribe(routeAlertsDTOS -> {
-                Log.i("AlertFragment", "Alert Routes: " + routeAlertsDTOS);
-                final AlertAdapter ada = new AlertAdapter(routeAlertsDTOS);
-                listView.setAdapter(ada);
+            .subscribe(routesAlertsDTOS -> {
+                Log.i("AlertFragment", "Alert Routes: " + routesAlertsDTOS);
+                this.routesAlertsDTOS = routesAlertsDTOS;
+
+
+                alertAdapter = new AlertAdapter(routesAlertsDTOS);
+                listView.setAdapter(alertAdapter);
                 listView.setOnItemClickListener((parentView, childView, position, id) -> {
-                    final RoutesAlertsDTO routesAlertsDTO = ada.getItem(position);
+                    final RoutesAlertsDTO routesAlertsDTO = alertAdapter.getItem(position);
                     final Intent intent = new Intent(getContext(), AlertActivity.class);
                     final Bundle extras = new Bundle();
                     extras.putString("routeId", routesAlertsDTO.getId());
@@ -82,6 +102,34 @@ public final class AlertFragment extends AbstractFragment {
                     startActivity(intent);
                 });
             });
+
+
+
+        textFilter.addTextChangedListener(new TextWatcher() {
+
+            List<RoutesAlertsDTO> routesAlertsDTOS = null;
+
+            @Override
+            public void beforeTextChanged(final CharSequence c, final int start, final int count, final int after) {
+                routesAlertsDTOS = new ArrayList<>();
+            }
+
+            @Override
+            public void onTextChanged(final CharSequence c, final int start, final int before, final int count) {
+                final CharSequence trimmed = c.toString().trim();
+                routesAlertsDTOS.addAll(
+                    Stream.of(AlertFragment.this.routesAlertsDTOS)
+                        .filter(value -> StringUtils.containsIgnoreCase(value.getRouteName(), trimmed) || StringUtils.containsIgnoreCase(value.getId(), trimmed))
+                        .collect(Collectors.toList())
+                );
+            }
+
+            @Override
+            public void afterTextChanged(final Editable s) {
+                alertAdapter.setAlerts(routesAlertsDTOS);
+                alertAdapter.notifyDataSetChanged();
+            }
+        });
         return rootView;
     }
 }
