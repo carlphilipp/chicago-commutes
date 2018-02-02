@@ -115,7 +115,7 @@ class BusBoundActivity : ListActivity() {
             }
             busBoundAdapter = BusBoundAdapter()
             listAdapter = busBoundAdapter
-            listView.setOnItemClickListener { adapterView, view, position, id ->
+            listView.setOnItemClickListener { _, _, position, id ->
                 val busStop = busBoundAdapter!!.getItem(position) as BusStop
                 val intent = Intent(applicationContext, BusActivity::class.java)
 
@@ -156,11 +156,11 @@ class BusBoundActivity : ListActivity() {
             })
 
 
-            util.setWindowsColor(this, toolbar!!, TrainLine.NA)
-            toolbar!!.title = busRouteId + " - " + boundTitle
+            util.setWindowsColor(this, toolbar, TrainLine.NA)
+            toolbar.title = busRouteId + " - " + boundTitle
 
-            toolbar!!.navigationIcon = arrowBackWhite
-            toolbar!!.setOnClickListener { v -> finish() }
+            toolbar.navigationIcon = arrowBackWhite
+            toolbar.setOnClickListener { _ -> finish() }
 
             observableUtil.createBusStopBoundObservable(busRouteId!!, bound!!)
                 .subscribe({ onNext ->

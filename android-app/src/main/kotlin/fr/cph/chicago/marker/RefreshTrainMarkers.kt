@@ -19,8 +19,6 @@
 
 package fr.cph.chicago.marker
 
-import android.content.Context
-
 import fr.cph.chicago.R
 
 /**

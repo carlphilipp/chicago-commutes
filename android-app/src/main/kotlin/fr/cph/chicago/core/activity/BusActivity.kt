@@ -160,7 +160,7 @@ class BusActivity : AbstractStationActivity() {
 
             mapImage.setColorFilter(grey_5)
             directionImage.setColorFilter(grey_5)
-            favoritesImageContainer.setOnClickListener { v -> switchFavorite() }
+            favoritesImageContainer.setOnClickListener { _ -> switchFavorite() }
 
             if (isFavorite) {
                 favoritesImage.setColorFilter(yellowLineDark)
@@ -278,11 +278,11 @@ class BusActivity : AbstractStationActivity() {
      */
     private fun switchFavorite() {
         if (isFavorite) {
-            preferenceService.removeFromBusFavorites(busRouteId!!, busStopId.toString(), boundTitle!!, scrollView!!)
+            preferenceService.removeFromBusFavorites(busRouteId!!, busStopId.toString(), boundTitle!!, scrollView)
             favoritesImage.setColorFilter(grey_5)
             isFavorite = false
         } else {
-            preferenceService.addToBusFavorites(busRouteId!!, busStopId.toString(), boundTitle!!, scrollView!!)
+            preferenceService.addToBusFavorites(busRouteId!!, busStopId.toString(), boundTitle!!, scrollView)
             preferenceService.addBusRouteNameMapping(busStopId.toString(), busRouteName!!)
             preferenceService.addBusStopNameMapping(busStopId.toString(), busStopName!!)
             favoritesImage.setColorFilter(yellowLineDark)

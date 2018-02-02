@@ -249,8 +249,8 @@ class StationActivity : AbstractStationActivity() {
     private fun setToolBar(randomTrainLine: TrainLine) {
         toolbar.inflateMenu(R.menu.main)
         toolbar.setOnMenuItemClickListener { _ ->
-            swipeRefreshLayout!!.isRefreshing = true
-            trainArrivalObservable!!.subscribe(TrainArrivalObserver(this, swipeRefreshLayout!!))
+            swipeRefreshLayout.isRefreshing = true
+            trainArrivalObservable!!.subscribe(TrainArrivalObserver(this, swipeRefreshLayout))
             false
         }
 
@@ -258,7 +258,7 @@ class StationActivity : AbstractStationActivity() {
             toolbar.elevation = 4f
         }
 
-        util.setWindowsColor(this, toolbar!!, randomTrainLine)
+        util.setWindowsColor(this, toolbar, randomTrainLine)
 
         toolbar.title = station!!.name
         toolbar.navigationIcon = arrowBackWhite
@@ -309,6 +309,7 @@ class StationActivity : AbstractStationActivity() {
                             Stream.range(0, line3View.childCount).forEach { i ->
                                 val view = line3View.getChildAt(i!!) as LinearLayout
                                 val timing = view.getChildAt(1) as TextView
+                                // FIXME
                                 if (timing != null) {
                                     timing.text = ""
                                 }

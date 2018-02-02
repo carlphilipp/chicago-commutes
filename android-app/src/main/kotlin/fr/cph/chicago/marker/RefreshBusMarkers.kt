@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.marker
 
-import android.content.Context
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.Marker
 import fr.cph.chicago.R

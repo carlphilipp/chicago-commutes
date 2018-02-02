@@ -130,7 +130,7 @@ class BikeStationActivity : AbstractStationActivity() {
                     favoritesImage.setColorFilter(grey_5)
                 }
 
-                favoritesImageContainer!!.setOnClickListener { _ -> switchFavorite() }
+                favoritesImageContainer.setOnClickListener { _ -> switchFavorite() }
                 bikeStationValue.text = bikeStation!!.stAddress1
                 streetViewImage.setOnClickListener(GoogleStreetOnClickListener(latitude, longitude))
                 mapContainer.setOnClickListener(GoogleMapOnClickListener(latitude, longitude))
@@ -147,7 +147,7 @@ class BikeStationActivity : AbstractStationActivity() {
         toolbar.setOnMenuItemClickListener { _ ->
             swipeRefreshLayout.isRefreshing = true
             observableUtil.createAllBikeStationsObservable()
-                .subscribe(BikeAllBikeStationsObserver(this@BikeStationActivity, bikeStation!!.id, swipeRefreshLayout!!))
+                .subscribe(BikeAllBikeStationsObserver(this@BikeStationActivity, bikeStation!!.id, swipeRefreshLayout))
             false
         }
         Util.setWindowsColor(this, toolbar, TrainLine.NA)
