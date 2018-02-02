@@ -30,5 +30,5 @@ abstract class AbstractStationActivity : Activity() {
             }
     }
 
-    protected abstract val isFavorite: Boolean
+    protected abstract fun isFavorite(): Boolean
 }
