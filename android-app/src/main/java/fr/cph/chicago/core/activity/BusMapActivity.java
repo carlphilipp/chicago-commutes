@@ -55,6 +55,7 @@ import fr.cph.chicago.rx.BusFollowObserver;
 import fr.cph.chicago.rx.BusObserver;
 import fr.cph.chicago.rx.ObservableUtil;
 import fr.cph.chicago.service.BusService;
+import fr.cph.chicago.util.Util;
 
 import static fr.cph.chicago.Constants.BUSES_ARRIVAL_URL;
 import static fr.cph.chicago.Constants.BUSES_DIRECTION_URL;
@@ -128,7 +129,7 @@ public class BusMapActivity extends AbstractMapActivity {
             setToolbar();
 
             // Google analytics
-            util.trackScreen(analyticsBusMap);
+            Util.INSTANCE.trackScreen(analyticsBusMap);
         }
     }
 
@@ -151,14 +152,14 @@ public class BusMapActivity extends AbstractMapActivity {
     @Override
     protected void setToolbar() {
         super.setToolbar();
-        toolbar.setOnMenuItemClickListener((item -> {
-            util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_VEHICLES_URL);
-            observableUtil.createBusListObservable(busId, busRouteId).subscribe(new BusObserver(BusMapActivity.this, false, layout));
+        getToolbar().setOnMenuItemClickListener((item -> {
+            Util.INSTANCE.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_VEHICLES_URL);
+            observableUtil.createBusListObservable(busId, busRouteId).subscribe(new BusObserver(BusMapActivity.this, false, getLayout()));
             return false;
         }));
 
-        util.setWindowsColor(this, toolbar, TrainLine.NA);
-        toolbar.setTitle(busRouteId);
+        Util.INSTANCE.setWindowsColor(this, getToolbar(), TrainLine.NA);
+        getToolbar().setTitle(busRouteId);
     }
 
     public void centerMapOnBus(@NonNull final List<Bus> result) {
@@ -186,7 +187,7 @@ public class BusMapActivity extends AbstractMapActivity {
             busMarkers.add(marker);
 
             final LayoutInflater layoutInflater = (LayoutInflater) BusMapActivity.this.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            final View view = layoutInflater.inflate(R.layout.marker, viewGroup, false);
+            final View view = layoutInflater.inflate(R.layout.marker, getViewGroup(), false);
             final TextView title = view.findViewById(R.id.title);
             title.setText(marker.getTitle());
 
@@ -266,12 +267,12 @@ public class BusMapActivity extends AbstractMapActivity {
             public View getInfoContents(final Marker marker) {
                 if (marker.getTitle().startsWith("To ")) {
                     final View view = views.get(marker);
-                    if (!refreshingInfoWindow) {
+                    if (!getRefreshingInfoWindow()) {
                         setSelectedMarker(marker);
                         final String busId = marker.getSnippet();
-                        util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
+                        Util.INSTANCE.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
                         observableUtil.createFollowBusObservable(busId)
-                            .subscribe(new BusFollowObserver(BusMapActivity.this, layout, view, false));
+                            .subscribe(new BusFollowObserver(BusMapActivity.this, getLayout(), view, false));
                         status.put(marker, false);
                     }
                     return view;
@@ -284,13 +285,13 @@ public class BusMapActivity extends AbstractMapActivity {
         getGoogleMap().setOnInfoWindowClickListener(marker -> {
             if (marker.getTitle().startsWith("To ")) {
                 final View view = views.get(marker);
-                if (!refreshingInfoWindow) {
+                if (!getRefreshingInfoWindow()) {
                     setSelectedMarker(marker);
                     final String runNumber = marker.getSnippet();
                     final boolean current = status.get(marker);
-                    util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
+                    Util.INSTANCE.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
                     observableUtil.createFollowBusObservable(runNumber)
-                        .subscribe(new BusFollowObserver(BusMapActivity.this, layout, view, !current));
+                        .subscribe(new BusFollowObserver(BusMapActivity.this, getLayout(), view, !current));
                     status.put(marker, !current);
                 }
             }
@@ -299,14 +300,14 @@ public class BusMapActivity extends AbstractMapActivity {
     }
 
     private void loadActivityData() {
-        if (util.isNetworkAvailable()) {
-            util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_VEHICLES_URL);
-            observableUtil.createBusListObservable(busId, busRouteId).subscribe(new BusObserver(BusMapActivity.this, true, layout));
+        if (Util.INSTANCE.isNetworkAvailable()) {
+            Util.INSTANCE.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_VEHICLES_URL);
+            observableUtil.createBusListObservable(busId, busRouteId).subscribe(new BusObserver(BusMapActivity.this, true, getLayout()));
             if (loadPattern) {
                 new LoadPattern().execute();
             }
         } else {
-            util.showNetworkErrorMessage(layout);
+            Util.INSTANCE.showNetworkErrorMessage(getLayout());
         }
     }
 
@@ -326,10 +327,10 @@ public class BusMapActivity extends AbstractMapActivity {
                 for (int i = 0; i < busDirections.getBusDirections().size(); i++) {
                     bounds[i] = busDirections.getBusDirections().get(i).getText();
                 }
-                util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_DIRECTION_URL);
+                Util.INSTANCE.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_DIRECTION_URL);
             }
             Stream.of(busService.loadBusPattern(busRouteId, bounds)).forEach(this.patterns::add);
-            util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL);
+            Util.INSTANCE.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL);
             return this.patterns;
         }
 
@@ -338,7 +339,7 @@ public class BusMapActivity extends AbstractMapActivity {
             if (result != null) {
                 drawPattern(result);
             } else {
-                util.showNetworkErrorMessage(layout);
+                Util.INSTANCE.showNetworkErrorMessage(getLayout());
             }
         }
     }

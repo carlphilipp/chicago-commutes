@@ -16,11 +16,9 @@
 
 package fr.cph.chicago.core.activity;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.annimon.stream.Stream;
@@ -42,8 +40,6 @@ import butterknife.BindString;
 import butterknife.ButterKnife;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.App;
-import fr.cph.chicago.core.adapter.TrainMapSnippetAdapter;
-import fr.cph.chicago.entity.Eta;
 import fr.cph.chicago.entity.Position;
 import fr.cph.chicago.entity.Train;
 import fr.cph.chicago.entity.enumeration.TrainLine;
@@ -51,9 +47,8 @@ import fr.cph.chicago.marker.RefreshTrainMarkers;
 import fr.cph.chicago.rx.ObservableUtil;
 import fr.cph.chicago.rx.TrainEtaObserver;
 import fr.cph.chicago.service.TrainService;
+import fr.cph.chicago.util.Util;
 import io.reactivex.Observable;
-
-import static fr.cph.chicago.Constants.TRAINS_FOLLOW_URL;
 
 /**
  * @author Carl-Philipp Harmant
@@ -109,7 +104,7 @@ public class TrainMapActivity extends AbstractMapActivity {
             setToolbar();
 
             // Google analytics
-            util.trackScreen(analyticsTrainMap);
+            Util.INSTANCE.trackScreen(analyticsTrainMap);
         }
     }
 
@@ -124,15 +119,15 @@ public class TrainMapActivity extends AbstractMapActivity {
     @Override
     protected void setToolbar() {
         super.setToolbar();
-        toolbar.setOnMenuItemClickListener((item -> {
+        getToolbar().setOnMenuItemClickListener((item -> {
             centerMap = false;
             loadActivityData();
             return false;
         }));
 
         final TrainLine trainLine = TrainLine.Companion.fromXmlString(line);
-        util.setWindowsColor(this, toolbar, trainLine);
-        toolbar.setTitle(trainLine.toStringWithLine());
+        Util.INSTANCE.setWindowsColor(this, getToolbar(), trainLine);
+        getToolbar().setTitle(trainLine.toStringWithLine());
     }
 
     @Override
@@ -183,7 +178,7 @@ public class TrainMapActivity extends AbstractMapActivity {
             final Marker marker = getGoogleMap().addMarker(new MarkerOptions().position(point).title(title).snippet(snippet).icon(bitmapDescr).anchor(0.5f, 0.5f).rotation(train.getHeading()).flat(true));
             markers.add(marker);
 
-            final View view = getLayoutInflater().inflate(R.layout.marker, viewGroup, false);
+            final View view = getLayoutInflater().inflate(R.layout.marker, getViewGroup(), false);
             final TextView title2 = view.findViewById(R.id.title);
             title2.setText(title);
 
@@ -227,7 +222,7 @@ public class TrainMapActivity extends AbstractMapActivity {
                 if (!"".equals(marker.getSnippet())) {
                     // View can be null
                     final View view = views.get(marker);
-                    if (!refreshingInfoWindow) {
+                    if (!getRefreshingInfoWindow()) {
                         setSelectedMarker(marker);
                         final String runNumber = marker.getSnippet();
                         observableUtil.createLoadTrainEtaObservable(runNumber, false)
@@ -243,7 +238,7 @@ public class TrainMapActivity extends AbstractMapActivity {
         getGoogleMap().setOnInfoWindowClickListener(marker -> {
             if (!"".equals(marker.getSnippet())) {
                 final View view = views.get(marker);
-                if (!refreshingInfoWindow) {
+                if (!getRefreshingInfoWindow()) {
                     setSelectedMarker(marker);
                     final String runNumber = marker.getSnippet();
                     final Boolean current = status.get(marker);
@@ -257,7 +252,7 @@ public class TrainMapActivity extends AbstractMapActivity {
     }
 
     private void loadActivityData() {
-        if (util.isNetworkAvailable()) {
+        if (Util.INSTANCE.isNetworkAvailable()) {
             // Load train location
             final Observable<List<Train>> trainsObservable = observableUtil.createTrainLocationObservable(line);
             // Load pattern from local file
@@ -273,10 +268,10 @@ public class TrainMapActivity extends AbstractMapActivity {
                                 centerMapOnTrain(trains);
                             }
                         } else {
-                            util.showMessage(TrainMapActivity.this, R.string.message_no_train_found);
+                            Util.INSTANCE.showMessage(TrainMapActivity.this, R.string.message_no_train_found);
                         }
                     } else {
-                        util.showMessage(TrainMapActivity.this, R.string.message_error_while_loading_data);
+                        Util.INSTANCE.showMessage(TrainMapActivity.this, R.string.message_error_while_loading_data);
                     }
                     return new Object();
                 }).subscribe();
@@ -285,15 +280,15 @@ public class TrainMapActivity extends AbstractMapActivity {
                     if (trains != null) {
                         drawTrains(trains);
                         if (trains.size() == 0) {
-                            util.showMessage(TrainMapActivity.this, R.string.message_no_train_found);
+                            Util.INSTANCE.showMessage(TrainMapActivity.this, R.string.message_no_train_found);
                         }
                     } else {
-                        util.showMessage(TrainMapActivity.this, R.string.message_error_while_loading_data);
+                        Util.INSTANCE.showMessage(TrainMapActivity.this, R.string.message_error_while_loading_data);
                     }
                 });
             }
         } else {
-            util.showNetworkErrorMessage(layout);
+            Util.INSTANCE.showNetworkErrorMessage(getLayout());
         }
     }
 }

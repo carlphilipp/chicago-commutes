@@ -43,7 +43,7 @@ class AlertActivity : Activity() {
 
     private fun setToolBar() {
         toolbar.inflateMenu(R.menu.main)
-        toolbar.setOnMenuItemClickListener { item ->
+        toolbar.setOnMenuItemClickListener { _ ->
             scrollView.isRefreshing = true
             refreshData()
             false
@@ -53,7 +53,7 @@ class AlertActivity : Activity() {
         }
         toolbar.title = title
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp)
-        toolbar.setOnClickListener { v -> finish() }
+        toolbar.setOnClickListener { _ -> finish() }
     }
 
     private fun refreshData() {
