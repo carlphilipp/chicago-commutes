@@ -178,6 +178,7 @@
     <string name="message_error_bus_favorites">Could not load buses :(</string>
     <string name="message_error_bike_favorites">Could not load bikes :(</string>
     <string name="message_open_details">Open details</string>
+    <string name="message_no_alerts">No alerts were found</string>
 
     <!-- Description -->
     <string name="description">Description</string>

@@ -240,11 +240,15 @@ object Util {
         showSnackBar(view, message)
     }
 
+    fun showSnackBar(view: View, message: String) {
+        Snackbar.make(view, message, Snackbar.LENGTH_LONG).show()
+    }
+
     fun showSnackBar(activity: Activity, message: Int, length: Int) {
         if (activity.currentFocus != null) {
             Snackbar.make(activity.currentFocus!!, activity.getString(message), length).show()
         } else {
-            Toast.makeText(activity, activity.getString(message), Toast.LENGTH_LONG).show()
+            Toast.makeText(activity, activity.getString(message), length).show()
         }
     }
 

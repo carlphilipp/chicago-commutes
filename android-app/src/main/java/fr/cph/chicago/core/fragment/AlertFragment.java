@@ -86,8 +86,6 @@ public final class AlertFragment extends AbstractFragment {
             .subscribe(routesAlertsDTOS -> {
                 Log.i("AlertFragment", "Alert Routes: " + routesAlertsDTOS);
                 this.routesAlertsDTOS = routesAlertsDTOS;
-
-
                 alertAdapter = new AlertAdapter(routesAlertsDTOS);
                 listView.setAdapter(alertAdapter);
                 listView.setOnItemClickListener((parentView, childView, position, id) -> {
