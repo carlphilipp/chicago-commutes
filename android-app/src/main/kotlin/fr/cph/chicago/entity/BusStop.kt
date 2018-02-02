@@ -38,7 +38,7 @@ open class BusStop(
     var id: Int = 0,
     var name: String = StringUtils.EMPTY,
     var description: String = StringUtils.EMPTY,
-    var position: Position = Position()) : RealmObject(), Comparable<BusStop>, Parcelable, Serializable, AStation {
+    var position: Position? = null) : RealmObject(), Comparable<BusStop>, Parcelable, Serializable, AStation {
 
     private constructor(source: Parcel) : this(
         id = source.readInt(),
@@ -52,7 +52,7 @@ open class BusStop(
 
     override fun compareTo(other: BusStop): Int {
         val position = other.position
-        val latitude = java.lang.Double.compare(position.latitude, position.latitude)
+        val latitude = java.lang.Double.compare(position!!.latitude, position.latitude)
         return if (latitude == 0) java.lang.Double.compare(position.longitude, position.longitude) else latitude
     }
 

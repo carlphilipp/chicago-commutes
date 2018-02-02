@@ -71,15 +71,16 @@ object BusRepository {
                 .lessThan("position.latitude", latMax)
                 .greaterThan("position.longitude", lonMin)
                 .lessThan("position.longitude", lonMax)
-                .findAllSorted("name")
+                .sort("name")
+                .findAll()
                 // Need to map and create objects to close realm stream
                 .map { currentBusStop ->
                     val busStop = BusStop()
                     busStop.name = currentBusStop.name
                     busStop.description = currentBusStop.description
                     val pos = Position()
-                    pos.latitude = currentBusStop.position.latitude
-                    pos.longitude = currentBusStop.position.longitude
+                    pos.latitude = currentBusStop.position!!.latitude
+                    pos.longitude = currentBusStop.position!!.longitude
                     busStop.position = pos
                     busStop.id = currentBusStop.id
                     busStop

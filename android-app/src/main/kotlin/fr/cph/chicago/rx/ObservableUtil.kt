@@ -3,7 +3,6 @@ package fr.cph.chicago.rx
 import android.app.Application
 import android.util.Log
 import android.util.SparseArray
-import com.google.android.gms.common.api.GoogleApiClient
 import fr.cph.chicago.core.App
 import fr.cph.chicago.entity.*
 import fr.cph.chicago.entity.dto.*
@@ -12,7 +11,6 @@ import fr.cph.chicago.service.AlertService
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
-import fr.cph.chicago.util.GPSUtil
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -259,24 +257,6 @@ object ObservableUtil {
                 // Do not change that to listOf().
                 // It needs to be ArrayList for being parcelable
                 ArrayList()
-            }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-    }
-
-    fun createPositionObservable(googleApiClient: GoogleApiClient): Observable<Position> {
-        return Observable.create { observableOnSubscribe: ObservableEmitter<Position> ->
-            if (!observableOnSubscribe.isDisposed) {
-                if (!googleApiClient.isConnected) {
-                    googleApiClient.blockingConnect()
-                }
-                observableOnSubscribe.onNext(GPSUtil(googleApiClient).location)
-                observableOnSubscribe.onComplete()
-            }
-        }
-            .onErrorReturn { throwable ->
-                Log.e(TAG, throwable.message, throwable)
-                Position()
             }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

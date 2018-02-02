@@ -81,8 +81,8 @@ class BusStopOnClickListener(private val activity: Activity, private val parent:
                         extras.putString(activity.getString(R.string.bundle_bus_route_name), busDetails.routeName)
                         extras.putString(activity.getString(R.string.bundle_bus_bound), busDetails.bound)
                         extras.putString(activity.getString(R.string.bundle_bus_bound_title), busDetails.boundTitle)
-                        extras.putDouble(activity.getString(R.string.bundle_bus_latitude), busStop.position.latitude)
-                        extras.putDouble(activity.getString(R.string.bundle_bus_longitude), busStop.position.longitude)
+                        extras.putDouble(activity.getString(R.string.bundle_bus_latitude), busStop.position!!.latitude)
+                        extras.putDouble(activity.getString(R.string.bundle_bus_longitude), busStop.position!!.longitude)
 
                         intent.putExtras(extras)
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

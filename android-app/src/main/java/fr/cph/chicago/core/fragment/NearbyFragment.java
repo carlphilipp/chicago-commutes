@@ -16,7 +16,10 @@
 
 package fr.cph.chicago.core.fragment;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -25,6 +28,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -37,6 +41,7 @@ import android.widget.ProgressBar;
 
 import com.annimon.stream.Stream;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -102,10 +107,12 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
     private GoogleApiClient googleApiClient;
     private SlidingUpAdapter slidingUpAdapter;
     private MarkerDataHolder markerDataHolder;
+    private FusedLocationProviderClient fusedLocationClient;
 
     public NearbyFragment() {
         this.util = Util.INSTANCE;
         this.observableUtil = ObservableUtil.INSTANCE;
+        this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity);
     }
 
     public SlidingUpPanelLayout getSlidingUpPanelLayout() {
@@ -292,13 +299,14 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
         showProgress(false);
     }
 
+    @SuppressLint("MissingPermission")
     private void startLoadingNearby() {
         if (util.isNetworkAvailable()) {
             showProgress(true);
-            final Thread thread = new Thread(() -> observableUtil
-                .createPositionObservable(googleApiClient)
-                .subscribe(this::handleNearbyData));
-            thread.start();
+            fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
+                final Position position = location == null? new Position() : new Position(location.getLatitude(), location.getLongitude());
+                handleNearbyData(position);
+            });
         } else {
             util.showNetworkErrorMessage(activity);
             showProgress(false);
