@@ -112,15 +112,12 @@ class BusActivity : AbstractStationActivity() {
 
     @JvmField
     @BindColor(R.color.grey_5)
-    @ColorInt
     internal var grey_5: Int = 0
     @JvmField
     @BindColor(R.color.grey)
-    @ColorInt
     internal var grey: Int = 0
     @JvmField
     @BindColor(R.color.yellowLineDark)
-    @ColorInt
     internal var yellowLineDark: Int = 0
 
     private val util = Util
