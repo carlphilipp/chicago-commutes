@@ -26,7 +26,6 @@ import android.widget.ListView;
 import butterknife.BindString;
 import butterknife.BindView;
 import fr.cph.chicago.R;
-import fr.cph.chicago.core.App;
 import fr.cph.chicago.core.activity.TrainListStationActivity;
 import fr.cph.chicago.core.adapter.TrainStationAdapter;
 import fr.cph.chicago.entity.enumeration.TrainLine;
@@ -46,12 +45,6 @@ public final class TrainFragment extends AbstractFragment {
     @BindString(R.string.bundle_train_line)
     String bundleTrainLine;
 
-    private final Util util;
-
-    public TrainFragment() {
-        util = Util.INSTANCE;
-    }
-
     /**
      * Returns a new instance of this fragment for the given section number.
      *
@@ -65,7 +58,7 @@ public final class TrainFragment extends AbstractFragment {
     @Override
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        util.trackScreen(getString(R.string.analytics_train_fragment));
+        Util.INSTANCE.trackScreen(getString(R.string.analytics_train_fragment));
     }
 
     @Override

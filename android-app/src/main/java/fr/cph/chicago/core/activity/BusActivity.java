@@ -122,9 +122,9 @@ public class BusActivity extends AbstractStationActivity {
     @BindColor(R.color.yellowLineDark)
     int yellowLineDark;
 
-    private final Util util;
-    private final PreferenceService preferenceService;
-    private final BusService busService;
+    private final Util util = Util.INSTANCE;
+    private final PreferenceService preferenceService = PreferenceService.INSTANCE;
+    private final BusService busService = BusService.INSTANCE;
 
     private List<BusArrival> busArrivals;
     private String busRouteId, bound, boundTitle;
@@ -132,12 +132,6 @@ public class BusActivity extends AbstractStationActivity {
     private String busStopName, busRouteName;
     private double latitude, longitude;
     private boolean isFavorite;
-
-    public BusActivity() {
-        util = Util.INSTANCE;
-        preferenceService = PreferenceService.INSTANCE;
-        busService = BusService.INSTANCE;
-    }
 
     @Override
     protected final void onCreate(final Bundle savedInstanceState) {

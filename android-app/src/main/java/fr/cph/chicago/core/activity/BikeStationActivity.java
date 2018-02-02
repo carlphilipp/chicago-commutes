@@ -84,7 +84,6 @@ public class BikeStationActivity extends AbstractStationActivity {
     String bikeAvailableDocks;
 
     private final ObservableUtil observableUtil;
-    private final Util util;
     private final PreferenceService preferenceService;
 
     @BindColor(R.color.grey_5)
@@ -101,7 +100,6 @@ public class BikeStationActivity extends AbstractStationActivity {
 
     public BikeStationActivity() {
         observableUtil = ObservableUtil.INSTANCE;
-        util = Util.INSTANCE;
         preferenceService = PreferenceService.INSTANCE;
     }
 
@@ -155,7 +153,7 @@ public class BikeStationActivity extends AbstractStationActivity {
                 .subscribe(new BikeAllBikeStationsObserver(BikeStationActivity.this, bikeStation.getId(), swipeRefreshLayout));
             return false;
         }));
-        util.setWindowsColor(this, toolbar, TrainLine.NA);
+        Util.INSTANCE.setWindowsColor(this, toolbar, TrainLine.NA);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.setElevation(4);
         }

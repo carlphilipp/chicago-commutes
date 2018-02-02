@@ -68,14 +68,12 @@ public class BaseActivity extends Activity {
     private final BusService busService;
     private final RealmConfig realmConfig;
     private final ObservableUtil observableUtil;
-    private final Util util;
 
     public BaseActivity() {
         trainService = TrainService.INSTANCE;
         busService = BusService.INSTANCE;
         realmConfig = RealmConfig.INSTANCE;
         observableUtil = ObservableUtil.INSTANCE;
-        util = Util.INSTANCE;
     }
 
     @Override
@@ -141,8 +139,8 @@ public class BaseActivity extends Activity {
     }
 
     private void trackWithGoogleAnalytics() {
-        util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
-        util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
+        Util.INSTANCE.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL);
+        Util.INSTANCE.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL);
     }
 
     /**

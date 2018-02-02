@@ -112,7 +112,6 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
     public NearbyFragment() {
         this.util = Util.INSTANCE;
         this.observableUtil = ObservableUtil.INSTANCE;
-        this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity);
     }
 
     public SlidingUpPanelLayout getSlidingUpPanelLayout() {
@@ -303,6 +302,7 @@ public class NearbyFragment extends AbstractFragment implements EasyPermissions.
     private void startLoadingNearby() {
         if (util.isNetworkAvailable()) {
             showProgress(true);
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity);
             fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
                 final Position position = location == null? new Position() : new Position(location.getLatitude(), location.getLongitude());
                 handleNearbyData(position);
