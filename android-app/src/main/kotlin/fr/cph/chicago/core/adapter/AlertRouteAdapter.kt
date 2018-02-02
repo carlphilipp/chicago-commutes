@@ -20,7 +20,6 @@ import fr.cph.chicago.entity.dto.RouteAlertsDTO
 class AlertRouteAdapter(private val routeAlertsDTOS: List<RouteAlertsDTO>) : BaseAdapter() {
 
     override fun getCount(): Int {
-        Log.i("AlertRouteAdapter", "Count: " + routeAlertsDTOS.size)
         return routeAlertsDTOS.size
     }
 

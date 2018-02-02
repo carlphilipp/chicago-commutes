@@ -42,17 +42,21 @@ object AlertService {
         params.put("routeid", id)
         val inputStream = ctaClient.connect(CtaRequestType.ALERTS_ROUTE, params)
         val alertRoutes = jsonParser.parse(inputStream, AlertsRoute::class.java)
-        return alertRoutes.ctaAlerts!!.alert!!
-            .map { alert ->
-                RouteAlertsDTO(
-                    id = alert.alertId!!,
-                    headLine = alert.headline!!,
-                    description = alert.shortDescription!!,
-                    impact = alert.impact!!,
-                    severityScore = alert.severityScore!!.toInt(),
-                    start = format.parse(alert.eventStart!!))
-            }
-            .sortedByDescending { it.severityScore }
-            .toList()
+
+        return if (alertRoutes.ctaAlerts!!.errorMessage != null)
+            listOf()
+        else
+            alertRoutes.ctaAlerts!!.alert!!
+                .map { alert ->
+                    RouteAlertsDTO(
+                        id = alert.alertId!!,
+                        headLine = alert.headline!!,
+                        description = alert.shortDescription!!,
+                        impact = alert.impact!!,
+                        severityScore = alert.severityScore!!.toInt(),
+                        start = format.parse(alert.eventStart!!))
+                }
+                .sortedByDescending { it.severityScore }
+                .toList()
     }
 }
