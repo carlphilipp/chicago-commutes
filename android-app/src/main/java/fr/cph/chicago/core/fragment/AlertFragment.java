@@ -39,7 +39,6 @@ import butterknife.BindView;
 import fr.cph.chicago.R;
 import fr.cph.chicago.core.activity.AlertActivity;
 import fr.cph.chicago.core.adapter.AlertAdapter;
-import fr.cph.chicago.entity.BusRoute;
 import fr.cph.chicago.entity.dto.AlertType;
 import fr.cph.chicago.entity.dto.RoutesAlertsDTO;
 import fr.cph.chicago.rx.ObservableUtil;
@@ -84,7 +83,6 @@ public final class AlertFragment extends AbstractFragment {
         setBinder(rootView);
         ObservableUtil.INSTANCE.createAlertRoutesObservable()
             .subscribe(routesAlertsDTOS -> {
-                Log.i("AlertFragment", "Alert Routes: " + routesAlertsDTOS);
                 this.routesAlertsDTOS = routesAlertsDTOS;
                 alertAdapter = new AlertAdapter(routesAlertsDTOS);
                 listView.setAdapter(alertAdapter);
@@ -100,8 +98,6 @@ public final class AlertFragment extends AbstractFragment {
                     startActivity(intent);
                 });
             });
-
-
 
         textFilter.addTextChangedListener(new TextWatcher() {
 
