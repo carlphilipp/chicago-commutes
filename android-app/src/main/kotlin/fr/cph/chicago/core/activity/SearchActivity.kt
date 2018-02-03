@@ -158,7 +158,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun setupToolbar() {
-        util.setWindowsColor(this, toolbar!!, TrainLine.NA)
+        util.setWindowsColor(this, toolbar, TrainLine.NA)
         setSupportActionBar(toolbar)
         val actionBar = supportActionBarNotNull
         actionBar.setDisplayShowHomeEnabled(true)

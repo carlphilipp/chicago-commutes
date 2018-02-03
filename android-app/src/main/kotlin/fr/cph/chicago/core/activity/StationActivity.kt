@@ -169,7 +169,7 @@ class StationActivity : AbstractStationActivity() {
                 params.width = layoutParams.width
                 mapImage.setColorFilter(grey_5)
                 directionImage.setColorFilter(grey_5)
-                favoritesImageContainer.setOnClickListener { v -> switchFavorite() }
+                favoritesImageContainer.setOnClickListener { _ -> switchFavorite() }
                 mapContainer.setOnClickListener(GoogleMapOnClickListener(position.latitude, position.longitude))
                 walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(position.latitude, position.longitude))
 

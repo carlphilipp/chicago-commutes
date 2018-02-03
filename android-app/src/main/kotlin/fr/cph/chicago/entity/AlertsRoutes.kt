@@ -3,49 +3,39 @@ package fr.cph.chicago.entity
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
+data class AlertsRoutes(@JsonProperty("CTARoutes")
+                        var ctaRoutes: CTARoutes? = null)
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-class AlertsRoutes {
-
-    @JsonProperty("CTARoutes")
-    var ctaRoutes: CTARoutes? = null
-}
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-class CTARoutes {
-
+data class CTARoutes(
     @JsonProperty("TimeStamp")
-    var timeStamp: String? = null
+    var timeStamp: String? = null,
     @JsonProperty("ErrorCode")
-    var errorCode: List<String>? = null
+    var errorCode: List<String>? = null,
     @JsonProperty("ErrorMessage")
-    var errorMessage: List<Any>? = null
+    var errorMessage: List<Any>? = null,
     @JsonProperty("RouteInfo")
-    var routeInfo: List<RouteInfo>? = null
-}
+    var routeInfo: List<RouteInfo>? = null)
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-class RouteInfo {
-
+data class RouteInfo(
     @JsonProperty("Route")
-    var route: String? = null
+    var route: String? = null,
     @JsonProperty("RouteColorCode")
-    var routeColorCode: String? = null
+    var routeColorCode: String? = null,
     @JsonProperty("RouteTextColor")
-    var routeTextColor: String? = null
+    var routeTextColor: String? = null,
     @JsonProperty("ServiceId")
-    var serviceId: String? = null
+    var serviceId: String? = null,
     @JsonProperty("RouteURL")
-    var routeURL: RouteURL? = null
+    var routeURL: RouteURL? = null,
     @JsonProperty("RouteStatus")
-    var routeStatus: String? = null
+    var routeStatus: String? = null,
     @JsonProperty("RouteStatusColor")
-    var routeStatusColor: String? = null
-}
+    var routeStatusColor: String? = null)
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-class RouteURL {
-
+class RouteURL(
     @JsonProperty("#cdata-section")
-    var cdataSection: String? = null
-}
+    var cdataSection: String? = null)

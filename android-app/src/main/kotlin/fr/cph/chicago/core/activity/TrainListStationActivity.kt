@@ -67,7 +67,7 @@ class TrainListStationActivity : ListActivity() {
             toolbar.title = trainLine!!.toStringWithLine()
 
             toolbar.navigationIcon = arrowBackWhite
-            toolbar.setOnClickListener { v -> finish() }
+            toolbar.setOnClickListener { _ -> finish() }
 
             val ada = TrainAdapter(trainLine!!, this)
             listAdapter = ada

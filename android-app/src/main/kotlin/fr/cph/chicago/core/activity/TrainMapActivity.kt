@@ -98,7 +98,7 @@ class TrainMapActivity : AbstractMapActivity() {
             setToolbar()
 
             // Google analytics
-            Util.trackScreen(analyticsTrainMap!!)
+            Util.trackScreen(analyticsTrainMap)
         }
     }
 
@@ -111,7 +111,7 @@ class TrainMapActivity : AbstractMapActivity() {
 
     override fun setToolbar() {
         super.setToolbar()
-        toolbar.setOnMenuItemClickListener { item ->
+        toolbar.setOnMenuItemClickListener { _ ->
             centerMap = false
             loadActivityData()
             false

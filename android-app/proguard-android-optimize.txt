@@ -102,7 +102,15 @@
 -keepnames class com.fasterxml.jackson.** { *; }
 -keep class org.apache.http.** { *; }
 -keep class android.net.http.** { *; }
--keep,includedescriptorclasses class io.realm.internal.Collection { *; }
+-keep,includedescriptorclasses class io.realm.RealmModel { *; }
+-keep,includedescriptorclasses class io.realm.RealmObjectChangeListener { *; }
+-keep,includedescriptorclasses class io.realm.RealmConfiguration { *; }
+-keep,includedescriptorclasses class io.realm.internal.OsRealmConfig$Builder { *; }
+-keep,includedescriptorclasses class io.realm.internal.OsResults$Iterator { *; }
+-keep,includedescriptorclasses class io.realm.internal.PendingRow { *; }
+-keep,includedescriptorclasses class io.realm.Sort { *; }
+-keep,includedescriptorclasses class io.realm.internal.fields.FieldDescriptor { *; }
+-keep,includedescriptorclasses class io.realm.internal.fields.FieldDescriptor$SchemaProxy { *; }
 -keep,includedescriptorclasses class com.sothree.slidinguppanel.SlidingUpPanelLayout { *; }
 -keep,includedescriptorclasses class io.realm.internal.android.AndroidRealmNotifier { *; }
 -keepclassmembers class ** {
@@ -111,6 +119,11 @@
 
 -keep class android.os.Build$VERSION { int SDK_INT; }
 -dontnote android.os.Build$VERSION
+
+-dontwarn kotlin.internal.jdk8.**
+-dontnote kotlin.internal.jdk8.**
+-dontwarn kotlin.reflect.jvm.internal.**
+-dontnote kotlin.reflect.jvm.internal.**
 
 -dontnote org.androidannotations.api.view.HasViews
 

@@ -115,7 +115,7 @@ class BusBoundActivity : ListActivity() {
             }
             busBoundAdapter = BusBoundAdapter()
             listAdapter = busBoundAdapter
-            listView.setOnItemClickListener { _, _, position, id ->
+            listView.setOnItemClickListener { _, _, position, _ ->
                 val busStop = busBoundAdapter!!.getItem(position) as BusStop
                 val intent = Intent(applicationContext, BusActivity::class.java)
 
@@ -219,7 +219,7 @@ class BusBoundActivity : ListActivity() {
                         }
                     }
                 ) { onError ->
-                    util.handleConnectOrParserException(onError, null, layout, layout!!)
+                    util.handleConnectOrParserException(onError, null, layout, layout)
                     Log.e(TAG, onError.message, onError)
                 }
         }

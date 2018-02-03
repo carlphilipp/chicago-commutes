@@ -127,7 +127,7 @@ class BusMapActivity : AbstractMapActivity() {
 
     override fun setToolbar() {
         super.setToolbar()
-        toolbar.setOnMenuItemClickListener { item ->
+        toolbar.setOnMenuItemClickListener { _ ->
             Util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_VEHICLES_URL)
             observableUtil.createBusListObservable(busId!!, busRouteId!!).subscribe(BusObserver(this@BusMapActivity, false, layout))
             false
@@ -146,7 +146,7 @@ class BusMapActivity : AbstractMapActivity() {
 
     fun drawBuses(buses: List<Bus>) {
         cleanAllMarkers()
-        val bitmapDescr = refreshBusesBitmap!!.currentDescriptor
+        val bitmapDesc = refreshBusesBitmap!!.currentDescriptor
         buses.forEach { bus ->
             val point = LatLng(bus.position.latitude, bus.position.longitude)
             val marker = googleMap.addMarker(
@@ -154,7 +154,7 @@ class BusMapActivity : AbstractMapActivity() {
                     .position(point)
                     .title("To " + bus.destination)
                     .snippet(bus.id.toString() + "")
-                    .icon(bitmapDescr)
+                    .icon(bitmapDesc)
                     .anchor(0.5f, 0.5f)
                     .rotation(bus.heading.toFloat())
                     .flat(true)
