@@ -36,12 +36,8 @@ open class AbstractMapActivity : FragmentActivity(), EasyPermissions.PermissionC
     @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
     lateinit var arrowBackWhite: Drawable
 
-    private var selectedMarker: Marker? = null
-
-    // FIXME should not be null
-    var googleMap: GoogleMap? = null
-        private set
-
+    lateinit var selectedMarker: Marker
+    protected lateinit var googleMap: GoogleMap
     protected var refreshingInfoWindow = false
 
     protected open fun initData() {
@@ -61,13 +57,13 @@ open class AbstractMapActivity : FragmentActivity(), EasyPermissions.PermissionC
 
     fun refreshInfoWindow() {
         refreshingInfoWindow = true
-        selectedMarker!!.showInfoWindow()
+        selectedMarker.showInfoWindow()
         refreshingInfoWindow = false
     }
 
     protected fun centerMapOn(latitude: Double, longitude: Double, zoom: Int) {
         val latLng = LatLng(latitude, longitude)
-        googleMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom.toFloat()))
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom.toFloat()))
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -84,13 +80,12 @@ open class AbstractMapActivity : FragmentActivity(), EasyPermissions.PermissionC
     }
 
     override fun onCameraIdle() {
-
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
-        this.googleMap!!.setOnCameraIdleListener(this)
-        this.googleMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(Util.chicago, 10f))
+        this.googleMap.setOnCameraIdleListener(this)
+        this.googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Util.chicago, 10f))
         enableMyLocationOnMapIfAllowed()
     }
 
@@ -102,10 +97,6 @@ open class AbstractMapActivity : FragmentActivity(), EasyPermissions.PermissionC
 
     @Throws(SecurityException::class)
     private fun setLocationOnMap() {
-        googleMap!!.isMyLocationEnabled = true
-    }
-
-    fun setSelectedMarker(selectedMarker: Marker) {
-        this.selectedMarker = selectedMarker
+        this.googleMap.isMyLocationEnabled = true
     }
 }
