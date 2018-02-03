@@ -24,7 +24,6 @@ import android.view.View
 import android.widget.TextView
 import butterknife.BindString
 import butterknife.ButterKnife
-import com.annimon.stream.Stream
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter
 import com.google.android.gms.maps.MapsInitializer
@@ -160,7 +159,7 @@ class TrainMapActivity : AbstractMapActivity() {
         }
         cleanAllMarkers()
         val bitmapDesc = refreshTrainMarkers!!.currentDescriptor
-        Stream.of(trains).forEach { (routeNumber, destName, _, position, heading) ->
+        trains.forEach { (routeNumber, destName, _, position, heading) ->
             val point = LatLng(position.latitude, position.longitude)
             val title = "To " + destName
             val snippet = Integer.toString(routeNumber)
@@ -177,7 +176,7 @@ class TrainMapActivity : AbstractMapActivity() {
     }
 
     private fun cleanAllMarkers() {
-        Stream.of(markers!!).forEach({ it.remove() })
+        markers!!.forEach({ it.remove() })
         markers!!.clear()
     }
 
@@ -185,7 +184,7 @@ class TrainMapActivity : AbstractMapActivity() {
         val poly = PolylineOptions()
         poly.width((application as App).lineWidth)
         poly.geodesic(true).color(TrainLine.fromXmlString(line!!).color)
-        Stream.of(positions)
+        positions
             .map { position -> LatLng(position.latitude, position.longitude) }
             .forEach({ poly.add(it) })
 

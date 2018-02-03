@@ -200,7 +200,7 @@ class StationActivity : AbstractStationActivity() {
 
             stopsView.addView(lineTitleView)
 
-            Stream.of<Stop>(stops).sorted().forEach { stop ->
+            stops.sorted().forEach { stop ->
                 val linearLayout = LinearLayout(this)
                 linearLayout.orientation = LinearLayout.HORIZONTAL
                 linearLayout.layoutParams = paramsStop
@@ -209,7 +209,7 @@ class StationActivity : AbstractStationActivity() {
                 checkBox.setOnCheckedChangeListener { _, isChecked -> preferenceService.saveTrainFilter(stationId, line, stop.direction, isChecked) }
                 checkBox.setOnClickListener {
                     if (checkBox.isChecked) {
-                        trainArrivalObservable!!.subscribe(TrainArrivalObserver(this, swipeRefreshLayout!!))
+                        trainArrivalObservable!!.subscribe(TrainArrivalObserver(this, swipeRefreshLayout))
                     }
                 }
                 checkBox.isChecked = preferenceService.getTrainFilter(stationId, line, stop.direction)
@@ -294,10 +294,9 @@ class StationActivity : AbstractStationActivity() {
 
     // FIXME: delete view instead of hiding it
     fun hideAllArrivalViews() {
-        Stream.of(station!!.lines)
+        station!!.lines
             .flatMap { trainLine ->
-                Stream.of(*TrainDirection.values())
-                    .map { trainDirection -> trainLine.toString() + "_" + trainDirection.toString() }
+                TrainDirection.values().map { trainDirection -> trainLine.toString() + "_" + trainDirection.toString() }
             }
             .forEach { key ->
                 if (ids!!.containsKey(key)) {

@@ -28,7 +28,6 @@ import android.view.View
 import android.widget.TextView
 import butterknife.BindString
 import butterknife.ButterKnife
-import com.annimon.stream.Stream
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter
 import com.google.android.gms.maps.MapsInitializer
@@ -148,7 +147,7 @@ class BusMapActivity : AbstractMapActivity() {
     fun drawBuses(buses: List<Bus>) {
         cleanAllMarkers()
         val bitmapDescr = refreshBusesBitmap!!.currentDescriptor
-        Stream.of(buses).forEach { bus ->
+        buses.forEach { bus ->
             val point = LatLng(bus.position.latitude, bus.position.longitude)
             val marker = googleMap.addMarker(
                 MarkerOptions()
@@ -172,7 +171,7 @@ class BusMapActivity : AbstractMapActivity() {
     }
 
     private fun cleanAllMarkers() {
-        Stream.of(busMarkers!!).forEach({ it.remove() })
+        busMarkers!!.forEach({ it.remove() })
         busMarkers!!.clear()
     }
 
@@ -180,12 +179,12 @@ class BusMapActivity : AbstractMapActivity() {
         val index = intArrayOf(0)
         val red = BitmapDescriptorFactory.defaultMarker()
         val blue = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
-        Stream.of(patterns).forEach { pattern ->
+        patterns.forEach { pattern ->
             val poly = PolylineOptions()
                 .color(if (index[0] == 0) Color.RED else if (index[0] == 1) Color.BLUE else Color.YELLOW)
                 .width((application as App).lineWidth).geodesic(true)
-            Stream.of(pattern.points)
-                .map<Marker> { patternPoint ->
+            pattern.points
+                .map { patternPoint ->
                     val point = LatLng(patternPoint.position.latitude, patternPoint.position.longitude)
                     poly.add(point)
                     var marker: Marker? = null
@@ -202,7 +201,7 @@ class BusMapActivity : AbstractMapActivity() {
                     marker
                 }
                 .filter { marker -> marker != null }
-                .forEach({ busStationMarkers!!.add(it) })
+                .forEach({ busStationMarkers!!.add(it!!) })
             googleMap.addPolyline(poly)
             index[0]++
         }
@@ -291,7 +290,7 @@ class BusMapActivity : AbstractMapActivity() {
                 bounds = busDirections.busDirections.map { busDirection -> busDirection.text }.toTypedArray()
                 Util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_DIRECTION_URL)
             }
-            Stream.of(busService.loadBusPattern(busRouteId!!, bounds)).forEach({ patterns.add(it) })
+            busService.loadBusPattern(busRouteId!!, bounds).forEach({ patterns.add(it) })
             Util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL)
             return patterns
         }

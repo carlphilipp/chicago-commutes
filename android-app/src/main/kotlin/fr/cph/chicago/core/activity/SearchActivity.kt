@@ -36,8 +36,6 @@ import android.widget.ListView
 import butterknife.BindString
 import butterknife.BindView
 import butterknife.ButterKnife
-import com.annimon.stream.Collectors
-import com.annimon.stream.Stream
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.adapter.SearchAdapter
@@ -173,11 +171,10 @@ class SearchActivity : AppCompatActivity() {
             val foundStations = trainService.searchStations(query)
             val foundBusRoutes = busService.searchBusRoutes(query)
             // TODO Consider doing in a different way how bikeStations is stored
-            val foundBikeStations = Stream.of(bikeStations!!)
+            val foundBikeStations = bikeStations!!
                 .filter { (_, name, _, _, _, _, _, stAddress1) -> containsIgnoreCase(name, query) || containsIgnoreCase(stAddress1, query) }
                 .distinct()
-                .sorted(util.bikeComparatorByName)
-                .collect(Collectors.toList())
+                .sortedWith(util.bikeComparatorByName)
             searchAdapter!!.updateData(foundStations, foundBusRoutes, foundBikeStations)
             searchAdapter!!.notifyDataSetChanged()
         }

@@ -24,7 +24,6 @@ import android.graphics.Typeface
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
-import android.support.annotation.ColorInt
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.Toolbar
 import android.widget.ImageView
@@ -34,7 +33,6 @@ import butterknife.BindColor
 import butterknife.BindString
 import butterknife.BindView
 import butterknife.ButterKnife
-import com.annimon.stream.Stream
 import fr.cph.chicago.Constants.Companion.BUSES_PATTERN_URL
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
@@ -241,7 +239,7 @@ class BusActivity : AbstractStationActivity() {
             arrivalView.text = busActivityNoService
             tempMap[""] = mutableListOf(arrivalView)
         } else {
-            Stream.of(busArrivals!!)
+            busArrivals!!
                 .forEach { arrival ->
                     val destination = arrival.busDestination
                     if (tempMap.containsKey(destination)) {
