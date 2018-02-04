@@ -116,5 +116,6 @@ data class RouteAlertsDTO(
     val description: String,
     val impact: String,
     val severityScore: Int,
-    val start: Date
+    val start: String,
+    val end: String
 )

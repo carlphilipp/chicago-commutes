@@ -18,6 +18,7 @@ package fr.cph.chicago.core.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -50,7 +51,6 @@ import fr.cph.chicago.util.Util;
  * @author Carl-Philipp Harmant
  * @version 1
  */
-@SuppressWarnings("WeakerAccess")
 public final class AlertFragment extends AbstractFragment {
 
     @BindView(R.id.alert_filter)
@@ -59,7 +59,7 @@ public final class AlertFragment extends AbstractFragment {
     ListView listView;
 
     private AlertAdapter alertAdapter;
-    private List<RoutesAlertsDTO> routesAlertsDTOS;
+    private List<RoutesAlertsDTO> routesAlertsDTOS;// = new ArrayList<>();
 
     /**
      * Returns a new instance of this fragment for the given section number.
@@ -75,6 +75,13 @@ public final class AlertFragment extends AbstractFragment {
     public final void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Util.INSTANCE.trackScreen(getString(R.string.analytics_cta_alert_fragment));
+    }
+
+    @Override
+    @CallSuper
+    public void onResume() {
+        super.onResume();
+        textFilter.setText("");
     }
 
     @Override
@@ -97,33 +104,32 @@ public final class AlertFragment extends AbstractFragment {
                     intent.putExtras(extras);
                     startActivity(intent);
                 });
+                textFilter.addTextChangedListener(new TextWatcher() {
+
+                    List<RoutesAlertsDTO> routesAlertsDTOS = null;
+
+                    @Override
+                    public void beforeTextChanged(final CharSequence c, final int start, final int count, final int after) {
+                        routesAlertsDTOS = new ArrayList<>();
+                    }
+
+                    @Override
+                    public void onTextChanged(final CharSequence c, final int start, final int before, final int count) {
+                        final CharSequence trimmed = c.toString().trim();
+                        routesAlertsDTOS.addAll(
+                            Stream.of(AlertFragment.this.routesAlertsDTOS)
+                                .filter(value -> StringUtils.containsIgnoreCase(value.getRouteName(), trimmed) || StringUtils.containsIgnoreCase(value.getId(), trimmed))
+                                .collect(Collectors.toList())
+                        );
+                    }
+
+                    @Override
+                    public void afterTextChanged(final Editable s) {
+                        alertAdapter.setAlerts(routesAlertsDTOS);
+                        alertAdapter.notifyDataSetChanged();
+                    }
+                });
             });
-
-        textFilter.addTextChangedListener(new TextWatcher() {
-
-            List<RoutesAlertsDTO> routesAlertsDTOS = null;
-
-            @Override
-            public void beforeTextChanged(final CharSequence c, final int start, final int count, final int after) {
-                routesAlertsDTOS = new ArrayList<>();
-            }
-
-            @Override
-            public void onTextChanged(final CharSequence c, final int start, final int before, final int count) {
-                final CharSequence trimmed = c.toString().trim();
-                routesAlertsDTOS.addAll(
-                    Stream.of(AlertFragment.this.routesAlertsDTOS)
-                        .filter(value -> StringUtils.containsIgnoreCase(value.getRouteName(), trimmed) || StringUtils.containsIgnoreCase(value.getId(), trimmed))
-                        .collect(Collectors.toList())
-                );
-            }
-
-            @Override
-            public void afterTextChanged(final Editable s) {
-                alertAdapter.setAlerts(routesAlertsDTOS);
-                alertAdapter.notifyDataSetChanged();
-            }
-        });
         return rootView;
     }
 }

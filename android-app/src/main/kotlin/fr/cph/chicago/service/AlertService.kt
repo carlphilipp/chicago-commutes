@@ -9,6 +9,7 @@ import fr.cph.chicago.entity.dto.RouteAlertsDTO
 import fr.cph.chicago.entity.dto.RoutesAlertsDTO
 import fr.cph.chicago.parser.JsonParser
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -16,6 +17,8 @@ object AlertService {
     private val ctaClient = CtaClient
     private val jsonParser = JsonParser
     private val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US)
+    private val format2 = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+    private val displayFormat = SimpleDateFormat("MM/dd/yyyy h:mm a", Locale.US)
 
     fun getAlerts(): List<RoutesAlertsDTO> {
         val params = ArrayListValuedHashMap<String, String>()
@@ -51,12 +54,23 @@ object AlertService {
                     RouteAlertsDTO(
                         id = alert.alertId!!,
                         headLine = alert.headline!!,
-                        description = alert.shortDescription!!,
+                        description = alert.shortDescription!!.replace("\r\n", ""),
                         impact = alert.impact!!,
                         severityScore = alert.severityScore!!.toInt(),
-                        start = format.parse(alert.eventStart!!))
+                        start = formatDate(alert.eventStart),
+                        end = formatDate(alert.eventEnd)
+                    )
                 }
                 .sortedByDescending { it.severityScore }
                 .toList()
+    }
+
+    private fun formatDate(str: String?): String {
+        if(str == null) return ""
+        return try {
+            displayFormat.format(format.parse(str))
+        } catch (p: ParseException) {
+            displayFormat.format(format2.parse(str))
+        }
     }
 }

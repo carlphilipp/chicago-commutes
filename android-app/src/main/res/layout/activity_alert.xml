@@ -29,27 +29,15 @@
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/activity_alerts_swipe_refresh_layout"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:elevation="3dp"
         tools:targetApi="lollipop">
 
-        <!-- Main container. Vertical layout -->
-        <LinearLayout
+        <ListView
+            android:id="@+id/alert_route_list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingBottom="@dimen/activity_train_line_padding_bottom"
-            android:paddingEnd="@dimen/activity_train_line_padding_right"
-            android:paddingLeft="@dimen/activity_train_line_padding_left"
-            android:paddingRight="@dimen/activity_train_line_padding_right"
-            android:paddingStart="@dimen/activity_train_line_padding_left"
-            android:paddingTop="@dimen/activity_train_line_padding_top">
+            android:layout_height="match_parent" />
 
-            <ListView
-                android:id="@+id/alert_route_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </LinearLayout>
     </android.support.v4.widget.SwipeRefreshLayout>
 </LinearLayout>

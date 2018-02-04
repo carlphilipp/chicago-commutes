@@ -347,10 +347,6 @@ object ObservableUtil {
                 observableOnSubscribe.onComplete()
             }
         }
-            .onErrorReturn { throwable ->
-                Log.e(TAG, throwable.message, throwable)
-                ArrayList()
-            }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }

@@ -5,8 +5,8 @@ import android.os.Build
 import android.os.Bundle
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.Toolbar
+import android.util.Log
 import android.widget.ListView
-
 import butterknife.BindView
 import butterknife.ButterKnife
 import fr.cph.chicago.R
@@ -25,7 +25,6 @@ class AlertActivity : Activity() {
 
     private var routeId: String? = null
     private var title: String? = null
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,15 +56,29 @@ class AlertActivity : Activity() {
     }
 
     private fun refreshData() {
-        ObservableUtil.createAlertRouteObservable(routeId!!).subscribe { routeAlertsDTOS ->
-            val ada = AlertRouteAdapter(routeAlertsDTOS)
-            listView.adapter = ada
-            if (scrollView.isRefreshing) {
-                scrollView.isRefreshing = false
-            }
-            if (routeAlertsDTOS.isEmpty()) {
-                Util.showSnackBar(listView, this@AlertActivity.getString(R.string.message_no_alerts))
-            }
+        ObservableUtil.createAlertRouteObservable(routeId!!).subscribe(
+            { routeAlertsDTOS ->
+                val ada = AlertRouteAdapter(routeAlertsDTOS)
+                listView.adapter = ada
+                if (routeAlertsDTOS.isEmpty()) {
+                    Util.showSnackBar(listView, this@AlertActivity.getString(R.string.message_no_alerts))
+                }
+                hideAnimation()
+            },
+            { onError ->
+                Log.e(TAG, onError.message, onError)
+                Util.showOopsSomethingWentWrong(listView)
+                hideAnimation()
+            })
+    }
+
+    private fun hideAnimation() {
+        if (scrollView.isRefreshing) {
+            scrollView.isRefreshing = false
         }
+    }
+
+    companion object {
+        private val TAG = AlertActivity::class.java.simpleName
     }
 }
