@@ -29,8 +29,6 @@ import android.widget.EditText
 import android.widget.ListView
 import android.widget.TextView
 import butterknife.BindView
-import com.annimon.stream.Collectors
-import com.annimon.stream.Stream
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.adapter.BusAdapter
@@ -93,9 +91,8 @@ class BusFragment : AbstractFragment() {
                 val busRoutes = busService.getBusRoutes()
                 val trimmed = c.toString().trim { it <= ' ' }
                 this.busRoutes!!.addAll(
-                    Stream.of(busRoutes)
-                        .filter { (id, name) -> StringUtils.containsIgnoreCase(id, trimmed) || StringUtils.containsIgnoreCase(name, trimmed) }
-                        .collect(Collectors.toList())
+                    busRoutes.filter { (id, name) -> StringUtils.containsIgnoreCase(id, trimmed) || StringUtils.containsIgnoreCase(name, trimmed) }
+
                 )
             }
 

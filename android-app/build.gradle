@@ -23,7 +23,6 @@ dependencies {
         [group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: jackson_version],
         [group: 'io.reactivex.rxjava2', name: 'rxandroid', version: reactivex_android_version],
         [group: 'io.reactivex.rxjava2', name: 'rxjava', version: reactivex_java_version],
-        [group: 'com.annimon', name: 'stream', version: annimon_stream_version],
         [group: 'com.jakewharton', name: 'butterknife', version: butterknife_version],
         [group: 'pub.devrel', name: 'easypermissions', version: easypermissions_version],
         [group: 'com.github.chrisbanes', name: 'PhotoView', version: photoview_version],

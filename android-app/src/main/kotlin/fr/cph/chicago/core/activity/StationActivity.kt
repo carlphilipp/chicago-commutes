@@ -32,7 +32,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import butterknife.*
-import com.annimon.stream.Stream
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
@@ -305,7 +304,7 @@ class StationActivity : AbstractStationActivity() {
                     if (line3View != null) {
                         line3View.visibility = View.GONE
                         if (line3View.childCount > 0) {
-                            Stream.range(0, line3View.childCount).forEach { i ->
+                            0.rangeTo(line3View.childCount).forEach { i ->
                                 val view = line3View.getChildAt(i!!) as LinearLayout
                                 val timing = view.getChildAt(1) as TextView
                                 // FIXME

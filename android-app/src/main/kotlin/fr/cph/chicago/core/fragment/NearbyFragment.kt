@@ -38,7 +38,6 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import butterknife.BindString
 import butterknife.BindView
-import com.annimon.stream.Stream
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -163,7 +162,7 @@ class NearbyFragment : AbstractFragment(), EasyPermissions.PermissionCallbacks {
                 val bitmapDescriptorTrain = createStop(context, R.drawable.train_station_icon)
                 val bitmapDescriptorBike = createStop(context, R.drawable.bike_station_icon)
 
-                Stream.of(busStops)
+                busStops
                     .forEach { busStop ->
                         val point = LatLng(busStop.position!!.latitude, busStop.position!!.longitude)
                         val markerOptions = MarkerOptions()
@@ -174,21 +173,20 @@ class NearbyFragment : AbstractFragment(), EasyPermissions.PermissionCallbacks {
                         markerDataHolder!!.addData(marker, busStop)
                     }
 
-                Stream.of(trainStation)
+                trainStation
                     .forEach { station ->
-                        Stream.of(station.stopsPosition)
-                            .findFirst()
-                            .ifPresent { position ->
-                                val markerOptions = MarkerOptions()
-                                    .position(LatLng(position.latitude, position.longitude))
-                                    .title(station.name)
-                                    .icon(bitmapDescriptorTrain)
-                                val marker = googleMap.addMarker(markerOptions)
-                                markerDataHolder!!.addData(marker, station)
-                            }
+                        val position = station.stopsPosition.firstOrNull()
+                        if (position != null) {
+                            val markerOptions = MarkerOptions()
+                                .position(LatLng(position.latitude, position.longitude))
+                                .title(station.name)
+                                .icon(bitmapDescriptorTrain)
+                            val marker = googleMap.addMarker(markerOptions)
+                            markerDataHolder!!.addData(marker, station)
+                        }
                     }
 
-                Stream.of(bikeStations)
+                bikeStations
                     .forEach { station ->
                         val markerOptions = MarkerOptions()
                             .position(LatLng(station.latitude, station.longitude))

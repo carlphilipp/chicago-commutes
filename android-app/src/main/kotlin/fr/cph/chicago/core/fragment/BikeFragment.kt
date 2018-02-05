@@ -30,8 +30,6 @@ import android.widget.ListView
 import android.widget.RelativeLayout
 import butterknife.BindString
 import butterknife.BindView
-import com.annimon.stream.Collectors
-import com.annimon.stream.Stream
 import fr.cph.chicago.R
 import fr.cph.chicago.core.adapter.BikeAdapter
 import fr.cph.chicago.entity.BikeStation
@@ -120,9 +118,8 @@ class BikeFragment : AbstractFragment() {
 
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 bikeStations!!.addAll(
-                    Stream.of(this@BikeFragment.bikeStations!!)
+                    this@BikeFragment.bikeStations!!
                         .filter { (_, name) -> StringUtils.containsIgnoreCase(name, s.toString().trim { it <= ' ' }) }
-                        .collect(Collectors.toList())
                 )
             }
 
