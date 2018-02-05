@@ -48,8 +48,8 @@ class TrainListStationActivity : ListActivity() {
     @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
     lateinit var arrowBackWhite: Drawable
 
-    private var trainLine: TrainLine? = null
-    private var lineParam: String? = null
+    private lateinit var trainLine: TrainLine
+    private lateinit var lineParam: String
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,18 +58,18 @@ class TrainListStationActivity : ListActivity() {
             ButterKnife.bind(this)
 
             // Load data
-            lineParam = if (savedInstanceState != null) savedInstanceState.getString(bundleTrainLine) else intent.extras!!.getString(bundleTrainLine)
+            lineParam = if (savedInstanceState != null) savedInstanceState.getString(bundleTrainLine) else intent.getStringExtra(bundleTrainLine)
 
-            trainLine = TrainLine.fromString(lineParam!!)
-            title = trainLine!!.toStringWithLine()
+            trainLine = TrainLine.fromString(lineParam)
+            title = trainLine.toStringWithLine()
 
-            Util.setWindowsColor(this, toolbar, trainLine!!)
-            toolbar.title = trainLine!!.toStringWithLine()
+            Util.setWindowsColor(this, toolbar, trainLine)
+            toolbar.title = trainLine.toStringWithLine()
 
             toolbar.navigationIcon = arrowBackWhite
             toolbar.setOnClickListener { _ -> finish() }
 
-            val ada = TrainAdapter(trainLine!!, this)
+            val ada = TrainAdapter(trainLine, this)
             listAdapter = ada
         }
     }
@@ -77,7 +77,7 @@ class TrainListStationActivity : ListActivity() {
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         lineParam = savedInstanceState.getString(bundleTrainLine)
-        trainLine = TrainLine.fromString(lineParam!!)
+        trainLine = TrainLine.fromString(lineParam)
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {

@@ -23,21 +23,32 @@ class AlertActivity : Activity() {
     @BindView(R.id.alert_route_list)
     lateinit var listView: ListView
 
-    private var routeId: String? = null
-    private var title: String? = null
+    private lateinit var routeId: String
+    private lateinit var title: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (!this.isFinishing) {
             setContentView(R.layout.activity_alert)
             ButterKnife.bind(this)
-            val extras = intent.extras
-            routeId = extras!!.getString("routeId", "")
-            title = extras.getString("title", "<Template title>")
+            routeId = intent.getStringExtra("routeId")
+            title = intent.getStringExtra("title")
             scrollView.setOnRefreshListener({ this.refreshData() })
             setToolBar()
             refreshData()
         }
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        routeId = savedInstanceState.getString("routeId")
+        title = savedInstanceState.getString("title")
+    }
+
+    override fun onSaveInstanceState(savedInstanceState: Bundle) {
+        savedInstanceState.putString("routeId", routeId)
+        savedInstanceState.putString("title", title)
+        super.onSaveInstanceState(savedInstanceState)
     }
 
     private fun setToolBar() {
@@ -56,7 +67,7 @@ class AlertActivity : Activity() {
     }
 
     private fun refreshData() {
-        ObservableUtil.createAlertRouteObservable(routeId!!).subscribe(
+        ObservableUtil.createAlertRouteObservable(routeId).subscribe(
             { routeAlertsDTOS ->
                 val ada = AlertRouteAdapter(routeAlertsDTOS)
                 listView.adapter = ada

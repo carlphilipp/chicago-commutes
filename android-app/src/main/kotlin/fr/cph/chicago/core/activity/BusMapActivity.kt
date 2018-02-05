@@ -47,7 +47,6 @@ import fr.cph.chicago.rx.BusObserver
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.Util
-import java.util.*
 
 /**
  * @author Carl-Philipp Harmant
@@ -63,21 +62,19 @@ class BusMapActivity : AbstractMapActivity() {
     lateinit var bundleBusBounds: String
     @BindString(R.string.analytics_bus_map)
     lateinit var analyticsBusMap: String
-    @BindString(R.string.request_rt)
-    lateinit var requestRt: String
 
     private val observableUtil: ObservableUtil = ObservableUtil
     private val busService: BusService = BusService
 
-    private var busMarkers: MutableList<Marker>? = null
-    private var busStationMarkers: MutableList<Marker>? = null
-    private var views: MutableMap<Marker, View>? = null
-    private var status: MutableMap<Marker, Boolean>? = null
+    private var busMarkers: MutableList<Marker> = mutableListOf()
+    private var busStationMarkers: MutableList<Marker> = mutableListOf()
+    private var views: MutableMap<Marker, View> = mutableMapOf()
+    private var status: MutableMap<Marker, Boolean> = mutableMapOf()
 
-    private var busId: Int? = null
-    private var busRouteId: String? = null
-    private var bounds: Array<String> = arrayOf()
-    private var refreshBusesBitmap: RefreshBusMarkers? = null
+    private var busId: Int = 0
+    private lateinit var busRouteId: String
+    private lateinit var bounds: Array<String>
+    private lateinit var refreshBusesBitmap: RefreshBusMarkers
 
     private var loadPattern = true
 
@@ -94,10 +91,9 @@ class BusMapActivity : AbstractMapActivity() {
                 busRouteId = savedInstanceState.getString(bundleBusRouteId)
                 bounds = savedInstanceState.getStringArray(bundleBusBounds)
             } else {
-                val extras = intent.extras
-                busId = extras!!.getInt(bundleBusId)
-                busRouteId = extras.getString(bundleBusRouteId)
-                bounds = extras.getStringArray(bundleBusBounds)
+                busId = intent.getIntExtra(bundleBusId, 0)
+                busRouteId = intent.getStringExtra(bundleBusRouteId)
+                bounds = intent.getStringArrayExtra(bundleBusBounds)
             }
 
             // Init data
@@ -118,10 +114,6 @@ class BusMapActivity : AbstractMapActivity() {
 
     override fun initData() {
         super.initData()
-        busMarkers = ArrayList()
-        busStationMarkers = ArrayList()
-        views = HashMap()
-        status = HashMap()
         refreshBusesBitmap = RefreshBusMarkers()
     }
 
@@ -129,7 +121,7 @@ class BusMapActivity : AbstractMapActivity() {
         super.setToolbar()
         toolbar.setOnMenuItemClickListener { _ ->
             Util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_VEHICLES_URL)
-            observableUtil.createBusListObservable(busId!!, busRouteId!!).subscribe(BusObserver(this@BusMapActivity, false, layout))
+            observableUtil.createBusListObservable(busId, busRouteId).subscribe(BusObserver(this@BusMapActivity, false, layout))
             false
         }
 
@@ -146,7 +138,7 @@ class BusMapActivity : AbstractMapActivity() {
 
     fun drawBuses(buses: List<Bus>) {
         cleanAllMarkers()
-        val bitmapDesc = refreshBusesBitmap!!.currentDescriptor
+        val bitmapDesc = refreshBusesBitmap.currentDescriptor
         buses.forEach { bus ->
             val point = LatLng(bus.position.latitude, bus.position.longitude)
             val marker = googleMap.addMarker(
@@ -159,20 +151,20 @@ class BusMapActivity : AbstractMapActivity() {
                     .rotation(bus.heading.toFloat())
                     .flat(true)
             )
-            busMarkers!!.add(marker)
+            busMarkers.add(marker)
 
             val layoutInflater = this@BusMapActivity.baseContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val view = layoutInflater.inflate(R.layout.marker, viewGroup, false)
             val title = view.findViewById<TextView>(R.id.title)
             title.text = marker.title
 
-            views!![marker] = view
+            views[marker] = view
         }
     }
 
     private fun cleanAllMarkers() {
-        busMarkers!!.forEach({ it.remove() })
-        busMarkers!!.clear()
+        busMarkers.forEach({ it.remove() })
+        busMarkers.clear()
     }
 
     private fun drawPattern(patterns: List<BusPattern>) {
@@ -201,7 +193,7 @@ class BusMapActivity : AbstractMapActivity() {
                     marker
                 }
                 .filter { marker -> marker != null }
-                .forEach({ busStationMarkers!!.add(it!!) })
+                .forEach({ busStationMarkers.add(it!!) })
             googleMap.addPolyline(poly)
             index[0]++
         }
@@ -215,14 +207,14 @@ class BusMapActivity : AbstractMapActivity() {
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle?) {
-        savedInstanceState!!.putInt(bundleBusId, busId!!)
+        savedInstanceState!!.putInt(bundleBusId, busId)
         savedInstanceState.putString(bundleBusRouteId, busRouteId)
         savedInstanceState.putStringArray(bundleBusBounds, bounds)
         super.onSaveInstanceState(savedInstanceState)
     }
 
     override fun onCameraIdle() {
-        refreshBusesBitmap!!.refreshBusAndStation(googleMap.cameraPosition, busMarkers!!, busStationMarkers!!)
+        refreshBusesBitmap.refreshBusAndStation(googleMap.cameraPosition, busMarkers, busStationMarkers)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -234,34 +226,34 @@ class BusMapActivity : AbstractMapActivity() {
             }
 
             override fun getInfoContents(marker: Marker): View? {
-                if (marker.title.startsWith("To ")) {
-                    val view = views!![marker]
+                return if (marker.title.startsWith("To ")) {
+                    val view = views[marker]
                     if (!refreshingInfoWindow) {
                         selectedMarker = marker
                         val busId = marker.snippet
                         Util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL)
                         observableUtil.createFollowBusObservable(busId)
                             .subscribe(BusFollowObserver(this@BusMapActivity, layout, view!!, false))
-                        status!![marker] = false
+                        status[marker] = false
                     }
-                    return view
+                    view
                 } else {
-                    return null
+                    null
                 }
             }
         })
 
         googleMap.setOnInfoWindowClickListener { marker ->
             if (marker.title.startsWith("To ")) {
-                val view = views!![marker]
+                val view = views[marker]
                 if (!refreshingInfoWindow) {
                     selectedMarker = marker
                     val runNumber = marker.snippet
-                    val current = status!![marker]
+                    val current = status[marker]
                     Util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL)
                     observableUtil.createFollowBusObservable(runNumber)
                         .subscribe(BusFollowObserver(this@BusMapActivity, layout, view!!, !current!!))
-                    status!![marker] = !current
+                    status[marker] = !current
                 }
             }
         }
@@ -271,7 +263,7 @@ class BusMapActivity : AbstractMapActivity() {
     private fun loadActivityData() {
         if (Util.isNetworkAvailable()) {
             Util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_VEHICLES_URL)
-            observableUtil.createBusListObservable(busId!!, busRouteId!!).subscribe(BusObserver(this@BusMapActivity, true, layout))
+            observableUtil.createBusListObservable(busId, busRouteId).subscribe(BusObserver(this@BusMapActivity, true, layout))
             if (loadPattern) {
                 LoadPattern().execute()
             }
@@ -286,11 +278,11 @@ class BusMapActivity : AbstractMapActivity() {
             val patterns: MutableList<BusPattern> = mutableListOf()
             if (busId == 0) {
                 // Search for directions
-                val busDirections = busService.loadBusDirections(busRouteId!!)
+                val busDirections = busService.loadBusDirections(busRouteId)
                 bounds = busDirections.busDirections.map { busDirection -> busDirection.text }.toTypedArray()
                 Util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_DIRECTION_URL)
             }
-            busService.loadBusPattern(busRouteId!!, bounds).forEach({ patterns.add(it) })
+            busService.loadBusPattern(busRouteId, bounds).forEach({ patterns.add(it) })
             Util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL)
             return patterns
         }
@@ -302,10 +294,5 @@ class BusMapActivity : AbstractMapActivity() {
                 Util.showNetworkErrorMessage(layout)
             }
         }
-    }
-
-    companion object {
-
-        private val TAG = BusMapActivity::class.java.simpleName
     }
 }

@@ -117,16 +117,16 @@ class StationActivity : AbstractStationActivity() {
     @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
     lateinit var arrowBackWhite: Drawable
 
-    private var paramsStop: LinearLayout.LayoutParams? = null
+    private lateinit var paramsStop: LinearLayout.LayoutParams
+    private lateinit var station: Station
+    private lateinit var trainArrivalObservable: Observable<TrainArrival>
+
     private var isFavorite: Boolean = false
     private var stationId: Int = 0
-    private var station: Station? = null
-    private var ids: MutableMap<String, Int>? = null
-    private var trainArrivalObservable: Observable<TrainArrival>? = null
+    private var ids: MutableMap<String, Int> = mutableMapOf()
 
     private val trainService: TrainService = TrainService
     private val preferenceService: PreferenceService = PreferenceService
-    private val observableUtil: ObservableUtil = ObservableUtil
     private val util: Util = Util
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -141,28 +141,25 @@ class StationActivity : AbstractStationActivity() {
             if (stationId != 0) {
                 // Get station
                 station = trainService.getStation(stationId)
+                trainArrivalObservable = ObservableUtil.createTrainArrivalsObservable(station)
 
                 paramsStop = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
 
                 val layoutParams = streetViewImage.layoutParams as RelativeLayout.LayoutParams
-                val position = station!!.stops[0].position
+                val position = station.stops[0].position
                 val params = streetViewImage.layoutParams
 
                 ids = HashMap()
                 isFavorite = isFavorite()
 
                 loadGoogleStreetImage(position, streetViewImage, streetViewText)
-                createTrainArrivalObservableAndSubscribe()
+                trainArrivalObservable.subscribe(TrainArrivalObserver(this, swipeRefreshLayout))
 
                 streetViewImage.setOnClickListener(GoogleStreetOnClickListener(position.latitude, position.longitude))
                 streetViewImage.layoutParams = params
                 streetViewText.setTypeface(null, Typeface.BOLD)
-                swipeRefreshLayout.setOnRefreshListener { trainArrivalObservable!!.subscribe(TrainArrivalObserver(this, swipeRefreshLayout)) }
-                if (isFavorite) {
-                    favoritesImage.setColorFilter(yellowLineDark)
-                } else {
-                    favoritesImage.setColorFilter(grey_5)
-                }
+                swipeRefreshLayout.setOnRefreshListener { trainArrivalObservable.subscribe(TrainArrivalObserver(this, swipeRefreshLayout)) }
+                favoritesImage.setColorFilter(if (isFavorite) yellowLineDark else grey_5)
 
                 params.height = height
                 params.width = layoutParams.width
@@ -172,7 +169,7 @@ class StationActivity : AbstractStationActivity() {
                 mapContainer.setOnClickListener(GoogleMapOnClickListener(position.latitude, position.longitude))
                 walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(position.latitude, position.longitude))
 
-                val stopByLines = station!!.stopByLines
+                val stopByLines = station.stopByLines
                 val randomTrainLine = getRandomLine(stopByLines)
                 setUpStopLayouts(stopByLines)
                 swipeRefreshLayout.setColorSchemeColors(randomTrainLine.color)
@@ -208,7 +205,7 @@ class StationActivity : AbstractStationActivity() {
                 checkBox.setOnCheckedChangeListener { _, isChecked -> preferenceService.saveTrainFilter(stationId, line, stop.direction, isChecked) }
                 checkBox.setOnClickListener {
                     if (checkBox.isChecked) {
-                        trainArrivalObservable!!.subscribe(TrainArrivalObserver(this, swipeRefreshLayout))
+                        trainArrivalObservable.subscribe(TrainArrivalObserver(this, swipeRefreshLayout))
                     }
                 }
                 checkBox.isChecked = preferenceService.getTrainFilter(stationId, line, stop.direction)
@@ -237,7 +234,7 @@ class StationActivity : AbstractStationActivity() {
                 arrivalTrainsLayout.layoutParams = paramsStop
                 val id = util.generateViewId()
                 arrivalTrainsLayout.id = id
-                ids!![line.toString() + "_" + stop.direction.toString()] = id
+                ids[line.toString() + "_" + stop.direction.toString()] = id
 
                 linearLayout.addView(arrivalTrainsLayout)
                 stopsView.addView(linearLayout)
@@ -259,7 +256,7 @@ class StationActivity : AbstractStationActivity() {
 
         util.setWindowsColor(this, toolbar, randomTrainLine)
 
-        toolbar.title = station!!.name
+        toolbar.title = station.name
         toolbar.navigationIcon = arrowBackWhite
 
         toolbar.setOnClickListener { _ -> finish() }
@@ -277,9 +274,7 @@ class StationActivity : AbstractStationActivity() {
 
     public override fun onDestroy() {
         super.onDestroy()
-        if (trainArrivalObservable != null) {
-            trainArrivalObservable!!.unsubscribeOn(Schedulers.io())
-        }
+        trainArrivalObservable.unsubscribeOn(Schedulers.io())
     }
 
     /**
@@ -293,19 +288,19 @@ class StationActivity : AbstractStationActivity() {
 
     // FIXME: delete view instead of hiding it
     fun hideAllArrivalViews() {
-        station!!.lines
+        station.lines
             .flatMap { trainLine ->
                 TrainDirection.values().map { trainDirection -> trainLine.toString() + "_" + trainDirection.toString() }
             }
             .forEach { key ->
-                if (ids!!.containsKey(key)) {
-                    val id = ids!![key]
+                if (ids.containsKey(key)) {
+                    val id = ids[key]
                     val line3View = findViewById<LinearLayout>(id!!)
                     if (line3View != null) {
                         line3View.visibility = View.GONE
                         if (line3View.childCount > 0) {
-                            0.rangeTo(line3View.childCount).forEach { i ->
-                                val view = line3View.getChildAt(i!!) as LinearLayout
+                            (0 until line3View.childCount).forEach { i ->
+                                val view = line3View.getChildAt(i) as LinearLayout
                                 val timing = view.getChildAt(1) as TextView
                                 // FIXME
                                 if (timing != null) {
@@ -328,17 +323,17 @@ class StationActivity : AbstractStationActivity() {
         val stop = eta.stop
         val key = line.toString() + "_" + stop.direction.toString()
         // viewId might be not there if CTA API provide wrong data
-        if (ids!!.containsKey(key)) {
-            val viewId = ids!![key]
+        if (ids.containsKey(key)) {
+            val viewId = ids[key]
             val line3View = findViewById<LinearLayout>(viewId!!)
-            val id = ids!![line.toString() + "_" + stop.direction.toString() + "_" + eta.destName]
+            val id = ids[line.toString() + "_" + stop.direction.toString() + "_" + eta.destName]
             if (id == null) {
                 val insideLayout = LinearLayout(this)
                 insideLayout.orientation = LinearLayout.HORIZONTAL
                 insideLayout.layoutParams = paramsStop
                 val newId = util.generateViewId()
                 insideLayout.id = newId
-                ids!![line.toString() + "_" + stop.direction.toString() + "_" + eta.destName] = newId
+                ids[line.toString() + "_" + stop.direction.toString() + "_" + eta.destName] = newId
 
                 val stopName = TextView(this)
                 val stopNameData = eta.destName + ": "
@@ -372,23 +367,17 @@ class StationActivity : AbstractStationActivity() {
     private fun switchFavorite() {
         if (isFavorite) {
             preferenceService.removeFromTrainFavorites(stationId, scrollView)
-            isFavorite = false
             favoritesImage.setColorFilter(grey)
         } else {
             preferenceService.addToTrainFavorites(stationId, scrollView)
-            isFavorite = true
             favoritesImage.setColorFilter(yellowLineDark)
         }
+        isFavorite = !isFavorite
     }
 
     private fun getRandomLine(stops: Map<TrainLine, List<Stop>>): TrainLine {
         val random = Random()
         val keys = ArrayList(stops.keys)
         return keys[random.nextInt(keys.size)]
-    }
-
-    private fun createTrainArrivalObservableAndSubscribe() {
-        trainArrivalObservable = observableUtil.createTrainArrivalsObservable(station!!)
-        trainArrivalObservable!!.subscribe(TrainArrivalObserver(this, swipeRefreshLayout))
     }
 }

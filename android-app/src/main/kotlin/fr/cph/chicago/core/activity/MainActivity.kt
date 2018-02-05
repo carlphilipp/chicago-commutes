@@ -93,8 +93,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private var currentPosition: Int = 0
 
-    private var drawerToggle: ActionBarDrawerToggle? = null
-    private var menuItem: MenuItem? = null
+    private lateinit var drawerToggle: ActionBarDrawerToggle
+    private lateinit var menuItem: MenuItem
 
     private var favoritesFragment: FavoritesFragment? = null
     private var trainFragment: TrainFragment? = null
@@ -124,8 +124,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             setToolbar()
 
             drawerToggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-            drawerLayout.addDrawerListener(drawerToggle!!)
-            drawerToggle!!.syncState()
+            drawerLayout.addDrawerListener(drawerToggle)
+            drawerToggle.syncState()
 
             currentPosition = savedInstanceState?.getInt(SELECTED_ID) ?: R.id.navigation_favorites
             itemSelection(currentPosition)
@@ -153,13 +153,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (currentPosition == R.id.navigation_favorites) {
             finish()
         } else {
-            onNavigationItemSelected(menuItem!!)
+            onNavigationItemSelected(menuItem)
         }
     }
 
     override fun onResume() {
         super.onResume()
-        setBarTitle(title!!)
+        if(title != null)
+            setBarTitle(title!!)
     }
 
     private fun initView() {
@@ -315,7 +316,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        drawerToggle!!.onConfigurationChanged(newConfig)
+        drawerToggle.onConfigurationChanged(newConfig)
     }
 
     override fun onNavigationItemSelected(menuItem: MenuItem): Boolean {

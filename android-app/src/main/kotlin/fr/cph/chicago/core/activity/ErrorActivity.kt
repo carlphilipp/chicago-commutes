@@ -49,7 +49,7 @@ class ErrorActivity : Activity() {
     @BindString(R.string.bundle_error)
     lateinit var bundleError: String
 
-    private var error: String? = null
+    private lateinit var error: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,9 +57,7 @@ class ErrorActivity : Activity() {
         ButterKnife.bind(this)
 
         loadLayout.visibility = View.GONE
-        if (error == null) {
-            error = intent.extras!!.getString(bundleError)
-        }
+        error = intent.getStringExtra(bundleError)
 
         errorText.text = error
 

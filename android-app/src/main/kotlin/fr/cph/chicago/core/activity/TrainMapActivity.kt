@@ -39,11 +39,9 @@ import fr.cph.chicago.entity.enumeration.TrainLine
 import fr.cph.chicago.marker.RefreshTrainMarkers
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.rx.TrainEtaObserver
-import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
-import java.util.*
 
 /**
  * @author Carl-Philipp Harmant
@@ -55,28 +53,17 @@ class TrainMapActivity : AbstractMapActivity() {
     lateinit var bundleTrainLine: String
     @BindString(R.string.analytics_train_map)
     lateinit var analyticsTrainMap: String
-    @BindString(R.string.request_runnumber)
-    lateinit var requestRunNumber: String
-    @BindString(R.string.request_rt)
-    lateinit var requestRt: String
 
-    private val trainService: TrainService
-    private val observableUtil: ObservableUtil
+    private val observableUtil: ObservableUtil = ObservableUtil
+    private var views: MutableMap<Marker, View> = hashMapOf()
 
-    private var views: MutableMap<Marker, View>? = null
-    private var line: String? = null
-    private var status: MutableMap<Marker, Boolean>? = null
-    private var markers: MutableList<Marker>? = null
-    private var refreshTrainMarkers: RefreshTrainMarkers? = null
+    private lateinit var line: String
+    private lateinit var refreshTrainMarkers: RefreshTrainMarkers
+    private var status: MutableMap<Marker, Boolean> = mutableMapOf()
+    private var markers: MutableList<Marker> = mutableListOf()
 
     private var centerMap = true
     private var drawLine = true
-
-    init {
-        this.views = HashMap()
-        trainService = TrainService
-        observableUtil = ObservableUtil
-    }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,7 +76,7 @@ class TrainMapActivity : AbstractMapActivity() {
             line = if (savedInstanceState != null)
                 savedInstanceState.getString(bundleTrainLine)
             else
-                intent.extras!!.getString(bundleTrainLine)
+                intent.getStringExtra(bundleTrainLine)
 
             // Init data
             initData()
@@ -104,8 +91,6 @@ class TrainMapActivity : AbstractMapActivity() {
 
     override fun initData() {
         super.initData()
-        markers = ArrayList()
-        status = HashMap()
         refreshTrainMarkers = RefreshTrainMarkers()
     }
 
@@ -117,7 +102,7 @@ class TrainMapActivity : AbstractMapActivity() {
             false
         }
 
-        val trainLine = TrainLine.fromXmlString(line!!)
+        val trainLine = TrainLine.fromXmlString(line)
         Util.setWindowsColor(this, toolbar, trainLine)
         toolbar.title = trainLine.toStringWithLine()
     }
@@ -152,38 +137,35 @@ class TrainMapActivity : AbstractMapActivity() {
 
     private fun drawTrains(trains: List<Train>) {
         // TODO see if views can actually be null.
-        if (views == null) {
-            views = HashMap()
-        } else {
-            views!!.clear()
-        }
+        views.clear()
+
         cleanAllMarkers()
-        val bitmapDesc = refreshTrainMarkers!!.currentDescriptor
+        val bitmapDesc = refreshTrainMarkers.currentDescriptor
         trains.forEach { (routeNumber, destName, _, position, heading) ->
             val point = LatLng(position.latitude, position.longitude)
             val title = "To " + destName
             val snippet = Integer.toString(routeNumber)
 
             val marker = googleMap.addMarker(MarkerOptions().position(point).title(title).snippet(snippet).icon(bitmapDesc).anchor(0.5f, 0.5f).rotation(heading.toFloat()).flat(true))
-            markers!!.add(marker)
+            markers.add(marker)
 
             val view = layoutInflater.inflate(R.layout.marker, viewGroup, false)
             val title2 = view.findViewById<TextView>(R.id.title)
             title2.text = title
 
-            views!![marker] = view
+            views[marker] = view
         }
     }
 
     private fun cleanAllMarkers() {
-        markers!!.forEach({ it.remove() })
-        markers!!.clear()
+        markers.forEach({ it.remove() })
+        markers.clear()
     }
 
     private fun drawLine(positions: List<Position>) {
         val poly = PolylineOptions()
         poly.width((application as App).lineWidth)
-        poly.geodesic(true).color(TrainLine.fromXmlString(line!!).color)
+        poly.geodesic(true).color(TrainLine.fromXmlString(line).color)
         positions
             .map { position -> LatLng(position.latitude, position.longitude) }
             .forEach({ poly.add(it) })
@@ -193,7 +175,7 @@ class TrainMapActivity : AbstractMapActivity() {
     }
 
     override fun onCameraIdle() {
-        refreshTrainMarkers!!.refresh(googleMap.cameraPosition, markers!!)
+        refreshTrainMarkers.refresh(googleMap.cameraPosition, markers)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -206,13 +188,13 @@ class TrainMapActivity : AbstractMapActivity() {
             override fun getInfoContents(marker: Marker): View? {
                 if ("" != marker.snippet) {
                     // View can be null
-                    val view = views!![marker]
+                    val view = views[marker]
                     if (!refreshingInfoWindow) {
                         selectedMarker = marker
                         val runNumber = marker.snippet
                         observableUtil.createLoadTrainEtaObservable(runNumber, false)
                             .subscribe(TrainEtaObserver(view!!, this@TrainMapActivity))
-                        status!![marker] = false
+                        status[marker] = false
                     }
                     return view
                 } else {
@@ -222,14 +204,14 @@ class TrainMapActivity : AbstractMapActivity() {
         })
         googleMap.setOnInfoWindowClickListener { marker ->
             if ("" != marker.snippet) {
-                val view = views!![marker]
+                val view = views[marker]
                 if (!refreshingInfoWindow) {
                     selectedMarker = marker
                     val runNumber = marker.snippet
-                    val current = status!![marker]
+                    val current = status[marker]
                     observableUtil.createLoadTrainEtaObservable(runNumber, !current!!)
                         .subscribe(TrainEtaObserver(view!!, this@TrainMapActivity))
-                    status!![marker] = !current
+                    status[marker] = !current
                 }
             }
         }
@@ -239,26 +221,22 @@ class TrainMapActivity : AbstractMapActivity() {
     private fun loadActivityData() {
         if (Util.isNetworkAvailable()) {
             // Load train location
-            val trainsObservable = observableUtil.createTrainLocationObservable(line!!)
+            val trainsObservable = observableUtil.createTrainLocationObservable(line)
             // Load pattern from local file
-            val positionsObservable = observableUtil.createTrainPatternObservable(line!!)
+            val positionsObservable = observableUtil.createTrainPatternObservable(line)
 
             if (drawLine) {
                 Observable.zip(trainsObservable, positionsObservable, BiFunction { trains: List<Train>, positions: List<Position> ->
-                    // FIXME
-                    if (trains != null) {
-                        drawTrains(trains)
-                        drawLine(positions)
-                        if (trains.isNotEmpty()) {
-                            if (centerMap) {
-                                centerMapOnTrain(trains)
-                            }
-                        } else {
-                            Util.showMessage(this@TrainMapActivity, R.string.message_no_train_found)
+                    drawTrains(trains)
+                    drawLine(positions)
+                    if (trains.isNotEmpty()) {
+                        if (centerMap) {
+                            centerMapOnTrain(trains)
                         }
                     } else {
-                        Util.showMessage(this@TrainMapActivity, R.string.message_error_while_loading_data)
+                        Util.showMessage(this@TrainMapActivity, R.string.message_no_train_found)
                     }
+
                     Any()
                 }).subscribe()
             } else {

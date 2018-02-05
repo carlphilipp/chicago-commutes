@@ -122,15 +122,15 @@ class BusActivity : AbstractStationActivity() {
     private val preferenceService = PreferenceService
     private val busService = BusService
 
-    private var busArrivals: List<BusArrival>? = null
-    private var busRouteId: String? = null
-    private var bound: String? = null
-    private var boundTitle: String? = null
-    private var busStopId: Int? = null
-    private var busStopName: String? = null
-    private var busRouteName: String? = null
-    private var latitude: Double = 0.toDouble()
-    private var longitude: Double = 0.toDouble()
+    var busArrivals: List<BusArrival> = listOf()
+    private lateinit var busRouteId: String
+    private lateinit var bound: String
+    private lateinit var boundTitle: String
+    private var busStopId: Int = 0
+    private lateinit var busStopName: String
+    private lateinit var busRouteName: String
+    private var latitude: Double = 0.0
+    private var longitude: Double = 0.0
     private var isFavorite: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -140,17 +140,14 @@ class BusActivity : AbstractStationActivity() {
             setContentView(R.layout.activity_bus)
             ButterKnife.bind(this)
 
-            if (busStopId == null || busRouteId == null || bound == null || busStopName == null || busRouteName == null || boundTitle == null) {
-                val extras = intent.extras
-                busStopId = extras!!.getInt(bundleBusStopId)
-                busRouteId = extras.getString(bundleBusRouteId)
-                bound = extras.getString(bundleBusBound)
-                boundTitle = extras.getString(bundleBusBoundTitle)
-                busStopName = extras.getString(bundleBusStopName)
-                busRouteName = extras.getString(bundleBusRouteName)
-                latitude = extras.getDouble(bundleBusLatitude)
-                longitude = extras.getDouble(bundleBusLongitude)
-            }
+            busStopId = intent.getIntExtra(bundleBusStopId, 0)
+            busRouteId = intent.getStringExtra(bundleBusRouteId)
+            bound = intent.getStringExtra(bundleBusBound)
+            boundTitle = intent.getStringExtra(bundleBusBoundTitle)
+            busStopName = intent.getStringExtra(bundleBusStopName)
+            busRouteName = intent.getStringExtra(bundleBusRouteName)
+            latitude = intent.getDoubleExtra(bundleBusLatitude, 0.0)
+            longitude = intent.getDoubleExtra(bundleBusLongitude, 0.0)
 
             val position = Position(latitude, longitude)
 
@@ -160,11 +157,8 @@ class BusActivity : AbstractStationActivity() {
             directionImage.setColorFilter(grey_5)
             favoritesImageContainer.setOnClickListener { _ -> switchFavorite() }
 
-            if (isFavorite) {
-                favoritesImage.setColorFilter(yellowLineDark)
-            } else {
-                favoritesImage.setColorFilter(grey_5)
-            }
+            favoritesImage.setColorFilter(if (isFavorite) yellowLineDark else grey_5)
+
             scrollView.setOnRefreshListener { LoadStationDataTask().execute() }
             streetViewImage.setOnClickListener(GoogleStreetOnClickListener(latitude, longitude))
             mapContainer.setOnClickListener(GoogleMapOnClickListener(latitude, longitude))
@@ -200,7 +194,7 @@ class BusActivity : AbstractStationActivity() {
         toolbar.setOnClickListener { _ -> finish() }
     }
 
-    public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         busStopId = savedInstanceState.getInt(bundleBusStopId)
         busRouteId = savedInstanceState.getString(bundleBusRouteId)
@@ -212,8 +206,8 @@ class BusActivity : AbstractStationActivity() {
         longitude = savedInstanceState.getDouble(bundleBusLongitude)
     }
 
-    public override fun onSaveInstanceState(savedInstanceState: Bundle) {
-        savedInstanceState.putInt(bundleBusStopId, busStopId!!)
+    override fun onSaveInstanceState(savedInstanceState: Bundle) {
+        savedInstanceState.putInt(bundleBusStopId, busStopId)
         savedInstanceState.putString(bundleBusRouteId, busRouteId)
         savedInstanceState.putString(bundleBusBound, bound)
         savedInstanceState.putString(bundleBusBoundTitle, boundTitle)
@@ -224,40 +218,38 @@ class BusActivity : AbstractStationActivity() {
         super.onSaveInstanceState(savedInstanceState)
     }
 
-    fun setBusArrivals(busArrivals: List<BusArrival>) {
-        this.busArrivals = busArrivals
-    }
-
     /**
      * Draw arrivals in current layout
      */
     fun drawArrivals() {
-        val tempMap = HashMap<String, MutableList<TextView>>()
-        if (busArrivals!!.isEmpty()) {
+        val tempMap = HashMap<String, MutableList<LinearLayout>>()
+        if (busArrivals.isEmpty()) {
             val arrivalView = TextView(applicationContext)
             arrivalView.setTextColor(grey)
             arrivalView.text = busActivityNoService
-            tempMap[""] = mutableListOf(arrivalView)
+            val linearLayout = LinearLayout(applicationContext)
+            linearLayout.addView(arrivalView)
+            tempMap[""] = mutableListOf(linearLayout)
         } else {
-            busArrivals!!
+            busArrivals
                 .forEach { arrival ->
                     val destination = arrival.busDestination
                     if (tempMap.containsKey(destination)) {
-                        val textViews = tempMap[destination]
+                        val linearLayout: LinearLayout = tempMap[destination]!![tempMap[destination]!!.size - 1]
                         val arrivalView = TextView(applicationContext)
                         arrivalView.text = if (arrival.isDelay) " Delay" else " " + arrival.timeLeft
-                        textViews!!.add(arrivalView)
+                        linearLayout.addView(arrivalView)
                     } else {
-                        val textViews = ArrayList<TextView>()
+                        val linearLayout = LinearLayout(applicationContext)
                         val destinationView = TextView(applicationContext)
                         destinationView.text = destination + ":   "
                         destinationView.setTextColor(grey)
                         destinationView.setTypeface(null, Typeface.BOLD)
                         val arrivalView = TextView(applicationContext)
                         arrivalView.text = if (arrival.isDelay) " Delay" else " " + arrival.timeLeft
-                        textViews.add(destinationView)
-                        textViews.add(arrivalView)
-                        tempMap[destination] = textViews
+                        linearLayout.addView(destinationView)
+                        linearLayout.addView(arrivalView)
+                        tempMap[destination] = mutableListOf(linearLayout)
                     }
                 }
         }
@@ -268,23 +260,23 @@ class BusActivity : AbstractStationActivity() {
     }
 
     override fun isFavorite(): Boolean {
-        return preferenceService.isStopFavorite(busRouteId!!, busStopId!!, boundTitle!!)
+        return preferenceService.isStopFavorite(busRouteId, busStopId, boundTitle)
     }
 
     /**
      * Add or remove from favorites
      */
     private fun switchFavorite() {
-        if (isFavorite) {
-            preferenceService.removeFromBusFavorites(busRouteId!!, busStopId.toString(), boundTitle!!, scrollView)
+        isFavorite = if (isFavorite) {
+            preferenceService.removeFromBusFavorites(busRouteId, busStopId.toString(), boundTitle, scrollView)
             favoritesImage.setColorFilter(grey_5)
-            isFavorite = false
+            false
         } else {
-            preferenceService.addToBusFavorites(busRouteId!!, busStopId.toString(), boundTitle!!, scrollView)
-            preferenceService.addBusRouteNameMapping(busStopId.toString(), busRouteName!!)
-            preferenceService.addBusStopNameMapping(busStopId.toString(), busStopName!!)
+            preferenceService.addToBusFavorites(busRouteId, busStopId.toString(), boundTitle, scrollView)
+            preferenceService.addBusRouteNameMapping(busStopId.toString(), busRouteName)
+            preferenceService.addBusStopNameMapping(busStopId.toString(), busStopName)
             favoritesImage.setColorFilter(yellowLineDark)
-            isFavorite = true
+            true
         }
     }
 
@@ -295,7 +287,7 @@ class BusActivity : AbstractStationActivity() {
 
         override fun doInBackground(vararg params: Void): List<BusArrival>? {
             try {
-                return busService.loadBusArrivals(requestRt, busRouteId!!, requestStopId, busStopId!!
+                return busService.loadBusArrivals(requestRt, busRouteId, requestStopId, busStopId
                 ) { (_, _, _, _, _, _, routeDirection) -> routeDirection == bound || routeDirection == boundTitle }
             } catch (e: ParserException) {
                 this.trackerException = e
@@ -311,7 +303,7 @@ class BusActivity : AbstractStationActivity() {
 
         override fun onPostExecute(result: List<BusArrival>) {
             if (trackerException == null) {
-                setBusArrivals(result)
+                this@BusActivity.busArrivals = result
                 drawArrivals()
             } else {
                 util.showNetworkErrorMessage(scrollView)

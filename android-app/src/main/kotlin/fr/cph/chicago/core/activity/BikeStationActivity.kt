@@ -98,7 +98,7 @@ class BikeStationActivity : AbstractStationActivity() {
     @BindColor(R.color.yellowLineDark)
     internal var yellowLineDark: Int = 0
 
-    private var bikeStation: BikeStation? = null
+    private lateinit var bikeStation: BikeStation
     private var isFavorite: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -106,38 +106,32 @@ class BikeStationActivity : AbstractStationActivity() {
         if (!this.isFinishing) {
             setContentView(R.layout.activity_bike_station)
             ButterKnife.bind(this)
-            bikeStation = intent.extras!!.getParcelable(bundleBikeStation)
-            if (bikeStation != null) {
-                val latitude = bikeStation!!.latitude
-                val longitude = bikeStation!!.longitude
+            bikeStation = intent.extras.getParcelable(bundleBikeStation)
+            val latitude = bikeStation.latitude
+            val longitude = bikeStation.longitude
 
-                swipeRefreshLayout.setOnRefreshListener {
-                    observableUtil.createAllBikeStationsObservable()
-                        .subscribe(BikeAllBikeStationsObserver(this, bikeStation!!.id, swipeRefreshLayout))
-                }
-
-                isFavorite = isFavorite()
-
-                // Call google street api to load image
-                loadGoogleStreetImage(Position(latitude, longitude), streetViewImage, streetViewText)
-
-                mapImage.setColorFilter(grey_5)
-                directionImage.setColorFilter(grey_5)
-
-                if (isFavorite) {
-                    favoritesImage.setColorFilter(yellowLineDark)
-                } else {
-                    favoritesImage.setColorFilter(grey_5)
-                }
-
-                favoritesImageContainer.setOnClickListener { _ -> switchFavorite() }
-                bikeStationValue.text = bikeStation!!.stAddress1
-                streetViewImage.setOnClickListener(GoogleStreetOnClickListener(latitude, longitude))
-                mapContainer.setOnClickListener(GoogleMapOnClickListener(latitude, longitude))
-                walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(latitude, longitude))
-
-                drawData()
+            swipeRefreshLayout.setOnRefreshListener {
+                observableUtil.createAllBikeStationsObservable()
+                    .subscribe(BikeAllBikeStationsObserver(this, bikeStation.id, swipeRefreshLayout))
             }
+
+            isFavorite = isFavorite()
+
+            // Call google street api to load image
+            loadGoogleStreetImage(Position(latitude, longitude), streetViewImage, streetViewText)
+
+            mapImage.setColorFilter(grey_5)
+            directionImage.setColorFilter(grey_5)
+
+            favoritesImage.setColorFilter(if (isFavorite) yellowLineDark else grey_5)
+
+            favoritesImageContainer.setOnClickListener { _ -> switchFavorite() }
+            bikeStationValue.text = bikeStation.stAddress1
+            streetViewImage.setOnClickListener(GoogleStreetOnClickListener(latitude, longitude))
+            mapContainer.setOnClickListener(GoogleMapOnClickListener(latitude, longitude))
+            walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(latitude, longitude))
+
+            drawData()
             setToolBar()
         }
     }
@@ -147,14 +141,14 @@ class BikeStationActivity : AbstractStationActivity() {
         toolbar.setOnMenuItemClickListener { _ ->
             swipeRefreshLayout.isRefreshing = true
             observableUtil.createAllBikeStationsObservable()
-                .subscribe(BikeAllBikeStationsObserver(this@BikeStationActivity, bikeStation!!.id, swipeRefreshLayout))
+                .subscribe(BikeAllBikeStationsObserver(this@BikeStationActivity, bikeStation.id, swipeRefreshLayout))
             false
         }
         Util.setWindowsColor(this, toolbar, TrainLine.NA)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.elevation = 4f
         }
-        toolbar.title = bikeStation!!.name
+        toolbar.title = bikeStation.name
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp)
         toolbar.setOnClickListener { _ -> finish() }
     }
@@ -178,24 +172,16 @@ class BikeStationActivity : AbstractStationActivity() {
         availableBike.text = bikeAvailableBikes
         availableBike.setTextColor(grey_5)
         availableBikes.addView(availableBike)
-        amountBike.text = bikeStation!!.availableBikes.toString()
-        if (bikeStation!!.availableBikes == 0) {
-            amountBike.setTextColor(red)
-        } else {
-            amountBike.setTextColor(green)
-        }
+        amountBike.text = bikeStation.availableBikes.toString()
+        amountBike.setTextColor(if (bikeStation.availableBikes == 0) red else green)
         availableBikes.addView(amountBike)
         availableLayout.addView(availableBikes)
         availableDocks.orientation = LinearLayout.HORIZONTAL
         availableDock.text = bikeAvailableDocks
         availableDock.setTextColor(grey_5)
         availableDocks.addView(availableDock)
-        amountDock.text = bikeStation!!.availableDocks.toString()
-        if (bikeStation!!.availableDocks == 0) {
-            amountDock.setTextColor(red)
-        } else {
-            amountDock.setTextColor(green)
-        }
+        amountDock.text = bikeStation.availableDocks.toString()
+        amountDock.setTextColor(if (bikeStation.availableDocks == 0) red else green)
         availableDocks.addView(amountDock)
         availableLayout.addView(availableDocks)
         container.addView(availableLayout)
@@ -217,7 +203,7 @@ class BikeStationActivity : AbstractStationActivity() {
      * @return if the station is favorite
      */
     override fun isFavorite(): Boolean {
-        return preferenceService.isBikeStationFavorite(bikeStation!!.id)
+        return preferenceService.isBikeStationFavorite(bikeStation.id)
     }
 
     fun refreshStation(station: BikeStation) {
@@ -230,12 +216,12 @@ class BikeStationActivity : AbstractStationActivity() {
      */
     private fun switchFavorite() {
         isFavorite = if (isFavorite) {
-            preferenceService.removeFromBikeFavorites(bikeStation!!.id, swipeRefreshLayout)
+            preferenceService.removeFromBikeFavorites(bikeStation.id, swipeRefreshLayout)
             favoritesImage.setColorFilter(grey_5)
             false
         } else {
-            preferenceService.addToBikeFavorites(bikeStation!!.id, swipeRefreshLayout)
-            preferenceService.addBikeRouteNameMapping(Integer.toString(bikeStation!!.id), bikeStation!!.name)
+            preferenceService.addToBikeFavorites(bikeStation.id, swipeRefreshLayout)
+            preferenceService.addBikeRouteNameMapping(Integer.toString(bikeStation.id), bikeStation.name)
             favoritesImage.setColorFilter(yellowLineDark)
             true
         }

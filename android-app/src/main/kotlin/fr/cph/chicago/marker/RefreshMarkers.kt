@@ -11,17 +11,17 @@ import fr.cph.chicago.core.App
 
 abstract class RefreshMarkers(@DrawableRes drawable: Int) {
 
-    val bitmapDescrSmall: BitmapDescriptor
-    val bitmapDescrMedium: BitmapDescriptor
-    val bitmapDescrLarge: BitmapDescriptor
-    var currentDescriptor: BitmapDescriptor? = null
+    private val bitmapDescSmall: BitmapDescriptor
+    private val bitmapDescMedium: BitmapDescriptor
+    private val bitmapDescLarge: BitmapDescriptor
+    var currentDescriptor: BitmapDescriptor
 
     init {
         val icon = BitmapFactory.decodeResource(App.instance.resources, drawable)
-        bitmapDescrSmall = createBitMapDescriptor(icon, 9)
-        bitmapDescrMedium = createBitMapDescriptor(icon, 5)
-        bitmapDescrLarge = createBitMapDescriptor(icon, 3)
-        currentDescriptor = bitmapDescrSmall
+        bitmapDescSmall = createBitMapDescriptor(icon, 9)
+        bitmapDescMedium = createBitMapDescriptor(icon, 5)
+        bitmapDescLarge = createBitMapDescriptor(icon, 3)
+        currentDescriptor = bitmapDescSmall
     }
 
     private fun createBitMapDescriptor(icon: Bitmap, size: Int): BitmapDescriptor {
@@ -40,14 +40,14 @@ abstract class RefreshMarkers(@DrawableRes drawable: Int) {
             currentZoom = position.zoom
 
             if (isIn(currentZoom, 12.9f, 11f) && !isIn(oldZoom, 12.9f, 11f)) {
-                markers.forEach { marker -> marker.setIcon(bitmapDescrSmall) }
-                currentDescriptor = bitmapDescrSmall
+                markers.forEach { marker -> marker.setIcon(bitmapDescSmall) }
+                currentDescriptor = bitmapDescSmall
             } else if (isIn(currentZoom, 14.9f, 13f) && !isIn(oldZoom, 14.9f, 13f)) {
-                markers.forEach { marker -> marker.setIcon(bitmapDescrMedium) }
-                currentDescriptor = bitmapDescrMedium
+                markers.forEach { marker -> marker.setIcon(bitmapDescMedium) }
+                currentDescriptor = bitmapDescMedium
             } else if (isIn(currentZoom, 21f, 15f) && !isIn(oldZoom, 21f, 15f)) {
-                markers.forEach { marker -> marker.setIcon(bitmapDescrLarge) }
-                currentDescriptor = bitmapDescrLarge
+                markers.forEach { marker -> marker.setIcon(bitmapDescLarge) }
+                currentDescriptor = bitmapDescLarge
             }
         }
     }

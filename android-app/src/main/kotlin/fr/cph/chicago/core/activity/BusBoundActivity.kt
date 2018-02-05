@@ -91,13 +91,13 @@ class BusBoundActivity : ListActivity() {
     private val observableUtil: ObservableUtil = ObservableUtil
     private val util: Util = Util
 
-    private var mapFragment: MapFragment? = null
-    private var busRouteId: String? = null
-    private var busRouteName: String? = null
-    private var bound: String? = null
-    private var boundTitle: String? = null
-    private var busBoundAdapter: BusBoundAdapter? = null
-    private var busStops: List<BusStop>? = null
+    private lateinit var mapFragment: MapFragment
+    private lateinit var busRouteId: String
+    private lateinit var busRouteName: String
+    private lateinit var bound: String
+    private lateinit var boundTitle: String
+    private lateinit var busBoundAdapter: BusBoundAdapter
+    private var busStops: List<BusStop> = listOf()
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,17 +106,15 @@ class BusBoundActivity : ListActivity() {
             setContentView(R.layout.activity_bus_bound)
             ButterKnife.bind(this)
 
-            if (busRouteId == null || busRouteName == null || bound == null || boundTitle == null) {
-                val extras = intent.extras
-                busRouteId = extras!!.getString(bundleBusRouteId)
-                busRouteName = extras.getString(bundleBusRouteName)
-                bound = extras.getString(bundleBusBound)
-                boundTitle = extras.getString(bundleBusBoundTitle)
-            }
+            busRouteId = intent.getStringExtra(bundleBusRouteId)
+            busRouteName = intent.getStringExtra(bundleBusRouteName)
+            bound = intent.getStringExtra(bundleBusBound)
+            boundTitle = intent.getStringExtra(bundleBusBoundTitle)
+
             busBoundAdapter = BusBoundAdapter()
             listAdapter = busBoundAdapter
             listView.setOnItemClickListener { _, _, position, _ ->
-                val busStop = busBoundAdapter!!.getItem(position) as BusStop
+                val busStop = busBoundAdapter.getItem(position) as BusStop
                 val intent = Intent(applicationContext, BusActivity::class.java)
 
                 val extras = Bundle()
@@ -135,23 +133,21 @@ class BusBoundActivity : ListActivity() {
             }
 
             filter.addTextChangedListener(object : TextWatcher {
-                private var busStopsFiltered: MutableList<BusStop>? = null
+                private var busStopsFiltered: MutableList<BusStop> = mutableListOf()
 
                 override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
                     busStopsFiltered = mutableListOf()
                 }
 
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                    if (busStops != null) {
-                        busStops!!
-                            .filter { busStop -> StringUtils.containsIgnoreCase(busStop.name, s) }
-                            .forEach({ busStopsFiltered!!.add(it) })
-                    }
+                    busStops
+                        .filter { busStop -> StringUtils.containsIgnoreCase(busStop.name, s) }
+                        .forEach({ busStopsFiltered.add(it) })
                 }
 
                 override fun afterTextChanged(s: Editable) {
-                    busBoundAdapter!!.busStops = busStopsFiltered!!.toList()
-                    busBoundAdapter!!.notifyDataSetChanged()
+                    busBoundAdapter.busStops = busStopsFiltered.toList()
+                    busBoundAdapter.notifyDataSetChanged()
                 }
             })
 
@@ -162,11 +158,11 @@ class BusBoundActivity : ListActivity() {
             toolbar.navigationIcon = arrowBackWhite
             toolbar.setOnClickListener { _ -> finish() }
 
-            observableUtil.createBusStopBoundObservable(busRouteId!!, bound!!)
+            observableUtil.createBusStopBoundObservable(busRouteId, bound)
                 .subscribe({ onNext ->
                     busStops = onNext
-                    busBoundAdapter!!.busStops = onNext
-                    busBoundAdapter!!.notifyDataSetChanged()
+                    busBoundAdapter.busStops = onNext
+                    busBoundAdapter.notifyDataSetChanged()
                 }
                 ) { onError ->
                     Log.e(TAG, onError.message, onError)
@@ -182,25 +178,22 @@ class BusBoundActivity : ListActivity() {
 
     public override fun onStart() {
         super.onStart()
-        if (mapFragment == null) {
-            val fm = fragmentManager
-            val options = GoogleMapOptions()
-            val camera = CameraPosition(util.chicago, 7f, 0f, 0f)
-            options.camera(camera)
-            mapFragment = MapFragment.newInstance(options)
-            mapFragment!!.retainInstance = true
-            fm.beginTransaction().replace(R.id.map, mapFragment).commit()
-        }
+        val options = GoogleMapOptions()
+        val camera = CameraPosition(util.chicago, 7f, 0f, 0f)
+        options.camera(camera)
+        mapFragment = MapFragment.newInstance(options)
+        mapFragment.retainInstance = true
+        fragmentManager.beginTransaction().replace(R.id.map, mapFragment).commit()
     }
 
     public override fun onResume() {
         super.onResume()
-        mapFragment!!.getMapAsync { googleMap ->
+        mapFragment.getMapAsync { googleMap ->
             googleMap.uiSettings.isMyLocationButtonEnabled = false
             googleMap.uiSettings.isZoomControlsEnabled = false
             googleMap.uiSettings.isMapToolbarEnabled = false
             util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL)
-            observableUtil.createBusPatternObservable(busRouteId!!, bound!!)
+            observableUtil.createBusPatternObservable(busRouteId, bound)
                 .subscribe(
                     { busPattern ->
                         if (busPattern.direction != "error") {
@@ -226,7 +219,7 @@ class BusBoundActivity : ListActivity() {
     }
 
     private fun drawPattern(pattern: BusPattern) {
-        mapFragment!!.getMapAsync { googleMap ->
+        mapFragment.getMapAsync { googleMap ->
             val poly = PolylineOptions()
             poly.geodesic(true).color(Color.BLACK)
             poly.width((application as App).lineWidth)
@@ -254,7 +247,6 @@ class BusBoundActivity : ListActivity() {
     }
 
     companion object {
-
         private val TAG = BusBoundActivity::class.java.simpleName
     }
 }

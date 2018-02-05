@@ -59,23 +59,16 @@ class SearchActivity : AppCompatActivity() {
     @BindString(R.string.bundle_bike_stations)
     lateinit var bundleBikeStations: String
 
-    private val trainService: TrainService
-    private val busService: BusService
-    private val util: Util
+    private val trainService: TrainService = TrainService
+    private val busService: BusService = BusService
+    private val util: Util = Util
 
-    private var searchView: SearchView? = null
-    private var searchAdapter: SearchAdapter? = null
-    private var bikeStations: List<BikeStation>? = null
+    private lateinit var searchView: SearchView
+    private lateinit var searchAdapter: SearchAdapter
+    private var bikeStations: List<BikeStation> = listOf()
 
     private val supportActionBarNotNull: ActionBar
         get() = supportActionBar ?: throw RuntimeException()
-
-    init {
-        this.bikeStations = ArrayList()
-        this.trainService = TrainService
-        this.busService = BusService
-        this.util = Util
-    }
 
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
@@ -90,7 +83,6 @@ class SearchActivity : AppCompatActivity() {
             container.foreground.alpha = 0
 
             searchAdapter = SearchAdapter(this)
-            searchAdapter!!.updateData(ArrayList(), ArrayList(), ArrayList())
             bikeStations = intent.extras!!.getParcelableArrayList(bundleBikeStations)
             handleIntent(intent)
 
@@ -99,17 +91,17 @@ class SearchActivity : AppCompatActivity() {
             // Associate searchable configuration with the SearchView
             val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
             searchView = SearchView(supportActionBarNotNull.themedContext)
-            searchView!!.setSearchableInfo(searchManager.getSearchableInfo(componentName))
-            searchView!!.isSubmitButtonEnabled = true
-            searchView!!.setIconifiedByDefault(false)
-            searchView!!.isIconified = false
-            searchView!!.maxWidth = 1000
-            searchView!!.isFocusable = true
-            searchView!!.isFocusableInTouchMode = true
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
+            searchView.isSubmitButtonEnabled = true
+            searchView.setIconifiedByDefault(false)
+            searchView.isIconified = false
+            searchView.maxWidth = 1000
+            searchView.isFocusable = true
+            searchView.isFocusableInTouchMode = true
             // FIXME remove clearfocus if possible
-            searchView!!.clearFocus()
-            searchView!!.requestFocus()
-            searchView!!.requestFocusFromTouch()
+            searchView.clearFocus()
+            searchView.requestFocus()
+            searchView.requestFocusFromTouch()
         }
     }
 
@@ -171,12 +163,12 @@ class SearchActivity : AppCompatActivity() {
             val foundStations = trainService.searchStations(query)
             val foundBusRoutes = busService.searchBusRoutes(query)
             // TODO Consider doing in a different way how bikeStations is stored
-            val foundBikeStations = bikeStations!!
+            val foundBikeStations = bikeStations
                 .filter { (_, name, _, _, _, _, _, stAddress1) -> containsIgnoreCase(name, query) || containsIgnoreCase(stAddress1, query) }
                 .distinct()
                 .sortedWith(util.bikeComparatorByName)
-            searchAdapter!!.updateData(foundStations, foundBusRoutes, foundBikeStations)
-            searchAdapter!!.notifyDataSetChanged()
+            searchAdapter.updateData(foundStations, foundBusRoutes, foundBikeStations)
+            searchAdapter.notifyDataSetChanged()
         }
     }
 }
