@@ -35,28 +35,28 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
     }
 
     private fun loadTrainArrivals(trainStation: Station) {
-        nearbyFragment.slidingUpAdapter.updateTitleTrain(trainStation.name)
+        nearbyFragment.slidingUpAdapter!!.updateTitleTrain(trainStation.name)
         observableUtil.createTrainArrivalsObservable(trainStation)
-            .subscribe({ nearbyFragment.slidingUpAdapter.addTrainStation(it) })
+            .subscribe({ nearbyFragment.slidingUpAdapter!!.addTrainStation(it) })
             { onError -> Log.e(TAG, onError.message, onError) }
     }
 
     private fun loadBusArrivals(busStop: BusStop) {
-        nearbyFragment.slidingUpAdapter.updateTitleBus(busStop.name)
+        nearbyFragment.slidingUpAdapter!!.updateTitleBus(busStop.name)
         observableUtil.createBusArrivalsObservable(busStop)
             .subscribe(
                 { result ->
                     val busArrivalRouteDTO = BusArrivalRouteDTO(BusArrivalRouteDTO.busComparator)
                     result.forEach({ busArrivalRouteDTO.addBusArrival(it) })
-                    nearbyFragment.slidingUpAdapter.addBusArrival(busArrivalRouteDTO)
+                    nearbyFragment.slidingUpAdapter!!.addBusArrival(busArrivalRouteDTO)
                 }
             ) { onError -> Log.e(TAG, onError.message, onError) }
     }
 
     private fun loadBikes(bikeStation: BikeStation) {
-        nearbyFragment.slidingUpAdapter.updateTitleBike(bikeStation.name)
+        nearbyFragment.slidingUpAdapter!!.updateTitleBike(bikeStation.name)
         observableUtil.createBikeStationsObservable(bikeStation)
-            .subscribe({ nearbyFragment.slidingUpAdapter.addBike(it) })
+            .subscribe({ nearbyFragment.slidingUpAdapter!!.addBike(it) })
             { onError -> Log.e(TAG, onError.message, onError) }
     }
 
