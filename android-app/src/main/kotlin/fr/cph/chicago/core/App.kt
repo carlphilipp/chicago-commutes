@@ -23,7 +23,6 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.Intent
-import android.content.res.Resources
 import android.graphics.Point
 import android.view.WindowManager
 import com.google.android.gms.analytics.GoogleAnalytics

@@ -27,7 +27,7 @@ class CtaMapFragment : AbstractFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_cta_map, container, false)
-        if (!mainActivity!!.isFinishing) {
+        if (!mainActivity.isFinishing) {
             setBinder(rootView)
             loadBitmap(ctaMap)
         }

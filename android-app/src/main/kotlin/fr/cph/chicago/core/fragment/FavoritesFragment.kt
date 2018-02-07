@@ -84,17 +84,17 @@ class FavoritesFragment : AbstractFragment() {
     private val busService: BusService = BusService
     private val preferenceService: PreferenceService = PreferenceService
 
-    private var favoritesAdapter: FavoritesAdapter? = null
+    private lateinit var favoritesAdapter: FavoritesAdapter
     private var busArrivals: List<BusArrival>? = null
     private var trainArrivals: SparseArray<TrainArrival>? = null
     private var bikeStations: List<BikeStation>? = null
     private var refreshTimingTask: RefreshTimingTask? = null
 
-    private var rootView: View? = null
+    private lateinit var rootView: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val bundle = mainActivity!!.intent.extras
+        val bundle = mainActivity.intent.extras
         busArrivals = if (bundle == null)
             savedInstanceState!!.getParcelableArrayList(getString(R.string.bundle_bus_arrivals))
         else
@@ -109,37 +109,35 @@ class FavoritesFragment : AbstractFragment() {
             bundle.getParcelableArrayList(getString(R.string.bundle_bike_stations))
 
         if (savedInstanceState != null) {
-            if (App.checkTrainData(mainActivity!!)) {
-                App.checkBusData(mainActivity!!)
+            if (App.checkTrainData(mainActivity)) {
+                App.checkBusData(mainActivity)
             }
         }
         if (bikeStations == null) {
-            bikeStations = ArrayList()
+            bikeStations = listOf()
         }
         util.trackScreen(getString(R.string.analytics_favorites_fragment))
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        if (!mainActivity!!.isFinishing) {
+        if (!mainActivity.isFinishing) {
             rootView = inflater.inflate(R.layout.fragment_main, container, false)
-            setBinder(rootView!!)
-            if (favoritesAdapter == null) {
-                favoritesAdapter = FavoritesAdapter(mainActivity!!)
-                favoritesData.trainArrivals = trainArrivals!!
-                favoritesData.busArrivals = busArrivals!!
-                favoritesData.bikeStations = bikeStations!!
-                favoritesAdapter!!.refreshFavorites()
-            }
+            setBinder(rootView)
+            favoritesAdapter = FavoritesAdapter(mainActivity)
+            favoritesData.trainArrivals = trainArrivals!!
+            favoritesData.busArrivals = busArrivals!!
+            favoritesData.bikeStations = bikeStations!!
+            favoritesAdapter.refreshFavorites()
             val linearLayoutManager = LinearLayoutManager(mainActivity)
             listView.adapter = favoritesAdapter
             listView.layoutManager = linearLayoutManager
             floatingButton.setOnClickListener { _ ->
                 if (bikeStations!!.isEmpty()) {
-                    util.showMessage(mainActivity!!, R.string.message_too_fast)
+                    util.showMessage(mainActivity, R.string.message_too_fast)
                 } else {
                     val intent = Intent(mainActivity, SearchActivity::class.java)
                     intent.putParcelableArrayListExtra(bundleBikeStation, bikeStations as ArrayList<BikeStation>?)
-                    mainActivity!!.startActivity(intent)
+                    mainActivity.startActivity(intent)
                 }
             }
             listView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -160,13 +158,13 @@ class FavoritesFragment : AbstractFragment() {
                 util.trackAction(R.string.analytics_category_ui, R.string.analytics_action_press, context!!.getString(R.string.analytics_action_refresh_fav))
 
                 if (busService.getBusRoutes().isEmpty()
-                    || mainActivity!!.intent.getParcelableArrayListExtra<Parcelable>(bundleBikeStation) == null
-                    || mainActivity!!.intent.getParcelableArrayListExtra<Parcelable>(bundleBikeStation).size == 0) {
-                    mainActivity!!.loadFirstData()
+                    || mainActivity.intent.getParcelableArrayListExtra<Parcelable>(bundleBikeStation) == null
+                    || mainActivity.intent.getParcelableArrayListExtra<Parcelable>(bundleBikeStation).size == 0) {
+                    mainActivity.loadFirstData()
                 }
 
                 if (util.isNetworkAvailable()) {
-                    val zipped = observableUtil.createAllDataObservable(mainActivity!!.application)
+                    val zipped = observableUtil.createAllDataObservable(mainActivity.application)
                     zipped.subscribe(
                         { this.reloadData(it) }
                     ) { onError ->
@@ -179,7 +177,7 @@ class FavoritesFragment : AbstractFragment() {
             }
 
             startRefreshTask()
-            util.displayRateSnackBarIfNeeded(swipeRefreshLayout, mainActivity!!)
+            util.displayRateSnackBarIfNeeded(swipeRefreshLayout, mainActivity)
         }
         return rootView
     }
@@ -207,8 +205,8 @@ class FavoritesFragment : AbstractFragment() {
 
     override fun onResume() {
         super.onResume()
-        favoritesAdapter!!.refreshFavorites()
-        favoritesAdapter!!.notifyDataSetChanged()
+        favoritesAdapter.refreshFavorites()
+        favoritesAdapter.notifyDataSetChanged()
         if (refreshTimingTask!!.status == Status.FINISHED) {
             startRefreshTask()
         }
@@ -224,27 +222,27 @@ class FavoritesFragment : AbstractFragment() {
     }
 
     fun reloadData(favoritesDTO: FavoritesDTO) {
-        mainActivity!!.intent.putParcelableArrayListExtra(bundleBikeStation, favoritesDTO.bikeStations as ArrayList<BikeStation>)
+        mainActivity.intent.putParcelableArrayListExtra(bundleBikeStation, favoritesDTO.bikeStations as ArrayList<BikeStation>)
         bikeStations = favoritesDTO.bikeStations
         favoritesData.busArrivals = favoritesDTO.busArrivalDTO.busArrivals
         favoritesData.trainArrivals = favoritesDTO.trainArrivalDTO.trainArrivalSparseArray
 
-        favoritesAdapter!!.refreshFavorites()
-        favoritesAdapter!!.resetLastUpdate()
-        favoritesAdapter!!.updateModel()
-        favoritesAdapter!!.notifyDataSetChanged()
+        favoritesAdapter.refreshFavorites()
+        favoritesAdapter.resetLastUpdate()
+        favoritesAdapter.updateModel()
+        favoritesAdapter.notifyDataSetChanged()
 
-        rootView!!.setBackgroundResource(R.drawable.highlight_selector)
-        rootView!!.postDelayed({ rootView!!.setBackgroundResource(R.drawable.bg_selector) }, 100)
+        rootView.setBackgroundResource(R.drawable.highlight_selector)
+        rootView.postDelayed({ rootView.setBackgroundResource(R.drawable.bg_selector) }, 100)
         stopRefreshing()
         if (util.isAtLeastTwoErrors(favoritesDTO.trainArrivalDTO.error, favoritesDTO.busArrivalDTO.error, favoritesDTO.bikeError)) {
-            util.showMessage(mainActivity!!, R.string.message_something_went_wrong)
+            util.showMessage(mainActivity, R.string.message_something_went_wrong)
         } else if (favoritesDTO.trainArrivalDTO.error) {
-            util.showMessage(mainActivity!!, R.string.message_error_train_favorites)
+            util.showMessage(mainActivity, R.string.message_error_train_favorites)
         } else if (favoritesDTO.busArrivalDTO.error) {
-            util.showMessage(mainActivity!!, R.string.message_error_bus_favorites)
+            util.showMessage(mainActivity, R.string.message_error_bus_favorites)
         } else if (favoritesDTO.bikeError) {
-            util.showMessage(mainActivity!!, R.string.message_error_bike_favorites)
+            util.showMessage(mainActivity, R.string.message_error_bike_favorites)
         }
     }
 
@@ -254,22 +252,22 @@ class FavoritesFragment : AbstractFragment() {
      * @param message the message
      */
     fun displayError(message: Int) {
-        util.showMessage(mainActivity!!, message)
+        util.showMessage(mainActivity, message)
         stopRefreshing()
     }
 
     fun setBikeStations(bikeStations: List<BikeStation>) {
         this.bikeStations = bikeStations
         favoritesData.bikeStations = bikeStations
-        favoritesAdapter!!.notifyDataSetChanged()
+        favoritesAdapter.notifyDataSetChanged()
     }
 
     /**
      * Start refreshBusAndStation task
      */
     private fun startRefreshTask() {
-        refreshTimingTask = RefreshTimingTask(favoritesAdapter!!).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR) as RefreshTimingTask
-        favoritesAdapter!!.updateModel()
+        refreshTimingTask = RefreshTimingTask(favoritesAdapter).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR) as RefreshTimingTask
+        favoritesAdapter.updateModel()
     }
 
     fun startRefreshing() {

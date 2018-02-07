@@ -40,7 +40,7 @@ class SettingsFragment : AbstractFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_settings, container, false)
-        if (!mainActivity!!.isFinishing) {
+        if (!mainActivity.isFinishing) {
             setBinder(rootView)
             val version = "Version " + util.getCurrentVersion()
             versionNumber.text = version
@@ -72,7 +72,7 @@ class SettingsFragment : AbstractFragment() {
         val pendingIntent = PendingIntent.getActivity(context, intentId, intent, PendingIntent.FLAG_CANCEL_CURRENT)
         val alarmManager = context!!.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmManager.set(AlarmManager.RTC, System.currentTimeMillis(), pendingIntent)
-        mainActivity!!.finish()
+        mainActivity.finish()
     }
 
     private fun cleanLocalData() {

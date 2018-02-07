@@ -85,30 +85,29 @@ class NearbyFragment : AbstractFragment(), EasyPermissions.PermissionCallbacks {
     private val util: Util = Util
     private val observableUtil: ObservableUtil = ObservableUtil
 
-    private var mapFragment: SupportMapFragment? = null
+    private lateinit var mapFragment: SupportMapFragment
+    private lateinit var googleApiClient: GoogleApiClient
+    lateinit var slidingUpAdapter: SlidingUpAdapter
 
-    private var googleApiClient: GoogleApiClient? = null
-    var slidingUpAdapter: SlidingUpAdapter? = null
-        private set
     private var markerDataHolder: MarkerDataHolder? = null
     private var fusedLocationClient: FusedLocationProviderClient? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        App.checkTrainData(mainActivity!!)
-        App.checkBusData(mainActivity!!)
+        App.checkTrainData(mainActivity)
+        App.checkBusData(mainActivity)
         util.trackScreen(getString(R.string.analytics_nearby_fragment))
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_nearby, container, false)
-        if (!mainActivity!!.isFinishing) {
+        if (!mainActivity.isFinishing) {
             setBinder(rootView)
             slidingUpAdapter = SlidingUpAdapter(this)
             markerDataHolder = MarkerDataHolder()
             searchAreaButton.setOnClickListener { view ->
                 view.visibility = View.INVISIBLE
-                mapFragment!!.getMapAsync { googleMap ->
+                mapFragment.getMapAsync { googleMap ->
                     googleMap.clear()
                     markerDataHolder!!.clear()
 
@@ -123,15 +122,15 @@ class NearbyFragment : AbstractFragment(), EasyPermissions.PermissionCallbacks {
 
     override fun onStart() {
         super.onStart()
-        googleApiClient = GoogleApiClient.Builder(mainActivity!!)
+        googleApiClient = GoogleApiClient.Builder(mainActivity)
             .addApi(LocationServices.API)
             .build()
         val options = GoogleMapOptions()
         val camera = CameraPosition(util.chicago, 7f, 0f, 0f)
         options.camera(camera)
         mapFragment = SupportMapFragment.newInstance(options)
-        mapFragment!!.retainInstance = true
-        val fm = mainActivity!!.supportFragmentManager
+        mapFragment.retainInstance = true
+        val fm = mainActivity.supportFragmentManager
         loadNearbyIfAllowed()
         fm.beginTransaction().replace(R.id.map, mapFragment).commit()
     }
@@ -143,17 +142,17 @@ class NearbyFragment : AbstractFragment(), EasyPermissions.PermissionCallbacks {
 
     override fun onStop() {
         super.onStop()
-        if (googleApiClient!!.isConnected) {
-            googleApiClient!!.disconnect()
+        if (googleApiClient.isConnected) {
+            googleApiClient.disconnect()
         }
     }
 
-    fun updateMarkersAndModel(
+    private fun updateMarkersAndModel(
         busStops: List<BusStop>,
         trainStation: List<Station>,
         bikeStations: List<BikeStation>) {
         if (isAdded) {
-            mapFragment!!.getMapAsync { googleMap ->
+            mapFragment.getMapAsync { googleMap ->
                 googleMap.uiSettings.isMyLocationButtonEnabled = true
                 googleMap.uiSettings.isZoomControlsEnabled = false
                 googleMap.uiSettings.isMapToolbarEnabled = false
@@ -204,16 +203,16 @@ class NearbyFragment : AbstractFragment(), EasyPermissions.PermissionCallbacks {
     }
 
     private fun createStop(context: Context?, @DrawableRes icon: Int): BitmapDescriptor {
-        if (context != null) {
+        return if (context != null) {
             val px = context.resources.getDimensionPixelSize(R.dimen.icon_shadow_2)
             val bitMapBusStation = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888)
             val canvas = Canvas(bitMapBusStation)
             val shape = ContextCompat.getDrawable(context, icon)
             shape!!.setBounds(0, 0, px, bitMapBusStation.height)
             shape.draw(canvas)
-            return BitmapDescriptorFactory.fromBitmap(bitMapBusStation)
+            BitmapDescriptorFactory.fromBitmap(bitMapBusStation)
         } else {
-            return BitmapDescriptorFactory.defaultMarker()
+            BitmapDescriptorFactory.defaultMarker()
         }
     }
 
@@ -253,24 +252,24 @@ class NearbyFragment : AbstractFragment(), EasyPermissions.PermissionCallbacks {
     private fun startLoadingNearby() {
         if (util.isNetworkAvailable()) {
             showProgress(true)
-            fusedLocationClient = LocationServices.getFusedLocationProviderClient(mainActivity!!)
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(mainActivity)
             fusedLocationClient!!.lastLocation.addOnSuccessListener { location ->
                 val position = if (location == null) Position() else Position(location.latitude, location.longitude)
                 handleNearbyData(position)
             }
         } else {
-            util.showNetworkErrorMessage(mainActivity!!)
+            util.showNetworkErrorMessage(mainActivity)
             showProgress(false)
         }
     }
 
     private fun handleNearbyData(position: Position) {
-        val bikeStations = mainActivity!!.intent.extras!!.getParcelableArrayList<BikeStation>(bundleBikeStations)
+        val bikeStations = mainActivity.intent.extras!!.getParcelableArrayList<BikeStation>(bundleBikeStations)
         var chicago: Position? = null
         if (position.longitude == 0.0 && position.latitude == 0.0) {
             Log.w(TAG, "Could not get current user location")
             chicago = Position(util.chicago.latitude, util.chicago.longitude)
-            util.showSnackBar(mainActivity!!, R.string.message_cant_find_location, Snackbar.LENGTH_LONG)
+            util.showSnackBar(mainActivity, R.string.message_cant_find_location, Snackbar.LENGTH_LONG)
         }
 
         val finalPosition = if (chicago == null) position else chicago
@@ -279,7 +278,7 @@ class NearbyFragment : AbstractFragment(), EasyPermissions.PermissionCallbacks {
         val bikeStationsObservable = observableUtil.createBikeStationAroundObservable(finalPosition, bikeStations!!)
         // <List<Station>, List<BusStop>, List<BikeStation>, Any>
         Observable.zip(trainStationAroundObservable, busStopsAroundObservable, bikeStationsObservable, Function3 { trains: List<Station>, buses: List<BusStop>, bikes: List<BikeStation> ->
-            util.centerMap(mapFragment!!, finalPosition)
+            util.centerMap(mapFragment, finalPosition)
             updateMarkersAndModel(buses, trains, bikes)
             Any()
         }).subscribe()

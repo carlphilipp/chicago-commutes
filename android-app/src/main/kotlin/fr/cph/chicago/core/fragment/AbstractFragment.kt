@@ -19,20 +19,18 @@
 
 package fr.cph.chicago.core.fragment
 
-import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.View
-
 import butterknife.ButterKnife
 import butterknife.Unbinder
 import fr.cph.chicago.core.activity.MainActivity
 
 open class AbstractFragment : Fragment() {
 
-    protected var mainActivity: MainActivity? = null
-    private var unbinder: Unbinder? = null
+    protected lateinit var mainActivity: MainActivity
+    private lateinit var unbinder: Unbinder
 
     fun setBinder(rootView: View) {
         unbinder = ButterKnife.bind(this, rootView)
@@ -40,14 +38,12 @@ open class AbstractFragment : Fragment() {
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        mainActivity = if (context is Activity) context as MainActivity? else null
+        mainActivity = context as MainActivity
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        if (unbinder != null) {
-            unbinder!!.unbind()
-        }
+        unbinder.unbind()
     }
 
     companion object {

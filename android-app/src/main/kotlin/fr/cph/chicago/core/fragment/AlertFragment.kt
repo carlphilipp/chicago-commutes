@@ -51,9 +51,6 @@ class AlertFragment : AbstractFragment() {
     @BindView(R.id.alert_list)
     lateinit var listView: ListView
 
-    private var alertAdapter: AlertAdapter? = null
-    private var routesAlertsDTOS: List<RoutesAlertsDTO>? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Util.trackScreen(getString(R.string.analytics_cta_alert_fragment))
@@ -69,11 +66,10 @@ class AlertFragment : AbstractFragment() {
         setBinder(rootView)
         ObservableUtil.createAlertRoutesObservable()
             .subscribe { routesAlertsDTOS ->
-                this.routesAlertsDTOS = routesAlertsDTOS
-                alertAdapter = AlertAdapter(routesAlertsDTOS)
+                val alertAdapter = AlertAdapter(routesAlertsDTOS)
                 listView.adapter = alertAdapter
                 listView.setOnItemClickListener { _, _, position, _ ->
-                    val (id1, routeName, _, _, _, _, alertType) = alertAdapter!!.getItem(position)
+                    val (id1, routeName, _, _, _, _, alertType) = alertAdapter.getItem(position)
                     val intent = Intent(context, AlertActivity::class.java)
                     val extras = Bundle()
                     extras.putString("routeId", id1)
@@ -95,14 +91,14 @@ class AlertFragment : AbstractFragment() {
                     override fun onTextChanged(c: CharSequence, start: Int, before: Int, count: Int) {
                         val trimmed = c.toString().trim { it <= ' ' }
                         this.routesAlertsDTOS.addAll(
-                            this@AlertFragment.routesAlertsDTOS!!
+                            routesAlertsDTOS
                                 .filter { (id, routeName) -> StringUtils.containsIgnoreCase(routeName, trimmed) || StringUtils.containsIgnoreCase(id, trimmed) }
                         )
                     }
 
                     override fun afterTextChanged(s: Editable) {
-                        alertAdapter!!.setAlerts(routesAlertsDTOS!!)
-                        alertAdapter!!.notifyDataSetChanged()
+                        alertAdapter.setAlerts(routesAlertsDTOS!!)
+                        alertAdapter.notifyDataSetChanged()
                     }
                 })
             }

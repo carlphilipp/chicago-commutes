@@ -54,17 +54,17 @@ class BusFragment : AbstractFragment() {
     private val util: Util = Util
     private val busService: BusService = BusService
 
-    private var busAdapter: BusAdapter? = null
+    private lateinit var busAdapter: BusAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        App.checkBusData(mainActivity!!)
+        App.checkBusData(mainActivity)
         util.trackScreen(getString(R.string.analytics_bus_fragment))
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_bus, container, false)
-        if (!mainActivity!!.isFinishing) {
+        if (!mainActivity.isFinishing) {
             setBinder(rootView)
             addView()
         }
@@ -76,29 +76,28 @@ class BusFragment : AbstractFragment() {
     }
 
     private fun addView() {
-        busAdapter = BusAdapter(mainActivity!!.application as App)
+        busAdapter = BusAdapter(mainActivity.application as App)
         listView.adapter = busAdapter
         textFilter.visibility = TextView.VISIBLE
         textFilter.addTextChangedListener(object : TextWatcher {
 
-            internal var busRoutes: MutableList<BusRoute>? = null
+            private lateinit var busRoutes: MutableList<BusRoute>
 
             override fun beforeTextChanged(c: CharSequence, start: Int, count: Int, after: Int) {
-                busRoutes = ArrayList()
+                busRoutes = mutableListOf()
             }
 
             override fun onTextChanged(c: CharSequence, start: Int, before: Int, count: Int) {
                 val busRoutes = busService.getBusRoutes()
                 val trimmed = c.toString().trim { it <= ' ' }
-                this.busRoutes!!.addAll(
+                this.busRoutes.addAll(
                     busRoutes.filter { (id, name) -> StringUtils.containsIgnoreCase(id, trimmed) || StringUtils.containsIgnoreCase(name, trimmed) }
-
                 )
             }
 
             override fun afterTextChanged(s: Editable) {
-                busAdapter!!.busRoutes = busRoutes!!.toList()
-                busAdapter!!.notifyDataSetChanged()
+                busAdapter.busRoutes = busRoutes.toList()
+                busAdapter.notifyDataSetChanged()
             }
         })
     }

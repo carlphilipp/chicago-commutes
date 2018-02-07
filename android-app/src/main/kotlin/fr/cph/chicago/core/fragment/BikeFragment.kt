@@ -35,7 +35,7 @@ import fr.cph.chicago.core.adapter.BikeAdapter
 import fr.cph.chicago.entity.BikeStation
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
-import java.util.*
+
 
 /**
  * Bike Fragment
@@ -57,75 +57,50 @@ class BikeFragment : AbstractFragment() {
     @BindString(R.string.bundle_bike_stations)
     lateinit var bundleBikeStations: String
 
-    private val util: Util = Util
-
-    private var bikeAdapter: BikeAdapter? = null
-    private var bikeStations: List<BikeStation>? = null
+    private lateinit var bikeAdapter: BikeAdapter
+    private lateinit var bikeStations: List<BikeStation>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        bikeStations = getBikeStations(savedInstanceState)
-
         setHasOptionsMenu(true)
 
-        util.trackScreen(getString(R.string.analytics_bike_fragment))
-    }
-
-    private fun getBikeStations(savedInstanceState: Bundle?): List<BikeStation> {
-        var bikeStations: List<BikeStation>?
-        if (savedInstanceState != null) {
-            bikeStations = savedInstanceState.getParcelableArrayList(getString(R.string.bundle_bike_stations))
-        } else {
-            val bundle = mainActivity!!.intent.extras
-            bikeStations = bundle!!.getParcelableArrayList(getString(R.string.bundle_bike_stations))
-        }
-        if (bikeStations == null) {
-            bikeStations = ArrayList()
-        }
-        return bikeStations
+        Util.trackScreen(getString(R.string.analytics_bike_fragment))
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_bike, container, false)
-        if (!mainActivity!!.isFinishing) {
+        if (!mainActivity.isFinishing) {
             setBinder(rootView)
-            if (!bikeStations!!.isEmpty()) {
-                loadList()
-            } else {
+            bikeStations = mainActivity.intent.getParcelableArrayListExtra(bundleBikeStations) ?: listOf()
+            if (bikeStations.isEmpty()) {
                 loadError()
+            } else {
+                loadList()
             }
         }
         return rootView
     }
 
     private fun loadList() {
-        if (bikeAdapter == null) {
-            var bikeStations: List<BikeStation>? = mainActivity!!.intent.extras!!.getParcelableArrayList(bundleBikeStations)
-            if (bikeStations == null) {
-                bikeStations = emptyList()
-            }
-            bikeAdapter = BikeAdapter(bikeStations)
-        }
+        bikeAdapter = BikeAdapter(bikeStations)
         bikeListView.adapter = bikeAdapter
         filter.addTextChangedListener(object : TextWatcher {
 
-            private var bikeStations: MutableList<BikeStation>? = null
+            private lateinit var bikeStations: List<BikeStation>
 
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-                bikeStations = ArrayList()
+                bikeStations = listOf()
             }
 
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                bikeStations!!.addAll(
-                    this@BikeFragment.bikeStations!!
-                        .filter { (_, name) -> StringUtils.containsIgnoreCase(name, s.toString().trim { it <= ' ' }) }
-                )
+                bikeStations = this@BikeFragment.bikeStations
+                    .filter { (_, name) -> StringUtils.containsIgnoreCase(name, s.toString().trim { it <= ' ' }) }
             }
 
             override fun afterTextChanged(s: Editable) {
-                bikeAdapter!!.bikeStations = this.bikeStations!!.toList()
-                bikeAdapter!!.notifyDataSetChanged()
+                bikeAdapter.bikeStations = this.bikeStations.toList()
+                bikeAdapter.notifyDataSetChanged()
             }
         })
         bikeListView.visibility = ListView.VISIBLE
@@ -141,12 +116,7 @@ class BikeFragment : AbstractFragment() {
 
     fun setBikeStations(bikeStations: List<BikeStation>) {
         this.bikeStations = bikeStations
-        if (bikeAdapter == null) {
-            loadList()
-        } else {
-            bikeAdapter!!.bikeStations = bikeStations
-            bikeAdapter!!.notifyDataSetChanged()
-        }
+        loadList()
     }
 
     companion object {
