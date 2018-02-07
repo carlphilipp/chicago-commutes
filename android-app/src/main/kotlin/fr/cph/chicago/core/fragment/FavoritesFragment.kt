@@ -39,7 +39,6 @@ import butterknife.BindView
 import fr.cph.chicago.Constants.Companion.BUSES_ARRIVAL_URL
 import fr.cph.chicago.Constants.Companion.TRAINS_ARRIVALS_URL
 import fr.cph.chicago.R
-import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.adapter.FavoritesAdapter
 import fr.cph.chicago.data.FavoritesData
@@ -73,10 +72,6 @@ class FavoritesFragment : AbstractFragment() {
 
     @BindString(R.string.bundle_bike_stations)
     lateinit var bundleBikeStation: String
-    @BindString(R.string.bundle_bus_arrivals)
-    lateinit var bundleBusArrivals: String
-    @BindString(R.string.bundle_train_arrivals)
-    lateinit var bundleTrainArrivals: String
 
     private val util: Util = Util
     private val observableUtil: ObservableUtil = ObservableUtil
@@ -84,37 +79,26 @@ class FavoritesFragment : AbstractFragment() {
     private val busService: BusService = BusService
     private val preferenceService: PreferenceService = PreferenceService
 
-    private lateinit var favoritesAdapter: FavoritesAdapter
-    private var busArrivals: List<BusArrival>? = null
-    private var trainArrivals: SparseArray<TrainArrival>? = null
-    private var bikeStations: List<BikeStation>? = null
+    private var favoritesAdapter: FavoritesAdapter? = null
     private var refreshTimingTask: RefreshTimingTask? = null
+    private lateinit var bikeStations: List<BikeStation>
 
     private lateinit var rootView: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val bundle = mainActivity.intent.extras
-        busArrivals = if (bundle == null)
-            savedInstanceState!!.getParcelableArrayList(getString(R.string.bundle_bus_arrivals))
-        else
-            bundle.getParcelableArrayList(getString(R.string.bundle_bus_arrivals))
-        trainArrivals = if (bundle == null)
-            savedInstanceState!!.getSparseParcelableArray(getString(R.string.bundle_train_arrivals))
-        else
-            bundle.getSparseParcelableArray(getString(R.string.bundle_train_arrivals))
-        bikeStations = if (bundle == null)
-            savedInstanceState!!.getParcelableArrayList(getString(R.string.bundle_bike_stations))
-        else
-            bundle.getParcelableArrayList(getString(R.string.bundle_bike_stations))
-
-        if (savedInstanceState != null) {
-            if (App.checkTrainData(mainActivity)) {
-                App.checkBusData(mainActivity)
-            }
-        }
-        if (bikeStations == null) {
-            bikeStations = listOf()
+        if (favoritesAdapter == null) {
+            val busArrivals: List<BusArrival> = mainActivity.intent.getParcelableArrayListExtra(getString(R.string.bundle_bus_arrivals))
+                ?: listOf()
+            val trainArrivals: SparseArray<TrainArrival> = mainActivity.intent.extras.getSparseParcelableArray(getString(R.string.bundle_train_arrivals))
+                ?: SparseArray()
+            bikeStations = mainActivity.intent.getParcelableArrayListExtra(getString(R.string.bundle_bike_stations))
+                ?: listOf()
+            favoritesAdapter = FavoritesAdapter(mainActivity)
+            favoritesData.trainArrivals = trainArrivals
+            favoritesData.busArrivals = busArrivals
+            favoritesData.bikeStations = bikeStations
+            favoritesAdapter!!.refreshFavorites()
         }
         util.trackScreen(getString(R.string.analytics_favorites_fragment))
     }
@@ -123,16 +107,11 @@ class FavoritesFragment : AbstractFragment() {
         if (!mainActivity.isFinishing) {
             rootView = inflater.inflate(R.layout.fragment_main, container, false)
             setBinder(rootView)
-            favoritesAdapter = FavoritesAdapter(mainActivity)
-            favoritesData.trainArrivals = trainArrivals!!
-            favoritesData.busArrivals = busArrivals!!
-            favoritesData.bikeStations = bikeStations!!
-            favoritesAdapter.refreshFavorites()
             val linearLayoutManager = LinearLayoutManager(mainActivity)
             listView.adapter = favoritesAdapter
             listView.layoutManager = linearLayoutManager
             floatingButton.setOnClickListener { _ ->
-                if (bikeStations!!.isEmpty()) {
+                if (bikeStations.isEmpty()) {
                     util.showMessage(mainActivity, R.string.message_too_fast)
                 } else {
                     val intent = Intent(mainActivity, SearchActivity::class.java)
@@ -166,11 +145,13 @@ class FavoritesFragment : AbstractFragment() {
                 if (util.isNetworkAvailable()) {
                     val zipped = observableUtil.createAllDataObservable(mainActivity.application)
                     zipped.subscribe(
-                        { this.reloadData(it) }
-                    ) { onError ->
-                        Log.e(TAG, onError.message, onError)
-                        this.displayError(R.string.message_something_went_wrong)
-                    }
+                        {
+                            this.reloadData(it)
+                        },
+                        { onError ->
+                            Log.e(TAG, onError.message, onError)
+                            this.displayError(R.string.message_something_went_wrong)
+                        })
                 } else {
                     this.displayError(R.string.message_network_error)
                 }
@@ -205,20 +186,13 @@ class FavoritesFragment : AbstractFragment() {
 
     override fun onResume() {
         super.onResume()
-        favoritesAdapter.refreshFavorites()
-        favoritesAdapter.notifyDataSetChanged()
+        favoritesAdapter!!.refreshFavorites()
+        favoritesAdapter!!.notifyDataSetChanged()
         if (refreshTimingTask!!.status == Status.FINISHED) {
             startRefreshTask()
         }
         val hasFav = preferenceService.hasFavorites()
         welcomeLayout.visibility = if (hasFav) View.GONE else View.VISIBLE
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putParcelableArrayList(bundleBusArrivals, busArrivals as ArrayList<BusArrival>?)
-        outState.putSparseParcelableArray(bundleTrainArrivals, trainArrivals)
-        outState.putParcelableArrayList(bundleBikeStation, bikeStations as ArrayList<BikeStation>?)
-        super.onSaveInstanceState(outState)
     }
 
     fun reloadData(favoritesDTO: FavoritesDTO) {
@@ -227,10 +201,10 @@ class FavoritesFragment : AbstractFragment() {
         favoritesData.busArrivals = favoritesDTO.busArrivalDTO.busArrivals
         favoritesData.trainArrivals = favoritesDTO.trainArrivalDTO.trainArrivalSparseArray
 
-        favoritesAdapter.refreshFavorites()
-        favoritesAdapter.resetLastUpdate()
-        favoritesAdapter.updateModel()
-        favoritesAdapter.notifyDataSetChanged()
+        favoritesAdapter!!.refreshFavorites()
+        favoritesAdapter!!.resetLastUpdate()
+        favoritesAdapter!!.updateModel()
+        favoritesAdapter!!.notifyDataSetChanged()
 
         rootView.setBackgroundResource(R.drawable.highlight_selector)
         rootView.postDelayed({ rootView.setBackgroundResource(R.drawable.bg_selector) }, 100)
@@ -259,15 +233,15 @@ class FavoritesFragment : AbstractFragment() {
     fun setBikeStations(bikeStations: List<BikeStation>) {
         this.bikeStations = bikeStations
         favoritesData.bikeStations = bikeStations
-        favoritesAdapter.notifyDataSetChanged()
+        favoritesAdapter!!.notifyDataSetChanged()
     }
 
     /**
      * Start refreshBusAndStation task
      */
     private fun startRefreshTask() {
-        refreshTimingTask = RefreshTimingTask(favoritesAdapter).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR) as RefreshTimingTask
-        favoritesAdapter.updateModel()
+        refreshTimingTask = RefreshTimingTask(favoritesAdapter!!).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR) as RefreshTimingTask
+        favoritesAdapter!!.updateModel()
     }
 
     fun startRefreshing() {
