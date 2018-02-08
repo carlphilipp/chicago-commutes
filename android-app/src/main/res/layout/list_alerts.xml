@@ -84,7 +84,8 @@
             android:layout_centerInParent="true"
             android:src="@drawable/ic_action_alert_warning"
             android:tint="@color/red"
-            android:visibility="invisible" />
+            android:visibility="invisible"
+            android:contentDescription="@string/cta_alert" />
 
     </RelativeLayout>
 

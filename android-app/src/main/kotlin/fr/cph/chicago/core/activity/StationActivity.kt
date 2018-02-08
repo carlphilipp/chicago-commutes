@@ -246,7 +246,7 @@ class StationActivity : AbstractStationActivity() {
         toolbar.inflateMenu(R.menu.main)
         toolbar.setOnMenuItemClickListener { _ ->
             swipeRefreshLayout.isRefreshing = true
-            trainArrivalObservable!!.subscribe(TrainArrivalObserver(this, swipeRefreshLayout))
+            trainArrivalObservable.subscribe(TrainArrivalObserver(this, swipeRefreshLayout))
             false
         }
 
@@ -301,8 +301,7 @@ class StationActivity : AbstractStationActivity() {
                         if (line3View.childCount > 0) {
                             (0 until line3View.childCount).forEach { i ->
                                 val view = line3View.getChildAt(i) as LinearLayout
-                                val timing = view.getChildAt(1) as TextView
-                                // FIXME
+                                val timing = view.getChildAt(1) as TextView?
                                 if (timing != null) {
                                     timing.text = ""
                                 }
