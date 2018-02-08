@@ -39,8 +39,8 @@ import java.net.URL
 object GoogleStreetClient {
 
     private val TAG = GoogleStreetClient::class.java.simpleName
-    private val WIDTH = 1000
-    private val HEIGHT = 300
+    private const val WIDTH = 1000
+    private const val HEIGHT = 300
 
     fun connect(latitude: Double, longitude: Double): Drawable {
         val address = GOOGLE_STREET_VIEW_URL + "?key=" +

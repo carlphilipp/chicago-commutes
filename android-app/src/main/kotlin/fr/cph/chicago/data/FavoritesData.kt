@@ -48,9 +48,9 @@ object FavoritesData {
     private val preferenceService = PreferenceService
     private val util = Util
 
-    var trainArrivals: SparseArray<TrainArrival> = SparseArray()
-    var busArrivals: List<BusArrival> = listOf()
-    var bikeStations: List<BikeStation> = listOf()
+    private val trainArrivals: SparseArray<TrainArrival> = SparseArray()
+    private val busArrivals: MutableList<BusArrival> = mutableListOf()
+    private val bikeStations: MutableList<BikeStation> = mutableListOf()
     private var trainFavorites: List<Int> = listOf()
     private var busFavorites: List<String> = listOf()
     private var fakeBusFavorites: List<String> = listOf()
@@ -105,21 +105,15 @@ object FavoritesData {
                     accumulator[stopNameData] + " " + timingData
                 else
                     timingData
-                accumulator.put(stopNameData, value)
+                accumulator[stopNameData] = value
                 accumulator
             })
     }
 
-    /**
-     * Get bus arrival mapped
-     *
-     * @param routeId the route id
-     * @return a nice map
-     */
     fun getBusArrivalsMapped(routeId: String): BusArrivalStopMappedDTO {
         val busArrivalDTO = BusArrivalStopMappedDTO()
         busArrivals
-            .filter { (_, _, _, _, _, routeId1) -> routeId1 == routeId }
+            .filter { (_, _, _, _, _, routeId) -> routeId == routeId }
             .filter { (_, _, _, stopId, _, _, routeDirection) -> isInFavorites(routeId, stopId, routeDirection) }
             .forEach({ busArrivalDTO.addBusArrival(it) })
 
@@ -143,6 +137,25 @@ object FavoritesData {
         } else {
             bikeFavorites.addAll(bikeFavoritesTemp)
         }
+    }
+
+    fun updateTrainArrivals(trainArrivals: SparseArray<TrainArrival>) {
+        this.trainArrivals.clear()
+        for (i in 0 until trainArrivals.size()) {
+            val key = trainArrivals.keyAt(i)
+            val obj = trainArrivals.get(key)
+            this.trainArrivals.append(key, obj)
+        }
+    }
+
+    fun updateBusArrivals(busArrivals: List<BusArrival>) {
+        this.busArrivals.clear()
+        this.busArrivals.addAll(busArrivals)
+    }
+
+    fun updateBikeStations(bikeStations: List<BikeStation>) {
+        this.bikeStations.clear()
+        this.bikeStations.addAll(bikeStations)
     }
 
     private fun createEmptyBikeStation(index: Int): BikeStation {

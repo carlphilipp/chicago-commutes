@@ -19,8 +19,6 @@
 
 package fr.cph.chicago.parser
 
-import com.univocity.parsers.common.CommonSettings
-import com.univocity.parsers.common.Format
 import com.univocity.parsers.common.ParsingContext
 import com.univocity.parsers.common.processor.RowProcessor
 import fr.cph.chicago.entity.BusStop
@@ -43,12 +41,11 @@ internal class BusStopCsvProcessor : RowProcessor {
      * Stores the row extracted by the parser into a list.
 
      * @param row     the data extracted by the parser for an individual record. Note that:
-     * *
-     * *                 * it will never by null.
-     * *                 * it will never be empty unless explicitly configured using [CommonSettings.setSkipEmptyLines]
-     * *                 * it won't contain lines identified by the parser as comments. To disable comment processing set [Format.setComment] to '\0'
-     * *
-     * *
+     *
+     *  it will never by null.
+     *  it will never be empty unless explicitly configured using [CommonSettings.setSkipEmptyLines]
+     *  it won't contain lines identified by the parser as comments. To disable comment processing set [Format.setComment] to '\0'
+     *
      * @param context A contextual object with information and controls over the current state of the parsing process
      */
     override fun rowProcessed(row: Array<String?>, context: ParsingContext) {

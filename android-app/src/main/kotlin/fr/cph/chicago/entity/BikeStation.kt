@@ -78,7 +78,7 @@ data class BikeStation(
 
     companion object {
 
-        private val DEFAULT_RANGE = 0.008
+        private const val DEFAULT_RANGE = 0.008
 
         fun buildDefaultBikeStationWithName(name: String): BikeStation {
             return BikeStation(0, name, -1, 0, 0.0, 0.0, -1, StringUtils.EMPTY)

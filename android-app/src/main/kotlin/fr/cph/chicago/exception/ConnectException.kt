@@ -38,12 +38,12 @@ private constructor(message: String, e: Exception) : TrackerException(message, e
         /**
          * Serializable
          */
-        private val serialVersionUID = 1L
+        private const val serialVersionUID = 1L
 
         /**
          * The error string
          */
-        private val ERROR = "Can't getBikeStations, please check your connection"
+        private const val ERROR = "Can't getBikeStations, please check your connection"
 
         fun defaultException(e: Exception): ConnectException {
             return ConnectException(ERROR, e)

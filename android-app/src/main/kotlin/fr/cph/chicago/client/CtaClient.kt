@@ -45,8 +45,8 @@ import java.io.InputStream
  */
 object CtaClient {
 
-    private val QUERY_PARAM_KEY = "?key="
-    private val QUERY_PARAM_JSON = "?outputType=json"
+    private const val QUERY_PARAM_KEY = "?key="
+    private const val QUERY_PARAM_JSON = "?outputType=json"
 
     /**
      * HttpClient

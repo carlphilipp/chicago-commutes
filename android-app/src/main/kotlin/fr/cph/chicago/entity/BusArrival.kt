@@ -100,7 +100,7 @@ data class BusArrival(
 
     companion object {
 
-        private val NO_SERVICE = "No service"
+        private const val NO_SERVICE = "No service"
 
         @JvmField val CREATOR: Parcelable.Creator<BusArrival> = object : Parcelable.Creator<BusArrival> {
             override fun createFromParcel(source: Parcel): BusArrival {

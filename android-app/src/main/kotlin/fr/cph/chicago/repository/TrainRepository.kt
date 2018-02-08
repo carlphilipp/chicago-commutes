@@ -43,9 +43,9 @@ import java.util.*
 object TrainRepository {
 
     private val TAG = TrainRepository::class.java.simpleName
-    private val DEFAULT_RANGE = 0.008
+    private const val DEFAULT_RANGE = 0.008
     // https://data.cityofchicago.org/Transportation/CTA-System-Information-List-of-L-Stops/8pix-ypme
-    private val TRAIN_FILE_PATH = "train_stops.csv"
+    private const val TRAIN_FILE_PATH = "train_stops.csv"
 
     var error: Boolean = false
 
@@ -240,7 +240,7 @@ object TrainRepository {
                 if (result.containsKey(trainLine)) {
                     val stations = result[trainLine]!!
                     stations.add(station)
-                    Collections.sort(stations)
+                    stations.sort()
                 } else {
                     val stations = mutableListOf<Station>()
                     result.put(trainLine, stations)

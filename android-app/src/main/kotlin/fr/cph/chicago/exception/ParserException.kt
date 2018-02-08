@@ -41,6 +41,6 @@ class ParserException : TrackerException {
         /**
          * Serializable
          */
-        private val serialVersionUID = 1L
+        private const val serialVersionUID = 1L
     }
 }

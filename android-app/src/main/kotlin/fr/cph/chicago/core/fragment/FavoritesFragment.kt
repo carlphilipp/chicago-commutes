@@ -95,9 +95,9 @@ class FavoritesFragment : AbstractFragment() {
             bikeStations = mainActivity.intent.getParcelableArrayListExtra(getString(R.string.bundle_bike_stations))
                 ?: listOf()
             favoritesAdapter = FavoritesAdapter(mainActivity)
-            favoritesData.trainArrivals = trainArrivals
-            favoritesData.busArrivals = busArrivals
-            favoritesData.bikeStations = bikeStations
+            favoritesData.updateTrainArrivals(trainArrivals)
+            favoritesData.updateBusArrivals(busArrivals)
+            favoritesData.updateBikeStations(bikeStations)
             favoritesAdapter!!.refreshFavorites()
         }
         util.trackScreen(getString(R.string.analytics_favorites_fragment))
@@ -193,8 +193,8 @@ class FavoritesFragment : AbstractFragment() {
     fun reloadData(favoritesDTO: FavoritesDTO) {
         mainActivity.intent.putParcelableArrayListExtra(bundleBikeStation, favoritesDTO.bikeStations as ArrayList<BikeStation>)
         bikeStations = favoritesDTO.bikeStations
-        favoritesData.busArrivals = favoritesDTO.busArrivalDTO.busArrivals
-        favoritesData.trainArrivals = favoritesDTO.trainArrivalDTO.trainArrivalSparseArray
+        favoritesData.updateBusArrivals(favoritesDTO.busArrivalDTO.busArrivals)
+        favoritesData.updateTrainArrivals(favoritesDTO.trainArrivalDTO.trainArrivalSparseArray)
 
         favoritesAdapter?.refreshFavorites()
         favoritesAdapter?.resetLastUpdate()
@@ -227,7 +227,7 @@ class FavoritesFragment : AbstractFragment() {
 
     fun setBikeStations(bikeStations: List<BikeStation>) {
         this.bikeStations = bikeStations
-        favoritesData.bikeStations = bikeStations
+        favoritesData.updateBikeStations(bikeStations)
         favoritesAdapter?.notifyDataSetChanged()
     }
 

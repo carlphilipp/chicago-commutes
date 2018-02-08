@@ -26,7 +26,7 @@ import io.realm.Realm
 
 object BusRepository {
 
-    private val DEFAULT_RANGE = 0.008
+    private const val DEFAULT_RANGE = 0.008
 
     var busRouteError: Boolean = false
 

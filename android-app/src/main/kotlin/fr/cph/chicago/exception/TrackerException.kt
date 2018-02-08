@@ -44,7 +44,7 @@ open class TrackerException : Exception {
 
     companion object {
 
-        private val serialVersionUID = 1L
-        val ERROR = "Error, please try again later"
+        private const val serialVersionUID = 1L
+        const val ERROR = "Error, please try again later"
     }
 }

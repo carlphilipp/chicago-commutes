@@ -45,13 +45,13 @@ object PreferenceRepository {
     private val PATTERN = Pattern.compile("(\\d{1,3})")
     private val FORMAT = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
 
-    private val PREFERENCE_FAVORITES = "ChicagoTrackerFavorites"
-    private val PREFERENCE_FAVORITES_TRAIN = "ChicagoTrackerFavoritesTrain"
-    private val PREFERENCE_FAVORITES_BUS = "ChicagoTrackerFavoritesBus"
-    private val PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING = "ChicagoTrackerFavoritesBusNameMapping"
-    private val PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING = "ChicagoTrackerFavoritesBusStopNameMapping"
-    private val PREFERENCE_FAVORITES_BIKE = "ChicagoTrackerFavoritesBike"
-    private val PREFERENCE_FAVORITES_BIKE_NAME_MAPPING = "ChicagoTrackerFavoritesBikeNameMapping"
+    private const val PREFERENCE_FAVORITES = "ChicagoTrackerFavorites"
+    private const val PREFERENCE_FAVORITES_TRAIN = "ChicagoTrackerFavoritesTrain"
+    private const val PREFERENCE_FAVORITES_BUS = "ChicagoTrackerFavoritesBus"
+    private const val PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING = "ChicagoTrackerFavoritesBusNameMapping"
+    private const val PREFERENCE_FAVORITES_BUS_STOP_NAME_MAPPING = "ChicagoTrackerFavoritesBusStopNameMapping"
+    private const val PREFERENCE_FAVORITES_BIKE = "ChicagoTrackerFavoritesBike"
+    private const val PREFERENCE_FAVORITES_BIKE_NAME_MAPPING = "ChicagoTrackerFavoritesBikeNameMapping"
 
     private val trainService = TrainService
     private val util = Util

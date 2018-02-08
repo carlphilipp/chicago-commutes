@@ -35,8 +35,8 @@ import java.util.*
 object AlertService {
     private val ctaClient = CtaClient
     private val jsonParser = JsonParser
-    private val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US)
-    private val format2 = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+    private val formatWithSeconds = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US)
+    private val format = SimpleDateFormat("yyyy-MM-dd", Locale.US)
     private val displayFormat = SimpleDateFormat("MM/dd/yyyy h:mm a", Locale.US)
 
     fun getAlerts(): List<RoutesAlertsDTO> {
@@ -87,9 +87,9 @@ object AlertService {
     private fun formatDate(str: String?): String {
         if(str == null) return ""
         return try {
-            displayFormat.format(format.parse(str))
+            displayFormat.format(formatWithSeconds.parse(str))
         } catch (p: ParseException) {
-            displayFormat.format(format2.parse(str))
+            displayFormat.format(format.parse(str))
         }
     }
 }

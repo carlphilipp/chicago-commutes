@@ -30,10 +30,10 @@ data class Train(
 
         fun getBestPosition(trains: List<Train>): Position {
             val position = Position()
-            var maxLatitude: Double = 0.0
-            var minLatitude: Double = 0.0
-            var maxLongitude: Double = 0.0
-            var minLongitude: Double = 0.0
+            var maxLatitude = 0.0
+            var minLatitude = 0.0
+            var maxLongitude = 0.0
+            var minLongitude = 0.0
             trains
                 .asSequence()
                 .map { it.position }
