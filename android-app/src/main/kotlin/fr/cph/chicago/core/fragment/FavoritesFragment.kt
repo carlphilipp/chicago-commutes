@@ -181,8 +181,8 @@ class FavoritesFragment : AbstractFragment() {
 
     override fun onResume() {
         super.onResume()
-        favoritesAdapter!!.refreshFavorites()
-        favoritesAdapter!!.notifyDataSetChanged()
+        favoritesAdapter?.refreshFavorites()
+        favoritesAdapter?.notifyDataSetChanged()
         if (refreshTimingTask!!.status == Status.FINISHED) {
             startRefreshTask()
         }
@@ -196,10 +196,10 @@ class FavoritesFragment : AbstractFragment() {
         favoritesData.busArrivals = favoritesDTO.busArrivalDTO.busArrivals
         favoritesData.trainArrivals = favoritesDTO.trainArrivalDTO.trainArrivalSparseArray
 
-        favoritesAdapter!!.refreshFavorites()
-        favoritesAdapter!!.resetLastUpdate()
-        favoritesAdapter!!.updateModel()
-        favoritesAdapter!!.notifyDataSetChanged()
+        favoritesAdapter?.refreshFavorites()
+        favoritesAdapter?.resetLastUpdate()
+        favoritesAdapter?.updateModel()
+        favoritesAdapter?.notifyDataSetChanged()
 
         rootView.setBackgroundResource(R.drawable.highlight_selector)
         rootView.postDelayed({ rootView.setBackgroundResource(R.drawable.bg_selector) }, 100)
@@ -228,7 +228,7 @@ class FavoritesFragment : AbstractFragment() {
     fun setBikeStations(bikeStations: List<BikeStation>) {
         this.bikeStations = bikeStations
         favoritesData.bikeStations = bikeStations
-        favoritesAdapter!!.notifyDataSetChanged()
+        favoritesAdapter?.notifyDataSetChanged()
     }
 
     /**
@@ -236,7 +236,7 @@ class FavoritesFragment : AbstractFragment() {
      */
     private fun startRefreshTask() {
         refreshTimingTask = RefreshTimingTask(favoritesAdapter!!).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR) as RefreshTimingTask
-        favoritesAdapter!!.updateModel()
+        favoritesAdapter?.updateModel()
     }
 
     fun startRefreshing() {
