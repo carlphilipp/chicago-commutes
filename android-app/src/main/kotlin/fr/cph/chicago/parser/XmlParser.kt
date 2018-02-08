@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 Carl-Philipp Harmant
+ * Copyright 2018 Carl-Philipp Harmant
  *
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,9 +38,8 @@ import java.util.*
 
 /**
  * XML parser
-
  * @author Carl-Philipp Harmant
- * *
+ *
  * @version 1
  */
 // TODO to refactor and optimize
@@ -53,13 +52,9 @@ object XmlParser {
 
     /**
      * Parse arrivals
-
      * @param inputStream   the xml string
-     * *
      * @param data the train data
-     * *
      * @return a list of train arrival
-     * *
      * @throws ParserException the parser exception
      */
     @Synchronized
