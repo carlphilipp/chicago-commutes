@@ -8,7 +8,6 @@ import fr.cph.chicago.entity.BusStop
 import fr.cph.chicago.entity.Position
 import fr.cph.chicago.service.BusService
 import org.apache.commons.lang3.StringUtils
-import java.util.*
 
 internal class BusStopCsvProcessor : RowProcessor {
 

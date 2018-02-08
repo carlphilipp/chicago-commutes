@@ -11,7 +11,7 @@ import java.io.InputStreamReader
 object BusStopCsvParser {
 
     private val TAG = BusStopCsvParser::class.java.simpleName
-    private val STOP_FILE_PATH = "bus_stops.txt"
+    private const val STOP_FILE_PATH = "bus_stops.txt"
 
     private val parser: CsvParser
 
@@ -24,7 +24,7 @@ object BusStopCsvParser {
     }
 
     fun parse() {
-        var inputStreamReader: InputStreamReader? = null
+        lateinit var inputStreamReader: InputStreamReader
         try {
             inputStreamReader = InputStreamReader(App.instance.assets.open(STOP_FILE_PATH))
             parser.parse(inputStreamReader)

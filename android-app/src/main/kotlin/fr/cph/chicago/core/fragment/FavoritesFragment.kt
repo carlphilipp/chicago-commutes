@@ -165,23 +165,18 @@ class FavoritesFragment : AbstractFragment() {
 
     override fun onPause() {
         super.onPause()
-        if (refreshTimingTask != null) {
-            refreshTimingTask!!.cancel(true)
-        }
+        refreshTimingTask?.cancel(true)
     }
 
     override fun onStop() {
         super.onStop()
-        if (refreshTimingTask != null) {
-            refreshTimingTask!!.cancel(true)
-        }
+        refreshTimingTask?.cancel(true)
+
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        if (refreshTimingTask != null) {
-            refreshTimingTask!!.cancel(true)
-        }
+        refreshTimingTask?.cancel(true)
     }
 
     override fun onResume() {
