@@ -159,7 +159,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onResume() {
         super.onResume()
-        if(title != null)
+        if (title != null)
             setBarTitle(title!!)
     }
 
@@ -185,7 +185,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     loadFirstData()
                 }
                 val zipped = observableUtil.createAllDataObservable(application)
-                zipped.subscribe({ favoritesResult -> favoritesFragment!!.reloadData(favoritesResult) })
+                zipped.subscribe({ favoritesResult -> favoritesFragment?.reloadData(favoritesResult) })
                 { onError ->
                     Log.e(TAG, onError.message, onError)
                     favoritesFragment!!.displayError(R.string.message_something_went_wrong)

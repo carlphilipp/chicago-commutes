@@ -27,6 +27,7 @@ import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
+import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,10 +42,7 @@ import fr.cph.chicago.core.activity.*
 import fr.cph.chicago.core.listener.BusStopOnClickListener
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener
 import fr.cph.chicago.data.FavoritesData
-import fr.cph.chicago.entity.BikeStation
-import fr.cph.chicago.entity.BusArrival
-import fr.cph.chicago.entity.BusRoute
-import fr.cph.chicago.entity.Station
+import fr.cph.chicago.entity.*
 import fr.cph.chicago.entity.dto.BusDetailsDTO
 import fr.cph.chicago.entity.enumeration.BusDirection
 import fr.cph.chicago.entity.enumeration.TrainLine
@@ -65,8 +63,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
     private val favoritesData = FavoritesData
     private val context: Context = activity.applicationContext
     private val layoutUtil = LayoutUtil
-
-    private var lastUpdate: String? = null
+    private lateinit var lastUpdate: String
 
     class FavoritesViewHolder(view: View, val parent: ViewGroup) : RecyclerView.ViewHolder(view) {
         val mainLayout: LinearLayout = view.findViewById(R.id.favorites_arrival_layout)
@@ -276,7 +273,6 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
     }
 
     fun refreshFavorites() {
-        // TODO delete that method but see if we can pass context properly
         favoritesData.refreshFavorites()
     }
 
@@ -293,6 +289,15 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
     fun updateModel() {
         lastUpdate = lastUpdateInMinutes
         notifyDataSetChanged()
+    }
+
+    fun updateTrainArrivalsAndBusArrivals(trainArrivals: SparseArray<TrainArrival>, busArrivals: List<BusArrival>) {
+        favoritesData.updateTrainArrivals(trainArrivals)
+        favoritesData.updateBusArrivals(busArrivals)
+    }
+
+    fun updateBikeStations(bikeStations: List<BikeStation>) {
+        favoritesData.updateBikeStations(bikeStations)
     }
 
     /**

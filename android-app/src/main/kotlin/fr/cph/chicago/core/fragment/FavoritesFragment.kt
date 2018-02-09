@@ -41,7 +41,6 @@ import fr.cph.chicago.Constants.Companion.TRAINS_ARRIVALS_URL
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.adapter.FavoritesAdapter
-import fr.cph.chicago.data.FavoritesData
 import fr.cph.chicago.entity.BikeStation
 import fr.cph.chicago.entity.BusArrival
 import fr.cph.chicago.entity.TrainArrival
@@ -66,7 +65,7 @@ class FavoritesFragment : AbstractFragment() {
     @BindView(R.id.activity_main_swipe_refresh_layout)
     lateinit var swipeRefreshLayout: SwipeRefreshLayout
     @BindView(R.id.favorites_list)
-    lateinit var listView: RecyclerView
+    lateinit var recyclerView: RecyclerView
     @BindView(R.id.floating_button)
     lateinit var floatingButton: FloatingActionButton
 
@@ -75,7 +74,6 @@ class FavoritesFragment : AbstractFragment() {
 
     private val util: Util = Util
     private val observableUtil: ObservableUtil = ObservableUtil
-    private val favoritesData: FavoritesData = FavoritesData
     private val busService: BusService = BusService
     private val preferenceService: PreferenceService = PreferenceService
 
@@ -88,16 +86,15 @@ class FavoritesFragment : AbstractFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (favoritesAdapter == null) {
-            val busArrivals: List<BusArrival> = mainActivity.intent.getParcelableArrayListExtra(getString(R.string.bundle_bus_arrivals))
+            val intent = mainActivity.intent
+            val busArrivals: List<BusArrival> = intent.getParcelableArrayListExtra(getString(R.string.bundle_bus_arrivals))
                 ?: listOf()
-            val trainArrivals: SparseArray<TrainArrival> = mainActivity.intent.extras.getSparseParcelableArray(getString(R.string.bundle_train_arrivals))
+            val trainArrivals: SparseArray<TrainArrival> = intent.extras.getSparseParcelableArray(getString(R.string.bundle_train_arrivals))
                 ?: SparseArray()
-            bikeStations = mainActivity.intent.getParcelableArrayListExtra(getString(R.string.bundle_bike_stations))
-                ?: listOf()
+            bikeStations = intent.getParcelableArrayListExtra(getString(R.string.bundle_bike_stations)) ?: listOf()
             favoritesAdapter = FavoritesAdapter(mainActivity)
-            favoritesData.updateTrainArrivals(trainArrivals)
-            favoritesData.updateBusArrivals(busArrivals)
-            favoritesData.updateBikeStations(bikeStations)
+            favoritesAdapter!!.updateTrainArrivalsAndBusArrivals(trainArrivals, busArrivals)
+            favoritesAdapter!!.updateBikeStations(bikeStations)
             favoritesAdapter!!.refreshFavorites()
         }
         util.trackScreen(getString(R.string.analytics_favorites_fragment))
@@ -107,9 +104,8 @@ class FavoritesFragment : AbstractFragment() {
         if (!mainActivity.isFinishing) {
             rootView = inflater.inflate(R.layout.fragment_main, container, false)
             setBinder(rootView)
-            val linearLayoutManager = LinearLayoutManager(mainActivity)
-            listView.adapter = favoritesAdapter
-            listView.layoutManager = linearLayoutManager
+            recyclerView.adapter = favoritesAdapter
+            recyclerView.layoutManager = LinearLayoutManager(mainActivity)
             floatingButton.setOnClickListener { _ ->
                 if (bikeStations.isEmpty()) {
                     util.showMessage(mainActivity, R.string.message_too_fast)
@@ -119,7 +115,8 @@ class FavoritesFragment : AbstractFragment() {
                     mainActivity.startActivity(intent)
                 }
             }
-            listView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+
+            recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
                     if (dy > 0 && floatingButton.isShown) {
                         floatingButton.hide()
@@ -193,9 +190,7 @@ class FavoritesFragment : AbstractFragment() {
     fun reloadData(favoritesDTO: FavoritesDTO) {
         mainActivity.intent.putParcelableArrayListExtra(bundleBikeStation, favoritesDTO.bikeStations as ArrayList<BikeStation>)
         bikeStations = favoritesDTO.bikeStations
-        favoritesData.updateBusArrivals(favoritesDTO.busArrivalDTO.busArrivals)
-        favoritesData.updateTrainArrivals(favoritesDTO.trainArrivalDTO.trainArrivalSparseArray)
-
+        favoritesAdapter?.updateTrainArrivalsAndBusArrivals(favoritesDTO.trainArrivalDTO.trainArrivalSparseArray, favoritesDTO.busArrivalDTO.busArrivals)
         favoritesAdapter?.refreshFavorites()
         favoritesAdapter?.resetLastUpdate()
         favoritesAdapter?.updateModel()
@@ -204,14 +199,11 @@ class FavoritesFragment : AbstractFragment() {
         rootView.setBackgroundResource(R.drawable.highlight_selector)
         rootView.postDelayed({ rootView.setBackgroundResource(R.drawable.bg_selector) }, 100)
         stopRefreshing()
-        if (util.isAtLeastTwoErrors(favoritesDTO.trainArrivalDTO.error, favoritesDTO.busArrivalDTO.error, favoritesDTO.bikeError)) {
-            util.showMessage(mainActivity, R.string.message_something_went_wrong)
-        } else if (favoritesDTO.trainArrivalDTO.error) {
-            util.showMessage(mainActivity, R.string.message_error_train_favorites)
-        } else if (favoritesDTO.busArrivalDTO.error) {
-            util.showMessage(mainActivity, R.string.message_error_bus_favorites)
-        } else if (favoritesDTO.bikeError) {
-            util.showMessage(mainActivity, R.string.message_error_bike_favorites)
+        when {
+            util.isAtLeastTwoErrors(favoritesDTO.trainArrivalDTO.error, favoritesDTO.busArrivalDTO.error, favoritesDTO.bikeError) -> util.showMessage(mainActivity, R.string.message_something_went_wrong)
+            favoritesDTO.trainArrivalDTO.error -> util.showMessage(mainActivity, R.string.message_error_train_favorites)
+            favoritesDTO.busArrivalDTO.error -> util.showMessage(mainActivity, R.string.message_error_bus_favorites)
+            favoritesDTO.bikeError -> util.showMessage(mainActivity, R.string.message_error_bike_favorites)
         }
     }
 
@@ -227,7 +219,7 @@ class FavoritesFragment : AbstractFragment() {
 
     fun setBikeStations(bikeStations: List<BikeStation>) {
         this.bikeStations = bikeStations
-        favoritesData.updateBikeStations(bikeStations)
+        favoritesAdapter?.updateBikeStations(bikeStations)
         favoritesAdapter?.notifyDataSetChanged()
     }
 
