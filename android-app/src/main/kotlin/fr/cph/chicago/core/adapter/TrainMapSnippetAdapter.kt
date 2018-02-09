@@ -49,7 +49,7 @@ class TrainMapSnippetAdapter(private val etas: List<Eta>) : BaseAdapter() {
         return position.toLong()
     }
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
         var view = convertView
         val eta = getItem(position) as Eta
 
@@ -57,7 +57,7 @@ class TrainMapSnippetAdapter(private val etas: List<Eta>) : BaseAdapter() {
 
         if (view == null) {
             val vi = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            view = vi.inflate(R.layout.list_map_train, parent, false)!!
+            view = vi.inflate(R.layout.list_map_train, parent, false)
 
             holder = ViewHolder(
                 view.findViewById(R.id.station_name),

@@ -221,14 +221,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun refreshFirstLoadData(bikeStations: List<BikeStation>) {
         intent.putParcelableArrayListExtra(bundleBikeStations, bikeStations as ArrayList<BikeStation>)
         onNewIntent(intent)
-        if (favoritesFragment != null) {
-            favoritesFragment!!.setBikeStations(bikeStations)
-        }
-        if (bikeFragment != null) {
-            bikeFragment!!.setBikeStations(bikeStations)
-        }
-        if (currentPosition == POSITION_BUS && busFragment != null) {
-            busFragment!!.update()
+        favoritesFragment?.setBikeStations(bikeStations)
+        bikeFragment?.setBikeStations(bikeStations)
+        if (currentPosition == POSITION_BUS) {
+            busFragment?.update()
         }
     }
 
@@ -327,8 +323,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    public override fun onSaveInstanceState(savedInstanceState: Bundle?) {
-        savedInstanceState!!.putInt(SELECTED_ID, currentPosition)
+    public override fun onSaveInstanceState(savedInstanceState: Bundle) {
+        savedInstanceState.putInt(SELECTED_ID, currentPosition)
         savedInstanceState.putString(bundleTitle, title)
         super.onSaveInstanceState(savedInstanceState)
     }

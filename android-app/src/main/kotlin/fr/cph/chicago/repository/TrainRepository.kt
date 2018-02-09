@@ -243,7 +243,7 @@ object TrainRepository {
                     stations.sort()
                 } else {
                     val stations = mutableListOf<Station>()
-                    result.put(trainLine, stations)
+                    result[trainLine] = stations
                     stations.add(station)
                 }
             }

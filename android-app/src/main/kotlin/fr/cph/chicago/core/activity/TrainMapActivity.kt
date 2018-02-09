@@ -117,8 +117,8 @@ class TrainMapActivity : AbstractMapActivity() {
         line = savedInstanceState.getString(bundleTrainLine)
     }
 
-    public override fun onSaveInstanceState(savedInstanceState: Bundle?) {
-        savedInstanceState!!.putString(bundleTrainLine, line)
+    public override fun onSaveInstanceState(savedInstanceState: Bundle) {
+        savedInstanceState.putString(bundleTrainLine, line)
         super.onSaveInstanceState(savedInstanceState)
     }
 
@@ -186,7 +186,7 @@ class TrainMapActivity : AbstractMapActivity() {
             }
 
             override fun getInfoContents(marker: Marker): View? {
-                if ("" != marker.snippet) {
+                return if ("" != marker.snippet) {
                     // View can be null
                     val view = views[marker]
                     if (!refreshingInfoWindow) {
@@ -196,9 +196,9 @@ class TrainMapActivity : AbstractMapActivity() {
                             .subscribe(TrainEtaObserver(view!!, this@TrainMapActivity))
                         status[marker] = false
                     }
-                    return view
+                    view
                 } else {
-                    return null
+                    null
                 }
             }
         })
@@ -208,8 +208,8 @@ class TrainMapActivity : AbstractMapActivity() {
                 if (!refreshingInfoWindow) {
                     selectedMarker = marker
                     val runNumber = marker.snippet
-                    val current = status[marker]
-                    observableUtil.createLoadTrainEtaObservable(runNumber, !current!!)
+                    val current = status.getOrDefault(marker, false)
+                    observableUtil.createLoadTrainEtaObservable(runNumber, !current)
                         .subscribe(TrainEtaObserver(view!!, this@TrainMapActivity))
                     status[marker] = !current
                 }

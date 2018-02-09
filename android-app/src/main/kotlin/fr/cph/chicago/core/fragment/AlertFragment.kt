@@ -82,22 +82,21 @@ class AlertFragment : AbstractFragment() {
                 }
                 textFilter.addTextChangedListener(object : TextWatcher {
 
-                    var routesAlertsDTOS: MutableList<RoutesAlertsDTO> = mutableListOf()
+                    val routesAlertsDTOS: MutableList<RoutesAlertsDTO> = mutableListOf()
 
                     override fun beforeTextChanged(c: CharSequence, start: Int, count: Int, after: Int) {
-                        this.routesAlertsDTOS = mutableListOf()
+                        this.routesAlertsDTOS.clear()
                     }
 
                     override fun onTextChanged(c: CharSequence, start: Int, before: Int, count: Int) {
                         val trimmed = c.toString().trim { it <= ' ' }
                         this.routesAlertsDTOS.addAll(
                             routesAlertsDTOS
-                                .filter { (id, routeName) -> StringUtils.containsIgnoreCase(routeName, trimmed) || StringUtils.containsIgnoreCase(id, trimmed) }
-                        )
+                                .filter { (id, routeName) -> StringUtils.containsIgnoreCase(routeName, trimmed) || StringUtils.containsIgnoreCase(id, trimmed) })
                     }
 
                     override fun afterTextChanged(s: Editable) {
-                        alertAdapter.setAlerts(routesAlertsDTOS!!)
+                        alertAdapter.setAlerts(routesAlertsDTOS)
                         alertAdapter.notifyDataSetChanged()
                     }
                 })

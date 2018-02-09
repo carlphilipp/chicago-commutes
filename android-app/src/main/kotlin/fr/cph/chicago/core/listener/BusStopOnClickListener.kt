@@ -61,7 +61,7 @@ class BusStopOnClickListener(private val activity: Activity, private val parent:
             val dialog = builder.create()
             dialog.show()
             if (dialog.window != null) {
-                dialog.window!!.setLayout(((activity.application as App).screenWidth * 0.7).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
+                dialog.window.setLayout(((activity.application as App).screenWidth * 0.7).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
             }
         }
     }

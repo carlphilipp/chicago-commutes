@@ -246,7 +246,7 @@ object Util {
 
     fun showSnackBar(activity: Activity, message: Int, length: Int) {
         if (activity.currentFocus != null) {
-            Snackbar.make(activity.currentFocus!!, activity.getString(message), length).show()
+            Snackbar.make(activity.currentFocus, activity.getString(message), length).show()
         } else {
             Toast.makeText(activity, activity.getString(message), length).show()
         }

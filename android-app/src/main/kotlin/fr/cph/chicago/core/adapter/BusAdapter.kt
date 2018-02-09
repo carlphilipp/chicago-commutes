@@ -59,13 +59,13 @@ class BusAdapter(private val app: App) : BaseAdapter() {
         return position.toLong()
     }
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
         var view = convertView
         val route = getItem(position) as BusRoute
         val holder: ViewHolder
         if (view == null) {
             val vi = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            view = vi.inflate(R.layout.list_bus, parent, false)!!
+            view = vi.inflate(R.layout.list_bus, parent, false)
             holder = ViewHolder(
                 routeNameView = view.findViewById(R.id.route_name),
                 routeNumberView = view.findViewById(R.id.route_number),
@@ -78,7 +78,7 @@ class BusAdapter(private val app: App) : BaseAdapter() {
         holder.routeNameView.text = route.name
         holder.routeNumberView.text = route.id
 
-        view.setOnClickListener { _ ->
+        view?.setOnClickListener { _ ->
             holder.detailsLayout.visibility = LinearLayout.VISIBLE
             observableUtil.createBusDirectionsObservable(route.id)
                 .doOnError { throwable: Throwable ->

@@ -50,7 +50,7 @@ class BikeAdapter(var bikeStations: List<BikeStation>) : BaseAdapter() {
         return position.toLong()
     }
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
         var view = convertView
         val station = getItem(position) as BikeStation
 
@@ -58,7 +58,7 @@ class BikeAdapter(var bikeStations: List<BikeStation>) : BaseAdapter() {
 
         if (view == null) {
             val vi = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            view = vi.inflate(R.layout.list_bike, parent, false)!!
+            view = vi.inflate(R.layout.list_bike, parent, false)
             holder = ViewHolder(view.findViewById(R.id.station_name))
             view.tag = holder
         } else {
@@ -66,7 +66,7 @@ class BikeAdapter(var bikeStations: List<BikeStation>) : BaseAdapter() {
         }
         holder.stationNameView.text = station.name
 
-        view.setOnClickListener(BikeStationOnClickListener(station))
+        view?.setOnClickListener(BikeStationOnClickListener(station))
         return view
     }
 

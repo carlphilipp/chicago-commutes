@@ -53,11 +53,11 @@ class CtaMapFragment : AbstractFragment() {
         return rootView
     }
 
-    fun loadBitmap(imageView: PhotoView?) {
+    private fun loadBitmap(imageView: PhotoView) {
         if (bitmapCache != null) {
-            imageView!!.setImageBitmap(bitmapCache)
+            imageView.setImageBitmap(bitmapCache)
         } else {
-            val task = BitmapWorkerTask(imageView!!)
+            val task = BitmapWorkerTask(imageView)
             task.execute()
         }
     }

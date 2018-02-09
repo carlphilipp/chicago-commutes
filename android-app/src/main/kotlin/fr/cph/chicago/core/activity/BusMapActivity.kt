@@ -206,8 +206,8 @@ class BusMapActivity : AbstractMapActivity() {
         bounds = savedInstanceState.getStringArray(bundleBusBounds)
     }
 
-    public override fun onSaveInstanceState(savedInstanceState: Bundle?) {
-        savedInstanceState!!.putInt(bundleBusId, busId)
+    public override fun onSaveInstanceState(savedInstanceState: Bundle) {
+        savedInstanceState.putInt(bundleBusId, busId)
         savedInstanceState.putString(bundleBusRouteId, busRouteId)
         savedInstanceState.putStringArray(bundleBusBounds, bounds)
         super.onSaveInstanceState(savedInstanceState)

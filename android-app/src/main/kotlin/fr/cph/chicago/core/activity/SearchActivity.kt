@@ -83,7 +83,7 @@ class SearchActivity : AppCompatActivity() {
             container.foreground.alpha = 0
 
             searchAdapter = SearchAdapter(this)
-            bikeStations = intent.extras!!.getParcelableArrayList(bundleBikeStations)
+            bikeStations = intent.extras.getParcelableArrayList(bundleBikeStations)
             handleIntent(intent)
 
             listView.adapter = searchAdapter
@@ -123,7 +123,7 @@ class SearchActivity : AppCompatActivity() {
     override fun startActivity(intent: Intent) {
         // check if search intent
         if (Intent.ACTION_SEARCH == intent.action) {
-            val bikeStations = getIntent().extras!!.getParcelableArrayList<BikeStation>(bundleBikeStations)
+            val bikeStations = getIntent().extras.getParcelableArrayList<BikeStation>(bundleBikeStations)
             intent.putParcelableArrayListExtra(bundleBikeStations, bikeStations)
         }
         super.startActivity(intent)

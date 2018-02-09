@@ -137,7 +137,7 @@ class StationActivity : AbstractStationActivity() {
             setContentView(R.layout.activity_station)
             ButterKnife.bind(this)
             // Get station id from bundle
-            stationId = intent.extras!!.getInt(bundleTrainStationId, 0)
+            stationId = intent.extras.getInt(bundleTrainStationId, 0)
             if (stationId != 0) {
                 // Get station
                 station = trainService.getStation(stationId)

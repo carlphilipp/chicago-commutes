@@ -93,9 +93,9 @@ class FavoritesFragment : AbstractFragment() {
                 ?: SparseArray()
             bikeStations = intent.getParcelableArrayListExtra(getString(R.string.bundle_bike_stations)) ?: listOf()
             favoritesAdapter = FavoritesAdapter(mainActivity)
-            favoritesAdapter!!.updateTrainArrivalsAndBusArrivals(trainArrivals, busArrivals)
-            favoritesAdapter!!.updateBikeStations(bikeStations)
-            favoritesAdapter!!.refreshFavorites()
+            favoritesAdapter?.updateTrainArrivalsAndBusArrivals(trainArrivals, busArrivals)
+            favoritesAdapter?.updateBikeStations(bikeStations)
+            favoritesAdapter?.refreshFavorites()
         }
         util.trackScreen(getString(R.string.analytics_favorites_fragment))
     }
@@ -180,8 +180,10 @@ class FavoritesFragment : AbstractFragment() {
         super.onResume()
         favoritesAdapter?.refreshFavorites()
         favoritesAdapter?.notifyDataSetChanged()
-        if (refreshTimingTask!!.status == Status.FINISHED) {
-            startRefreshTask()
+        if (refreshTimingTask != null) {
+            if (refreshTimingTask!!.status == Status.FINISHED) {
+                startRefreshTask()
+            }
         }
         val hasFav = preferenceService.hasFavorites()
         welcomeLayout.visibility = if (hasFav) View.GONE else View.VISIBLE

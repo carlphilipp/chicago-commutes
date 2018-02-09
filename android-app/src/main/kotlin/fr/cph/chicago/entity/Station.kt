@@ -57,7 +57,7 @@ data class Station(
                     if (result.containsKey(trainLine)) {
                         result[trainLine]!!.add(stop)
                     } else {
-                        result.put(trainLine, mutableListOf(stop))
+                        result[trainLine] = mutableListOf(stop)
                     }
                 }
             }

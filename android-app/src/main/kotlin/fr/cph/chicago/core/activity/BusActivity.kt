@@ -235,7 +235,8 @@ class BusActivity : AbstractStationActivity() {
                 .forEach { arrival ->
                     val destination = arrival.busDestination
                     if (tempMap.containsKey(destination)) {
-                        val linearLayout: LinearLayout = tempMap[destination]!![tempMap[destination]!!.size - 1]
+                        val oldLayout = tempMap[destination]!!
+                        val linearLayout: LinearLayout = oldLayout[oldLayout.size - 1]
                         val arrivalView = TextView(applicationContext)
                         arrivalView.text = if (arrival.isDelay) " Delay" else " " + arrival.timeLeft
                         linearLayout.addView(arrivalView)

@@ -50,7 +50,7 @@ class BusBoundAdapter : BaseAdapter() {
         return busStops[position].id.toLong()
     }
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
         var view = convertView
         val busStop = busStops[position]
 
@@ -58,7 +58,7 @@ class BusBoundAdapter : BaseAdapter() {
 
         if (view == null) {
             val vi = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            view = vi.inflate(R.layout.list_bus_bounds, parent, false)!!
+            view = vi.inflate(R.layout.list_bus_bounds, parent, false)
             holder = ViewHolder(view.findViewById(R.id.station_name))
             view.tag = holder
         } else {

@@ -59,7 +59,7 @@ class TrainAdapter(line: TrainLine, private val activity: Activity) : BaseAdapte
         return position.toLong()
     }
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
         val station = getItem(position) as Station
 
         var view = convertView
@@ -69,7 +69,7 @@ class TrainAdapter(line: TrainLine, private val activity: Activity) : BaseAdapte
             view = vi.inflate(R.layout.list_train, parent, false)
 
             holder = ViewHolder(
-                view!!.findViewById(R.id.station_name_value),
+                view.findViewById(R.id.station_name_value),
                 view.findViewById(R.id.station_color)
             )
             view.tag = holder
@@ -83,7 +83,7 @@ class TrainAdapter(line: TrainLine, private val activity: Activity) : BaseAdapte
             .map { line -> layoutUtil.createColoredRoundForMultiple(line) }
             .forEach { layout -> holder.stationColorView.addView(layout) }
 
-        view.setOnClickListener(TrainOnClickListener(parent.context, station.id, station.lines))
+        view?.setOnClickListener(TrainOnClickListener(parent.context, station.id, station.lines))
         return view
     }
 

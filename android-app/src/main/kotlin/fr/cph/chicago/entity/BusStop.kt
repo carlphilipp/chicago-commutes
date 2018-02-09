@@ -38,7 +38,8 @@ open class BusStop(
     var id: Int = 0,
     var name: String = StringUtils.EMPTY,
     var description: String = StringUtils.EMPTY,
-    var position: Position? = null) : RealmObject(), Comparable<BusStop>, Parcelable, Serializable, AStation {
+    // Realm decided that position must be nullable... https://github.com/realm/realm-java/commit/39bb67cef10b62456649fdd7cf5710bd3361c29a
+    var position: Position? = Position()) : RealmObject(), Comparable<BusStop>, Parcelable, Serializable, AStation {
 
     private constructor(source: Parcel) : this(
         id = source.readInt(),
@@ -71,7 +72,8 @@ open class BusStop(
 
         private const val serialVersionUID = 0L
 
-        @JvmField val CREATOR: Parcelable.Creator<BusStop> = object : Parcelable.Creator<BusStop> {
+        @JvmField
+        val CREATOR: Parcelable.Creator<BusStop> = object : Parcelable.Creator<BusStop> {
             override fun createFromParcel(source: Parcel): BusStop {
                 return BusStop(source)
             }

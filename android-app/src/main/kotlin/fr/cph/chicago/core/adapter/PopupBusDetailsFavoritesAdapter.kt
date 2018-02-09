@@ -35,12 +35,12 @@ import org.apache.commons.text.WordUtils
  */
 class PopupBusDetailsFavoritesAdapter(context: Context, private val values: List<BusDetailsDTO>) : ArrayAdapter<BusDetailsDTO>(context, R.layout.popup_bus_cell, values) {
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
         var view = convertView
         val holder: ViewHolder
         if (view == null) {
             val vi = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            view = vi.inflate(R.layout.popup_bus_cell_0, parent, false)!!
+            view = vi.inflate(R.layout.popup_bus_cell_0, parent, false)
             holder = ViewHolder(view.findViewById(R.id.label))
             view.tag = holder
         } else {
