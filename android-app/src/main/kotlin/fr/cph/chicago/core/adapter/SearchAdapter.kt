@@ -53,9 +53,9 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
 
     private val context: Context = activity.applicationContext
 
-    private var trains: List<Station> = listOf()
-    private var busRoutes: List<BusRoute> = listOf()
-    private var bikeStations: List<BikeStation> = listOf()
+    private val trains: MutableList<Station> = mutableListOf()
+    private val busRoutes: MutableList<BusRoute> = mutableListOf()
+    private val bikeStations: MutableList<BikeStation> = mutableListOf()
 
     override fun getCount(): Int {
         return trains.size + busRoutes.size + bikeStations.size
@@ -63,12 +63,10 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
 
     override fun getItem(position: Int): Any {
         val result: Any
-        if (position < trains.size) {
-            result = trains[position]
-        } else if (position < trains.size + busRoutes.size) {
-            result = busRoutes[position - trains.size]
-        } else {
-            result = bikeStations[position - (trains.size + busRoutes.size)]
+        result = when {
+            position < trains.size -> trains[position]
+            position < trains.size + busRoutes.size -> busRoutes[position - trains.size]
+            else -> bikeStations[position - (trains.size + busRoutes.size)]
         }
         return result
     }
@@ -84,59 +82,61 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
 
         val routeName: TextView = view.findViewById(R.id.station_name)
 
-        if (position < trains.size) {
-            val station = getItem(position) as Station
-            routeName.text = station.name
+        when {
+            position < trains.size -> {
+                val station = getItem(position) as Station
+                routeName.text = station.name
 
-            val stationColorView: LinearLayout = view.findViewById(R.id.station_color)
+                val stationColorView: LinearLayout = view.findViewById(R.id.station_color)
 
-            station.lines
-                .map { layoutUtil.createColoredRoundForMultiple(it) }
-                .forEach { stationColorView.addView(it) }
+                station.lines
+                    .map { layoutUtil.createColoredRoundForMultiple(it) }
+                    .forEach { stationColorView.addView(it) }
 
-            view.setOnClickListener(TrainOnClickListener(parent.context, station.id, station.lines))
-        } else if (position < trains.size + busRoutes.size) {
-            val busRoute = getItem(position) as BusRoute
-
-            val icon: ImageView = view.findViewById(R.id.icon)
-            icon.setImageDrawable(ContextCompat.getDrawable(parent.context, R.drawable.ic_directions_bus_white_24dp))
-
-            val name = "${busRoute.id} ${busRoute.name}"
-            routeName.text = name
-
-            val loadingTextView: TextView = view.findViewById(R.id.loading_text_view)
-            view.setOnClickListener { _ ->
-                loadingTextView.visibility = LinearLayout.VISIBLE
-                observableUtil.createBusDirectionsObservable(busRoute.id)
-                    .doOnError { throwable ->
-                        util.handleConnectOrParserException(throwable, activity, null, loadingTextView)
-                        Log.e(TAG, throwable.message, throwable)
-                    }.subscribe(BusDirectionObserver(App.instance.screenWidth, parent, loadingTextView, busRoute))
+                view.setOnClickListener(TrainOnClickListener(parent.context, station.id, station.lines))
             }
-        } else {
-            val bikeStation = getItem(position) as BikeStation
+            position < trains.size + busRoutes.size -> {
+                val busRoute = getItem(position) as BusRoute
 
-            val icon: ImageView = view.findViewById(R.id.icon)
-            icon.setImageDrawable(ContextCompat.getDrawable(parent.context, R.drawable.ic_directions_bike_white_24dp))
+                val icon: ImageView = view.findViewById(R.id.icon)
+                icon.setImageDrawable(ContextCompat.getDrawable(parent.context, R.drawable.ic_directions_bus_white_24dp))
 
-            routeName.text = bikeStation.name
+                val name = "${busRoute.id} ${busRoute.name}"
+                routeName.text = name
 
-            view.setOnClickListener(BikeStationOnClickListener(bikeStation))
+                val loadingTextView: TextView = view.findViewById(R.id.loading_text_view)
+                view.setOnClickListener { _ ->
+                    loadingTextView.visibility = LinearLayout.VISIBLE
+                    observableUtil.createBusDirectionsObservable(busRoute.id)
+                        .doOnError { throwable ->
+                            util.handleConnectOrParserException(throwable, activity, null, loadingTextView)
+                            Log.e(TAG, throwable.message, throwable)
+                        }.subscribe(BusDirectionObserver(App.instance.screenWidth, parent, loadingTextView, busRoute))
+                }
+            }
+            else -> {
+                val bikeStation = getItem(position) as BikeStation
+
+                val icon: ImageView = view.findViewById(R.id.icon)
+                icon.setImageDrawable(ContextCompat.getDrawable(parent.context, R.drawable.ic_directions_bike_white_24dp))
+
+                routeName.text = bikeStation.name
+
+                view.setOnClickListener(BikeStationOnClickListener(bikeStation))
+            }
         }
         return view
     }
 
-    /**
-     * Update data
-     *
-     * @param trains the list of train stations
-     * @param buses  the list of bus routes
-     * @param bikes  the list of bikes
-     */
     fun updateData(trains: List<Station>, buses: List<BusRoute>, bikes: List<BikeStation>) {
-        this.trains = trains
-        this.busRoutes = buses
-        this.bikeStations = bikes
+        this.trains.clear()
+        this.trains.addAll(trains)
+
+        this.busRoutes.clear()
+        this.busRoutes.addAll(buses)
+
+        this.bikeStations.clear()
+        this.bikeStations.addAll(bikes)
     }
 
     companion object {

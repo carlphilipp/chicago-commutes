@@ -69,7 +69,7 @@ class TrainListStationActivity : ListActivity() {
             toolbar.navigationIcon = arrowBackWhite
             toolbar.setOnClickListener { _ -> finish() }
 
-            val ada = TrainAdapter(trainLine, this)
+            val ada = TrainAdapter(trainLine)
             listAdapter = ada
         }
     }

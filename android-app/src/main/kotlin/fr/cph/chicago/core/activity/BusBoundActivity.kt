@@ -146,7 +146,7 @@ class BusBoundActivity : ListActivity() {
                 }
 
                 override fun afterTextChanged(s: Editable) {
-                    busBoundAdapter.busStops = busStopsFiltered.toList()
+                    busBoundAdapter.updateBusStops(busStopsFiltered)
                     busBoundAdapter.notifyDataSetChanged()
                 }
             })
@@ -161,7 +161,7 @@ class BusBoundActivity : ListActivity() {
             observableUtil.createBusStopBoundObservable(busRouteId, bound)
                 .subscribe({ onNext ->
                     busStops = onNext
-                    busBoundAdapter.busStops = onNext
+                    busBoundAdapter.updateBusStops(onNext)
                     busBoundAdapter.notifyDataSetChanged()
                 }
                 ) { onError ->

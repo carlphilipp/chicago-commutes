@@ -42,12 +42,12 @@ enum class BusDirection constructor(val text: String, val shortUpperCase: String
 
         fun fromString(text: String): BusDirection {
             for (busDirectionEnum in BusDirection.values()) {
-                if (text.equals(busDirectionEnum.text, ignoreCase = true)) {
-                    return busDirectionEnum
-                } else if (text.equals(busDirectionEnum.shortUpperCase, ignoreCase = true)) {
-                    return busDirectionEnum
-                } else if (busDirectionEnum.text.toLowerCase(Locale.US).contains(text.toLowerCase(Locale.US))) {
-                    return busDirectionEnum
+                when {
+                    text.equals(busDirectionEnum.text, ignoreCase = true) -> return busDirectionEnum
+                    text.equals(busDirectionEnum.shortUpperCase, ignoreCase = true) -> return busDirectionEnum
+                    busDirectionEnum.text.toLowerCase(Locale.US).contains(text.toLowerCase(Locale.US)) -> return busDirectionEnum
+                    else -> {
+                    }
                 }
             }
             Log.w(TAG, "Bus direction enum not found: " + text)

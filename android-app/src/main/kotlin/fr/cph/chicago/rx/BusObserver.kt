@@ -40,12 +40,12 @@ class BusObserver(private val activity: BusMapActivity, private val centerMap: B
                 activity.centerMapOnBus(buses)
             }
         } else {
-            util.showMessage(view, R.string.message_no_bus_found)
+            Util.showMessage(view, R.string.message_no_bus_found)
         }
     }
 
     override fun onError(throwable: Throwable) {
-        util.handleConnectOrParserException(throwable, null, view, view)
+        Util.handleConnectOrParserException(throwable, null, view, view)
         Log.e(TAG, throwable.message, throwable)
     }
 
@@ -53,6 +53,5 @@ class BusObserver(private val activity: BusMapActivity, private val centerMap: B
 
     companion object {
         private val TAG = BusObserver::class.java.simpleName
-        private val util = Util
     }
 }

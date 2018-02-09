@@ -43,8 +43,6 @@ import fr.cph.chicago.util.Util
  */
 class BusAdapter(private val app: App) : BaseAdapter() {
 
-    private val TAG = BusAdapter::class.java.simpleName
-
     var busRoutes: List<BusRoute> = BusService.getBusRoutes()
 
     override fun getCount(): Int {
@@ -80,9 +78,9 @@ class BusAdapter(private val app: App) : BaseAdapter() {
 
         view?.setOnClickListener { _ ->
             holder.detailsLayout.visibility = LinearLayout.VISIBLE
-            observableUtil.createBusDirectionsObservable(route.id)
+            ObservableUtil.createBusDirectionsObservable(route.id)
                 .doOnError { throwable: Throwable ->
-                    util.handleConnectOrParserException(throwable, null, view, holder.detailsLayout)
+                    Util.handleConnectOrParserException(throwable, null, view, holder.detailsLayout)
                     Log.e(TAG, throwable.message, throwable)
                 }
                 .subscribe(BusDirectionObserver(app.screenWidth, parent, holder.detailsLayout, route))
@@ -90,14 +88,13 @@ class BusAdapter(private val app: App) : BaseAdapter() {
         return view
     }
 
-    companion object {
-        private val util = Util
-        private val observableUtil = ObservableUtil
-    }
-
     private class ViewHolder(
         val routeNameView: TextView,
         val routeNumberView: TextView,
         val detailsLayout: LinearLayout
     )
+
+    companion object {
+        private val TAG = BusAdapter::class.java.simpleName
+    }
 }

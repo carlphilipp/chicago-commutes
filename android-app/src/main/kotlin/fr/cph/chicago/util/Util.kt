@@ -93,12 +93,12 @@ object Util {
         override fun compare(route1: BusRoute, route2: BusRoute): Int {
             val matcher1 = PATTERN.matcher(route1.id)
             val matcher2 = PATTERN.matcher(route2.id)
-            if (matcher1.find() && matcher2.find()) {
+            return if (matcher1.find() && matcher2.find()) {
                 val one = Integer.parseInt(matcher1.group(1))
                 val two = Integer.parseInt(matcher2.group(1))
-                return if (one < two) -1 else if (one == two) 0 else 1
+                if (one < two) -1 else if (one == two) 0 else 1
             } else {
-                return route1.id.compareTo(route2.id)
+                route1.id.compareTo(route2.id)
             }
         }
     }

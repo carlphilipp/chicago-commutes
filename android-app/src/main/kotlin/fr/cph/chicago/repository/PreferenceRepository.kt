@@ -138,14 +138,6 @@ object PreferenceRepository {
         })
     }
 
-    fun addBusRouteNameMapping(busStopId: String, routeName: String) {
-        val sharedPref = getPrivatePreferencesBusRouteMapping()
-        val editor = sharedPref.edit()
-        editor.putString(busStopId, routeName)
-        Log.v(TAG, "Add bus route name mapping : $busStopId => $routeName")
-        editor.apply()
-    }
-
     fun getBusRouteNameMapping(busStopId: String): String? {
         val sharedPref = getPrivatePreferencesBusRouteMapping()
         val routeName = sharedPref.getString(busStopId, null)

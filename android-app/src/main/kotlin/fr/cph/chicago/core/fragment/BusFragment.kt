@@ -36,7 +36,6 @@ import fr.cph.chicago.entity.BusRoute
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
-import java.util.*
 
 /**
  * Bus Fragment

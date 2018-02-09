@@ -79,12 +79,12 @@ object FavoritesData {
             val index = position - trainFavorites.size
             val routeId = fakeBusFavorites[index]
             val busDataRoute = busService.getBusRoute(routeId)
-            if (busDataRoute.name != "error") {
-                return busDataRoute
+            return if (busDataRoute.name != "error") {
+                busDataRoute
             } else {
                 // Get name in the preferences if null
                 val routeName = preferenceService.getBusRouteNameMapping(routeId)
-                return BusRoute(routeId, routeName ?: "")
+                BusRoute(routeId, routeName ?: "")
             }
         } else {
             val index = position - (trainFavorites.size + fakeBusFavorites.size)

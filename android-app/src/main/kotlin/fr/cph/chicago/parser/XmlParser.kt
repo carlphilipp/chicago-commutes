@@ -53,7 +53,6 @@ object XmlParser {
     /**
      * Parse arrivals
      * @param inputStream   the xml string
-     * @param data the train data
      * @return a list of train arrival
      * @throws ParserException the parser exception
      */
@@ -542,7 +541,7 @@ object XmlParser {
                 res.add(etas[0])
             }
         }
-        Collections.sort(res)
+        res.sort()
         return res
     }
 }

@@ -162,7 +162,7 @@ object TrainRepository {
      * @param id the id of the station
      * @return the station
      */
-    fun getStation(id: Int): Station { // FIXME should be Station? ??
+    fun getStation(id: Int): Station {
         val station = stations.get(id)
         return station ?: Station.buildEmptyStation()
     }

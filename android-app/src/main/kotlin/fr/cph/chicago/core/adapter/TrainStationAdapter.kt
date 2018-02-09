@@ -40,7 +40,7 @@ import fr.cph.chicago.entity.enumeration.TrainLine
 class TrainStationAdapter : BaseAdapter() {
 
     override fun getCount(): Int {
-        return TrainLine.size() - 1
+        return TrainLine.size() - 1 // Do not display "NA"
     }
 
     override fun getItem(position: Int): Any {

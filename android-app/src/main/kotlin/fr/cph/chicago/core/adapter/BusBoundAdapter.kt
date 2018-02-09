@@ -34,9 +34,7 @@ import fr.cph.chicago.entity.BusStop
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BusBoundAdapter : BaseAdapter() {
-
-    var busStops: List<BusStop> = listOf()
+class BusBoundAdapter(private var busStops: MutableList<BusStop> = mutableListOf()) : BaseAdapter() {
 
     override fun getCount(): Int {
         return busStops.size
@@ -67,6 +65,11 @@ class BusBoundAdapter : BaseAdapter() {
         holder.routNameView.text = busStop.name
 
         return view
+    }
+
+    fun updateBusStops(busStops: List<BusStop>) {
+        this.busStops.clear()
+        this.busStops.addAll(busStops)
     }
 
     /**

@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.core.adapter
 
-import android.app.Activity
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -40,7 +39,7 @@ import fr.cph.chicago.util.LayoutUtil
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class TrainAdapter(line: TrainLine, private val activity: Activity) : BaseAdapter() {
+class TrainAdapter(line: TrainLine) : BaseAdapter() {
 
     private val trainService = TrainService
     private val layoutUtil = LayoutUtil
