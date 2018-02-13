@@ -139,11 +139,9 @@ object XmlParser {
 
     /**
      * Parse bus route
-
+     *
      * @param xml the xml to parse
-     * *
      * @return a list of bus routes
-     * *
      * @throws ParserException a parser exception
      */
     @Synchronized
@@ -194,13 +192,10 @@ object XmlParser {
 
     /**
      * Parse bus directions
-
+     *
      * @param xml the xml to parse
-     * *
      * @param id  the line id
-     * *
      * @return a bus directions
-     * *
      * @throws ParserException a parser exception
      */
     @Synchronized
@@ -232,11 +227,9 @@ object XmlParser {
 
     /**
      * Parse bus bounds
-
+     *
      * @param xml the xml to parse
-     * *
      * @return a list of bus stop
-     * *
      * @throws ParserException a parser exception
      */
     @Synchronized
@@ -289,17 +282,15 @@ object XmlParser {
 
     /**
      * Parse bus arrivals
-
+     *
      * @param xml the xml to parse
-     * *
      * @return a list of bus arrivals
-     * *
      * @throws ParserException a parser exception
      */
     @Synchronized
     @Throws(ParserException::class)
     fun parseBusArrivals(xml: InputStream): List<BusArrival> {
-        val result = ArrayList<BusArrival>()
+        val result = mutableListOf<BusArrival>()
         try {
             parser.setInput(xml, "UTF-8")
             var eventType = parser.eventType
@@ -357,11 +348,9 @@ object XmlParser {
 
     /**
      * Parse alert general
-
+     *
      * @param xml the xml to parse
-     * *
      * @return a list of alert
-     * *
      * @throws ParserException a parser exception
      */
     @Synchronized

@@ -26,9 +26,8 @@ import java.io.Serializable
 
 /**
  * The position. This can't be immutable because it needs to extends RealmObject.
-
+ *
  * @author Carl-Philipp Harmant
- * *
  * @version 1
  */
 open class Position(var latitude: Double = 0.0, var longitude: Double = 0.0) : RealmObject(), Parcelable, Serializable {
@@ -59,7 +58,8 @@ open class Position(var latitude: Double = 0.0, var longitude: Double = 0.0) : R
 
         private const val serialVersionUID = 0L
 
-        @JvmField val CREATOR: Parcelable.Creator<Position> = object : Parcelable.Creator<Position> {
+        @JvmField
+        val CREATOR: Parcelable.Creator<Position> = object : Parcelable.Creator<Position> {
             override fun createFromParcel(source: Parcel): Position {
                 return Position(source)
             }

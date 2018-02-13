@@ -21,9 +21,8 @@ package fr.cph.chicago
 
 /**
  * Constants needed across the application.
-
+ *
  * @author Carl-Philipp Harmant
- * *
  * @version 1
  */
 class Constants {

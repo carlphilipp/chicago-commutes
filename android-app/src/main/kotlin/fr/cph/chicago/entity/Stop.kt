@@ -27,9 +27,8 @@ import org.apache.commons.lang3.StringUtils
 
 /**
  * Station entity
-
+ *
  * @author Carl-Philipp Harmant
- * *
  * @version 1
  */
 data class Stop(

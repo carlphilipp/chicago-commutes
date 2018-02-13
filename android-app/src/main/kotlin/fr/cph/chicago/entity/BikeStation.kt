@@ -27,9 +27,8 @@ import org.apache.commons.lang3.StringUtils
 
 /**
  * Bike station entity
-
+ *
  * @author Carl-Philipp Harmant
- * *
  * @version 1
  */
 @JsonIgnoreProperties(ignoreUnknown = true)

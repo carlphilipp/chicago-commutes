@@ -25,9 +25,8 @@ import java.io.InputStream
 
 /**
  * Class that build url and getBikeStations to Divvy API.
-
+ *
  * @author Carl-Philipp Harmant
- * *
  * @version 1
  */
 object DivvyClient {

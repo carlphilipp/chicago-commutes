@@ -24,9 +24,8 @@ import android.os.Parcelable
 
 /**
  * Bus route entity
-
+ *
  * @author Carl-Philipp Harmant
- * *
  * @version 1
  */
 data class BusRoute(val id: String, val name: String) : Parcelable {

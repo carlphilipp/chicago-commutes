@@ -29,9 +29,8 @@ import java.util.concurrent.TimeUnit
 
 /**
  * Eta entity
-
+ *
  * @author Carl-Philipp Harmant
- * *
  * @version 1
  */
 data class Eta(

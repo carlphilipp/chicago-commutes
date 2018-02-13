@@ -39,7 +39,7 @@ internal class BusStopCsvProcessor : RowProcessor {
 
     /**
      * Stores the row extracted by the parser into a list.
-
+     *
      * @param row     the data extracted by the parser for an individual record. Note that:
      *
      *  it will never by null.

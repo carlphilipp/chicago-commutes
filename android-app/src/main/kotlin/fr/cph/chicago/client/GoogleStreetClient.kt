@@ -31,9 +31,8 @@ import java.net.URL
 
 /**
  * Class that access google street api. Singleton
-
+ *
  * @author Carl-Philipp Harmant
- * *
  * @version 1
  */
 object GoogleStreetClient {
@@ -56,9 +55,8 @@ object GoogleStreetClient {
 
     /**
      * HttpClient to the API and get the MAP
-
+     *
      * @param address the address to getBikeStations to
-     * *
      * @return a drawable map
      */
     private fun connectUrl(address: String): Drawable {

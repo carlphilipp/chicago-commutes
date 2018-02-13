@@ -38,9 +38,9 @@ import java.io.InputStream
 
 /**
  * Class that build url and getBikeStations to CTA API
-
+ *
  * @author Carl-Philipp Harmant
- * *
+ *
  * @version 1
  */
 object CtaClient {
@@ -48,17 +48,6 @@ object CtaClient {
     private const val QUERY_PARAM_KEY = "?key="
     private const val QUERY_PARAM_JSON = "?outputType=json"
 
-    /**
-     * HttpClient
-
-     * @param requestType the type of request
-     * *
-     * @param params      the params
-     * *
-     * @return a string
-     * *
-     * @throws ConnectException the connection exception
-     */
     @Throws(ConnectException::class)
     fun connect(requestType: CtaRequestType, params: MultiValuedMap<String, String>): InputStream {
         val ctaTrainKey = App.ctaTrainKey
@@ -74,8 +63,8 @@ object CtaClient {
             BUS_VEHICLES -> StringBuilder(BUSES_VEHICLES_URL + QUERY_PARAM_KEY + ctaBusKey)
             BUS_ARRIVALS -> StringBuilder(BUSES_ARRIVAL_URL + QUERY_PARAM_KEY + ctaBusKey)
             BUS_PATTERN -> StringBuilder(BUSES_PATTERN_URL + QUERY_PARAM_KEY + ctaBusKey)
-            ALERTS_ROUTES -> StringBuilder(ALERTS_ROUTES_URL+ QUERY_PARAM_JSON)
-            ALERTS_ROUTE -> StringBuilder(ALERT_ROUTES_URL+ QUERY_PARAM_JSON)
+            ALERTS_ROUTES -> StringBuilder(ALERTS_ROUTES_URL + QUERY_PARAM_JSON)
+            ALERTS_ROUTE -> StringBuilder(ALERT_ROUTES_URL + QUERY_PARAM_JSON)
             else -> StringBuilder()
         }
         params.asMap()

@@ -27,9 +27,8 @@ import java.util.concurrent.TimeUnit
 
 /**
  * Bus Arrival entity
-
+ *
  * @author Carl-Philipp Harmant
- * *
  * @version 1
  */
 data class BusArrival(
@@ -102,7 +101,8 @@ data class BusArrival(
 
         private const val NO_SERVICE = "No service"
 
-        @JvmField val CREATOR: Parcelable.Creator<BusArrival> = object : Parcelable.Creator<BusArrival> {
+        @JvmField
+        val CREATOR: Parcelable.Creator<BusArrival> = object : Parcelable.Creator<BusArrival> {
             override fun createFromParcel(source: Parcel): BusArrival {
                 return BusArrival(source)
             }

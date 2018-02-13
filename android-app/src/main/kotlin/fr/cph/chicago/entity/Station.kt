@@ -27,9 +27,8 @@ import java.util.*
 
 /**
  * Station entity
-
+ *
  * @author Carl-Philipp Harmant
- * *
  * @version 1
  */
 data class Station(

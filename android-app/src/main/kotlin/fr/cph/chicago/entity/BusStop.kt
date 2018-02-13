@@ -28,9 +28,8 @@ import java.io.Serializable
 
 /**
  * Bus stop entity. This can't be immutable because it needs to extends RealmObject.
-
+ *
  * @author Carl-Philipp Harmant
- * *
  * @version 1
  */
 open class BusStop(

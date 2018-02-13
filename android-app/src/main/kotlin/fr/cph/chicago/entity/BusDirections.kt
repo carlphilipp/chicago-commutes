@@ -23,9 +23,8 @@ import fr.cph.chicago.entity.enumeration.BusDirection
 
 /**
  * Bus directions entity
-
+ *
  * @author Carl-Philipp Harmant
- * *
  * @version 1
  */
 class BusDirections(val id: String) {

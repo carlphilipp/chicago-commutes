@@ -21,9 +21,8 @@ package fr.cph.chicago.client
 
 /**
  * Enum that store the different kind of query we can do
-
+ *
  * @author Carl-Philipp Harmant
- * *
  * @version 1
  */
 enum class CtaRequestType {

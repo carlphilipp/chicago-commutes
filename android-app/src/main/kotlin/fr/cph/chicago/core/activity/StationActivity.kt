@@ -376,7 +376,7 @@ class StationActivity : AbstractStationActivity() {
 
     private fun getRandomLine(stops: Map<TrainLine, List<Stop>>): TrainLine {
         val random = Random()
-        val keys = ArrayList(stops.keys)
-        return keys[random.nextInt(keys.size)]
+        val keys = stops.keys
+        return keys.elementAt(random.nextInt(keys.size))
     }
 }

@@ -26,9 +26,8 @@ import java.io.Serializable
 
 /**
  * Train Arrival entity
-
+ *
  * @author Carl-Philipp Harmant
- * *
  * @version 1
  */
 data class TrainArrival(var etas: MutableList<Eta> = mutableListOf()) : Parcelable, Serializable {
