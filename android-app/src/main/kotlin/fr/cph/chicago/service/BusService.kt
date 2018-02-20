@@ -195,7 +195,7 @@ object BusService {
     }
 
     fun getBusRoutes(): MutableList<BusRoute> {
-        return busRepository.busRoutes
+        return busRepository.inMemoryBusRoutes
     }
 
     fun setBusRoutes(busRoutes: List<BusRoute>) {

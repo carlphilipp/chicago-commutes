@@ -30,15 +30,15 @@ object BusRepository {
 
     var busRouteError: Boolean = false
 
-    val busRoutes: MutableList<BusRoute> = mutableListOf()
+    val inMemoryBusRoutes: MutableList<BusRoute> = mutableListOf()
 
     fun setBusRoutes(busRoutes: List<BusRoute>) {
-        this.busRoutes.clear()
-        this.busRoutes.addAll(busRoutes)
+        this.inMemoryBusRoutes.clear()
+        this.inMemoryBusRoutes.addAll(busRoutes)
     }
 
     fun getBusRoute(routeId: String): BusRoute {
-        return this.busRoutes
+        return this.inMemoryBusRoutes
             .filter { (id) -> id == routeId }
             .getOrElse(0, { BusRoute("0", "error") })
     }
