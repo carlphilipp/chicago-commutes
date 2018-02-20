@@ -45,7 +45,6 @@ import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
-import java.util.*
 
 class SearchActivity : AppCompatActivity() {
 
