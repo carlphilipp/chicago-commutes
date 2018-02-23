@@ -38,7 +38,7 @@ import fr.cph.chicago.repository.RealmConfig
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.Util
 import java.io.File
-import java.util.*
+import java.util.Random
 
 class SettingsFragment : AbstractFragment() {
 

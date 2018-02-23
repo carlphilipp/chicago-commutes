@@ -33,7 +33,6 @@ import butterknife.BindColor
 import butterknife.BindString
 import butterknife.BindView
 import butterknife.ButterKnife
-import fr.cph.chicago.Constants.Companion.BUSES_PATTERN_URL
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
@@ -48,7 +47,6 @@ import fr.cph.chicago.exception.TrackerException
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.Util
-import java.util.*
 
 /**
  * Activity that represents the bus stop

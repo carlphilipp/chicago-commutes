@@ -29,7 +29,8 @@ import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import java.util.regex.Pattern
 
 /**

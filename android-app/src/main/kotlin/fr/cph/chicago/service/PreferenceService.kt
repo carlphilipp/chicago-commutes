@@ -28,7 +28,7 @@ import fr.cph.chicago.repository.PreferenceRepository
 import fr.cph.chicago.util.Util
 import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
-import java.util.*
+import java.util.Date
 
 object PreferenceService {
 

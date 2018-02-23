@@ -30,7 +30,7 @@ import fr.cph.chicago.parser.JsonParser
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 
 object AlertService {
     private val ctaClient = CtaClient
@@ -41,7 +41,8 @@ object AlertService {
 
     fun getAlerts(): List<RoutesAlertsDTO> {
         val params = ArrayListValuedHashMap<String, String>()
-        params.put("type", "rail,bus")
+        params.put("type", "rail")
+        params.put("type", "bus")
         val inputStream = ctaClient.connect(CtaRequestType.ALERTS_ROUTES, params)
         val alertRoutes = jsonParser.parse(inputStream, AlertsRoutes::class.java)
         return alertRoutes.ctaRoutes?.routeInfo
@@ -85,7 +86,7 @@ object AlertService {
     }
 
     private fun formatDate(str: String?): String {
-        if(str == null) return ""
+        if (str == null) return ""
         return try {
             displayFormat.format(formatWithSeconds.parse(str))
         } catch (p: ParseException) {

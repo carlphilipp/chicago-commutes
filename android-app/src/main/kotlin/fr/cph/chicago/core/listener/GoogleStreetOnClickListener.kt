@@ -23,7 +23,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.view.View
-import java.util.*
+import java.util.Locale
 
 class GoogleStreetOnClickListener(latitude: Double, longitude: Double) : GoogleMapListener(latitude, longitude) {
 

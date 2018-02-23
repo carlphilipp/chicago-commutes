@@ -48,7 +48,6 @@ import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.task.RefreshTimingTask
 import fr.cph.chicago.util.Util
-import java.util.*
 
 /**
  * FavoritesData Fragment

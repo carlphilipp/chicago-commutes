@@ -20,7 +20,7 @@
 package fr.cph.chicago.entity.enumeration
 
 import android.util.Log
-import java.util.*
+import java.util.Locale
 
 /**
  * Enumeration, bus direction

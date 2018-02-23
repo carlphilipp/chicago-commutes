@@ -50,7 +50,7 @@ import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
-import java.util.*
+import java.util.Random
 
 /**
  * Activity that represents the train station

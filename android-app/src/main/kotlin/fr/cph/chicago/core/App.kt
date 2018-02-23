@@ -29,7 +29,7 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.BaseActivity
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
-import java.util.*
+import java.util.Date
 
 /**
  * Main class that extends Application. Mainly used to get the context from anywhere in the app.

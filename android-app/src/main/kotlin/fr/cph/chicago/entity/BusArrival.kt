@@ -22,7 +22,8 @@ package fr.cph.chicago.entity
 import android.os.Parcel
 import android.os.Parcelable
 import org.apache.commons.lang3.StringUtils
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 /**

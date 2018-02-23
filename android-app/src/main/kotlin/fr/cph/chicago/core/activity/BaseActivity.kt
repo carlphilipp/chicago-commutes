@@ -40,7 +40,7 @@ import io.reactivex.ObservableEmitter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
-import java.util.*
+import java.util.Calendar
 
 /**
  * This class represents the base activity of the application It will load the loading screen and/or the main

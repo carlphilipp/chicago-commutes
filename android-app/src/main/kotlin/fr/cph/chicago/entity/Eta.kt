@@ -24,7 +24,8 @@ import android.os.Parcelable
 import fr.cph.chicago.entity.enumeration.TrainLine
 import org.apache.commons.lang3.StringUtils
 import java.io.Serializable
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 /**

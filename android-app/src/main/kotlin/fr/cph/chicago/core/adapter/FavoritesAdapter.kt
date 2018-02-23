@@ -48,7 +48,8 @@ import fr.cph.chicago.entity.enumeration.BusDirection
 import fr.cph.chicago.entity.enumeration.TrainLine
 import fr.cph.chicago.util.LayoutUtil
 import fr.cph.chicago.util.Util
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 
 /**
  * Adapter that will handle favoritesData

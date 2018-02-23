@@ -34,7 +34,7 @@ import fr.cph.chicago.util.Util
 import io.reactivex.exceptions.Exceptions
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
-import java.util.*
+import java.util.Locale
 
 object BusService {
 
@@ -47,42 +47,18 @@ object BusService {
     private val util = Util
 
     fun loadFavoritesBuses(): List<BusArrival> {
-        // FIXME to refactor
-        val busArrivals = LinkedHashSet<BusArrival>()
-        val paramBus = preferenceService.getFavoritesBusParams()
-        // Load bus
         try {
-            val rts = mutableListOf<String>()
-            val stpids = mutableListOf<String>()
-            for ((key, value) in paramBus.asMap()) {
-                var str = StringBuilder()
-                var i = 0
-                val values = value as List<*>
-                for (v in values) {
-                    str.append(v).append(",")
-                    if (i == 9 || i == values.size - 1) {
-                        if ("rt" == key) {
-                            rts.add(str.toString())
-                        } else if ("stpid" == key) {
-                            stpids.add(str.toString())
-                        }
-                        str = StringBuilder()
-                        i = -1
-                    }
-                    i++
-                }
-            }
-            for (i in rts.indices) {
-                val para = ArrayListValuedHashMap<String, String>()
-                para.put(App.instance.getString(R.string.request_rt), rts[i])
-                para.put(App.instance.getString(R.string.request_stop_id), stpids[i])
-                val xmlResult = ctaClient.connect(BUS_ARRIVALS, para)
-                busArrivals.addAll(xmlParser.parseBusArrivals(xmlResult))
-            }
+            val favoritesBusParams = preferenceService.getFavoritesBusParams()
+            val requestParams = ArrayListValuedHashMap<String, String>()
+            val routeIdParam = App.instance.getString(R.string.request_rt)
+            val stopIdParam = App.instance.getString(R.string.request_stop_id)
+            requestParams.put(routeIdParam, favoritesBusParams.get(routeIdParam).joinToString(separator = ","))
+            requestParams.put(stopIdParam, favoritesBusParams.get(stopIdParam).joinToString(separator = ","))
+            val xmlResult = ctaClient.connect(BUS_ARRIVALS, requestParams)
+            return xmlParser.parseBusArrivals(xmlResult).distinct()
         } catch (e: Throwable) {
             throw Exceptions.propagate(e)
         }
-        return busArrivals.toMutableList()
     }
 
     fun loadOneBusStop(stopId: String, bound: String): List<BusStop> {
@@ -95,7 +71,6 @@ object BusService {
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }
-
     }
 
     fun loadLocalBusData(): Any {

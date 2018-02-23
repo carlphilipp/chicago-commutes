@@ -31,7 +31,7 @@ import fr.cph.chicago.util.Util
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 import org.apache.commons.lang3.StringUtils
-import java.util.*
+import java.util.Date
 
 class BusFollowObserver(private val activity: BusMapActivity, private val layout: View, private val view: View, private val loadAll: Boolean) : Observer<List<BusArrival>> {
 

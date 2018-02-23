@@ -33,7 +33,7 @@ import fr.cph.chicago.repository.TrainRepository
 import io.reactivex.exceptions.Exceptions
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import org.apache.commons.lang3.StringUtils
-import java.util.*
+import java.util.Calendar
 
 object TrainService {
 

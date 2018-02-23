@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.client
 
+import android.util.Log
 import fr.cph.chicago.Constants.Companion.ALERTS_ROUTES_URL
 import fr.cph.chicago.Constants.Companion.ALERT_ROUTES_URL
 import fr.cph.chicago.Constants.Companion.BUSES_ARRIVAL_URL
