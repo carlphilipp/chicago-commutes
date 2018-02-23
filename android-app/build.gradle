@@ -29,7 +29,6 @@ dependencies {
         [group: 'pub.devrel', name: 'easypermissions', version: easypermissions_version],
         [group: 'com.github.chrisbanes', name: 'PhotoView', version: photoview_version],
         [group: 'com.sothree.slidinguppanel', name: 'library', version: sliding_up_panel_version],
-        // TODO remove that lib
         [group: 'org.apache.commons', name: 'commons-collections4', version: commons_collections4_version],
         [group: 'org.apache.commons', name: 'commons-text', version: commons_text],
         [group: 'com.univocity', name: 'univocity-parsers', version: univocity_parsers_version],

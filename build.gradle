@@ -8,7 +8,6 @@ buildscript {
     dependencies {
         classpath(
             [group: 'com.android.tools.build', name: 'gradle', version: android_tools_build_version],
-            [group: 'me.tatarka', name: 'gradle-retrolambda', version: retro_lambda_version],
             [group: 'io.realm', name: 'realm-gradle-plugin', version: realm_version],
             [group: 'org.jetbrains.kotlin', name: 'kotlin-gradle-plugin', version: kotlin_version]
         )
