@@ -174,8 +174,6 @@ class StationActivity : AbstractStationActivity() {
                 setUpStopLayouts(stopByLines)
                 swipeRefreshLayout.setColorSchemeColors(randomTrainLine.color)
                 setToolBar(randomTrainLine)
-
-                util.trackScreen(trainDetails)
             }
         }
     }

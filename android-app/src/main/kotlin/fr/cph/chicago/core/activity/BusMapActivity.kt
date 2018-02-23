@@ -101,9 +101,6 @@ class BusMapActivity : AbstractMapActivity() {
 
             // Init toolbar
             setToolbar()
-
-            // Google analytics
-            Util.trackScreen(analyticsBusMap)
         }
     }
 
@@ -120,7 +117,6 @@ class BusMapActivity : AbstractMapActivity() {
     override fun setToolbar() {
         super.setToolbar()
         toolbar.setOnMenuItemClickListener { _ ->
-            Util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_VEHICLES_URL)
             observableUtil.createBusListObservable(busId, busRouteId).subscribe(BusObserver(this@BusMapActivity, false, layout))
             false
         }
@@ -231,7 +227,6 @@ class BusMapActivity : AbstractMapActivity() {
                     if (!refreshingInfoWindow) {
                         selectedMarker = marker
                         val busId = marker.snippet
-                        Util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL)
                         observableUtil.createFollowBusObservable(busId)
                             .subscribe(BusFollowObserver(this@BusMapActivity, layout, view!!, false))
                         status[marker] = false
@@ -250,7 +245,6 @@ class BusMapActivity : AbstractMapActivity() {
                     selectedMarker = marker
                     val runNumber = marker.snippet
                     val current = status[marker]
-                    Util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL)
                     observableUtil.createFollowBusObservable(runNumber)
                         .subscribe(BusFollowObserver(this@BusMapActivity, layout, view!!, !current!!))
                     status[marker] = !current
@@ -262,7 +256,6 @@ class BusMapActivity : AbstractMapActivity() {
 
     private fun loadActivityData() {
         if (Util.isNetworkAvailable()) {
-            Util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_VEHICLES_URL)
             observableUtil.createBusListObservable(busId, busRouteId).subscribe(BusObserver(this@BusMapActivity, true, layout))
             if (loadPattern) {
                 LoadPattern().execute()
@@ -280,10 +273,8 @@ class BusMapActivity : AbstractMapActivity() {
                 // Search for directions
                 val busDirections = busService.loadBusDirections(busRouteId)
                 bounds = busDirections.busDirections.map { busDirection -> busDirection.text }.toTypedArray()
-                Util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_DIRECTION_URL)
             }
             busService.loadBusPattern(busRouteId, bounds).forEach({ patterns.add(it) })
-            Util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL)
             return patterns
         }
 

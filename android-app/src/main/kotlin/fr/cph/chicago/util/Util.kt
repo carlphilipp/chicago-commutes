@@ -32,7 +32,6 @@ import android.support.v7.widget.Toolbar
 import android.util.TypedValue
 import android.view.View
 import android.widget.Toast
-import com.google.android.gms.analytics.HitBuilders
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
@@ -126,26 +125,6 @@ object Util {
         val connectivityManager = App.instance.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetworkInfo = connectivityManager.activeNetworkInfo
         return activeNetworkInfo != null && activeNetworkInfo.isConnected
-    }
-
-    /**
-     * Google analytics track screen
-     *
-     * @param screen the screen name
-     */
-    fun trackScreen(screen: String) {
-        App.instance.tracker.setScreenName(screen)
-        App.instance.tracker.send(HitBuilders.ScreenViewBuilder().build())
-    }
-
-    fun trackAction(category: Int, action: Int, label: String) {
-        Thread {
-            App.instance.tracker.send(HitBuilders.EventBuilder()
-                .setCategory(App.instance.getString(category))
-                .setAction(App.instance.getString(action))
-                .setLabel(label)
-                .setValue(0).build())
-        }.start()
     }
 
     fun setWindowsColor(activity: Activity, toolbar: Toolbar, trainLine: TrainLine) {

@@ -36,8 +36,6 @@ import android.view.ViewGroup
 import android.widget.RelativeLayout
 import butterknife.BindString
 import butterknife.BindView
-import fr.cph.chicago.Constants.Companion.BUSES_ARRIVAL_URL
-import fr.cph.chicago.Constants.Companion.TRAINS_ARRIVALS_URL
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.adapter.FavoritesAdapter
@@ -97,7 +95,6 @@ class FavoritesFragment : AbstractFragment() {
             favoritesAdapter?.updateBikeStations(bikeStations)
             favoritesAdapter?.refreshFavorites()
         }
-        util.trackScreen(getString(R.string.analytics_favorites_fragment))
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -128,10 +125,6 @@ class FavoritesFragment : AbstractFragment() {
 
             swipeRefreshLayout.setOnRefreshListener {
                 swipeRefreshLayout.setColorSchemeColors(util.randomColor)
-                util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL)
-                util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL)
-                util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_divvy, context!!.getString(R.string.analytics_action_get_divvy_all))
-                util.trackAction(R.string.analytics_category_ui, R.string.analytics_action_press, context!!.getString(R.string.analytics_action_refresh_fav))
 
                 if (busService.getBusRoutes().isEmpty()
                     || mainActivity.intent.getParcelableArrayListExtra<Parcelable>(bundleBikeStation) == null

@@ -33,7 +33,6 @@ import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.adapter.BikeAdapter
 import fr.cph.chicago.entity.BikeStation
-import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
 
 
@@ -64,8 +63,6 @@ class BikeFragment : AbstractFragment() {
         super.onCreate(savedInstanceState)
 
         setHasOptionsMenu(true)
-
-        Util.trackScreen(getString(R.string.analytics_bike_fragment))
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

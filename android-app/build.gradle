@@ -8,7 +8,6 @@ dependencies {
     implementation(
         [group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jre8', version: kotlin_version],
         [group: 'com.google.android.gms', name: 'play-services-maps', version: google_play_version],
-        [group: 'com.google.android.gms', name: 'play-services-analytics', version: google_play_version],
         [group: 'com.google.android.gms', name: 'play-services-location', version: google_play_version],
         [group: 'org.apache.commons', name: 'commons-collections4', version: commons_collections4_version],
         [group: 'org.apache.commons', name: 'commons-text', version: commons_text],
@@ -76,7 +75,6 @@ android {
         props.load(new FileInputStream(appProperties))
 
         resValue "string", "google_maps_api_key", props['google.streetmap.key']
-        resValue "string", "google_analytics_key", props['google.analytics']
         resValue "string", "cta_train_key", props['cta.train.key']
         resValue "string", "cta_bus_key", props['cta.bus.key']
 
@@ -103,7 +101,7 @@ android {
     sourceSets {
         main {
             manifest.srcFile 'src/main/AndroidManifest.xml'
-            java.srcDirs = ['src/main/java', 'src/main/kotlin']
+            java.srcDirs = ['src/main/kotlin']
             res.srcDirs = ['src/main/res']
             assets.srcDirs = ['src/main/assets']
         }

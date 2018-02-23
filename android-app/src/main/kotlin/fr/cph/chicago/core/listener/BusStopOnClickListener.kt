@@ -29,7 +29,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ListView
-import fr.cph.chicago.Constants.Companion.BUSES_STOP_URL
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.BusActivity
@@ -56,7 +55,6 @@ class BusStopOnClickListener(private val activity: Activity, private val parent:
             builder.setAdapter(ada) { _, position ->
                 val busDetails = busDetailsDTOs[position]
                 loadBusDetails(view, busDetails)
-                util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_STOP_URL)
             }
             val dialog = builder.create()
             dialog.show()

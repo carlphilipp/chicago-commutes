@@ -25,14 +25,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ListView
-
 import butterknife.BindString
 import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.TrainListStationActivity
 import fr.cph.chicago.core.adapter.TrainStationAdapter
 import fr.cph.chicago.entity.enumeration.TrainLine
-import fr.cph.chicago.util.Util
 
 /**
  * Train Fragment
@@ -46,11 +44,6 @@ class TrainFragment : AbstractFragment() {
     lateinit var listView: ListView
     @BindString(R.string.bundle_train_line)
     lateinit var bundleTrainLine: String
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Util.trackScreen(getString(R.string.analytics_train_fragment))
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_train, container, false)

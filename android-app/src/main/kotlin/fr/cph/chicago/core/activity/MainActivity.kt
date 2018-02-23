@@ -37,9 +37,6 @@ import butterknife.BindColor
 import butterknife.BindString
 import butterknife.BindView
 import butterknife.ButterKnife
-import fr.cph.chicago.Constants.Companion.BUSES_ARRIVAL_URL
-import fr.cph.chicago.Constants.Companion.BUSES_ROUTES_URL
-import fr.cph.chicago.Constants.Companion.TRAINS_ARRIVALS_URL
 import fr.cph.chicago.R
 import fr.cph.chicago.core.fragment.*
 import fr.cph.chicago.entity.BikeStation
@@ -173,11 +170,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             // Favorite fragment
             favoritesFragment!!.startRefreshing()
 
-            util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ARRIVAL_URL)
-            util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_train, TRAINS_ARRIVALS_URL)
-            util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_divvy, applicationContext.getString(R.string.analytics_action_get_divvy_all))
-            util.trackAction(R.string.analytics_category_ui, R.string.analytics_action_press, applicationContext.getString(R.string.analytics_action_refresh_fav))
-
             if (util.isNetworkAvailable()) {
                 if (busService.getBusRoutes().size == 0
                     || intent.getParcelableArrayListExtra<Parcelable>(bundleBikeStations) == null
@@ -212,10 +204,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
             },
             { _ -> util.showSnackBar(this, R.string.message_something_went_wrong, Snackbar.LENGTH_SHORT) }
-        ) {
-            util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_ROUTES_URL)
-            util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_divvy, applicationContext.getString(R.string.analytics_action_get_divvy_all))
-        }
+        )
     }
 
     private fun refreshFirstLoadData(bikeStations: List<BikeStation>) {

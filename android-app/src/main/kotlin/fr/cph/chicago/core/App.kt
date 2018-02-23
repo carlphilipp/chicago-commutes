@@ -25,8 +25,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Point
 import android.view.WindowManager
-import com.google.android.gms.analytics.GoogleAnalytics
-import com.google.android.gms.analytics.Tracker
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.BaseActivity
 import fr.cph.chicago.service.BusService
@@ -42,14 +40,6 @@ import java.util.*
 class App : Application() {
 
     var lastUpdate: Date = Date()
-
-    val tracker: Tracker by lazy {
-        val analytics = GoogleAnalytics.getInstance(applicationContext)
-        val key = applicationContext.getString(R.string.google_analytics_key)
-        val tracker = analytics.newTracker(key)
-        tracker.enableAutoActivityTracking(true)
-        tracker
-    }
 
     val screenWidth: Int by lazy {
         screenSize[0]

@@ -34,7 +34,6 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.adapter.BusAdapter
 import fr.cph.chicago.entity.BusRoute
 import fr.cph.chicago.service.BusService
-import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
 
 /**
@@ -50,7 +49,6 @@ class BusFragment : AbstractFragment() {
     @BindView(R.id.bus_list)
     lateinit var listView: ListView
 
-    private val util: Util = Util
     private val busService: BusService = BusService
 
     private lateinit var busAdapter: BusAdapter
@@ -58,7 +56,6 @@ class BusFragment : AbstractFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         App.checkBusData(mainActivity)
-        util.trackScreen(getString(R.string.analytics_bus_fragment))
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

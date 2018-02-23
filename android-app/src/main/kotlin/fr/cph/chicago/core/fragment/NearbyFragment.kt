@@ -96,7 +96,6 @@ class NearbyFragment : AbstractFragment(), EasyPermissions.PermissionCallbacks {
         super.onCreate(savedInstanceState)
         App.checkTrainData(mainActivity)
         App.checkBusData(mainActivity)
-        util.trackScreen(getString(R.string.analytics_nearby_fragment))
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

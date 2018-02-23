@@ -35,7 +35,6 @@ import fr.cph.chicago.core.adapter.AlertAdapter
 import fr.cph.chicago.entity.dto.AlertType
 import fr.cph.chicago.entity.dto.RoutesAlertsDTO
 import fr.cph.chicago.rx.ObservableUtil
-import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
 
 /**
@@ -50,11 +49,6 @@ class AlertFragment : AbstractFragment() {
     lateinit var textFilter: EditText
     @BindView(R.id.alert_list)
     lateinit var listView: ListView
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Util.trackScreen(getString(R.string.analytics_cta_alert_fragment))
-    }
 
     override fun onResume() {
         super.onResume()

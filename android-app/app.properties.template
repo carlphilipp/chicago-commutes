@@ -1,7 +1,6 @@
 # Cta
-cta.train.key			= 
-cta.bus.key				= 
+cta.train.key			=
+cta.bus.key				=
 
 # Google
-google.streetmap.key	= 
-google.analytics		= 
+google.streetmap.key	=

@@ -172,9 +172,6 @@ class BusActivity : AbstractStationActivity() {
             LoadStationDataTask().execute()
 
             setToolBar()
-
-            // Google analytics
-            util.trackScreen(analyticsBusDetails)
         }
     }
 
@@ -295,8 +292,6 @@ class BusActivity : AbstractStationActivity() {
             } catch (e: ConnectException) {
                 this.trackerException = e
             }
-
-            util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL)
             return null
         }
 

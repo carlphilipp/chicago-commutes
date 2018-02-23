@@ -83,9 +83,6 @@ class TrainMapActivity : AbstractMapActivity() {
 
             // Init toolbar
             setToolbar()
-
-            // Google analytics
-            Util.trackScreen(analyticsTrainMap)
         }
     }
 

@@ -52,11 +52,6 @@ class SettingsFragment : AbstractFragment() {
     private val preferenceService: PreferenceService = PreferenceService
     private val realmConfig: RealmConfig = RealmConfig
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        util.trackScreen(getString(R.string.analytics_settings_fragment))
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_settings, container, false)
         if (!mainActivity.isFinishing) {

@@ -29,20 +29,12 @@ import android.view.ViewGroup
 import butterknife.BindView
 import com.github.chrisbanes.photoview.PhotoView
 import fr.cph.chicago.R
-import fr.cph.chicago.util.Util
 
 class CtaMapFragment : AbstractFragment() {
 
     @BindView(R.id.cta_map)
     lateinit var ctaMap: PhotoView
     private var bitmapCache: Bitmap? = null
-
-    private val util: Util = Util
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        util.trackScreen(getString(R.string.analytics_cta_map_fragment))
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_cta_map, container, false)

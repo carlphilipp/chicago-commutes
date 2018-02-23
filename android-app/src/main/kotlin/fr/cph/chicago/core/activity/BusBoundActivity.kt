@@ -169,8 +169,6 @@ class BusBoundActivity : ListActivity() {
                     util.showOopsSomethingWentWrong(listView)
                 }
 
-            util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_STOP_URL)
-
             // Preventing keyboard from moving background when showing up
             window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
         }
@@ -192,7 +190,6 @@ class BusBoundActivity : ListActivity() {
             googleMap.uiSettings.isMyLocationButtonEnabled = false
             googleMap.uiSettings.isZoomControlsEnabled = false
             googleMap.uiSettings.isMapToolbarEnabled = false
-            util.trackAction(R.string.analytics_category_req, R.string.analytics_action_get_bus, BUSES_PATTERN_URL)
             observableUtil.createBusPatternObservable(busRouteId, bound)
                 .subscribe(
                     { busPattern ->
