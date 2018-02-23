@@ -23,7 +23,7 @@ import android.util.Log
 import com.univocity.parsers.csv.CsvParser
 import com.univocity.parsers.csv.CsvParserSettings
 import fr.cph.chicago.core.App
-import org.apache.commons.io.IOUtils
+import fr.cph.chicago.util.Util
 import java.io.IOException
 import java.io.InputStreamReader
 
@@ -50,7 +50,7 @@ object BusStopCsvParser {
         } catch (e: IOException) {
             Log.e(TAG, e.message, e)
         } finally {
-            IOUtils.closeQuietly(inputStreamReader)
+            Util.closeQuietly(inputStreamReader)
         }
     }
 }

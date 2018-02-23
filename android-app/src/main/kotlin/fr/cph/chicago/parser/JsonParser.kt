@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import fr.cph.chicago.entity.BikeStation
 import fr.cph.chicago.entity.dto.DivvyDTO
 import fr.cph.chicago.exception.ParserException
-import org.apache.commons.io.IOUtils
+import fr.cph.chicago.util.Util
 import java.io.InputStream
 
 /**
@@ -50,7 +50,7 @@ object JsonParser {
         } catch (e: Exception) {
             throw ParserException(e)
         } finally {
-            IOUtils.closeQuietly(stream)
+            Util.closeQuietly(stream)
         }
     }
 
@@ -62,7 +62,7 @@ object JsonParser {
         } catch (e: Exception) {
             throw ParserException(e)
         } finally {
-            IOUtils.closeQuietly(stream)
+            Util.closeQuietly(stream)
         }
     }
 }

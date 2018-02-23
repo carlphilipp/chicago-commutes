@@ -29,7 +29,7 @@ import fr.cph.chicago.entity.Station
 import fr.cph.chicago.entity.Stop
 import fr.cph.chicago.entity.enumeration.TrainDirection
 import fr.cph.chicago.entity.enumeration.TrainLine
-import org.apache.commons.io.IOUtils
+import fr.cph.chicago.util.Util
 import java.io.IOException
 import java.io.InputStreamReader
 import java.util.*
@@ -151,7 +151,7 @@ object TrainRepository {
         } catch (e: IOException) {
             Log.e(TAG, e.message, e)
         } finally {
-            IOUtils.closeQuietly(inputStreamReader)
+            Util.closeQuietly(inputStreamReader)
         }
         return Triple(stations, stops, stationsOrderByLineMap)
     }
@@ -227,7 +227,7 @@ object TrainRepository {
             Log.e(TAG, e.message, e)
             listOf()
         } finally {
-            IOUtils.closeQuietly(inputStreamReader)
+            Util.closeQuietly(inputStreamReader)
         }
     }
 

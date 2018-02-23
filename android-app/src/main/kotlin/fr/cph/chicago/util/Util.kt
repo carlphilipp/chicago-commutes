@@ -45,6 +45,9 @@ import fr.cph.chicago.entity.enumeration.TrainLine
 import fr.cph.chicago.exception.ConnectException
 import fr.cph.chicago.exception.ParserException
 import fr.cph.chicago.service.PreferenceService
+import java.io.Closeable
+import java.io.IOException
+import java.io.Reader
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.regex.Pattern
@@ -296,5 +299,17 @@ object Util {
     fun getCurrentVersion(): String {
         val packageInfo = App.instance.packageManager.getPackageInfo(App.instance.packageName, 0)
         return packageInfo.versionName
+    }
+
+    fun closeQuietly(inputStream: Reader?) {
+        closeQuietly(inputStream as Closeable)
+    }
+
+    fun closeQuietly(closable: Closeable?) {
+        try {
+            closable?.close()
+        } catch (ioe: IOException) {
+            // ignore
+        }
     }
 }

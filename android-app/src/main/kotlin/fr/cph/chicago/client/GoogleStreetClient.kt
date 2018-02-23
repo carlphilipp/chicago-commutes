@@ -25,7 +25,7 @@ import android.graphics.drawable.Drawable
 import android.util.Log
 import fr.cph.chicago.Constants.Companion.GOOGLE_STREET_VIEW_URL
 import fr.cph.chicago.core.App
-import org.apache.commons.io.IOUtils
+import fr.cph.chicago.util.Util
 import java.io.InputStream
 import java.net.URL
 
@@ -70,7 +70,7 @@ object GoogleStreetClient {
             // TODO add a temporary image here
             ColorDrawable(Color.TRANSPARENT)
         } finally {
-            IOUtils.closeQuietly(inputStream)
+            Util.closeQuietly(inputStream)
         }
     }
 }

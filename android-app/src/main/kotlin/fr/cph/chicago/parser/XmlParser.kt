@@ -25,7 +25,7 @@ import fr.cph.chicago.entity.enumeration.BusDirection
 import fr.cph.chicago.entity.enumeration.TrainLine
 import fr.cph.chicago.exception.ParserException
 import fr.cph.chicago.service.TrainService
-import org.apache.commons.io.IOUtils
+import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
@@ -132,7 +132,7 @@ object XmlParser {
         } catch (e: IOException) {
             throw ParserException(e)
         } finally {
-            IOUtils.closeQuietly(inputStream)
+            Util.closeQuietly(inputStream)
         }
         return result
     }
@@ -185,7 +185,7 @@ object XmlParser {
         } catch (e: XmlPullParserException) {
             throw ParserException(e)
         } finally {
-            IOUtils.closeQuietly(xml)
+            Util.closeQuietly(xml)
         }
         return result
     }
@@ -220,7 +220,7 @@ object XmlParser {
         } catch (e: XmlPullParserException) {
             throw ParserException(e)
         } finally {
-            IOUtils.closeQuietly(xml)
+            Util.closeQuietly(xml)
         }
         return result
     }
@@ -275,7 +275,7 @@ object XmlParser {
         } catch (e: XmlPullParserException) {
             throw ParserException(e)
         } finally {
-            IOUtils.closeQuietly(xml)
+            Util.closeQuietly(xml)
         }
         return result
     }
@@ -341,7 +341,7 @@ object XmlParser {
         } catch (e: IOException) {
             throw ParserException(e)
         } finally {
-            IOUtils.closeQuietly(xml)
+            Util.closeQuietly(xml)
         }
         return result
     }
@@ -411,7 +411,7 @@ object XmlParser {
         } catch (e: IOException) {
             throw ParserException(e)
         } finally {
-            IOUtils.closeQuietly(xml)
+            Util.closeQuietly(xml)
         }
         return result
     }
@@ -462,7 +462,7 @@ object XmlParser {
         } catch (e: IOException) {
             throw ParserException(e)
         } finally {
-            IOUtils.closeQuietly(inputStream)
+            Util.closeQuietly(inputStream)
         }
         return buses
     }
@@ -513,7 +513,7 @@ object XmlParser {
         } catch (e: IOException) {
             throw ParserException(e)
         } finally {
-            IOUtils.closeQuietly(inputStream)
+            Util.closeQuietly(inputStream)
         }
         return trains
     }
