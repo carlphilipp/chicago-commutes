@@ -40,7 +40,7 @@ object AlertService {
     private val displayFormat = SimpleDateFormat("MM/dd/yyyy h:mm a", Locale.US)
 
     fun getAlerts(): List<RoutesAlertsDTO> {
-        val params = ArrayListValuedHashMap<String, String>()
+        val params = ArrayListValuedHashMap<String, String>(1, 2)
         params.put("type", "rail")
         params.put("type", "bus")
         val inputStream = ctaClient.connect(CtaRequestType.ALERTS_ROUTES, params)
@@ -61,7 +61,7 @@ object AlertService {
     }
 
     fun getRouteAlert(id: String): List<RouteAlertsDTO> {
-        val params = ArrayListValuedHashMap<String, String>()
+        val params = ArrayListValuedHashMap<String, String>(1, 1)
         params.put("routeid", id)
         val inputStream = ctaClient.connect(CtaRequestType.ALERTS_ROUTE, params)
         val alertRoutes = jsonParser.parse(inputStream, AlertsRoute::class.java)

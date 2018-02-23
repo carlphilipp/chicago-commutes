@@ -101,7 +101,7 @@ object TrainService {
 
     fun loadStationTrainArrival(stationId: Int): TrainArrival {
         try {
-            val params = ArrayListValuedHashMap<String, String>()
+            val params = ArrayListValuedHashMap<String, String>(1, 1)
             params.put(App.instance.applicationContext.getString(R.string.request_map_id), Integer.toString(stationId))
 
             val xmlResult = ctaClient.connect(TRAIN_ARRIVALS, params)
@@ -117,7 +117,7 @@ object TrainService {
 
     fun loadTrainEta(runNumber: String, loadAll: Boolean): List<Eta> {
         try {
-            val connectParam = ArrayListValuedHashMap<String, String>()
+            val connectParam = ArrayListValuedHashMap<String, String>(1, 1)
             connectParam.put(App.instance.applicationContext.getString(R.string.request_runnumber), runNumber)
             val content = ctaClient.connect(TRAIN_FOLLOW, connectParam)
             var etas = xmlParser.parseTrainsFollow(content)
@@ -140,7 +140,7 @@ object TrainService {
 
     fun getTrainLocation(line: String): List<Train> {
         try {
-            val connectParam = ArrayListValuedHashMap<String, String>()
+            val connectParam = ArrayListValuedHashMap<String, String>(1, 1)
             connectParam.put(App.instance.applicationContext.getString(R.string.request_rt), line)
             val content = ctaClient.connect(TRAIN_LOCATION, connectParam)
             return xmlParser.parseTrainsLocation(content)

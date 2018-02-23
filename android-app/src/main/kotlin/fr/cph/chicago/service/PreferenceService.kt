@@ -117,7 +117,7 @@ object PreferenceService {
     }
 
     fun getFavoritesBusParams(): MultiValuedMap<String, String> {
-        val paramsBus = ArrayListValuedHashMap<String, String>()
+        val paramsBus = ArrayListValuedHashMap<String, String>(2)
         val busFavorites = repo.getBusFavorites()
         busFavorites
             .map { util.decodeBusFavorite(it) }
@@ -129,8 +129,8 @@ object PreferenceService {
     }
 
     fun getFavoritesTrainParams(): MultiValuedMap<String, String> {
-        val paramsTrain = ArrayListValuedHashMap<String, String>()
         val favorites = repo.getTrainFavorites()
+        val paramsTrain = ArrayListValuedHashMap<String, String>(1, favorites.size)
         favorites.forEach { favorite -> paramsTrain.put(App.instance.getString(R.string.request_map_id), favorite.toString()) }
         return paramsTrain
     }

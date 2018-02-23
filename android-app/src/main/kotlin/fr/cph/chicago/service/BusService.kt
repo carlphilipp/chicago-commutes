@@ -49,7 +49,7 @@ object BusService {
     fun loadFavoritesBuses(): List<BusArrival> {
         try {
             val favoritesBusParams = preferenceService.getFavoritesBusParams()
-            val requestParams = ArrayListValuedHashMap<String, String>()
+            val requestParams = ArrayListValuedHashMap<String, String>(2, 1)
             val routeIdParam = App.instance.getString(R.string.request_rt)
             val stopIdParam = App.instance.getString(R.string.request_stop_id)
             requestParams.put(routeIdParam, favoritesBusParams.get(routeIdParam).joinToString(separator = ","))
@@ -63,7 +63,7 @@ object BusService {
 
     fun loadOneBusStop(stopId: String, bound: String): List<BusStop> {
         try {
-            val params = ArrayListValuedHashMap<String, String>()
+            val params = ArrayListValuedHashMap<String, String>(2, 1)
             params.put(App.instance.getString(R.string.request_rt), stopId)
             params.put(App.instance.getString(R.string.request_dir), bound)
             val xmlResult = ctaClient.connect(BUS_STOP_LIST, params)
@@ -83,7 +83,7 @@ object BusService {
 
     fun loadBusDirections(busRouteId: String): BusDirections {
         try {
-            val reqParams = ArrayListValuedHashMap<String, String>()
+            val reqParams = ArrayListValuedHashMap<String, String>(1, 1)
             reqParams.put(App.instance.getString(R.string.request_rt), busRouteId)
             val xmlResult = ctaClient.connect(BUS_DIRECTION, reqParams)
             return xmlParser.parseBusDirections(xmlResult, busRouteId)
@@ -104,7 +104,7 @@ object BusService {
 
     fun loadFollowBus(busId: String): List<BusArrival> {
         try {
-            val connectParam = ArrayListValuedHashMap<String, String>()
+            val connectParam = ArrayListValuedHashMap<String, String>(1, 1)
             connectParam.put(App.instance.getString(R.string.request_vid), busId)
             val content = ctaClient.connect(BUS_ARRIVALS, connectParam)
             return xmlParser.parseBusArrivals(content)
@@ -118,7 +118,7 @@ object BusService {
     }
 
     fun loadBusPattern(busRouteId: String, bounds: Array<String>): List<BusPattern> {
-        val connectParam = ArrayListValuedHashMap<String, String>()
+        val connectParam = ArrayListValuedHashMap<String, String>(1, 1)
         connectParam.put(App.instance.getString(R.string.request_rt), busRouteId)
         val boundIgnoreCase = bounds.map { bound -> bound.toLowerCase(Locale.US) }
         try {
@@ -135,7 +135,7 @@ object BusService {
     }
 
     fun loadBus(busId: Int, busRouteId: String): List<Bus> {
-        val connectParam = ArrayListValuedHashMap<String, String>()
+        val connectParam = ArrayListValuedHashMap<String, String>(1, 1)
         if (busId != 0) {
             connectParam.put(App.instance.getString(R.string.request_vid), busId.toString())
         } else {
@@ -198,7 +198,7 @@ object BusService {
 
     @Throws(ParserException::class, ConnectException::class)
     fun loadBusArrivals(requestRt: String, busRouteId: String, requestStopId: String, busStopId: Int, predicate: (BusArrival) -> (Boolean)): List<BusArrival> {
-        val params = ArrayListValuedHashMap<String, String>()
+        val params = ArrayListValuedHashMap<String, String>(2, 1)
         params.put(requestRt, busRouteId)
         params.put(requestStopId, busStopId.toString())
         val xmlResult = ctaClient.connect(BUS_ARRIVALS, params)
