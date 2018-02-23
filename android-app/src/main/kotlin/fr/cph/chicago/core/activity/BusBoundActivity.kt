@@ -41,8 +41,6 @@ import com.google.android.gms.maps.MapFragment
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolylineOptions
-import fr.cph.chicago.Constants.Companion.BUSES_PATTERN_URL
-import fr.cph.chicago.Constants.Companion.BUSES_STOP_URL
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.adapter.BusBoundAdapter

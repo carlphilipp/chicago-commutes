@@ -6,25 +6,33 @@ apply plugin: 'realm-android'
 dependencies {
 
     implementation(
+        // Kotlin
         [group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jre8', version: kotlin_version],
+
+        // Google
+        [group: 'com.android.support', name: 'design', version: google_support_version],
+        [group: 'com.android.support', name: 'cardview-v7', version: google_support_version],
         [group: 'com.google.android.gms', name: 'play-services-maps', version: google_play_version],
         [group: 'com.google.android.gms', name: 'play-services-location', version: google_play_version],
-        [group: 'org.apache.commons', name: 'commons-collections4', version: commons_collections4_version],
-        [group: 'org.apache.commons', name: 'commons-text', version: commons_text],
-        [group: 'com.univocity', name: 'univocity-parsers', version: univocity_parsers_version],
-        [group: 'com.android.support', name: 'appcompat-v7', version: google_support_version],
-        [group: 'com.android.support', name: 'design', version: google_support_version],
-        [group: 'com.android.support', name: 'support-v4', version: google_support_version],
-        [group: 'com.android.support', name: 'cardview-v7', version: google_support_version],
+
+        // Jackson
         [group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jackson_version],
         [group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jackson_version],
         [group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: jackson_version],
+
+        // RxJava
         [group: 'io.reactivex.rxjava2', name: 'rxandroid', version: reactivex_android_version],
         [group: 'io.reactivex.rxjava2', name: 'rxjava', version: reactivex_java_version],
+
+        // Tools
         [group: 'com.jakewharton', name: 'butterknife', version: butterknife_version],
         [group: 'pub.devrel', name: 'easypermissions', version: easypermissions_version],
         [group: 'com.github.chrisbanes', name: 'PhotoView', version: photoview_version],
-        [group: 'com.sothree.slidinguppanel', name: 'library', version: sliding_up_panel_version]
+        [group: 'com.sothree.slidinguppanel', name: 'library', version: sliding_up_panel_version],
+        // TODO remove that lib
+        [group: 'org.apache.commons', name: 'commons-collections4', version: commons_collections4_version],
+        [group: 'org.apache.commons', name: 'commons-text', version: commons_text],
+        [group: 'com.univocity', name: 'univocity-parsers', version: univocity_parsers_version],
     )
 
     kapt(
