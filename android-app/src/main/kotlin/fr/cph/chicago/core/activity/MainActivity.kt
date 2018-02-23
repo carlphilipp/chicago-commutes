@@ -106,9 +106,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (!isFinishing) {
-            if (savedInstanceState != null) {
-                reloadData()
-            }
             setContentView(R.layout.activity_main)
             ButterKnife.bind(this)
 
@@ -214,10 +211,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (currentPosition == POSITION_BUS) {
             busFragment?.update()
         }
-    }
-
-    private fun reloadData() {
-        // Might want to reload train csv data if needed here
     }
 
     private fun setBarTitle(title: String) {

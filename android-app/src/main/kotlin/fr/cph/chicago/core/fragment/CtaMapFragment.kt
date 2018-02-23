@@ -21,7 +21,6 @@ package fr.cph.chicago.core.fragment
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.AsyncTask
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -29,6 +28,9 @@ import android.view.ViewGroup
 import butterknife.BindView
 import com.github.chrisbanes.photoview.PhotoView
 import fr.cph.chicago.R
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 class CtaMapFragment : AbstractFragment() {
 
@@ -40,34 +42,25 @@ class CtaMapFragment : AbstractFragment() {
         val rootView = inflater.inflate(R.layout.fragment_cta_map, container, false)
         if (!mainActivity.isFinishing) {
             setBinder(rootView)
-            loadBitmap(ctaMap)
+            loadBitmap()
         }
         return rootView
     }
 
-    private fun loadBitmap(imageView: PhotoView) {
-        if (bitmapCache != null) {
-            imageView.setImageBitmap(bitmapCache)
-        } else {
-            val task = BitmapWorkerTask(imageView)
-            task.execute()
+    private fun loadBitmap() {
+        Observable.fromCallable {
+            if (bitmapCache != null) bitmapCache
+            else BitmapFactory.decodeResource(resources, R.drawable.ctamap)
         }
-    }
-
-    private inner class BitmapWorkerTask internal constructor(private val imageView: PhotoView) : AsyncTask<Void, Void, Bitmap>() {
-
-        override fun doInBackground(vararg params: Void): Bitmap {
-            return BitmapFactory.decodeResource(resources, R.drawable.ctamap)
-        }
-
-        override fun onPostExecute(bitmap: Bitmap) {
-            this@CtaMapFragment.bitmapCache = bitmap
-            imageView.setImageBitmap(bitmap)
-        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { bitmap ->
+                this@CtaMapFragment.bitmapCache = bitmap
+                ctaMap.setImageBitmap(bitmap)
+            }
     }
 
     companion object {
-
         fun newInstance(sectionNumber: Int): CtaMapFragment {
             return AbstractFragment.Companion.fragmentWithBundle(CtaMapFragment(), sectionNumber) as CtaMapFragment
         }
