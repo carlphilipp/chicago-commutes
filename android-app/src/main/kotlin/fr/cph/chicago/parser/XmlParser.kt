@@ -344,7 +344,7 @@ object XmlParser {
         } finally {
             Util.closeQuietly(xml)
         }
-        return result.toList()
+        return result
     }
 
     /**

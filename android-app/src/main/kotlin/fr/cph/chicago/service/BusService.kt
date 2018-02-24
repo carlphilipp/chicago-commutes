@@ -35,6 +35,16 @@ import io.reactivex.exceptions.Exceptions
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 import java.util.Locale
+import kotlin.collections.ArrayList
+import kotlin.collections.List
+import kotlin.collections.MutableList
+import kotlin.collections.distinct
+import kotlin.collections.filter
+import kotlin.collections.getOrElse
+import kotlin.collections.joinToString
+import kotlin.collections.map
+import kotlin.collections.mutableListOf
+import kotlin.collections.sortedWith
 
 object BusService {
 
@@ -55,7 +65,9 @@ object BusService {
             requestParams.put(routeIdParam, favoritesBusParams.get(routeIdParam).joinToString(separator = ","))
             requestParams.put(stopIdParam, favoritesBusParams.get(stopIdParam).joinToString(separator = ","))
             val xmlResult = ctaClient.connect(BUS_ARRIVALS, requestParams)
-            return xmlParser.parseBusArrivals(xmlResult).distinct()
+            val result = xmlParser.parseBusArrivals(xmlResult).distinct()
+            // We do not want to return EmptyList as it's not serializable
+            return if (result.isEmpty()) ArrayList() else result
         } catch (e: Throwable) {
             throw Exceptions.propagate(e)
         }

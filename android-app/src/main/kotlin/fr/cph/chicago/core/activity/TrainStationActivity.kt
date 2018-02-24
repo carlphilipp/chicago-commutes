@@ -58,7 +58,7 @@ import java.util.Random
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class StationActivity : AbstractStationActivity() {
+class TrainStationActivity : AbstractStationActivity() {
 
     @BindView(android.R.id.content)
     lateinit var viewGroup: ViewGroup

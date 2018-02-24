@@ -29,7 +29,7 @@ import android.view.View.OnClickListener
 import android.view.ViewGroup
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.activity.StationActivity
+import fr.cph.chicago.core.activity.TrainStationActivity
 import fr.cph.chicago.core.activity.TrainMapActivity
 import fr.cph.chicago.core.adapter.PopupTrainAdapter
 import fr.cph.chicago.entity.enumeration.TrainLine
@@ -66,7 +66,7 @@ class TrainOnClickListener(private val context: Context,
                 val intent: Intent
                 if (position == 0) {
                     // Start station activity
-                    intent = Intent(view.context, StationActivity::class.java)
+                    intent = Intent(view.context, TrainStationActivity::class.java)
                     extras.putInt(view.context.getString(R.string.bundle_train_stationId), stationId)
                 } else {
                     // Follow all trains from given line on google map view

@@ -119,7 +119,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
             } else {
                 // Start station activity
                 val extras = Bundle()
-                val intent = Intent(context, StationActivity::class.java)
+                val intent = Intent(context, TrainStationActivity::class.java)
                 extras.putInt(activity.getString(R.string.bundle_train_stationId), stationId)
                 intent.putExtras(extras)
                 activity.startActivity(intent)

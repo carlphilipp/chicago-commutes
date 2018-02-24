@@ -64,7 +64,7 @@
                 android:value="fr.cph.chicago.activity.SearchActivity"/>
         </activity>
         <activity
-            android:name=".core.activity.StationActivity"
+            android:name=".core.activity.TrainStationActivity"
             android:label="@string/station_activity"
             android:screenOrientation="portrait"/>
         <activity
