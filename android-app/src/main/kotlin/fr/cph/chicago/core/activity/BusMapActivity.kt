@@ -21,7 +21,6 @@ package fr.cph.chicago.core.activity
 
 import android.content.Context
 import android.graphics.Color
-import android.os.AsyncTask
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -32,10 +31,6 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter
 import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.model.*
-import fr.cph.chicago.Constants.Companion.BUSES_ARRIVAL_URL
-import fr.cph.chicago.Constants.Companion.BUSES_DIRECTION_URL
-import fr.cph.chicago.Constants.Companion.BUSES_PATTERN_URL
-import fr.cph.chicago.Constants.Companion.BUSES_VEHICLES_URL
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.entity.Bus
@@ -47,6 +42,9 @@ import fr.cph.chicago.rx.BusObserver
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.Util
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 /**
  * @author Carl-Philipp Harmant
@@ -60,8 +58,6 @@ class BusMapActivity : AbstractMapActivity() {
     lateinit var bundleBusRouteId: String
     @BindString(R.string.bundle_bus_bounds)
     lateinit var bundleBusBounds: String
-    @BindString(R.string.analytics_bus_map)
-    lateinit var analyticsBusMap: String
 
     private val observableUtil: ObservableUtil = ObservableUtil
     private val busService: BusService = BusService
@@ -258,32 +254,28 @@ class BusMapActivity : AbstractMapActivity() {
         if (Util.isNetworkAvailable()) {
             observableUtil.createBusListObservable(busId, busRouteId).subscribe(BusObserver(this@BusMapActivity, true, layout))
             if (loadPattern) {
-                LoadPattern().execute()
+                Observable.fromCallable {
+                    val patterns: MutableList<BusPattern> = mutableListOf()
+                    if (busId == 0) {
+                        // Search for directions
+                        val busDirections = busService.loadBusDirections(busRouteId)
+                        bounds = busDirections.busDirections.map { busDirection -> busDirection.text }.toTypedArray()
+                    }
+                    busService.loadBusPattern(busRouteId, bounds).forEach({ patterns.add(it) })
+                    patterns
+                }
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { result ->
+                        if (result != null) {
+                            drawPattern(result)
+                        } else {
+                            Util.showNetworkErrorMessage(layout)
+                        }
+                    }
             }
         } else {
             Util.showNetworkErrorMessage(layout)
-        }
-    }
-
-    private inner class LoadPattern : AsyncTask<Void, Void, MutableList<BusPattern>>() {
-
-        override fun doInBackground(vararg params: Void): MutableList<BusPattern> {
-            val patterns: MutableList<BusPattern> = mutableListOf()
-            if (busId == 0) {
-                // Search for directions
-                val busDirections = busService.loadBusDirections(busRouteId)
-                bounds = busDirections.busDirections.map { busDirection -> busDirection.text }.toTypedArray()
-            }
-            busService.loadBusPattern(busRouteId, bounds).forEach({ patterns.add(it) })
-            return patterns
-        }
-
-        override fun onPostExecute(result: MutableList<BusPattern>?) {
-            if (result != null) {
-                drawPattern(result)
-            } else {
-                Util.showNetworkErrorMessage(layout)
-            }
         }
     }
 }

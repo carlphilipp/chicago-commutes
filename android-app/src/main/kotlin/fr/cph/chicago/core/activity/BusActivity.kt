@@ -99,8 +99,6 @@ class BusActivity : AbstractStationActivity() {
     lateinit var bundleBusLongitude: String
     @BindString(R.string.bus_activity_no_service)
     lateinit var busActivityNoService: String
-    @BindString(R.string.analytics_bus_details)
-    lateinit var analyticsBusDetails: String
     @BindString(R.string.request_rt)
     lateinit var requestRt: String
     @BindString(R.string.request_stop_id)

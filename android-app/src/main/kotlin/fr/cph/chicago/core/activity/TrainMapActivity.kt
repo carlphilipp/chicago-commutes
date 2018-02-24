@@ -51,8 +51,6 @@ class TrainMapActivity : AbstractMapActivity() {
 
     @BindString(R.string.bundle_train_line)
     lateinit var bundleTrainLine: String
-    @BindString(R.string.analytics_train_map)
-    lateinit var analyticsTrainMap: String
 
     private val observableUtil: ObservableUtil = ObservableUtil
     private var views: MutableMap<Marker, View> = hashMapOf()

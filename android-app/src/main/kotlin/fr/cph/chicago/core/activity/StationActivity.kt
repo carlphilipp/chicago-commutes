@@ -89,8 +89,6 @@ class StationActivity : AbstractStationActivity() {
 
     @BindString(R.string.bundle_train_stationId)
     lateinit var bundleTrainStationId: String
-    @BindString(R.string.analytics_train_details)
-    lateinit var trainDetails: String
 
     @JvmField
     @BindDimen(R.dimen.activity_station_street_map_height)
@@ -125,7 +123,6 @@ class StationActivity : AbstractStationActivity() {
     private var stationId: Int = 0
     private var ids: MutableMap<String, Int> = mutableMapOf()
 
-    private val trainService: TrainService = TrainService
     private val preferenceService: PreferenceService = PreferenceService
     private val util: Util = Util
 
@@ -140,7 +137,7 @@ class StationActivity : AbstractStationActivity() {
             stationId = intent.extras.getInt(bundleTrainStationId, 0)
             if (stationId != 0) {
                 // Get station
-                station = trainService.getStation(stationId)
+                station = TrainService.getStation(stationId)
                 trainArrivalObservable = ObservableUtil.createTrainArrivalsObservable(station)
 
                 paramsStop = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -149,7 +146,6 @@ class StationActivity : AbstractStationActivity() {
                 val position = station.stops[0].position
                 val params = streetViewImage.layoutParams
 
-                ids = HashMap()
                 isFavorite = isFavorite()
 
                 loadGoogleStreetImage(position, streetViewImage, streetViewText)
@@ -284,7 +280,6 @@ class StationActivity : AbstractStationActivity() {
         return preferenceService.isTrainStationFavorite(stationId)
     }
 
-    // FIXME: delete view instead of hiding it
     fun hideAllArrivalViews() {
         station.lines
             .flatMap { trainLine ->

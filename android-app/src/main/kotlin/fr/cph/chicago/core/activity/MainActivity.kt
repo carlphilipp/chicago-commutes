@@ -249,11 +249,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.navigation_nearby -> {
                 setBarTitle(nearby)
                 nearbyFragment = if (nearbyFragment == null) NearbyFragment.newInstance(position + 1) else nearbyFragment
-                Observable.create<Any> { subscriber ->
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    subscriber.onNext(Any())
-                    subscriber.onComplete()
-                }
+                Observable.fromCallable { drawerLayout.closeDrawer(GravityCompat.START) }
                     .delay(500, TimeUnit.MILLISECONDS)
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnError { throwable -> Log.e(TAG, throwable.message, throwable) }

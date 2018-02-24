@@ -121,33 +121,6 @@
     <string name="map_activity">Map</string>
     <string name="map_train_follow_error">Unable to determine upcoming stops</string>
 
-    <!-- Analytics -->
-    <string name="analytics_bike_fragment">Bike fragment</string>
-    <string name="analytics_bus_fragment">Bus fragment</string>
-    <string name="analytics_favorites_fragment">Favorites fragment</string>
-    <string name="analytics_nearby_fragment">Nearby fragment</string>
-    <string name="analytics_train_fragment">Train fragment</string>
-    <string name="analytics_cta_map_fragment">CTA map fragment</string>
-    <string name="analytics_cta_alert_fragment">CTA alert fragment</string>
-    <string name="analytics_settings_fragment">Settings fragment</string>
-
-    <string name="analytics_bus_details">Bus details</string>
-    <string name="analytics_train_details">Train details</string>
-    <string name="analytics_bus_map">Map bus</string>
-    <string name="analytics_train_map">Map train</string>
-
-
-    <string name="analytics_category_ui">UI</string>
-    <string name="analytics_category_req">Request</string>
-    <string name="analytics_action_press">Press</string>
-    <string name="analytics_action_get_bus">CTA Bus</string>
-    <string name="analytics_action_get_train">CTA Train</string>
-    <string name="analytics_action_get_divvy">Divvy</string>
-
-    <string name="analytics_action_get_divvy_all">All</string>
-
-    <string name="analytics_action_refresh_fav">Refresh favorites</string>
-
     <!-- Requests -->
     <string name="request_map_id">mapid</string>
     <string name="request_vid">vid</string>

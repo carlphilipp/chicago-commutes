@@ -47,7 +47,6 @@ object LayoutUtil {
 
     private val util = Util
 
-    // FIXME Find a way to not use context everywhere here
     private fun createColoredRoundForFavorites(trainLine: TrainLine): RelativeLayout {
         val lineIndication = RelativeLayout(App.instance)
         val params = RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
