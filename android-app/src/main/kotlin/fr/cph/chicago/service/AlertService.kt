@@ -30,7 +30,7 @@ import fr.cph.chicago.parser.JsonParser
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.Locale
+import java.util.*
 
 object AlertService {
     private val ctaClient = CtaClient
