@@ -106,7 +106,7 @@ class BusActivity : AbstractStationActivity() {
 
     @JvmField
     @BindColor(R.color.grey_5)
-    internal var grey_5: Int = 0
+    internal var grey5: Int = 0
     @JvmField
     @BindColor(R.color.grey)
     internal var grey: Int = 0
@@ -149,11 +149,11 @@ class BusActivity : AbstractStationActivity() {
 
             isFavorite = isFavorite()
 
-            mapImage.setColorFilter(grey_5)
-            directionImage.setColorFilter(grey_5)
+            mapImage.setColorFilter(grey5)
+            directionImage.setColorFilter(grey5)
             favoritesImageContainer.setOnClickListener { _ -> switchFavorite() }
 
-            favoritesImage.setColorFilter(if (isFavorite) yellowLineDark else grey_5)
+            favoritesImage.setColorFilter(if (isFavorite) yellowLineDark else grey5)
 
             scrollView.setOnRefreshListener { LoadStationDataTask().execute() }
             streetViewImage.setOnClickListener(GoogleStreetOnClickListener(latitude, longitude))
@@ -263,7 +263,7 @@ class BusActivity : AbstractStationActivity() {
     private fun switchFavorite() {
         isFavorite = if (isFavorite) {
             preferenceService.removeFromBusFavorites(busRouteId, busStopId.toString(), boundTitle, scrollView)
-            favoritesImage.setColorFilter(grey_5)
+            favoritesImage.setColorFilter(grey5)
             false
         } else {
             preferenceService.addToBusFavorites(busRouteId, busStopId.toString(), boundTitle, scrollView)

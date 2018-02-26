@@ -24,7 +24,7 @@ import fr.cph.chicago.exception.ConnectException
 import java.io.InputStream
 
 /**
- * Class that build url and getBikeStations to Divvy API.
+ * Class that build connect to the Divvy API.
  *
  * @author Carl-Philipp Harmant
  * @version 1

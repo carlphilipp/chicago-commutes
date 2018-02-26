@@ -56,7 +56,7 @@ object GoogleStreetClient {
     /**
      * HttpClient to the API and get the MAP
      *
-     * @param address the address to getBikeStations to
+     * @param address the address to connect to
      * @return a drawable map
      */
     private fun connectUrl(address: String): Drawable {

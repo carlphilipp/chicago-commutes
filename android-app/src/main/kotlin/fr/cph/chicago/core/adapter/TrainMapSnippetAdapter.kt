@@ -29,20 +29,20 @@ import android.widget.BaseAdapter
 import android.widget.TextView
 
 import fr.cph.chicago.R
-import fr.cph.chicago.entity.Eta
+import fr.cph.chicago.entity.TrainEta
 
 /**
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class TrainMapSnippetAdapter(private val etas: List<Eta>) : BaseAdapter() {
+class TrainMapSnippetAdapter(private val trainEtas: List<TrainEta>) : BaseAdapter() {
 
     override fun getCount(): Int {
-        return etas.size
+        return trainEtas.size
     }
 
     override fun getItem(position: Int): Any {
-        return etas[position]
+        return trainEtas[position]
     }
 
     override fun getItemId(position: Int): Long {
@@ -51,7 +51,7 @@ class TrainMapSnippetAdapter(private val etas: List<Eta>) : BaseAdapter() {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
         var view = convertView
-        val eta = getItem(position) as Eta
+        val eta = getItem(position) as TrainEta
 
         val holder: ViewHolder
 
@@ -69,7 +69,7 @@ class TrainMapSnippetAdapter(private val etas: List<Eta>) : BaseAdapter() {
             holder = view.tag as ViewHolder
         }
         holder.name.text = eta.station.name
-        if (!(position == etas.size - 1 && "0 min" == eta.timeLeftDueDelay)) {
+        if (!(position == trainEtas.size - 1 && "0 min" == eta.timeLeftDueDelay)) {
             holder.time.text = eta.timeLeftDueDelay
             holder.name.setTextColor(ContextCompat.getColor(parent.context, R.color.grey_5))
             holder.name.gravity = Gravity.START

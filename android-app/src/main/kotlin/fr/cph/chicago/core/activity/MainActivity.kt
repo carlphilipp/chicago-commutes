@@ -39,7 +39,7 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import fr.cph.chicago.R
 import fr.cph.chicago.core.fragment.*
-import fr.cph.chicago.entity.BikeStation
+import fr.cph.chicago.entity.bike.DivvyStation
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.Util
@@ -203,11 +203,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         )
     }
 
-    private fun refreshFirstLoadData(bikeStations: List<BikeStation>) {
-        intent.putParcelableArrayListExtra(bundleBikeStations, bikeStations as ArrayList<BikeStation>)
+    private fun refreshFirstLoadData(divvyStations: List<DivvyStation>) {
+        intent.putParcelableArrayListExtra(bundleBikeStations, divvyStations as ArrayList<DivvyStation>)
         onNewIntent(intent)
-        favoritesFragment?.setBikeStations(bikeStations)
-        bikeFragment?.setBikeStations(bikeStations)
+        favoritesFragment?.setBikeStations(divvyStations)
+        bikeFragment?.setBikeStations(divvyStations)
         if (currentPosition == POSITION_BUS) {
             busFragment?.update()
         }

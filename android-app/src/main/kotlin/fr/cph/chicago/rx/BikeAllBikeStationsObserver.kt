@@ -22,19 +22,19 @@ import android.support.v4.widget.SwipeRefreshLayout
 import android.util.Log
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.BikeStationActivity
-import fr.cph.chicago.entity.BikeStation
+import fr.cph.chicago.entity.bike.DivvyStation
 import fr.cph.chicago.util.Util
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 
-class BikeAllBikeStationsObserver(private val activity: BikeStationActivity, private val bikeStationId: Int, private val swipeRefreshLayout: SwipeRefreshLayout) : Observer<List<BikeStation>> {
+class BikeAllBikeStationsObserver(private val activity: BikeStationActivity, private val bikeStationId: Int, private val swipeRefreshLayout: SwipeRefreshLayout) : Observer<List<DivvyStation>> {
 
     override fun onSubscribe(d: Disposable) {}
 
-    override fun onNext(bikeStations: List<BikeStation>) {
-        bikeStations
+    override fun onNext(divvyStations: List<DivvyStation>) {
+        divvyStations
             .filter { (id) -> bikeStationId == id }
-            .elementAtOrElse(0, { BikeStation.buildDefaultBikeStationWithName("error") })
+            .elementAtOrElse(0, { DivvyStation.buildDefaultBikeStationWithName("error") })
             .also { station ->
                 if (station.name != "error") {
                     activity.refreshStation(station)

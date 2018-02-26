@@ -21,10 +21,10 @@ package fr.cph.chicago.data
 
 import android.os.Parcelable
 import android.util.SparseArray
-import fr.cph.chicago.entity.BikeStation
 import fr.cph.chicago.entity.BusArrival
 import fr.cph.chicago.entity.BusRoute
 import fr.cph.chicago.entity.TrainArrival
+import fr.cph.chicago.entity.bike.DivvyStation
 import fr.cph.chicago.entity.dto.BusArrivalStopMappedDTO
 import fr.cph.chicago.entity.enumeration.TrainLine
 import fr.cph.chicago.service.BusService
@@ -51,7 +51,7 @@ object FavoritesData {
 
     private val trainArrivals: SparseArray<TrainArrival> = SparseArray()
     private val busArrivals: MutableList<BusArrival> = mutableListOf()
-    private val bikeStations: MutableList<BikeStation> = mutableListOf()
+    private val divvyStations: MutableList<DivvyStation> = mutableListOf()
     private var trainFavorites: List<Int> = listOf()
     private var busFavorites: List<String> = listOf()
     private var fakeBusFavorites: List<String> = listOf()
@@ -89,7 +89,7 @@ object FavoritesData {
             }
         } else {
             val index = position - (trainFavorites.size + fakeBusFavorites.size)
-            return bikeStations
+            return divvyStations
                 .filter { (id) -> Integer.toString(id) == bikeFavorites[index] }
                 .getOrElse(0, { createEmptyBikeStation(index) })
         }
@@ -129,10 +129,10 @@ object FavoritesData {
         fakeBusFavorites = calculateActualRouteNumberBusFavorites(busFavorites)
         bikeFavorites.clear()
         val bikeFavoritesTemp = preferenceService.getBikeFavorites()
-        if (bikeStations.isNotEmpty()) {
+        if (divvyStations.isNotEmpty()) {
             bikeFavoritesTemp
-                .flatMap { bikeStationId -> bikeStations.filter { (id) -> Integer.toString(id) == bikeStationId } }
-                .sortedWith(util.bikeComparatorByName)
+                .flatMap { bikeStationId -> divvyStations.filter { (id) -> Integer.toString(id) == bikeStationId } }
+                .sortedWith(util.DIVVY_COMPARATOR_BY_NAME)
                 .map { (id) -> Integer.toString(id) }
                 .forEach({ bikeFavorites.add(it) })
         } else {
@@ -154,14 +154,14 @@ object FavoritesData {
         this.busArrivals.addAll(busArrivals)
     }
 
-    fun updateBikeStations(bikeStations: List<BikeStation>) {
-        this.bikeStations.clear()
-        this.bikeStations.addAll(bikeStations)
+    fun updateBikeStations(divvyStations: List<DivvyStation>) {
+        this.divvyStations.clear()
+        this.divvyStations.addAll(divvyStations)
     }
 
-    private fun createEmptyBikeStation(index: Int): BikeStation {
+    private fun createEmptyBikeStation(index: Int): DivvyStation {
         val stationName = preferenceService.getBikeRouteNameMapping(bikeFavorites[index])
-        return BikeStation.buildDefaultBikeStationWithName(stationName ?: StringUtils.EMPTY)
+        return DivvyStation.buildDefaultBikeStationWithName(stationName ?: StringUtils.EMPTY)
     }
 
     private fun calculateActualRouteNumberBusFavorites(busFavorites: List<String>): List<String> {

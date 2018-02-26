@@ -17,12 +17,14 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.entity
+package fr.cph.chicago.entity.bike
 
 import android.os.Parcel
 import android.os.Parcelable
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import fr.cph.chicago.entity.AStation
+import fr.cph.chicago.entity.Position
 import org.apache.commons.lang3.StringUtils
 
 /**
@@ -32,7 +34,7 @@ import org.apache.commons.lang3.StringUtils
  * @version 1
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class BikeStation(
+data class DivvyStation(
     @JsonProperty("id")
     val id: Int,
     @JsonProperty("stationName")
@@ -79,11 +81,11 @@ data class BikeStation(
 
         private const val DEFAULT_RANGE = 0.008
 
-        fun buildDefaultBikeStationWithName(name: String): BikeStation {
-            return BikeStation(0, name, -1, 0, 0.0, 0.0, -1, StringUtils.EMPTY)
+        fun buildDefaultBikeStationWithName(name: String): DivvyStation {
+            return DivvyStation(0, name, -1, 0, 0.0, 0.0, -1, StringUtils.EMPTY)
         }
 
-        fun readNearbyStation(bikeStations: List<BikeStation>, position: Position): List<BikeStation> {
+        fun readNearbyStation(divvyStations: List<DivvyStation>, position: Position): List<DivvyStation> {
             val latitude = position.latitude
             val longitude = position.longitude
 
@@ -92,21 +94,20 @@ data class BikeStation(
             val lonMax = longitude + DEFAULT_RANGE
             val lonMin = longitude - DEFAULT_RANGE
 
-            return bikeStations
+            return divvyStations
                 .filter { station -> station.latitude <= latMax }
                 .filter { station -> station.latitude >= latMin }
                 .filter { station -> station.longitude <= lonMax }
                 .filter { station -> station.longitude >= lonMin }
-                .toList()
         }
 
         @JvmField
-        val CREATOR: Parcelable.Creator<BikeStation> = object : Parcelable.Creator<BikeStation> {
-            override fun createFromParcel(source: Parcel): BikeStation {
-                return BikeStation(source)
+        val CREATOR: Parcelable.Creator<DivvyStation> = object : Parcelable.Creator<DivvyStation> {
+            override fun createFromParcel(source: Parcel): DivvyStation {
+                return DivvyStation(source)
             }
 
-            override fun newArray(size: Int): Array<BikeStation?> {
+            override fun newArray(size: Int): Array<DivvyStation?> {
                 return arrayOfNulls(size)
             }
         }

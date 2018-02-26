@@ -33,7 +33,7 @@ class TrainArrivalObserver(private val trainStationActivity: TrainStationActivit
 
     override fun onNext(trainArrival: TrainArrival) {
         trainStationActivity.hideAllArrivalViews()
-        trainArrival.etas.forEach { trainStationActivity.drawAllArrivalsTrain(it) }
+        trainArrival.trainEtas.forEach { trainStationActivity.drawAllArrivalsTrain(it) }
     }
 
     override fun onError(e: Throwable) {

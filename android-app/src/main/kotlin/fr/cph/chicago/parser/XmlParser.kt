@@ -100,9 +100,9 @@ object XmlParser {
                                 "Loop"
                             else
                                 destinationName
-                        val eta = Eta(station, stop, routeName!!, destinationName!!, predictionDate!!, arrivalDepartureDate!!, isApp, isDly, position)
+                        val eta = TrainEta(station, stop, routeName!!, destinationName!!, predictionDate!!, arrivalDepartureDate!!, isApp, isDly, position)
                         val arri = result.get(stationId, TrainArrival.buildEmptyTrainArrival())
-                        val etas = arri.etas
+                        val etas = arri.trainEtas
                         etas.add(eta)
                         result.append(stationId, arri)
                     }
@@ -521,9 +521,9 @@ object XmlParser {
 
     @Synchronized
     @Throws(ParserException::class)
-    fun parseTrainsFollow(inputStream: InputStream): MutableList<Eta> {
+    fun parseTrainsFollow(inputStream: InputStream): MutableList<TrainEta> {
         val arrivals = parseArrivals(inputStream)
-        val res = mutableListOf<Eta>()
+        val res = mutableListOf<TrainEta>()
         var index = 0
         while (index < arrivals.size()) {
             val (etas) = arrivals.valueAt(index++)

@@ -37,7 +37,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.entity.BikeStation
+import fr.cph.chicago.entity.bike.DivvyStation
 import fr.cph.chicago.entity.BusRoute
 import fr.cph.chicago.entity.Position
 import fr.cph.chicago.entity.dto.BusFavoriteDTO
@@ -62,7 +62,7 @@ import java.util.regex.Pattern
  */
 object Util {
 
-    val bikeComparatorByName: Comparator<BikeStation> by lazy { BikeStationComparator() }
+    val DIVVY_COMPARATOR_BY_NAME: Comparator<DivvyStation> by lazy { BikeStationComparator() }
     val busStopComparatorByName: Comparator<BusRoute> by lazy { BusStopComparator() }
     private val preferenceService = PreferenceService
 
@@ -86,8 +86,8 @@ object Util {
         }
     }
 
-    private class BikeStationComparator : Comparator<BikeStation> {
-        override fun compare(station1: BikeStation, station2: BikeStation): Int {
+    private class BikeStationComparator : Comparator<DivvyStation> {
+        override fun compare(station1: DivvyStation, station2: DivvyStation): Int {
             return station1.name.compareTo(station2.name)
         }
     }

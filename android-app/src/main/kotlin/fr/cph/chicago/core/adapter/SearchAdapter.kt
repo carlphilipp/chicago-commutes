@@ -35,7 +35,7 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.listener.BikeStationOnClickListener
 import fr.cph.chicago.core.listener.TrainOnClickListener
-import fr.cph.chicago.entity.BikeStation
+import fr.cph.chicago.entity.bike.DivvyStation
 import fr.cph.chicago.entity.BusRoute
 import fr.cph.chicago.entity.Station
 import fr.cph.chicago.rx.BusDirectionObserver
@@ -55,10 +55,10 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
 
     private val trains: MutableList<Station> = mutableListOf()
     private val busRoutes: MutableList<BusRoute> = mutableListOf()
-    private val bikeStations: MutableList<BikeStation> = mutableListOf()
+    private val divvyStations: MutableList<DivvyStation> = mutableListOf()
 
     override fun getCount(): Int {
-        return trains.size + busRoutes.size + bikeStations.size
+        return trains.size + busRoutes.size + divvyStations.size
     }
 
     override fun getItem(position: Int): Any {
@@ -66,7 +66,7 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
         result = when {
             position < trains.size -> trains[position]
             position < trains.size + busRoutes.size -> busRoutes[position - trains.size]
-            else -> bikeStations[position - (trains.size + busRoutes.size)]
+            else -> divvyStations[position - (trains.size + busRoutes.size)]
         }
         return result
     }
@@ -115,7 +115,7 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
                 }
             }
             else -> {
-                val bikeStation = getItem(position) as BikeStation
+                val bikeStation = getItem(position) as DivvyStation
 
                 val icon: ImageView = view.findViewById(R.id.icon)
                 icon.setImageDrawable(ContextCompat.getDrawable(parent.context, R.drawable.ic_directions_bike_white_24dp))
@@ -128,15 +128,15 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
         return view
     }
 
-    fun updateData(trains: List<Station>, buses: List<BusRoute>, bikes: List<BikeStation>) {
+    fun updateData(trains: List<Station>, buses: List<BusRoute>, divvies: List<DivvyStation>) {
         this.trains.clear()
         this.trains.addAll(trains)
 
         this.busRoutes.clear()
         this.busRoutes.addAll(buses)
 
-        this.bikeStations.clear()
-        this.bikeStations.addAll(bikes)
+        this.divvyStations.clear()
+        this.divvyStations.addAll(divvies)
     }
 
     companion object {

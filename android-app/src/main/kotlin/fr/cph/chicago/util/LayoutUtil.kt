@@ -32,7 +32,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.entity.BikeStation
+import fr.cph.chicago.entity.bike.DivvyStation
 import fr.cph.chicago.entity.BusArrival
 import fr.cph.chicago.entity.enumeration.BusDirection
 import fr.cph.chicago.entity.enumeration.TrainLine
@@ -207,7 +207,7 @@ object LayoutUtil {
         return container
     }
 
-    fun createBikeLayout(bikeStation: BikeStation): LinearLayout {
+    fun createBikeLayout(divvyStation: DivvyStation): LinearLayout {
         val containerParams = getInsideParams(true, true)
         val container = LinearLayout(App.instance)
         container.orientation = LinearLayout.VERTICAL
@@ -215,14 +215,14 @@ object LayoutUtil {
 
         val linearLayout = LinearLayout(App.instance)
         linearLayout.orientation = LinearLayout.VERTICAL
-        linearLayout.addView(createBikeLine(bikeStation, true))
-        linearLayout.addView(createBikeLine(bikeStation, false))
+        linearLayout.addView(createBikeLine(divvyStation, true))
+        linearLayout.addView(createBikeLine(divvyStation, false))
 
         container.addView(linearLayout)
         return container
     }
 
-    private fun createBikeLine(bikeStation: BikeStation, firstLine: Boolean): LinearLayout {
+    private fun createBikeLine(divvyStation: DivvyStation, firstLine: Boolean): LinearLayout {
         val pixels = util.convertDpToPixel(16)
         val pixelsHalf = pixels / 2
         val grey5 = ContextCompat.getColor(App.instance, R.color.grey_5)
@@ -261,7 +261,7 @@ object LayoutUtil {
         val amountBike = TextView(App.instance)
         val text = if (firstLine) App.instance.resources.getString(R.string.bike_available_bikes) else App.instance.resources.getString(R.string.bike_available_docks)
         boundCustomTextView.text = text
-        val data = if (firstLine) bikeStation.availableBikes else bikeStation.availableDocks
+        val data = if (firstLine) divvyStation.availableBikes else divvyStation.availableDocks
         if (data == -1) {
             amountBike.text = "?"
             amountBike.setTextColor(ContextCompat.getColor(App.instance, R.color.orange))

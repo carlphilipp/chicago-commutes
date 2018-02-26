@@ -22,7 +22,7 @@ package fr.cph.chicago.parser
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
-import fr.cph.chicago.entity.BikeStation
+import fr.cph.chicago.entity.bike.DivvyStation
 import fr.cph.chicago.entity.dto.DivvyDTO
 import fr.cph.chicago.exception.ParserException
 import fr.cph.chicago.util.Util
@@ -55,7 +55,7 @@ object JsonParser {
     }
 
     @Throws(ParserException::class)
-    fun parseStations(stream: InputStream): List<BikeStation> {
+    fun parseStations(stream: InputStream): List<DivvyStation> {
         try {
             val (stations) = mapper.readValue<DivvyDTO>(stream, object : TypeReference<DivvyDTO>() {})
             return stations

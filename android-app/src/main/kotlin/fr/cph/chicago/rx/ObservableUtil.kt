@@ -24,6 +24,7 @@ import android.util.Log
 import android.util.SparseArray
 import fr.cph.chicago.core.App
 import fr.cph.chicago.entity.*
+import fr.cph.chicago.entity.bike.DivvyStation
 import fr.cph.chicago.entity.dto.*
 import fr.cph.chicago.entity.enumeration.TrainLine
 import fr.cph.chicago.service.AlertService
@@ -75,7 +76,7 @@ object ObservableUtil {
             }
     }
 
-    fun createAllBikeStationsObservable(): Observable<List<BikeStation>> {
+    fun createAllBikeStationsObservable(): Observable<List<DivvyStation>> {
         return createObservableFromCallable(Callable { bikeService.loadAllBikeStations() })
             .onErrorReturn { throwable ->
                 Log.e(TAG, throwable.message, throwable)
@@ -83,11 +84,11 @@ object ObservableUtil {
             }
     }
 
-    fun createBikeStationsObservable(bikeStation: BikeStation): Observable<BikeStation> {
-        return createObservableFromCallable(Callable { bikeService.findBikeStation(bikeStation.id) })
+    fun createBikeStationsObservable(divvyStation: DivvyStation): Observable<DivvyStation> {
+        return createObservableFromCallable(Callable { bikeService.findBikeStation(divvyStation.id) })
             .onErrorReturn { throwable ->
                 Log.e(TAG, throwable.message, throwable)
-                BikeStation.buildDefaultBikeStationWithName("error")
+                DivvyStation.buildDefaultBikeStationWithName("error")
             }
     }
 
@@ -99,10 +100,10 @@ object ObservableUtil {
         // Bikes online all stations
         val bikeStationsObservable = createAllBikeStationsObservable()
         return Observable.zip(busArrivalsObservable, trainArrivalsObservable, bikeStationsObservable,
-            Function3 { busArrivalDTO: BusArrivalDTO, trainArrivalsDTO: TrainArrivalDTO, bikeStations: List<BikeStation>
+            Function3 { busArrivalDTO: BusArrivalDTO, trainArrivalsDTO: TrainArrivalDTO, divvyStations: List<DivvyStation>
                 ->
                 (application as App).lastUpdate = Calendar.getInstance().time
-                FavoritesDTO(trainArrivalsDTO, busArrivalDTO, bikeStations.isEmpty(), bikeStations)
+                FavoritesDTO(trainArrivalsDTO, busArrivalDTO, divvyStations.isEmpty(), divvyStations)
             })
     }
 
@@ -196,8 +197,8 @@ object ObservableUtil {
             }
     }
 
-    fun createBikeStationAroundObservable(position: Position, bikeStations: List<BikeStation>): Observable<List<BikeStation>> {
-        return createObservableFromCallable(Callable { BikeStation.readNearbyStation(bikeStations, position) })
+    fun createBikeStationAroundObservable(position: Position, divvyStations: List<DivvyStation>): Observable<List<DivvyStation>> {
+        return createObservableFromCallable(Callable { DivvyStation.readNearbyStation(divvyStations, position) })
             .onErrorReturn { throwable ->
                 Log.e(TAG, throwable.message, throwable)
                 // Do not change that to listOf().
@@ -206,7 +207,7 @@ object ObservableUtil {
             }
     }
 
-    fun createLoadTrainEtaObservable(runNumber: String, loadAll: Boolean): Observable<List<Eta>> {
+    fun createLoadTrainEtaObservable(runNumber: String, loadAll: Boolean): Observable<List<TrainEta>> {
         return createObservableFromCallable(Callable { trainService.loadTrainEta(runNumber, loadAll) })
             .onErrorReturn { ArrayList() }
     }

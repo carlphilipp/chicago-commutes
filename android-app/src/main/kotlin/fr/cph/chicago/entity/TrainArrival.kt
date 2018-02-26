@@ -30,12 +30,12 @@ import java.io.Serializable
  * @author Carl-Philipp Harmant
  * @version 1
  */
-data class TrainArrival(var etas: MutableList<Eta> = mutableListOf()) : Parcelable, Serializable {
+data class TrainArrival(var trainEtas: MutableList<TrainEta> = mutableListOf()) : Parcelable, Serializable {
 
-    private constructor(source: Parcel) : this(etas = source.createTypedArray(Eta.CREATOR).toMutableList())
+    private constructor(source: Parcel) : this(trainEtas = source.createTypedArray(TrainEta.CREATOR).toMutableList())
 
-    fun getEtas(line: TrainLine): MutableList<Eta> {
-        return this.etas.filter { eta -> eta.routeName == line }.toMutableList()
+    fun getEtas(line: TrainLine): MutableList<TrainEta> {
+        return this.trainEtas.filter { eta -> eta.routeName == line }.toMutableList()
     }
 
     override fun describeContents(): Int {
@@ -43,7 +43,7 @@ data class TrainArrival(var etas: MutableList<Eta> = mutableListOf()) : Parcelab
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeTypedList(etas)
+        dest.writeTypedList(trainEtas)
     }
 
     companion object {

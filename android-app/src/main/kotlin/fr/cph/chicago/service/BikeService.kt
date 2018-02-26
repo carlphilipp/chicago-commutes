@@ -20,7 +20,7 @@
 package fr.cph.chicago.service
 
 import fr.cph.chicago.client.DivvyClient
-import fr.cph.chicago.entity.BikeStation
+import fr.cph.chicago.entity.bike.DivvyStation
 import fr.cph.chicago.parser.JsonParser
 import io.reactivex.exceptions.Exceptions
 
@@ -29,16 +29,16 @@ object BikeService {
     private val client = DivvyClient
     private val jsonParser = JsonParser
 
-    fun loadAllBikeStations(): List<BikeStation> {
+    fun loadAllBikeStations(): List<DivvyStation> {
         try {
             val bikeStationsInputStream = client.getBikeStations()
-            return jsonParser.parseStations(bikeStationsInputStream).sortedWith(compareBy(BikeStation::name)).toList()
+            return jsonParser.parseStations(bikeStationsInputStream).sortedWith(compareBy(DivvyStation::name)).toList()
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }
     }
 
-    fun findBikeStation(id: Int): BikeStation {
+    fun findBikeStation(id: Int): DivvyStation {
         try {
             return loadAllBikeStations().first { (bikeId) -> bikeId == id }
         } catch (throwable: Throwable) {

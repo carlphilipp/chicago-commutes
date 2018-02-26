@@ -28,7 +28,7 @@ import android.widget.TextView
 
 import fr.cph.chicago.R
 import fr.cph.chicago.core.listener.BikeStationOnClickListener
-import fr.cph.chicago.entity.BikeStation
+import fr.cph.chicago.entity.bike.DivvyStation
 
 /**
  * Adapter that will handle bikes
@@ -36,14 +36,14 @@ import fr.cph.chicago.entity.BikeStation
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BikeAdapter(var bikeStations: List<BikeStation>) : BaseAdapter() {
+class BikeAdapter(var divvyStations: List<DivvyStation>) : BaseAdapter() {
 
     override fun getCount(): Int {
-        return bikeStations.size
+        return divvyStations.size
     }
 
     override fun getItem(position: Int): Any {
-        return bikeStations[position]
+        return divvyStations[position]
     }
 
     override fun getItemId(position: Int): Long {
@@ -52,7 +52,7 @@ class BikeAdapter(var bikeStations: List<BikeStation>) : BaseAdapter() {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
         var view = convertView
-        val station = getItem(position) as BikeStation
+        val station = getItem(position) as DivvyStation
 
         val holder: ViewHolder
 

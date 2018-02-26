@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.client
 
-import android.util.Log
 import fr.cph.chicago.Constants.Companion.ALERTS_ROUTES_URL
 import fr.cph.chicago.Constants.Companion.ALERT_ROUTES_URL
 import fr.cph.chicago.Constants.Companion.BUSES_ARRIVAL_URL
@@ -38,7 +37,7 @@ import org.apache.commons.collections4.MultiValuedMap
 import java.io.InputStream
 
 /**
- * Class that build url and getBikeStations to CTA API
+ * Class that build url and getDivvyStations to CTA API
  *
  * @author Carl-Philipp Harmant
  *

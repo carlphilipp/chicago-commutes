@@ -39,7 +39,7 @@ import butterknife.ButterKnife
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.adapter.SearchAdapter
-import fr.cph.chicago.entity.BikeStation
+import fr.cph.chicago.entity.bike.DivvyStation
 import fr.cph.chicago.entity.enumeration.TrainLine
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
@@ -64,7 +64,7 @@ class SearchActivity : AppCompatActivity() {
 
     private lateinit var searchView: SearchView
     private lateinit var searchAdapter: SearchAdapter
-    private var bikeStations: List<BikeStation> = listOf()
+    private var divvyStations: List<DivvyStation> = listOf()
 
     private val supportActionBarNotNull: ActionBar
         get() = supportActionBar ?: throw RuntimeException()
@@ -82,7 +82,7 @@ class SearchActivity : AppCompatActivity() {
             container.foreground.alpha = 0
 
             searchAdapter = SearchAdapter(this)
-            bikeStations = intent.extras.getParcelableArrayList(bundleBikeStations)
+            divvyStations = intent.extras.getParcelableArrayList(bundleBikeStations)
             handleIntent(intent)
 
             listView.adapter = searchAdapter
@@ -122,7 +122,7 @@ class SearchActivity : AppCompatActivity() {
     override fun startActivity(intent: Intent) {
         // check if search intent
         if (Intent.ACTION_SEARCH == intent.action) {
-            val bikeStations = getIntent().extras.getParcelableArrayList<BikeStation>(bundleBikeStations)
+            val bikeStations = getIntent().extras.getParcelableArrayList<DivvyStation>(bundleBikeStations)
             intent.putParcelableArrayListExtra(bundleBikeStations, bikeStations)
         }
         super.startActivity(intent)
@@ -161,11 +161,11 @@ class SearchActivity : AppCompatActivity() {
             val query = intent.getStringExtra(SearchManager.QUERY).trim { it <= ' ' }
             val foundStations = trainService.searchStations(query)
             val foundBusRoutes = busService.searchBusRoutes(query)
-            // TODO Consider doing in a different way how bikeStations is stored
-            val foundBikeStations = bikeStations
+            // TODO Consider doing in a different way how divvyStations is stored
+            val foundBikeStations = divvyStations
                 .filter { (_, name, _, _, _, _, _, stAddress1) -> containsIgnoreCase(name, query) || containsIgnoreCase(stAddress1, query) }
                 .distinct()
-                .sortedWith(util.bikeComparatorByName)
+                .sortedWith(util.DIVVY_COMPARATOR_BY_NAME)
             searchAdapter.updateData(foundStations, foundBusRoutes, foundBikeStations)
             searchAdapter.notifyDataSetChanged()
         }

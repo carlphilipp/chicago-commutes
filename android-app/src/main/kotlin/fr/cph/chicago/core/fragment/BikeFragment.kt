@@ -32,7 +32,7 @@ import butterknife.BindString
 import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.adapter.BikeAdapter
-import fr.cph.chicago.entity.BikeStation
+import fr.cph.chicago.entity.bike.DivvyStation
 import org.apache.commons.lang3.StringUtils
 
 
@@ -57,7 +57,7 @@ class BikeFragment : AbstractFragment() {
     lateinit var bundleBikeStations: String
 
     private lateinit var bikeAdapter: BikeAdapter
-    private lateinit var bikeStations: List<BikeStation>
+    private lateinit var divvyStations: List<DivvyStation>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,8 +69,8 @@ class BikeFragment : AbstractFragment() {
         val rootView = inflater.inflate(R.layout.fragment_bike, container, false)
         if (!mainActivity.isFinishing) {
             setBinder(rootView)
-            bikeStations = mainActivity.intent.getParcelableArrayListExtra(bundleBikeStations) ?: listOf()
-            if (bikeStations.isEmpty()) {
+            divvyStations = mainActivity.intent.getParcelableArrayListExtra(bundleBikeStations) ?: listOf()
+            if (divvyStations.isEmpty()) {
                 loadError()
             } else {
                 loadList()
@@ -80,23 +80,23 @@ class BikeFragment : AbstractFragment() {
     }
 
     private fun loadList() {
-        bikeAdapter = BikeAdapter(bikeStations)
+        bikeAdapter = BikeAdapter(divvyStations)
         bikeListView.adapter = bikeAdapter
         filter.addTextChangedListener(object : TextWatcher {
 
-            private lateinit var bikeStations: List<BikeStation>
+            private lateinit var divvyStations: List<DivvyStation>
 
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-                bikeStations = listOf()
+                divvyStations = listOf()
             }
 
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                bikeStations = this@BikeFragment.bikeStations
+                divvyStations = this@BikeFragment.divvyStations
                     .filter { (_, name) -> StringUtils.containsIgnoreCase(name, s.toString().trim { it <= ' ' }) }
             }
 
             override fun afterTextChanged(s: Editable) {
-                bikeAdapter.bikeStations = this.bikeStations.toList()
+                bikeAdapter.divvyStations = this.divvyStations.toList()
                 bikeAdapter.notifyDataSetChanged()
             }
         })
@@ -111,8 +111,8 @@ class BikeFragment : AbstractFragment() {
         errorLayout.visibility = RelativeLayout.VISIBLE
     }
 
-    fun setBikeStations(bikeStations: List<BikeStation>) {
-        this.bikeStations = bikeStations
+    fun setBikeStations(divvyStations: List<DivvyStation>) {
+        this.divvyStations = divvyStations
         loadList()
     }
 

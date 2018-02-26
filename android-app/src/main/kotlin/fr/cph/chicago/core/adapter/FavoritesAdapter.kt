@@ -43,6 +43,7 @@ import fr.cph.chicago.core.listener.BusStopOnClickListener
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener
 import fr.cph.chicago.data.FavoritesData
 import fr.cph.chicago.entity.*
+import fr.cph.chicago.entity.bike.DivvyStation
 import fr.cph.chicago.entity.dto.BusDetailsDTO
 import fr.cph.chicago.entity.enumeration.BusDirection
 import fr.cph.chicago.entity.enumeration.TrainLine
@@ -97,7 +98,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
             is Station -> handleStation(holder, model)
             is BusRoute -> handleBusRoute(holder, model)
             else -> {
-                val bikeStation = model as BikeStation
+                val bikeStation = model as DivvyStation
                 handleBikeStation(holder, bikeStation)
             }
         }
@@ -239,17 +240,17 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         }
     }
 
-    private fun handleBikeStation(holder: FavoritesViewHolder, bikeStation: BikeStation) {
-        holder.stationNameTextView.text = bikeStation.name
+    private fun handleBikeStation(holder: FavoritesViewHolder, divvyStation: DivvyStation) {
+        holder.stationNameTextView.text = divvyStation.name
         holder.favoriteImage.setImageResource(R.drawable.ic_directions_bike_white_24dp)
 
         holder.detailsButton.setOnClickListener { _ ->
             if (!util.isNetworkAvailable()) {
                 util.showNetworkErrorMessage(activity)
-            } else if (bikeStation.latitude != 0.0 && bikeStation.longitude != 0.0) {
+            } else if (divvyStation.latitude != 0.0 && divvyStation.longitude != 0.0) {
                 val intent = Intent(activity.applicationContext, BikeStationActivity::class.java)
                 val extras = Bundle()
-                extras.putParcelable(activity.getString(R.string.bundle_bike_station), bikeStation)
+                extras.putParcelable(activity.getString(R.string.bundle_bike_station), divvyStation)
                 intent.putExtras(extras)
                 activity.startActivity(intent)
             } else {
@@ -258,9 +259,9 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         }
 
         holder.mapButton.text = activity.getString(R.string.favorites_view_station)
-        holder.mapButton.setOnClickListener(GoogleMapOnClickListener(bikeStation.latitude, bikeStation.longitude))
+        holder.mapButton.setOnClickListener(GoogleMapOnClickListener(divvyStation.latitude, divvyStation.longitude))
 
-        val bikeResultLayout = layoutUtil.createBikeLayout(bikeStation)
+        val bikeResultLayout = layoutUtil.createBikeLayout(divvyStation)
 
         holder.mainLayout.addView(bikeResultLayout)
     }
@@ -297,8 +298,8 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         favoritesData.updateBusArrivals(busArrivals)
     }
 
-    fun updateBikeStations(bikeStations: List<BikeStation>) {
-        favoritesData.updateBikeStations(bikeStations)
+    fun updateBikeStations(divvyStations: List<DivvyStation>) {
+        favoritesData.updateBikeStations(divvyStations)
     }
 
     /**

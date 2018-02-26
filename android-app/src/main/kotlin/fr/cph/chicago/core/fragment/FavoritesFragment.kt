@@ -39,7 +39,7 @@ import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.adapter.FavoritesAdapter
-import fr.cph.chicago.entity.BikeStation
+import fr.cph.chicago.entity.bike.DivvyStation
 import fr.cph.chicago.entity.BusArrival
 import fr.cph.chicago.entity.TrainArrival
 import fr.cph.chicago.entity.dto.FavoritesDTO
@@ -76,7 +76,7 @@ class FavoritesFragment : AbstractFragment() {
 
     private var favoritesAdapter: FavoritesAdapter? = null
     private var refreshTimingTask: RefreshTimingTask? = null
-    private lateinit var bikeStations: List<BikeStation>
+    private lateinit var divvyStations: List<DivvyStation>
 
     private lateinit var rootView: View
 
@@ -88,10 +88,10 @@ class FavoritesFragment : AbstractFragment() {
                 ?: listOf()
             val trainArrivals: SparseArray<TrainArrival> = intent.extras.getSparseParcelableArray(getString(R.string.bundle_train_arrivals))
                 ?: SparseArray()
-            bikeStations = intent.getParcelableArrayListExtra(getString(R.string.bundle_bike_stations)) ?: listOf()
+            divvyStations = intent.getParcelableArrayListExtra(getString(R.string.bundle_bike_stations)) ?: listOf()
             favoritesAdapter = FavoritesAdapter(mainActivity)
             favoritesAdapter?.updateTrainArrivalsAndBusArrivals(trainArrivals, busArrivals)
-            favoritesAdapter?.updateBikeStations(bikeStations)
+            favoritesAdapter?.updateBikeStations(divvyStations)
             favoritesAdapter?.refreshFavorites()
         }
     }
@@ -103,11 +103,11 @@ class FavoritesFragment : AbstractFragment() {
             recyclerView.adapter = favoritesAdapter
             recyclerView.layoutManager = LinearLayoutManager(mainActivity)
             floatingButton.setOnClickListener { _ ->
-                if (bikeStations.isEmpty()) {
+                if (divvyStations.isEmpty()) {
                     util.showMessage(mainActivity, R.string.message_too_fast)
                 } else {
                     val intent = Intent(mainActivity, SearchActivity::class.java)
-                    intent.putParcelableArrayListExtra(bundleBikeStation, bikeStations as ArrayList<BikeStation>?)
+                    intent.putParcelableArrayListExtra(bundleBikeStation, divvyStations as ArrayList<DivvyStation>?)
                     mainActivity.startActivity(intent)
                 }
             }
@@ -182,8 +182,8 @@ class FavoritesFragment : AbstractFragment() {
     }
 
     fun reloadData(favoritesDTO: FavoritesDTO) {
-        mainActivity.intent.putParcelableArrayListExtra(bundleBikeStation, favoritesDTO.bikeStations as ArrayList<BikeStation>)
-        bikeStations = favoritesDTO.bikeStations
+        mainActivity.intent.putParcelableArrayListExtra(bundleBikeStation, favoritesDTO.divvyStations as ArrayList<DivvyStation>)
+        divvyStations = favoritesDTO.divvyStations
         favoritesAdapter?.updateTrainArrivalsAndBusArrivals(favoritesDTO.trainArrivalDTO.trainArrivalSparseArray, favoritesDTO.busArrivalDTO.busArrivals)
         favoritesAdapter?.refreshFavorites()
         favoritesAdapter?.resetLastUpdate()
@@ -211,9 +211,9 @@ class FavoritesFragment : AbstractFragment() {
         stopRefreshing()
     }
 
-    fun setBikeStations(bikeStations: List<BikeStation>) {
-        this.bikeStations = bikeStations
-        favoritesAdapter?.updateBikeStations(bikeStations)
+    fun setBikeStations(divvyStations: List<DivvyStation>) {
+        this.divvyStations = divvyStations
+        favoritesAdapter?.updateBikeStations(divvyStations)
         favoritesAdapter?.notifyDataSetChanged()
     }
 

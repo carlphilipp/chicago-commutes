@@ -37,7 +37,7 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
-import fr.cph.chicago.entity.Eta
+import fr.cph.chicago.entity.TrainEta
 import fr.cph.chicago.entity.Station
 import fr.cph.chicago.entity.Stop
 import fr.cph.chicago.entity.TrainArrival
@@ -308,34 +308,34 @@ class TrainStationActivity : AbstractStationActivity() {
     /**
      * Draw line
      *
-     * @param eta the eta
+     * @param trainEta the trainEta
      */
-    fun drawAllArrivalsTrain(eta: Eta) {
-        val line = eta.routeName
-        val stop = eta.stop
+    fun drawAllArrivalsTrain(trainEta: TrainEta) {
+        val line = trainEta.routeName
+        val stop = trainEta.stop
         val key = line.toString() + "_" + stop.direction.toString()
         // viewId might be not there if CTA API provide wrong data
         if (ids.containsKey(key)) {
             val viewId = ids[key]
             val line3View = findViewById<LinearLayout>(viewId!!)
-            val id = ids[line.toString() + "_" + stop.direction.toString() + "_" + eta.destName]
+            val id = ids[line.toString() + "_" + stop.direction.toString() + "_" + trainEta.destName]
             if (id == null) {
                 val insideLayout = LinearLayout(this)
                 insideLayout.orientation = LinearLayout.HORIZONTAL
                 insideLayout.layoutParams = paramsStop
                 val newId = util.generateViewId()
                 insideLayout.id = newId
-                ids[line.toString() + "_" + stop.direction.toString() + "_" + eta.destName] = newId
+                ids[line.toString() + "_" + stop.direction.toString() + "_" + trainEta.destName] = newId
 
                 val stopName = TextView(this)
-                val stopNameData = eta.destName + ": "
+                val stopNameData = trainEta.destName + ": "
                 stopName.text = stopNameData
                 stopName.setTextColor(grey)
                 stopName.setPadding(line3PaddingLeft, line3PaddingTop, 0, 0)
                 insideLayout.addView(stopName)
 
                 val timing = TextView(this)
-                val timingData = eta.timeLeftDueDelay + " "
+                val timingData = trainEta.timeLeftDueDelay + " "
                 timing.text = timingData
                 timing.setTextColor(grey)
                 timing.setLines(1)
@@ -346,7 +346,7 @@ class TrainStationActivity : AbstractStationActivity() {
             } else {
                 val insideLayout = findViewById<LinearLayout>(id)
                 val timing = insideLayout.getChildAt(1) as TextView
-                val timingData = timing.text.toString() + eta.timeLeftDueDelay + " "
+                val timingData = timing.text.toString() + trainEta.timeLeftDueDelay + " "
                 timing.text = timingData
             }
             line3View.visibility = View.VISIBLE

@@ -29,12 +29,12 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 /**
- * Eta entity
+ * TrainEta entity
  *
  * @author Carl-Philipp Harmant
  * @version 1
  */
-data class Eta(
+data class TrainEta(
     val station: Station,
     val stop: Stop,
     val routeName: TrainLine,
@@ -43,7 +43,7 @@ data class Eta(
     private val arrivalDepartureDate: Date,
     private val isApp: Boolean,
     private var isDly: Boolean,
-    val position: Position) : Comparable<Eta>, Parcelable, Serializable {
+    val position: Position) : Comparable<TrainEta>, Parcelable, Serializable {
 
     constructor(source: Parcel) : this(
         station = source.readParcelable<Station>(Station::class.java.classLoader),
@@ -72,7 +72,7 @@ data class Eta(
             }
         }
 
-    override fun compareTo(other: Eta): Int {
+    override fun compareTo(other: TrainEta): Int {
         val time1 = arrivalDepartureDate.time - predictionDate.time
         val time2 = other.arrivalDepartureDate.time - other.predictionDate.time
         return time1.compareTo(time2)
@@ -94,25 +94,21 @@ data class Eta(
         dest.writeParcelable(position, flags)
     }
 
-    override fun toString(): String {
-        return "Eta(station=$station, stop=$stop, routeName=$routeName, destName=$destName, predictionDate=$predictionDate, arrivalDepartureDate=$arrivalDepartureDate, isApp=$isApp, isDelay=$isDly, position=$position)"
-    }
-
     companion object {
 
         private const val serialVersionUID = 0L
 
-        fun buildFakeEtaWith(station: Station, arrivalDepartureDate: Date, predictionDate: Date, app: Boolean, delay: Boolean): Eta {
-            return Eta(station, Stop.buildEmptyStop(), TrainLine.NA, StringUtils.EMPTY, predictionDate, arrivalDepartureDate, app, delay, Position())
+        fun buildFakeEtaWith(station: Station, arrivalDepartureDate: Date, predictionDate: Date, app: Boolean, delay: Boolean): TrainEta {
+            return TrainEta(station, Stop.buildEmptyStop(), TrainLine.NA, StringUtils.EMPTY, predictionDate, arrivalDepartureDate, app, delay, Position())
         }
 
         @JvmField
-        val CREATOR: Parcelable.Creator<Eta> = object : Parcelable.Creator<Eta> {
-            override fun createFromParcel(source: Parcel): Eta {
-                return Eta(source)
+        val CREATOR: Parcelable.Creator<TrainEta> = object : Parcelable.Creator<TrainEta> {
+            override fun createFromParcel(source: Parcel): TrainEta {
+                return TrainEta(source)
             }
 
-            override fun newArray(size: Int): Array<Eta?> {
+            override fun newArray(size: Int): Array<TrainEta?> {
                 return arrayOfNulls(size)
             }
         }

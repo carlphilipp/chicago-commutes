@@ -82,8 +82,8 @@ object TrainService {
             var index = 0
             while (index < trainArrivals.size()) {
                 val trainArrival = trainArrivals.valueAt(index++)
-                val etas = trainArrival.etas
-                trainArrival.etas = etas
+                val etas = trainArrival.trainEtas
+                trainArrival.trainEtas = etas
                     .filter { (station, stop, line) -> preferencesService.getTrainFilter(station.id, line, stop.direction) }
                     .sorted()
                     .toMutableList()
@@ -115,7 +115,7 @@ object TrainService {
         }
     }
 
-    fun loadTrainEta(runNumber: String, loadAll: Boolean): List<Eta> {
+    fun loadTrainEta(runNumber: String, loadAll: Boolean): List<TrainEta> {
         try {
             val connectParam = ArrayListValuedHashMap<String, String>(1, 1)
             connectParam.put(App.instance.applicationContext.getString(R.string.request_runnumber), runNumber)
@@ -126,8 +126,8 @@ object TrainService {
                 etas = etas.subList(0, 6)
                 val currentDate = Calendar.getInstance().time
                 val fakeStation = Station(0, App.instance.getString(R.string.bus_all_results), ArrayList())
-                // Add a fake Eta cell to alert the user about the fact that only a part of the result is displayed
-                val eta = Eta.buildFakeEtaWith(fakeStation, currentDate, currentDate, false, false)
+                // Add a fake TrainEta cell to alert the user about the fact that only a part of the result is displayed
+                val eta = TrainEta.buildFakeEtaWith(fakeStation, currentDate, currentDate, false, false)
                 etas.add(eta)
             }
             return etas

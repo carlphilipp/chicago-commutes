@@ -24,7 +24,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
 import fr.cph.chicago.core.fragment.NearbyFragment
 import fr.cph.chicago.entity.AStation
-import fr.cph.chicago.entity.BikeStation
+import fr.cph.chicago.entity.bike.DivvyStation
 import fr.cph.chicago.entity.BusStop
 import fr.cph.chicago.entity.Station
 import fr.cph.chicago.entity.dto.BusArrivalRouteDTO
@@ -49,7 +49,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
         when (station) {
             is Station -> loadTrainArrivals(station)
             is BusStop -> loadBusArrivals(station)
-            is BikeStation -> loadBikes(station)
+            is DivvyStation -> loadBikes(station)
         }
     }
 
@@ -72,9 +72,9 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
             ) { onError -> Log.e(TAG, onError.message, onError) }
     }
 
-    private fun loadBikes(bikeStation: BikeStation) {
-        nearbyFragment.slidingUpAdapter.updateTitleBike(bikeStation.name)
-        observableUtil.createBikeStationsObservable(bikeStation)
+    private fun loadBikes(divvyStation: DivvyStation) {
+        nearbyFragment.slidingUpAdapter.updateTitleBike(divvyStation.name)
+        observableUtil.createBikeStationsObservable(divvyStation)
             .subscribe({ nearbyFragment.slidingUpAdapter.addBike(it) })
             { onError -> Log.e(TAG, onError.message, onError) }
     }

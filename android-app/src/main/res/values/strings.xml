@@ -45,7 +45,7 @@
     <string name="bundle_bus_id">busId</string>
     <string name="bundle_bus_bounds">bounds</string>
     <string name="bundle_train_line">line</string>
-    <string name="bundle_bike_stations">bikeStations</string>
+    <string name="bundle_bike_stations">divvyStations</string>
     <string name="bundle_train_stationId">stationId</string>
     <string name="bundle_title">title</string>
     <string name="bundle_train_error">trainError</string>
@@ -114,7 +114,7 @@
     <!-- Bike -->
     <string name="bike_activity">Divvy</string>
     <string name="bike_fragment_filter">Filter</string>
-    <string name="bike_available_bikes">Available bikes&#160;&#160;</string>
+    <string name="bike_available_bikes">Available divvies&#160;&#160;</string>
     <string name="bike_available_docks">Available docks&#160;</string>
 
     <!-- Map -->
@@ -149,7 +149,7 @@
     <string name="message_error_could_not_load_path">Sorry, could not load the path!</string>
     <string name="message_error_train_favorites">Could not load trains :(</string>
     <string name="message_error_bus_favorites">Could not load buses :(</string>
-    <string name="message_error_bike_favorites">Could not load bikes :(</string>
+    <string name="message_error_bike_favorites">Could not load divvies :(</string>
     <string name="message_open_details">Open details</string>
     <string name="message_no_alerts">No alerts were found</string>
 

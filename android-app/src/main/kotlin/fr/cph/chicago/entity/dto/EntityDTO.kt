@@ -21,7 +21,7 @@ package fr.cph.chicago.entity.dto
 
 import android.util.SparseArray
 import com.fasterxml.jackson.annotation.JsonProperty
-import fr.cph.chicago.entity.BikeStation
+import fr.cph.chicago.entity.bike.DivvyStation
 import fr.cph.chicago.entity.BusArrival
 import fr.cph.chicago.entity.BusRoute
 import fr.cph.chicago.entity.TrainArrival
@@ -36,15 +36,15 @@ data class FirstLoadDTO(
     val busRoutesError: Boolean,
     val bikeStationsError: Boolean,
     val busRoutes: List<BusRoute>,
-    val bikeStations: List<BikeStation>)
+    val divvyStations: List<DivvyStation>)
 
 data class FavoritesDTO(
     val trainArrivalDTO: TrainArrivalDTO,
     val busArrivalDTO: BusArrivalDTO,
     val bikeError: Boolean,
-    val bikeStations: List<BikeStation>)
+    val divvyStations: List<DivvyStation>)
 
-data class DivvyDTO(@JsonProperty("stationBeanList") val stations: List<BikeStation>)
+data class DivvyDTO(@JsonProperty("stationBeanList") val stations: List<DivvyStation>)
 
 data class BusFavoriteDTO(val routeId: String, val stopId: String, val bound: String)
 

@@ -25,19 +25,19 @@ import android.widget.TextView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.TrainMapActivity
 import fr.cph.chicago.core.adapter.TrainMapSnippetAdapter
-import fr.cph.chicago.entity.Eta
+import fr.cph.chicago.entity.TrainEta
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 
-class TrainEtaObserver(view: View, private val trainMapActivity: TrainMapActivity) : Observer<List<Eta>> {
+class TrainEtaObserver(view: View, private val trainMapActivity: TrainMapActivity) : Observer<List<TrainEta>> {
 
     private val arrivals: ListView = view.findViewById(R.id.arrivals)
     private val error: TextView = view.findViewById(R.id.error)
 
-    override fun onNext(etas: List<Eta>) {
+    override fun onNext(trainEtas: List<TrainEta>) {
         // View can be null
-        if (etas.isNotEmpty()) {
-            val ada = TrainMapSnippetAdapter(etas)
+        if (trainEtas.isNotEmpty()) {
+            val ada = TrainMapSnippetAdapter(trainEtas)
             arrivals.adapter = ada
             arrivals.visibility = ListView.VISIBLE
             error.visibility = TextView.GONE

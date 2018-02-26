@@ -31,7 +31,7 @@ import android.widget.TextView
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import fr.cph.chicago.R
 import fr.cph.chicago.core.fragment.NearbyFragment
-import fr.cph.chicago.entity.BikeStation
+import fr.cph.chicago.entity.bike.DivvyStation
 import fr.cph.chicago.entity.BusArrival
 import fr.cph.chicago.entity.TrainArrival
 import fr.cph.chicago.entity.dto.BusArrivalRouteDTO
@@ -145,14 +145,14 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
         }
     }
 
-    fun addBike(bikeStation: BikeStation) {
+    fun addBike(divvyStation: DivvyStation) {
         val linearLayout = nearbyResultsView
         /*
          * Handle the case where a user clicks quickly from one marker to another. Will not update anything if a child view is already present,
          * it just mean that the view has been updated already with a faster request.
          */
-        if (linearLayout.childCount == 0 || "error" == bikeStation.name) {
-            val bikeResultLayout = LayoutUtil.createBikeLayout(bikeStation)
+        if (linearLayout.childCount == 0 || "error" == divvyStation.name) {
+            val bikeResultLayout = LayoutUtil.createBikeLayout(divvyStation)
             linearLayout.addView(bikeResultLayout)
             nearbyFragment.slidingUpPanelLayout.panelHeight = getSlidingPanelHeight(2)
             updatePanelState()
