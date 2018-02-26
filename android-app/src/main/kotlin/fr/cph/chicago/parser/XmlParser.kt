@@ -59,7 +59,7 @@ object XmlParser {
      */
     @Synchronized
     @Throws(ParserException::class)
-    fun parseArrivals(inputStream: InputStream): SparseArray<TrainArrival> {
+    fun parseTrainArrivals(inputStream: InputStream): SparseArray<TrainArrival> {
         val result = SparseArray<TrainArrival>()
         try {
 
@@ -522,7 +522,7 @@ object XmlParser {
     @Synchronized
     @Throws(ParserException::class)
     fun parseTrainsFollow(inputStream: InputStream): MutableList<TrainEta> {
-        val arrivals = parseArrivals(inputStream)
+        val arrivals = parseTrainArrivals(inputStream)
         val res = mutableListOf<TrainEta>()
         var index = 0
         while (index < arrivals.size()) {

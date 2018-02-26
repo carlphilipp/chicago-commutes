@@ -35,16 +35,6 @@ import io.reactivex.exceptions.Exceptions
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 import java.util.Locale
-import kotlin.collections.ArrayList
-import kotlin.collections.List
-import kotlin.collections.MutableList
-import kotlin.collections.distinct
-import kotlin.collections.filter
-import kotlin.collections.getOrElse
-import kotlin.collections.joinToString
-import kotlin.collections.map
-import kotlin.collections.mutableListOf
-import kotlin.collections.sortedWith
 
 object BusService {
 
@@ -59,6 +49,7 @@ object BusService {
     fun loadFavoritesBuses(): List<BusArrival> {
         try {
             val favoritesBusParams = preferenceService.getFavoritesBusParams()
+            if (favoritesBusParams.isEmpty) return ArrayList()
             val requestParams = ArrayListValuedHashMap<String, String>(2, 1)
             val routeIdParam = App.instance.getString(R.string.request_rt)
             val stopIdParam = App.instance.getString(R.string.request_stop_id)
