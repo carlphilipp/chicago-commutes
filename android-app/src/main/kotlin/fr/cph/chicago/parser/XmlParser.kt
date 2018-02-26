@@ -139,59 +139,6 @@ object XmlParser {
     }
 
     /**
-     * Parse bus route
-     *
-     * @param xml the xml to parse
-     * @return a list of bus routes
-     * @throws ParserException a parser exception
-     */
-    @Synchronized
-    @Throws(ParserException::class)
-    fun parseBusRoutes(xml: InputStream): List<BusRoute> {
-        val result = mutableListOf<BusRoute>()
-        try {
-
-            parser.setInput(xml, "UTF-8")
-            var eventType = parser.eventType
-            var tagName: String? = null
-
-            var routeId: String? = null
-            var routeName: String? = null
-
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-                if (eventType == XmlPullParser.START_TAG) {
-                    tagName = parser.name
-                } else if (eventType == XmlPullParser.END_TAG) {
-                    val route = parser.name
-                    if (StringUtils.isNotBlank(route) && "route" == route) {
-                        assert(routeId != null)
-                        assert(routeName != null)
-                        val busRoute = BusRoute(routeId!!, routeName!!)
-                        result.add(busRoute)
-                    }
-                    tagName = null
-                } else if (eventType == XmlPullParser.TEXT) {
-                    if (tagName != null) {
-                        val text = parser.text
-                        when (tagName) {
-                            "rt" -> routeId = text
-                            "rtnm" -> routeName = text
-                        }
-                    }
-                }
-                eventType = parser.next()
-            }
-        } catch (e: IOException) {
-            throw ParserException(e)
-        } catch (e: XmlPullParserException) {
-            throw ParserException(e)
-        } finally {
-            Util.closeQuietly(xml)
-        }
-        return result
-    }
-
-    /**
      * Parse bus directions
      *
      * @param xml the xml to parse

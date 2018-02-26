@@ -30,7 +30,7 @@ class Constants {
         const val GPS_ACCESS = 1
 
         private const val TRAINS_BASE = "http://lapi.transitchicago.com/api/1.0/"
-        private const val BUSES_BASE = "http://www.ctabustracker.com/bustime/api/v1/"
+        private const val BUSES_BASE = "http://www.ctabustracker.com/bustime/api/v2/"
         private const val ALERTS_BASE = "http://www.transitchicago.com/api/1.0/"
 
         // CTA - Trains

@@ -25,9 +25,11 @@ import fr.cph.chicago.client.CtaClient
 import fr.cph.chicago.client.CtaRequestType.*
 import fr.cph.chicago.core.App
 import fr.cph.chicago.entity.*
+import fr.cph.chicago.entity.web.BusRoutesResponse
 import fr.cph.chicago.exception.ConnectException
 import fr.cph.chicago.exception.ParserException
 import fr.cph.chicago.parser.BusStopCsvParser
+import fr.cph.chicago.parser.JsonParser
 import fr.cph.chicago.parser.XmlParser
 import fr.cph.chicago.repository.BusRepository
 import fr.cph.chicago.util.Util
@@ -99,7 +101,11 @@ object BusService {
         try {
             val params = ArrayListValuedHashMap<String, String>()
             val xmlResult = ctaClient.connect(BUS_ROUTES, params)
-            return xmlParser.parseBusRoutes(xmlResult)
+            return JsonParser.parse(xmlResult, BusRoutesResponse::class.java)
+                .bustimeResponse.routes
+                .map { route ->
+                    BusRoute(route.routeId, route.routeName)
+                }
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }
