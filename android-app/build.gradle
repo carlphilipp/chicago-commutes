@@ -67,8 +67,8 @@ android {
 
     defaultConfig {
         applicationId 'fr.cph.chicago'
-        versionCode 141
-        versionName '5.3.3'
+        versionCode 142
+        versionName '5.3.4'
 
         minSdkVersion 14
         targetSdkVersion 27
