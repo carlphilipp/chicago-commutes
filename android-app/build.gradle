@@ -7,7 +7,7 @@ dependencies {
 
     implementation(
         // Kotlin
-        [group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jre8', version: kotlin_version],
+        [group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: kotlin_version],
 
         // Google
         [group: 'com.android.support', name: 'design', version: google_support_version],
