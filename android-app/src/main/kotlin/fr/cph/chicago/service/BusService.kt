@@ -58,7 +58,7 @@ object BusService {
             requestParams.put(routeIdParam, favoritesBusParams.get(routeIdParam).joinToString(separator = ","))
             requestParams.put(stopIdParam, favoritesBusParams.get(stopIdParam).joinToString(separator = ","))
             val xmlResult = ctaClient.connect(BUS_ARRIVALS, requestParams)
-            val result = xmlParser.parseBusArrivals(xmlResult).distinct()
+            val result = xmlParser.parseBusArrivals(xmlResult).distinct().toMutableList()
             // We do not want to return EmptyList as it's not serializable
             return if (result.isEmpty()) ArrayList() else result
         } catch (e: Throwable) {
