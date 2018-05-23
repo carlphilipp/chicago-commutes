@@ -133,3 +133,5 @@
      @com.fasterxml.jackson.annotation.JsonCreator *;
      @com.fasterxml.jackson.annotation.JsonProperty *;
 }
+
+-dontwarn android.graphics.Canvas
