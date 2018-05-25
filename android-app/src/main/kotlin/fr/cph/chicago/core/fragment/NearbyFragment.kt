@@ -228,7 +228,7 @@ class NearbyFragment : AbstractFragment(), EasyPermissions.PermissionCallbacks {
 
     @AfterPermissionGranted(GPS_ACCESS)
     private fun loadNearbyIfAllowed() {
-        if (EasyPermissions.hasPermissions(context, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)) {
+        if (EasyPermissions.hasPermissions(context!!, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)) {
             startLoadingNearby()
         } else {
             EasyPermissions.requestPermissions(this, "To access that feature, we need to access your current location", GPS_ACCESS, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)
