@@ -69,39 +69,21 @@
 	public static *** i(...);
 }
 
+-dontwarn com.fasterxml.jackson.**
+
 -dontnote com.google.vending.**
 -dontnote com.android.vending.**
 -dontnote android.support.**
-
--dontwarn org.apache.commons.**
--dontwarn java.beans.**
--dontwarn org.apache.http.**
--dontwarn android.net.http.**
--dontwarn org.w3c.dom.**
--dontwarn android.support.v7.**
--dontwarn android.support.v4.**
--dontwarn com.google.android.gms.**
--dontwarn com.fasterxml.jackson.**
--dontwarn android.support.design.**
--dontwarn com.univocity.parsers.**
-
 -dontnote android.net.http.**
 -dontnote org.apache.http.**
--dontnote org.apache.commons.**
--dontnote java.beans.**
--dontnote org.apache.http.**
--dontnote android.net.http.**
--dontnote org.w3c.dom.**
 -dontnote com.google.android.gms.**
--dontnote com.fasterxml.jackson.**
 -dontnote com.univocity.parsers.common.beans.**
+-dontnote pub.devrel.easypermissions.EasyPermissions
+-dontnote kotlin.internal.PlatformImplementationsKt
+-dontnote kotlin.reflect.jvm.internal.ReflectionFactoryImpl
 
 -keep class com.github.chrisbanes.photoview.** { *; }
--keep public class fr.cph.chicago.exception.TrackerException
--keep @interface *
 -keepnames class com.fasterxml.jackson.** { *; }
--keep class org.apache.http.** { *; }
--keep class android.net.http.** { *; }
 -keep,includedescriptorclasses class io.realm.RealmModel { *; }
 -keep,includedescriptorclasses class io.realm.RealmObjectChangeListener { *; }
 -keep,includedescriptorclasses class io.realm.RealmConfiguration { *; }
@@ -113,25 +95,10 @@
 -keep,includedescriptorclasses class io.realm.internal.fields.FieldDescriptor$SchemaProxy { *; }
 -keep,includedescriptorclasses class com.sothree.slidinguppanel.SlidingUpPanelLayout { *; }
 -keep,includedescriptorclasses class io.realm.internal.android.AndroidRealmNotifier { *; }
--keepclassmembers class ** {
-  ** memberValues;
-}
-
--keep class android.os.Build$VERSION { int SDK_INT; }
--dontnote android.os.Build$VERSION
-
--dontwarn kotlin.internal.jdk8.**
--dontnote kotlin.internal.jdk8.**
--dontwarn kotlin.reflect.jvm.internal.**
--dontnote kotlin.reflect.jvm.internal.**
-
--dontnote org.androidannotations.api.view.HasViews
-
--dontwarn java.lang.invoke.*
 
 -keepclassmembers class * {
      @com.fasterxml.jackson.annotation.JsonCreator *;
      @com.fasterxml.jackson.annotation.JsonProperty *;
 }
 
--dontwarn android.graphics.Canvas
+-dontnote fr.cph.chicago.entity.**
