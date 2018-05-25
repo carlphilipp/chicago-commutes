@@ -32,7 +32,7 @@ object BikeService {
     fun loadAllBikeStations(): List<DivvyStation> {
         try {
             val bikeStationsInputStream = client.getBikeStations()
-            return jsonParser.parseStations(bikeStationsInputStream).sortedWith(compareBy(DivvyStation::name)).toList()
+            return jsonParser.parseStations(bikeStationsInputStream).sortedWith(compareBy(DivvyStation::name)).toMutableList()
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }

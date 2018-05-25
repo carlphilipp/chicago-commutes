@@ -184,6 +184,7 @@ class FavoritesFragment : AbstractFragment() {
     fun reloadData(favoritesDTO: FavoritesDTO) {
         mainActivity.intent.putParcelableArrayListExtra(bundleBikeStation, favoritesDTO.divvyStations as ArrayList<DivvyStation>)
         divvyStations = favoritesDTO.divvyStations
+        favoritesAdapter?.updateBikeStations(favoritesDTO.divvyStations)
         favoritesAdapter?.updateTrainArrivalsAndBusArrivals(favoritesDTO.trainArrivalDTO.trainArrivalSparseArray, favoritesDTO.busArrivalDTO.busArrivals)
         favoritesAdapter?.refreshFavorites()
         favoritesAdapter?.resetLastUpdate()
