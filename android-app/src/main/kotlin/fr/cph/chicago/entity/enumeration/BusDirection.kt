@@ -50,7 +50,7 @@ enum class BusDirection constructor(val text: String, val shortUpperCase: String
                     }
                 }
             }
-            Log.w(TAG, "Bus direction enum not found: " + text)
+            Log.w(TAG, "Bus direction enum not found: $text")
             return UNKNOWN
         }
     }

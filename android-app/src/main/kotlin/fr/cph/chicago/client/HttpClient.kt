@@ -32,7 +32,7 @@ object HttpClient {
     @Throws(ConnectException::class)
     fun connect(address: String): InputStream {
         try {
-            Log.v(TAG, "Address: " + address)
+            Log.v(TAG, "Address: $address")
             return URL(address).readBytes().inputStream()
         } catch (e: IOException) {
             Log.e(TAG, e.message, e)
