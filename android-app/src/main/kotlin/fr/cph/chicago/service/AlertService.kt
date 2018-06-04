@@ -84,7 +84,7 @@ object AlertService {
     private fun buildAlertsParam() : MultiValuedMap<String, String> {
         val params = ArrayListValuedHashMap<String, String>(1, 2)
         params.put("type", "rail")
-        params.put("type", "buses")
+        params.put("type", "bus")
         return params
     }
 
