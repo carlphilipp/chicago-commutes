@@ -19,6 +19,7 @@ dependencies {
         [group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jackson_version],
         [group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jackson_version],
         [group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: jackson_version],
+        [group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: jackson_version],
 
         // RxJava
         [group: 'io.reactivex.rxjava2', name: 'rxandroid', version: reactivex_android_version],

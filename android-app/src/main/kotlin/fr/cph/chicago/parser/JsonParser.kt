@@ -23,6 +23,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import fr.cph.chicago.entity.Divvy
 import fr.cph.chicago.entity.DivvyStation
 import fr.cph.chicago.exception.ParserException
@@ -37,7 +39,7 @@ import java.io.InputStream
  * @version 1
  */
 object JsonParser {
-    private val mapper = ObjectMapper()
+    private val mapper = jacksonObjectMapper()
 
     init {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
