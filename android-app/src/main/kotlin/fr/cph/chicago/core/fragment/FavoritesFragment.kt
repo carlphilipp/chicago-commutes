@@ -39,10 +39,10 @@ import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.adapter.FavoritesAdapter
-import fr.cph.chicago.entity.bike.DivvyStation
-import fr.cph.chicago.entity.BusArrival
-import fr.cph.chicago.entity.TrainArrival
-import fr.cph.chicago.entity.dto.FavoritesDTO
+import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.core.model.BusArrival
+import fr.cph.chicago.core.model.TrainArrival
+import fr.cph.chicago.core.model.dto.FavoritesDTO
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.PreferenceService
@@ -76,7 +76,7 @@ class FavoritesFragment : AbstractFragment() {
 
     private var favoritesAdapter: FavoritesAdapter? = null
     private var refreshTimingTask: RefreshTimingTask? = null
-    private lateinit var divvyStations: List<DivvyStation>
+    private lateinit var divvyStations: List<BikeStation>
 
     private lateinit var rootView: View
 
@@ -107,7 +107,7 @@ class FavoritesFragment : AbstractFragment() {
                     util.showMessage(mainActivity, R.string.message_too_fast)
                 } else {
                     val intent = Intent(mainActivity, SearchActivity::class.java)
-                    intent.putParcelableArrayListExtra(bundleBikeStation, divvyStations as ArrayList<DivvyStation>?)
+                    intent.putParcelableArrayListExtra(bundleBikeStation, divvyStations as ArrayList<BikeStation>?)
                     mainActivity.startActivity(intent)
                 }
             }
@@ -182,9 +182,9 @@ class FavoritesFragment : AbstractFragment() {
     }
 
     fun reloadData(favoritesDTO: FavoritesDTO) {
-        mainActivity.intent.putParcelableArrayListExtra(bundleBikeStation, favoritesDTO.divvyStations as ArrayList<DivvyStation>)
-        divvyStations = favoritesDTO.divvyStations
-        favoritesAdapter?.updateBikeStations(favoritesDTO.divvyStations)
+        mainActivity.intent.putParcelableArrayListExtra(bundleBikeStation, favoritesDTO.bikeStations as ArrayList<BikeStation>)
+        divvyStations = favoritesDTO.bikeStations
+        favoritesAdapter?.updateBikeStations(favoritesDTO.bikeStations)
         favoritesAdapter?.updateTrainArrivalsAndBusArrivals(favoritesDTO.trainArrivalDTO.trainArrivalSparseArray, favoritesDTO.busArrivalDTO.busArrivals)
         favoritesAdapter?.refreshFavorites()
         favoritesAdapter?.resetLastUpdate()
@@ -212,7 +212,7 @@ class FavoritesFragment : AbstractFragment() {
         stopRefreshing()
     }
 
-    fun setBikeStations(divvyStations: List<DivvyStation>) {
+    fun setBikeStations(divvyStations: List<BikeStation>) {
         this.divvyStations = divvyStations
         favoritesAdapter?.updateBikeStations(divvyStations)
         favoritesAdapter?.notifyDataSetChanged()

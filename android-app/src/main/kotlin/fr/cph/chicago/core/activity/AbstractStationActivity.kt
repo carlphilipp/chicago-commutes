@@ -26,7 +26,7 @@ import android.widget.TextView
 
 import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
-import fr.cph.chicago.entity.Position
+import fr.cph.chicago.core.model.Position
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.android.schedulers.AndroidSchedulers

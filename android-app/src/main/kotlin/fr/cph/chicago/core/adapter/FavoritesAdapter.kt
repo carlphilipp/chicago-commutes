@@ -41,12 +41,11 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.*
 import fr.cph.chicago.core.listener.BusStopOnClickListener
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener
+import fr.cph.chicago.core.model.*
+import fr.cph.chicago.core.model.dto.BusDetailsDTO
+import fr.cph.chicago.core.model.enumeration.BusDirection
+import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.data.FavoritesData
-import fr.cph.chicago.entity.*
-import fr.cph.chicago.entity.bike.DivvyStation
-import fr.cph.chicago.entity.dto.BusDetailsDTO
-import fr.cph.chicago.entity.enumeration.BusDirection
-import fr.cph.chicago.entity.enumeration.TrainLine
 import fr.cph.chicago.util.LayoutUtil
 import fr.cph.chicago.util.Util
 import java.util.Calendar
@@ -98,7 +97,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
             is Station -> handleStation(holder, model)
             is BusRoute -> handleBusRoute(holder, model)
             else -> {
-                val bikeStation = model as DivvyStation
+                val bikeStation = model as BikeStation
                 handleBikeStation(holder, bikeStation)
             }
         }
@@ -240,7 +239,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         }
     }
 
-    private fun handleBikeStation(holder: FavoritesViewHolder, divvyStation: DivvyStation) {
+    private fun handleBikeStation(holder: FavoritesViewHolder, divvyStation: BikeStation) {
         holder.stationNameTextView.text = divvyStation.name
         holder.favoriteImage.setImageResource(R.drawable.ic_directions_bike_white_24dp)
 
@@ -298,7 +297,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         favoritesData.updateBusArrivals(busArrivals)
     }
 
-    fun updateBikeStations(divvyStations: List<DivvyStation>) {
+    fun updateBikeStations(divvyStations: List<BikeStation>) {
         favoritesData.updateBikeStations(divvyStations)
     }
 

@@ -31,12 +31,12 @@ import android.widget.TextView
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import fr.cph.chicago.R
 import fr.cph.chicago.core.fragment.NearbyFragment
-import fr.cph.chicago.entity.bike.DivvyStation
-import fr.cph.chicago.entity.BusArrival
-import fr.cph.chicago.entity.TrainArrival
-import fr.cph.chicago.entity.dto.BusArrivalRouteDTO
-import fr.cph.chicago.entity.enumeration.BusDirection
-import fr.cph.chicago.entity.enumeration.TrainLine
+import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.core.model.BusArrival
+import fr.cph.chicago.core.model.TrainArrival
+import fr.cph.chicago.core.model.dto.BusArrivalRouteDTO
+import fr.cph.chicago.core.model.enumeration.BusDirection
+import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.util.LayoutUtil
 import fr.cph.chicago.util.Util
 
@@ -145,7 +145,7 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
         }
     }
 
-    fun addBike(divvyStation: DivvyStation) {
+    fun addBike(divvyStation: BikeStation) {
         val linearLayout = nearbyResultsView
         /*
          * Handle the case where a user clicks quickly from one marker to another. Will not update anything if a child view is already present,

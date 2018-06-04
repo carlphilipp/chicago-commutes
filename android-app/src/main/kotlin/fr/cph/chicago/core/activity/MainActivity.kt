@@ -39,7 +39,7 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import fr.cph.chicago.R
 import fr.cph.chicago.core.fragment.*
-import fr.cph.chicago.entity.bike.DivvyStation
+import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.Util
@@ -193,7 +193,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     fun loadFirstData() {
         observableUtil.createOnFirstLoadObservable().subscribe(
             { (busRoutesError, bikeStationsError, busRoutes, bikeStations) ->
-                busService.setBusRoutes(busRoutes)
+                busService.saveBusRoutes(busRoutes)
                 refreshFirstLoadData(bikeStations)
                 if (bikeStationsError || busRoutesError) {
                     util.showSnackBar(this, R.string.message_something_went_wrong, Snackbar.LENGTH_SHORT)
@@ -203,8 +203,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         )
     }
 
-    private fun refreshFirstLoadData(divvyStations: List<DivvyStation>) {
-        intent.putParcelableArrayListExtra(bundleBikeStations, divvyStations as ArrayList<DivvyStation>)
+    private fun refreshFirstLoadData(divvyStations: List<BikeStation>) {
+        intent.putParcelableArrayListExtra(bundleBikeStations, divvyStations as ArrayList<BikeStation>)
         onNewIntent(intent)
         favoritesFragment?.setBikeStations(divvyStations)
         bikeFragment?.setBikeStations(divvyStations)

@@ -22,7 +22,7 @@ package fr.cph.chicago.rx
 import android.support.v4.widget.SwipeRefreshLayout
 import android.util.Log
 import fr.cph.chicago.core.activity.TrainStationActivity
-import fr.cph.chicago.entity.TrainArrival
+import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.util.Util
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable

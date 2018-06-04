@@ -17,14 +17,13 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.entity.dto
+package fr.cph.chicago.core.model.dto
 
 import android.util.SparseArray
-import com.fasterxml.jackson.annotation.JsonProperty
-import fr.cph.chicago.entity.bike.DivvyStation
-import fr.cph.chicago.entity.BusArrival
-import fr.cph.chicago.entity.BusRoute
-import fr.cph.chicago.entity.TrainArrival
+import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.core.model.BusArrival
+import fr.cph.chicago.core.model.BusRoute
+import fr.cph.chicago.core.model.TrainArrival
 import org.apache.commons.lang3.StringUtils
 import java.util.TreeMap
 
@@ -36,15 +35,13 @@ data class FirstLoadDTO(
     val busRoutesError: Boolean,
     val bikeStationsError: Boolean,
     val busRoutes: List<BusRoute>,
-    val divvyStations: List<DivvyStation>)
+    val bikeStations: List<BikeStation>)
 
 data class FavoritesDTO(
     val trainArrivalDTO: TrainArrivalDTO,
     val busArrivalDTO: BusArrivalDTO,
     val bikeError: Boolean,
-    val divvyStations: List<DivvyStation>)
-
-data class DivvyDTO(@JsonProperty("stationBeanList") val stations: List<DivvyStation>)
+    val bikeStations: List<BikeStation>)
 
 data class BusFavoriteDTO(val routeId: String, val stopId: String, val bound: String)
 

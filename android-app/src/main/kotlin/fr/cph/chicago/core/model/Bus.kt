@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.entity
+package fr.cph.chicago.core.model
 
 class Bus(val id: Int,
           val position: Position,

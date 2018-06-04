@@ -28,8 +28,8 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.listener.TrainOnClickListener
-import fr.cph.chicago.entity.Station
-import fr.cph.chicago.entity.enumeration.TrainLine
+import fr.cph.chicago.core.model.Station
+import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.LayoutUtil
 

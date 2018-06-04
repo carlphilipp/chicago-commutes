@@ -17,23 +17,9 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.entity
-
-import fr.cph.chicago.entity.enumeration.BusDirection
+package fr.cph.chicago.core.model
 
 /**
- * Bus directions entity
- *
- * @author Carl-Philipp Harmant
- * @version 1
+ * @author carl
  */
-class BusDirections(val id: String) {
-
-    val busDirections: MutableList<BusDirection> = mutableListOf()
-
-    fun addBusDirection(busDirection: BusDirection) {
-        if (!busDirections.contains(busDirection)) {
-            busDirections.add(busDirection)
-        }
-    }
-}
+class BusPattern(val direction: String, val points: MutableList<PatternPoint>)

@@ -33,8 +33,8 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.BusBoundActivity
 import fr.cph.chicago.core.activity.BusMapActivity
 import fr.cph.chicago.core.adapter.PopupBusAdapter
-import fr.cph.chicago.entity.BusDirections
-import fr.cph.chicago.entity.BusRoute
+import fr.cph.chicago.core.model.BusDirections
+import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.util.Util
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable

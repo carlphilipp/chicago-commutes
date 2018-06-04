@@ -24,8 +24,8 @@ import fr.cph.chicago.R
 import fr.cph.chicago.client.CtaClient
 import fr.cph.chicago.client.CtaRequestType.*
 import fr.cph.chicago.core.App
-import fr.cph.chicago.entity.*
-import fr.cph.chicago.entity.web.BusRoutesResponse
+import fr.cph.chicago.core.model.*
+import fr.cph.chicago.entity.BusRoutesResponse
 import fr.cph.chicago.exception.ConnectException
 import fr.cph.chicago.exception.ParserException
 import fr.cph.chicago.parser.BusStopCsvParser
@@ -51,7 +51,7 @@ object BusService {
     fun loadFavoritesBuses(): List<BusArrival> {
         try {
             val favoritesBusParams = preferenceService.getFavoritesBusParams()
-            if (favoritesBusParams.isEmpty) return ArrayList()
+            if (favoritesBusParams.isEmpty) return mutableListOf()
             val requestParams = ArrayListValuedHashMap<String, String>(2, 1)
             val routeIdParam = App.instance.getString(R.string.request_rt)
             val stopIdParam = App.instance.getString(R.string.request_stop_id)
@@ -60,7 +60,7 @@ object BusService {
             val xmlResult = ctaClient.connect(BUS_ARRIVALS, requestParams)
             val result = xmlParser.parseBusArrivals(xmlResult).distinct().toMutableList()
             // We do not want to return EmptyList as it's not serializable
-            return if (result.isEmpty()) ArrayList() else result
+            return if (result.isEmpty()) mutableListOf() else result
         } catch (e: Throwable) {
             throw Exceptions.propagate(e)
         }
@@ -103,9 +103,7 @@ object BusService {
             val xmlResult = ctaClient.connect(BUS_ROUTES, params)
             return JsonParser.parse(xmlResult, BusRoutesResponse::class.java)
                 .bustimeResponse.routes
-                .map { route ->
-                    BusRoute(route.routeId, route.routeName)
-                }
+                .map { route -> BusRoute(route.routeId, route.routeName) }
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }
@@ -182,8 +180,8 @@ object BusService {
         return busRepository.inMemoryBusRoutes
     }
 
-    fun setBusRoutes(busRoutes: List<BusRoute>) {
-        busRepository.setBusRoutes(busRoutes)
+    fun saveBusRoutes(busRoutes: List<BusRoute>) {
+        busRepository.saveBusRoutes(busRoutes)
     }
 
     fun getBusRoute(routeId: String): BusRoute {

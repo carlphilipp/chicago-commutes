@@ -38,9 +38,9 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
-import fr.cph.chicago.entity.BusArrival
-import fr.cph.chicago.entity.Position
-import fr.cph.chicago.entity.enumeration.TrainLine
+import fr.cph.chicago.core.model.BusArrival
+import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.exception.ConnectException
 import fr.cph.chicago.exception.ParserException
 import fr.cph.chicago.exception.TrackerException

@@ -17,25 +17,6 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.marker
+package fr.cph.chicago.core.model
 
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import fr.cph.chicago.core.model.AStation
-
-class MarkerDataHolder {
-    private val data: MutableMap<LatLng, AStation> = mutableMapOf()
-
-    fun addData(marker: Marker, station: AStation) {
-        val latLng = marker.position
-        data[latLng] = station
-    }
-
-    fun clear() {
-        data.clear()
-    }
-
-    fun getStation(marker: Marker): AStation? {
-        return data[marker.position]
-    }
-}
+class PatternPoint(val position: Position, val type: String, val stopName: String)

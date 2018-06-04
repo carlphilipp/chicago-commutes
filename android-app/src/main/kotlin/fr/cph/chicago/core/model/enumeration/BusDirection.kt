@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.entity.enumeration
+package fr.cph.chicago.core.model.enumeration
 
 import android.util.Log
 import java.util.Locale

@@ -32,7 +32,7 @@ import butterknife.BindString
 import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.adapter.BikeAdapter
-import fr.cph.chicago.entity.bike.DivvyStation
+import fr.cph.chicago.core.model.BikeStation
 import org.apache.commons.lang3.StringUtils
 
 
@@ -57,7 +57,7 @@ class BikeFragment : AbstractFragment() {
     lateinit var bundleBikeStations: String
 
     private lateinit var bikeAdapter: BikeAdapter
-    private lateinit var divvyStations: List<DivvyStation>
+    private lateinit var divvyStations: List<BikeStation>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,7 +84,7 @@ class BikeFragment : AbstractFragment() {
         bikeListView.adapter = bikeAdapter
         filter.addTextChangedListener(object : TextWatcher {
 
-            private lateinit var divvyStations: List<DivvyStation>
+            private lateinit var divvyStations: List<BikeStation>
 
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
                 divvyStations = listOf()
@@ -111,7 +111,7 @@ class BikeFragment : AbstractFragment() {
         errorLayout.visibility = RelativeLayout.VISIBLE
     }
 
-    fun setBikeStations(divvyStations: List<DivvyStation>) {
+    fun setBikeStations(divvyStations: List<BikeStation>) {
         this.divvyStations = divvyStations
         loadList()
     }

@@ -27,10 +27,10 @@ import butterknife.BindString
 import butterknife.ButterKnife
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.entity.BusArrival
-import fr.cph.chicago.entity.dto.BusArrivalDTO
-import fr.cph.chicago.entity.dto.FavoritesDTO
-import fr.cph.chicago.entity.dto.TrainArrivalDTO
+import fr.cph.chicago.core.model.BusArrival
+import fr.cph.chicago.core.model.dto.BusArrivalDTO
+import fr.cph.chicago.core.model.dto.FavoritesDTO
+import fr.cph.chicago.core.model.dto.TrainArrivalDTO
 import fr.cph.chicago.repository.RealmConfig
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.service.BusService

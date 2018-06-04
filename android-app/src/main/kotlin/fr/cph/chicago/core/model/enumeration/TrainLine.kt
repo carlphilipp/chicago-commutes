@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.entity.enumeration
+package fr.cph.chicago.core.model.enumeration
 
 import android.graphics.Color
 
@@ -43,7 +43,7 @@ enum class TrainLine constructor(private val text: String, val fullText: String,
      * Get to string with line
      */
     fun toStringWithLine(): String {
-        return fullText + " Line"
+        return "$fullText Line"
     }
 
     override fun toString(): String {

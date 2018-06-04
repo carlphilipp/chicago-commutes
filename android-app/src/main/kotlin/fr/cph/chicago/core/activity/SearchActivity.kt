@@ -39,8 +39,8 @@ import butterknife.ButterKnife
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.adapter.SearchAdapter
-import fr.cph.chicago.entity.bike.DivvyStation
-import fr.cph.chicago.entity.enumeration.TrainLine
+import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
@@ -64,7 +64,7 @@ class SearchActivity : AppCompatActivity() {
 
     private lateinit var searchView: SearchView
     private lateinit var searchAdapter: SearchAdapter
-    private var divvyStations: List<DivvyStation> = listOf()
+    private var divvyStations: List<BikeStation> = listOf()
 
     private val supportActionBarNotNull: ActionBar
         get() = supportActionBar ?: throw RuntimeException()
@@ -122,7 +122,7 @@ class SearchActivity : AppCompatActivity() {
     override fun startActivity(intent: Intent) {
         // check if search intent
         if (Intent.ACTION_SEARCH == intent.action) {
-            val bikeStations = getIntent().extras.getParcelableArrayList<DivvyStation>(bundleBikeStations)
+            val bikeStations = getIntent().extras.getParcelableArrayList<BikeStation>(bundleBikeStations)
             intent.putParcelableArrayListExtra(bundleBikeStations, bikeStations)
         }
         super.startActivity(intent)
@@ -161,7 +161,7 @@ class SearchActivity : AppCompatActivity() {
             val query = intent.getStringExtra(SearchManager.QUERY).trim { it <= ' ' }
             val foundStations = trainService.searchStations(query)
             val foundBusRoutes = busService.searchBusRoutes(query)
-            // TODO Consider doing in a different way how divvyStations is stored
+            // TODO Consider doing in a different way how bikeStations is stored
             val foundBikeStations = divvyStations
                 .filter { (_, name, _, _, _, _, _, stAddress1) -> containsIgnoreCase(name, query) || containsIgnoreCase(stAddress1, query) }
                 .distinct()

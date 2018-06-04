@@ -19,20 +19,21 @@
 
 package fr.cph.chicago.repository
 
-import fr.cph.chicago.entity.BusRoute
-import fr.cph.chicago.entity.BusStop
-import fr.cph.chicago.entity.Position
+import fr.cph.chicago.core.model.BusRoute
+import fr.cph.chicago.core.model.BusStop
+import fr.cph.chicago.core.model.Position
 import io.realm.Realm
 
 object BusRepository {
 
     private const val DEFAULT_RANGE = 0.008
 
+    // FIXME: No state should be allowed here
     var busRouteError: Boolean = false
 
     val inMemoryBusRoutes: MutableList<BusRoute> = mutableListOf()
 
-    fun setBusRoutes(busRoutes: List<BusRoute>) {
+    fun saveBusRoutes(busRoutes: List<BusRoute>) {
         this.inMemoryBusRoutes.clear()
         this.inMemoryBusRoutes.addAll(busRoutes)
     }

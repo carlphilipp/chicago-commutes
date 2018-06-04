@@ -21,12 +21,12 @@ package fr.cph.chicago.data
 
 import android.os.Parcelable
 import android.util.SparseArray
-import fr.cph.chicago.entity.BusArrival
-import fr.cph.chicago.entity.BusRoute
-import fr.cph.chicago.entity.TrainArrival
-import fr.cph.chicago.entity.bike.DivvyStation
-import fr.cph.chicago.entity.dto.BusArrivalStopMappedDTO
-import fr.cph.chicago.entity.enumeration.TrainLine
+import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.core.model.BusArrival
+import fr.cph.chicago.core.model.BusRoute
+import fr.cph.chicago.core.model.TrainArrival
+import fr.cph.chicago.core.model.dto.BusArrivalStopMappedDTO
+import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
@@ -51,7 +51,7 @@ object FavoritesData {
 
     private val trainArrivals: SparseArray<TrainArrival> = SparseArray()
     private val busArrivals: MutableList<BusArrival> = mutableListOf()
-    private val divvyStations: MutableList<DivvyStation> = mutableListOf()
+    private val divvyStations: MutableList<BikeStation> = mutableListOf()
     private var trainFavorites: List<Int> = listOf()
     private var busFavorites: List<String> = listOf()
     private var fakeBusFavorites: List<String> = listOf()
@@ -154,14 +154,14 @@ object FavoritesData {
         this.busArrivals.addAll(busArrivals)
     }
 
-    fun updateBikeStations(divvyStations: List<DivvyStation>) {
+    fun updateBikeStations(divvyStations: List<BikeStation>) {
         this.divvyStations.clear()
         this.divvyStations.addAll(divvyStations)
     }
 
-    private fun createEmptyBikeStation(index: Int): DivvyStation {
+    private fun createEmptyBikeStation(index: Int): BikeStation {
         val stationName = preferenceService.getBikeRouteNameMapping(bikeFavorites[index])
-        return DivvyStation.buildDefaultBikeStationWithName(stationName ?: StringUtils.EMPTY)
+        return BikeStation.buildDefaultBikeStationWithName(stationName ?: StringUtils.EMPTY)
     }
 
     private fun calculateActualRouteNumberBusFavorites(busFavorites: List<String>): List<String> {

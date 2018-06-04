@@ -26,7 +26,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import fr.cph.chicago.R
-import fr.cph.chicago.entity.dto.BusDetailsDTO
+import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import org.apache.commons.text.WordUtils
 
 /**

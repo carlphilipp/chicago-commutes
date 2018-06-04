@@ -23,11 +23,11 @@ import android.util.Log
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
 import fr.cph.chicago.core.fragment.NearbyFragment
-import fr.cph.chicago.entity.AStation
-import fr.cph.chicago.entity.bike.DivvyStation
-import fr.cph.chicago.entity.BusStop
-import fr.cph.chicago.entity.Station
-import fr.cph.chicago.entity.dto.BusArrivalRouteDTO
+import fr.cph.chicago.core.model.AStation
+import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.core.model.BusStop
+import fr.cph.chicago.core.model.Station
+import fr.cph.chicago.core.model.dto.BusArrivalRouteDTO
 import fr.cph.chicago.marker.MarkerDataHolder
 import fr.cph.chicago.rx.ObservableUtil
 
@@ -49,7 +49,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
         when (station) {
             is Station -> loadTrainArrivals(station)
             is BusStop -> loadBusArrivals(station)
-            is DivvyStation -> loadBikes(station)
+            is BikeStation -> loadBikes(station)
         }
     }
 
@@ -72,7 +72,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
             ) { onError -> Log.e(TAG, onError.message, onError) }
     }
 
-    private fun loadBikes(divvyStation: DivvyStation) {
+    private fun loadBikes(divvyStation: BikeStation) {
         nearbyFragment.slidingUpAdapter.updateTitleBike(divvyStation.name)
         observableUtil.createBikeStationsObservable(divvyStation)
             .subscribe({ nearbyFragment.slidingUpAdapter.addBike(it) })

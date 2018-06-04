@@ -19,11 +19,12 @@
 
 package fr.cph.chicago.parser
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
-import fr.cph.chicago.entity.bike.DivvyStation
-import fr.cph.chicago.entity.dto.DivvyDTO
+import fr.cph.chicago.entity.Divvy
+import fr.cph.chicago.entity.DivvyStation
 import fr.cph.chicago.exception.ParserException
 import fr.cph.chicago.util.Util
 import java.io.InputStream
@@ -41,6 +42,7 @@ object JsonParser {
     init {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+        mapper.setSerializationInclusion(Include.NON_NULL)
     }
 
     @Throws(ParserException::class)
@@ -57,7 +59,7 @@ object JsonParser {
     @Throws(ParserException::class)
     fun parseStations(stream: InputStream): List<DivvyStation> {
         try {
-            val (stations) = mapper.readValue<DivvyDTO>(stream, object : TypeReference<DivvyDTO>() {})
+            val (stations) = mapper.readValue<Divvy>(stream, object : TypeReference<Divvy>() {})
             return stations
         } catch (e: Exception) {
             throw ParserException(e)

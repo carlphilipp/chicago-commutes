@@ -19,11 +19,9 @@
 
 package fr.cph.chicago.entity
 
-import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 class Alert(
     @JsonProperty("AlertId")
     var alertId: String? = null,
@@ -58,19 +56,16 @@ class Alert(
     @JsonProperty("GUID")
     var guid: String? = null)
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 class AlertURL(
     @JsonProperty("#cdata-section")
     var cdataSection: String? = null
 )
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 class AlertsRoute(
     @JsonProperty("CTAAlerts")
     var ctaAlerts: CTAAlerts? = null
 )
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 class CTAAlerts(
     @JsonProperty("TimeStamp")
     var timeStamp: String? = null,
@@ -82,20 +77,17 @@ class CTAAlerts(
     var alert: List<Alert>? = null
 )
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 class FullDescription(
     @JsonProperty("#cdata-section")
     var cdataSection: String? = null
 )
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder("Service")
 class ImpactedService(
     @JsonProperty("Service")
     var service: List<Service>? = null
 )
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 class Service(
     @JsonProperty("ServiceType")
     var serviceType: String? = null,
@@ -113,7 +105,6 @@ class Service(
     var serviceURL: ServiceURL? = null
 )
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 class ServiceURL(
     @JsonProperty("#cdata-section")
     var cdataSection: String? = null

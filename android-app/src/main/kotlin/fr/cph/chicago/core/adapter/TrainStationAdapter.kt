@@ -29,7 +29,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 
 import fr.cph.chicago.R
-import fr.cph.chicago.entity.enumeration.TrainLine
+import fr.cph.chicago.core.model.enumeration.TrainLine
 
 /**
  * Adapter that will handle Train station list

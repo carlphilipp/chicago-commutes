@@ -24,11 +24,11 @@ import android.util.SparseArray
 import com.univocity.parsers.csv.CsvParser
 import com.univocity.parsers.csv.CsvParserSettings
 import fr.cph.chicago.core.App
-import fr.cph.chicago.entity.Position
-import fr.cph.chicago.entity.Station
-import fr.cph.chicago.entity.Stop
-import fr.cph.chicago.entity.enumeration.TrainDirection
-import fr.cph.chicago.entity.enumeration.TrainLine
+import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.model.Station
+import fr.cph.chicago.core.model.Stop
+import fr.cph.chicago.core.model.enumeration.TrainDirection
+import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.util.Util
 import java.io.IOException
 import java.io.InputStreamReader

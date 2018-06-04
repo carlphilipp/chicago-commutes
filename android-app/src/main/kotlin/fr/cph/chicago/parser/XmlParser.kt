@@ -20,9 +20,10 @@
 package fr.cph.chicago.parser
 
 import android.util.SparseArray
+import fr.cph.chicago.core.model.*
 import fr.cph.chicago.entity.*
-import fr.cph.chicago.entity.enumeration.BusDirection
-import fr.cph.chicago.entity.enumeration.TrainLine
+import fr.cph.chicago.core.model.enumeration.BusDirection
+import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.exception.ParserException
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util

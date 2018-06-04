@@ -21,8 +21,8 @@ package fr.cph.chicago.parser
 
 import com.univocity.parsers.common.ParsingContext
 import com.univocity.parsers.common.processor.RowProcessor
-import fr.cph.chicago.entity.BusStop
-import fr.cph.chicago.entity.Position
+import fr.cph.chicago.core.model.BusStop
+import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.service.BusService
 import org.apache.commons.lang3.StringUtils
 

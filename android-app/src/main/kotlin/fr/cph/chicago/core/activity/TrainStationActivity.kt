@@ -38,11 +38,11 @@ import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.entity.TrainEta
-import fr.cph.chicago.entity.Station
-import fr.cph.chicago.entity.Stop
-import fr.cph.chicago.entity.TrainArrival
-import fr.cph.chicago.entity.enumeration.TrainDirection
-import fr.cph.chicago.entity.enumeration.TrainLine
+import fr.cph.chicago.core.model.Station
+import fr.cph.chicago.core.model.Stop
+import fr.cph.chicago.core.model.TrainArrival
+import fr.cph.chicago.core.model.enumeration.TrainDirection
+import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.rx.TrainArrivalObserver
 import fr.cph.chicago.service.PreferenceService

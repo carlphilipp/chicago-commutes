@@ -34,9 +34,9 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
-import fr.cph.chicago.entity.Position
-import fr.cph.chicago.entity.bike.DivvyStation
-import fr.cph.chicago.entity.enumeration.TrainLine
+import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.rx.BikeAllBikeStationsObserver
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.service.PreferenceService
@@ -98,7 +98,7 @@ class BikeStationActivity : AbstractStationActivity() {
     @BindColor(R.color.yellowLineDark)
     internal var yellowLineDark: Int = 0
 
-    private lateinit var divvyStation: DivvyStation
+    private lateinit var divvyStation: BikeStation
     private var isFavorite: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -206,7 +206,7 @@ class BikeStationActivity : AbstractStationActivity() {
         return preferenceService.isBikeStationFavorite(divvyStation.id)
     }
 
-    fun refreshStation(station: DivvyStation) {
+    fun refreshStation(station: BikeStation) {
         this.divvyStation = station
         drawData()
     }

@@ -19,14 +19,10 @@
 
 package fr.cph.chicago.entity
 
-import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-data class AlertsRoutes(@JsonProperty("CTARoutes")
-                        var ctaRoutes: CTARoutes? = null)
+data class AlertsRoutes(@JsonProperty("CTARoutes") val ctaRoutes: CTARoutes)
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 data class CTARoutes(
     @JsonProperty("TimeStamp")
     var timeStamp: String? = null,
@@ -37,7 +33,6 @@ data class CTARoutes(
     @JsonProperty("RouteInfo")
     var routeInfo: List<RouteInfo>? = null)
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 data class RouteInfo(
     @JsonProperty("Route")
     var route: String? = null,
@@ -54,7 +49,6 @@ data class RouteInfo(
     @JsonProperty("RouteStatusColor")
     var routeStatusColor: String? = null)
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 class RouteURL(
     @JsonProperty("#cdata-section")
     var cdataSection: String? = null)

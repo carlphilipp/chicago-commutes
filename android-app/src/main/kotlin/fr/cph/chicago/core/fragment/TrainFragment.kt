@@ -30,7 +30,7 @@ import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.TrainListStationActivity
 import fr.cph.chicago.core.adapter.TrainStationAdapter
-import fr.cph.chicago.entity.enumeration.TrainLine
+import fr.cph.chicago.core.model.enumeration.TrainLine
 
 /**
  * Train Fragment

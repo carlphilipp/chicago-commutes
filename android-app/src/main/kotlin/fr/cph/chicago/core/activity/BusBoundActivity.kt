@@ -44,9 +44,9 @@ import com.google.android.gms.maps.model.PolylineOptions
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.adapter.BusBoundAdapter
-import fr.cph.chicago.entity.BusPattern
-import fr.cph.chicago.entity.BusStop
-import fr.cph.chicago.entity.enumeration.TrainLine
+import fr.cph.chicago.core.model.BusPattern
+import fr.cph.chicago.core.model.BusStop
+import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils

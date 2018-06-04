@@ -35,9 +35,9 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.listener.BikeStationOnClickListener
 import fr.cph.chicago.core.listener.TrainOnClickListener
-import fr.cph.chicago.entity.bike.DivvyStation
-import fr.cph.chicago.entity.BusRoute
-import fr.cph.chicago.entity.Station
+import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.core.model.BusRoute
+import fr.cph.chicago.core.model.Station
 import fr.cph.chicago.rx.BusDirectionObserver
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.util.LayoutUtil
@@ -55,7 +55,7 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
 
     private val trains: MutableList<Station> = mutableListOf()
     private val busRoutes: MutableList<BusRoute> = mutableListOf()
-    private val divvyStations: MutableList<DivvyStation> = mutableListOf()
+    private val divvyStations: MutableList<BikeStation> = mutableListOf()
 
     override fun getCount(): Int {
         return trains.size + busRoutes.size + divvyStations.size
@@ -115,7 +115,7 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
                 }
             }
             else -> {
-                val bikeStation = getItem(position) as DivvyStation
+                val bikeStation = getItem(position) as BikeStation
 
                 val icon: ImageView = view.findViewById(R.id.icon)
                 icon.setImageDrawable(ContextCompat.getDrawable(parent.context, R.drawable.ic_directions_bike_white_24dp))
@@ -128,7 +128,7 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
         return view
     }
 
-    fun updateData(trains: List<Station>, buses: List<BusRoute>, divvies: List<DivvyStation>) {
+    fun updateData(trains: List<Station>, buses: List<BusRoute>, divvies: List<BikeStation>) {
         this.trains.clear()
         this.trains.addAll(trains)
 

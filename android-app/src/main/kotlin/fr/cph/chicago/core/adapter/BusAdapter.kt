@@ -29,7 +29,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.entity.BusRoute
+import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.rx.BusDirectionObserver
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.service.BusService

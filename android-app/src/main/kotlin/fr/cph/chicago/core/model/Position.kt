@@ -17,25 +17,27 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.entity
+package fr.cph.chicago.core.model
 
 import android.os.Parcel
 import android.os.Parcelable
-import fr.cph.chicago.entity.enumeration.TrainLine
+import io.realm.RealmObject
 import java.io.Serializable
 
 /**
- * Train Arrival entity
+ * The position. This can't be immutable because it needs to extends RealmObject.
  *
  * @author Carl-Philipp Harmant
  * @version 1
  */
-data class TrainArrival(var trainEtas: MutableList<TrainEta> = mutableListOf()) : Parcelable, Serializable {
+open class Position(var latitude: Double = 0.0, var longitude: Double = 0.0) : RealmObject(), Parcelable, Serializable {
 
-    private constructor(source: Parcel) : this(trainEtas = source.createTypedArray(TrainEta.CREATOR).toMutableList())
+    private constructor(source: Parcel) : this() {
+        readFromParcel(source)
+    }
 
-    fun getEtas(line: TrainLine): MutableList<TrainEta> {
-        return this.trainEtas.filter { eta -> eta.routeName == line }.toMutableList()
+    override fun toString(): String {
+        return "[latitude=$latitude;longitude=$longitude]"
     }
 
     override fun describeContents(): Int {
@@ -43,24 +45,26 @@ data class TrainArrival(var trainEtas: MutableList<TrainEta> = mutableListOf()) 
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeTypedList(trainEtas)
+        dest.writeDouble(latitude)
+        dest.writeDouble(longitude)
+    }
+
+    private fun readFromParcel(source: Parcel) {
+        latitude = source.readDouble()
+        longitude = source.readDouble()
     }
 
     companion object {
 
         private const val serialVersionUID = 0L
 
-        fun buildEmptyTrainArrival(): TrainArrival {
-            return TrainArrival(mutableListOf())
-        }
-
         @JvmField
-        val CREATOR: Parcelable.Creator<TrainArrival> = object : Parcelable.Creator<TrainArrival> {
-            override fun createFromParcel(source: Parcel): TrainArrival {
-                return TrainArrival(source)
+        val CREATOR: Parcelable.Creator<Position> = object : Parcelable.Creator<Position> {
+            override fun createFromParcel(source: Parcel): Position {
+                return Position(source)
             }
 
-            override fun newArray(size: Int): Array<TrainArrival?> {
+            override fun newArray(size: Int): Array<Position?> {
                 return arrayOfNulls(size)
             }
         }

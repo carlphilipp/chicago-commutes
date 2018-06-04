@@ -22,12 +22,11 @@ package fr.cph.chicago.core.listener
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.BikeStationActivity
-import fr.cph.chicago.entity.bike.DivvyStation
+import fr.cph.chicago.core.model.BikeStation
 
-class BikeStationOnClickListener(private val station: DivvyStation) : View.OnClickListener {
+class BikeStationOnClickListener(private val station: BikeStation) : View.OnClickListener {
 
     override fun onClick(view: View) {
         val intent = Intent(view.context, BikeStationActivity::class.java)

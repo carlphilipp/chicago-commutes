@@ -32,7 +32,7 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.TrainStationActivity
 import fr.cph.chicago.core.activity.TrainMapActivity
 import fr.cph.chicago.core.adapter.PopupTrainAdapter
-import fr.cph.chicago.entity.enumeration.TrainLine
+import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.util.Util
 
 /**

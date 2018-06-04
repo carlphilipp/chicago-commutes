@@ -50,10 +50,10 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.adapter.SlidingUpAdapter
 import fr.cph.chicago.core.listener.OnMarkerClickListener
-import fr.cph.chicago.entity.bike.DivvyStation
-import fr.cph.chicago.entity.BusStop
-import fr.cph.chicago.entity.Position
-import fr.cph.chicago.entity.Station
+import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.core.model.BusStop
+import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.model.Station
 import fr.cph.chicago.marker.MarkerDataHolder
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.util.Util
@@ -149,7 +149,7 @@ class NearbyFragment : AbstractFragment(), EasyPermissions.PermissionCallbacks {
     private fun updateMarkersAndModel(
         busStops: List<BusStop>,
         trainStation: List<Station>,
-        divvyStations: List<DivvyStation>) {
+        divvyStations: List<BikeStation>) {
         if (isAdded) {
             mapFragment.getMapAsync { googleMap ->
                 googleMap.uiSettings.isMyLocationButtonEnabled = true
@@ -263,7 +263,7 @@ class NearbyFragment : AbstractFragment(), EasyPermissions.PermissionCallbacks {
     }
 
     private fun handleNearbyData(position: Position) {
-        val bikeStations = mainActivity.intent.extras.getParcelableArrayList<DivvyStation>(bundleBikeStations)
+        val bikeStations = mainActivity.intent.extras.getParcelableArrayList<BikeStation>(bundleBikeStations)
         var chicago: Position? = null
         if (position.longitude == 0.0 && position.latitude == 0.0) {
             Log.w(TAG, "Could not get current user location")
@@ -275,7 +275,7 @@ class NearbyFragment : AbstractFragment(), EasyPermissions.PermissionCallbacks {
         val trainStationAroundObservable = observableUtil.createTrainStationAroundObservable(finalPosition)
         val busStopsAroundObservable = observableUtil.createBusStopsAroundObservable(finalPosition)
         val bikeStationsObservable = observableUtil.createBikeStationAroundObservable(finalPosition, bikeStations)
-        Observable.zip(trainStationAroundObservable, busStopsAroundObservable, bikeStationsObservable, Function3 { trains: List<Station>, buses: List<BusStop>, divvies: List<DivvyStation> ->
+        Observable.zip(trainStationAroundObservable, busStopsAroundObservable, bikeStationsObservable, Function3 { trains: List<Station>, buses: List<BusStop>, divvies: List<BikeStation> ->
             util.centerMap(mapFragment, finalPosition)
             updateMarkersAndModel(buses, trains, divvies)
             Any()

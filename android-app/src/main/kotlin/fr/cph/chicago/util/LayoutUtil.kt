@@ -32,10 +32,10 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.entity.bike.DivvyStation
-import fr.cph.chicago.entity.BusArrival
-import fr.cph.chicago.entity.enumeration.BusDirection
-import fr.cph.chicago.entity.enumeration.TrainLine
+import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.core.model.BusArrival
+import fr.cph.chicago.core.model.enumeration.BusDirection
+import fr.cph.chicago.core.model.enumeration.TrainLine
 
 /**
  * Layout util class
@@ -207,7 +207,7 @@ object LayoutUtil {
         return container
     }
 
-    fun createBikeLayout(divvyStation: DivvyStation): LinearLayout {
+    fun createBikeLayout(divvyStation: BikeStation): LinearLayout {
         val containerParams = getInsideParams(true, true)
         val container = LinearLayout(App.instance)
         container.orientation = LinearLayout.VERTICAL
@@ -222,7 +222,7 @@ object LayoutUtil {
         return container
     }
 
-    private fun createBikeLine(divvyStation: DivvyStation, firstLine: Boolean): LinearLayout {
+    private fun createBikeLine(divvyStation: BikeStation, firstLine: Boolean): LinearLayout {
         val pixels = util.convertDpToPixel(16)
         val pixelsHalf = pixels / 2
         val grey5 = ContextCompat.getColor(App.instance, R.color.grey_5)

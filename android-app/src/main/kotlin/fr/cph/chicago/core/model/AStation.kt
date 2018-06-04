@@ -17,9 +17,6 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.entity
+package fr.cph.chicago.core.model
 
-/**
- * @author carl
- */
-class BusPattern(val direction: String, val points: MutableList<PatternPoint>)
+interface AStation

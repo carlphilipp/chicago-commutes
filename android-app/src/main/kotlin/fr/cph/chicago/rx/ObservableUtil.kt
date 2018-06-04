@@ -23,10 +23,10 @@ import android.app.Application
 import android.util.Log
 import android.util.SparseArray
 import fr.cph.chicago.core.App
-import fr.cph.chicago.entity.*
-import fr.cph.chicago.entity.bike.DivvyStation
-import fr.cph.chicago.entity.dto.*
-import fr.cph.chicago.entity.enumeration.TrainLine
+import fr.cph.chicago.core.model.*
+import fr.cph.chicago.core.model.dto.*
+import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.entity.TrainEta
 import fr.cph.chicago.service.AlertService
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
@@ -64,7 +64,7 @@ object ObservableUtil {
         return createObservableFromCallable(Callable { BusArrivalDTO(busService.loadFavoritesBuses(), false) })
             .onErrorReturn { throwable ->
                 Log.e(TAG, throwable.message, throwable)
-                BusArrivalDTO(ArrayList(), true)
+                BusArrivalDTO(mutableListOf(), true)
             }
     }
 
@@ -72,23 +72,23 @@ object ObservableUtil {
         return createObservableFromCallable(Callable { busService.loadAroundBusArrivals(busStop) })
             .onErrorReturn { throwable ->
                 Log.e(TAG, throwable.message, throwable)
-                ArrayList()
+                mutableListOf()
             }
     }
 
-    fun createAllBikeStationsObservable(): Observable<List<DivvyStation>> {
+    fun createAllBikeStationsObservable(): Observable<List<BikeStation>> {
         return createObservableFromCallable(Callable { bikeService.loadAllBikeStations() })
             .onErrorReturn { throwable ->
                 Log.e(TAG, throwable.message, throwable)
-                ArrayList()
+                mutableListOf()
             }
     }
 
-    fun createBikeStationsObservable(divvyStation: DivvyStation): Observable<DivvyStation> {
+    fun createBikeStationsObservable(divvyStation: BikeStation): Observable<BikeStation> {
         return createObservableFromCallable(Callable { bikeService.findBikeStation(divvyStation.id) })
             .onErrorReturn { throwable ->
                 Log.e(TAG, throwable.message, throwable)
-                DivvyStation.buildDefaultBikeStationWithName("error")
+                BikeStation.buildDefaultBikeStationWithName("error")
             }
     }
 
@@ -100,7 +100,7 @@ object ObservableUtil {
         // Bikes online all stations
         val bikeStationsObservable = createAllBikeStationsObservable()
         return Observable.zip(busArrivalsObservable, trainArrivalsObservable, bikeStationsObservable,
-            Function3 { busArrivalDTO: BusArrivalDTO, trainArrivalsDTO: TrainArrivalDTO, divvyStations: List<DivvyStation>
+            Function3 { busArrivalDTO: BusArrivalDTO, trainArrivalsDTO: TrainArrivalDTO, divvyStations: List<BikeStation>
                 ->
                 (application as App).lastUpdate = Calendar.getInstance().time
                 FavoritesDTO(trainArrivalsDTO, busArrivalDTO, divvyStations.isEmpty(), divvyStations)
@@ -119,7 +119,7 @@ object ObservableUtil {
         val busRoutesObs = createObservableFromCallable(Callable { busService.loadBusRoutes() })
             .onErrorReturn { throwable ->
                 Log.e(TAG, throwable.message, throwable)
-                ArrayList()
+                mutableListOf()
             }
 
         val bikeStationsObs = createObservableFromCallable(Callable { bikeService.loadAllBikeStations() })
@@ -127,7 +127,7 @@ object ObservableUtil {
                 Log.e(TAG, throwable.message, throwable)
                 // Do not change that to listOf().
                 // It needs to be ArrayList for being parcelable
-                ArrayList()
+                mutableListOf()
             }
 
         return Observable.zip(busRoutesObs, bikeStationsObs, BiFunction { busRoutes, bikeStations -> FirstLoadDTO(busRoutes.isEmpty(), bikeStations.isEmpty(), busRoutes, bikeStations) })
@@ -139,7 +139,7 @@ object ObservableUtil {
                 Log.e(TAG, throwable.message, throwable)
                 // Do not change that to listOf().
                 // It needs to be ArrayList for being parcelable
-                ArrayList()
+                mutableListOf()
             }
     }
 
@@ -153,7 +153,7 @@ object ObservableUtil {
                 Log.e(TAG, throwable.message, throwable)
                 // Do not change that to listOf().
                 // It needs to be ArrayList for being parcelable
-                ArrayList()
+                mutableListOf()
             }
     }
 
@@ -163,7 +163,7 @@ object ObservableUtil {
                 Log.e(TAG, throwable.message, throwable)
                 // Do not change that to listOf().
                 // It needs to be ArrayList for being parcelable
-                ArrayList()
+                mutableListOf()
             }
     }
 
@@ -173,7 +173,7 @@ object ObservableUtil {
                 Log.e(TAG, throwable.message, throwable)
                 // Do not change that to listOf().
                 // It needs to be ArrayList for being parcelable
-                ArrayList()
+                mutableListOf()
             }
     }
 
@@ -183,7 +183,7 @@ object ObservableUtil {
                 Log.e(TAG, throwable.message, throwable)
                 // Do not change that to listOf().
                 // It needs to be ArrayList for being parcelable
-                ArrayList()
+                mutableListOf()
             }
     }
 
@@ -193,30 +193,30 @@ object ObservableUtil {
                 Log.e(TAG, throwable.message, throwable)
                 // Do not change that to listOf().
                 // It needs to be ArrayList for being parcelable
-                ArrayList()
+                mutableListOf()
             }
     }
 
-    fun createBikeStationAroundObservable(position: Position, divvyStations: List<DivvyStation>): Observable<List<DivvyStation>> {
-        return createObservableFromCallable(Callable { DivvyStation.readNearbyStation(divvyStations, position) })
+    fun createBikeStationAroundObservable(position: Position, divvyStations: List<BikeStation>): Observable<List<BikeStation>> {
+        return createObservableFromCallable(Callable { BikeStation.readNearbyStation(divvyStations, position) })
             .onErrorReturn { throwable ->
                 Log.e(TAG, throwable.message, throwable)
                 // Do not change that to listOf().
                 // It needs to be ArrayList for being parcelable
-                ArrayList()
+                mutableListOf()
             }
     }
 
     fun createLoadTrainEtaObservable(runNumber: String, loadAll: Boolean): Observable<List<TrainEta>> {
         return createObservableFromCallable(Callable { trainService.loadTrainEta(runNumber, loadAll) })
-            .onErrorReturn { ArrayList() }
+            .onErrorReturn { mutableListOf() }
     }
 
     fun createAlertRoutesObservable(): Observable<List<RoutesAlertsDTO>> {
         return createObservableFromCallable(Callable { alertService.getAlerts() })
             .onErrorReturn { throwable ->
                 Log.e(TAG, throwable.message, throwable)
-                ArrayList()
+                mutableListOf()
             }
     }
 

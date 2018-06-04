@@ -23,8 +23,8 @@ import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.util.Log
 import fr.cph.chicago.core.App
-import fr.cph.chicago.entity.enumeration.TrainDirection
-import fr.cph.chicago.entity.enumeration.TrainLine
+import fr.cph.chicago.core.model.enumeration.TrainDirection
+import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
 import java.text.ParseException

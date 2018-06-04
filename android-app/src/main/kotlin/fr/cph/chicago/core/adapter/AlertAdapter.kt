@@ -30,8 +30,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import fr.cph.chicago.R
-import fr.cph.chicago.entity.dto.AlertType
-import fr.cph.chicago.entity.dto.RoutesAlertsDTO
+import fr.cph.chicago.core.model.dto.AlertType
+import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 
 /**
  * Adapter that handle alert lists

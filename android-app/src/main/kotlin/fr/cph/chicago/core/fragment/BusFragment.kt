@@ -32,7 +32,7 @@ import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.adapter.BusAdapter
-import fr.cph.chicago.entity.BusRoute
+import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.service.BusService
 import org.apache.commons.lang3.StringUtils
 

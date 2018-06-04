@@ -19,4 +19,19 @@
 
 package fr.cph.chicago.entity
 
-class PatternPoint(val position: Position, val type: String, val stopName: String)
+import com.fasterxml.jackson.annotation.JsonProperty
+
+class BusRoutesResponse(
+    @JsonProperty("bustime-response")
+    val bustimeResponse: BustimeResponse)
+
+class BustimeResponse(
+    @JsonProperty("routes")
+    var routes: List<Route>)
+
+class Route(
+    @JsonProperty("rt")
+    val routeId: String,
+    @JsonProperty("rtnm")
+    val routeName: String)
+

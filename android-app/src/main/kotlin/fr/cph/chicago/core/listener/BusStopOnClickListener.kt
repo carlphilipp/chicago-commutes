@@ -33,8 +33,8 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.BusActivity
 import fr.cph.chicago.core.adapter.PopupBusDetailsFavoritesAdapter
-import fr.cph.chicago.entity.BusStop
-import fr.cph.chicago.entity.dto.BusDetailsDTO
+import fr.cph.chicago.core.model.BusStop
+import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable

@@ -33,9 +33,9 @@ import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.model.*
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.entity.Bus
-import fr.cph.chicago.entity.BusPattern
-import fr.cph.chicago.entity.enumeration.TrainLine
+import fr.cph.chicago.core.model.Bus
+import fr.cph.chicago.core.model.BusPattern
+import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.marker.RefreshBusMarkers
 import fr.cph.chicago.rx.BusFollowObserver
 import fr.cph.chicago.rx.BusObserver

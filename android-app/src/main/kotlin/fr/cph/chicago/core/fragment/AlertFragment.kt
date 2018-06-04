@@ -32,8 +32,8 @@ import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.AlertActivity
 import fr.cph.chicago.core.adapter.AlertAdapter
-import fr.cph.chicago.entity.dto.AlertType
-import fr.cph.chicago.entity.dto.RoutesAlertsDTO
+import fr.cph.chicago.core.model.dto.AlertType
+import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 import fr.cph.chicago.rx.ObservableUtil
 import org.apache.commons.lang3.StringUtils
 
