@@ -40,6 +40,7 @@ import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.rx.BikeAllBikeStationsObserver
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.service.PreferenceService
+import fr.cph.chicago.util.LayoutUtil
 import fr.cph.chicago.util.Util
 
 /**
@@ -154,37 +155,8 @@ class BikeStationActivity : AbstractStationActivity() {
     }
 
     private fun drawData() {
-        val context = applicationContext
-
-        val availableLayout = LinearLayout(context)
-        val availableBikes = LinearLayout(context)
-        val availableDocks = LinearLayout(context)
-
-        val availableBike = TextView(context)
-        val availableDock = TextView(context)
-        val amountBike = TextView(context)
-        val amountDock = TextView(context)
-
-        container.removeAllViews()
-        container.orientation = LinearLayout.HORIZONTAL
-        availableLayout.orientation = LinearLayout.VERTICAL
-        availableBikes.orientation = LinearLayout.HORIZONTAL
-        availableBike.text = bikeAvailableBikes
-        availableBike.setTextColor(grey_5)
-        availableBikes.addView(availableBike)
-        amountBike.text = divvyStation.availableBikes.toString()
-        amountBike.setTextColor(if (divvyStation.availableBikes == 0) red else green)
-        availableBikes.addView(amountBike)
-        availableLayout.addView(availableBikes)
-        availableDocks.orientation = LinearLayout.HORIZONTAL
-        availableDock.text = bikeAvailableDocks
-        availableDock.setTextColor(grey_5)
-        availableDocks.addView(availableDock)
-        amountDock.text = divvyStation.availableDocks.toString()
-        amountDock.setTextColor(if (divvyStation.availableDocks == 0) red else green)
-        availableDocks.addView(amountDock)
-        availableLayout.addView(availableDocks)
-        container.addView(availableLayout)
+        val bikeResultLayout = LayoutUtil.buildBikeStationLayout(divvyStation)
+        container.addView(bikeResultLayout)
     }
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {

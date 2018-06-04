@@ -114,8 +114,8 @@
     <!-- Bike -->
     <string name="bike_activity">Divvy</string>
     <string name="bike_fragment_filter">Filter</string>
-    <string name="bike_available_bikes">Available divvies&#160;&#160;</string>
-    <string name="bike_available_docks">Available docks&#160;</string>
+    <string name="bike_available_bikes">Available bikes</string>
+    <string name="bike_available_docks">Available docks</string>
 
     <!-- Map -->
     <string name="map_activity">Map</string>

@@ -92,8 +92,7 @@ object LayoutUtil {
 
     // TODO Create XML files instead of doing all those methods in Java
     fun createBusArrivalsLayout(containParams: LinearLayout.LayoutParams, stopNameTrimmed: String, busDirection: BusDirection?, buses: MutableList<out BusArrival>): LinearLayout {
-        val pixels = util.convertDpToPixel(16)
-        val pixelsHalf = pixels / 2
+        val pixelsHalf = util.convertDpToPixel(16) / 2
         val marginLeftPixel = util.convertDpToPixel(10)
         val grey5 = ContextCompat.getColor(App.instance, R.color.grey_5)
 
@@ -207,7 +206,23 @@ object LayoutUtil {
         return container
     }
 
-    fun createBikeLayout(divvyStation: BikeStation): LinearLayout {
+    fun buildBikeFavoritesLayout(bikeStation: BikeStation): LinearLayout {
+        val container = buildBikeLayout()
+        val linearLayout = (container.getChildAt(0) as LinearLayout)
+        linearLayout.addView(createBikeLine(bikeStation, true, true))
+        linearLayout.addView(createBikeLine(bikeStation, false, true))
+        return container
+    }
+
+    fun buildBikeStationLayout(bikeStation: BikeStation): LinearLayout {
+        val container = buildBikeLayout()
+        val linearLayout = (container.getChildAt(0) as LinearLayout)
+        linearLayout.addView(createBikeLine(bikeStation, true, false))
+        linearLayout.addView(createBikeLine(bikeStation, false, false))
+        return container
+    }
+
+    private fun buildBikeLayout(): LinearLayout {
         val containerParams = getInsideParams(true, true)
         val container = LinearLayout(App.instance)
         container.orientation = LinearLayout.VERTICAL
@@ -215,18 +230,15 @@ object LayoutUtil {
 
         val linearLayout = LinearLayout(App.instance)
         linearLayout.orientation = LinearLayout.VERTICAL
-        linearLayout.addView(createBikeLine(divvyStation, true))
-        linearLayout.addView(createBikeLine(divvyStation, false))
 
         container.addView(linearLayout)
         return container
     }
 
-    private fun createBikeLine(divvyStation: BikeStation, firstLine: Boolean): LinearLayout {
+    private fun createBikeLine(divvyStation: BikeStation, firstLine: Boolean, withDots: Boolean): LinearLayout {
         val pixels = util.convertDpToPixel(16)
         val pixelsHalf = pixels / 2
         val grey5 = ContextCompat.getColor(App.instance, R.color.grey_5)
-
 
         val lineParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         val line = LinearLayout(App.instance)
@@ -237,14 +249,14 @@ object LayoutUtil {
         val leftParam = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         val left = RelativeLayout(App.instance)
         left.layoutParams = leftParam
-
-        val lineIndication = createColoredRoundForFavorites(TrainLine.NA)
         val lineId = util.generateViewId()
-        lineIndication.id = lineId
 
         val availableParam = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        availableParam.addRule(RelativeLayout.RIGHT_OF, lineId)
+        if (withDots) {
+            availableParam.addRule(RelativeLayout.RIGHT_OF, lineId)
+        }
         availableParam.setMargins(pixelsHalf, 0, 0, 0)
+        availableParam.width = util.convertDpToPixel(110)
 
         val boundCustomTextView = TextView(App.instance)
         boundCustomTextView.text = App.instance.resources.getString(R.string.bike_available_docks)
@@ -266,16 +278,24 @@ object LayoutUtil {
             amountBike.text = "?"
             amountBike.setTextColor(ContextCompat.getColor(App.instance, R.color.orange))
         } else {
-            amountBike.text = data.toString()
+            amountBike.text = formatBikesDocksValues(data)
             val color = if (data == 0) R.color.red else R.color.green
             amountBike.setTextColor(ContextCompat.getColor(App.instance, color))
         }
         amountBike.layoutParams = availableValueParam
 
-        left.addView(lineIndication)
+        if (withDots) {
+            val lineIndication = createColoredRoundForFavorites(TrainLine.NA)
+            lineIndication.id = lineId
+            left.addView(lineIndication)
+        }
         left.addView(boundCustomTextView)
         left.addView(amountBike)
         line.addView(left)
         return line
+    }
+
+    private fun formatBikesDocksValues(num: Int): String {
+        return if (num >= 10) num.toString() else "  $num"
     }
 }

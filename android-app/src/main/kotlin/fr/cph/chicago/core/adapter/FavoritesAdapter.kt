@@ -260,7 +260,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         holder.mapButton.text = activity.getString(R.string.favorites_view_station)
         holder.mapButton.setOnClickListener(GoogleMapOnClickListener(divvyStation.latitude, divvyStation.longitude))
 
-        val bikeResultLayout = layoutUtil.createBikeLayout(divvyStation)
+        val bikeResultLayout = layoutUtil.buildBikeFavoritesLayout(divvyStation)
 
         holder.mainLayout.addView(bikeResultLayout)
     }

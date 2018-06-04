@@ -152,7 +152,7 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
          * it just mean that the view has been updated already with a faster request.
          */
         if (linearLayout.childCount == 0 || "error" == divvyStation.name) {
-            val bikeResultLayout = LayoutUtil.createBikeLayout(divvyStation)
+            val bikeResultLayout = LayoutUtil.buildBikeFavoritesLayout(divvyStation)
             linearLayout.addView(bikeResultLayout)
             nearbyFragment.slidingUpPanelLayout.panelHeight = getSlidingPanelHeight(2)
             updatePanelState()
