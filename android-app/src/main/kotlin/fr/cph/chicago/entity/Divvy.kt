@@ -28,6 +28,5 @@ data class DivvyStation(
     val lastCommunicationTime: String,
     val landMark: String,
     @JsonProperty("is_renting")
-    val isRenting: Boolean
-)
+    val isRenting: Boolean)
 

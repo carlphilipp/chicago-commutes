@@ -163,7 +163,7 @@ class SearchActivity : AppCompatActivity() {
             val foundBusRoutes = busService.searchBusRoutes(query)
             // TODO Consider doing in a different way how bikeStations is stored
             val foundBikeStations = divvyStations
-                .filter { (_, name, _, _, _, _, _, stAddress1) -> containsIgnoreCase(name, query) || containsIgnoreCase(stAddress1, query) }
+                .filter { (_, name, _, _, _, _, address) -> containsIgnoreCase(name, query) || containsIgnoreCase(address, query) }
                 .distinct()
                 .sortedWith(util.DIVVY_COMPARATOR_BY_NAME)
             searchAdapter.updateData(foundStations, foundBusRoutes, foundBikeStations)

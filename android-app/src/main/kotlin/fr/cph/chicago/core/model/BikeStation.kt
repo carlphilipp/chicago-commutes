@@ -8,21 +8,19 @@ data class BikeStation(
     val id: Int,
     val name: String,
     val availableDocks: Int,
-    val totalDocks: Int,
+    val availableBikes: Int,
     val latitude: Double,
     val longitude: Double,
-    val availableBikes: Int,
-    val stAddress1: String) : Parcelable, AStation {
+    val address: String) : Parcelable, AStation {
 
     private constructor(source: Parcel) : this(
         id = source.readInt(),
         name = source.readString(),
         availableDocks = source.readInt(),
-        totalDocks = source.readInt(),
+        availableBikes = source.readInt(),
         latitude = source.readDouble(),
         longitude = source.readDouble(),
-        availableBikes = source.readInt(),
-        stAddress1 = source.readString())
+        address = source.readString())
 
     override fun describeContents(): Int {
         return 0
@@ -32,11 +30,10 @@ data class BikeStation(
         dest.writeInt(id)
         dest.writeString(name)
         dest.writeInt(availableDocks)
-        dest.writeInt(totalDocks)
+        dest.writeInt(availableBikes)
         dest.writeDouble(latitude)
         dest.writeDouble(longitude)
-        dest.writeInt(availableBikes)
-        dest.writeString(stAddress1)
+        dest.writeString(address)
     }
 
     companion object {
@@ -44,7 +41,7 @@ data class BikeStation(
         private const val DEFAULT_RANGE = 0.008
 
         fun buildDefaultBikeStationWithName(name: String): BikeStation {
-            return BikeStation(0, name, -1, 0, 0.0, 0.0, -1, StringUtils.EMPTY)
+            return BikeStation(0, name, -1, -1, 0.0, 0.0, StringUtils.EMPTY)
         }
 
         fun readNearbyStation(divvyStations: List<BikeStation>, position: Position): List<BikeStation> {

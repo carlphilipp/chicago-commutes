@@ -126,7 +126,7 @@ class BikeStationActivity : AbstractStationActivity() {
             favoritesImage.setColorFilter(if (isFavorite) yellowLineDark else grey_5)
 
             favoritesImageContainer.setOnClickListener { _ -> switchFavorite() }
-            bikeStationValue.text = divvyStation.stAddress1
+            bikeStationValue.text = divvyStation.address
             streetViewImage.setOnClickListener(GoogleStreetOnClickListener(latitude, longitude))
             mapContainer.setOnClickListener(GoogleMapOnClickListener(latitude, longitude))
             walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(latitude, longitude))

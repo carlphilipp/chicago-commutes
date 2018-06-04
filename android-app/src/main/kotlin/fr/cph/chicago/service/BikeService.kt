@@ -40,12 +40,10 @@ object BikeService {
                         divvyStation.id,
                         divvyStation.name,
                         divvyStation.availableDocks,
-                        divvyStation.totalDocks,
+                        divvyStation.availableBikes,
                         divvyStation.latitude,
                         divvyStation.longitude,
-                        divvyStation.availableBikes,
-                        divvyStation.stAddress1
-                    )
+                        divvyStation.stAddress1)
                 }
                 .sortedWith(compareBy(BikeStation::name))
                 .toMutableList()
