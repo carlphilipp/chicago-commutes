@@ -20,61 +20,55 @@
 package fr.cph.chicago.entity
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonPropertyOrder
+
+class AlertsRoute(
+    @JsonProperty("CTAAlerts")
+    val ctaAlerts: CTAAlerts
+)
+
+class CTAAlerts(
+    @JsonProperty("ErrorMessage")
+    var errorMessage: Any? = null,
+    @JsonProperty("Alert")
+    val alert: List<Alert> = listOf()
+)
 
 class Alert(
     @JsonProperty("AlertId")
-    var alertId: String? = null,
+    val alertId: String,
     @JsonProperty("Headline")
-    var headline: String? = null,
+    val headline: String,
     @JsonProperty("ShortDescription")
-    var shortDescription: String? = null,
+    val shortDescription: String,
     @JsonProperty("FullDescription")
-    var fullDescription: FullDescription? = null,
+    val fullDescription: FullDescription,
     @JsonProperty("SeverityScore")
-    var severityScore: String? = null,
+    val severityScore: String,
     @JsonProperty("SeverityColor")
-    var severityColor: String? = null,
+    val severityColor: String,
     @JsonProperty("SeverityCSS")
-    var severityCSS: String? = null,
+    val severityCSS: String,
     @JsonProperty("Impact")
-    var impact: String? = null,
+    val impact: String,
     @JsonProperty("EventStart")
-    var eventStart: String? = null,
+    val eventStart: String,
     @JsonProperty("EventEnd")
     var eventEnd: String? = null,
     @JsonProperty("TBD")
-    var tbd: String? = null,
+    val tbd: String,
     @JsonProperty("MajorAlert")
-    var majorAlert: String? = null,
+    val majorAlert: String,
     @JsonProperty("AlertURL")
-    var alertURL: AlertURL? = null,
+    val alertURL: AlertURL,
     @JsonProperty("ImpactedService")
-    var impactedService: ImpactedService? = null,
-    @JsonProperty("ttim")
-    var ttim: String? = null,
+    val impactedService: ImpactedService,
+    val ttim: String,
     @JsonProperty("GUID")
-    var guid: String? = null)
+    val guid: String)
 
 class AlertURL(
     @JsonProperty("#cdata-section")
     var cdataSection: String? = null
-)
-
-class AlertsRoute(
-    @JsonProperty("CTAAlerts")
-    var ctaAlerts: CTAAlerts? = null
-)
-
-class CTAAlerts(
-    @JsonProperty("TimeStamp")
-    var timeStamp: String? = null,
-    @JsonProperty("ErrorCode")
-    var errorCode: String? = null,
-    @JsonProperty("ErrorMessage")
-    var errorMessage: Any? = null,
-    @JsonProperty("Alert")
-    var alert: List<Alert>? = null
 )
 
 class FullDescription(
@@ -82,7 +76,6 @@ class FullDescription(
     var cdataSection: String? = null
 )
 
-@JsonPropertyOrder("Service")
 class ImpactedService(
     @JsonProperty("Service")
     var service: List<Service>? = null

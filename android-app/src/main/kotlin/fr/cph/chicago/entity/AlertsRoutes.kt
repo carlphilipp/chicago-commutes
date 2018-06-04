@@ -24,14 +24,10 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class AlertsRoutes(@JsonProperty("CTARoutes") val ctaRoutes: CTARoutes)
 
 data class CTARoutes(
-    @JsonProperty("TimeStamp")
-    var timeStamp: String? = null,
-    @JsonProperty("ErrorCode")
-    var errorCode: List<String>? = null,
     @JsonProperty("ErrorMessage")
-    var errorMessage: List<Any>? = null,
+    val errorMessage: List<Any> = listOf(),
     @JsonProperty("RouteInfo")
-    var routeInfo: List<RouteInfo>? = null)
+    val routeInfo: List<RouteInfo> = listOf())
 
 data class RouteInfo(
     @JsonProperty("Route")

@@ -58,43 +58,42 @@ class AlertFragment : AbstractFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_alert, container, false)
         setBinder(rootView)
-        ObservableUtil.createAlertRoutesObservable()
-            .subscribe { routesAlertsDTOS ->
-                val alertAdapter = AlertAdapter(routesAlertsDTOS)
-                listView.adapter = alertAdapter
-                listView.setOnItemClickListener { _, _, position, _ ->
-                    val (id1, routeName, _, _, _, _, alertType) = alertAdapter.getItem(position)
-                    val intent = Intent(context, AlertActivity::class.java)
-                    val extras = Bundle()
-                    extras.putString("routeId", id1)
-                    extras.putString("title", if (alertType === AlertType.TRAIN)
-                        routeName
-                    else
-                        id1 + " - " + routeName)
-                    intent.putExtras(extras)
-                    startActivity(intent)
-                }
-                textFilter.addTextChangedListener(object : TextWatcher {
-
-                    val routesAlertsDTOS: MutableList<RoutesAlertsDTO> = mutableListOf()
-
-                    override fun beforeTextChanged(c: CharSequence, start: Int, count: Int, after: Int) {
-                        this.routesAlertsDTOS.clear()
-                    }
-
-                    override fun onTextChanged(c: CharSequence, start: Int, before: Int, count: Int) {
-                        val trimmed = c.toString().trim { it <= ' ' }
-                        this.routesAlertsDTOS.addAll(
-                            routesAlertsDTOS
-                                .filter { (id, routeName) -> StringUtils.containsIgnoreCase(routeName, trimmed) || StringUtils.containsIgnoreCase(id, trimmed) })
-                    }
-
-                    override fun afterTextChanged(s: Editable) {
-                        alertAdapter.setAlerts(routesAlertsDTOS)
-                        alertAdapter.notifyDataSetChanged()
-                    }
-                })
+        ObservableUtil.createAlertRoutesObservable().subscribe { routesAlerts ->
+            val alertAdapter = AlertAdapter(routesAlerts)
+            listView.adapter = alertAdapter
+            listView.setOnItemClickListener { _, _, position, _ ->
+                val (id1, routeName, _, _, _, _, alertType) = alertAdapter.getItem(position)
+                val intent = Intent(context, AlertActivity::class.java)
+                val extras = Bundle()
+                extras.putString("routeId", id1)
+                extras.putString("title", if (alertType === AlertType.TRAIN)
+                    routeName
+                else
+                    "$id1 - $routeName")
+                intent.putExtras(extras)
+                startActivity(intent)
             }
+            textFilter.addTextChangedListener(object : TextWatcher {
+
+                val routesAlertsDTOS: MutableList<RoutesAlertsDTO> = mutableListOf()
+
+                override fun beforeTextChanged(c: CharSequence, start: Int, count: Int, after: Int) {
+                    this.routesAlertsDTOS.clear()
+                }
+
+                override fun onTextChanged(c: CharSequence, start: Int, before: Int, count: Int) {
+                    val trimmed = c.toString().trim { it <= ' ' }
+                    this.routesAlertsDTOS.addAll(
+                        routesAlerts
+                            .filter { (id, routeName) -> StringUtils.containsIgnoreCase(routeName, trimmed) || StringUtils.containsIgnoreCase(id, trimmed) })
+                }
+
+                override fun afterTextChanged(s: Editable) {
+                    alertAdapter.setAlerts(routesAlerts)
+                    alertAdapter.notifyDataSetChanged()
+                }
+            })
+        }
         return rootView
     }
 
