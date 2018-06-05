@@ -25,6 +25,7 @@ import fr.cph.chicago.client.CtaClient
 import fr.cph.chicago.client.CtaRequestType.*
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.*
+import fr.cph.chicago.core.model.Stop
 import fr.cph.chicago.entity.*
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.exception.ConnectException

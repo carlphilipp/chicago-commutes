@@ -32,12 +32,9 @@ import fr.cph.chicago.Constants.Companion.TRAINS_FOLLOW_URL
 import fr.cph.chicago.Constants.Companion.TRAINS_LOCATION_URL
 import fr.cph.chicago.client.CtaRequestType.*
 import fr.cph.chicago.core.App
-import fr.cph.chicago.entity.AlertsRoute
-import fr.cph.chicago.entity.AlertsRoutes
 import fr.cph.chicago.exception.ConnectException
 import fr.cph.chicago.parser.JsonParser
 import org.apache.commons.collections4.MultiValuedMap
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import java.io.InputStream
 
 /**
@@ -90,7 +87,7 @@ object CtaClient {
             TRAIN_LOCATION -> StringBuilder(TRAINS_LOCATION_URL + QUERY_PARAM_KEY + ctaTrainKey)
             BUS_ROUTES -> StringBuilder(BUSES_ROUTES_URL + QUERY_PARAM_KEY + ctaBusKey + "&format=json")
             BUS_DIRECTION -> StringBuilder(BUSES_DIRECTION_URL + QUERY_PARAM_KEY + ctaBusKey)
-            BUS_STOP_LIST -> StringBuilder(BUSES_STOP_URL + QUERY_PARAM_KEY + ctaBusKey)
+            BUS_STOP_LIST -> StringBuilder(BUSES_STOP_URL + QUERY_PARAM_KEY + ctaBusKey + "&format=json")
             BUS_VEHICLES -> StringBuilder(BUSES_VEHICLES_URL + QUERY_PARAM_KEY + ctaBusKey)
             BUS_ARRIVALS -> StringBuilder(BUSES_ARRIVAL_URL + QUERY_PARAM_KEY + ctaBusKey + "&format=json")
             BUS_PATTERN -> StringBuilder(BUSES_PATTERN_URL + QUERY_PARAM_KEY + ctaBusKey)

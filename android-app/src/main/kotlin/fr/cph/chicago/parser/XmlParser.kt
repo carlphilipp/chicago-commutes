@@ -175,61 +175,6 @@ object XmlParser {
     }
 
     /**
-     * Parse bus bounds
-     *
-     * @param xml the xml to parse
-     * @return a list of bus stop
-     * @throws ParserException a parser exception
-     */
-    @Synchronized
-    @Throws(ParserException::class)
-    fun parseBusBounds(xml: InputStream): List<BusStop> {
-        val result = mutableListOf<BusStop>()
-        try {
-            parser.setInput(xml, "UTF-8")
-            var eventType = parser.eventType
-            var tagName: String? = null
-
-            var stopId: Int? = null
-            var stopName: String? = null
-            var latitude: Double? = null
-            var longitude: Double? = null
-
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-                if (eventType == XmlPullParser.START_TAG) {
-                    tagName = parser.name
-                } else if (eventType == XmlPullParser.END_TAG) {
-                    val stop = parser.name
-                    if (StringUtils.isNotBlank(stop) && "stop" == stop) {
-                        val busArrival = BusStop(stopId!!, stopName!!, stopName, Position(latitude!!, longitude!!))
-                        result.add(busArrival)
-                    }
-                    tagName = null
-                } else if (eventType == XmlPullParser.TEXT) {
-                    val text = parser.text
-                    if (tagName != null) {
-                        when (tagName) {
-                            "stpid" -> stopId = text.toInt()
-                            "stpnm" -> stopName = text
-                            "lat" -> latitude = text.toDouble()
-                            "lon" -> longitude = text.toDouble()
-                            "msg" -> throw ParserException(text)
-                        }
-                    }
-                }
-                eventType = parser.next()
-            }
-        } catch (e: IOException) {
-            throw ParserException(e)
-        } catch (e: XmlPullParserException) {
-            throw ParserException(e)
-        } finally {
-            Util.closeQuietly(xml)
-        }
-        return result
-    }
-
-    /**
      * Parse alert general
      *
      * @param xml the xml to parse

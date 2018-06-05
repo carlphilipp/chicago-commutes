@@ -28,6 +28,7 @@ import fr.cph.chicago.core.model.*
 import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.entity.BusArrivalResponse
 import fr.cph.chicago.entity.BusRoutesResponse
+import fr.cph.chicago.entity.BusStopsResponse
 import fr.cph.chicago.exception.ConnectException
 import fr.cph.chicago.exception.ParserException
 import fr.cph.chicago.parser.BusStopCsvParser
@@ -63,6 +64,7 @@ object BusService {
             val stopIdParam = App.instance.getString(R.string.request_stop_id)
             params.put(routeIdParam, favoritesBusParams.get(routeIdParam).joinToString(separator = ","))
             params.put(stopIdParam, favoritesBusParams.get(stopIdParam).joinToString(separator = ","))
+            // Return mutable list because this need to be serializable
             return getBusArrivals(params).toMutableList()
         } catch (e: Throwable) {
             throw Exceptions.propagate(e)
@@ -74,8 +76,18 @@ object BusService {
             val params = ArrayListValuedHashMap<String, String>(2, 1)
             params.put(App.instance.getString(R.string.request_rt), stopId)
             params.put(App.instance.getString(R.string.request_dir), bound)
-            val xmlResult = ctaClient.connect(BUS_STOP_LIST, params)
-            return xmlParser.parseBusBounds(xmlResult)
+            val result = ctaClient.get(BUS_STOP_LIST, params, BusStopsResponse::class.java)
+            if (result.bustimeResponse.stops == null) {
+                val error = result.bustimeResponse.error?.joinToString { error -> "${error.rt} ${error.dir} ${error.msg}" }
+                Log.e(TAG, error)
+                return listOf()
+            }
+            return result.bustimeResponse.stops!!.map { stop -> BusStop(
+                id = stop.stpid.toInt(),
+                name = stop.stpnm,
+                description = stop.stpnm,
+                position = Position(stop.lat, stop.lon)
+            ) }
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }
