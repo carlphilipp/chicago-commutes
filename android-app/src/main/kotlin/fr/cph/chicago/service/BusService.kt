@@ -25,6 +25,8 @@ import fr.cph.chicago.client.CtaClient
 import fr.cph.chicago.client.CtaRequestType.*
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.*
+import fr.cph.chicago.core.model.enumeration.BusDirection
+import fr.cph.chicago.entity.BusArrivalResponse
 import fr.cph.chicago.entity.BusRoutesResponse
 import fr.cph.chicago.exception.ConnectException
 import fr.cph.chicago.exception.ParserException
@@ -35,7 +37,9 @@ import fr.cph.chicago.repository.BusRepository
 import fr.cph.chicago.util.Util
 import io.reactivex.exceptions.Exceptions
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
+import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
+import java.text.SimpleDateFormat
 import java.util.Locale
 
 object BusService {
@@ -47,6 +51,7 @@ object BusService {
     private val ctaClient = CtaClient
     private val xmlParser = XmlParser
     private val util = Util
+    private val simpleDateFormatBus: SimpleDateFormat = SimpleDateFormat("yyyyMMdd HH:mm", Locale.US)
 
     fun loadFavoritesBuses(): List<BusArrival> {
         try {
@@ -99,10 +104,10 @@ object BusService {
 
     fun loadBusRoutes(): List<BusRoute> {
         try {
-            val params = ArrayListValuedHashMap<String, String>()
-            val xmlResult = ctaClient.connect(BUS_ROUTES, params)
-            return JsonParser.parse(xmlResult, BusRoutesResponse::class.java)
-                .bustimeResponse.routes
+            val inputStream = ctaClient.connect(BUS_ROUTES, ArrayListValuedHashMap<String, String>())
+            return JsonParser.parse(inputStream, BusRoutesResponse::class.java)
+                .bustimeResponse
+                .routes
                 .map { route -> BusRoute(route.routeId, route.routeName) }
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
@@ -161,8 +166,27 @@ object BusService {
             val busStopId = busStop.id
             val reqParams = ArrayListValuedHashMap<String, String>(1, 1)
             reqParams.put(App.instance.getString(R.string.request_stop_id), Integer.toString(busStopId))
-            val inputStream = ctaClient.connect(BUS_ARRIVALS, reqParams)
-            return xmlParser.parseBusArrivals(inputStream)
+            val result = ctaClient.get(BUS_ARRIVALS, reqParams, BusArrivalResponse::class.java)
+            if (result.bustimeResponse.prd == null) {
+                val error = result.bustimeResponse.error?.joinToString { error -> "${error.stpid} ${error.msg}" }
+                Log.e(TAG, error)
+                return listOf()
+            }
+            return result.bustimeResponse
+                .prd!!
+                .map { prd ->
+                    BusArrival(
+                        timeStamp = simpleDateFormatBus.parse(prd.tmstmp),
+                        errorMessage = StringUtils.EMPTY, // TODO evaluate why there is this field
+                        stopName = prd.stpnm,
+                        stopId = prd.stpid.toInt(),
+                        busId = prd.vid.toInt(),
+                        routeId = prd.rt,
+                        routeDirection = BusDirection.fromString(prd.rtdir).text,
+                        busDestination = prd.des,
+                        predictionTime = simpleDateFormatBus.parse(prd.prdtm),
+                        isDelay = prd.dly)
+                }
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }

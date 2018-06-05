@@ -32,8 +32,12 @@ import fr.cph.chicago.Constants.Companion.TRAINS_FOLLOW_URL
 import fr.cph.chicago.Constants.Companion.TRAINS_LOCATION_URL
 import fr.cph.chicago.client.CtaRequestType.*
 import fr.cph.chicago.core.App
+import fr.cph.chicago.entity.AlertsRoute
+import fr.cph.chicago.entity.AlertsRoutes
 import fr.cph.chicago.exception.ConnectException
+import fr.cph.chicago.parser.JsonParser
 import org.apache.commons.collections4.MultiValuedMap
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import java.io.InputStream
 
 /**
@@ -48,6 +52,9 @@ object CtaClient {
     private const val QUERY_PARAM_KEY = "?key="
     private const val QUERY_PARAM_JSON = "?outputType=json"
 
+    private val jsonParser = JsonParser
+
+    @Deprecated(message = "Use get instead")
     @Throws(ConnectException::class)
     fun connect(requestType: CtaRequestType, params: MultiValuedMap<String, String>): InputStream {
         val ctaTrainKey = App.ctaTrainKey
@@ -71,5 +78,30 @@ object CtaClient {
             .flatMap { entry -> entry.value.map { value -> StringBuilder().append("&").append(entry.key).append("=").append(value) } }
             .forEach({ address.append(it) })
         return HttpClient.connect(address.toString())
+    }
+
+    fun <T> get(requestType: CtaRequestType, params: MultiValuedMap<String, String>, clazz: Class<T>): T {
+        val ctaTrainKey = App.ctaTrainKey
+        val ctaBusKey = App.ctaBusKey
+        val address: StringBuilder
+        address = when (requestType) {
+            TRAIN_ARRIVALS -> StringBuilder(TRAINS_ARRIVALS_URL + QUERY_PARAM_KEY + ctaTrainKey)
+            TRAIN_FOLLOW -> StringBuilder(TRAINS_FOLLOW_URL + QUERY_PARAM_KEY + ctaTrainKey)
+            TRAIN_LOCATION -> StringBuilder(TRAINS_LOCATION_URL + QUERY_PARAM_KEY + ctaTrainKey)
+            BUS_ROUTES -> StringBuilder(BUSES_ROUTES_URL + QUERY_PARAM_KEY + ctaBusKey + "&format=json")
+            BUS_DIRECTION -> StringBuilder(BUSES_DIRECTION_URL + QUERY_PARAM_KEY + ctaBusKey)
+            BUS_STOP_LIST -> StringBuilder(BUSES_STOP_URL + QUERY_PARAM_KEY + ctaBusKey)
+            BUS_VEHICLES -> StringBuilder(BUSES_VEHICLES_URL + QUERY_PARAM_KEY + ctaBusKey)
+            BUS_ARRIVALS -> StringBuilder(BUSES_ARRIVAL_URL + QUERY_PARAM_KEY + ctaBusKey + "&format=json")
+            BUS_PATTERN -> StringBuilder(BUSES_PATTERN_URL + QUERY_PARAM_KEY + ctaBusKey)
+            ALERTS_ROUTES -> StringBuilder(ALERTS_ROUTES_URL + QUERY_PARAM_JSON)
+            ALERTS_ROUTE -> StringBuilder(ALERT_ROUTES_URL + QUERY_PARAM_JSON)
+            else -> StringBuilder()
+        }
+        params.asMap()
+            .flatMap { entry -> entry.value.map { value -> StringBuilder().append("&").append(entry.key).append("=").append(value) } }
+            .forEach({ address.append(it) })
+        val inputStream = HttpClient.connect(address.toString())
+        return jsonParser.parse(inputStream, clazz)
     }
 }

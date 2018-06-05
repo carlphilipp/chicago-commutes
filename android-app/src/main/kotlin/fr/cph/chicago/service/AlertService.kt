@@ -27,7 +27,6 @@ import fr.cph.chicago.core.model.dto.RouteAlertsDTO
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 import fr.cph.chicago.entity.AlertsRoute
 import fr.cph.chicago.entity.AlertsRoutes
-import fr.cph.chicago.parser.JsonParser
 import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import java.text.ParseException
@@ -38,16 +37,14 @@ object AlertService {
     private val TAG = AlertService::class.java.simpleName
 
     private val ctaClient = CtaClient
-    private val jsonParser = JsonParser
     private val formatWithSeconds = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US)
     private val format = SimpleDateFormat("yyyy-MM-dd", Locale.US)
     private val displayFormat = SimpleDateFormat("MM/dd/yyyy h:mm a", Locale.US)
 
     fun getAlerts(): List<RoutesAlertsDTO> {
-        val inputStream = ctaClient.connect(CtaRequestType.ALERTS_ROUTES, buildAlertsParam())
-        val alertRoutes = jsonParser.parse(inputStream, AlertsRoutes::class.java)
+        val alertRoutes = ctaClient.get(CtaRequestType.ALERTS_ROUTES, buildAlertsParam(), AlertsRoutes::class.java)
         if (alertRoutes.ctaRoutes.routeInfo.isEmpty()) {
-            val errors  = alertRoutes.ctaRoutes.errorMessage.joinToString()
+            val errors = alertRoutes.ctaRoutes.errorMessage.joinToString()
             Log.e(TAG, errors)
             return listOf()
         }
@@ -63,12 +60,10 @@ object AlertService {
                     routeStatusColor = "#" + routeInfo.routeStatusColor!!,
                     alertType = if (routeInfo.route!!.contains("Line")) AlertType.TRAIN else AlertType.BUS)
             }
-            .toList()
     }
 
     fun getRouteAlert(id: String): List<RouteAlertsDTO> {
-        val inputStream = ctaClient.connect(CtaRequestType.ALERTS_ROUTE, buildAlertParam(id))
-        val alertRoutes = jsonParser.parse(inputStream, AlertsRoute::class.java)
+        val alertRoutes = ctaClient.get(CtaRequestType.ALERTS_ROUTE, buildAlertParam(id), AlertsRoute::class.java)
 
         return if (alertRoutes.ctaAlerts.errorMessage != null) {
             Log.e(TAG, alertRoutes.ctaAlerts.errorMessage.toString())
@@ -86,7 +81,6 @@ object AlertService {
                         end = formatDate(alert.eventEnd))
                 }
                 .sortedByDescending { it.severityScore }
-                .toList()
     }
 
     private fun buildAlertsParam(): MultiValuedMap<String, String> {
@@ -95,6 +89,7 @@ object AlertService {
         params.put("type", "bus")
         return params
     }
+
 
     private fun buildAlertParam(id: String): MultiValuedMap<String, String> {
         val params = ArrayListValuedHashMap<String, String>(1, 1)
