@@ -36,6 +36,7 @@ import fr.cph.chicago.parser.XmlParser
 import fr.cph.chicago.repository.BusRepository
 import fr.cph.chicago.util.Util
 import io.reactivex.exceptions.Exceptions
+import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
@@ -57,15 +58,12 @@ object BusService {
         try {
             val favoritesBusParams = preferenceService.getFavoritesBusParams()
             if (favoritesBusParams.isEmpty) return mutableListOf()
-            val requestParams = ArrayListValuedHashMap<String, String>(2, 1)
+            val params = ArrayListValuedHashMap<String, String>(2, 1)
             val routeIdParam = App.instance.getString(R.string.request_rt)
             val stopIdParam = App.instance.getString(R.string.request_stop_id)
-            requestParams.put(routeIdParam, favoritesBusParams.get(routeIdParam).joinToString(separator = ","))
-            requestParams.put(stopIdParam, favoritesBusParams.get(stopIdParam).joinToString(separator = ","))
-            val xmlResult = ctaClient.connect(BUS_ARRIVALS, requestParams)
-            val result = xmlParser.parseBusArrivals(xmlResult).distinct().toMutableList()
-            // We do not want to return EmptyList as it's not serializable
-            return if (result.isEmpty()) mutableListOf() else result
+            params.put(routeIdParam, favoritesBusParams.get(routeIdParam).joinToString(separator = ","))
+            params.put(stopIdParam, favoritesBusParams.get(stopIdParam).joinToString(separator = ","))
+            return getBusArrivals(params).toMutableList()
         } catch (e: Throwable) {
             throw Exceptions.propagate(e)
         }
@@ -116,10 +114,9 @@ object BusService {
 
     fun loadFollowBus(busId: String): List<BusArrival> {
         try {
-            val connectParam = ArrayListValuedHashMap<String, String>(1, 1)
-            connectParam.put(App.instance.getString(R.string.request_vid), busId)
-            val content = ctaClient.connect(BUS_ARRIVALS, connectParam)
-            return xmlParser.parseBusArrivals(content)
+            val params = ArrayListValuedHashMap<String, String>(1, 1)
+            params.put(App.instance.getString(R.string.request_vid), busId)
+            return getBusArrivals(params)
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }
@@ -164,29 +161,9 @@ object BusService {
     fun loadAroundBusArrivals(busStop: BusStop): List<BusArrival> {
         try {
             val busStopId = busStop.id
-            val reqParams = ArrayListValuedHashMap<String, String>(1, 1)
-            reqParams.put(App.instance.getString(R.string.request_stop_id), Integer.toString(busStopId))
-            val result = ctaClient.get(BUS_ARRIVALS, reqParams, BusArrivalResponse::class.java)
-            if (result.bustimeResponse.prd == null) {
-                val error = result.bustimeResponse.error?.joinToString { error -> "${error.stpid} ${error.msg}" }
-                Log.e(TAG, error)
-                return listOf()
-            }
-            return result.bustimeResponse
-                .prd!!
-                .map { prd ->
-                    BusArrival(
-                        timeStamp = simpleDateFormatBus.parse(prd.tmstmp),
-                        errorMessage = StringUtils.EMPTY, // TODO evaluate why there is this field
-                        stopName = prd.stpnm,
-                        stopId = prd.stpid.toInt(),
-                        busId = prd.vid.toInt(),
-                        routeId = prd.rt,
-                        routeDirection = BusDirection.fromString(prd.rtdir).text,
-                        busDestination = prd.des,
-                        predictionTime = simpleDateFormatBus.parse(prd.prdtm),
-                        isDelay = prd.dly)
-                }
+            val params = ArrayListValuedHashMap<String, String>(1, 1)
+            params.put(App.instance.getString(R.string.request_stop_id), Integer.toString(busStopId))
+            return getBusArrivals(params)
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }
@@ -229,10 +206,37 @@ object BusService {
 
     @Throws(ParserException::class, ConnectException::class)
     fun loadBusArrivals(requestRt: String, busRouteId: String, requestStopId: String, busStopId: Int, predicate: (BusArrival) -> (Boolean)): List<BusArrival> {
-        val params = ArrayListValuedHashMap<String, String>(2, 1)
-        params.put(requestRt, busRouteId)
-        params.put(requestStopId, busStopId.toString())
-        val xmlResult = ctaClient.connect(BUS_ARRIVALS, params)
-        return xmlParser.parseBusArrivals(xmlResult).filter(predicate)
+        try {
+            val params = ArrayListValuedHashMap<String, String>(2, 1)
+            params.put(requestRt, busRouteId)
+            params.put(requestStopId, busStopId.toString())
+            return getBusArrivals(params).filter(predicate)
+        } catch (throwable: Throwable) {
+            throw Exceptions.propagate(throwable)
+        }
+    }
+
+    private fun getBusArrivals(params: MultiValuedMap<String, String>): List<BusArrival> {
+        val result = ctaClient.get(BUS_ARRIVALS, params, BusArrivalResponse::class.java)
+        if (result.bustimeResponse.prd == null) {
+            val error = result.bustimeResponse.error?.joinToString { error -> "${error.stpid} ${error.msg}" }
+            Log.e(TAG, error)
+            return listOf()
+        }
+        return result.bustimeResponse
+            .prd!!
+            .map { prd ->
+                BusArrival(
+                    timeStamp = simpleDateFormatBus.parse(prd.tmstmp),
+                    errorMessage = StringUtils.EMPTY, // TODO evaluate why there is this field
+                    stopName = prd.stpnm,
+                    stopId = prd.stpid.toInt(),
+                    busId = prd.vid.toInt(),
+                    routeId = prd.rt,
+                    routeDirection = BusDirection.fromString(prd.rtdir).text,
+                    busDestination = prd.des,
+                    predictionTime = simpleDateFormatBus.parse(prd.prdtm),
+                    isDelay = prd.dly)
+            }
     }
 }
