@@ -236,6 +236,7 @@ object XmlParser {
      * @return a list of bus arrivals
      * @throws ParserException a parser exception
      */
+    @Deprecated(message = "Use the CtaClient.get instead to use JSON instead of XML")
     @Synchronized
     @Throws(ParserException::class)
     fun parseBusArrivals(xml: InputStream): List<BusArrival> {
