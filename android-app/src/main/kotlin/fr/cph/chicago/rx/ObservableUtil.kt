@@ -145,6 +145,10 @@ object ObservableUtil {
 
     fun createBusPatternObservable(busRouteId: String, bound: String): Observable<BusPattern> {
         return createObservableFromCallable(Callable { busService.loadBusPattern(busRouteId, bound) })
+            .onErrorReturn { throwable ->
+                Log.e(TAG, throwable.message, throwable)
+                BusPattern("error", mutableListOf())
+            }
     }
 
     fun createBusListObservable(busId: Int, busRouteId: String): Observable<List<Bus>> {
