@@ -45,7 +45,7 @@ import fr.cph.chicago.core.model.*
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import fr.cph.chicago.data.FavoritesData
+import fr.cph.chicago.core.model.Favorites
 import fr.cph.chicago.util.LayoutUtil
 import fr.cph.chicago.util.Util
 import java.util.Calendar
@@ -61,7 +61,7 @@ import java.util.Date
 class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder>() {
 
     private val util = Util
-    private val favoritesData = FavoritesData
+    private val favoritesData = Favorites
     private val context: Context = activity.applicationContext
     private val layoutUtil = LayoutUtil
     private lateinit var lastUpdate: String

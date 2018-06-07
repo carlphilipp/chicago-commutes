@@ -50,7 +50,7 @@ import fr.cph.chicago.task.RefreshTimingTask
 import fr.cph.chicago.util.Util
 
 /**
- * FavoritesData Fragment
+ * Favorites Fragment
  *
  * @author Carl-Philipp Harmant
  * @version 1

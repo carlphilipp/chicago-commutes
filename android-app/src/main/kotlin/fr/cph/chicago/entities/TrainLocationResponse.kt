@@ -1,21 +1,21 @@
-package fr.cph.chicago.entity
+package fr.cph.chicago.entities
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-class TrainLocationResponse(val ctatt: Ctatt) {
-    class Ctatt(
+data class TrainLocationResponse(val ctatt: Ctatt) {
+    data class Ctatt(
         val tmst: String,
         var errCd: String,
         var errNm: String? = null,
         var route: List<Route>? = null)
 
 
-    class Route(
+    data class Route(
         @JsonProperty("@name")
         val name: String,
         val train: List<Train> = listOf())
 
-    class Train(
+    data class Train(
         var rn: String,
         var destSt: String,
         var destNm: String,

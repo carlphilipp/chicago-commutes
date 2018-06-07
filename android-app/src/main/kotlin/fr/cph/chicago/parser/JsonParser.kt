@@ -22,11 +22,9 @@ package fr.cph.chicago.parser
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import fr.cph.chicago.entity.Divvy
-import fr.cph.chicago.entity.DivvyStation
+import fr.cph.chicago.entities.Divvy
+import fr.cph.chicago.entities.DivvyStation
 import fr.cph.chicago.exception.ParserException
 import fr.cph.chicago.util.Util
 import java.io.InputStream

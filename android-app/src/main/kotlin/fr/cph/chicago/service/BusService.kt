@@ -26,7 +26,7 @@ import fr.cph.chicago.client.CtaRequestType.*
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.*
 import fr.cph.chicago.core.model.enumeration.BusDirection
-import fr.cph.chicago.entity.*
+import fr.cph.chicago.entities.*
 import fr.cph.chicago.parser.BusStopCsvParser
 import fr.cph.chicago.repository.BusRepository
 import fr.cph.chicago.util.Util

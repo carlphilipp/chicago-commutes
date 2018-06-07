@@ -40,7 +40,7 @@ import fr.cph.chicago.core.model.dto.RouteAlertsDTO
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 import fr.cph.chicago.core.model.dto.TrainArrivalDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import fr.cph.chicago.entity.TrainEta
+import fr.cph.chicago.entities.TrainEta
 import fr.cph.chicago.service.AlertService
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService

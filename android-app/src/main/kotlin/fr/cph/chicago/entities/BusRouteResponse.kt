@@ -17,19 +17,19 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.entity
+package fr.cph.chicago.entities
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-class BusRoutesResponse(
+data class BusRoutesResponse(
     @JsonProperty("bustime-response")
     val bustimeResponse: BustimeResponse)
 
-class BustimeResponse(
+data class BustimeResponse(
     @JsonProperty("routes")
     var routes: List<Route>)
 
-class Route(
+data class Route(
     @JsonProperty("rt")
     val routeId: String,
     @JsonProperty("rtnm")
