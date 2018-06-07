@@ -147,8 +147,8 @@ object ObservableUtil {
         return createObservableFromCallable(Callable { busService.loadBusPattern(busRouteId, bound) })
     }
 
-    fun createBusListObservable(busId: Int, busRouteId: String): Observable<List<Bus>> {
-        return createObservableFromCallable(Callable { busService.loadBus(busId, busRouteId) })
+    fun createBusListObservable(busRouteId: String): Observable<List<Bus>> {
+        return createObservableFromCallable(Callable { busService.loadBus(busRouteId) })
             .onErrorReturn { throwable ->
                 Log.e(TAG, throwable.message, throwable)
                 // Do not change that to listOf().

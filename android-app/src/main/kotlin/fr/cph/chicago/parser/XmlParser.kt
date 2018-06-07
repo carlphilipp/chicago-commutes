@@ -20,10 +20,11 @@
 package fr.cph.chicago.parser
 
 import android.util.SparseArray
-import fr.cph.chicago.core.model.*
-import fr.cph.chicago.entity.*
-import fr.cph.chicago.core.model.enumeration.BusDirection
+import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.model.Train
+import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.entity.TrainEta
 import fr.cph.chicago.exception.ParserException
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
@@ -50,7 +51,6 @@ object XmlParser {
     private val trainService: TrainService = TrainService
     private val parser: XmlPullParser = XmlPullParserFactory.newInstance().newPullParser()
     private val simpleDateFormatTrain: SimpleDateFormat = SimpleDateFormat("yyyyMMdd HH:mm:ss", Locale.US)
-    private val simpleDateFormatBus: SimpleDateFormat = SimpleDateFormat("yyyyMMdd HH:mm", Locale.US)
 
     /**
      * Parse arrivals
@@ -137,57 +137,6 @@ object XmlParser {
             Util.closeQuietly(inputStream)
         }
         return result
-    }
-
-    @Synchronized
-    @Throws(ParserException::class)
-    fun parseVehicles(inputStream: InputStream): List<Bus> {
-        val buses = mutableListOf<Bus>()
-        try {
-            parser.setInput(inputStream, "UTF-8")
-            var eventType = parser.eventType
-            var tagName: String? = null
-
-            var busId: Int? = null
-            var latitude: Double? = null
-            var longitude: Double? = null
-            var heading: Int? = null
-            var destination: String? = null
-
-
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-                if (eventType == XmlPullParser.START_TAG) {
-                    tagName = parser.name
-                } else if (eventType == XmlPullParser.END_TAG) {
-                    val vehicle = parser.name
-                    if (StringUtils.isNotBlank(vehicle) && "vehicle" == vehicle) {
-                        val position = Position(latitude!!, longitude!!)
-                        val bus = Bus(busId!!, position, heading!!, destination!!)
-                        buses.add(bus)
-                    }
-                    tagName = null
-                } else if (eventType == XmlPullParser.TEXT) {
-                    val text = parser.text
-                    if (tagName != null) {
-                        when (tagName) {
-                            "vid" -> busId = text.toInt()
-                            "lat" -> latitude = text.toDouble()
-                            "lon" -> longitude = text.toDouble()
-                            "hdg" -> heading = text.toInt()
-                            "des" -> destination = text
-                        }
-                    }
-                }
-                eventType = parser.next()
-            }
-        } catch (e: XmlPullParserException) {
-            throw ParserException(e)
-        } catch (e: IOException) {
-            throw ParserException(e)
-        } finally {
-            Util.closeQuietly(inputStream)
-        }
-        return buses
     }
 
     @Synchronized
