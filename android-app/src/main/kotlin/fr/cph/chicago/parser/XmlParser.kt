@@ -21,7 +21,6 @@ package fr.cph.chicago.parser
 
 import android.util.SparseArray
 import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.entity.TrainEta
@@ -137,57 +136,6 @@ object XmlParser {
             Util.closeQuietly(inputStream)
         }
         return result
-    }
-
-    @Synchronized
-    @Throws(ParserException::class)
-    fun parseTrainsLocation(inputStream: InputStream): List<Train> {
-        val trains = mutableListOf<Train>()
-        try {
-            parser.setInput(inputStream, "UTF-8")
-            var tagName: String? = null
-            var eventType = parser.eventType
-
-            var routeNumber = 0
-            var destName: String? = null
-            var app = false
-            var latitude = 0.0
-            var longitude = 0.0
-            var heading = 0
-
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-                if (eventType == XmlPullParser.START_TAG) {
-                    tagName = parser.name
-                } else if (eventType == XmlPullParser.END_TAG) {
-                    val trainNode = parser.name
-                    if (StringUtils.isNotBlank(trainNode) && "train" == trainNode) {
-                        val train = Train(routeNumber, destName!!, app, Position(latitude, longitude), heading)
-                        trains.add(train)
-                    }
-                    tagName = null
-                } else if (eventType == XmlPullParser.TEXT) {
-                    val text = parser.text
-                    if (tagName != null) {
-                        when (tagName) {
-                            "rn" -> routeNumber = text.toInt()
-                            "destNm" -> destName = text
-                            "lat" -> latitude = text.toDouble()
-                            "lon" -> longitude = text.toDouble()
-                            "heading" -> heading = text.toInt()
-                            "isApp" -> app = text.toBoolean()
-                        }
-                    }
-                }
-                eventType = parser.next()
-            }
-        } catch (e: XmlPullParserException) {
-            throw ParserException(e)
-        } catch (e: IOException) {
-            throw ParserException(e)
-        } finally {
-            Util.closeQuietly(inputStream)
-        }
-        return trains
     }
 
     @Synchronized

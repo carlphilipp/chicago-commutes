@@ -19,15 +19,16 @@
 
 package fr.cph.chicago.service
 
+import android.util.Log
 import android.util.SparseArray
 import fr.cph.chicago.R
 import fr.cph.chicago.client.CtaClient
 import fr.cph.chicago.client.CtaRequestType.*
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.*
-import fr.cph.chicago.core.model.Stop
-import fr.cph.chicago.entity.*
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.entity.TrainArrivalResponse
+import fr.cph.chicago.entity.TrainEta
 import fr.cph.chicago.exception.ConnectException
 import fr.cph.chicago.exception.ParserException
 import fr.cph.chicago.parser.XmlParser
@@ -39,6 +40,7 @@ import java.util.Calendar
 
 object TrainService {
 
+    private val TAG = TrainService::class.java.simpleName
     private val trainRepository = TrainRepository
     private val preferencesService = PreferenceService
     private val ctaClient = CtaClient
@@ -141,16 +143,17 @@ object TrainService {
     }
 
     fun getTrainLocation(line: String): List<Train> {
-        try {
-            val connectParam = ArrayListValuedHashMap<String, String>(1, 1)
-            connectParam.put(App.instance.applicationContext.getString(R.string.request_rt), line)
-            val content = ctaClient.connect(TRAIN_LOCATION, connectParam)
-            return xmlParser.parseTrainsLocation(content)
-        } catch (e: ConnectException) {
-            throw Exceptions.propagate(e)
-        } catch (e: ParserException) {
-            throw Exceptions.propagate(e)
+        val connectParam = ArrayListValuedHashMap<String, String>(1, 1)
+        connectParam.put(App.instance.applicationContext.getString(R.string.request_rt), line)
+        val result = ctaClient.get(TRAIN_LOCATION, connectParam, TrainArrivalResponse::class.java)
+        if (result.ctatt.route == null) {
+            val error = result.ctatt.errNm
+            Log.e(TAG, error)
+            return listOf()
         }
+        return result.ctatt.route!!
+            .flatMap { route -> route.train }
+            .map { route -> Train(route.rn.toInt(), route.destNm, route.isApp.toBoolean(), Position(route.lat.toDouble(), route.lon.toDouble()), route.heading.toInt()) }
     }
 
     fun setStationError(value: Boolean) {

@@ -85,7 +85,7 @@ object CtaClient {
         address = when (requestType) {
             TRAIN_ARRIVALS -> StringBuilder(TRAINS_ARRIVALS_URL + QUERY_PARAM_KEY + ctaTrainKey)
             TRAIN_FOLLOW -> StringBuilder(TRAINS_FOLLOW_URL + QUERY_PARAM_KEY + ctaTrainKey)
-            TRAIN_LOCATION -> StringBuilder(TRAINS_LOCATION_URL + QUERY_PARAM_KEY + ctaTrainKey)
+            TRAIN_LOCATION -> StringBuilder(TRAINS_LOCATION_URL + QUERY_PARAM_KEY + ctaTrainKey + "&outputType=JSON")
             BUS_ROUTES -> StringBuilder(BUSES_ROUTES_URL + QUERY_PARAM_KEY + ctaBusKey + "&format=json")
             BUS_DIRECTION -> StringBuilder(BUSES_DIRECTION_URL + QUERY_PARAM_KEY + ctaBusKey + "&format=json")
             BUS_STOP_LIST -> StringBuilder(BUSES_STOP_URL + QUERY_PARAM_KEY + ctaBusKey + "&format=json")
