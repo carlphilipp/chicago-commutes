@@ -37,7 +37,7 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
-import fr.cph.chicago.entity.TrainEta
+import fr.cph.chicago.entities.TrainEta
 import fr.cph.chicago.core.model.Station
 import fr.cph.chicago.core.model.Stop
 import fr.cph.chicago.core.model.TrainArrival

@@ -113,7 +113,7 @@ class BusMapActivity : AbstractMapActivity() {
     override fun setToolbar() {
         super.setToolbar()
         toolbar.setOnMenuItemClickListener { _ ->
-            observableUtil.createBusListObservable(busId, busRouteId).subscribe(BusObserver(this@BusMapActivity, false, layout))
+            observableUtil.createBusListObservable(busRouteId).subscribe(BusObserver(this@BusMapActivity, false, layout))
             false
         }
 
@@ -252,7 +252,7 @@ class BusMapActivity : AbstractMapActivity() {
 
     private fun loadActivityData() {
         if (Util.isNetworkAvailable()) {
-            observableUtil.createBusListObservable(busId, busRouteId).subscribe(BusObserver(this@BusMapActivity, true, layout))
+            observableUtil.createBusListObservable(busRouteId).subscribe(BusObserver(this@BusMapActivity, true, layout))
             if (loadPattern) {
                 Observable.fromCallable {
                     val patterns: MutableList<BusPattern> = mutableListOf()

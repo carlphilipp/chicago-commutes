@@ -17,14 +17,10 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.data
+package fr.cph.chicago.core.model
 
 import android.os.Parcelable
 import android.util.SparseArray
-import fr.cph.chicago.core.model.BikeStation
-import fr.cph.chicago.core.model.BusArrival
-import fr.cph.chicago.core.model.BusRoute
-import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.core.model.dto.BusArrivalStopMappedDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.service.BusService
@@ -42,7 +38,7 @@ import java.util.TreeMap
  * @version 1
  */
 // TODO to analyze and refactor
-object FavoritesData {
+object Favorites {
 
     private val trainService = TrainService
     private val busService = BusService
@@ -141,22 +137,22 @@ object FavoritesData {
     }
 
     fun updateTrainArrivals(trainArrivals: SparseArray<TrainArrival>) {
-        this.trainArrivals.clear()
+        Favorites.trainArrivals.clear()
         for (i in 0 until trainArrivals.size()) {
             val key = trainArrivals.keyAt(i)
             val obj = trainArrivals.get(key)
-            this.trainArrivals.append(key, obj)
+            Favorites.trainArrivals.append(key, obj)
         }
     }
 
     fun updateBusArrivals(busArrivals: List<BusArrival>) {
-        this.busArrivals.clear()
-        this.busArrivals.addAll(busArrivals)
+        Favorites.busArrivals.clear()
+        Favorites.busArrivals.addAll(busArrivals)
     }
 
     fun updateBikeStations(divvyStations: List<BikeStation>) {
-        this.divvyStations.clear()
-        this.divvyStations.addAll(divvyStations)
+        Favorites.divvyStations.clear()
+        Favorites.divvyStations.addAll(divvyStations)
     }
 
     private fun createEmptyBikeStation(index: Int): BikeStation {

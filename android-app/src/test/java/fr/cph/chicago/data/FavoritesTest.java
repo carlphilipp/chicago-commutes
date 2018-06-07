@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import fr.cph.chicago.core.model.Favorites;
 import fr.cph.chicago.repository.PreferenceRepository;
 
 import static org.hamcrest.Matchers.hasKey;
@@ -17,7 +18,7 @@ import static org.junit.Assert.assertThat;
 
 @Ignore
 @RunWith(MockitoJUnitRunner.class)
-public class FavoritesDataTest {
+public class FavoritesTest {
 
     // FIXME kotlin
 
@@ -29,12 +30,12 @@ public class FavoritesDataTest {
     @Mock
     private Context context;
 
-    private FavoritesData favoritesData;
+    private Favorites favoritesData;
 
 /*    @Before
     public void setUp() {
         // Given
-        favoritesData = FavoritesData.INSTANCE;
+        favoritesData = Favorites.INSTANCE;
         favoritesData.setBusArrivals(createBusArrivals());
         favoritesData.setBusFavorites(createListFavorites());
         favoritesData.setPreferences(preferences);

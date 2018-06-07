@@ -23,10 +23,24 @@ import android.app.Application
 import android.util.Log
 import android.util.SparseArray
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.model.*
-import fr.cph.chicago.core.model.dto.*
+import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.core.model.Bus
+import fr.cph.chicago.core.model.BusArrival
+import fr.cph.chicago.core.model.BusDirections
+import fr.cph.chicago.core.model.BusPattern
+import fr.cph.chicago.core.model.BusStop
+import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.model.Station
+import fr.cph.chicago.core.model.Train
+import fr.cph.chicago.core.model.TrainArrival
+import fr.cph.chicago.core.model.dto.BusArrivalDTO
+import fr.cph.chicago.core.model.dto.FavoritesDTO
+import fr.cph.chicago.core.model.dto.FirstLoadDTO
+import fr.cph.chicago.core.model.dto.RouteAlertsDTO
+import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
+import fr.cph.chicago.core.model.dto.TrainArrivalDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import fr.cph.chicago.entity.TrainEta
+import fr.cph.chicago.entities.TrainEta
 import fr.cph.chicago.service.AlertService
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
@@ -151,8 +165,8 @@ object ObservableUtil {
             }
     }
 
-    fun createBusListObservable(busId: Int, busRouteId: String): Observable<List<Bus>> {
-        return createObservableFromCallable(Callable { busService.loadBus(busId, busRouteId) })
+    fun createBusListObservable(busRouteId: String): Observable<List<Bus>> {
+        return createObservableFromCallable(Callable { busService.loadBus(busRouteId) })
             .onErrorReturn { throwable ->
                 Log.e(TAG, throwable.message, throwable)
                 // Do not change that to listOf().
@@ -213,7 +227,10 @@ object ObservableUtil {
 
     fun createLoadTrainEtaObservable(runNumber: String, loadAll: Boolean): Observable<List<TrainEta>> {
         return createObservableFromCallable(Callable { trainService.loadTrainEta(runNumber, loadAll) })
-            .onErrorReturn { mutableListOf() }
+            .onErrorReturn { throwable ->
+                Log.e(TAG, throwable.message, throwable)
+                mutableListOf()
+            }
     }
 
     fun createAlertRoutesObservable(): Observable<List<RoutesAlertsDTO>> {

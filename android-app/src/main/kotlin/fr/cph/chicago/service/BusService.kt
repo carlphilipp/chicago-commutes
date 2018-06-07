@@ -26,20 +26,16 @@ import fr.cph.chicago.client.CtaRequestType.*
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.*
 import fr.cph.chicago.core.model.enumeration.BusDirection
-import fr.cph.chicago.entity.*
-import fr.cph.chicago.exception.ConnectException
-import fr.cph.chicago.exception.ParserException
+import fr.cph.chicago.entities.*
 import fr.cph.chicago.parser.BusStopCsvParser
-import fr.cph.chicago.parser.XmlParser
 import fr.cph.chicago.repository.BusRepository
 import fr.cph.chicago.util.Util
-import io.reactivex.exceptions.Exceptions
 import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 
 object BusService {
 
@@ -48,7 +44,6 @@ object BusService {
     private val preferenceService = PreferenceService
     private val busRepository = BusRepository
     private val ctaClient = CtaClient
-    private val xmlParser = XmlParser
     private val util = Util
     private val simpleDateFormatBus: SimpleDateFormat = SimpleDateFormat("yyyyMMdd HH:mm", Locale.US)
 
@@ -104,7 +99,7 @@ object BusService {
         }
         result
             .bustimeResponse
-            .directions!!
+            .directions
             .map { direction -> BusDirection.fromString(direction.dir) }
             .forEach { busDirections.addBusDirection(it) }
         return busDirections
@@ -155,15 +150,20 @@ object BusService {
             }
     }
 
-    fun loadBus(busId: Int, busRouteId: String): List<Bus> {
+    fun loadBus(busRouteId: String): List<Bus> {
         val connectParam = ArrayListValuedHashMap<String, String>(1, 1)
-        if (busId != 0) {
-            connectParam.put(App.instance.getString(R.string.request_vid), busId.toString())
-        } else {
-            connectParam.put(App.instance.getString(R.string.request_rt), busRouteId)
+        connectParam.put(App.instance.getString(R.string.request_rt), busRouteId)
+        val result = ctaClient.get(BUS_VEHICLES, connectParam, BusPositionResponse::class.java)
+        if (result.bustimeResponse.vehicle == null) {
+            val error = result.bustimeResponse.error?.joinToString { error -> "${error.rt} ${error.msg}" }
+            Log.e(TAG, error)
+            return listOf()
         }
-        val content = ctaClient.connect(BUS_VEHICLES, connectParam)
-        return xmlParser.parseVehicles(content)
+        return result.bustimeResponse.vehicle!!
+            .map { vehicle ->
+                val position = Position(vehicle.lat.toDouble(), vehicle.lon.toDouble())
+                Bus(vehicle.vid.toInt(), position, vehicle.hdg.toInt(), vehicle.des)
+            }
     }
 
     fun loadAroundBusArrivals(busStop: BusStop): List<BusArrival> {
@@ -208,16 +208,11 @@ object BusService {
             .sortedWith(util.busStopComparatorByName)
     }
 
-    @Throws(ParserException::class, ConnectException::class)
     fun loadBusArrivals(requestRt: String, busRouteId: String, requestStopId: String, busStopId: Int, predicate: (BusArrival) -> (Boolean)): List<BusArrival> {
-        try {
-            val params = ArrayListValuedHashMap<String, String>(2, 1)
-            params.put(requestRt, busRouteId)
-            params.put(requestStopId, busStopId.toString())
-            return getBusArrivals(params).filter(predicate)
-        } catch (throwable: Throwable) {
-            throw Exceptions.propagate(throwable)
-        }
+        val params = ArrayListValuedHashMap<String, String>(2, 1)
+        params.put(requestRt, busRouteId)
+        params.put(requestStopId, busStopId.toString())
+        return getBusArrivals(params).filter(predicate)
     }
 
     private fun getBusArrivals(params: MultiValuedMap<String, String>): List<BusArrival> {
