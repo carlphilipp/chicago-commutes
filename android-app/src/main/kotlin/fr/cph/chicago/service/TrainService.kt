@@ -37,7 +37,6 @@ import fr.cph.chicago.entity.TrainArrivalResponse
 import fr.cph.chicago.entity.TrainEta
 import fr.cph.chicago.entity.TrainLocationResponse
 import fr.cph.chicago.repository.TrainRepository
-import io.reactivex.exceptions.Exceptions
 import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import org.apache.commons.lang3.StringUtils
@@ -56,49 +55,45 @@ object TrainService {
     fun loadFavoritesTrain(): SparseArray<TrainArrival> {
         val trainParams = preferencesService.getFavoritesTrainParams()
         var trainArrivals = SparseArray<TrainArrival>()
-        try {
-            for ((key, value) in trainParams.asMap()) {
-                if ("mapid" == key) {
-                    val list = value as MutableList<String>
-                    if (list.size < 5) {
-                        trainArrivals = getTrainArrivals(trainParams)
-                    } else {
-                        val size = list.size
-                        var start = 0
-                        var end = 4
-                        while (end < size + 1) {
-                            val subList = list.subList(start, end)
-                            val paramsTemp = ArrayListValuedHashMap<String, String>()
-                            for (sub in subList) {
-                                paramsTemp.put(key, sub)
-                            }
-                            val temp = getTrainArrivals(paramsTemp)
-                            for (j in 0..temp.size() - 1) {
-                                trainArrivals.put(temp.keyAt(j), temp.valueAt(j))
-                            }
-                            start = end
-                            if (end + 3 >= size - 1 && end != size) {
-                                end = size
-                            } else {
-                                end += 3
-                            }
+        for ((key, value) in trainParams.asMap()) {
+            if ("mapid" == key) {
+                val list = value as MutableList<String>
+                if (list.size < 5) {
+                    trainArrivals = getTrainArrivals(trainParams)
+                } else {
+                    val size = list.size
+                    var start = 0
+                    var end = 4
+                    while (end < size + 1) {
+                        val subList = list.subList(start, end)
+                        val paramsTemp = ArrayListValuedHashMap<String, String>()
+                        for (sub in subList) {
+                            paramsTemp.put(key, sub)
+                        }
+                        val temp = getTrainArrivals(paramsTemp)
+                        for (j in 0..temp.size() - 1) {
+                            trainArrivals.put(temp.keyAt(j), temp.valueAt(j))
+                        }
+                        start = end
+                        if (end + 3 >= size - 1 && end != size) {
+                            end = size
+                        } else {
+                            end += 3
                         }
                     }
                 }
             }
+        }
 
-            // Apply filters
-            var index = 0
-            while (index < trainArrivals.size()) {
-                val trainArrival = trainArrivals.valueAt(index++)
-                val etas = trainArrival.trainEtas
-                trainArrival.trainEtas = etas
-                    .filter { (station, stop, line) -> preferencesService.getTrainFilter(station.id, line, stop.direction) }
-                    .sorted()
-                    .toMutableList()
-            }
-        } catch (e: Throwable) {
-            throw Exceptions.propagate(e)
+        // Apply filters
+        var index = 0
+        while (index < trainArrivals.size()) {
+            val trainArrival = trainArrivals.valueAt(index++)
+            val etas = trainArrival.trainEtas
+            trainArrival.trainEtas = etas
+                .filter { (station, stop, line) -> preferencesService.getTrainFilter(station.id, line, stop.direction) }
+                .sorted()
+                .toMutableList()
         }
         return trainArrivals
     }
@@ -122,7 +117,12 @@ object TrainService {
 
     private fun getTrainArrivalsInternal(trainArrivalResponse: TrainArrivalResponse): SparseArray<TrainArrival> {
         val result = SparseArray<TrainArrival>()
-        trainArrivalResponse.ctatt.eta!!.map { eta ->
+        if (trainArrivalResponse.ctatt.eta == null) {
+            val error = trainArrivalResponse.ctatt.errNm
+            Log.e(TAG, error)
+            return result
+        }
+        trainArrivalResponse.ctatt.eta.map { eta ->
             val station = getStation(eta.staId.toInt())
             station.name = eta.staNm
             val stop = getStop(eta.stpId.toInt())
