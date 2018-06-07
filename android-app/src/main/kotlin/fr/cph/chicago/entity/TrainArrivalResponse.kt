@@ -1,35 +1,30 @@
 package fr.cph.chicago.entity
 
-import com.fasterxml.jackson.annotation.JsonProperty
+data class TrainArrivalResponse(val ctatt: Ctatt2)
 
-class TrainArrivalResponse(val ctatt: Ctatt)
-
-class Ctatt(
+data class Ctatt2(
     val tmst: String,
-    var errCd: String,
-    var errNm: String? = null,
-    var route: List<Route2>? = null)
+    val errCd: String,
+    val errNm: String? = null,
+    val eta: List<Eta>? = null)
 
-
-class Route2(
-    @JsonProperty("@name")
-    val name: String,
-    val train: List<Train> = listOf())
-
-class Train(
-    var rn: String,
-    var destSt: String,
-    var destNm: String,
-    var trDr: String,
-    var nextStaId: String,
-    var nextStpId: String,
-    var nextStaNm: String,
-    var prdt: String,
-    var arrT: String,
-    var isApp: String,
-    var isDly: String,
-    var lat: String,
-    var lon: String,
-    var heading: String)
-
-
+data class Eta(
+    val staId: String,
+    val stpId: String,
+    val staNm: String,
+    val stpDe: String,
+    val rn: String,
+    val rt: String,
+    val destSt: String,
+    val destNm: String,
+    val trDr: String,
+    val prdt: String,
+    val arrT: String,
+    val isApp: String,
+    val isSch: String,
+    val isDly: String,
+    val isFlt: String,
+    val lat: String? = null,
+    val lon: String? = null,
+    val heading: String? = null
+)

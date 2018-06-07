@@ -25,16 +25,7 @@ package fr.cph.chicago.exception
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class ParserException : TrackerException {
-
-    /**
-     * The constructor
-     *
-     * @param e       the exception
-     */
-    constructor(e: Exception) : super(TrackerException.ERROR, e)
-
-    constructor(text: String) : super(text)
+class ParserException(e: Exception) : TrackerException("Error while parsing", e) {
 
     companion object {
 

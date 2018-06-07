@@ -21,8 +21,8 @@ package fr.cph.chicago.core.model
 
 import android.os.Parcel
 import android.os.Parcelable
-import fr.cph.chicago.entity.TrainEta
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.entity.TrainEta
 import java.io.Serializable
 
 /**
@@ -34,6 +34,11 @@ import java.io.Serializable
 data class TrainArrival(var trainEtas: MutableList<TrainEta> = mutableListOf()) : Parcelable, Serializable {
 
     private constructor(source: Parcel) : this(trainEtas = source.createTypedArray(TrainEta.CREATOR).toMutableList())
+
+    fun addEta(eta: TrainEta): TrainArrival {
+        trainEtas.add(eta)
+        return this
+    }
 
     fun getEtas(line: TrainLine): MutableList<TrainEta> {
         return this.trainEtas.filter { eta -> eta.routeName == line }.toMutableList()

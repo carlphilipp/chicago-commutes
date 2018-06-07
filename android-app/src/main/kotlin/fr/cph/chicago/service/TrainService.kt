@@ -23,20 +23,27 @@ import android.util.Log
 import android.util.SparseArray
 import fr.cph.chicago.R
 import fr.cph.chicago.client.CtaClient
-import fr.cph.chicago.client.CtaRequestType.*
+import fr.cph.chicago.client.CtaRequestType.TRAIN_ARRIVALS
+import fr.cph.chicago.client.CtaRequestType.TRAIN_FOLLOW
+import fr.cph.chicago.client.CtaRequestType.TRAIN_LOCATION
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.model.*
+import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.model.Station
+import fr.cph.chicago.core.model.Stop
+import fr.cph.chicago.core.model.Train
+import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.entity.TrainArrivalResponse
 import fr.cph.chicago.entity.TrainEta
-import fr.cph.chicago.exception.ConnectException
-import fr.cph.chicago.exception.ParserException
-import fr.cph.chicago.parser.XmlParser
+import fr.cph.chicago.entity.TrainLocationResponse
 import fr.cph.chicago.repository.TrainRepository
 import io.reactivex.exceptions.Exceptions
+import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import org.apache.commons.lang3.StringUtils
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 
 object TrainService {
 
@@ -44,7 +51,7 @@ object TrainService {
     private val trainRepository = TrainRepository
     private val preferencesService = PreferenceService
     private val ctaClient = CtaClient
-    private val xmlParser = XmlParser
+    private val simpleDateFormatTrain: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US)
 
     fun loadFavoritesTrain(): SparseArray<TrainArrival> {
         val trainParams = preferencesService.getFavoritesTrainParams()
@@ -54,8 +61,7 @@ object TrainService {
                 if ("mapid" == key) {
                     val list = value as MutableList<String>
                     if (list.size < 5) {
-                        val xmlResult = ctaClient.connect(TRAIN_ARRIVALS, trainParams)
-                        trainArrivals = xmlParser.parseTrainArrivals(xmlResult)
+                        trainArrivals = getTrainArrivals(trainParams)
                     } else {
                         val size = list.size
                         var start = 0
@@ -66,8 +72,7 @@ object TrainService {
                             for (sub in subList) {
                                 paramsTemp.put(key, sub)
                             }
-                            val xmlResult = ctaClient.connect(TRAIN_ARRIVALS, paramsTemp)
-                            val temp = xmlParser.parseTrainArrivals(xmlResult)
+                            val temp = getTrainArrivals(paramsTemp)
                             for (j in 0..temp.size() - 1) {
                                 trainArrivals.put(temp.keyAt(j), temp.valueAt(j))
                             }
@@ -104,48 +109,86 @@ object TrainService {
     }
 
     fun loadStationTrainArrival(stationId: Int): TrainArrival {
-        try {
-            val params = ArrayListValuedHashMap<String, String>(1, 1)
-            params.put(App.instance.applicationContext.getString(R.string.request_map_id), Integer.toString(stationId))
+        val params = ArrayListValuedHashMap<String, String>(1, 1)
+        params.put(App.instance.applicationContext.getString(R.string.request_map_id), stationId.toString())
+        val map = getTrainArrivals(params)
+        return map.get(stationId, TrainArrival.buildEmptyTrainArrival())
+    }
 
-            val xmlResult = ctaClient.connect(TRAIN_ARRIVALS, params)
-            val arrivals = xmlParser.parseTrainArrivals(xmlResult)
-            return if (arrivals.size() == 1)
-                arrivals.get(stationId)
-            else
-                TrainArrival.buildEmptyTrainArrival()
-        } catch (e: Throwable) {
-            throw Exceptions.propagate(e)
+    private fun getTrainArrivals(params: MultiValuedMap<String, String>): SparseArray<TrainArrival> {
+        val trainArrivalResponse = ctaClient.get(TRAIN_ARRIVALS, params, TrainArrivalResponse::class.java)
+        return getTrainArrivalsInternal(trainArrivalResponse)
+    }
+
+    private fun getTrainArrivalsInternal(trainArrivalResponse: TrainArrivalResponse): SparseArray<TrainArrival> {
+        val result = SparseArray<TrainArrival>()
+        trainArrivalResponse.ctatt.eta!!.map { eta ->
+            val station = getStation(eta.staId.toInt())
+            station.name = eta.staNm
+            val stop = getStop(eta.stpId.toInt())
+            stop.description = eta.stpDe
+            val routeName = TrainLine.fromXmlString(eta.rt)
+            val destinationName =
+                if ("See train".equals(eta.destNm, ignoreCase = true) && stop.description.contains("Loop") && routeName == TrainLine.GREEN ||
+                    "See train".equals(eta.destNm, ignoreCase = true) && stop.description.contains("Loop") && routeName == TrainLine.BROWN ||
+                    "Loop, Midway".equals(eta.destNm, ignoreCase = true) && routeName == TrainLine.BROWN)
+                    "Loop"
+                else
+                    eta.destNm
+
+            val trainEta = TrainEta(station = station,
+                stop = stop,
+                routeName = routeName,
+                destName = destinationName,
+                predictionDate = simpleDateFormatTrain.parse(eta.prdt),
+                arrivalDepartureDate = simpleDateFormatTrain.parse(eta.arrT),
+                isApp = eta.isApp.toBoolean(),
+                isDly = eta.isDly.toBoolean(),
+                position = Position(0.0, 0.0)) // FIXME: this is not needed
+            trainEta
         }
+            .forEach {
+                if (result.indexOfKey(it.station.id) < 0) {
+                    result.append(it.station.id, TrainArrival.buildEmptyTrainArrival().addEta(it))
+                } else {
+                    result.get(it.station.id).addEta(it)
+                }
+            }
+        return result
     }
 
     fun loadTrainEta(runNumber: String, loadAll: Boolean): List<TrainEta> {
-        try {
-            val connectParam = ArrayListValuedHashMap<String, String>(1, 1)
-            connectParam.put(App.instance.applicationContext.getString(R.string.request_runnumber), runNumber)
-            val content = ctaClient.connect(TRAIN_FOLLOW, connectParam)
-            var etas = xmlParser.parseTrainsFollow(content)
+        val params = ArrayListValuedHashMap<String, String>(1, 1)
+        params.put(App.instance.applicationContext.getString(R.string.request_runnumber), runNumber)
 
-            if (!loadAll && etas.size > 7) {
-                etas = etas.subList(0, 6)
-                val currentDate = Calendar.getInstance().time
-                val fakeStation = Station(0, App.instance.getString(R.string.bus_all_results), ArrayList())
-                // Add a fake TrainEta cell to alert the user about the fact that only a part of the result is displayed
-                val eta = TrainEta.buildFakeEtaWith(fakeStation, currentDate, currentDate, false, false)
-                etas.add(eta)
+        val content = ctaClient.get(TRAIN_FOLLOW, params, TrainArrivalResponse::class.java)
+        val arrivals = getTrainArrivalsInternal(content)
+
+        var trainEta = mutableListOf<TrainEta>()
+        var index = 0
+        while (index < arrivals.size()) {
+            val (etas) = arrivals.valueAt(index++)
+            if (etas.size != 0) {
+                trainEta.add(etas[0])
             }
-            return etas
-        } catch (e: ConnectException) {
-            throw Exceptions.propagate(e)
-        } catch (e: ParserException) {
-            throw Exceptions.propagate(e)
         }
+        trainEta.sort()
+
+        if (!loadAll && trainEta.size > 7) {
+            trainEta = trainEta.subList(0, 6)
+            val currentDate = Calendar.getInstance().time
+            val fakeStation = Station(0, App.instance.getString(R.string.bus_all_results), ArrayList())
+            // Add a fake TrainEta cell to alert the user about the fact that only a part of the result is displayed
+            val eta = TrainEta.buildFakeEtaWith(fakeStation, currentDate, currentDate, false, false)
+            trainEta.add(eta)
+        }
+        return trainEta
     }
 
     fun getTrainLocation(line: String): List<Train> {
         val connectParam = ArrayListValuedHashMap<String, String>(1, 1)
         connectParam.put(App.instance.applicationContext.getString(R.string.request_rt), line)
-        val result = ctaClient.get(TRAIN_LOCATION, connectParam, TrainArrivalResponse::class.java)
+        val result = ctaClient.get(TRAIN_LOCATION, connectParam, TrainLocationResponse::class.java)
         if (result.ctatt.route == null) {
             val error = result.ctatt.errNm
             Log.e(TAG, error)
