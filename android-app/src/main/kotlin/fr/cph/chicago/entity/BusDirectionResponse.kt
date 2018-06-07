@@ -4,10 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 class BusDirectionResponse(
     @JsonProperty("bustime-response")
-    val bustimeResponse: BustimeResponse4)
+    val bustimeResponse: BustimeResponse) {
 
-class BustimeResponse4(val directions: List<Direction>? = null, val error: List<Error3>? = null)
+    class BustimeResponse(val directions: List<Direction>? = null, val error: List<Error>? = null)
 
-class Direction(val dir: String)
+    class Direction(val dir: String)
 
-class Error3(val rt: String, val msg: String)
+    class Error(val rt: String, val msg: String)
+}
