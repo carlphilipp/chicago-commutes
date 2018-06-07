@@ -19,4 +19,4 @@
 
 package fr.cph.chicago.core.model
 
-class PatternPoint(val position: Position, val type: String, val stopName: String)
+data class PatternPoint(val position: Position, val type: String, val stopName: String)

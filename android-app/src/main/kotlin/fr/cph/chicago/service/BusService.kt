@@ -26,13 +26,10 @@ import fr.cph.chicago.client.CtaRequestType.*
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.*
 import fr.cph.chicago.core.model.enumeration.BusDirection
-import fr.cph.chicago.entity.BusArrivalResponse
-import fr.cph.chicago.entity.BusRoutesResponse
-import fr.cph.chicago.entity.BusStopsResponse
+import fr.cph.chicago.entity.*
 import fr.cph.chicago.exception.ConnectException
 import fr.cph.chicago.exception.ParserException
 import fr.cph.chicago.parser.BusStopCsvParser
-import fr.cph.chicago.parser.JsonParser
 import fr.cph.chicago.parser.XmlParser
 import fr.cph.chicago.repository.BusRepository
 import fr.cph.chicago.util.Util
@@ -42,7 +39,7 @@ import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 import java.text.SimpleDateFormat
-import java.util.Locale
+import java.util.*
 
 object BusService {
 
@@ -82,12 +79,14 @@ object BusService {
                 Log.e(TAG, error)
                 return listOf()
             }
-            return result.bustimeResponse.stops!!.map { stop -> BusStop(
-                id = stop.stpid.toInt(),
-                name = stop.stpnm,
-                description = stop.stpnm,
-                position = Position(stop.lat, stop.lon)
-            ) }
+            return result.bustimeResponse.stops!!.map { stop ->
+                BusStop(
+                    id = stop.stpid.toInt(),
+                    name = stop.stpnm,
+                    description = stop.stpnm,
+                    position = Position(stop.lat, stop.lon)
+                )
+            }
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }
@@ -103,10 +102,21 @@ object BusService {
 
     fun loadBusDirections(busRouteId: String): BusDirections {
         try {
-            val reqParams = ArrayListValuedHashMap<String, String>(1, 1)
-            reqParams.put(App.instance.getString(R.string.request_rt), busRouteId)
-            val xmlResult = ctaClient.connect(BUS_DIRECTION, reqParams)
-            return xmlParser.parseBusDirections(xmlResult, busRouteId)
+            val params = ArrayListValuedHashMap<String, String>(1, 1)
+            params.put(App.instance.getString(R.string.request_rt), busRouteId)
+            val busDirections = BusDirections(busRouteId)
+            val result = ctaClient.get(BUS_DIRECTION, params, BusDirectionResponse::class.java)
+            if (result.bustimeResponse.directions == null) {
+                val error = result.bustimeResponse.error?.joinToString { error -> "${error.rt} ${error.msg}" }
+                Log.e(TAG, error)
+                return busDirections
+            }
+            result
+                .bustimeResponse
+                .directions!!
+                .map { direction -> BusDirection.fromString(direction.dir) }
+                .forEach { busDirections.addBusDirection(it) }
+            return busDirections
         } catch (throwable: Throwable) {
             throw Exceptions.propagate(throwable)
         }
@@ -114,8 +124,7 @@ object BusService {
 
     fun loadBusRoutes(): List<BusRoute> {
         try {
-            val inputStream = ctaClient.connect(BUS_ROUTES, ArrayListValuedHashMap<String, String>())
-            return JsonParser.parse(inputStream, BusRoutesResponse::class.java)
+            return ctaClient.get(BUS_ROUTES, ArrayListValuedHashMap<String, String>(), BusRoutesResponse::class.java)
                 .bustimeResponse
                 .routes
                 .map { route -> BusRoute(route.routeId, route.routeName) }
@@ -139,13 +148,28 @@ object BusService {
     }
 
     fun loadBusPattern(busRouteId: String, bounds: Array<String>): List<BusPattern> {
-        val connectParam = ArrayListValuedHashMap<String, String>(1, 1)
-        connectParam.put(App.instance.getString(R.string.request_rt), busRouteId)
-        val boundIgnoreCase = bounds.map { bound -> bound.toLowerCase(Locale.US) }
         try {
-            val content = ctaClient.connect(BUS_PATTERN, connectParam)
-            val patterns = xmlParser.parsePatterns(content)
-            return patterns
+            val connectParam = ArrayListValuedHashMap<String, String>(1, 1)
+            connectParam.put(App.instance.getString(R.string.request_rt), busRouteId)
+            val boundIgnoreCase = bounds.map { bound -> bound.toLowerCase(Locale.US) }
+            val result = ctaClient.get(BUS_PATTERN, connectParam, BusPatternResponse::class.java)
+            if (result.bustimeResponse.ptr == null) {
+                val error = result.bustimeResponse.error?.joinToString { error -> "${error.rt} ${error.msg}" }
+                Log.e(TAG, error)
+                return listOf()
+            }
+            return result
+                .bustimeResponse
+                .ptr!!
+                .map { ptr ->
+                    BusPattern(
+                        direction = ptr.rtdir,
+                        points = ptr.pt.map { pt ->
+                            val stopName = pt.stpnm ?: ""
+                            PatternPoint(Position(pt.lat, pt.lon), pt.typ, stopName)
+                        }.toMutableList()
+                    )
+                }
                 .filter { pattern ->
                     val directionIgnoreCase = pattern.direction.toLowerCase(Locale.US)
                     boundIgnoreCase.contains(directionIgnoreCase)
