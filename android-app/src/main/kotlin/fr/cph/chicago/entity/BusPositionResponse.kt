@@ -1,7 +1,6 @@
-package fr.cph.chicago.entities
+package fr.cph.chicago.entity
 
 import com.fasterxml.jackson.annotation.JsonProperty
-
 
 data class BusPositionResponse(@JsonProperty("bustime-response") var bustimeResponse: BustimeResponse) {
     data class BustimeResponse(val vehicle: List<Vehicle>? = null, val error: List<Error>? = null)

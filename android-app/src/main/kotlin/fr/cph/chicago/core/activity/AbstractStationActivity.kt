@@ -23,7 +23,6 @@ import android.app.Activity
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import android.widget.TextView
-
 import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
 import fr.cph.chicago.core.model.Position

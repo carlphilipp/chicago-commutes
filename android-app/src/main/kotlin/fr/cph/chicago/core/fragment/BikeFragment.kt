@@ -35,7 +35,6 @@ import fr.cph.chicago.core.adapter.BikeAdapter
 import fr.cph.chicago.core.model.BikeStation
 import org.apache.commons.lang3.StringUtils
 
-
 /**
  * Bike Fragment
  *

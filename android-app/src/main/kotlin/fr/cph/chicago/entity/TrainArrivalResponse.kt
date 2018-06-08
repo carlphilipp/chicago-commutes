@@ -1,4 +1,4 @@
-package fr.cph.chicago.entities
+package fr.cph.chicago.entity
 
 data class TrainArrivalResponse(val ctatt: Ctatt) {
     data class Ctatt(

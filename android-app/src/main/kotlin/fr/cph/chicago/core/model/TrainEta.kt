@@ -17,13 +17,10 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.entities
+package fr.cph.chicago.core.model
 
 import android.os.Parcel
 import android.os.Parcelable
-import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.core.model.Station
-import fr.cph.chicago.core.model.Stop
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import org.apache.commons.lang3.StringUtils
 import java.io.Serializable

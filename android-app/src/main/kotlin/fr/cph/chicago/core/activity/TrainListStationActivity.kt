@@ -23,7 +23,6 @@ import android.app.ListActivity
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.support.v7.widget.Toolbar
-
 import butterknife.BindDrawable
 import butterknife.BindString
 import butterknife.BindView

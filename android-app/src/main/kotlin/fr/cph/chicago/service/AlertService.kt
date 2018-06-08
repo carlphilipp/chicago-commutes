@@ -25,8 +25,8 @@ import fr.cph.chicago.client.CtaRequestType
 import fr.cph.chicago.core.model.dto.AlertType
 import fr.cph.chicago.core.model.dto.RouteAlertsDTO
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
-import fr.cph.chicago.entities.AlertsRoute
-import fr.cph.chicago.entities.AlertsRoutes
+import fr.cph.chicago.entity.AlertsRoute
+import fr.cph.chicago.entity.AlertsRoutes
 import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import java.text.ParseException

@@ -25,7 +25,7 @@ import android.widget.TextView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.TrainMapActivity
 import fr.cph.chicago.core.adapter.TrainMapSnippetAdapter
-import fr.cph.chicago.entities.TrainEta
+import fr.cph.chicago.core.model.TrainEta
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 

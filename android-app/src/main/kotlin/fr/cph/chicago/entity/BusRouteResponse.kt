@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.entities
+package fr.cph.chicago.entity
 
 import com.fasterxml.jackson.annotation.JsonProperty
 

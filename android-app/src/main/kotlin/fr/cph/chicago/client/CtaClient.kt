@@ -30,7 +30,17 @@ import fr.cph.chicago.Constants.Companion.BUSES_VEHICLES_URL
 import fr.cph.chicago.Constants.Companion.TRAINS_ARRIVALS_URL
 import fr.cph.chicago.Constants.Companion.TRAINS_FOLLOW_URL
 import fr.cph.chicago.Constants.Companion.TRAINS_LOCATION_URL
-import fr.cph.chicago.client.CtaRequestType.*
+import fr.cph.chicago.client.CtaRequestType.ALERTS_ROUTE
+import fr.cph.chicago.client.CtaRequestType.ALERTS_ROUTES
+import fr.cph.chicago.client.CtaRequestType.BUS_ARRIVALS
+import fr.cph.chicago.client.CtaRequestType.BUS_DIRECTION
+import fr.cph.chicago.client.CtaRequestType.BUS_PATTERN
+import fr.cph.chicago.client.CtaRequestType.BUS_ROUTES
+import fr.cph.chicago.client.CtaRequestType.BUS_STOP_LIST
+import fr.cph.chicago.client.CtaRequestType.BUS_VEHICLES
+import fr.cph.chicago.client.CtaRequestType.TRAIN_ARRIVALS
+import fr.cph.chicago.client.CtaRequestType.TRAIN_FOLLOW
+import fr.cph.chicago.client.CtaRequestType.TRAIN_LOCATION
 import fr.cph.chicago.core.App
 import fr.cph.chicago.exception.ConnectException
 import fr.cph.chicago.parser.JsonParser
@@ -84,7 +94,7 @@ object CtaClient {
         val address: StringBuilder
         address = when (requestType) {
             TRAIN_ARRIVALS -> StringBuilder(TRAINS_ARRIVALS_URL + QUERY_PARAM_KEY + ctaTrainKey + "&outputType=JSON")
-            TRAIN_FOLLOW -> StringBuilder(TRAINS_FOLLOW_URL + QUERY_PARAM_KEY + ctaTrainKey +  "&outputType=JSON")
+            TRAIN_FOLLOW -> StringBuilder(TRAINS_FOLLOW_URL + QUERY_PARAM_KEY + ctaTrainKey + "&outputType=JSON")
             TRAIN_LOCATION -> StringBuilder(TRAINS_LOCATION_URL + QUERY_PARAM_KEY + ctaTrainKey + "&outputType=JSON")
             BUS_ROUTES -> StringBuilder(BUSES_ROUTES_URL + QUERY_PARAM_KEY + ctaBusKey + "&format=json")
             BUS_DIRECTION -> StringBuilder(BUSES_DIRECTION_URL + QUERY_PARAM_KEY + ctaBusKey + "&format=json")

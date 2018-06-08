@@ -24,7 +24,7 @@ import android.os.Parcelable
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import org.apache.commons.lang3.StringUtils
 import java.util.TreeMap
-import java.util.*
+import java.util.TreeSet
 
 /**
  * Station entity

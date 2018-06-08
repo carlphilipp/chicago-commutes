@@ -32,10 +32,10 @@ import fr.cph.chicago.core.model.Station
 import fr.cph.chicago.core.model.Stop
 import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.TrainArrival
+import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import fr.cph.chicago.entities.TrainArrivalResponse
-import fr.cph.chicago.entities.TrainEta
-import fr.cph.chicago.entities.TrainLocationResponse
+import fr.cph.chicago.entity.TrainArrivalResponse
+import fr.cph.chicago.entity.TrainLocationResponse
 import fr.cph.chicago.repository.TrainRepository
 import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap

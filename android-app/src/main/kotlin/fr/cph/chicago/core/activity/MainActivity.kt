@@ -38,7 +38,14 @@ import butterknife.BindString
 import butterknife.BindView
 import butterknife.ButterKnife
 import fr.cph.chicago.R
-import fr.cph.chicago.core.fragment.*
+import fr.cph.chicago.core.fragment.AlertFragment
+import fr.cph.chicago.core.fragment.BikeFragment
+import fr.cph.chicago.core.fragment.BusFragment
+import fr.cph.chicago.core.fragment.CtaMapFragment
+import fr.cph.chicago.core.fragment.FavoritesFragment
+import fr.cph.chicago.core.fragment.NearbyFragment
+import fr.cph.chicago.core.fragment.SettingsFragment
+import fr.cph.chicago.core.fragment.TrainFragment
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.service.BusService

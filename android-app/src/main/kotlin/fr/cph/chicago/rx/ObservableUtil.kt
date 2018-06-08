@@ -33,6 +33,7 @@ import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Station
 import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.TrainArrival
+import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.dto.BusArrivalDTO
 import fr.cph.chicago.core.model.dto.FavoritesDTO
 import fr.cph.chicago.core.model.dto.FirstLoadDTO
@@ -40,7 +41,6 @@ import fr.cph.chicago.core.model.dto.RouteAlertsDTO
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
 import fr.cph.chicago.core.model.dto.TrainArrivalDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import fr.cph.chicago.entities.TrainEta
 import fr.cph.chicago.service.AlertService
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
