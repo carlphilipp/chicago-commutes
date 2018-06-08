@@ -42,8 +42,7 @@ data class TrainEta(
     private val predictionDate: Date,
     private val arrivalDepartureDate: Date,
     private val isApp: Boolean,
-    private var isDly: Boolean,
-    val position: Position) : Comparable<TrainEta>, Parcelable, Serializable {
+    private var isDly: Boolean) : Comparable<TrainEta>, Parcelable, Serializable {
 
     constructor(source: Parcel) : this(
         station = source.readParcelable<Station>(Station::class.java.classLoader),
@@ -53,8 +52,7 @@ data class TrainEta(
         predictionDate = Date(source.readLong()),
         arrivalDepartureDate = Date(source.readLong()),
         isApp = source.readString().toBoolean(),
-        isDly = source.readString().toBoolean(),
-        position = source.readParcelable<Position>(Position::class.java.classLoader)
+        isDly = source.readString().toBoolean()
     )
 
     private val timeLeft: String
@@ -91,7 +89,6 @@ data class TrainEta(
         dest.writeLong(arrivalDepartureDate.time)
         dest.writeString(isApp.toString())
         dest.writeString(isDly.toString())
-        dest.writeParcelable(position, flags)
     }
 
     companion object {
@@ -99,7 +96,7 @@ data class TrainEta(
         private const val serialVersionUID = 0L
 
         fun buildFakeEtaWith(station: Station, arrivalDepartureDate: Date, predictionDate: Date, app: Boolean, delay: Boolean): TrainEta {
-            return TrainEta(station, Stop.buildEmptyStop(), TrainLine.NA, StringUtils.EMPTY, predictionDate, arrivalDepartureDate, app, delay, Position())
+            return TrainEta(station, Stop.buildEmptyStop(), TrainLine.NA, StringUtils.EMPTY, predictionDate, arrivalDepartureDate, app, delay)
         }
 
         @JvmField

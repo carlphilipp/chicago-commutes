@@ -59,7 +59,6 @@ object CtaClient {
 
     private val jsonParser = JsonParser
 
-    // TODO: Create a method with no params
     fun <T> get(requestType: CtaRequestType, params: MultiValuedMap<String, String>, clazz: Class<T>): T {
         val address = when (requestType) {
             TRAIN_ARRIVALS -> TRAINS_ARRIVALS_URL + QUERY_PARAM_KEY + App.ctaTrainKey + "&outputType=JSON"

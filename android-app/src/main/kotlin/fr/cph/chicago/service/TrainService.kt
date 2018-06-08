@@ -110,53 +110,6 @@ object TrainService {
         return map.get(stationId, TrainArrival.buildEmptyTrainArrival())
     }
 
-    private fun getTrainArrivals(params: MultiValuedMap<String, String>): SparseArray<TrainArrival> {
-        val trainArrivalResponse = ctaClient.get(TRAIN_ARRIVALS, params, TrainArrivalResponse::class.java)
-        return getTrainArrivalsInternal(trainArrivalResponse)
-    }
-
-    private fun getTrainArrivalsInternal(trainArrivalResponse: TrainArrivalResponse): SparseArray<TrainArrival> {
-        val result = SparseArray<TrainArrival>()
-        if (trainArrivalResponse.ctatt.eta == null) {
-            val error = trainArrivalResponse.ctatt.errNm
-            Log.e(TAG, error)
-            return result
-        }
-        trainArrivalResponse.ctatt.eta.map { eta ->
-            val station = getStation(eta.staId.toInt())
-            station.name = eta.staNm
-            val stop = getStop(eta.stpId.toInt())
-            stop.description = eta.stpDe
-            val routeName = TrainLine.fromXmlString(eta.rt)
-            val destinationName =
-                if ("See train".equals(eta.destNm, ignoreCase = true) && stop.description.contains("Loop") && routeName == TrainLine.GREEN ||
-                    "See train".equals(eta.destNm, ignoreCase = true) && stop.description.contains("Loop") && routeName == TrainLine.BROWN ||
-                    "Loop, Midway".equals(eta.destNm, ignoreCase = true) && routeName == TrainLine.BROWN)
-                    "Loop"
-                else
-                    eta.destNm
-
-            val trainEta = TrainEta(station = station,
-                stop = stop,
-                routeName = routeName,
-                destName = destinationName,
-                predictionDate = simpleDateFormatTrain.parse(eta.prdt),
-                arrivalDepartureDate = simpleDateFormatTrain.parse(eta.arrT),
-                isApp = eta.isApp.toBoolean(),
-                isDly = eta.isDly.toBoolean(),
-                position = Position(0.0, 0.0)) // FIXME: this is not needed
-            trainEta
-        }
-            .forEach {
-                if (result.indexOfKey(it.station.id) < 0) {
-                    result.append(it.station.id, TrainArrival.buildEmptyTrainArrival().addEta(it))
-                } else {
-                    result.get(it.station.id).addEta(it)
-                }
-            }
-        return result
-    }
-
     fun loadTrainEta(runNumber: String, loadAll: Boolean): List<TrainEta> {
         val params = ArrayListValuedHashMap<String, String>(1, 1)
         params.put(App.instance.applicationContext.getString(R.string.request_runnumber), runNumber)
@@ -215,10 +168,6 @@ object TrainService {
         return trainRepository.readPattern(line)
     }
 
-    fun getStop(id: Int): Stop {
-        return trainRepository.getStop(id)
-    }
-
     fun readNearbyStation(position: Position): List<Station> {
         return trainRepository.readNearbyStation(position)
     }
@@ -233,6 +182,56 @@ object TrainService {
             .filter { station -> StringUtils.containsIgnoreCase(station.name, query) }
             .distinct()
             .sorted()
+    }
+
+    private fun getTrainArrivals(params: MultiValuedMap<String, String>): SparseArray<TrainArrival> {
+        val trainArrivalResponse = ctaClient.get(TRAIN_ARRIVALS, params, TrainArrivalResponse::class.java)
+        return getTrainArrivalsInternal(trainArrivalResponse)
+    }
+
+    private fun getTrainArrivalsInternal(trainArrivalResponse: TrainArrivalResponse): SparseArray<TrainArrival> {
+        val result = SparseArray<TrainArrival>()
+        if (trainArrivalResponse.ctatt.eta == null) {
+            val error = trainArrivalResponse.ctatt.errNm
+            Log.e(TAG, error)
+            return result
+        }
+        trainArrivalResponse.ctatt.eta.map { eta ->
+            val station = getStation(eta.staId.toInt())
+            station.name = eta.staNm
+            val stop = getStop(eta.stpId.toInt())
+            stop.description = eta.stpDe
+            val routeName = TrainLine.fromXmlString(eta.rt)
+            val destinationName =
+                if ("See train".equals(eta.destNm, ignoreCase = true) && stop.description.contains("Loop") && routeName == TrainLine.GREEN ||
+                    "See train".equals(eta.destNm, ignoreCase = true) && stop.description.contains("Loop") && routeName == TrainLine.BROWN ||
+                    "Loop, Midway".equals(eta.destNm, ignoreCase = true) && routeName == TrainLine.BROWN)
+                    "Loop"
+                else
+                    eta.destNm
+
+            val trainEta = TrainEta(station = station,
+                stop = stop,
+                routeName = routeName,
+                destName = destinationName,
+                predictionDate = simpleDateFormatTrain.parse(eta.prdt),
+                arrivalDepartureDate = simpleDateFormatTrain.parse(eta.arrT),
+                isApp = eta.isApp.toBoolean(),
+                isDly = eta.isDly.toBoolean())
+            trainEta
+        }
+            .forEach {
+                if (result.indexOfKey(it.station.id) < 0) {
+                    result.append(it.station.id, TrainArrival.buildEmptyTrainArrival().addEta(it))
+                } else {
+                    result.get(it.station.id).addEta(it)
+                }
+            }
+        return result
+    }
+
+    private fun getStop(id: Int): Stop {
+        return trainRepository.getStop(id)
     }
 
     private fun getAllStations(): MutableMap<TrainLine, MutableList<Station>> {

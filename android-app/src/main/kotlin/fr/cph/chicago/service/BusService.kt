@@ -176,7 +176,7 @@ object BusService {
     fun loadAroundBusArrivals(busStop: BusStop): List<BusArrival> {
         val busStopId = busStop.id
         val params = ArrayListValuedHashMap<String, String>(1, 1)
-        params.put(App.instance.getString(R.string.request_stop_id), Integer.toString(busStopId))
+        params.put(App.instance.getString(R.string.request_stop_id), busStopId.toString())
         return getBusArrivals(params)
     }
 
