@@ -146,13 +146,13 @@ object Favorites {
     }
 
     fun updateBusArrivals(busArrivals: List<BusArrival>) {
-        Favorites.busArrivals.clear()
-        Favorites.busArrivals.addAll(busArrivals)
+        this.busArrivals.clear()
+        this.busArrivals.addAll(busArrivals)
     }
 
     fun updateBikeStations(divvyStations: List<BikeStation>) {
-        Favorites.divvyStations.clear()
-        Favorites.divvyStations.addAll(divvyStations)
+        this.divvyStations.clear()
+        this.divvyStations.addAll(divvyStations)
     }
 
     private fun createEmptyBikeStation(index: Int): BikeStation {
