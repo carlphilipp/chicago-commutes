@@ -28,7 +28,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
 import fr.cph.chicago.R
-import fr.cph.chicago.entity.TrainEta
+import fr.cph.chicago.core.model.TrainEta
 
 /**
  * @author Carl-Philipp Harmant

@@ -22,7 +22,6 @@ package fr.cph.chicago.core.model
 import android.os.Parcel
 import android.os.Parcelable
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import fr.cph.chicago.entity.TrainEta
 import java.io.Serializable
 
 /**
