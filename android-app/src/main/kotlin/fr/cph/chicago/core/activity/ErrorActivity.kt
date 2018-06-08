@@ -31,7 +31,7 @@ import butterknife.ButterKnife
 import fr.cph.chicago.R
 
 /**
- * Error activity that can be thrown from anywhere in the app
+ * BusArrivalError activity that can be thrown from anywhere in the app
  *
  * @author Carl-Philipp Harmant
  * @version 1

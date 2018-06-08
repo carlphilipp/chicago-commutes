@@ -44,6 +44,7 @@ import fr.cph.chicago.entity.BusPatternResponse
 import fr.cph.chicago.entity.BusPositionResponse
 import fr.cph.chicago.entity.BusRoutesResponse
 import fr.cph.chicago.entity.BusStopsResponse
+import fr.cph.chicago.exception.CtaException
 import fr.cph.chicago.parser.BusStopCsvParser
 import fr.cph.chicago.repository.BusRepository
 import fr.cph.chicago.util.Util
@@ -82,9 +83,7 @@ object BusService {
         params.put(App.instance.getString(R.string.request_dir), bound)
         val result = ctaClient.get(BUS_STOP_LIST, params, BusStopsResponse::class.java)
         if (result.bustimeResponse.stops == null) {
-            val error = result.bustimeResponse.error?.joinToString { error -> "${error.rt} ${error.dir} ${error.msg}" }
-            Log.e(TAG, error)
-            return listOf()
+            throw CtaException(result)
         }
         return result.bustimeResponse.stops!!.map { stop ->
             BusStop(
@@ -110,9 +109,7 @@ object BusService {
         val busDirections = BusDirections(busRouteId)
         val result = ctaClient.get(BUS_DIRECTION, params, BusDirectionResponse::class.java)
         if (result.bustimeResponse.directions == null) {
-            val error = result.bustimeResponse.error?.joinToString { error -> "${error.rt} ${error.msg}" }
-            Log.e(TAG, error)
-            return busDirections
+            throw CtaException(result)
         }
         result
             .bustimeResponse
@@ -144,21 +141,18 @@ object BusService {
         connectParam.put(App.instance.getString(R.string.request_rt), busRouteId)
         val boundIgnoreCase = bounds.map { bound -> bound.toLowerCase(Locale.US) }
         val result = ctaClient.get(BUS_PATTERN, connectParam, BusPatternResponse::class.java)
-        if (result.bustimeResponse.ptr == null) {
-            val error = result.bustimeResponse.error?.joinToString { error -> "${error.rt} ${error.msg}" }
-            Log.e(TAG, error)
-            return listOf()
-        }
+        if (result.bustimeResponse.ptr == null) throw CtaException(result)
         return result
             .bustimeResponse
             .ptr!!
             .map { ptr ->
                 BusPattern(
                     direction = ptr.rtdir,
-                    points = ptr.pt.map { pt ->
-                        val stopName = pt.stpnm ?: ""
-                        PatternPoint(Position(pt.lat, pt.lon), pt.typ, stopName)
-                    }.toMutableList()
+                    points = ptr.pt
+                        .map { pt ->
+                            PatternPoint(Position(pt.lat, pt.lon), pt.typ, pt.stpnm ?: "")
+                        }
+                        .toMutableList()
                 )
             }
             .filter { pattern ->
@@ -171,11 +165,7 @@ object BusService {
         val connectParam = ArrayListValuedHashMap<String, String>(1, 1)
         connectParam.put(App.instance.getString(R.string.request_rt), busRouteId)
         val result = ctaClient.get(BUS_VEHICLES, connectParam, BusPositionResponse::class.java)
-        if (result.bustimeResponse.vehicle == null) {
-            val error = result.bustimeResponse.error?.joinToString { error -> "${error.rt} ${error.msg}" }
-            Log.e(TAG, error)
-            return listOf()
-        }
+        if (result.bustimeResponse.vehicle == null) throw CtaException(result)
         return result.bustimeResponse.vehicle!!
             .map { vehicle ->
                 val position = Position(vehicle.lat.toDouble(), vehicle.lon.toDouble())
@@ -235,9 +225,12 @@ object BusService {
     private fun getBusArrivals(params: MultiValuedMap<String, String>): List<BusArrival> {
         val result = ctaClient.get(BUS_ARRIVALS, params, BusArrivalResponse::class.java)
         if (result.bustimeResponse.prd == null) {
-            val error = result.bustimeResponse.error?.joinToString { error -> "${error.stpid} ${error.msg}" }
-            Log.e(TAG, error)
-            return listOf()
+            if (result.bustimeResponse.error != null && result.bustimeResponse.error!!.isNotEmpty()) {
+                if (result.bustimeResponse.error!![0].noServiceScheduled()) {
+                    return mutableListOf()
+                }
+            }
+            throw CtaException(result)
         }
         return result.bustimeResponse
             .prd!!

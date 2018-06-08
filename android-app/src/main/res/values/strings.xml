@@ -100,7 +100,7 @@
     <!-- Nearby -->
     <string name="search_area">Search this area</string>
 
-    <!-- Error -->
+    <!-- BusArrivalError -->
     <string name="error_desc">Error</string>
     <string name="error_retry">Retry</string>
 

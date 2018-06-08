@@ -24,7 +24,7 @@ import fr.cph.chicago.exception.ConnectException
 import java.io.InputStream
 
 /**
- * Class that build connect to the Divvy API.
+ * Class that build connect to the DivvyResponse API.
  *
  * @author Carl-Philipp Harmant
  * @version 1

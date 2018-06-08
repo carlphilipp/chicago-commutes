@@ -21,7 +21,7 @@ package fr.cph.chicago.service
 
 import fr.cph.chicago.client.DivvyClient
 import fr.cph.chicago.core.model.BikeStation
-import fr.cph.chicago.entity.Divvy
+import fr.cph.chicago.entity.DivvyResponse
 import fr.cph.chicago.parser.JsonParser
 
 object BikeService {
@@ -32,7 +32,7 @@ object BikeService {
     fun loadAllBikeStations(): List<BikeStation> {
         val bikeStationsInputStream = client.getBikeStations()
         return jsonParser
-            .parse(bikeStationsInputStream, Divvy::class.java)
+            .parse(bikeStationsInputStream, DivvyResponse::class.java)
             .stations
             .map { divvyStation ->
                 BikeStation(

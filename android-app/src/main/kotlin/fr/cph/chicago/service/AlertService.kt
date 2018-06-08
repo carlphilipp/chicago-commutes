@@ -25,8 +25,8 @@ import fr.cph.chicago.client.CtaRequestType
 import fr.cph.chicago.core.model.dto.AlertType
 import fr.cph.chicago.core.model.dto.RouteAlertsDTO
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
-import fr.cph.chicago.entity.AlertsRoute
-import fr.cph.chicago.entity.AlertsRoutes
+import fr.cph.chicago.entity.AlertsRouteResponse
+import fr.cph.chicago.entity.AlertsRoutesResponse
 import org.apache.commons.collections4.MultiValuedMap
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import java.text.ParseException
@@ -42,7 +42,7 @@ object AlertService {
     private val displayFormat = SimpleDateFormat("MM/dd/yyyy h:mm a", Locale.US)
 
     fun getAlerts(): List<RoutesAlertsDTO> {
-        val alertRoutes = ctaClient.get(CtaRequestType.ALERTS_ROUTES, buildAlertsParam(), AlertsRoutes::class.java)
+        val alertRoutes = ctaClient.get(CtaRequestType.ALERTS_ROUTES, buildAlertsParam(), AlertsRoutesResponse::class.java)
         if (alertRoutes.ctaRoutes.routeInfo.isEmpty()) {
             val errors = alertRoutes.ctaRoutes.errorMessage.joinToString()
             Log.e(TAG, errors)
@@ -63,7 +63,7 @@ object AlertService {
     }
 
     fun getRouteAlert(id: String): List<RouteAlertsDTO> {
-        val alertRoutes = ctaClient.get(CtaRequestType.ALERTS_ROUTE, buildAlertParam(id), AlertsRoute::class.java)
+        val alertRoutes = ctaClient.get(CtaRequestType.ALERTS_ROUTE, buildAlertParam(id), AlertsRouteResponse::class.java)
 
         return if (alertRoutes.ctaAlerts.errorMessage != null) {
             Log.e(TAG, alertRoutes.ctaAlerts.errorMessage.toString())

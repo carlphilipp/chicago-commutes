@@ -17,21 +17,23 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.entity
+package fr.cph.chicago.exception
 
-import com.fasterxml.jackson.annotation.JsonProperty
+open class TrackerException constructor(message: String, e: Exception) : Exception(message, e)
 
-data class BusRoutesResponse(
-    @JsonProperty("bustime-response")
-    val bustimeResponse: BustimeResponse)
+class ConnectException(message: String, e: Exception) : TrackerException(message, e) {
+    companion object {
 
-data class BustimeResponse(
-    @JsonProperty("routes")
-    var routes: List<Route>)
+        private const val ERROR = "Please check your connection"
 
-data class Route(
-    @JsonProperty("rt")
-    val routeId: String,
-    @JsonProperty("rtnm")
-    val routeName: String)
+        fun defaultException(e: Exception): ConnectException {
+            return ConnectException(ERROR, e)
+        }
+    }
+}
+
+class CtaException(response: Any) : Exception("CTA error response [$response]")
+
+class ParserException(e: Exception) : TrackerException("Parse exception", e)
+
 

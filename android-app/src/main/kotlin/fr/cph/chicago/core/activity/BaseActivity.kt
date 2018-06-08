@@ -138,7 +138,7 @@ class BaseActivity : Activity() {
     }
 
     private fun startErrorActivity() {
-        // Set Error
+        // Set BusArrivalError
         trainService.setStationError(true)
         busService.setBusRouteError(true)
 
