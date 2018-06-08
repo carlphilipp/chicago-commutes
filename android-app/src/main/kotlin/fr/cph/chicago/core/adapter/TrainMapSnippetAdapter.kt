@@ -67,7 +67,7 @@ class TrainMapSnippetAdapter(private val trainEtas: List<TrainEta>) : BaseAdapte
         } else {
             holder = view.tag as ViewHolder
         }
-        holder.name.text = eta.station.name
+        holder.name.text = eta.trainStation.name
         if (!(position == trainEtas.size - 1 && "0 min" == eta.timeLeftDueDelay)) {
             holder.time.text = eta.timeLeftDueDelay
             holder.name.setTextColor(ContextCompat.getColor(parent.context, R.color.grey_5))

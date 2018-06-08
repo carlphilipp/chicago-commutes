@@ -28,7 +28,7 @@ import fr.cph.chicago.client.CtaRequestType.TRAIN_FOLLOW
 import fr.cph.chicago.client.CtaRequestType.TRAIN_LOCATION
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.core.model.Station
+import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.Stop
 import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.TrainArrival
@@ -98,7 +98,7 @@ object TrainService {
         return trainArrivals
     }
 
-    fun loadLocalTrainData(): SparseArray<Station> {
+    fun loadLocalTrainData(): SparseArray<TrainStation> {
         // Force loading train from CSV toi avoid doing it later
         return trainRepository.stations
     }
@@ -130,7 +130,7 @@ object TrainService {
         if (!loadAll && trainEta.size > 7) {
             trainEta = trainEta.subList(0, 6)
             val currentDate = Calendar.getInstance().time
-            val fakeStation = Station(0, App.instance.getString(R.string.bus_all_results), ArrayList())
+            val fakeStation = TrainStation(0, App.instance.getString(R.string.bus_all_results), ArrayList())
             // Add a fake TrainEta cell to alert the user about the fact that only a part of the result is displayed
             val eta = TrainEta.buildFakeEtaWith(fakeStation, currentDate, currentDate, false, false)
             trainEta.add(eta)
@@ -160,7 +160,7 @@ object TrainService {
         return trainRepository.error
     }
 
-    fun getStation(id: Int): Station {
+    fun getStation(id: Int): TrainStation {
         return trainRepository.getStation(id)
     }
 
@@ -168,15 +168,15 @@ object TrainService {
         return trainRepository.readPattern(line)
     }
 
-    fun readNearbyStation(position: Position): List<Station> {
+    fun readNearbyStation(position: Position): List<TrainStation> {
         return trainRepository.readNearbyStation(position)
     }
 
-    fun getStationsForLine(line: TrainLine): List<Station> {
+    fun getStationsForLine(line: TrainLine): List<TrainStation> {
         return trainRepository.allStations[line]!!
     }
 
-    fun searchStations(query: String): List<Station> {
+    fun searchStations(query: String): List<TrainStation> {
         return getAllStations().entries
             .flatMap { mutableEntry -> mutableEntry.value }
             .filter { station -> StringUtils.containsIgnoreCase(station.name, query) }
@@ -210,7 +210,7 @@ object TrainService {
                 else
                     eta.destNm
 
-            val trainEta = TrainEta(station = station,
+            val trainEta = TrainEta(trainStation = station,
                 stop = stop,
                 routeName = routeName,
                 destName = destinationName,
@@ -221,10 +221,10 @@ object TrainService {
             trainEta
         }
             .forEach {
-                if (result.indexOfKey(it.station.id) < 0) {
-                    result.append(it.station.id, TrainArrival.buildEmptyTrainArrival().addEta(it))
+                if (result.indexOfKey(it.trainStation.id) < 0) {
+                    result.append(it.trainStation.id, TrainArrival.buildEmptyTrainArrival().addEta(it))
                 } else {
-                    result.get(it.station.id).addEta(it)
+                    result.get(it.trainStation.id).addEta(it)
                 }
             }
         return result
@@ -234,7 +234,7 @@ object TrainService {
         return trainRepository.getStop(id)
     }
 
-    private fun getAllStations(): MutableMap<TrainLine, MutableList<Station>> {
+    private fun getAllStations(): MutableMap<TrainLine, MutableList<TrainStation>> {
         return trainRepository.allStations
     }
 }

@@ -37,7 +37,7 @@ import fr.cph.chicago.core.listener.BikeStationOnClickListener
 import fr.cph.chicago.core.listener.TrainOnClickListener
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
-import fr.cph.chicago.core.model.Station
+import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.rx.BusDirectionObserver
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.util.LayoutUtil
@@ -53,7 +53,7 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
 
     private val context: Context = activity.applicationContext
 
-    private val trains: MutableList<Station> = mutableListOf()
+    private val trains: MutableList<TrainStation> = mutableListOf()
     private val busRoutes: MutableList<BusRoute> = mutableListOf()
     private val divvyStations: MutableList<BikeStation> = mutableListOf()
 
@@ -84,7 +84,7 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
 
         when {
             position < trains.size -> {
-                val station = getItem(position) as Station
+                val station = getItem(position) as TrainStation
                 routeName.text = station.name
 
                 val stationColorView: LinearLayout = view.findViewById(R.id.station_color)
@@ -128,7 +128,7 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
         return view
     }
 
-    fun updateData(trains: List<Station>, buses: List<BusRoute>, divvies: List<BikeStation>) {
+    fun updateData(trains: List<TrainStation>, buses: List<BusRoute>, divvies: List<BikeStation>) {
         this.trains.clear()
         this.trains.addAll(trains)
 

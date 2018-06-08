@@ -49,7 +49,7 @@ import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.Favorites
-import fr.cph.chicago.core.model.Station
+import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.model.enumeration.BusDirection
@@ -102,7 +102,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         val model = favoritesData.getObject(position)
         holder.lastUpdateTextView.text = lastUpdate
         when (model) {
-            is Station -> handleStation(holder, model)
+            is TrainStation -> handleStation(holder, model)
             is BusRoute -> handleBusRoute(holder, model)
             else -> {
                 val bikeStation = model as BikeStation
@@ -115,17 +115,17 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         holder.mainLayout.removeAllViews()
     }
 
-    private fun handleStation(holder: FavoritesViewHolder, station: Station) {
-        val stationId = station.id
-        val trainLines = station.lines
+    private fun handleStation(holder: FavoritesViewHolder, trainStation: TrainStation) {
+        val stationId = trainStation.id
+        val trainLines = trainStation.lines
 
         holder.favoriteImage.setImageResource(R.drawable.ic_train_white_24dp)
-        holder.stationNameTextView.text = station.name
+        holder.stationNameTextView.text = trainStation.name
         holder.detailsButton.setOnClickListener { _ ->
             if (!util.isNetworkAvailable()) {
                 util.showNetworkErrorMessage(activity)
             } else {
-                // Start station activity
+                // Start train station activity
                 val extras = Bundle()
                 val intent = Intent(context, TrainStationActivity::class.java)
                 extras.putInt(activity.getString(R.string.bundle_train_stationId), stationId)

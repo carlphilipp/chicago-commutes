@@ -30,7 +30,7 @@ import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.core.model.Station
+import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.core.model.TrainEta
@@ -70,8 +70,8 @@ object ObservableUtil {
             }
     }
 
-    fun createTrainArrivalsObservable(station: Station): Observable<TrainArrival> {
-        return createObservableFromCallable(Callable { trainService.loadStationTrainArrival(station.id) })
+    fun createTrainArrivalsObservable(trainStation: TrainStation): Observable<TrainArrival> {
+        return createObservableFromCallable(Callable { trainService.loadStationTrainArrival(trainStation.id) })
     }
 
     fun createFavoritesBusArrivalsObservable(): Observable<BusArrivalDTO> {
@@ -195,7 +195,7 @@ object ObservableUtil {
             }
     }
 
-    fun createTrainStationAroundObservable(position: Position): Observable<List<Station>> {
+    fun createTrainStationAroundObservable(position: Position): Observable<List<TrainStation>> {
         return createObservableFromCallable(Callable { trainService.readNearbyStation(position) })
             .onErrorReturn { throwable ->
                 Log.e(TAG, throwable.message, throwable)

@@ -66,7 +66,7 @@ object Favorites {
      * Get the object depending on position
      *
      * @param position the position
-     * @return an object, station or bus route
+     * @return an object, trainStation or bus route
      */
     fun getObject(position: Int): Parcelable {
         if (position < trainFavorites.size) {

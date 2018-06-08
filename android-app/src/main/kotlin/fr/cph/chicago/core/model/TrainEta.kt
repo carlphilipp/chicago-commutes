@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit
  * @version 1
  */
 data class TrainEta(
-    val station: Station,
+    val trainStation: TrainStation,
     val stop: Stop,
     val routeName: TrainLine,
     val destName: String,
@@ -45,7 +45,7 @@ data class TrainEta(
     private var isDly: Boolean) : Comparable<TrainEta>, Parcelable, Serializable {
 
     constructor(source: Parcel) : this(
-        station = source.readParcelable<Station>(Station::class.java.classLoader),
+        trainStation = source.readParcelable<TrainStation>(TrainStation::class.java.classLoader),
         stop = source.readParcelable<Stop>(Stop::class.java.classLoader),
         routeName = TrainLine.fromXmlString(source.readString()),
         destName = source.readString(),
@@ -81,7 +81,7 @@ data class TrainEta(
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeParcelable(station, flags)
+        dest.writeParcelable(trainStation, flags)
         dest.writeParcelable(stop, flags)
         dest.writeString(routeName.toTextString())
         dest.writeString(destName)
@@ -95,8 +95,8 @@ data class TrainEta(
 
         private const val serialVersionUID = 0L
 
-        fun buildFakeEtaWith(station: Station, arrivalDepartureDate: Date, predictionDate: Date, app: Boolean, delay: Boolean): TrainEta {
-            return TrainEta(station, Stop.buildEmptyStop(), TrainLine.NA, StringUtils.EMPTY, predictionDate, arrivalDepartureDate, app, delay)
+        fun buildFakeEtaWith(trainStation: TrainStation, arrivalDepartureDate: Date, predictionDate: Date, app: Boolean, delay: Boolean): TrainEta {
+            return TrainEta(trainStation, Stop.buildEmptyStop(), TrainLine.NA, StringUtils.EMPTY, predictionDate, arrivalDepartureDate, app, delay)
         }
 
         @JvmField

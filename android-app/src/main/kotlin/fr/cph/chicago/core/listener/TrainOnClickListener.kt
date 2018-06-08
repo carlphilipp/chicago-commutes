@@ -65,7 +65,7 @@ class TrainOnClickListener(private val context: Context,
                 val extras = Bundle()
                 val intent: Intent
                 if (position == 0) {
-                    // Start station activity
+                    // Start train station activity
                     intent = Intent(view.context, TrainStationActivity::class.java)
                     extras.putInt(view.context.getString(R.string.bundle_train_stationId), stationId)
                 } else {

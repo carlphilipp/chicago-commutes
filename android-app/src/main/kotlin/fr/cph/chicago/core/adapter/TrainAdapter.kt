@@ -28,7 +28,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.listener.TrainOnClickListener
-import fr.cph.chicago.core.model.Station
+import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.LayoutUtil
@@ -44,14 +44,14 @@ class TrainAdapter(line: TrainLine) : BaseAdapter() {
     private val trainService = TrainService
     private val layoutUtil = LayoutUtil
 
-    private val stations: List<Station> = trainService.getStationsForLine(line)
+    private val trainStations: List<TrainStation> = trainService.getStationsForLine(line)
 
     override fun getCount(): Int {
-        return stations.size
+        return trainStations.size
     }
 
     override fun getItem(position: Int): Any {
-        return stations[position]
+        return trainStations[position]
     }
 
     override fun getItemId(position: Int): Long {
@@ -59,7 +59,7 @@ class TrainAdapter(line: TrainLine) : BaseAdapter() {
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
-        val station = getItem(position) as Station
+        val station = getItem(position) as TrainStation
 
         var view = convertView
         val holder: ViewHolder

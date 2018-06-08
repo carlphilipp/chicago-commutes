@@ -11,7 +11,7 @@ data class BikeStation(
     val availableBikes: Int,
     val latitude: Double,
     val longitude: Double,
-    val address: String) : Parcelable, AStation {
+    val address: String) : Parcelable, Station {
 
     private constructor(source: Parcel) : this(
         id = source.readInt(),

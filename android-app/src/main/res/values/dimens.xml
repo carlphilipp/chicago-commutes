@@ -20,12 +20,12 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_vertical_margin">16dp</dimen>
 
-    <!-- Font activity station -->
+    <!-- Font activity train station -->
     <dimen name="activity_station_stops_0dp">0dp</dimen>
     <dimen name="activity_station_stops_line1_padding_color">4dp</dimen>
     <dimen name="activity_station_stops_line3_padding_left">7dp</dimen>
     <dimen name="activity_station_stops_line3_padding_top">6dp</dimen>
-    <!-- Activity station google street image size -->
+    <!-- Activity train station google street image size -->
     <dimen name="activity_station_street_map_height">100dp</dimen>
     <!-- Activity train station -->
     <dimen name="activity_train_line_padding_left">10dp</dimen>

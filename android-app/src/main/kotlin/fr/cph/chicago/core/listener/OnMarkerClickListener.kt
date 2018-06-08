@@ -23,10 +23,10 @@ import android.util.Log
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
 import fr.cph.chicago.core.fragment.NearbyFragment
-import fr.cph.chicago.core.model.AStation
+import fr.cph.chicago.core.model.Station
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusStop
-import fr.cph.chicago.core.model.Station
+import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusArrivalRouteDTO
 import fr.cph.chicago.marker.MarkerDataHolder
 import fr.cph.chicago.rx.ObservableUtil
@@ -45,17 +45,17 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
     }
 
 
-    private fun loadArrivals(station: AStation) {
+    private fun loadArrivals(station: Station) {
         when (station) {
-            is Station -> loadTrainArrivals(station)
+            is TrainStation -> loadTrainArrivals(station)
             is BusStop -> loadBusArrivals(station)
             is BikeStation -> loadBikes(station)
         }
     }
 
-    private fun loadTrainArrivals(trainStation: Station) {
-        nearbyFragment.slidingUpAdapter.updateTitleTrain(trainStation.name)
-        observableUtil.createTrainArrivalsObservable(trainStation)
+    private fun loadTrainArrivals(trainTrainStation: TrainStation) {
+        nearbyFragment.slidingUpAdapter.updateTitleTrain(trainTrainStation.name)
+        observableUtil.createTrainArrivalsObservable(trainTrainStation)
             .subscribe({ nearbyFragment.slidingUpAdapter.addTrainStation(it) })
             { onError -> Log.e(TAG, onError.message, onError) }
     }

@@ -25,7 +25,7 @@ import com.univocity.parsers.csv.CsvParser
 import com.univocity.parsers.csv.CsvParserSettings
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.core.model.Station
+import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.Stop
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
@@ -57,11 +57,11 @@ object TrainRepository {
         parser = CsvParser(settings)
     }
 
-    private val inMemoryData: Triple<SparseArray<Station>, SparseArray<Stop>, TreeMap<TrainLine, MutableList<Station>>> by lazy {
+    private val inMemoryData: Triple<SparseArray<TrainStation>, SparseArray<Stop>, TreeMap<TrainLine, MutableList<TrainStation>>> by lazy {
         loadInMemoryStationsAndStops()
     }
 
-    val stations: SparseArray<Station>
+    val stations: SparseArray<TrainStation>
         get() = inMemoryData.first
 
     private val stops: SparseArray<Stop>
@@ -72,13 +72,13 @@ object TrainRepository {
      *
      * @return a map containing all the stations ordered line
      */
-    val allStations: MutableMap<TrainLine, MutableList<Station>>
+    val allStations: MutableMap<TrainLine, MutableList<TrainStation>>
         get() = inMemoryData.third
 
-    private fun loadInMemoryStationsAndStops(): Triple<SparseArray<Station>, SparseArray<Stop>, TreeMap<TrainLine, MutableList<Station>>> {
-        val stations: SparseArray<Station> = SparseArray()
+    private fun loadInMemoryStationsAndStops(): Triple<SparseArray<TrainStation>, SparseArray<Stop>, TreeMap<TrainLine, MutableList<TrainStation>>> {
+        val stations: SparseArray<TrainStation> = SparseArray()
         val stops: SparseArray<Stop> = SparseArray()
-        val stationsOrderByLineMap: TreeMap<TrainLine, MutableList<Station>> = TreeMap()
+        val stationsOrderByLineMap: TreeMap<TrainLine, MutableList<TrainStation>> = TreeMap()
 
         var inputStreamReader: InputStreamReader? = null
         try {
@@ -134,7 +134,7 @@ object TrainRepository {
                 val latitude = coordinates[0].toDouble()
                 val longitude = coordinates[1].toDouble()
 
-                val station = Station(parentStopId, stationName, mutableListOf())
+                val station = TrainStation(parentStopId, stationName, mutableListOf())
                 val stop = Stop(stopId, stopName, direction, Position(latitude, longitude), ada, lines)
                 stops.append(stopId, stop)
 
@@ -157,14 +157,14 @@ object TrainRepository {
     }
 
     /**
-     * get a station
+     * get a trainStation
      *
-     * @param id the id of the station
-     * @return the station
+     * @param id the id of the train station
+     * @return the train station
      */
-    fun getStation(id: Int): Station {
+    fun getStation(id: Int): TrainStation {
         val station = stations.get(id)
-        return station ?: Station.buildEmptyStation()
+        return station ?: TrainStation.buildEmptyStation()
     }
 
     /**
@@ -178,12 +178,12 @@ object TrainRepository {
     }
 
     /**
-     * Read near by station
+     * Read near by train station
      *
      * @param position the position
-     * @return a list of station
+     * @return a list of train station
      */
-    fun readNearbyStation(position: Position): List<Station> {
+    fun readNearbyStation(position: Position): List<TrainStation> {
         val latitude = position.latitude
         val longitude = position.longitude
 
@@ -192,7 +192,7 @@ object TrainRepository {
         val lonMax = longitude + DEFAULT_RANGE
         val lonMin = longitude - DEFAULT_RANGE
 
-        val nearByStations = mutableListOf<Station>()
+        val nearByStations = mutableListOf<TrainStation>()
         (0 until stations.size())
             .map { stations.valueAt(it) }
             .forEach {
@@ -231,10 +231,10 @@ object TrainRepository {
         }
     }
 
-    private fun sortStation(stationNotSorted: SparseArray<Station>): TreeMap<TrainLine, MutableList<Station>> {
-        val result = TreeMap<TrainLine, MutableList<Station>>()
-        for (i in 0 until stationNotSorted.size()) {
-            val station = stationNotSorted.valueAt(i)
+    private fun sortStation(trainStationNotSorted: SparseArray<TrainStation>): TreeMap<TrainLine, MutableList<TrainStation>> {
+        val result = TreeMap<TrainLine, MutableList<TrainStation>>()
+        for (i in 0 until trainStationNotSorted.size()) {
+            val station = trainStationNotSorted.valueAt(i)
             val trainLines = station.lines
             for (trainLine in trainLines) {
                 if (result.containsKey(trainLine)) {
@@ -242,7 +242,7 @@ object TrainRepository {
                     stations.add(station)
                     stations.sort()
                 } else {
-                    val stations = mutableListOf<Station>()
+                    val stations = mutableListOf<TrainStation>()
                     result[trainLine] = stations
                     stations.add(station)
                 }

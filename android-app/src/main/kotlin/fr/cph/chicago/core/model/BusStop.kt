@@ -38,7 +38,7 @@ open class BusStop(
     var name: String = StringUtils.EMPTY,
     var description: String = StringUtils.EMPTY,
     // Realm decided that position must be nullable... https://github.com/realm/realm-java/commit/39bb67cef10b62456649fdd7cf5710bd3361c29a
-    var position: Position? = Position()) : RealmObject(), Comparable<BusStop>, Parcelable, Serializable, AStation {
+    var position: Position? = Position()) : RealmObject(), Comparable<BusStop>, Parcelable, Serializable, Station {
 
     private constructor(source: Parcel) : this(
         id = source.readInt(),

@@ -36,7 +36,7 @@
 
         <!-- Scroll view wrapping the layout to allow to scroll -->
         <ScrollView
-            android:id="@+id/scrollViewTrainStation"
+            android:id="@+id/scrollViewStation"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/bg_selector"

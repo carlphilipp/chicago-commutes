@@ -57,7 +57,7 @@ import fr.cph.chicago.core.listener.OnMarkerClickListener
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.core.model.Station
+import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.marker.MarkerDataHolder
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.util.Util
@@ -152,7 +152,7 @@ class NearbyFragment : AbstractFragment(), EasyPermissions.PermissionCallbacks {
 
     private fun updateMarkersAndModel(
         busStops: List<BusStop>,
-        trainStation: List<Station>,
+        trainTrainStation: List<TrainStation>,
         divvyStations: List<BikeStation>) {
         if (isAdded) {
             mapFragment.getMapAsync { googleMap ->
@@ -175,7 +175,7 @@ class NearbyFragment : AbstractFragment(), EasyPermissions.PermissionCallbacks {
                         markerDataHolder.addData(marker, busStop)
                     }
 
-                trainStation
+                trainTrainStation
                     .forEach { station ->
                         val position = station.stopsPosition.firstOrNull()
                         if (position != null) {
@@ -279,7 +279,7 @@ class NearbyFragment : AbstractFragment(), EasyPermissions.PermissionCallbacks {
         val trainStationAroundObservable = observableUtil.createTrainStationAroundObservable(finalPosition)
         val busStopsAroundObservable = observableUtil.createBusStopsAroundObservable(finalPosition)
         val bikeStationsObservable = observableUtil.createBikeStationAroundObservable(finalPosition, bikeStations)
-        Observable.zip(trainStationAroundObservable, busStopsAroundObservable, bikeStationsObservable, Function3 { trains: List<Station>, buses: List<BusStop>, divvies: List<BikeStation> ->
+        Observable.zip(trainStationAroundObservable, busStopsAroundObservable, bikeStationsObservable, Function3 { trains: List<TrainStation>, buses: List<BusStop>, divvies: List<BikeStation> ->
             util.centerMap(mapFragment, finalPosition)
             updateMarkersAndModel(buses, trains, divvies)
             Any()

@@ -21,12 +21,12 @@ package fr.cph.chicago.marker
 
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
-import fr.cph.chicago.core.model.AStation
+import fr.cph.chicago.core.model.Station
 
 class MarkerDataHolder {
-    private val data: MutableMap<LatLng, AStation> = mutableMapOf()
+    private val data: MutableMap<LatLng, Station> = mutableMapOf()
 
-    fun addData(marker: Marker, station: AStation) {
+    fun addData(marker: Marker, station: Station) {
         val latLng = marker.position
         data[latLng] = station
     }
@@ -35,7 +35,7 @@ class MarkerDataHolder {
         data.clear()
     }
 
-    fun getStation(marker: Marker): AStation? {
+    fun getStation(marker: Marker): Station? {
         return data[marker.position]
     }
 }

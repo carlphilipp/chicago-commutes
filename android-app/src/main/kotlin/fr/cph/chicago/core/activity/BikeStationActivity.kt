@@ -168,7 +168,7 @@ class BikeStationActivity : AbstractStationActivity() {
     /**
      * Is favorite or not ?
      *
-     * @return if the station is favorite
+     * @return if the train station is favorite
      */
     override fun isFavorite(): Boolean {
         return preferenceService.isBikeStationFavorite(divvyStation.id)

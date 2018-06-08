@@ -77,7 +77,7 @@
     <string name="favorites_view_buses">view buses</string>
     <string name="favorites_view_station">view station</string>
 
-    <!-- Station -->
+    <!-- Train Station -->
     <string name="station_activity">Station</string>
     <string name="station_name">Station Name</string>
     <string name="train_station_activity">Stations</string>

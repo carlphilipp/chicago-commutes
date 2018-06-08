@@ -46,7 +46,7 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
-import fr.cph.chicago.core.model.Station
+import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.Stop
 import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.core.model.TrainEta
@@ -62,7 +62,7 @@ import io.reactivex.schedulers.Schedulers
 import java.util.Random
 
 /**
- * Activity that represents the train station
+ * Activity that represents the train trainStation
  *
  * @author Carl-Philipp Harmant
  * @version 1
@@ -73,7 +73,7 @@ class TrainStationActivity : AbstractStationActivity() {
     lateinit var viewGroup: ViewGroup
     @BindView(R.id.activity_train_station_streetview_image)
     lateinit var streetViewImage: ImageView
-    @BindView(R.id.scrollViewTrainStation)
+    @BindView(R.id.scrollViewStation)
     lateinit var scrollView: ScrollView
     @BindView(R.id.activity_station_swipe_refresh_layout)
     lateinit var swipeRefreshLayout: SwipeRefreshLayout
@@ -125,7 +125,7 @@ class TrainStationActivity : AbstractStationActivity() {
     lateinit var arrowBackWhite: Drawable
 
     private lateinit var paramsStop: LinearLayout.LayoutParams
-    private lateinit var station: Station
+    private lateinit var trainStation: TrainStation
     private lateinit var trainArrivalObservable: Observable<TrainArrival>
 
     private var isFavorite: Boolean = false
@@ -142,17 +142,17 @@ class TrainStationActivity : AbstractStationActivity() {
             // Layout setup
             setContentView(R.layout.activity_station)
             ButterKnife.bind(this)
-            // Get station id from bundle
+            // Get trainStation id from bundle
             stationId = intent.extras.getInt(bundleTrainStationId, 0)
             if (stationId != 0) {
-                // Get station
-                station = TrainService.getStation(stationId)
-                trainArrivalObservable = ObservableUtil.createTrainArrivalsObservable(station)
+                // Get trainStation
+                trainStation = TrainService.getStation(stationId)
+                trainArrivalObservable = ObservableUtil.createTrainArrivalsObservable(trainStation)
 
                 paramsStop = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
 
                 val layoutParams = streetViewImage.layoutParams as RelativeLayout.LayoutParams
-                val position = station.stops[0].position
+                val position = trainStation.stops[0].position
                 val params = streetViewImage.layoutParams
 
                 isFavorite = isFavorite()
@@ -174,7 +174,7 @@ class TrainStationActivity : AbstractStationActivity() {
                 mapContainer.setOnClickListener(GoogleMapOnClickListener(position.latitude, position.longitude))
                 walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(position.latitude, position.longitude))
 
-                val stopByLines = station.stopByLines
+                val stopByLines = trainStation.stopByLines
                 val randomTrainLine = getRandomLine(stopByLines)
                 setUpStopLayouts(stopByLines)
                 swipeRefreshLayout.setColorSchemeColors(randomTrainLine.color)
@@ -259,7 +259,7 @@ class TrainStationActivity : AbstractStationActivity() {
 
         util.setWindowsColor(this, toolbar, randomTrainLine)
 
-        toolbar.title = station.name
+        toolbar.title = trainStation.name
         toolbar.navigationIcon = arrowBackWhite
 
         toolbar.setOnClickListener { _ -> finish() }
@@ -283,14 +283,14 @@ class TrainStationActivity : AbstractStationActivity() {
     /**
      * Is favorite or not ?
      *
-     * @return if the station is favorite
+     * @return if the trainStation is favorite
      */
     override fun isFavorite(): Boolean {
         return preferenceService.isTrainStationFavorite(stationId)
     }
 
     fun hideAllArrivalViews() {
-        station.lines
+        trainStation.lines
             .flatMap { trainLine ->
                 TrainDirection.values().map { trainDirection -> trainLine.toString() + "_" + trainDirection.toString() }
             }
