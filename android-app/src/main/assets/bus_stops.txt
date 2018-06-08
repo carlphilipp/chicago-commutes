@@ -1177,7 +1177,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 1748,1748,"Pratt & Glenwood","Pratt & Glenwood, Westbound, Northwest Corner",42.00550567,-87.6661253,0,,1
 1749,1749,"Pratt & Greenview","Pratt & Greenview, Westbound, Northwest Corner",42.00547805,-87.66786796,0,,1
 1750,1750,"Pratt & Ashland","Pratt & Ashland, Westbound, Northeast Corner",42.00544585,-87.66974721,0,,1
-1751,1751,"Ashland & Farwell","Ashland & Farwell, Northbound, Northeast Corner",42.00664127,-87.66978328,0,,1
+1751,1751,"Ashland & Farwell","",42.00673018,-87.66992096,0,,1
 1752,1752,"Ashland & Morse","Ashland & Morse, Northbound, Southeast Corner",42.007744,-87.669959,0,,1
 1753,1753,"Morse & Greenview","Morse & Greenview, Eastbound, Southwest Corner",42.00779501,-87.66791571,0,,1
 1754,1754,"Morse & Glenwood (Red Line)","Morse & Glenwood (Red Line), Eastbound, Southeast Corner",42.0078605,-87.66563004,0,,1
@@ -3112,7 +3112,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 4555,4555,"55th Street & Austin","55th Street & Austin, Eastbound, Southwest Corner",41.79248,-87.772168,0,,1
 4556,4556,"Austin & 55th Street","Austin & 55th Street, Southbound, Southwest Corner",41.792356,-87.772133,0,,1
 4557,4557,"Austin & 56th Street","Austin & 56th Street, Southbound, Northwest Corner",41.790778,-87.77206,0,,1
-4558,4558,"Austin & 57th Street","Austin & 57th Street, Southbound, Northwest Corner",41.788945,-87.771989,0,,1
+4558,4558,"Austin & 57th Street","",41.788945,-87.771989,0,,1
 4559,4559,"Austin & 58th Street","Austin & 58th Street, Southbound, Northwest Corner",41.787107,-87.771918,0,,1
 4560,4560,"Austin & 59th Street","Austin & 59th Street, Southbound, Northwest Corner",41.785275,-87.771847,0,,1
 4561,4561,"5920 S Austin","5920 S Austin, Southbound, Northwest Corner",41.78418538,-87.77180996,0,,1
@@ -3129,7 +3129,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 4574,4574,"5920 S Austin","5920 S Austin, Northbound, Southeast Corner",41.78393684,-87.77164534,0,,1
 4575,4575,"Austin & 59th Street","Austin & 59th Street, Northbound, Southeast Corner",41.78511,-87.771702,0,,1
 4576,4576,"Austin & 58th Street","Austin & 58th Street, Northbound, Southeast Corner",41.786942,-87.771773,0,,1
-4577,4577,"Austin & 57th Street","Austin & 57th Street, Northbound, Southeast Corner",41.788779,-87.771844,0,,1
+4577,4577,"Austin & 57th Street","",41.788779,-87.771844,0,,1
 4578,4578,"Austin & 56th Street","Austin & 56th Street, Northbound, Southeast Corner",41.790613,-87.771914,0,,1
 4579,4579,"Austin & 55th Street","Austin & 55th Street, Northbound, Southeast Corner",41.792452,-87.771985,0,,1
 4580,4580,"55th Street & Mayfield","55th Street & Mayfield, Eastbound, Southwest Corner",41.792529,-87.769728,0,,1
@@ -5342,7 +5342,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 8081,8081,"47th Street & Laflin","47th Street & Laflin, Westbound, Northeast Corner",41.80869778,-87.66239116,0,,1
 8084,8084,"47th Street & Wood","47th Street & Wood, Westbound, Northeast Corner",41.80861579,-87.6696874,0,,1
 8085,8085,"47th Street & Wolcott","47th Street & Wolcott, Westbound, Northeast Corner",41.80858031,-87.67205729,0,,1
-8088,8088,"47th Street & Hoyne","47th Street & Hoyne, Westbound, Northside of the Street",41.80857825,-87.67696292,0,,1
+8088,8088,"47th Street & Hoyne","",41.80857825,-87.67696292,0,,1
 8089,8089,"47th Street & Oakley","47th Street & Oakley, Westbound, Northside of the Street",41.80850079,-87.68185692,0,,1
 8090,8090,"47th Street & Western Boulevard","47th Street & Western Boulevard, Westbound, Northeast Corner",41.80847329,-87.68362468,0,,1
 8091,8091,"47th Street & Western Avenue","47th Street & Western Avenue, Westbound, Northwest Corner",41.80849339,-87.6846866,0,,1
@@ -9440,6 +9440,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 15059,15059,"Western Pink Line Station","Western Pink Line Station, Southbound, Westside of the Street",41.85431964,-87.68579134,0,,1
 15063,15063,"Van Buren & Financial Place","Van Buren & Financial Place, Westbound, Northeast Corner",41.87692096,-87.6326028,0,,1
 15077,15077,"Oakton & Lacrosse","Oakton & Lacrosse, Eastbound, Southwest Corner",42.02621973,-87.74892626,0,,1
+15078,15078,"Oakton & Lacrosse","Oakton & Lacrosse, Westbound, Northeast Corner",42.02632058,-87.74872683,0,,1
 15079,15079,"Michigan & 113th Street","Michigan & 113th Street, Northbound, Northeast Corner",41.68917118,-87.62093363,0,,1
 15080,15080,"Michigan & 109th Street","Michigan & 109th Street, Northbound, Northeast Corner",41.69647817,-87.62074028,0,,1
 15081,15081,"Michigan & 107th Street","Michigan & 107th Street, Southbound, Southwest Corner",41.69967175,-87.62100212,0,,1
@@ -9638,6 +9639,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 15339,15339,"Grand & Artesian","Grand & Artesian, Eastbound, Southwest Corner",41.89081167,-87.6880416,0,,1
 15340,15340,"Grand & Western","Grand & Western, Westbound, Northwest Corner",41.89070441,-87.68705485,0,,1
 15341,15341,"Milwaukee & Grand/Halsted (Blue Line)","Milwaukee & Grand/Halsted (Blue Line), Northwestbound, Northeast Corner",41.89153959,-87.64798878,0,,1
+15343,15343,"Broadway & Leland","Broadway & Leland, Northbound, Northeast Corner",41.96736103,-87.65860852,0,,1
 15344,15344,"Western & Hubbard","Western & Hubbard, Southbound, Southwest Corner",41.88933967,-87.68677339,0,,1
 15345,15345,"Western & Taylor","Western & Taylor, Southbound, Southwest Corner",41.86917092,-87.68623062,0,,1
 15347,15347,"Halsted & Chicago","Halsted & Chicago, Southbound, Southwest Corner",41.89609584,-87.64784752,0,,1
@@ -10240,7 +10242,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 17206,17206,"Roosevelt & Laramie","Roosevelt & Laramie, Westbound, Northwest Corner",41.86581986,-87.75504704,0,,1
 17208,17208,"Narragansett & Diversey","Narragansett & Diversey, Northbound, Northeast Corner",41.93116013,-87.7855992,0,,1
 17209,17209,"Narragansett & Berteau","Narragansett & Berteau, Southbound, Southwest Corner",41.95645032,-87.78679863,0,,1
-17211,17211,"Oakton & Lacrosse","Oakton & Lacrosse, Westbound, Northwest Corner",42.02633136,-87.7489762,0,,1
+17211,17211,"Oakton & Lacrosse","",42.02633136,-87.7489762,0,,1
 17212,17212,"Pulaski & 19th Street","Pulaski & 19th Street, Northbound, Northeast Corner",41.85516196,-87.72476054,0,,1
 17213,17213,"Pulaski & 14th Street","Pulaski & 14th Street, Northbound, Northeast Corner",41.8626889,-87.72497574,0,,1
 17214,17214,"Pulaski & Ferdinand","Pulaski & Ferdinand, Northbound, Northeast Corner",41.8900458,-87.72583368,0,,1
@@ -10740,6 +10742,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 18067,18067,"Forest Preserve Avenue & Oak Park","Forest Preserve Avenue & Oak Park, Northeastbound, Southeast Corner",41.95843079,-87.79733995,0,,1
 18078,18078,"Beverly & 99th Street","Beverly & 99th Street, Northbound, Northeast Corner",41.71437847,-87.6597269,0,,1
 18079,18079,"Beverly & 99th Street","Beverly & 99th Street, Southbound, Southwest Corner",41.71358922,-87.65952324,0,,1
+18083,18083,"Clark & Roscoe","Clark & Roscoe, Northbound, Northeast Corner",41.94374757,-87.65362186,0,,1
 18084,18084,"69th Street & Damen","69th Street & Damen, Eastbound, Southeast Corner",41.76837203,-87.67336798,0,,1
 18086,18086,"Fullerton & Western","Fullerton & Western, Westbound, Northwest Corner",41.92499011,-87.68802345,0,,1
 18088,18088,"Fullerton & Rockwell","Fullerton & Rockwell, Eastbound, Southside of the Street",41.9247731,-87.69240253,0,,1
@@ -10939,6 +10942,8 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 18396,18396,"Michigan & Monroe","Michigan & Monroe, Southbound, Southwest Corner",41.88062493,-87.62451644,0,,1
 18397,18397,"Sacramento & Belmont","Sacramento & Belmont, Northbound, Northeast Corner",41.9395705,-87.70264492,0,,1
 18398,18398,"Diversey & Damen/Clybourn","Diversey & Damen/Clybourn, Westbound, Northeast Corner",41.9323564,-87.67784133,0,,1
+18400,18400,"47th Street & Hoyne","47th Street & Hoyne, Westbound, Northwest Corner",41.80857067,-87.67740132,0,,1
+18401,18401,"Ashland & Farwell","Ashland & Farwell, Northbound, Southeast Corner",42.00651087,-87.66991398,0,,1
 30001,,"Austin-Blue","",41.870851,-87.776812,0,40010,0
 30002,,"Austin-Blue","",41.870851,-87.776812,0,40010,0
 30003,,"Harlem-Green","",41.886848,-87.803176,0,40020,1
@@ -11380,3 +11385,12 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 41680,,"Oakton-Skokie","",42.02624348,-87.74722084,1,,1
 41690,,"Cermak-McCormick Place","",41.853115,-87.626402,1,,1
 41700,,"Washington/Wabash","",41.88322,-87.626189,1,,1
+60000,,"Clark/Division (Clark St Entrance)","East entrance",41.9039993,-87.6313019,2,40630,2
+60001,,"Clark/Division (LaSalle Blvd Entrance)","West entrance, accessible",41.903801,-87.6327972,2,40630,1
+60002,,"Harlem/Lake (Harlem Ave Entrance)","Main entrance on Harlem  Ave",41.886795,-87.805087,2,40020,1
+60003,,"Harlem/Lake (Marion St Entrance)","Accessible entrance with connection to Metra UP-W Oak Park Station",41.8867989,-87.803299,2,40020,2
+60004,,"Sox-35th (33rd St Entrance)","Auxiliary entrance, farecard required",41.8345985,-87.6307983,2,40190,2
+60005,,"Sox-35th (35th St Entrance)","Main entrance, accessible",41.831081,-87.630642,2,40190,1
+60006,,"Wilson (Wilson Ave - South Side Entrance)","Main entrance on south side of Wilson, accessible via elevators",41.96528,-87.657906,2,40540,1
+60007,,"Wilson (Sunnyside Ave Entrance )","Entrance on Sunnyside, west of Broadway, accessible via ramps",41.963503,-87.657345,2,40540,1
+60008,,"Wilson (Wilson Ave - North Side Entrance)","Auxiliary entrance on north side of Wilson",41.965531,-87.657968,2,40540,2

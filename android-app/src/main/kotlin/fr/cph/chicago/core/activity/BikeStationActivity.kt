@@ -78,10 +78,6 @@ class BikeStationActivity : AbstractStationActivity() {
 
     @BindString(R.string.bundle_bike_station)
     lateinit var bundleBikeStation: String
-    @BindString(R.string.bike_available_bikes)
-    lateinit var bikeAvailableBikes: String
-    @BindString(R.string.bike_available_docks)
-    lateinit var bikeAvailableDocks: String
 
     private val observableUtil: ObservableUtil = ObservableUtil
     private val preferenceService: PreferenceService = PreferenceService

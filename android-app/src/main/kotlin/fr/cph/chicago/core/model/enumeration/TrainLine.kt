@@ -27,7 +27,7 @@ import android.graphics.Color
  * @author Carl-Philipp Harmant
  * @version 1
  */
-enum class TrainLine constructor(private val text: String, val fullText: String, val color: Int) {
+enum class TrainLine constructor(private val text: String, private val fullText: String, val color: Int) {
 
     BLUE("Blue", "Blue", Color.rgb(0, 158, 218)),
     BROWN("Brn", "Brown", Color.rgb(102, 51, 0)),

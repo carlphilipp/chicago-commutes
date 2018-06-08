@@ -68,17 +68,15 @@ data class BusArrival(
 
     val timeLeftDueDelay: String
         get() {
-            val result: String
-            if (isDelay) {
-                result = "Delay"
+            return if (isDelay) {
+                "Delay"
             } else {
                 if ("0 min" == timeLeft.trim { it <= ' ' }) {
-                    result = "Due"
+                    "Due"
                 } else {
-                    result = timeLeft
+                    timeLeft
                 }
             }
-            return result
         }
 
     override fun describeContents(): Int {

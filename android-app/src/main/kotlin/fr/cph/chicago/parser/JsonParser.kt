@@ -20,11 +20,8 @@
 package fr.cph.chicago.parser
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import fr.cph.chicago.entity.Divvy
-import fr.cph.chicago.entity.DivvyStation
 import fr.cph.chicago.exception.ParserException
 import fr.cph.chicago.util.Util
 import java.io.InputStream
@@ -49,18 +46,6 @@ object JsonParser {
     fun <T> parse(stream: InputStream, clazz: Class<T>): T {
         try {
             return mapper.readValue(stream, clazz)
-        } catch (e: Exception) {
-            throw ParserException(e)
-        } finally {
-            Util.closeQuietly(stream)
-        }
-    }
-
-    @Throws(ParserException::class)
-    fun parseStations(stream: InputStream): List<DivvyStation> {
-        try {
-            val (stations) = mapper.readValue<Divvy>(stream, object : TypeReference<Divvy>() {})
-            return stations
         } catch (e: Exception) {
             throw ParserException(e)
         } finally {

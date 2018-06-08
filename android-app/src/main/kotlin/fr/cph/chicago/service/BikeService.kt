@@ -21,8 +21,8 @@ package fr.cph.chicago.service
 
 import fr.cph.chicago.client.DivvyClient
 import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.entity.Divvy
 import fr.cph.chicago.parser.JsonParser
-import io.reactivex.exceptions.Exceptions
 
 object BikeService {
 
@@ -30,33 +30,25 @@ object BikeService {
     private val jsonParser = JsonParser
 
     fun loadAllBikeStations(): List<BikeStation> {
-        try {
-            val bikeStationsInputStream = client.getBikeStations()
-            return jsonParser
-                .parseStations(bikeStationsInputStream)
-                // TODO: Add mapstruct to the project to avoid doing that
-                .map { divvyStation ->
-                    BikeStation(
-                        divvyStation.id,
-                        divvyStation.name,
-                        divvyStation.availableDocks,
-                        divvyStation.availableBikes,
-                        divvyStation.latitude,
-                        divvyStation.longitude,
-                        divvyStation.stAddress1)
-                }
-                .sortedWith(compareBy(BikeStation::name))
-                .toMutableList()
-        } catch (throwable: Throwable) {
-            throw Exceptions.propagate(throwable)
-        }
+        val bikeStationsInputStream = client.getBikeStations()
+        return jsonParser
+            .parse(bikeStationsInputStream, Divvy::class.java)
+            .stations
+            .map { divvyStation ->
+                BikeStation(
+                    divvyStation.id,
+                    divvyStation.name,
+                    divvyStation.availableDocks,
+                    divvyStation.availableBikes,
+                    divvyStation.latitude,
+                    divvyStation.longitude,
+                    divvyStation.stAddress1)
+            }
+            .sortedWith(compareBy(BikeStation::name))
+            .toMutableList()
     }
 
     fun findBikeStation(id: Int): BikeStation {
-        try {
-            return loadAllBikeStations().first { (bikeId) -> bikeId == id }
-        } catch (throwable: Throwable) {
-            throw Exceptions.propagate(throwable)
-        }
+        return loadAllBikeStations().first { (bikeId) -> bikeId == id }
     }
 }
