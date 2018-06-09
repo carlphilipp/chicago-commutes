@@ -122,8 +122,8 @@ class BusBoundActivity : ListActivity() {
                 extras.putString(bundleBusRouteName, busRouteName)
                 extras.putString(bundleBusBound, bound)
                 extras.putString(bundleBusBoundTitle, boundTitle)
-                extras.putDouble(bundleBusLatitude, busStop.position!!.latitude)
-                extras.putDouble(bundleBusLongitude, busStop.position!!.longitude)
+                extras.putDouble(bundleBusLatitude, busStop.position.latitude)
+                extras.putDouble(bundleBusLongitude, busStop.position.longitude)
 
                 intent.putExtras(extras)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

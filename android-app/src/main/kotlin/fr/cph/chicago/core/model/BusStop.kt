@@ -21,24 +21,18 @@ package fr.cph.chicago.core.model
 
 import android.os.Parcel
 import android.os.Parcelable
-import io.realm.RealmObject
-import io.realm.annotations.PrimaryKey
-import org.apache.commons.lang3.StringUtils
-import java.io.Serializable
 
 /**
- * Bus stop entity. This can't be immutable because it needs to extends RealmObject.
+ * Bus stop entity
  *
  * @author Carl-Philipp Harmant
  * @version 1
  */
 open class BusStop(
-    @PrimaryKey
-    var id: Int = 0,
-    var name: String = StringUtils.EMPTY,
-    var description: String = StringUtils.EMPTY,
-    // Realm decided that position must be nullable... https://github.com/realm/realm-java/commit/39bb67cef10b62456649fdd7cf5710bd3361c29a
-    var position: Position? = Position()) : RealmObject(), Comparable<BusStop>, Parcelable, Serializable, Station {
+    val id: Int,
+    val name: String,
+    val description: String,
+    val position: Position) : Comparable<BusStop>, Parcelable, Station {
 
     private constructor(source: Parcel) : this(
         id = source.readInt(),
@@ -52,8 +46,8 @@ open class BusStop(
 
     override fun compareTo(other: BusStop): Int {
         val position = other.position
-        val latitude = java.lang.Double.compare(position!!.latitude, position.latitude)
-        return if (latitude == 0) java.lang.Double.compare(position.longitude, position.longitude) else latitude
+        val latitude = position.latitude.compareTo(position.latitude)
+        return if (latitude == 0) position.longitude.compareTo(position.longitude) else latitude
     }
 
     override fun describeContents(): Int {
@@ -68,8 +62,6 @@ open class BusStop(
     }
 
     companion object {
-
-        private const val serialVersionUID = 0L
 
         @JvmField
         val CREATOR: Parcelable.Creator<BusStop> = object : Parcelable.Creator<BusStop> {

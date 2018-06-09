@@ -22,6 +22,7 @@ package fr.cph.chicago.repository
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.repository.entity.BusStopDb
 import io.realm.Realm
 
 object BusRepository {
@@ -47,7 +48,7 @@ object BusRepository {
     fun hasBusStopsEmpty(): Boolean {
         val realm = Realm.getDefaultInstance()
         return realm.use {
-            it.where(BusStop::class.java).findFirst() == null
+            it.where(BusStopDb::class.java).findFirst() == null
         }
     }
 
@@ -55,7 +56,9 @@ object BusRepository {
         val realm = Realm.getDefaultInstance()
         realm.use {
             it.executeTransaction {
-                busStops.forEach { busStop -> it.copyToRealm(busStop) }
+                busStops
+                    .map { busStop -> BusStopDb(busStop) }
+                    .forEach { busStopDb -> it.copyToRealm(busStopDb) }
             }
         }
     }
@@ -82,7 +85,7 @@ object BusRepository {
         val lonMin = longitude - range
 
         return realm.use {
-            it.where(BusStop::class.java)
+            it.where(BusStopDb::class.java)
                 // TODO use between when child object is supported by Realm
                 .greaterThan("position.latitude", latMin)
                 .lessThan("position.latitude", latMax)
@@ -90,19 +93,17 @@ object BusRepository {
                 .lessThan("position.longitude", lonMax)
                 .sort("name")
                 .findAll()
-                // Need to map and create objects to close realm stream
                 .map { currentBusStop ->
-                    val busStop = BusStop()
-                    busStop.name = currentBusStop.name
-                    busStop.description = currentBusStop.description
-                    val pos = Position()
-                    pos.latitude = currentBusStop.position!!.latitude
-                    pos.longitude = currentBusStop.position!!.longitude
-                    busStop.position = pos
-                    busStop.id = currentBusStop.id
-                    busStop
+                    BusStop(
+                        id = currentBusStop.id,
+                        name = currentBusStop.name,
+                        description = currentBusStop.description,
+                        position = Position(
+                            latitude = currentBusStop.position!!.latitude,
+                            longitude = currentBusStop.position!!.longitude
+                        )
+                    )
                 }
-                .toList()
         }
     }
 }

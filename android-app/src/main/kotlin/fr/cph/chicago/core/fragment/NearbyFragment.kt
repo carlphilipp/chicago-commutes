@@ -166,7 +166,7 @@ class NearbyFragment : AbstractFragment(), EasyPermissions.PermissionCallbacks {
 
                 busStops
                     .forEach { busStop ->
-                        val point = LatLng(busStop.position!!.latitude, busStop.position!!.longitude)
+                        val point = LatLng(busStop.position.latitude, busStop.position.longitude)
                         val markerOptions = MarkerOptions()
                             .position(point)
                             .title(busStop.name)

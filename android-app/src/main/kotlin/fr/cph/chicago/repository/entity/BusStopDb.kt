@@ -1,0 +1,42 @@
+/**
+ * Copyright 2018 Carl-Philipp Harmant
+ *
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package fr.cph.chicago.repository.entity
+
+import fr.cph.chicago.core.model.BusStop
+import fr.cph.chicago.core.model.Position
+import io.realm.RealmObject
+import io.realm.annotations.PrimaryKey
+import org.apache.commons.lang3.StringUtils
+
+open class BusStopDb(
+    @PrimaryKey
+    var id: Int = 0,
+    var name: String = StringUtils.EMPTY,
+    var description: String = StringUtils.EMPTY,
+    // Realm decided that position must be nullable... https://github.com/realm/realm-java/commit/39bb67cef10b62456649fdd7cf5710bd3361c29a
+    var position: Position? = Position()) : RealmObject() {
+
+    constructor(busStop: BusStop) : this(
+        id = busStop.id,
+        name = busStop.name,
+        description = busStop.description,
+        position = busStop.position
+    )
+}
