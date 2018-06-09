@@ -27,15 +27,15 @@ import java.util.TreeMap
 import java.util.TreeSet
 
 /**
- * TrainStation entity
+ * Train station entity
  *
  * @author Carl-Philipp Harmant
  * @version 1
  */
-data class TrainStation(
-    var id: Int,
-    var name: String,
-    var stops: MutableList<Stop>) : Comparable<TrainStation>, Parcelable, Station {
+class TrainStation(
+    id: Int,
+    name: String,
+    var stops: MutableList<Stop>) : Comparable<TrainStation>, Parcelable, Station(id, name) {
 
     private constructor(source: Parcel) : this(
         id = source.readInt(),

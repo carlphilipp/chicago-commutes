@@ -91,7 +91,7 @@ class BikeFragment : AbstractFragment() {
 
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 divvyStations = this@BikeFragment.divvyStations
-                    .filter { (_, name) -> StringUtils.containsIgnoreCase(name, s.toString().trim { it <= ' ' }) }
+                    .filter { station -> StringUtils.containsIgnoreCase(station.name, s.toString().trim { it <= ' ' }) }
             }
 
             override fun afterTextChanged(s: Editable) {

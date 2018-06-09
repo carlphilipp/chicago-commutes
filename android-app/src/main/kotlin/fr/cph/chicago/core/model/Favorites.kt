@@ -86,7 +86,7 @@ object Favorites {
         } else {
             val index = position - (trainFavorites.size + fakeBusFavorites.size)
             return divvyStations
-                .filter { (id) -> Integer.toString(id) == bikeFavorites[index] }
+                .filter { st -> Integer.toString(st.id) == bikeFavorites[index] }
                 .getOrElse(0, { createEmptyBikeStation(index) })
         }
     }
@@ -127,9 +127,9 @@ object Favorites {
         val bikeFavoritesTemp = preferenceService.getBikeFavorites()
         if (divvyStations.isNotEmpty()) {
             bikeFavoritesTemp
-                .flatMap { bikeStationId -> divvyStations.filter { (id) -> Integer.toString(id) == bikeStationId } }
+                .flatMap { bikeStationId -> divvyStations.filter { st -> st.id.toString() == bikeStationId } }
                 .sortedWith(util.DIVVY_COMPARATOR_BY_NAME)
-                .map { (id) -> Integer.toString(id) }
+                .map { st -> st.id.toString() }
                 .forEach({ bikeFavorites.add(it) })
         } else {
             bikeFavorites.addAll(bikeFavoritesTemp)

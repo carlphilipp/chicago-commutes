@@ -19,4 +19,4 @@
 
 package fr.cph.chicago.core.model
 
-interface Station
+abstract class Station(val id: Int, val name: String)

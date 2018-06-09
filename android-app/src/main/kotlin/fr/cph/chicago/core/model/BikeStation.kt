@@ -4,14 +4,14 @@ import android.os.Parcel
 import android.os.Parcelable
 import org.apache.commons.lang3.StringUtils
 
-data class BikeStation(
-    val id: Int,
-    val name: String,
+class BikeStation(
+    id: Int,
+    name: String,
     val availableDocks: Int,
     val availableBikes: Int,
     val latitude: Double,
     val longitude: Double,
-    val address: String) : Parcelable, Station {
+    val address: String) : Parcelable, Station(id, name) {
 
     private constructor(source: Parcel) : this(
         id = source.readInt(),

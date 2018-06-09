@@ -33,7 +33,7 @@ class BikeAllBikeStationsObserver(private val activity: BikeStationActivity, pri
 
     override fun onNext(divvyStations: List<BikeStation>) {
         divvyStations
-            .filter { (id) -> bikeStationId == id }
+            .filter { station -> bikeStationId == station.id }
             .elementAtOrElse(0, { BikeStation.buildDefaultBikeStationWithName("error") })
             .also { station ->
                 if (station.name != "error") {

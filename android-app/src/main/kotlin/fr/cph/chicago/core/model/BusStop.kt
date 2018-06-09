@@ -28,11 +28,11 @@ import android.os.Parcelable
  * @author Carl-Philipp Harmant
  * @version 1
  */
-open class BusStop(
-    val id: Int,
-    val name: String,
+class BusStop(
+    id: Int,
+    name: String,
     val description: String,
-    val position: Position) : Comparable<BusStop>, Parcelable, Station {
+    val position: Position) : Comparable<BusStop>, Parcelable, Station(id, name) {
 
     private constructor(source: Parcel) : this(
         id = source.readInt(),

@@ -49,6 +49,6 @@ object BikeService {
     }
 
     fun findBikeStation(id: Int): BikeStation {
-        return loadAllBikeStations().first { (bikeId) -> bikeId == id }
+        return loadAllBikeStations().first { station -> station.id == id }
     }
 }
