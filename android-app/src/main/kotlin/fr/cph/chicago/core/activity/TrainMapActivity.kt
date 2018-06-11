@@ -139,7 +139,7 @@ class TrainMapActivity : AbstractMapActivity() {
         trains.forEach { (routeNumber, destName, _, position, heading) ->
             val point = LatLng(position.latitude, position.longitude)
             val title = "To " + destName
-            val snippet = Integer.toString(routeNumber)
+            val snippet = routeNumber.toString()
 
             val marker = googleMap.addMarker(MarkerOptions().position(point).title(title).snippet(snippet).icon(bitmapDesc).anchor(0.5f, 0.5f).rotation(heading.toFloat()).flat(true))
             markers.add(marker)

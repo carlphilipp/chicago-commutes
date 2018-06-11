@@ -68,7 +68,7 @@ class BusStopOnClickListener(private val activity: Activity, private val parent:
         observableUtil.createBusStopBoundObservable(busDetails.busRouteId, busDetails.boundTitle)
             .subscribe({ onNext ->
                 Observable.fromIterable(onNext)
-                    .filter { busStop -> Integer.toString(busStop.id) == busDetails.stopId }
+                    .filter { busStop -> busStop.id.toString() == busDetails.stopId }
                     .firstElement()
                     .subscribe({ busStop: BusStop ->
                         val intent = Intent(activity, BusActivity::class.java)

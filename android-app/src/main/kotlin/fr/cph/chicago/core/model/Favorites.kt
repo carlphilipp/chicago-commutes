@@ -86,7 +86,7 @@ object Favorites {
         } else {
             val index = position - (trainFavorites.size + fakeBusFavorites.size)
             return divvyStations
-                .filter { st -> Integer.toString(st.id) == bikeFavorites[index] }
+                .filter { st -> st.id.toString() == bikeFavorites[index] }
                 .getOrElse(0, { createEmptyBikeStation(index) })
         }
     }
@@ -137,11 +137,11 @@ object Favorites {
     }
 
     fun updateTrainArrivals(trainArrivals: SparseArray<TrainArrival>) {
-        Favorites.trainArrivals.clear()
+        this.trainArrivals.clear()
         for (i in 0 until trainArrivals.size()) {
             val key = trainArrivals.keyAt(i)
             val obj = trainArrivals.get(key)
-            Favorites.trainArrivals.append(key, obj)
+            this.trainArrivals.append(key, obj)
         }
     }
 
@@ -179,7 +179,7 @@ object Favorites {
         return busFavorites
             .map { util.decodeBusFavorite(it) }
             // TODO: Is that correct ? maybe remove stopId
-            .filter { (routeId1, stopId1, bound1) -> routeId == routeId1 && Integer.toString(stopId) == stopId1 && bound == bound1 }
+            .filter { (routeId1, stopId1, bound1) -> routeId == routeId1 && stopId.toString() == stopId1 && bound == bound1 }
             .isNotEmpty()
     }
 

@@ -189,7 +189,7 @@ class BikeStationActivity : AbstractStationActivity() {
             false
         } else {
             preferenceService.addToBikeFavorites(divvyStation.id, swipeRefreshLayout)
-            preferenceService.addBikeRouteNameMapping(Integer.toString(divvyStation.id), divvyStation.name)
+            preferenceService.addBikeRouteNameMapping(divvyStation.id.toString(), divvyStation.name)
             favoritesImage.setColorFilter(yellowLineDark)
             true
         }

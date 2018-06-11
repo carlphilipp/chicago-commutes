@@ -145,7 +145,7 @@ object PreferenceService {
 
     fun removeFromBikeFavorites(stationId: Int, view: View) {
         val favorites = repo.getBikeFavorites().toMutableList()
-        favorites.remove(Integer.toString(stationId))
+        favorites.remove(stationId.toString())
         repo.saveBikeFavorites(favorites)
         util.showSnackBar(view, R.string.message_remove_fav)
     }

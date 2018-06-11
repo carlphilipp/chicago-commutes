@@ -213,7 +213,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
                     routeId,
                     busDirectionEnum.shortUpperCase,
                     boundTitle,
-                    Integer.toString(stopId),
+                    stopId.toString(),
                     busRoute.name,
                     stopName
                 )
