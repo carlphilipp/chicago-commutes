@@ -55,9 +55,9 @@ import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.util.LayoutUtil
+import fr.cph.chicago.util.TimeUtil
 import fr.cph.chicago.util.Util
 import java.util.Calendar
-import java.util.Date
 
 /**
  * Adapter that will handle favoritesData
@@ -98,21 +98,14 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
     }
 
     override fun onBindViewHolder(holder: FavoritesViewHolder, position: Int) {
-        resetData(holder)
+        holder.mainLayout.removeAllViews()
         val model = favoritesData.getObject(position)
         holder.lastUpdateTextView.text = lastUpdate
         when (model) {
             is TrainStation -> handleStation(holder, model)
             is BusRoute -> handleBusRoute(holder, model)
-            else -> {
-                val bikeStation = model as BikeStation
-                handleBikeStation(holder, bikeStation)
-            }
+            else -> handleBikeStation(holder, model as BikeStation)
         }
-    }
-
-    private fun resetData(holder: FavoritesViewHolder) {
-        holder.mainLayout.removeAllViews()
     }
 
     private fun handleStation(holder: FavoritesViewHolder, trainStation: TrainStation) {
@@ -128,19 +121,19 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
                 // Start train station activity
                 val extras = Bundle()
                 val intent = Intent(context, TrainStationActivity::class.java)
-                extras.putInt(activity.getString(R.string.bundle_train_stationId), stationId)
+                extras.putInt(App.instance.getString(R.string.bundle_train_stationId), stationId)
                 intent.putExtras(extras)
-                activity.startActivity(intent)
+                App.instance.startActivity(intent)
             }
         }
 
-        holder.mapButton.text = activity.getString(R.string.favorites_view_trains)
+        holder.mapButton.text = App.instance.getString(R.string.favorites_view_trains)
         holder.mapButton.setOnClickListener { _ ->
             if (!util.isNetworkAvailable()) {
                 util.showNetworkErrorMessage(activity)
             } else {
                 if (trainLines.size == 1) {
-                    startActivity(trainLines.iterator().next())
+                    startTrainMapActivity(trainLines.iterator().next())
                 } else {
                     val colors = mutableListOf<Int>()
                     val values = trainLines
@@ -148,20 +141,19 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
                             val color = if (line !== TrainLine.YELLOW) line.color else ContextCompat.getColor(context, R.color.yellowLine)
                             colors.add(color)
                             listOf(line.toStringWithLine())
-                        }.toList()
+                        }
 
                     val ada = PopupFavoritesTrainAdapter(activity, values, colors)
 
-                    val lines = mutableListOf<TrainLine>()
-                    lines.addAll(trainLines)
+                    val lines = trainLines.toList()
 
                     val builder = AlertDialog.Builder(activity)
-                    builder.setAdapter(ada) { _, position -> startActivity(lines[position]) }
+                    builder.setAdapter(ada) { _, position -> startTrainMapActivity(lines[position]) }
 
                     val dialog = builder.create()
                     dialog.show()
                     if (dialog.window != null) {
-                        dialog.window.setLayout(((activity.application as App).screenWidth * 0.7).toInt(), LayoutParams.WRAP_CONTENT)
+                        dialog.window.setLayout((App.instance.screenWidth * 0.7).toInt(), LayoutParams.WRAP_CONTENT)
                     }
                 }
             }
@@ -181,10 +173,10 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         }
     }
 
-    private fun startActivity(trainLine: TrainLine) {
+    private fun startTrainMapActivity(trainLine: TrainLine) {
         val extras = Bundle()
         val intent = Intent(context, TrainMapActivity::class.java)
-        extras.putString(activity.getString(R.string.bundle_train_line), trainLine.toTextString())
+        extras.putString(App.instance.getString(R.string.bundle_train_line), trainLine.toTextString())
         intent.putExtras(extras)
         activity.startActivity(intent)
     }
@@ -230,17 +222,17 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
             }
         }
 
-        holder.mapButton.text = activity.getString(R.string.favorites_view_buses)
+        holder.mapButton.text = App.instance.getString(R.string.favorites_view_buses)
         holder.detailsButton.setOnClickListener(BusStopOnClickListener(activity, holder.parent, busDetailsDTOs))
         holder.mapButton.setOnClickListener { _ ->
             if (!util.isNetworkAvailable()) {
                 util.showNetworkErrorMessage(activity)
             } else {
                 val bounds = busDetailsDTOs.map { it.bound }.toSet()
-                val intent = Intent(activity.applicationContext, BusMapActivity::class.java)
+                val intent = Intent(App.instance.applicationContext, BusMapActivity::class.java)
                 val extras = Bundle()
-                extras.putString(activity.getString(R.string.bundle_bus_route_id), busRoute.id)
-                extras.putStringArray(activity.getString(R.string.bundle_bus_bounds), bounds.toTypedArray())
+                extras.putString(App.instance.getString(R.string.bundle_bus_route_id), busRoute.id)
+                extras.putStringArray(App.instance.getString(R.string.bundle_bus_bounds), bounds.toTypedArray())
                 intent.putExtras(extras)
                 activity.startActivity(intent)
             }
@@ -257,7 +249,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
             } else if (divvyStation.latitude != 0.0 && divvyStation.longitude != 0.0) {
                 val intent = Intent(activity.applicationContext, BikeStationActivity::class.java)
                 val extras = Bundle()
-                extras.putParcelable(activity.getString(R.string.bundle_bike_station), divvyStation)
+                extras.putParcelable(App.instance.getString(R.string.bundle_bike_station), divvyStation)
                 intent.putExtras(extras)
                 activity.startActivity(intent)
             } else {
@@ -265,7 +257,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
             }
         }
 
-        holder.mapButton.text = activity.getString(R.string.favorites_view_station)
+        holder.mapButton.text = App.instance.getString(R.string.favorites_view_station)
         holder.mapButton.setOnClickListener(GoogleMapOnClickListener(divvyStation.latitude, divvyStation.longitude))
 
         val bikeResultLayout = layoutUtil.buildBikeFavoritesLayout(divvyStation)
@@ -289,14 +281,14 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
      * Refresh date update
      */
     fun resetLastUpdate() {
-        (activity.application as App).lastUpdate = Calendar.getInstance().time
+        App.instance.lastUpdate = Calendar.getInstance().time
     }
 
     /**
      * Refresh updated view
      */
     fun updateModel() {
-        lastUpdate = lastUpdateInMinutes
+        lastUpdate = TimeUtil.lastUpdateInMinutes()
         notifyDataSetChanged()
     }
 
@@ -308,55 +300,5 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
 
     fun updateBikeStations(divvyStations: List<BikeStation>) {
         favoritesData.updateBikeStations(divvyStations)
-    }
-
-    /**
-     * Get last update in minutes
-     *
-     * @return a string
-     */
-    private val lastUpdateInMinutes: String
-        get() {
-            val lastUpdateInMinutes = StringBuilder()
-            val currentDate = Calendar.getInstance().time
-            val diff = getTimeDifference((activity.application as App).lastUpdate, currentDate)
-            val hours = diff[0]
-            val minutes = diff[1]
-            if (hours == 0L && minutes == 0L) {
-                lastUpdateInMinutes.append(activity.getString(R.string.time_now))
-            } else {
-                if (hours == 0L) {
-                    lastUpdateInMinutes.append(minutes).append(activity.getString(R.string.time_min))
-                } else {
-                    lastUpdateInMinutes.append(hours).append(activity.getString(R.string.time_hour)).append(minutes).append(activity.getString(R.string.time_min))
-                }
-            }
-            return lastUpdateInMinutes.toString()
-        }
-
-    /**
-     * Get time difference between 2 dates
-     *
-     * @param date1 the date one
-     * @param date2 the date two
-     * @return a tab containing in 0 the hour and in 1 the minutes
-     */
-    private fun getTimeDifference(date1: Date, date2: Date): LongArray {
-        val result = LongArray(2)
-        val cal = Calendar.getInstance()
-        cal.time = date1
-        val t1 = cal.timeInMillis
-        cal.time = date2
-        var diff = Math.abs(cal.timeInMillis - t1)
-        val day = 1000 * 60 * 60 * 24
-        val hour = day / 24
-        val minute = hour / 60
-        diff %= day.toLong()
-        val h = diff / hour
-        diff %= hour.toLong()
-        val m = diff / minute
-        result[0] = h
-        result[1] = m
-        return result
     }
 }
