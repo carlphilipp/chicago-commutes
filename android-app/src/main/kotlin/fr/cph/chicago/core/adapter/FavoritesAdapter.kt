@@ -34,7 +34,7 @@ import android.widget.TextView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.MainActivity
-import fr.cph.chicago.core.listener.BikeDetailsOnClickListener
+import fr.cph.chicago.core.listener.BikeDetailsButtonOnClickListener
 import fr.cph.chicago.core.listener.BusMapButtonOnClickListener
 import fr.cph.chicago.core.listener.BusStopOnClickListener
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener
@@ -173,7 +173,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         holder.stationNameTextView.text = divvyStation.name
         holder.favoriteImage.setImageResource(R.drawable.ic_directions_bike_white_24dp)
 
-        holder.detailsButton.setOnClickListener(BikeDetailsOnClickListener(activity, divvyStation))
+        holder.detailsButton.setOnClickListener(BikeDetailsButtonOnClickListener(activity, divvyStation))
 
         holder.mapButton.text = App.instance.getString(R.string.favorites_view_station)
         holder.mapButton.setOnClickListener(GoogleMapOnClickListener(divvyStation.latitude, divvyStation.longitude))
