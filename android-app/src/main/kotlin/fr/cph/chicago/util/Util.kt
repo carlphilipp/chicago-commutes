@@ -73,6 +73,10 @@ object Util {
         LatLng(41.8819, -87.6278)
     }
 
+    val chicagoPosition: Position by lazy {
+        Position(chicago.latitude, chicago.longitude)
+    }
+
     fun generateViewId(): Int {
         while (true) {
             val result = nextGeneratedId.get()

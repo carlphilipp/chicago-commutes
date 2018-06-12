@@ -121,7 +121,10 @@ class TrainMapActivity : AbstractMapActivity() {
         val position: Position
         val zoom: Int
         if (result.size == 1) {
-            position = result[0].position
+            position = if (result[0].position.latitude == 0.0 && result[0].position.longitude == 0.0)
+                Util.chicagoPosition
+            else
+                result[0].position
             zoom = 15
         } else {
             position = Train.getBestPosition(result)

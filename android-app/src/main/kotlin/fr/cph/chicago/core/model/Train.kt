@@ -37,6 +37,7 @@ data class Train(
             trains
                 .asSequence()
                 .map { it.position }
+                .filter { it.latitude != 0.0 && it.latitude != 0.0 }
                 .forEachIndexed { i, temp ->
                     if (i == 0) {
                         maxLatitude = temp.latitude
