@@ -104,7 +104,9 @@
                     android:scrollHorizontally="true"
                     android:textColor="@color/black"
                     android:textIsSelectable="false"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp"/>
 
                 <LinearLayout
                     android:id="@+id/activity_bus_stops"

@@ -113,7 +113,7 @@ class BusBoundActivity : ListActivity() {
             listAdapter = busBoundAdapter
             listView.setOnItemClickListener { _, _, position, _ ->
                 val busStop = busBoundAdapter.getItem(position) as BusStop
-                val intent = Intent(applicationContext, BusActivity::class.java)
+                val intent = Intent(applicationContext, BusStopActivity::class.java)
 
                 val extras = Bundle()
                 extras.putInt(bundleBusStopId, busStop.id)

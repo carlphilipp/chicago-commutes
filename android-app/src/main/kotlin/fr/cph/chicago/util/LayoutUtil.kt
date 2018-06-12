@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.util
 
+import android.graphics.Typeface
 import android.support.v4.content.ContextCompat
 import android.text.SpannableString
 import android.text.TextUtils
@@ -207,7 +208,7 @@ object LayoutUtil {
     }
 
     fun buildBikeFavoritesLayout(bikeStation: BikeStation): LinearLayout {
-        val container = buildBikeLayout()
+        val container = buildBusBikeLayout()
         val linearLayout = (container.getChildAt(0) as LinearLayout)
         linearLayout.addView(createBikeLine(bikeStation, true, true))
         linearLayout.addView(createBikeLine(bikeStation, false, true))
@@ -215,14 +216,21 @@ object LayoutUtil {
     }
 
     fun buildBikeStationLayout(bikeStation: BikeStation): LinearLayout {
-        val container = buildBikeLayout()
+        val container = buildBusBikeLayout()
         val linearLayout = (container.getChildAt(0) as LinearLayout)
         linearLayout.addView(createBikeLine(bikeStation, true, false))
         linearLayout.addView(createBikeLine(bikeStation, false, false))
         return container
     }
 
-    private fun buildBikeLayout(): LinearLayout {
+    fun buildBusStopsLayout(busArrivals: List<BusArrival>): LinearLayout {
+        val container = buildBusBikeLayout()
+        val linearLayout = (container.getChildAt(0) as LinearLayout)
+        linearLayout.addView(createBusLines(busArrivals))
+        return container
+    }
+
+    private fun buildBusBikeLayout(): LinearLayout {
         val containerParams = getInsideParams(true, true)
         val container = LinearLayout(App.instance)
         container.orientation = LinearLayout.VERTICAL
@@ -233,6 +241,69 @@ object LayoutUtil {
 
         container.addView(linearLayout)
         return container
+    }
+
+    private fun createBusLines(busArrivals: List<BusArrival>): LinearLayout {
+        val lines = LinearLayout(App.instance)
+        lines.orientation = LinearLayout.VERTICAL
+
+        val tempMap = HashMap<String, MutableList<LinearLayout>>()
+
+        busArrivals.forEach {
+            val destination = it.busDestination
+            if (tempMap.containsKey(destination)) {
+                val layouts = tempMap[destination]!!
+                val layout: LinearLayout = layouts.last()
+                val arrivalTextView = TextView(App.instance)
+                arrivalTextView.text = formatArrivalTime(it)
+                layout.addView(arrivalTextView)
+
+            } else {
+                val pixels = util.convertDpToPixel(16)
+                val pixelsHalf = pixels / 2
+                val grey5 = ContextCompat.getColor(App.instance, R.color.grey_5)
+
+                val lineParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                val line = LinearLayout(App.instance)
+                line.orientation = LinearLayout.HORIZONTAL
+                line.layoutParams = lineParams
+
+                // Left
+                val leftParam = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                val left = RelativeLayout(App.instance)
+                left.layoutParams = leftParam
+
+                val availableParam = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                availableParam.setMargins(pixelsHalf, 0, 0, 0)
+                availableParam.width = util.convertDpToPixel(110)
+
+                val destinationTextView = TextView(App.instance)
+                destinationTextView.text = App.instance.resources.getString(R.string.bike_available_docks)
+                destinationTextView.setSingleLine(true)
+                destinationTextView.layoutParams = availableParam
+                destinationTextView.setTextColor(grey5)
+                destinationTextView.setTypeface(null, Typeface.BOLD)
+                val availableId = util.generateViewId()
+                destinationTextView.id = availableId
+
+                val availableValueParam = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                availableValueParam.addRule(RelativeLayout.RIGHT_OF, availableId)
+                availableValueParam.setMargins(pixelsHalf, 0, 0, 0)
+
+                val arrivalTextView = TextView(App.instance)
+                destinationTextView.text = destination
+                arrivalTextView.text = formatArrivalTime(it)
+                arrivalTextView.layoutParams = availableValueParam
+
+                left.addView(destinationTextView)
+                left.addView(arrivalTextView)
+                line.addView(left)
+                lines.addView(line)
+
+                tempMap[destination] = mutableListOf(line)
+            }
+        }
+        return lines
     }
 
     private fun createBikeLine(divvyStation: BikeStation, firstLine: Boolean, withDots: Boolean): LinearLayout {
@@ -297,5 +368,9 @@ object LayoutUtil {
 
     private fun formatBikesDocksValues(num: Int): String {
         return if (num >= 10) num.toString() else "  $num"
+    }
+
+    private fun formatArrivalTime(busArrival: BusArrival): String {
+        return if (busArrival.isDelay) " Delay" else " " + busArrival.timeLeft
     }
 }

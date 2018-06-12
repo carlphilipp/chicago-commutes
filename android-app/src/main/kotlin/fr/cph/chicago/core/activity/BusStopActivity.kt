@@ -46,6 +46,7 @@ import fr.cph.chicago.exception.ParserException
 import fr.cph.chicago.exception.TrackerException
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.PreferenceService
+import fr.cph.chicago.util.LayoutUtil
 import fr.cph.chicago.util.Util
 
 /**
@@ -54,7 +55,7 @@ import fr.cph.chicago.util.Util
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BusActivity : AbstractStationActivity() {
+class BusStopActivity : AbstractStationActivity() {
 
     @BindView(R.id.activity_bus_stop_swipe_refresh_layout)
     lateinit var scrollView: SwipeRefreshLayout
@@ -182,7 +183,7 @@ class BusActivity : AbstractStationActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.elevation = 4f
         }
-        toolbar.title = busRouteId + " - " + busStopName
+        toolbar.title = "$busRouteId - $busStopName"
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp)
         toolbar.setOnClickListener { _ -> finish() }
     }
@@ -215,42 +216,8 @@ class BusActivity : AbstractStationActivity() {
      * Draw arrivals in current layout
      */
     fun drawArrivals() {
-        val tempMap = HashMap<String, MutableList<LinearLayout>>()
-        if (busArrivals.isEmpty()) {
-            val arrivalView = TextView(applicationContext)
-            arrivalView.setTextColor(grey)
-            arrivalView.text = busActivityNoService
-            val linearLayout = LinearLayout(applicationContext)
-            linearLayout.addView(arrivalView)
-            tempMap[""] = mutableListOf(linearLayout)
-        } else {
-            busArrivals
-                .forEach { arrival ->
-                    val destination = arrival.busDestination
-                    if (tempMap.containsKey(destination)) {
-                        val oldLayout = tempMap[destination]!!
-                        val linearLayout: LinearLayout = oldLayout[oldLayout.size - 1]
-                        val arrivalView = TextView(applicationContext)
-                        arrivalView.text = if (arrival.isDelay) " Delay" else " " + arrival.timeLeft
-                        linearLayout.addView(arrivalView)
-                    } else {
-                        val linearLayout = LinearLayout(applicationContext)
-                        val destinationView = TextView(applicationContext)
-                        destinationView.text = destination + ":   "
-                        destinationView.setTextColor(grey)
-                        destinationView.setTypeface(null, Typeface.BOLD)
-                        val arrivalView = TextView(applicationContext)
-                        arrivalView.text = if (arrival.isDelay) " Delay" else " " + arrival.timeLeft
-                        linearLayout.addView(destinationView)
-                        linearLayout.addView(arrivalView)
-                        tempMap[destination] = mutableListOf(linearLayout)
-                    }
-                }
-        }
         stopsView.removeAllViews()
-        tempMap.entries
-            .flatMap { mutableEntry -> mutableEntry.value }
-            .forEach { stopsView.addView(it) }
+        stopsView.addView(LayoutUtil.buildBusStopsLayout(busArrivals))
     }
 
     override fun isFavorite(): Boolean {
@@ -295,7 +262,7 @@ class BusActivity : AbstractStationActivity() {
 
         override fun onPostExecute(result: List<BusArrival>) {
             if (trackerException == null) {
-                this@BusActivity.busArrivals = result
+                this@BusStopActivity.busArrivals = result
                 drawArrivals()
             } else {
                 util.showNetworkErrorMessage(scrollView)

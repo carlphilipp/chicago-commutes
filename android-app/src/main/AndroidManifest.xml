@@ -76,7 +76,7 @@
             android:label="@string/train_station_activity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".core.activity.BusActivity"
+            android:name=".core.activity.BusStopActivity"
             android:label="@string/bus_bound_activity"
             android:screenOrientation="portrait"/>
         <activity

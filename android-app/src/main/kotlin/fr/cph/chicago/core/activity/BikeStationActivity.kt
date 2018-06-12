@@ -84,7 +84,7 @@ class BikeStationActivity : AbstractStationActivity() {
 
     @JvmField
     @BindColor(R.color.grey_5)
-    internal var grey_5: Int = 0
+    internal var grey5: Int = 0
     @JvmField
     @BindColor(R.color.red)
     internal var red: Int = 0
@@ -117,10 +117,10 @@ class BikeStationActivity : AbstractStationActivity() {
             // Call google street api to load image
             loadGoogleStreetImage(Position(latitude, longitude), streetViewImage, streetViewText)
 
-            mapImage.setColorFilter(grey_5)
-            directionImage.setColorFilter(grey_5)
+            mapImage.setColorFilter(grey5)
+            directionImage.setColorFilter(grey5)
 
-            favoritesImage.setColorFilter(if (isFavorite) yellowLineDark else grey_5)
+            favoritesImage.setColorFilter(if (isFavorite) yellowLineDark else grey5)
 
             favoritesImageContainer.setOnClickListener { _ -> switchFavorite() }
             bikeStationValue.text = divvyStation.address
@@ -185,7 +185,7 @@ class BikeStationActivity : AbstractStationActivity() {
     private fun switchFavorite() {
         isFavorite = if (isFavorite) {
             preferenceService.removeFromBikeFavorites(divvyStation.id, swipeRefreshLayout)
-            favoritesImage.setColorFilter(grey_5)
+            favoritesImage.setColorFilter(grey5)
             false
         } else {
             preferenceService.addToBikeFavorites(divvyStation.id, swipeRefreshLayout)
