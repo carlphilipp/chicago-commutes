@@ -1,9 +1,12 @@
 package fr.cph.chicago.util
 
 import com.google.android.gms.maps.model.LatLng
+import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.Position
 
 object PositionUtil {
+
+    private const val DEFAULT_RANGE = 0.008
 
     val chicago: LatLng by lazy {
         LatLng(41.8819, -87.6278)
@@ -45,5 +48,21 @@ object PositionUtil {
             latitude = (maxLatitude + minLatitude) / 2,
             longitude = (maxLongitude + minLongitude) / 2
         )
+    }
+
+    fun readNearbyStation(divvyStations: List<BikeStation>, position: Position): List<BikeStation> {
+        val latitude = position.latitude
+        val longitude = position.longitude
+
+        val latMax = latitude + DEFAULT_RANGE
+        val latMin = latitude - DEFAULT_RANGE
+        val lonMax = longitude + DEFAULT_RANGE
+        val lonMin = longitude - DEFAULT_RANGE
+
+        return divvyStations
+            .filter { station -> station.latitude <= latMax }
+            .filter { station -> station.latitude >= latMin }
+            .filter { station -> station.longitude <= lonMax }
+            .filter { station -> station.longitude >= lonMin }
     }
 }

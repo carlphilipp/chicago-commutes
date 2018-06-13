@@ -45,6 +45,7 @@ import fr.cph.chicago.service.AlertService
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
+import fr.cph.chicago.util.PositionUtil
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
@@ -61,6 +62,7 @@ object ObservableUtil {
     private val busService = BusService
     private val bikeService = BikeService
     private val alertService = AlertService
+    private val positionUtil = PositionUtil
 
     fun createFavoritesTrainArrivalsObservable(): Observable<TrainArrivalDTO> {
         return createObservableFromCallable(Callable { TrainArrivalDTO(trainService.loadFavoritesTrain(), false) })
@@ -216,7 +218,7 @@ object ObservableUtil {
     }
 
     fun createBikeStationAroundObservable(position: Position, divvyStations: List<BikeStation>): Observable<List<BikeStation>> {
-        return createObservableFromCallable(Callable { BikeStation.readNearbyStation(divvyStations, position) })
+        return createObservableFromCallable(Callable { positionUtil.readNearbyStation(divvyStations, position) })
             .onErrorReturn { throwable ->
                 Log.e(TAG, throwable.message, throwable)
                 // Do not change that to listOf().

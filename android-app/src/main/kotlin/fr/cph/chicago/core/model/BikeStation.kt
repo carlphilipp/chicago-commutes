@@ -38,26 +38,8 @@ class BikeStation(
 
     companion object {
 
-        private const val DEFAULT_RANGE = 0.008
-
         fun buildDefaultBikeStationWithName(name: String): BikeStation {
             return BikeStation(0, name, -1, -1, 0.0, 0.0, StringUtils.EMPTY)
-        }
-
-        fun readNearbyStation(divvyStations: List<BikeStation>, position: Position): List<BikeStation> {
-            val latitude = position.latitude
-            val longitude = position.longitude
-
-            val latMax = latitude + DEFAULT_RANGE
-            val latMin = latitude - DEFAULT_RANGE
-            val lonMax = longitude + DEFAULT_RANGE
-            val lonMin = longitude - DEFAULT_RANGE
-
-            return divvyStations
-                .filter { station -> station.latitude <= latMax }
-                .filter { station -> station.latitude >= latMin }
-                .filter { station -> station.longitude <= lonMax }
-                .filter { station -> station.longitude >= lonMin }
         }
 
         @JvmField

@@ -23,7 +23,7 @@ import android.os.Parcel
 import android.os.Parcelable
 
 /**
- * The position. This can't be immutable because it needs to extends RealmObject.
+ * The position
  *
  * @author Carl-Philipp Harmant
  * @version 1

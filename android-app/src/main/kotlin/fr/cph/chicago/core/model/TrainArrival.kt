@@ -30,7 +30,7 @@ import java.io.Serializable
  * @author Carl-Philipp Harmant
  * @version 1
  */
-data class TrainArrival(var trainEtas: MutableList<TrainEta> = mutableListOf()) : Parcelable, Serializable {
+data class TrainArrival(var trainEtas: MutableList<TrainEta> = mutableListOf()) : Parcelable {
 
     private constructor(source: Parcel) : this(trainEtas = source.createTypedArray(TrainEta.CREATOR).toMutableList())
 
@@ -52,8 +52,6 @@ data class TrainArrival(var trainEtas: MutableList<TrainEta> = mutableListOf()) 
     }
 
     companion object {
-
-        private const val serialVersionUID = 0L
 
         fun buildEmptyTrainArrival(): TrainArrival {
             return TrainArrival(mutableListOf())
