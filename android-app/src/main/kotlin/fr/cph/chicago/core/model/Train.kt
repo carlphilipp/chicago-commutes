@@ -20,49 +20,8 @@
 package fr.cph.chicago.core.model
 
 data class Train(
-    var routeNumber: Int,
-    var destName: String,
+    val routeNumber: Int,
+    val destName: String,
     val app: Boolean,
-    var position: Position,
-    var heading: Int) {
-
-    companion object {
-
-        // TODO: Merge with Bus.getBestPosition
-        fun getBestPosition(trains: List<Train>): Position {
-            var maxLatitude = 0.0
-            var minLatitude = 0.0
-            var maxLongitude = 0.0
-            var minLongitude = 0.0
-            trains
-                .asSequence()
-                .map { it.position }
-                .filter { it.latitude != 0.0 && it.latitude != 0.0 }
-                .forEachIndexed { i, temp ->
-                    if (i == 0) {
-                        maxLatitude = temp.latitude
-                        minLatitude = temp.latitude
-                        maxLongitude = temp.longitude
-                        minLongitude = temp.longitude
-                    } else {
-                        if (temp.latitude > maxLatitude) {
-                            maxLatitude = temp.latitude
-                        }
-                        if (temp.latitude < minLatitude) {
-                            minLatitude = temp.latitude
-                        }
-                        if (temp.longitude > maxLongitude) {
-                            maxLongitude = temp.longitude
-                        }
-                        if (temp.longitude < minLongitude) {
-                            minLongitude = temp.longitude
-                        }
-                    }
-                }
-            return Position(
-                latitude = (maxLatitude + minLatitude) / 2,
-                longitude = (maxLongitude + minLongitude) / 2
-            )
-        }
-    }
-}
+    val position: Position,
+    val heading: Int)

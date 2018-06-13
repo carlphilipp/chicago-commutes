@@ -60,6 +60,7 @@ import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.marker.MarkerDataHolder
 import fr.cph.chicago.rx.ObservableUtil
+import fr.cph.chicago.util.PositionUtil
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable
 import io.reactivex.functions.Function3
@@ -129,7 +130,7 @@ class NearbyFragment : AbstractFragment(), EasyPermissions.PermissionCallbacks {
             .addApi(LocationServices.API)
             .build()
         val options = GoogleMapOptions()
-        val camera = CameraPosition(util.chicago, 7f, 0f, 0f)
+        val camera = CameraPosition(PositionUtil.chicago, 7f, 0f, 0f)
         options.camera(camera)
         mapFragment = SupportMapFragment.newInstance(options)
         mapFragment.retainInstance = true
@@ -271,7 +272,7 @@ class NearbyFragment : AbstractFragment(), EasyPermissions.PermissionCallbacks {
         var chicago: Position? = null
         if (position.longitude == 0.0 && position.latitude == 0.0) {
             Log.w(TAG, "Could not get current user location")
-            chicago = Position(util.chicago.latitude, util.chicago.longitude)
+            chicago = Position(PositionUtil.chicago.latitude, PositionUtil.chicago.longitude)
             util.showSnackBar(mainActivity, R.string.message_cant_find_location, Snackbar.LENGTH_LONG)
         }
 

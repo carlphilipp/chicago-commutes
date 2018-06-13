@@ -28,9 +28,7 @@ import android.os.Parcelable
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class Position(val latitude: Double, val longitude: Double) : Parcelable {
-
-    constructor() : this(0.0, 0.0)
+class Position(val latitude: Double = 0.0, val longitude: Double = 0.0) : Parcelable {
 
     private constructor(source: Parcel) : this(
         latitude = source.readDouble(),

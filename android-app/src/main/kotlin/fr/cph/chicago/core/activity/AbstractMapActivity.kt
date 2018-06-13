@@ -38,7 +38,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import fr.cph.chicago.Constants.Companion.GPS_ACCESS
 import fr.cph.chicago.R
-import fr.cph.chicago.util.Util
+import fr.cph.chicago.util.PositionUtil
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 
@@ -104,7 +104,7 @@ open class AbstractMapActivity : FragmentActivity(), EasyPermissions.PermissionC
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
         this.googleMap.setOnCameraIdleListener(this)
-        this.googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Util.chicago, 10f))
+        this.googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(PositionUtil.chicago, 10f))
         enableMyLocationOnMapIfAllowed()
     }
 

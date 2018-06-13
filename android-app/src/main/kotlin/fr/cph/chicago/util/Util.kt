@@ -69,14 +69,6 @@ object Util {
     private val PATTERN = Pattern.compile("(\\d{1,3})")
     private val nextGeneratedId = AtomicInteger(1)
 
-    val chicago: LatLng by lazy {
-        LatLng(41.8819, -87.6278)
-    }
-
-    val chicagoPosition: Position by lazy {
-        Position(chicago.latitude, chicago.longitude)
-    }
-
     val dpToPixel16: Int by lazy {
         convertDpToPixel(16)
     }
@@ -214,7 +206,7 @@ object Util {
                 val latLng = LatLng(position.latitude, position.longitude)
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
             } else {
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(chicago, 10f))
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(PositionUtil.chicago, 10f))
             }
         }
     }

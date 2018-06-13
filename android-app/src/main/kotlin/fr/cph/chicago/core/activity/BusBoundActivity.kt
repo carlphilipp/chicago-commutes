@@ -48,6 +48,7 @@ import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.rx.ObservableUtil
+import fr.cph.chicago.util.PositionUtil
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
 
@@ -175,7 +176,7 @@ class BusBoundActivity : ListActivity() {
     public override fun onStart() {
         super.onStart()
         val options = GoogleMapOptions()
-        val camera = CameraPosition(util.chicago, 7f, 0f, 0f)
+        val camera = CameraPosition(PositionUtil.chicago, 7f, 0f, 0f)
         options.camera(camera)
         mapFragment = MapFragment.newInstance(options)
         mapFragment.retainInstance = true
@@ -195,7 +196,7 @@ class BusBoundActivity : ListActivity() {
                             val center = busPattern.points.size / 2
                             val position = busPattern.points[center].position
                             if (position.latitude == 0.0 && position.longitude == 0.0) {
-                                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(util.chicago, 10f))
+                                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(PositionUtil.chicago, 10f))
                             } else {
                                 val latLng = LatLng(position.latitude, position.longitude)
                                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7f))

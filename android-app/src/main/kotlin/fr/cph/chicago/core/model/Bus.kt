@@ -19,47 +19,7 @@
 
 package fr.cph.chicago.core.model
 
-class Bus(val id: Int,
-          val position: Position,
-          val heading: Int,
-          val destination: String) {
-
-    companion object {
-
-        fun getBestPosition(buses: List<Bus>): Position {
-            var maxLatitude = 0.0
-            var minLatitude = 0.0
-            var maxLongitude = 0.0
-            var minLongitude = 0.0
-
-            buses
-                .asSequence()
-                .map { it.position }
-                .forEachIndexed { i, temp ->
-                    if (i == 0) {
-                        maxLatitude = temp.latitude
-                        minLatitude = temp.latitude
-                        maxLongitude = temp.longitude
-                        minLongitude = temp.longitude
-                    } else {
-                        if (temp.latitude > maxLatitude) {
-                            maxLatitude = temp.latitude
-                        }
-                        if (temp.latitude < minLatitude) {
-                            minLatitude = temp.latitude
-                        }
-                        if (temp.longitude > maxLongitude) {
-                            maxLongitude = temp.longitude
-                        }
-                        if (temp.longitude < minLongitude) {
-                            minLongitude = temp.longitude
-                        }
-                    }
-                }
-            return Position(
-                latitude = (maxLatitude + minLatitude) / 2,
-                longitude = (maxLongitude + minLongitude) / 2
-            )
-        }
-    }
-}
+open class Bus(val id: Int,
+               val position: Position,
+               val heading: Int,
+               val destination: String)
