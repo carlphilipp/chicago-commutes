@@ -25,14 +25,7 @@ package fr.cph.chicago.core.model.enumeration
  * @author Carl-Philipp Harmant
  * @version 1
  */
-enum class TrainDirection
-/**
- * Private constructor
- *
- * @param text          the text
- * @param formattedText the formatted text
- */
-constructor(private val text: String, private val formattedText: String) {
+enum class TrainDirection(private val text: String, private val formattedText: String) {
 
     NORTH("N", "North"),
     SOUTH("S", "South"),
@@ -49,13 +42,6 @@ constructor(private val text: String, private val formattedText: String) {
     }
 
     companion object {
-
-        /**
-         * Get train direction from string
-         *
-         * @param text the text
-         * @return the train direction
-         */
         fun fromString(text: String): TrainDirection {
             return TrainDirection.values()
                 .filter { trainDirection -> text.equals(trainDirection.text, ignoreCase = true) }

@@ -130,7 +130,7 @@ object Favorites {
                 .flatMap { bikeStationId -> divvyStations.filter { st -> st.id.toString() == bikeStationId } }
                 .sortedWith(util.bikeStationComparator)
                 .map { st -> st.id.toString() }
-                .forEach({ bikeFavorites.add(it) })
+                .forEach{ bikeFavorites.add(it) }
         } else {
             bikeFavorites.addAll(bikeFavoritesTemp)
         }

@@ -58,7 +58,7 @@ import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.TrainStation
-import fr.cph.chicago.marker.MarkerDataHolder
+import fr.cph.chicago.core.model.marker.MarkerDataHolder
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable

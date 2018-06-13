@@ -127,10 +127,11 @@ data class BusStopsResponse(
 }
 
 class Error : HashMap<String, Any>() {
-    fun noServiceScheduled() : Boolean {
-        if(!this.containsKey("msg")) {
+    fun noServiceScheduled(): Boolean {
+        if (!this.containsKey("msg")) {
             return false
         }
-        return "No service scheduled" == get("msg") || "No arrival times" == get("msg")
+        val msg = get("msg")
+        return "No service scheduled" == msg || "No arrival times" == msg
     }
 }

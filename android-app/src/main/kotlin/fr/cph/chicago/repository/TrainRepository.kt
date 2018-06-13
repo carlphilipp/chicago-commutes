@@ -25,8 +25,8 @@ import com.univocity.parsers.csv.CsvParser
 import com.univocity.parsers.csv.CsvParserSettings
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.Stop
+import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.util.Util

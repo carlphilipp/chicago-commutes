@@ -36,7 +36,7 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import fr.cph.chicago.marker.RefreshTrainMarkers
+import fr.cph.chicago.core.model.marker.RefreshTrainMarkers
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.rx.TrainEtaObserver
 import fr.cph.chicago.util.Util

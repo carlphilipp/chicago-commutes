@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.marker
+package fr.cph.chicago.core.model.marker
 
 import fr.cph.chicago.R
 

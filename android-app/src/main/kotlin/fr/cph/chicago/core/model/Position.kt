@@ -21,8 +21,6 @@ package fr.cph.chicago.core.model
 
 import android.os.Parcel
 import android.os.Parcelable
-import io.realm.RealmObject
-import java.io.Serializable
 
 /**
  * The position. This can't be immutable because it needs to extends RealmObject.
@@ -30,11 +28,13 @@ import java.io.Serializable
  * @author Carl-Philipp Harmant
  * @version 1
  */
-open class Position(var latitude: Double = 0.0, var longitude: Double = 0.0) : RealmObject(), Parcelable, Serializable {
+class Position(val latitude: Double, val longitude: Double) : Parcelable {
 
-    private constructor(source: Parcel) : this() {
-        readFromParcel(source)
-    }
+    constructor() : this(0.0, 0.0)
+
+    private constructor(source: Parcel) : this(
+        latitude = source.readDouble(),
+        longitude = source.readDouble())
 
     override fun toString(): String {
         return "[latitude=$latitude;longitude=$longitude]"
@@ -49,14 +49,7 @@ open class Position(var latitude: Double = 0.0, var longitude: Double = 0.0) : R
         dest.writeDouble(longitude)
     }
 
-    private fun readFromParcel(source: Parcel) {
-        latitude = source.readDouble()
-        longitude = source.readDouble()
-    }
-
     companion object {
-
-        private const val serialVersionUID = 0L
 
         @JvmField
         val CREATOR: Parcelable.Creator<Position> = object : Parcelable.Creator<Position> {

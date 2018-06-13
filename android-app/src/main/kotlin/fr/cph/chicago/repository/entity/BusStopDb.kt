@@ -20,7 +20,6 @@
 package fr.cph.chicago.repository.entity
 
 import fr.cph.chicago.core.model.BusStop
-import fr.cph.chicago.core.model.Position
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import org.apache.commons.lang3.StringUtils
@@ -31,12 +30,12 @@ open class BusStopDb(
     var name: String = StringUtils.EMPTY,
     var description: String = StringUtils.EMPTY,
     // Realm decided that position must be nullable... https://github.com/realm/realm-java/commit/39bb67cef10b62456649fdd7cf5710bd3361c29a
-    var position: Position? = Position()) : RealmObject() {
+    var position: PositionDb? = PositionDb()) : RealmObject() {
 
     constructor(busStop: BusStop) : this(
         id = busStop.id,
         name = busStop.name,
         description = busStop.description,
-        position = busStop.position
+        position = PositionDb(busStop.position.latitude, busStop.position.longitude)
     )
 }

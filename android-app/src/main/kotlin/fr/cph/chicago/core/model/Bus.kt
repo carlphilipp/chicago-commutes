@@ -27,7 +27,6 @@ class Bus(val id: Int,
     companion object {
 
         fun getBestPosition(buses: List<Bus>): Position {
-            val position = Position()
             var maxLatitude = 0.0
             var minLatitude = 0.0
             var maxLongitude = 0.0
@@ -57,9 +56,10 @@ class Bus(val id: Int,
                         }
                     }
                 }
-            position.latitude = (maxLatitude + minLatitude) / 2
-            position.longitude = (maxLongitude + minLongitude) / 2
-            return position
+            return Position(
+                latitude = (maxLatitude + minLatitude) / 2,
+                longitude = (maxLongitude + minLongitude) / 2
+            )
         }
     }
 }

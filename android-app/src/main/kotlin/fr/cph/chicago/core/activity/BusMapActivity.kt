@@ -40,7 +40,7 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Bus
 import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import fr.cph.chicago.marker.RefreshBusMarkers
+import fr.cph.chicago.core.model.marker.RefreshBusMarkers
 import fr.cph.chicago.rx.BusFollowObserver
 import fr.cph.chicago.rx.BusObserver
 import fr.cph.chicago.rx.ObservableUtil
