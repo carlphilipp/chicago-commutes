@@ -131,6 +131,6 @@ class Error : HashMap<String, Any>() {
         if(!this.containsKey("msg")) {
             return false
         }
-        return "No service scheduled" == get("msg")
+        return "No service scheduled" == get("msg") || "No arrival times" == get("msg")
     }
 }
