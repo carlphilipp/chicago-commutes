@@ -165,7 +165,7 @@ class SearchActivity : AppCompatActivity() {
             val foundBikeStations = divvyStations
                 .filter { station -> containsIgnoreCase(station.name, query) || containsIgnoreCase(station.address, query) }
                 .distinct()
-                .sortedWith(util.DIVVY_COMPARATOR_BY_NAME)
+                .sortedWith(util.bikeStationComparator)
             searchAdapter.updateData(foundStations, foundBusRoutes, foundBikeStations)
             searchAdapter.notifyDataSetChanged()
         }

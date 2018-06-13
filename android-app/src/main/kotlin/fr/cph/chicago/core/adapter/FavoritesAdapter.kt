@@ -155,7 +155,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
 
                 // Build UI
                 val containParams = layoutUtil.getInsideParams(newLine, i == boundMap.size - 1)
-                val container = layoutUtil.createBusArrivalsLayout(containParams, stopNameTrimmed, BusDirection.fromString(key), value as MutableList<out BusArrival>)
+                val container = layoutUtil.createFavoritesBusArrivalsLayout(containParams, stopNameTrimmed, BusDirection.fromString(key), value as MutableList<out BusArrival>)
 
                 holder.mainLayout.addView(container)
 

@@ -20,7 +20,6 @@
 package fr.cph.chicago.core.activity
 
 import android.annotation.SuppressLint
-import android.graphics.Typeface
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
@@ -48,6 +47,8 @@ import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.LayoutUtil
 import fr.cph.chicago.util.Util
+import org.apache.commons.lang3.StringUtils
+import java.util.Date
 
 /**
  * Activity that represents the bus stop

@@ -62,7 +62,7 @@ import java.util.regex.Pattern
  */
 object Util {
 
-    val DIVVY_COMPARATOR_BY_NAME: Comparator<BikeStation> by lazy { BikeStationComparator() }
+    val bikeStationComparator: Comparator<BikeStation> by lazy { BikeStationComparator() }
     val busStopComparatorByName: Comparator<BusRoute> by lazy { BusStopComparator() }
     private val preferenceService = PreferenceService
 
@@ -75,6 +75,18 @@ object Util {
 
     val chicagoPosition: Position by lazy {
         Position(chicago.latitude, chicago.longitude)
+    }
+
+    val dpToPixel16: Int by lazy {
+        convertDpToPixel(16)
+    }
+
+    val dpToPixel16d: Int by lazy {
+        dpToPixel16 / 2
+    }
+
+    val grey5: Int by lazy {
+        ContextCompat.getColor(App.instance, R.color.grey_5)
     }
 
     fun generateViewId(): Int {

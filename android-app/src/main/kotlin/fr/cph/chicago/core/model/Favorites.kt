@@ -110,7 +110,7 @@ object Favorites {
     fun getBusArrivalsMapped(routeId: String): BusArrivalStopMappedDTO {
         val busArrivalDTO = BusArrivalStopMappedDTO()
         busArrivals
-            .filter { (_, _, _, _, _, routeId) -> routeId == routeId }
+            .filter { (_, _, _, _, _, rId) -> rId == routeId }
             .filter { (_, _, _, stopId, _, _, routeDirection) -> isInFavorites(routeId, stopId, routeDirection) }
             .forEach({ busArrivalDTO.addBusArrival(it) })
 
@@ -128,7 +128,7 @@ object Favorites {
         if (divvyStations.isNotEmpty()) {
             bikeFavoritesTemp
                 .flatMap { bikeStationId -> divvyStations.filter { st -> st.id.toString() == bikeStationId } }
-                .sortedWith(util.DIVVY_COMPARATOR_BY_NAME)
+                .sortedWith(util.bikeStationComparator)
                 .map { st -> st.id.toString() }
                 .forEach({ bikeFavorites.add(it) })
         } else {
@@ -187,7 +187,7 @@ object Favorites {
         for (bus in busFavorites) {
             val (routeIdFav, stopId1, bound) = util.decodeBusFavorite(bus)
             if (routeIdFav == routeId) {
-                val stopId = Integer.valueOf(stopId1)
+                val stopId = stopId1.toInt()
 
                 var stopName = preferenceService.getBusStopNameMapping(stopId.toString())
                 stopName = if (stopName != null) stopName else stopId.toString()
