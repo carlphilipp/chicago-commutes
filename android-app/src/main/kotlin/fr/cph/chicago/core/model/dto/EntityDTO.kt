@@ -54,6 +54,8 @@ data class BusDetailsDTO(
     val stopName: String
 )
 
+class BusArrivalStopDTO : HashMap<String, List<BusArrival>>()
+
 class BusArrivalStopMappedDTO : TreeMap<String, MutableMap<String, MutableList<BusArrival>>>() {
     // stop name => { bound => BusArrival }
 

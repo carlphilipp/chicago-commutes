@@ -34,6 +34,7 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusArrival
+import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
 import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
 
@@ -216,7 +217,7 @@ object LayoutUtil {
         return container
     }
 
-    fun buildBusStopsLayout(busArrivals: List<BusArrival>): LinearLayout {
+    fun buildBusStopsLayout(busArrivals: BusArrivalStopDTO): LinearLayout {
         val container = buildBusBikeLayout()
         val linearLayout = (container.getChildAt(0) as LinearLayout)
         linearLayout.addView(createBusLines(busArrivals))
@@ -236,7 +237,7 @@ object LayoutUtil {
         return container
     }
 
-    private fun createBusLines(busArrivals: List<BusArrival>): LinearLayout {
+    private fun createBusLines(busArrivals: BusArrivalStopDTO): LinearLayout {
         val lines = LinearLayout(App.instance)
         lines.orientation = LinearLayout.VERTICAL
         if (busArrivals.isEmpty()) {
@@ -245,34 +246,29 @@ object LayoutUtil {
             line.addView(lineTitleTextView)
             lines.addView(line)
         } else {
-            val tempMap = HashMap<String, MutableList<LinearLayout>>()
             busArrivals.forEach {
-                val destination = it.busDestination
-                if (tempMap.containsKey(destination)) {
-                    val layouts = tempMap[destination]!!
-                    val layout: LinearLayout = layouts.last()
+                // Create line
+                val line = createLineLayout()
+                lines.addView(line)
+
+                // Left layout
+                val left = createLeftLayout()
+                line.addView(left)
+
+                val lineTitleTextView = createLineTitle(it.key, createTitleParams())
+                left.addView(lineTitleTextView)
+
+                if(it.value.isNotEmpty()) {
                     val arrivalTextView = TextView(App.instance)
-                    arrivalTextView.text = formatArrivalTime(it)
-                    layout.addView(arrivalTextView)
-                } else {
-                    // Create line
-                    val line = createLineLayout()
-
-                    // Left layout
-                    val left = createLeftLayout()
-
-                    val lineTitleTextView = createLineTitle(destination, createTitleParams())
-
-                    val arrivalTextView = TextView(App.instance)
-                    arrivalTextView.text = formatArrivalTime(it)
+                    arrivalTextView.text = formatArrivalTime(it.value[0])
                     arrivalTextView.layoutParams = createLineValueLayoutParams(lineTitleTextView.id)
-
-                    left.addView(lineTitleTextView)
                     left.addView(arrivalTextView)
-                    line.addView(left)
-                    lines.addView(line)
 
-                    tempMap[destination] = mutableListOf(line)
+                    it.value.drop(1).forEach {
+                        val textView = TextView(App.instance)
+                        textView.text = formatArrivalTime(it)
+                        line.addView(textView)
+                    }
                 }
             }
         }

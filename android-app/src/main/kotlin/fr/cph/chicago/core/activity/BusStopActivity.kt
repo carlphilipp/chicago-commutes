@@ -37,8 +37,8 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
-import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.exception.ConnectException
 import fr.cph.chicago.exception.ParserException
@@ -47,8 +47,6 @@ import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.LayoutUtil
 import fr.cph.chicago.util.Util
-import org.apache.commons.lang3.StringUtils
-import java.util.Date
 
 /**
  * Activity that represents the bus stop
@@ -99,8 +97,6 @@ class BusStopActivity : AbstractStationActivity() {
     lateinit var bundleBusLatitude: String
     @BindString(R.string.bundle_bus_longitude)
     lateinit var bundleBusLongitude: String
-    @BindString(R.string.bus_activity_no_service)
-    lateinit var busActivityNoService: String
     @BindString(R.string.request_rt)
     lateinit var requestRt: String
     @BindString(R.string.request_stop_id)
@@ -120,7 +116,7 @@ class BusStopActivity : AbstractStationActivity() {
     private val preferenceService = PreferenceService
     private val busService = BusService
 
-    var busArrivals: List<BusArrival> = listOf()
+    private var busArrivals: BusArrivalStopDTO = BusArrivalStopDTO()
     private lateinit var busRouteId: String
     private lateinit var bound: String
     private lateinit var boundTitle: String
@@ -243,25 +239,33 @@ class BusStopActivity : AbstractStationActivity() {
     }
 
     @SuppressLint("StaticFieldLeak")
-    private inner class LoadStationDataTask : AsyncTask<Void, Void, List<BusArrival>>() {
+    private inner class LoadStationDataTask : AsyncTask<Void, Void, BusArrivalStopDTO>() {
 
         private var trackerException: TrackerException? = null
 
-        override fun doInBackground(vararg params: Void): List<BusArrival>? {
+        override fun doInBackground(vararg params: Void): BusArrivalStopDTO {
             try {
-                return busService.loadBusArrivals(requestRt, busRouteId, requestStopId, busStopId
-                ) { (_, _, _, _, _, _, routeDirection) -> routeDirection == bound || routeDirection == boundTitle }
+                return busService
+                    .loadBusArrivals(requestRt, busRouteId, requestStopId, busStopId) { (_, _, _, _, _, _, routeDirection) -> routeDirection == bound || routeDirection == boundTitle }
+                    .fold(BusArrivalStopDTO()) { accumulator, busArrival ->
+                        if (accumulator.containsKey(busArrival.busDestination)) {
+                            (accumulator[busArrival.busDestination] as MutableList).add(busArrival)
+                        } else {
+                            accumulator[busArrival.busDestination] = mutableListOf(busArrival)
+                        }
+                        accumulator
+                    }
             } catch (e: ParserException) {
                 this.trackerException = e
             } catch (e: ConnectException) {
                 this.trackerException = e
             }
-            return null
+            return BusArrivalStopDTO()
         }
 
         override fun onProgressUpdate(vararg values: Void) {}
 
-        override fun onPostExecute(result: List<BusArrival>) {
+        override fun onPostExecute(result: BusArrivalStopDTO) {
             if (trackerException == null) {
                 this@BusStopActivity.busArrivals = result
                 drawArrivals()

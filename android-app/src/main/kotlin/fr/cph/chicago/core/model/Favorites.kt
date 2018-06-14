@@ -95,7 +95,7 @@ object Favorites {
         return trainArrivals
             .get(stationId, TrainArrival.buildEmptyTrainArrival())
             .getEtas(trainLine)
-            .fold(TreeMap(), { accumulator, eta ->
+            .fold(TreeMap()) { accumulator, eta ->
                 val stopNameData = eta.destName
                 val timingData = eta.timeLeftDueDelay
                 val value = if (accumulator.containsKey(stopNameData))
@@ -104,7 +104,7 @@ object Favorites {
                     timingData
                 accumulator[stopNameData] = value
                 accumulator
-            })
+            }
     }
 
     fun getBusArrivalsMapped(routeId: String): BusArrivalStopMappedDTO {
