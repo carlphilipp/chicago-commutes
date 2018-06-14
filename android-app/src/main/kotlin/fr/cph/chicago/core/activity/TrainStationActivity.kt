@@ -67,7 +67,7 @@ import java.util.Random
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class TrainStationActivity : AbstractStationActivity() {
+class TrainStationActivity : AbstractStationActivity(R.layout.activity_station) {
 
     @BindView(android.R.id.content)
     lateinit var viewGroup: ViewGroup
@@ -111,7 +111,7 @@ class TrainStationActivity : AbstractStationActivity() {
 
     @JvmField
     @BindColor(R.color.grey_5)
-    internal var grey_5: Int = 0
+    internal var grey5: Int = 0
     @JvmField
     @BindColor(R.color.grey)
     internal var grey: Int = 0
@@ -136,50 +136,48 @@ class TrainStationActivity : AbstractStationActivity() {
     private val util: Util = Util
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         App.checkTrainData(this)
-        if (!this.isFinishing) {
-            // Layout setup
-            setContentView(R.layout.activity_station)
-            ButterKnife.bind(this)
-            // Get trainStation id from bundle
-            stationId = intent.extras.getInt(bundleTrainStationId, 0)
-            if (stationId != 0) {
-                // Get trainStation
-                trainStation = TrainService.getStation(stationId)
-                trainArrivalObservable = ObservableUtil.createTrainArrivalsObservable(trainStation)
+        super.onCreate(savedInstanceState)
+    }
 
-                paramsStop = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+    override fun onCreate() {
+        // Get train station id from bundle
+        stationId = intent.extras.getInt(bundleTrainStationId, 0)
+        if (stationId != 0) {
+            // Get trainStation
+            trainStation = TrainService.getStation(stationId)
+            trainArrivalObservable = ObservableUtil.createTrainArrivalsObservable(trainStation)
 
-                val layoutParams = streetViewImage.layoutParams as RelativeLayout.LayoutParams
-                val position = trainStation.stops[0].position
-                val params = streetViewImage.layoutParams
+            paramsStop = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
 
-                isFavorite = isFavorite()
+            val layoutParams = streetViewImage.layoutParams as RelativeLayout.LayoutParams
+            val position = trainStation.stops[0].position
+            val params = streetViewImage.layoutParams
 
-                loadGoogleStreetImage(position, streetViewImage, streetViewText)
-                trainArrivalObservable.subscribe(TrainArrivalObserver(this, swipeRefreshLayout))
+            isFavorite = isFavorite()
 
-                streetViewImage.setOnClickListener(GoogleStreetOnClickListener(position.latitude, position.longitude))
-                streetViewImage.layoutParams = params
-                streetViewText.setTypeface(null, Typeface.BOLD)
-                swipeRefreshLayout.setOnRefreshListener { trainArrivalObservable.subscribe(TrainArrivalObserver(this, swipeRefreshLayout)) }
-                favoritesImage.setColorFilter(if (isFavorite) yellowLineDark else grey_5)
+            loadGoogleStreetImage(position, streetViewImage, streetViewText)
+            trainArrivalObservable.subscribe(TrainArrivalObserver(this, swipeRefreshLayout))
 
-                params.height = height
-                params.width = layoutParams.width
-                mapImage.setColorFilter(grey_5)
-                directionImage.setColorFilter(grey_5)
-                favoritesImageContainer.setOnClickListener { _ -> switchFavorite() }
-                mapContainer.setOnClickListener(GoogleMapOnClickListener(position.latitude, position.longitude))
-                walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(position.latitude, position.longitude))
+            streetViewImage.setOnClickListener(GoogleStreetOnClickListener(position.latitude, position.longitude))
+            streetViewImage.layoutParams = params
+            streetViewText.setTypeface(null, Typeface.BOLD)
+            swipeRefreshLayout.setOnRefreshListener { trainArrivalObservable.subscribe(TrainArrivalObserver(this, swipeRefreshLayout)) }
+            favoritesImage.setColorFilter(if (isFavorite) yellowLineDark else grey5)
 
-                val stopByLines = trainStation.stopByLines
-                val randomTrainLine = getRandomLine(stopByLines)
-                setUpStopLayouts(stopByLines)
-                swipeRefreshLayout.setColorSchemeColors(randomTrainLine.color)
-                setToolBar(randomTrainLine)
-            }
+            params.height = height
+            params.width = layoutParams.width
+            mapImage.setColorFilter(grey5)
+            directionImage.setColorFilter(grey5)
+            favoritesImageContainer.setOnClickListener { _ -> switchFavorite() }
+            mapContainer.setOnClickListener(GoogleMapOnClickListener(position.latitude, position.longitude))
+            walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(position.latitude, position.longitude))
+
+            val stopByLines = trainStation.stopByLines
+            val randomTrainLine = getRandomLine(stopByLines)
+            setUpStopLayouts(stopByLines)
+            swipeRefreshLayout.setColorSchemeColors(randomTrainLine.color)
+            setToolBar(randomTrainLine)
         }
     }
 

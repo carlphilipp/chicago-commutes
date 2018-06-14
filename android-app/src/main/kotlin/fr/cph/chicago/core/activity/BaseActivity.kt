@@ -19,12 +19,10 @@
 
 package fr.cph.chicago.core.activity
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import butterknife.BindString
-import butterknife.ButterKnife
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.BusArrival
@@ -49,7 +47,7 @@ import java.util.Calendar
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BaseActivity : Activity() {
+class BaseActivity : ButterKnifeActivity(R.layout.loading) {
 
     @BindString(R.string.bundle_error)
     lateinit var bundleError: String
@@ -61,11 +59,7 @@ class BaseActivity : Activity() {
     private val realmConfig: RealmConfig = RealmConfig
     private val observableUtil: ObservableUtil = ObservableUtil
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.loading)
-        ButterKnife.bind(this)
-
+    override fun onCreate() {
         setUpRealm()
         loadLocalAndFavoritesData()
     }

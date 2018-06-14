@@ -48,7 +48,7 @@ import io.reactivex.functions.BiFunction
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class TrainMapActivity : AbstractMapActivity() {
+class TrainMapActivity : FragmentMapActivity() {
 
     @BindString(R.string.bundle_train_line)
     lateinit var bundleTrainLine: String

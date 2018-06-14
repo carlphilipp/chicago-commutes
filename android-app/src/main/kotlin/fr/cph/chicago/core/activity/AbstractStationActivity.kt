@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.core.activity
 
-import android.app.Activity
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import android.widget.TextView
@@ -31,7 +30,7 @@ import io.reactivex.ObservableEmitter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
-abstract class AbstractStationActivity : Activity() {
+abstract class AbstractStationActivity(contentView: Int) : ButterKnifeActivity(contentView) {
 
     fun loadGoogleStreetImage(position: Position, streetViewImage: ImageView, streetViewText: TextView) {
         Observable.create { observableOnSubscribe: ObservableEmitter<Drawable> ->

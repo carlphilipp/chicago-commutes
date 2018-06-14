@@ -55,7 +55,7 @@ import io.reactivex.schedulers.Schedulers
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BusMapActivity : AbstractMapActivity() {
+class BusMapActivity : FragmentMapActivity() {
 
     @BindString(R.string.bundle_bus_id)
     lateinit var bundleBusId: String

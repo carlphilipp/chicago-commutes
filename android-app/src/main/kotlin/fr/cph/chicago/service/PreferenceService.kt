@@ -36,7 +36,7 @@ object PreferenceService {
     private val util = Util
 
     fun isTrainStationFavorite(trainStationId: Int): Boolean {
-        return repo.getTrainFavorites().any({ it == trainStationId })
+        return repo.getTrainFavorites().any { it == trainStationId }
     }
 
     fun getTrainFilter(stationId: Int, line: TrainLine, direction: TrainDirection): Boolean {
@@ -78,13 +78,13 @@ object PreferenceService {
     // Favorites
     fun isStopFavorite(busRouteId: String, busStopId: Int, boundTitle: String): Boolean {
         return !repo.getBusFavorites()
-            .firstOrNull({ favorite -> favorite == busRouteId + "_" + busStopId + "_" + boundTitle })
+            .firstOrNull { favorite -> favorite == busRouteId + "_" + busStopId + "_" + boundTitle }
             .isNullOrBlank()
     }
 
     fun isBikeStationFavorite(bikeStationId: Int): Boolean {
         return !repo.getBikeFavorites()
-            .firstOrNull({ it.toInt() == bikeStationId })
+            .firstOrNull { it.toInt() == bikeStationId }
             .isNullOrBlank()
     }
 

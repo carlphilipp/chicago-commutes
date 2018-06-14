@@ -58,7 +58,7 @@ import org.apache.commons.lang3.StringUtils
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BusBoundActivity : ListActivity() {
+class BusBoundActivity : ListActivity()  {
 
     @BindView(R.id.bellow)
     lateinit var layout: LinearLayout
@@ -141,7 +141,7 @@ class BusBoundActivity : ListActivity() {
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                     busStops
                         .filter { busStop -> StringUtils.containsIgnoreCase(busStop.name, s) }
-                        .forEach({ busStopsFiltered.add(it) })
+                        .forEach { busStopsFiltered.add(it) }
                 }
 
                 override fun afterTextChanged(s: Editable) {

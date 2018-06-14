@@ -29,7 +29,6 @@ import android.widget.TextView
 import butterknife.BindColor
 import butterknife.BindString
 import butterknife.BindView
-import butterknife.ButterKnife
 import fr.cph.chicago.R
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener
@@ -49,7 +48,7 @@ import fr.cph.chicago.util.Util
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BikeStationActivity : AbstractStationActivity() {
+class BikeStationActivity : AbstractStationActivity(R.layout.activity_bike_station) {
 
     @BindView(R.id.activity_station_swipe_refresh_layout)
     lateinit var swipeRefreshLayout: SwipeRefreshLayout
@@ -98,39 +97,34 @@ class BikeStationActivity : AbstractStationActivity() {
     private lateinit var divvyStation: BikeStation
     private var isFavorite: Boolean = false
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (!this.isFinishing) {
-            setContentView(R.layout.activity_bike_station)
-            ButterKnife.bind(this)
-            divvyStation = intent.extras.getParcelable(bundleBikeStation)
-            val latitude = divvyStation.latitude
-            val longitude = divvyStation.longitude
+    override fun onCreate() {
+        divvyStation = intent.extras.getParcelable(bundleBikeStation)
+        val latitude = divvyStation.latitude
+        val longitude = divvyStation.longitude
 
-            swipeRefreshLayout.setOnRefreshListener {
-                observableUtil.createAllBikeStationsObservable()
-                    .subscribe(BikeAllBikeStationsObserver(this, divvyStation.id, swipeRefreshLayout))
-            }
-
-            isFavorite = isFavorite()
-
-            // Call google street api to load image
-            loadGoogleStreetImage(Position(latitude, longitude), streetViewImage, streetViewText)
-
-            mapImage.setColorFilter(grey5)
-            directionImage.setColorFilter(grey5)
-
-            favoritesImage.setColorFilter(if (isFavorite) yellowLineDark else grey5)
-
-            favoritesImageContainer.setOnClickListener { _ -> switchFavorite() }
-            bikeStationValue.text = divvyStation.address
-            streetViewImage.setOnClickListener(GoogleStreetOnClickListener(latitude, longitude))
-            mapContainer.setOnClickListener(GoogleMapOnClickListener(latitude, longitude))
-            walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(latitude, longitude))
-
-            drawData()
-            setToolBar()
+        swipeRefreshLayout.setOnRefreshListener {
+            observableUtil.createAllBikeStationsObservable()
+                .subscribe(BikeAllBikeStationsObserver(this, divvyStation.id, swipeRefreshLayout))
         }
+
+        isFavorite = isFavorite()
+
+        // Call google street api to load image
+        loadGoogleStreetImage(Position(latitude, longitude), streetViewImage, streetViewText)
+
+        mapImage.setColorFilter(grey5)
+        directionImage.setColorFilter(grey5)
+
+        favoritesImage.setColorFilter(if (isFavorite) yellowLineDark else grey5)
+
+        favoritesImageContainer.setOnClickListener { _ -> switchFavorite() }
+        bikeStationValue.text = divvyStation.address
+        streetViewImage.setOnClickListener(GoogleStreetOnClickListener(latitude, longitude))
+        mapContainer.setOnClickListener(GoogleMapOnClickListener(latitude, longitude))
+        walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(latitude, longitude))
+
+        drawData()
+        setToolBar()
     }
 
     private fun setToolBar() {

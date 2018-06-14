@@ -31,7 +31,6 @@ import android.widget.TextView
 import butterknife.BindColor
 import butterknife.BindString
 import butterknife.BindView
-import butterknife.ButterKnife
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
@@ -54,7 +53,7 @@ import fr.cph.chicago.util.Util
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BusStopActivity : AbstractStationActivity() {
+class BusStopActivity : AbstractStationActivity(R.layout.activity_bus) {
 
     @BindView(R.id.activity_bus_stop_swipe_refresh_layout)
     lateinit var scrollView: SwipeRefreshLayout
@@ -128,45 +127,43 @@ class BusStopActivity : AbstractStationActivity() {
     private var isFavorite: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         App.checkBusData(this)
-        if (!this.isFinishing) {
-            setContentView(R.layout.activity_bus)
-            ButterKnife.bind(this)
+        super.onCreate(savedInstanceState)
+    }
 
-            busStopId = intent.getIntExtra(bundleBusStopId, 0)
-            busRouteId = intent.getStringExtra(bundleBusRouteId)
-            bound = intent.getStringExtra(bundleBusBound)
-            boundTitle = intent.getStringExtra(bundleBusBoundTitle)
-            busStopName = intent.getStringExtra(bundleBusStopName)
-            busRouteName = intent.getStringExtra(bundleBusRouteName)
-            latitude = intent.getDoubleExtra(bundleBusLatitude, 0.0)
-            longitude = intent.getDoubleExtra(bundleBusLongitude, 0.0)
+    override fun onCreate() {
+        busStopId = intent.getIntExtra(bundleBusStopId, 0)
+        busRouteId = intent.getStringExtra(bundleBusRouteId)
+        bound = intent.getStringExtra(bundleBusBound)
+        boundTitle = intent.getStringExtra(bundleBusBoundTitle)
+        busStopName = intent.getStringExtra(bundleBusStopName)
+        busRouteName = intent.getStringExtra(bundleBusRouteName)
+        latitude = intent.getDoubleExtra(bundleBusLatitude, 0.0)
+        longitude = intent.getDoubleExtra(bundleBusLongitude, 0.0)
 
-            val position = Position(latitude, longitude)
+        val position = Position(latitude, longitude)
 
-            isFavorite = isFavorite()
+        isFavorite = isFavorite()
 
-            mapImage.setColorFilter(grey5)
-            directionImage.setColorFilter(grey5)
-            favoritesImageContainer.setOnClickListener { _ -> switchFavorite() }
+        mapImage.setColorFilter(grey5)
+        directionImage.setColorFilter(grey5)
+        favoritesImageContainer.setOnClickListener { _ -> switchFavorite() }
 
-            favoritesImage.setColorFilter(if (isFavorite) yellowLineDark else grey5)
+        favoritesImage.setColorFilter(if (isFavorite) yellowLineDark else grey5)
 
-            scrollView.setOnRefreshListener { LoadStationDataTask().execute() }
-            streetViewImage.setOnClickListener(GoogleStreetOnClickListener(latitude, longitude))
-            mapContainer.setOnClickListener(GoogleMapOnClickListener(latitude, longitude))
-            walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(latitude, longitude))
+        scrollView.setOnRefreshListener { LoadStationDataTask().execute() }
+        streetViewImage.setOnClickListener(GoogleStreetOnClickListener(latitude, longitude))
+        mapContainer.setOnClickListener(GoogleMapOnClickListener(latitude, longitude))
+        walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(latitude, longitude))
 
-            val busRouteName2 = "$busRouteName ($boundTitle)"
-            busRouteNameView2.text = busRouteName2
+        val busRouteName2 = "$busRouteName ($boundTitle)"
+        busRouteNameView2.text = busRouteName2
 
-            // Load google street picture and data
-            loadGoogleStreetImage(position, streetViewImage, streetViewText)
-            LoadStationDataTask().execute()
+        // Load google street picture and data
+        loadGoogleStreetImage(position, streetViewImage, streetViewText)
+        LoadStationDataTask().execute()
 
-            setToolBar()
-        }
+        setToolBar()
     }
 
     private fun setToolBar() {

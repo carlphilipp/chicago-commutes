@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.core.activity
 
-import android.app.Activity
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.widget.SwipeRefreshLayout
@@ -27,13 +26,12 @@ import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.widget.ListView
 import butterknife.BindView
-import butterknife.ButterKnife
 import fr.cph.chicago.R
 import fr.cph.chicago.core.adapter.AlertRouteAdapter
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.util.Util
 
-class AlertActivity : Activity() {
+class AlertActivity : ButterKnifeActivity(R.layout.activity_alert) {
 
     @BindView(R.id.activity_alerts_swipe_refresh_layout)
     lateinit var scrollView: SwipeRefreshLayout
@@ -45,17 +43,12 @@ class AlertActivity : Activity() {
     private lateinit var routeId: String
     private lateinit var title: String
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (!this.isFinishing) {
-            setContentView(R.layout.activity_alert)
-            ButterKnife.bind(this)
-            routeId = intent.getStringExtra("routeId")
-            title = intent.getStringExtra("title")
-            scrollView.setOnRefreshListener({ this.refreshData() })
-            setToolBar()
-            refreshData()
-        }
+    override fun onCreate() {
+        routeId = intent.getStringExtra("routeId")
+        title = intent.getStringExtra("title")
+        scrollView.setOnRefreshListener { this.refreshData() }
+        setToolBar()
+        refreshData()
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
