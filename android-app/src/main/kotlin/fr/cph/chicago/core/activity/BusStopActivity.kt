@@ -212,7 +212,8 @@ class BusStopActivity : AbstractStationActivity() {
     /**
      * Draw arrivals in current layout
      */
-    fun drawArrivals() {
+    fun refreshActivity(busArrivals: BusArrivalStopDTO) {
+        this.busArrivals = busArrivals
         stopsView.removeAllViews()
         stopsView.addView(LayoutUtil.buildBusStopsLayout(busArrivals))
     }
@@ -245,16 +246,7 @@ class BusStopActivity : AbstractStationActivity() {
 
         override fun doInBackground(vararg params: Void): BusArrivalStopDTO {
             try {
-                return busService
-                    .loadBusArrivals(requestRt, busRouteId, requestStopId, busStopId) { (_, _, _, _, _, _, routeDirection) -> routeDirection == bound || routeDirection == boundTitle }
-                    .fold(BusArrivalStopDTO()) { accumulator, busArrival ->
-                        if (accumulator.containsKey(busArrival.busDestination)) {
-                            (accumulator[busArrival.busDestination] as MutableList).add(busArrival)
-                        } else {
-                            accumulator[busArrival.busDestination] = mutableListOf(busArrival)
-                        }
-                        accumulator
-                    }
+                return busService.loadBusArrivals(requestRt, busRouteId, requestStopId, busStopId, bound, boundTitle)
             } catch (e: ParserException) {
                 this.trackerException = e
             } catch (e: ConnectException) {
@@ -267,8 +259,7 @@ class BusStopActivity : AbstractStationActivity() {
 
         override fun onPostExecute(result: BusArrivalStopDTO) {
             if (trackerException == null) {
-                this@BusStopActivity.busArrivals = result
-                drawArrivals()
+                refreshActivity(result)
             } else {
                 util.showNetworkErrorMessage(scrollView)
             }

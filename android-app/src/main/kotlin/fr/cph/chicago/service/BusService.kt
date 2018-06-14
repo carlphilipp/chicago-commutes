@@ -37,6 +37,7 @@ import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.PatternPoint
 import fr.cph.chicago.core.model.Position
+import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
 import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.entity.BusArrivalResponse
 import fr.cph.chicago.entity.BusDirectionResponse
@@ -215,11 +216,20 @@ object BusService {
             .sortedWith(util.busStopComparatorByName)
     }
 
-    fun loadBusArrivals(requestRt: String, busRouteId: String, requestStopId: String, busStopId: Int, predicate: (BusArrival) -> (Boolean)): List<BusArrival> {
+    fun loadBusArrivals(requestRt: String, busRouteId: String, requestStopId: String, busStopId: Int, bound: String, boundTitle: String): BusArrivalStopDTO {
         val params = ArrayListValuedHashMap<String, String>(2, 1)
         params.put(requestRt, busRouteId)
         params.put(requestStopId, busStopId.toString())
-        return getBusArrivals(params).filter(predicate)
+        return getBusArrivals(params)
+            .filter { (_, _, _, _, _, _, routeDirection) -> routeDirection == bound || routeDirection == boundTitle }
+            .fold(BusArrivalStopDTO()) { accumulator, busArrival ->
+                if (accumulator.containsKey(busArrival.busDestination)) {
+                    (accumulator[busArrival.busDestination] as MutableList).add(busArrival)
+                } else {
+                    accumulator[busArrival.busDestination] = mutableListOf(busArrival)
+                }
+                accumulator
+            }
     }
 
     private fun getBusArrivals(params: MultiValuedMap<String, String>): List<BusArrival> {
