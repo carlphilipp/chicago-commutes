@@ -34,7 +34,7 @@ import fr.cph.chicago.core.model.BusStop
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BusBoundAdapter(private var busStops: MutableList<BusStop> = mutableListOf()) : BaseAdapter() {
+class BusBoundAdapter(private var busStops: List<BusStop> = listOf()) : BaseAdapter() {
 
     override fun getCount(): Int {
         return busStops.size
@@ -68,8 +68,7 @@ class BusBoundAdapter(private var busStops: MutableList<BusStop> = mutableListOf
     }
 
     fun updateBusStops(busStops: List<BusStop>) {
-        this.busStops.clear()
-        this.busStops.addAll(busStops)
+        this.busStops = busStops
     }
 
     /**

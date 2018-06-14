@@ -41,9 +41,6 @@ import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
  */
 class AlertAdapter(private var routesAlertsDTOS: List<RoutesAlertsDTO>) : BaseAdapter() {
 
-    fun setAlerts(routesAlertsDTOS: List<RoutesAlertsDTO>) {
-        this.routesAlertsDTOS = routesAlertsDTOS
-    }
 
     override fun getCount(): Int {
         return routesAlertsDTOS.size
@@ -86,5 +83,9 @@ class AlertAdapter(private var routesAlertsDTOS: List<RoutesAlertsDTO>) : BaseAd
             imageView.visibility = View.VISIBLE
         }
         return view
+    }
+
+    fun setAlerts(routesAlertsDTOS: List<RoutesAlertsDTO>) {
+        this.routesAlertsDTOS = routesAlertsDTOS
     }
 }

@@ -53,9 +53,9 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
 
     private val context: Context = activity.applicationContext
 
-    private val trains: MutableList<TrainStation> = mutableListOf()
-    private val busRoutes: MutableList<BusRoute> = mutableListOf()
-    private val divvyStations: MutableList<BikeStation> = mutableListOf()
+    private var trains: List<TrainStation> = listOf()
+    private var busRoutes: List<BusRoute> = listOf()
+    private var divvyStations: List<BikeStation> = listOf()
 
     override fun getCount(): Int {
         return trains.size + busRoutes.size + divvyStations.size
@@ -129,14 +129,9 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
     }
 
     fun updateData(trains: List<TrainStation>, buses: List<BusRoute>, divvies: List<BikeStation>) {
-        this.trains.clear()
-        this.trains.addAll(trains)
-
-        this.busRoutes.clear()
-        this.busRoutes.addAll(buses)
-
-        this.divvyStations.clear()
-        this.divvyStations.addAll(divvies)
+        this.trains = trains
+        this.busRoutes = buses
+        this.divvyStations = divvies
     }
 
     companion object {

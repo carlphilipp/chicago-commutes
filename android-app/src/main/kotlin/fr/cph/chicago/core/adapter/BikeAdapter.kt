@@ -35,14 +35,14 @@ import fr.cph.chicago.core.model.BikeStation
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BikeAdapter(var divvyStations: List<BikeStation>) : BaseAdapter() {
+class BikeAdapter(private var bikeStations: List<BikeStation>) : BaseAdapter() {
 
     override fun getCount(): Int {
-        return divvyStations.size
+        return bikeStations.size
     }
 
     override fun getItem(position: Int): Any {
-        return divvyStations[position]
+        return bikeStations[position]
     }
 
     override fun getItemId(position: Int): Long {
@@ -69,11 +69,9 @@ class BikeAdapter(var divvyStations: List<BikeStation>) : BaseAdapter() {
         return view
     }
 
-    /**
-     * DP view holder
-     *
-     * @author Carl-Philipp Harmant
-     * @version 1
-     */
+    fun updateBikeStations(bikeStations: List<BikeStation>) {
+        this.bikeStations = bikeStations
+    }
+
     private class ViewHolder(val stationNameView: TextView)
 }

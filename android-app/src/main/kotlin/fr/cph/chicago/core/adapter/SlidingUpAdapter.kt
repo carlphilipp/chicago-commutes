@@ -83,7 +83,7 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
 
             for (trainLine in TrainLine.values()) {
                 val etaResult = trainArrival.getEtas(trainLine)
-                val etas = etaResult.fold(mutableMapOf<String, String>(), { accumulator, eta ->
+                val etas = etaResult.fold(mutableMapOf<String, String>()) { accumulator, eta ->
                     val stopNameData = eta.destName
                     val timingData = eta.timeLeftDueDelay
                     val value = if (accumulator.containsKey(stopNameData))
@@ -92,7 +92,7 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
                         timingData
                     accumulator[stopNameData] = value
                     accumulator
-                })
+                }
 
                 var newLine = true
                 for ((i, entry) in etas.entries.withIndex()) {

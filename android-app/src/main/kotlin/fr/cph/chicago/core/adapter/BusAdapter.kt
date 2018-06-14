@@ -41,7 +41,7 @@ import fr.cph.chicago.util.Util
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BusAdapter(private val app: App) : BaseAdapter() {
+class BusAdapter : BaseAdapter() {
 
     var busRoutes: List<BusRoute> = BusService.getBusRoutes()
 
@@ -83,7 +83,7 @@ class BusAdapter(private val app: App) : BaseAdapter() {
                     Util.handleConnectOrParserException(throwable, null, view, holder.detailsLayout)
                     Log.e(TAG, throwable.message, throwable)
                 }
-                .subscribe(BusDirectionObserver(app.screenWidth, parent, holder.detailsLayout, route))
+                .subscribe(BusDirectionObserver(App.instance.screenWidth, parent, holder.detailsLayout, route))
         }
         return view
     }

@@ -72,7 +72,7 @@ class BusFragment : AbstractFragment() {
     }
 
     private fun addView() {
-        busAdapter = BusAdapter(mainActivity.application as App)
+        busAdapter = BusAdapter()
         listView.adapter = busAdapter
         textFilter.visibility = TextView.VISIBLE
         textFilter.addTextChangedListener(object : TextWatcher {

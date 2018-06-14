@@ -95,7 +95,7 @@ class BikeFragment : AbstractFragment() {
             }
 
             override fun afterTextChanged(s: Editable) {
-                bikeAdapter.divvyStations = this.divvyStations.toList()
+                bikeAdapter.updateBikeStations(this.divvyStations)
                 bikeAdapter.notifyDataSetChanged()
             }
         })
