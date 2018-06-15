@@ -211,7 +211,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun refreshFirstLoadData(divvyStations: List<BikeStation>) {
-        intent.putParcelableArrayListExtra(bundleBikeStations, divvyStations as ArrayList<BikeStation>)
+        intent.putParcelableArrayListExtra(bundleBikeStations, util.asParcelableArrayList(divvyStations))
         onNewIntent(intent)
         favoritesFragment?.setBikeStations(divvyStations)
         bikeFragment?.setBikeStations(divvyStations)

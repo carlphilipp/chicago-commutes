@@ -74,8 +74,7 @@ object BusService {
         val stopIdParam = App.instance.getString(R.string.request_stop_id)
         params.put(routeIdParam, favoritesBusParams.get(routeIdParam).joinToString(separator = ","))
         params.put(stopIdParam, favoritesBusParams.get(stopIdParam).joinToString(separator = ","))
-        // Return mutable list because this need to be serializable
-        return getBusArrivals(params).toMutableList()
+        return getBusArrivals(params)
     }
 
     fun loadOneBusStop(stopId: String, bound: String): List<BusStop> {
@@ -254,7 +253,7 @@ object BusService {
         if (result.bustimeResponse.prd == null) {
             if (result.bustimeResponse.error != null && result.bustimeResponse.error!!.isNotEmpty()) {
                 if (result.bustimeResponse.error!![0].noServiceScheduled()) {
-                    return mutableListOf()
+                    return listOf()
                 }
             }
             throw CtaException(result)

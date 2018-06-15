@@ -27,7 +27,7 @@ import fr.cph.chicago.core.model.TrainArrival
 import org.apache.commons.lang3.StringUtils
 import java.util.TreeMap
 
-data class BusArrivalDTO(val busArrivals: List<BusArrival>, val error: Boolean)
+data class BusArrivalDTO(val busArrivals: List<BusArrival> = listOf(), val error: Boolean = true)
 
 data class TrainArrivalDTO(val trainArrivalSparseArray: SparseArray<TrainArrival>, val error: Boolean)
 

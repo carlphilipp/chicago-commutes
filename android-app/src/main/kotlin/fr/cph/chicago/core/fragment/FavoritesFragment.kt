@@ -106,7 +106,7 @@ class FavoritesFragment : AbstractFragment() {
                     util.showMessage(mainActivity, R.string.message_too_fast)
                 } else {
                     val intent = Intent(mainActivity, SearchActivity::class.java)
-                    intent.putParcelableArrayListExtra(bundleBikeStation, divvyStations as ArrayList<BikeStation>?)
+                    intent.putParcelableArrayListExtra(bundleBikeStation, util.asParcelableArrayList(divvyStations))
                     mainActivity.startActivity(intent)
                 }
             }
@@ -179,7 +179,7 @@ class FavoritesFragment : AbstractFragment() {
     }
 
     fun reloadData(favoritesDTO: FavoritesDTO) {
-        mainActivity.intent.putParcelableArrayListExtra(bundleBikeStation, favoritesDTO.bikeStations as ArrayList<BikeStation>)
+        mainActivity.intent.putParcelableArrayListExtra(bundleBikeStation, util.asParcelableArrayList(favoritesDTO.bikeStations))
         divvyStations = favoritesDTO.bikeStations
         favoritesAdapter.updateData(favoritesDTO.trainArrivalDTO.trainArrivalSparseArray, favoritesDTO.busArrivalDTO.busArrivals, favoritesDTO.bikeStations)
         favoritesAdapter.refreshFavorites()

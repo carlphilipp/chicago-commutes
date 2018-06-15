@@ -322,4 +322,13 @@ object Util {
             // ignore
         }
     }
+
+    fun <T> asParcelableArrayList(list: List<T>): ArrayList<T> {
+        // Make sure that we have an ArrayList and not a kotlin.collections.EmptyList
+        return if (list.isEmpty()) {
+            ArrayList()
+        } else {
+            list as ArrayList
+        }
+    }
 }

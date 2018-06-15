@@ -80,7 +80,7 @@ object ObservableUtil {
         return createObservableFromCallable(Callable { BusArrivalDTO(busService.loadFavoritesBuses(), false) })
             .onErrorReturn { throwable ->
                 Log.e(TAG, throwable.message, throwable)
-                BusArrivalDTO(mutableListOf(), true)
+                BusArrivalDTO()
             }
     }
 

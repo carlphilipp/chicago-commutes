@@ -25,7 +25,6 @@ import android.util.Log
 import butterknife.BindString
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.dto.BusArrivalDTO
 import fr.cph.chicago.core.model.dto.FavoritesDTO
 import fr.cph.chicago.core.model.dto.TrainArrivalDTO
@@ -33,6 +32,7 @@ import fr.cph.chicago.repository.RealmConfig
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
+import fr.cph.chicago.util.Util
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -120,7 +120,7 @@ class BaseActivity : ButterKnifeActivity(R.layout.loading) {
     private fun startMainActivity(result: FavoritesDTO) {
         val intent = Intent(this, MainActivity::class.java)
         val bundle = Bundle()
-        bundle.putParcelableArrayList(getString(R.string.bundle_bus_arrivals), result.busArrivalDTO.busArrivals as ArrayList<BusArrival>)
+        bundle.putParcelableArrayList(getString(R.string.bundle_bus_arrivals), Util.asParcelableArrayList(result.busArrivalDTO.busArrivals))
         bundle.putSparseParcelableArray(getString(R.string.bundle_train_arrivals), result.trainArrivalDTO.trainArrivalSparseArray)
         bundle.putBoolean(getString(R.string.bundle_train_error), result.trainArrivalDTO.error)
         bundle.putBoolean(getString(R.string.bundle_bus_error), result.busArrivalDTO.error)

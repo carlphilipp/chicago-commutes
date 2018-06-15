@@ -123,7 +123,7 @@ class SearchActivity : AppCompatActivity() {
         // check if search intent
         if (Intent.ACTION_SEARCH == intent.action) {
             val bikeStations = getIntent().extras.getParcelableArrayList<BikeStation>(bundleBikeStations)
-            intent.putParcelableArrayListExtra(bundleBikeStations, bikeStations)
+            intent.putParcelableArrayListExtra(bundleBikeStations, util.asParcelableArrayList(bikeStations))
         }
         super.startActivity(intent)
     }
