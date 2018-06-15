@@ -20,7 +20,6 @@
 package fr.cph.chicago.core.model
 
 import android.os.Parcelable
-import android.util.Log
 import android.util.SparseArray
 import fr.cph.chicago.core.model.dto.BusArrivalStopMappedDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
@@ -70,23 +69,16 @@ object Favorites {
      * @return an object, trainStation or bus route
      */
     fun getObject(position: Int): Parcelable {
-        if (position < trainFavorites.size) {
+        return if (position < trainFavorites.size) {
             val stationId = trainFavorites[position]
-            return trainService.getStation(stationId)
+            trainService.getStation(stationId)
         } else if (position < trainFavorites.size + fakeBusFavorites.size && position - trainFavorites.size < fakeBusFavorites.size) {
             val index = position - trainFavorites.size
             val routeId = fakeBusFavorites[index]
-            val busDataRoute = busService.getBusRoute(routeId)
-            return if (busDataRoute.name != "error") {
-                busDataRoute
-            } else {
-                // Get name in the preferences if error
-                val routeName = preferenceService.getBusRouteNameMapping(routeId)
-                BusRoute(routeId, routeName ?: "")
-            }
+            busService.getBusRoute(routeId)
         } else {
             val index = position - (trainFavorites.size + fakeBusFavorites.size)
-            return divvyStations
+            divvyStations
                 .filter { st -> st.id.toString() == bikeFavorites[index] }
                 .getOrElse(0) { createEmptyBikeStation(index) }
         }
@@ -113,7 +105,7 @@ object Favorites {
         busArrivals
             .filter { (_, _, _, _, _, rId) -> rId == routeId }
             .filter { (_, _, _, stopId, _, _, routeDirection) -> isInFavorites(routeId, stopId, routeDirection) }
-            .forEach({ busArrivalDTO.addBusArrival(it) })
+            .forEach { busArrivalDTO.addBusArrival(it) }
 
         // Put empty buses if one of the stop is missing from the response
         addNoServiceBusIfNeeded(busArrivalDTO, routeId)
@@ -131,7 +123,7 @@ object Favorites {
                 .flatMap { bikeStationId -> divvyStations.filter { st -> st.id.toString() == bikeStationId } }
                 .sortedWith(util.bikeStationComparator)
                 .map { st -> st.id.toString() }
-                .forEach{ bikeFavorites.add(it) }
+                .forEach { bikeFavorites.add(it) }
         } else {
             bikeFavorites.addAll(bikeFavoritesTemp)
         }

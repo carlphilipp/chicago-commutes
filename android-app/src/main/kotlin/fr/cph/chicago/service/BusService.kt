@@ -197,8 +197,18 @@ object BusService {
         busRepository.saveBusRoutes(busRoutes)
     }
 
+    /**
+     *  We can't guaranty that the repo will be populated when we call that method
+     */
     fun getBusRoute(routeId: String): BusRoute {
-        return busRepository.getBusRoute(routeId)
+        val busRoute = busRepository.getBusRoute(routeId)
+        return if (busRoute.name != "error") {
+            busRoute
+        } else {
+            // Get name in the preferences if error
+            val routeName = preferenceService.getBusRouteNameMapping(routeId)
+            BusRoute(routeId, routeName ?: "")
+        }
     }
 
     fun busRouteError(): Boolean {
