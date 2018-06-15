@@ -38,7 +38,6 @@ import java.util.TreeMap
  * @author Carl-Philipp Harmant
  * @version 1
  */
-// TODO to analyze and refactor
 object Favorites {
 
     private val trainService = TrainService

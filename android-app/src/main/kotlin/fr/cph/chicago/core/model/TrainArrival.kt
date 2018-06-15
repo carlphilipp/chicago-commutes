@@ -39,8 +39,8 @@ data class TrainArrival(var trainEtas: MutableList<TrainEta> = mutableListOf()) 
         return this
     }
 
-    fun getEtas(line: TrainLine): MutableList<TrainEta> {
-        return this.trainEtas.filter { eta -> eta.routeName == line }.toMutableList()
+    fun getEtas(line: TrainLine): List<TrainEta> {
+        return this.trainEtas.filter { eta -> eta.routeName == line }
     }
 
     override fun describeContents(): Int {
