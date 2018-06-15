@@ -134,7 +134,7 @@ object BusService {
     }
 
     fun loadBusPattern(busRouteId: String, bound: String): BusPattern {
-        return loadBusPattern(busRouteId, arrayOf(bound)).getOrElse(0, { BusPattern("error", mutableListOf()) })
+        return loadBusPattern(busRouteId, arrayOf(bound)).getOrElse(0) { BusPattern("error", mutableListOf()) }
     }
 
     fun loadBusPattern(busRouteId: String, bounds: Array<String>): List<BusPattern> {

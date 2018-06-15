@@ -54,7 +54,7 @@ import fr.cph.chicago.util.Util
 import java.util.Calendar
 
 /**
- * Adapter that will handle favoritesData
+ * Adapter that will handle favorites
  *
  * @author Carl-Philipp Harmant
  * @version 1
@@ -63,7 +63,7 @@ import java.util.Calendar
 class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder>() {
 
     private val util = Util
-    private val favoritesData = Favorites
+    private val favorites = Favorites
     private val layoutUtil = LayoutUtil
     private lateinit var lastUpdate: String
 
@@ -75,7 +75,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
 
     override fun onBindViewHolder(holder: FavoritesViewHolder, position: Int) {
         holder.mainLayout.removeAllViews()
-        val model = favoritesData.getObject(position)
+        val model = favorites.getObject(position)
         holder.lastUpdateTextView.text = lastUpdate
         when (model) {
             is TrainStation -> handleStation(holder, model)
@@ -111,7 +111,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
 
         trainStation.lines.forEach { trainLine ->
             var newLine = true
-            val etas = favoritesData.getTrainArrivalByLine(trainStation.id, trainLine)
+            val etas = favorites.getTrainArrivalByLine(trainStation.id, trainLine)
             for ((i, entry) in etas.entries.withIndex()) {
                 val containParams = layoutUtil.getInsideParams(newLine, i == etas.size - 1)
                 val container = layoutUtil.createTrainArrivalsLayout(containParams, entry, trainLine)
@@ -129,7 +129,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
 
         val busDetailsDTOs = mutableListOf<BusDetailsDTO>()
 
-        val busArrivalDTO = favoritesData.getBusArrivalsMapped(busRoute.id)
+        val busArrivalDTO = favorites.getBusArrivalsMapped(busRoute.id)
         val entrySet = busArrivalDTO.entries
 
         for ((stopName, boundMap) in entrySet) {
@@ -188,11 +188,11 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
     }
 
     override fun getItemCount(): Int {
-        return favoritesData.size()
+        return favorites.size()
     }
 
     fun refreshFavorites() {
-        favoritesData.refreshFavorites()
+        favorites.refreshFavorites()
     }
 
     /**
@@ -211,12 +211,12 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
     }
 
     fun updateData(trainArrivals: SparseArray<TrainArrival>, busArrivals: List<BusArrival>, divvyStations: List<BikeStation>) {
-        favoritesData.updateTrainArrivals(trainArrivals)
-        favoritesData.updateBusArrivals(busArrivals)
-        favoritesData.updateBikeStations(divvyStations)
+        favorites.updateTrainArrivals(trainArrivals)
+        favorites.updateBusArrivals(busArrivals)
+        favorites.updateBikeStations(divvyStations)
     }
 
     fun updateBikeStations(divvyStations: List<BikeStation>) {
-        favoritesData.updateBikeStations(divvyStations)
+        favorites.updateBikeStations(divvyStations)
     }
 }

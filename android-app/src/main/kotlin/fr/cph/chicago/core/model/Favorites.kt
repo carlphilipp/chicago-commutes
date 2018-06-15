@@ -158,7 +158,7 @@ object Favorites {
     }
 
     /**
-     * Is in favorites
+     * Is in bus favorites
      *
      * @param routeId the route id
      * @param stopId  the stop id
