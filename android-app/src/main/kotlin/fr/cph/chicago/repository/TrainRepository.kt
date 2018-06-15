@@ -157,14 +157,13 @@ object TrainRepository {
     }
 
     /**
-     * get a trainStation
+     * Get a train station
      *
      * @param id the id of the train station
      * @return the train station
      */
     fun getStation(id: Int): TrainStation {
-        val station = stations.get(id)
-        return station ?: TrainStation.buildEmptyStation()
+        return stations.get(id) ?: TrainStation.buildEmptyStation()
     }
 
     /**

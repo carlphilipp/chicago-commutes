@@ -23,6 +23,7 @@ import android.os.Parcelable
 import android.util.SparseArray
 import fr.cph.chicago.core.model.dto.BusArrivalStopMappedDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
@@ -42,12 +43,13 @@ object Favorites {
 
     private val trainService = TrainService
     private val busService = BusService
+    private val bikeService = BikeService
     private val preferenceService = PreferenceService
     private val util = Util
 
     private val trainArrivals: SparseArray<TrainArrival> = SparseArray()
     private val busArrivals: MutableList<BusArrival> = mutableListOf()
-    private val divvyStations: MutableList<BikeStation> = mutableListOf()
+    private val bikeStations: MutableList<BikeStation> = mutableListOf()
     private var trainFavorites: List<Int> = listOf()
     private var busFavorites: List<String> = listOf()
     private var fakeBusFavorites: List<String> = listOf()
@@ -78,9 +80,9 @@ object Favorites {
             busService.getBusRoute(routeId)
         } else {
             val index = position - (trainFavorites.size + fakeBusFavorites.size)
-            divvyStations
-                .filter { st -> st.id.toString() == bikeFavorites[index] }
-                .getOrElse(0) { createEmptyBikeStation(index) }
+            bikeStations
+                .filter { bikeStation -> bikeStation.id.toString() == bikeFavorites[index] }
+                .getOrElse(0) { bikeService.createEmptyBikeStation(bikeFavorites[index]) }
         }
     }
 
@@ -118,9 +120,9 @@ object Favorites {
         fakeBusFavorites = calculateActualRouteNumberBusFavorites(busFavorites)
         bikeFavorites.clear()
         val bikeFavoritesTemp = preferenceService.getBikeFavorites()
-        if (divvyStations.isNotEmpty()) {
+        if (bikeStations.isNotEmpty()) {
             bikeFavoritesTemp
-                .flatMap { bikeStationId -> divvyStations.filter { st -> st.id.toString() == bikeStationId } }
+                .flatMap { bikeStationId -> bikeStations.filter { st -> st.id.toString() == bikeStationId } }
                 .sortedWith(util.bikeStationComparator)
                 .map { st -> st.id.toString() }
                 .forEach { bikeFavorites.add(it) }
@@ -144,13 +146,8 @@ object Favorites {
     }
 
     fun updateBikeStations(divvyStations: List<BikeStation>) {
-        this.divvyStations.clear()
-        this.divvyStations.addAll(divvyStations)
-    }
-
-    private fun createEmptyBikeStation(index: Int): BikeStation {
-        val stationName = preferenceService.getBikeRouteNameMapping(bikeFavorites[index])
-        return BikeStation.buildDefaultBikeStationWithName(stationName ?: StringUtils.EMPTY)
+        this.bikeStations.clear()
+        this.bikeStations.addAll(divvyStations)
     }
 
     private fun calculateActualRouteNumberBusFavorites(busFavorites: List<String>): List<String> {
@@ -171,9 +168,7 @@ object Favorites {
     private fun isInFavorites(routeId: String, stopId: Int, bound: String): Boolean {
         return busFavorites
             .map { util.decodeBusFavorite(it) }
-            // TODO: Is that correct ? maybe remove stopId
-            .filter { (routeId1, stopId1, bound1) -> routeId == routeId1 && stopId.toString() == stopId1 && bound == bound1 }
-            .isNotEmpty()
+            .any { (routeId1, stopId1, bound1) -> routeId == routeId1 && stopId.toString() == stopId1 && bound == bound1 }
     }
 
     private fun addNoServiceBusIfNeeded(busArrivalDTO: BusArrivalStopMappedDTO, routeId: String) {
@@ -183,7 +178,7 @@ object Favorites {
                 val stopId = stopId1.toInt()
 
                 var stopName = preferenceService.getBusStopNameMapping(stopId.toString())
-                stopName = if (stopName != null) stopName else stopId.toString()
+                stopName = stopName ?: stopId.toString()
 
                 // FIXME check if that logic works. I think it does not. In what case do we show that bus arrival?
                 if (!busArrivalDTO.containsStopNameAndBound(stopName, bound)) {

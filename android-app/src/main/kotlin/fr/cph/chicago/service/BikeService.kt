@@ -23,11 +23,13 @@ import fr.cph.chicago.client.DivvyClient
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.entity.DivvyResponse
 import fr.cph.chicago.parser.JsonParser
+import org.apache.commons.lang3.StringUtils
 
 object BikeService {
 
     private val client = DivvyClient
     private val jsonParser = JsonParser
+    private val preferenceService = PreferenceService
 
     fun loadAllBikeStations(): List<BikeStation> {
         val bikeStationsInputStream = client.getBikeStations()
@@ -50,5 +52,10 @@ object BikeService {
 
     fun findBikeStation(id: Int): BikeStation {
         return loadAllBikeStations().first { station -> station.id == id }
+    }
+
+    fun createEmptyBikeStation(bikeId: String): BikeStation {
+        val stationName = preferenceService.getBikeRouteNameMapping(bikeId)
+        return BikeStation.buildDefaultBikeStationWithName(stationName ?: StringUtils.EMPTY)
     }
 }

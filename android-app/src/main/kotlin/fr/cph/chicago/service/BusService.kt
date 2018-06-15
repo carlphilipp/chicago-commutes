@@ -189,7 +189,7 @@ object BusService {
         return busRepository.saveBusStops(busStops)
     }
 
-    fun getBusRoutes(): MutableList<BusRoute> {
+    fun getBusRoutes(): List<BusRoute> {
         return busRepository.inMemoryBusRoutes
     }
 
@@ -201,14 +201,21 @@ object BusService {
      *  We can't guaranty that the repo will be populated when we call that method
      */
     fun getBusRoute(routeId: String): BusRoute {
-        val busRoute = busRepository.getBusRoute(routeId)
-        return if (busRoute.name != "error") {
-            busRoute
+        return if (busRepository.isEmpty()) {
+            getBusRouteFromFavorites(routeId)
         } else {
-            // Get name in the preferences if error
-            val routeName = preferenceService.getBusRouteNameMapping(routeId)
-            BusRoute(routeId, routeName ?: "")
+            val busRoute = busRepository.getBusRoute(routeId)
+            if (busRoute.name != "error") {
+                busRoute
+            } else {
+                getBusRouteFromFavorites(routeId)
+            }
         }
+    }
+
+    private fun getBusRouteFromFavorites(routeId: String): BusRoute {
+        val routeName = preferenceService.getBusRouteNameMapping(routeId)
+        return BusRoute(routeId, routeName ?: "")
     }
 
     fun busRouteError(): Boolean {

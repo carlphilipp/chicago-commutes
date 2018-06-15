@@ -32,15 +32,17 @@ object BusRepository {
     // FIXME: No state should be allowed here
     var busRouteError: Boolean = false
 
-    val inMemoryBusRoutes: MutableList<BusRoute> = mutableListOf()
+    var inMemoryBusRoutes: List<BusRoute> = listOf()
+
+    fun isEmpty(): Boolean {
+        return inMemoryBusRoutes.isEmpty()
+    }
 
     fun saveBusRoutes(busRoutes: List<BusRoute>) {
-        this.inMemoryBusRoutes.clear()
-        this.inMemoryBusRoutes.addAll(busRoutes)
+        inMemoryBusRoutes = busRoutes
     }
 
     fun getBusRoute(routeId: String): BusRoute {
-        val derp = this.inMemoryBusRoutes
         return this.inMemoryBusRoutes
             .filter { (id) -> id == routeId }
             .getOrElse(0) { BusRoute("0", "error") }
