@@ -46,6 +46,7 @@ import fr.cph.chicago.core.model.enumeration.TrainLine
  */
 object LayoutUtil {
 
+    private const val DEFAULT_SPACE_DP = 110
     private val util = Util
 
     private fun createColoredRoundForFavorites(trainLine: TrainLine): RelativeLayout {
@@ -242,10 +243,18 @@ object LayoutUtil {
         lines.orientation = LinearLayout.VERTICAL
         if (busArrivals.isEmpty()) {
             val line = createLineLayout()
-            val lineTitleTextView = createLineTitle(App.instance.getString(R.string.bus_activity_no_service), createTitleParams())
+            val lineTitleTextView = createLineTitle(App.instance.getString(R.string.bus_activity_no_service), createTitleParams(DEFAULT_SPACE_DP))
             line.addView(lineTitleTextView)
             lines.addView(line)
         } else {
+            // Get the max size of the title to be able to align properly arrival times
+            val maxSize = busArrivals.keys.map { s ->
+                val textView = TextView(App.instance)
+                textView.text = s
+                textView.measure(0, 0)
+                textView.measuredWidth
+            }.max()!!
+
             busArrivals.forEach {
                 // Create line
                 val line = createLineLayout()
@@ -255,10 +264,10 @@ object LayoutUtil {
                 val left = createLeftLayout()
                 line.addView(left)
 
-                val lineTitleTextView = createLineTitle(it.key, createTitleParams())
+                val lineTitleTextView = createLineTitle(it.key, createTitleParams(maxSize / 3))
                 left.addView(lineTitleTextView)
 
-                if(it.value.isNotEmpty()) {
+                if (it.value.isNotEmpty()) {
                     val arrivalTextView = TextView(App.instance)
                     arrivalTextView.text = formatArrivalTime(it.value[0])
                     arrivalTextView.layoutParams = createLineValueLayoutParams(lineTitleTextView.id)
@@ -285,7 +294,7 @@ object LayoutUtil {
 
         val lineTitleTextView = createLineTitle(
             lineTitle,
-            if (withDots) createTitleParamsWithId(lineId) else createTitleParams()
+            if (withDots) createTitleParamsWithId(lineId) else createTitleParams(DEFAULT_SPACE_DP)
         )
 
         val amountBike = TextView(App.instance)
@@ -325,15 +334,15 @@ object LayoutUtil {
         return left
     }
 
-    private fun createTitleParams(): RelativeLayout.LayoutParams {
+    private fun createTitleParams(dp: Int): RelativeLayout.LayoutParams {
         val destinationParams = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         destinationParams.setMargins(util.dpToPixel16d, 0, 0, 0)
-        destinationParams.width = util.convertDpToPixel(110)
+        destinationParams.width = util.convertDpToPixel(dp)
         return destinationParams
     }
 
     private fun createTitleParamsWithId(id: Int): RelativeLayout.LayoutParams {
-        val params = createTitleParams()
+        val params = createTitleParams(DEFAULT_SPACE_DP)
         params.addRule(RelativeLayout.RIGHT_OF, id)
         return params
     }
@@ -352,6 +361,7 @@ object LayoutUtil {
         lineTitleTextView.id = util.generateViewId()
         lineTitleTextView.setSingleLine(true)
         lineTitleTextView.setTextColor(util.grey5)
+        lineTitleTextView.measure(0, 0)
         return lineTitleTextView
     }
 

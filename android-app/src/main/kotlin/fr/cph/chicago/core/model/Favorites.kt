@@ -20,6 +20,7 @@
 package fr.cph.chicago.core.model
 
 import android.os.Parcelable
+import android.util.Log
 import android.util.SparseArray
 import fr.cph.chicago.core.model.dto.BusArrivalStopMappedDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
@@ -79,7 +80,7 @@ object Favorites {
             return if (busDataRoute.name != "error") {
                 busDataRoute
             } else {
-                // Get name in the preferences if null
+                // Get name in the preferences if error
                 val routeName = preferenceService.getBusRouteNameMapping(routeId)
                 BusRoute(routeId, routeName ?: "")
             }
@@ -87,7 +88,7 @@ object Favorites {
             val index = position - (trainFavorites.size + fakeBusFavorites.size)
             return divvyStations
                 .filter { st -> st.id.toString() == bikeFavorites[index] }
-                .getOrElse(0, { createEmptyBikeStation(index) })
+                .getOrElse(0) { createEmptyBikeStation(index) }
         }
     }
 

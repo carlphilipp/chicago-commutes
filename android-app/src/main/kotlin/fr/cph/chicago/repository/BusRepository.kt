@@ -40,9 +40,10 @@ object BusRepository {
     }
 
     fun getBusRoute(routeId: String): BusRoute {
+        val derp = this.inMemoryBusRoutes
         return this.inMemoryBusRoutes
             .filter { (id) -> id == routeId }
-            .getOrElse(0, { BusRoute("0", "error") })
+            .getOrElse(0) { BusRoute("0", "error") }
     }
 
     fun hasBusStopsEmpty(): Boolean {

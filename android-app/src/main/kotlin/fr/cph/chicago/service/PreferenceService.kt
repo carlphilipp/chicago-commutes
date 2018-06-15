@@ -52,7 +52,7 @@ object PreferenceService {
     }
 
     fun addBusRouteNameMapping(busStopId: String, routeName: String) {
-        repo.addBikeRouteNameMapping(busStopId, routeName)
+        repo.addBusRouteNameMapping(busStopId, routeName)
     }
 
     fun addBusStopNameMapping(busStopId: String, stopName: String) {

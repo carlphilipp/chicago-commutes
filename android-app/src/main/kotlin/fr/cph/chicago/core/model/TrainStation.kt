@@ -46,7 +46,7 @@ class TrainStation(
         get() {
             return stops
                 .map { it.lines }
-                .fold(TreeSet(), { accumulator, item -> accumulator.addAll(item); accumulator })
+                .fold(TreeSet()) { accumulator, item -> accumulator.addAll(item); accumulator }
         }
 
     val stopByLines: Map<TrainLine, MutableList<Stop>>
@@ -78,6 +78,10 @@ class TrainStation(
         dest.writeInt(id)
         dest.writeString(name)
         dest.writeTypedList(stops)
+    }
+
+    override fun toString(): String {
+        return "TrainStation(stops=$stops)"
     }
 
     companion object {
