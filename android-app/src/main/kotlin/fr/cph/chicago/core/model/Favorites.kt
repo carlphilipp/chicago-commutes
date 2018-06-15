@@ -47,9 +47,10 @@ object Favorites {
     private val preferenceService = PreferenceService
     private val util = Util
 
-    private val trainArrivals: SparseArray<TrainArrival> = SparseArray()
-    private val busArrivals: MutableList<BusArrival> = mutableListOf()
-    private val bikeStations: MutableList<BikeStation> = mutableListOf()
+    private var trainArrivals: SparseArray<TrainArrival> = SparseArray()
+    private var busArrivals: List<BusArrival> = listOf()
+    private var bikeStations: List<BikeStation> = listOf()
+
     private var trainFavorites: List<Int> = listOf()
     private var busFavorites: List<String> = listOf()
     private var fakeBusFavorites: List<String> = listOf()
@@ -131,23 +132,14 @@ object Favorites {
         }
     }
 
-    fun updateTrainArrivals(trainArrivals: SparseArray<TrainArrival>) {
-        this.trainArrivals.clear()
-        for (i in 0 until trainArrivals.size()) {
-            val key = trainArrivals.keyAt(i)
-            val obj = trainArrivals.get(key)
-            this.trainArrivals.append(key, obj)
-        }
+    fun updateData(trainArrivals: SparseArray<TrainArrival>, busArrivals: List<BusArrival>, bikeStations: List<BikeStation>) {
+        this.trainArrivals = trainArrivals
+        this.busArrivals = busArrivals
+        this.bikeStations = bikeStations
     }
 
-    fun updateBusArrivals(busArrivals: List<BusArrival>) {
-        this.busArrivals.clear()
-        this.busArrivals.addAll(busArrivals)
-    }
-
-    fun updateBikeStations(divvyStations: List<BikeStation>) {
-        this.bikeStations.clear()
-        this.bikeStations.addAll(divvyStations)
+    fun updateBikeStations(bikeStations: List<BikeStation>) {
+        this.bikeStations = bikeStations
     }
 
     private fun calculateActualRouteNumberBusFavorites(busFavorites: List<String>): List<String> {

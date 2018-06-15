@@ -211,8 +211,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
     }
 
     fun updateData(trainArrivals: SparseArray<TrainArrival>, busArrivals: List<BusArrival>, divvyStations: List<BikeStation>) {
-        favorites.updateTrainArrivals(trainArrivals)
-        favorites.updateBusArrivals(busArrivals)
+        favorites.updateData(trainArrivals, busArrivals, divvyStations)
         favorites.updateBikeStations(divvyStations)
     }
 
