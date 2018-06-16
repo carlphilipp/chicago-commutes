@@ -27,6 +27,7 @@ import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.Toolbar
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.TextView
 import butterknife.BindColor
 import butterknife.BindString
@@ -36,6 +37,7 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
+import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
@@ -46,6 +48,7 @@ import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.LayoutUtil
 import fr.cph.chicago.util.Util
+import java.util.Date
 
 /**
  * Activity that represents the bus stop
@@ -59,8 +62,10 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
     lateinit var scrollView: SwipeRefreshLayout
     @BindView(R.id.activity_favorite_star)
     lateinit var favoritesImage: ImageView
-    @BindView(R.id.activity_bus_stops)
-    lateinit var stopsView: LinearLayout
+    @BindView(R.id.left_layout)
+    lateinit var leftLayout: RelativeLayout
+    @BindView(R.id.right_layout)
+    lateinit var rightLayout: RelativeLayout
     @BindView(R.id.activity_bus_streetview_image)
     lateinit var streetViewImage: ImageView
     @BindView(R.id.activity_bus_steetview_text)
@@ -76,9 +81,13 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
     @BindView(R.id.map_container)
     lateinit var mapContainer: LinearLayout
     @BindView(R.id.activity_bus_station_value)
-    lateinit var busRouteNameView2: TextView
+    lateinit var busRouteNameView: TextView
     @BindView(R.id.toolbar)
     lateinit var toolbar: Toolbar
+    @BindView(R.id.destination)
+    lateinit var destinationTextView: TextView
+    @BindView(R.id.arrivals)
+    lateinit var arrivalsTextView: TextView
 
     @BindString(R.string.bundle_bus_stop_id)
     lateinit var bundleBusStopId: String
@@ -157,7 +166,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
         walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(latitude, longitude))
 
         val busRouteName2 = "$busRouteName ($boundTitle)"
-        busRouteNameView2.text = busRouteName2
+        busRouteNameView.text = busRouteName2
 
         // Load google street picture and data
         loadGoogleStreetImage(position, streetViewImage, streetViewText)
@@ -211,8 +220,52 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
      */
     fun refreshActivity(busArrivals: BusArrivalStopDTO) {
         this.busArrivals = busArrivals
-        stopsView.removeAllViews()
-        stopsView.addView(LayoutUtil.buildBusStopsLayout(busArrivals))
+        cleanLayout()
+        if (busArrivals.isEmpty()) {
+            destinationTextView.text = App.instance.getString(R.string.bus_activity_no_service)
+            arrivalsTextView.text = ""
+        } else {
+            val key1 = busArrivals.keys.iterator().next()
+            destinationTextView.text = key1
+            arrivalsTextView.text = busArrivals[key1]!!.joinToString(separator = " ") { LayoutUtil.formatArrivalTime(it) }
+
+            var idBellowTitle = destinationTextView.id
+            var idBellowArrival = arrivalsTextView.id
+            busArrivals.entries.drop(1).forEach {
+                val belowTitle = TextView(App.instance)
+                belowTitle.text = it.key
+                belowTitle.id = util.generateViewId()
+                belowTitle.setSingleLine(true)
+                belowTitle.setTextColor(util.grey5)
+                belowTitle.layoutParams = LayoutUtil.createLineBelowLayoutParams(idBellowTitle)
+                idBellowTitle = belowTitle.id
+
+                val belowArrival = TextView(App.instance)
+                belowArrival.text = it.value.joinToString(separator = " ") { LayoutUtil.formatArrivalTime(it) }
+                belowArrival.id = util.generateViewId()
+                belowArrival.setSingleLine(true)
+                belowArrival.setTextColor(util.grey5)
+                belowArrival.layoutParams = LayoutUtil.createLineBelowLayoutParams(idBellowArrival)
+                idBellowArrival = belowArrival.id
+
+                leftLayout.addView(belowTitle)
+                rightLayout.addView(belowArrival)
+            }
+        }
+    }
+
+    private fun cleanLayout() {
+        destinationTextView.text = ""
+        arrivalsTextView.text = ""
+        while (leftLayout.childCount >= 2) {
+            val view = leftLayout.getChildAt(leftLayout.childCount - 1)
+            leftLayout.removeView(view)
+        }
+
+        while (rightLayout.childCount >= 2) {
+            val view2 = rightLayout.getChildAt(rightLayout.childCount - 1)
+            rightLayout.removeView(view2)
+        }
     }
 
     override fun isFavorite(): Boolean {

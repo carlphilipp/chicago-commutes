@@ -218,11 +218,10 @@ object LayoutUtil {
         return container
     }
 
-    fun buildBusStopsLayout(busArrivals: BusArrivalStopDTO): LinearLayout {
-        val container = buildBusBikeLayout()
-        val linearLayout = (container.getChildAt(0) as LinearLayout)
-        linearLayout.addView(createBusLines(busArrivals))
-        return container
+    fun createLineBelowLayoutParams(id: Int): RelativeLayout.LayoutParams {
+        val arrivalLayoutParams = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        arrivalLayoutParams.addRule(RelativeLayout.BELOW, id)
+        return arrivalLayoutParams
     }
 
     private fun buildBusBikeLayout(): LinearLayout {
@@ -236,54 +235,6 @@ object LayoutUtil {
 
         container.addView(linearLayout)
         return container
-    }
-
-    private fun createBusLines(busArrivals: BusArrivalStopDTO): LinearLayout {
-        val lines = LinearLayout(App.instance)
-        lines.orientation = LinearLayout.VERTICAL
-        if (busArrivals.isEmpty()) {
-            val line = createLineLayout()
-            val lineTitleTextView = createLineTitle(App.instance.getString(R.string.bus_activity_no_service), createTitleParams(DEFAULT_SPACE_DP))
-            line.addView(lineTitleTextView)
-            lines.addView(line)
-        } else {
-            // Get the max size of the title to be able to align properly arrival times
-            val maxSize = busArrivals.keys.map { s ->
-                val textView = TextView(App.instance)
-                textView.text = s
-                textView.measure(0, 0)
-                textView.measuredWidth
-            }.max()!!
-
-            busArrivals.forEach {
-                // Create line
-                val line = createLineLayout()
-                lines.addView(line)
-
-                // Left layout
-                val left = createLeftLayout()
-                line.addView(left)
-
-                val lineTitleTextView = createLineTitle(it.key, createTitleParams(maxSize / 3))
-                left.addView(lineTitleTextView)
-
-                if (it.value.isNotEmpty()) {
-                    val arrivalTextView = TextView(App.instance)
-                    arrivalTextView.text = formatArrivalTime(it.value[0])
-                    arrivalTextView.layoutParams = createLineValueLayoutParams(lineTitleTextView.id)
-                    arrivalTextView.setTextColor(util.grey5)
-                    left.addView(arrivalTextView)
-
-                    it.value.drop(1).forEach {
-                        val textView = TextView(App.instance)
-                        textView.text = formatArrivalTime(it)
-                        textView.setTextColor(util.grey5)
-                        line.addView(textView)
-                    }
-                }
-            }
-        }
-        return lines
     }
 
     private fun createBikeLine(lineTitle: String, lineValue: Int, withDots: Boolean): LinearLayout {
@@ -371,7 +322,8 @@ object LayoutUtil {
         return if (num >= 10) num.toString() else "  $num"
     }
 
-    private fun formatArrivalTime(busArrival: BusArrival): String {
+    // TODO move to appropriate utility class
+    fun formatArrivalTime(busArrival: BusArrival): String {
         return if (busArrival.isDelay) " Delay" else " " + busArrival.timeLeft
     }
 }
