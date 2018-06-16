@@ -23,7 +23,7 @@ import android.view.View
 import android.widget.ListView
 import android.widget.TextView
 import fr.cph.chicago.R
-import fr.cph.chicago.core.activity.TrainMapActivity
+import fr.cph.chicago.core.activity.map.TrainMapActivity
 import fr.cph.chicago.core.adapter.TrainMapSnippetAdapter
 import fr.cph.chicago.core.model.TrainEta
 import io.reactivex.Observer

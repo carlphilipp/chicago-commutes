@@ -26,10 +26,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import butterknife.BindString
-import butterknife.ButterKnife
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter
-import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -37,6 +35,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
+import fr.cph.chicago.core.activity.map.FragmentMapActivity
 import fr.cph.chicago.core.model.Bus
 import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.enumeration.TrainLine
@@ -80,29 +79,26 @@ class BusMapActivity : FragmentMapActivity() {
     private var loadPattern = true
 
     public override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         App.checkBusData(this)
-        if (!this.isFinishing) {
-            MapsInitializer.initialize(applicationContext)
-            setContentView(R.layout.activity_map)
-            ButterKnife.bind(this)
+        super.onCreate(savedInstanceState)
+    }
 
-            if (savedInstanceState != null) {
-                busId = savedInstanceState.getInt(bundleBusId)
-                busRouteId = savedInstanceState.getString(bundleBusRouteId)
-                bounds = savedInstanceState.getStringArray(bundleBusBounds)
-            } else {
-                busId = intent.getIntExtra(bundleBusId, 0)
-                busRouteId = intent.getStringExtra(bundleBusRouteId)
-                bounds = intent.getStringArrayExtra(bundleBusBounds)
-            }
-
-            // Init data
-            initData()
-
-            // Init toolbar
-            setToolbar()
+    override fun create(savedInstanceState: Bundle?) {
+        if (savedInstanceState != null) {
+            busId = savedInstanceState.getInt(bundleBusId)
+            busRouteId = savedInstanceState.getString(bundleBusRouteId)
+            bounds = savedInstanceState.getStringArray(bundleBusBounds)
+        } else {
+            busId = intent.getIntExtra(bundleBusId, 0)
+            busRouteId = intent.getStringExtra(bundleBusRouteId)
+            bounds = intent.getStringArrayExtra(bundleBusBounds)
         }
+
+        // Init data
+        initData()
+
+        // Init toolbar
+        setToolbar()
     }
 
     public override fun onStop() {
@@ -160,7 +156,7 @@ class BusMapActivity : FragmentMapActivity() {
     }
 
     private fun cleanAllMarkers() {
-        busMarkers.forEach({ it.remove() })
+        busMarkers.forEach { it.remove() }
         busMarkers.clear()
     }
 
@@ -266,7 +262,7 @@ class BusMapActivity : FragmentMapActivity() {
                         val busDirections = busService.loadBusDirections(busRouteId)
                         bounds = busDirections.busDirections.map { busDirection -> busDirection.text }.toTypedArray()
                     }
-                    busService.loadBusPattern(busRouteId, bounds).forEach({ patterns.add(it) })
+                    busService.loadBusPattern(busRouteId, bounds).forEach { patterns.add(it) }
                     patterns
                 }
                     .subscribeOn(Schedulers.io())

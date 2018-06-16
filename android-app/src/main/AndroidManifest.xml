@@ -64,7 +64,7 @@
                 android:value="fr.cph.chicago.activity.SearchActivity"/>
         </activity>
         <activity
-            android:name=".core.activity.TrainStationActivity"
+            android:name=".core.activity.station.TrainStationActivity"
             android:label="@string/station_activity"
             android:screenOrientation="portrait"/>
         <activity
@@ -76,7 +76,7 @@
             android:label="@string/train_station_activity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".core.activity.BusStopActivity"
+            android:name=".core.activity.station.BusStopActivity"
             android:label="@string/bus_bound_activity"
             android:screenOrientation="portrait"/>
         <activity
@@ -97,7 +97,7 @@
                 android:resource="@xml/searchable"/>
         </activity>
         <activity
-            android:name=".core.activity.BikeStationActivity"
+            android:name=".core.activity.station.BikeStationActivity"
             android:label="@string/bike_activity"
             android:screenOrientation="portrait"/>
         <activity
@@ -105,7 +105,7 @@
             android:label="@string/map_activity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".core.activity.TrainMapActivity"
+            android:name=".core.activity.map.TrainMapActivity"
             android:label="@string/map_activity"
             android:screenOrientation="portrait"/>
         <activity

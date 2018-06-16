@@ -41,6 +41,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolylineOptions
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
+import fr.cph.chicago.core.activity.butterknife.ButterKnifeListActivity
+import fr.cph.chicago.core.activity.station.BusStopActivity
 import fr.cph.chicago.core.adapter.BusBoundAdapter
 import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.BusStop
@@ -149,7 +151,7 @@ class BusBoundActivity : ButterKnifeListActivity(R.layout.activity_bus_bound) {
 
 
         util.setWindowsColor(this, toolbar, TrainLine.NA)
-        toolbar.title = busRouteId + " - " + boundTitle
+        toolbar.title = "$busRouteId - $boundTitle"
 
         toolbar.navigationIcon = arrowBackWhite
         toolbar.setOnClickListener { _ -> finish() }

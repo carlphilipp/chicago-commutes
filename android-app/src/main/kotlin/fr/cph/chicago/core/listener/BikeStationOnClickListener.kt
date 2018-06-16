@@ -23,7 +23,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import fr.cph.chicago.R
-import fr.cph.chicago.core.activity.BikeStationActivity
+import fr.cph.chicago.core.activity.station.BikeStationActivity
 import fr.cph.chicago.core.model.BikeStation
 
 class BikeStationOnClickListener(private val station: BikeStation) : View.OnClickListener {

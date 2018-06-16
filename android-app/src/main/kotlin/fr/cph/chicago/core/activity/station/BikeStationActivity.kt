@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.core.activity
+package fr.cph.chicago.core.activity.station
 
 import android.os.Build
 import android.os.Bundle
@@ -30,6 +30,7 @@ import butterknife.BindColor
 import butterknife.BindString
 import butterknife.BindView
 import fr.cph.chicago.R
+import fr.cph.chicago.core.activity.station.StationActivity
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener

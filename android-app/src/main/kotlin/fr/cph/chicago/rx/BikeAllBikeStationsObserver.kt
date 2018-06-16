@@ -21,7 +21,7 @@ package fr.cph.chicago.rx
 import android.support.v4.widget.SwipeRefreshLayout
 import android.util.Log
 import fr.cph.chicago.R
-import fr.cph.chicago.core.activity.BikeStationActivity
+import fr.cph.chicago.core.activity.station.BikeStationActivity
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.util.Util
 import io.reactivex.Observer

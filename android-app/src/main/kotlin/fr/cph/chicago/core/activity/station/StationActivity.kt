@@ -17,13 +17,14 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.core.activity
+package fr.cph.chicago.core.activity.station
 
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import android.widget.TextView
 import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
+import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.model.Position
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter

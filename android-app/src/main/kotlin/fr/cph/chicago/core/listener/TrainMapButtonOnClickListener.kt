@@ -8,7 +8,7 @@ import android.support.v4.content.ContextCompat
 import android.view.ViewGroup
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.activity.TrainMapActivity
+import fr.cph.chicago.core.activity.map.TrainMapActivity
 import fr.cph.chicago.core.adapter.PopupFavoritesTrainAdapter
 import fr.cph.chicago.core.model.enumeration.TrainLine
 

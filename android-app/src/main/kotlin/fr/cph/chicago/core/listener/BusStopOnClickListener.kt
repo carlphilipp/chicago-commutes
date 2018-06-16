@@ -31,7 +31,7 @@ import android.view.ViewGroup
 import android.widget.ListView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.activity.BusStopActivity
+import fr.cph.chicago.core.activity.station.BusStopActivity
 import fr.cph.chicago.core.adapter.PopupBusDetailsFavoritesAdapter
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.dto.BusDetailsDTO

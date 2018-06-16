@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.activity.TrainStationActivity
+import fr.cph.chicago.core.activity.station.TrainStationActivity
 
 class TrainDetailsButtonOnClickListener(private val activity: Activity, private val stationId: Int) : NetworkCheckListener(activity) {
 

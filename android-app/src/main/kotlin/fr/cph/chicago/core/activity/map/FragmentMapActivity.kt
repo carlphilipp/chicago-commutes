@@ -17,13 +17,14 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.core.activity
+package fr.cph.chicago.core.activity.map
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import android.os.Build
+import android.os.Bundle
 import android.support.v4.app.FragmentActivity
 import android.support.v7.widget.Toolbar
 import android.view.ViewGroup
@@ -38,12 +39,13 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import fr.cph.chicago.Constants.Companion.GPS_ACCESS
 import fr.cph.chicago.R
+import fr.cph.chicago.core.activity.butterknife.ButterKnifeFragmentMapActivity
 import fr.cph.chicago.util.PositionUtil
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 
 @SuppressLint("Registered")
-open class FragmentMapActivity : FragmentActivity(), EasyPermissions.PermissionCallbacks, GoogleMap.OnCameraIdleListener, OnMapReadyCallback {
+abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), EasyPermissions.PermissionCallbacks, GoogleMap.OnCameraIdleListener, OnMapReadyCallback {
 
     @BindView(android.R.id.content)
     lateinit var viewGroup: ViewGroup

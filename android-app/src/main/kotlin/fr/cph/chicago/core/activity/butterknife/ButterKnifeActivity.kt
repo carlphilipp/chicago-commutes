@@ -1,4 +1,4 @@
-package fr.cph.chicago.core.activity
+package fr.cph.chicago.core.activity.butterknife
 
 import android.app.Activity
 import android.os.Bundle

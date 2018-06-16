@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.core.activity
+package fr.cph.chicago.core.activity.station
 
 import android.content.res.ColorStateList
 import android.graphics.Typeface

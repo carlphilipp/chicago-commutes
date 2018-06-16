@@ -17,16 +17,14 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.core.activity
+package fr.cph.chicago.core.activity.map
 
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import butterknife.BindString
-import butterknife.ButterKnife
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter
-import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
@@ -65,24 +63,21 @@ class TrainMapActivity : FragmentMapActivity() {
     private var drawLine = true
 
     public override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         App.checkTrainData(this)
-        if (!this.isFinishing) {
-            MapsInitializer.initialize(applicationContext)
-            setContentView(R.layout.activity_map)
-            ButterKnife.bind(this)
+        super.onCreate(savedInstanceState)
+    }
 
-            line = if (savedInstanceState != null)
-                savedInstanceState.getString(bundleTrainLine)
-            else
-                intent.getStringExtra(bundleTrainLine)
+    override fun create(savedInstanceState: Bundle?) {
+        line = if (savedInstanceState != null)
+            savedInstanceState.getString(bundleTrainLine)
+        else
+            intent.getStringExtra(bundleTrainLine)
 
-            // Init data
-            initData()
+        // Init data
+        initData()
 
-            // Init toolbar
-            setToolbar()
-        }
+        // Init toolbar
+        setToolbar()
     }
 
     override fun initData() {
