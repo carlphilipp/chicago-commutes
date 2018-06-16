@@ -28,7 +28,6 @@ import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.MenuItem
@@ -36,8 +35,8 @@ import android.widget.FrameLayout
 import butterknife.BindColor
 import butterknife.BindString
 import butterknife.BindView
-import butterknife.ButterKnife
 import fr.cph.chicago.R
+import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.fragment.AlertFragment
 import fr.cph.chicago.core.fragment.BikeFragment
 import fr.cph.chicago.core.fragment.BusFragment
@@ -54,7 +53,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import java.util.concurrent.TimeUnit
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView.OnNavigationItemSelectedListener {
 
     @BindView(R.id.toolbar)
     lateinit var toolbar: Toolbar
@@ -110,28 +109,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private var title: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (!isFinishing) {
-            setContentView(R.layout.activity_main)
-            ButterKnife.bind(this)
+    override fun create(savedInstanceState: Bundle?) {
+        loadFirstData()
 
-            loadFirstData()
+        frameLayout.foreground.alpha = 0
 
-            frameLayout.foreground.alpha = 0
+        initView()
+        setToolbar()
 
-            initView()
-            setToolbar()
+        drawerToggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+        drawerLayout.addDrawerListener(drawerToggle)
+        drawerToggle.syncState()
 
-            drawerToggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-            drawerLayout.addDrawerListener(drawerToggle)
-            drawerToggle.syncState()
+        currentPosition = savedInstanceState?.getInt(SELECTED_ID) ?: R.id.navigation_favorites
+        itemSelection(currentPosition)
 
-            currentPosition = savedInstanceState?.getInt(SELECTED_ID) ?: R.id.navigation_favorites
-            itemSelection(currentPosition)
-
-            checkForErrorInBundle()
-        }
+        checkForErrorInBundle()
     }
 
     private fun checkForErrorInBundle() {

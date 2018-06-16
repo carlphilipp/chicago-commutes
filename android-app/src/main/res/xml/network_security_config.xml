@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">transitchicago.com</domain>
+        <domain includeSubdomains="true">ctabustracker.com</domain>
+        <domain includeSubdomains="true">divvybikes.com</domain>
+        <domain includeSubdomains="true">googleapis.com</domain>
+        <domain includeSubdomains="true">google.com</domain>
+    </domain-config>
+</network-security-config>

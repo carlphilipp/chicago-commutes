@@ -24,7 +24,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.ActionBar
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.SearchView
 import android.support.v7.widget.Toolbar
 import android.view.KeyEvent
@@ -35,9 +34,9 @@ import android.widget.FrameLayout
 import android.widget.ListView
 import butterknife.BindString
 import butterknife.BindView
-import butterknife.ButterKnife
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
+import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.adapter.SearchAdapter
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
@@ -46,7 +45,7 @@ import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 
-class SearchActivity : AppCompatActivity() {
+class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
 
     @BindView(R.id.container)
     lateinit var container: FrameLayout
@@ -70,38 +69,36 @@ class SearchActivity : AppCompatActivity() {
         get() = supportActionBar ?: throw RuntimeException()
 
     override fun onCreate(state: Bundle?) {
-        super.onCreate(state)
         App.checkTrainData(this)
         App.checkBusData(this)
-        if (!this.isFinishing) {
-            setContentView(R.layout.activity_search)
-            ButterKnife.bind(this)
+        super.onCreate(state)
+    }
 
-            setupToolbar()
+    override fun create(savedInstanceState: Bundle?) {
+        setupToolbar()
 
-            container.foreground.alpha = 0
+        container.foreground.alpha = 0
 
-            searchAdapter = SearchAdapter(this)
-            divvyStations = intent.extras.getParcelableArrayList(bundleBikeStations)
-            handleIntent(intent)
+        searchAdapter = SearchAdapter(this)
+        divvyStations = intent.extras.getParcelableArrayList(bundleBikeStations)
+        handleIntent(intent)
 
-            listView.adapter = searchAdapter
+        listView.adapter = searchAdapter
 
-            // Associate searchable configuration with the SearchView
-            val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
-            searchView = SearchView(supportActionBarNotNull.themedContext)
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
-            searchView.isSubmitButtonEnabled = true
-            searchView.setIconifiedByDefault(false)
-            searchView.isIconified = false
-            searchView.maxWidth = 1000
-            searchView.isFocusable = true
-            searchView.isFocusableInTouchMode = true
-            // FIXME remove clearfocus if possible
-            searchView.clearFocus()
-            searchView.requestFocus()
-            searchView.requestFocusFromTouch()
-        }
+        // Associate searchable configuration with the SearchView
+        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        searchView = SearchView(supportActionBarNotNull.themedContext)
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
+        searchView.isSubmitButtonEnabled = true
+        searchView.setIconifiedByDefault(false)
+        searchView.isIconified = false
+        searchView.maxWidth = 1000
+        searchView.isFocusable = true
+        searchView.isFocusableInTouchMode = true
+        // FIXME remove clearfocus if possible
+        searchView.clearFocus()
+        searchView.requestFocus()
+        searchView.requestFocusFromTouch()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
