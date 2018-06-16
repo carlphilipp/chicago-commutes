@@ -208,10 +208,8 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
 
     private fun drawPattern(googleMap: GoogleMap, pattern: BusPattern) {
         val poly = PolylineOptions()
-            .geodesic(true)
-            .color(Color.BLACK)
-            .width(App.instance.lineWidth)
-            .addAll(pattern.points.map { patternPoint -> LatLng(patternPoint.position.latitude, patternPoint.position.longitude) })
+        poly.geodesic(true).color(Color.BLACK)
+        poly.width(App.instance.lineWidth)
         pattern.points
             .map { patternPoint -> LatLng(patternPoint.position.latitude, patternPoint.position.longitude) }
             .forEach { poly.add(it) }
