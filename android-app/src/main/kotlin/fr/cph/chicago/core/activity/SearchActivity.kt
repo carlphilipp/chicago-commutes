@@ -68,10 +68,10 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
     private val supportActionBarNotNull: ActionBar
         get() = supportActionBar ?: throw RuntimeException()
 
-    override fun onCreate(state: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         App.checkTrainData(this)
         App.checkBusData(this)
-        super.onCreate(state)
+        super.onCreate(savedInstanceState)
     }
 
     override fun create(savedInstanceState: Bundle?) {
