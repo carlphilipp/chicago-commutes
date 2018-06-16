@@ -25,6 +25,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
+import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
@@ -228,25 +229,25 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
             R.id.navigation_favorites -> {
                 setBarTitle(favorites)
                 favoritesFragment = favoritesFragment ?: FavoritesFragment.newInstance(position + 1)
-                supportFragmentManager.beginTransaction().replace(R.id.container, favoritesFragment).commit()
+                supportFragmentManager.beginTransaction().replace(R.id.container, favoritesFragment as Fragment).commit()
                 closeDrawerAndUpdateActionBar(true)
             }
             R.id.navigation_train -> {
                 setBarTitle(train)
                 trainFragment = trainFragment ?: TrainFragment.newInstance(position + 1)
-                supportFragmentManager.beginTransaction().replace(R.id.container, trainFragment).commit()
+                supportFragmentManager.beginTransaction().replace(R.id.container, trainFragment as Fragment).commit()
                 closeDrawerAndUpdateActionBar(false)
             }
             R.id.navigation_bus -> {
                 setBarTitle(bus)
                 busFragment = busFragment ?: BusFragment.newInstance(position + 1)
-                supportFragmentManager.beginTransaction().replace(R.id.container, busFragment).commit()
+                supportFragmentManager.beginTransaction().replace(R.id.container, busFragment as Fragment).commit()
                 closeDrawerAndUpdateActionBar(false)
             }
             R.id.navigation_bike -> {
                 setBarTitle(divvy)
                 bikeFragment = bikeFragment ?: BikeFragment.newInstance(position + 1)
-                supportFragmentManager.beginTransaction().replace(R.id.container, bikeFragment).commit()
+                supportFragmentManager.beginTransaction().replace(R.id.container, bikeFragment as Fragment).commit()
                 closeDrawerAndUpdateActionBar(false)
             }
             R.id.navigation_nearby -> {
@@ -256,27 +257,27 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
                     .delay(500, TimeUnit.MILLISECONDS)
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnError { throwable -> Log.e(TAG, throwable.message, throwable) }
-                    .subscribe { _ -> supportFragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commitAllowingStateLoss() }
+                    .subscribe { _ -> supportFragmentManager.beginTransaction().replace(R.id.container, nearbyFragment as Fragment).commitAllowingStateLoss() }
                 drawerLayout.closeDrawer(GravityCompat.START)
                 hideActionBarMenu()
             }
             R.id.navigation_cta_map -> {
                 setBarTitle(ctaMap)
                 ctaMapFragment = ctaMapFragment ?: CtaMapFragment.newInstance(position + 1)
-                supportFragmentManager.beginTransaction().replace(R.id.container, ctaMapFragment).commit()
+                supportFragmentManager.beginTransaction().replace(R.id.container, ctaMapFragment as Fragment).commit()
                 closeDrawerAndUpdateActionBar(false)
             }
             R.id.alert_cta -> {
                 setBarTitle(ctaAlert)
                 alertFragment = alertFragment ?: AlertFragment.newInstance(position + 1)
-                supportFragmentManager.beginTransaction().replace(R.id.container, alertFragment).commit()
+                supportFragmentManager.beginTransaction().replace(R.id.container, alertFragment as Fragment).commit()
                 closeDrawerAndUpdateActionBar(false)
             }
             R.id.rate_this_app -> util.rateThisApp(this)
             R.id.settings -> {
                 setBarTitle(settings)
                 settingsFragment = settingsFragment ?: SettingsFragment.newInstance(position + 1)
-                supportFragmentManager.beginTransaction().replace(R.id.container, settingsFragment).commit()
+                supportFragmentManager.beginTransaction().replace(R.id.container, settingsFragment as Fragment).commit()
                 closeDrawerAndUpdateActionBar(false)
             }
         }

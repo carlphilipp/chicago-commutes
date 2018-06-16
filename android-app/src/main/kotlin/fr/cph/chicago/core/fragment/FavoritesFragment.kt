@@ -113,7 +113,7 @@ class FavoritesFragment : AbstractFragment() {
             }
 
             recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     if (dy > 0 && floatingButton.isShown) {
                         floatingButton.hide()
                     } else if (dy < 0 && !floatingButton.isShown) {
