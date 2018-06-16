@@ -167,12 +167,12 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
             favoritesFragment!!.startRefreshing()
 
             if (util.isNetworkAvailable()) {
-                if (busService.getBusRoutes().size == 0
+                if (busService.getBusRoutes().isEmpty()
                     || intent.getParcelableArrayListExtra<Parcelable>(bundleBikeStations) == null
                     || intent.getParcelableArrayListExtra<Parcelable>(bundleBikeStations).size == 0) {
                     loadFirstData()
                 }
-                val zipped = observableUtil.createAllDataObservable(application)
+                val zipped = observableUtil.createAllDataObservable()
                 zipped.subscribe({ favoritesResult -> favoritesFragment?.reloadData(favoritesResult) })
                 { onError ->
                     Log.e(TAG, onError.message, onError)
@@ -196,10 +196,14 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
                 busService.saveBusRoutes(busRoutes)
                 refreshFirstLoadData(bikeStations)
                 if (bikeStationsError || busRoutesError) {
+                    Log.w(TAG, "Bike station [$bikeStationsError] or Bus routes error [$busRoutesError]")
                     util.showSnackBar(this, R.string.message_something_went_wrong, Snackbar.LENGTH_SHORT)
                 }
             },
-            { _ -> util.showSnackBar(this, R.string.message_something_went_wrong, Snackbar.LENGTH_SHORT) }
+            { throwable ->
+                Log.e(TAG, "Error while loading data", throwable)
+                util.showSnackBar(this, R.string.message_something_went_wrong, Snackbar.LENGTH_SHORT)
+            }
         )
     }
 
@@ -219,61 +223,60 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
     }
 
     private fun itemSelection(position: Int) {
-        val fragmentManager = supportFragmentManager
         currentPosition = position
         when (position) {
             R.id.navigation_favorites -> {
                 setBarTitle(favorites)
-                favoritesFragment = if (favoritesFragment == null) FavoritesFragment.newInstance(position + 1) else favoritesFragment
-                fragmentManager.beginTransaction().replace(R.id.container, favoritesFragment).commit()
+                favoritesFragment = favoritesFragment ?: FavoritesFragment.newInstance(position + 1)
+                supportFragmentManager.beginTransaction().replace(R.id.container, favoritesFragment).commit()
                 closeDrawerAndUpdateActionBar(true)
             }
             R.id.navigation_train -> {
                 setBarTitle(train)
-                trainFragment = if (trainFragment == null) TrainFragment.newInstance(position + 1) else trainFragment
-                fragmentManager.beginTransaction().replace(R.id.container, trainFragment).commit()
+                trainFragment = trainFragment ?: TrainFragment.newInstance(position + 1)
+                supportFragmentManager.beginTransaction().replace(R.id.container, trainFragment).commit()
                 closeDrawerAndUpdateActionBar(false)
             }
             R.id.navigation_bus -> {
                 setBarTitle(bus)
-                busFragment = if (busFragment == null) BusFragment.newInstance(position + 1) else busFragment
-                fragmentManager.beginTransaction().replace(R.id.container, busFragment).commit()
+                busFragment = busFragment ?: BusFragment.newInstance(position + 1)
+                supportFragmentManager.beginTransaction().replace(R.id.container, busFragment).commit()
                 closeDrawerAndUpdateActionBar(false)
             }
             R.id.navigation_bike -> {
                 setBarTitle(divvy)
-                bikeFragment = if (bikeFragment == null) BikeFragment.newInstance(position + 1) else bikeFragment
-                fragmentManager.beginTransaction().replace(R.id.container, bikeFragment).commit()
+                bikeFragment = bikeFragment ?: BikeFragment.newInstance(position + 1)
+                supportFragmentManager.beginTransaction().replace(R.id.container, bikeFragment).commit()
                 closeDrawerAndUpdateActionBar(false)
             }
             R.id.navigation_nearby -> {
                 setBarTitle(nearby)
-                nearbyFragment = if (nearbyFragment == null) NearbyFragment.newInstance(position + 1) else nearbyFragment
+                nearbyFragment = nearbyFragment ?: NearbyFragment.newInstance(position + 1)
                 Observable.fromCallable { drawerLayout.closeDrawer(GravityCompat.START) }
                     .delay(500, TimeUnit.MILLISECONDS)
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnError { throwable -> Log.e(TAG, throwable.message, throwable) }
-                    .subscribe { _ -> fragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commitAllowingStateLoss() }
+                    .subscribe { _ -> supportFragmentManager.beginTransaction().replace(R.id.container, nearbyFragment).commitAllowingStateLoss() }
                 drawerLayout.closeDrawer(GravityCompat.START)
                 hideActionBarMenu()
             }
             R.id.navigation_cta_map -> {
                 setBarTitle(ctaMap)
-                ctaMapFragment = if (ctaMapFragment == null) CtaMapFragment.newInstance(position + 1) else ctaMapFragment
-                fragmentManager.beginTransaction().replace(R.id.container, ctaMapFragment).commit()
+                ctaMapFragment = ctaMapFragment ?: CtaMapFragment.newInstance(position + 1)
+                supportFragmentManager.beginTransaction().replace(R.id.container, ctaMapFragment).commit()
                 closeDrawerAndUpdateActionBar(false)
             }
             R.id.alert_cta -> {
                 setBarTitle(ctaAlert)
-                alertFragment = if (alertFragment == null) AlertFragment.newInstance(position + 1) else alertFragment
-                fragmentManager.beginTransaction().replace(R.id.container, alertFragment).commit()
+                alertFragment = alertFragment ?: AlertFragment.newInstance(position + 1)
+                supportFragmentManager.beginTransaction().replace(R.id.container, alertFragment).commit()
                 closeDrawerAndUpdateActionBar(false)
             }
             R.id.rate_this_app -> util.rateThisApp(this)
             R.id.settings -> {
                 setBarTitle(settings)
-                settingsFragment = if (settingsFragment == null) SettingsFragment.newInstance(position + 1) else settingsFragment
-                fragmentManager.beginTransaction().replace(R.id.container, settingsFragment).commit()
+                settingsFragment = settingsFragment ?: SettingsFragment.newInstance(position + 1)
+                supportFragmentManager.beginTransaction().replace(R.id.container, settingsFragment).commit()
                 closeDrawerAndUpdateActionBar(false)
             }
         }

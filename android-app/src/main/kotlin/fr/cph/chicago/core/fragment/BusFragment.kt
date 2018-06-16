@@ -105,7 +105,7 @@ class BusFragment : AbstractFragment() {
          * @return the fragment
          */
         fun newInstance(sectionNumber: Int): BusFragment {
-            return AbstractFragment.Companion.fragmentWithBundle(BusFragment(), sectionNumber) as BusFragment
+            return AbstractFragment.fragmentWithBundle(BusFragment(), sectionNumber) as BusFragment
         }
     }
 }

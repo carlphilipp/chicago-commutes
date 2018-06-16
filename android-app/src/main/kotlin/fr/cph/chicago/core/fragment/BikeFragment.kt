@@ -124,7 +124,7 @@ class BikeFragment : AbstractFragment() {
          * @return the fragment
          */
         fun newInstance(sectionNumber: Int): BikeFragment {
-            return AbstractFragment.Companion.fragmentWithBundle(BikeFragment(), sectionNumber) as BikeFragment
+            return AbstractFragment.fragmentWithBundle(BikeFragment(), sectionNumber) as BikeFragment
         }
     }
 }

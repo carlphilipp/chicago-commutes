@@ -37,6 +37,7 @@ import android.widget.RelativeLayout
 import butterknife.BindString
 import butterknife.BindView
 import fr.cph.chicago.R
+import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.adapter.FavoritesAdapter
 import fr.cph.chicago.core.model.BikeStation
@@ -129,20 +130,7 @@ class FavoritesFragment : AbstractFragment() {
                     || mainActivity.intent.getParcelableArrayListExtra<Parcelable>(bundleBikeStation).size == 0) {
                     mainActivity.loadFirstData()
                 }
-
-                if (util.isNetworkAvailable()) {
-                    val zipped = observableUtil.createAllDataObservable(mainActivity.application)
-                    zipped.subscribe(
-                        {
-                            this.reloadData(it)
-                        },
-                        { onError ->
-                            Log.e(TAG, onError.message, onError)
-                            this.displayError(R.string.message_something_went_wrong)
-                        })
-                } else {
-                    this.displayError(R.string.message_network_error)
-                }
+                fetchData()
             }
 
             startRefreshTask()
@@ -159,7 +147,6 @@ class FavoritesFragment : AbstractFragment() {
     override fun onStop() {
         super.onStop()
         refreshTimingTask.cancel(true)
-
     }
 
     override fun onDestroy() {
@@ -169,6 +156,11 @@ class FavoritesFragment : AbstractFragment() {
 
     override fun onResume() {
         super.onResume()
+        Log.i(TAG, "on fragment resume")
+        if (App.instance.refresh) {
+            App.instance.refresh = false
+            fetchData()
+        }
         favoritesAdapter.refreshFavorites()
         favoritesAdapter.notifyDataSetChanged()
         if (refreshTimingTask.status == Status.FINISHED) {
@@ -214,14 +206,6 @@ class FavoritesFragment : AbstractFragment() {
         favoritesAdapter.notifyDataSetChanged()
     }
 
-    /**
-     * Start refreshBusAndStation task
-     */
-    private fun startRefreshTask() {
-        refreshTimingTask = RefreshTimingTask(favoritesAdapter).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR) as RefreshTimingTask
-        favoritesAdapter.updateModel()
-    }
-
     fun startRefreshing() {
         swipeRefreshLayout.setColorSchemeColors(util.randomColor)
         swipeRefreshLayout.isRefreshing = true
@@ -229,6 +213,29 @@ class FavoritesFragment : AbstractFragment() {
 
     private fun stopRefreshing() {
         swipeRefreshLayout.isRefreshing = false
+    }
+
+    private fun fetchData() {
+        if (util.isNetworkAvailable()) {
+            observableUtil.createAllDataObservable().subscribe(
+                {
+                    this.reloadData(it)
+                },
+                { onError ->
+                    Log.e(TAG, onError.message, onError)
+                    this.displayError(R.string.message_something_went_wrong)
+                })
+        } else {
+            this.displayError(R.string.message_network_error)
+        }
+    }
+
+    /**
+     * Start refreshBusAndStation task
+     */
+    private fun startRefreshTask() {
+        refreshTimingTask = RefreshTimingTask(favoritesAdapter).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR) as RefreshTimingTask
+        favoritesAdapter.updateModel()
     }
 
     companion object {

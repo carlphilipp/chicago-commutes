@@ -369,6 +369,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
         } else {
             preferenceService.addToTrainFavorites(stationId, scrollView)
             favoritesImage.setColorFilter(yellowLineDark)
+            App.instance.refresh = true
         }
         isFavorite = !isFavorite
     }

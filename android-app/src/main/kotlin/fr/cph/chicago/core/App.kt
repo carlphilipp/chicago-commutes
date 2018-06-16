@@ -41,6 +41,8 @@ class App : Application() {
 
     var lastUpdate: Date = Date()
 
+    var refresh: Boolean = false
+
     val screenWidth: Int by lazy {
         screenSize[0]
     }

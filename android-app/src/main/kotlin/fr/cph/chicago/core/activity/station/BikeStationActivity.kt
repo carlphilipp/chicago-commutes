@@ -30,6 +30,7 @@ import butterknife.BindColor
 import butterknife.BindString
 import butterknife.BindView
 import fr.cph.chicago.R
+import fr.cph.chicago.core.App
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
@@ -185,6 +186,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
             preferenceService.addToBikeFavorites(divvyStation.id, swipeRefreshLayout)
             preferenceService.addBikeRouteNameMapping(divvyStation.id.toString(), divvyStation.name)
             favoritesImage.setColorFilter(yellowLineDark)
+            App.instance.refresh = true
             true
         }
     }

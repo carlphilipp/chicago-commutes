@@ -232,6 +232,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
             preferenceService.addBusRouteNameMapping(busStopId.toString(), busRouteName)
             preferenceService.addBusStopNameMapping(busStopId.toString(), busStopName)
             favoritesImage.setColorFilter(yellowLineDark)
+            App.instance.refresh = true
             true
         }
     }

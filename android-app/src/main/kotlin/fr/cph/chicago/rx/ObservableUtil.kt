@@ -102,7 +102,7 @@ object ObservableUtil {
             }
     }
 
-    fun createAllDataObservable(application: Application): Observable<FavoritesDTO> {
+    fun createAllDataObservable(): Observable<FavoritesDTO> {
         // Train online favorites
         val trainArrivalsObservable = createFavoritesTrainArrivalsObservable()
         // Bus online favorites
@@ -112,7 +112,7 @@ object ObservableUtil {
         return Observable.zip(busArrivalsObservable, trainArrivalsObservable, bikeStationsObservable,
             Function3 { busArrivalDTO: BusArrivalDTO, trainArrivalsDTO: TrainArrivalDTO, divvyStations: List<BikeStation>
                 ->
-                (application as App).lastUpdate = Calendar.getInstance().time
+                App.instance.lastUpdate = Calendar.getInstance().time
                 FavoritesDTO(trainArrivalsDTO, busArrivalDTO, divvyStations.isEmpty(), divvyStations)
             })
     }
