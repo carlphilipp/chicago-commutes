@@ -30,7 +30,6 @@ import butterknife.BindColor
 import butterknife.BindString
 import butterknife.BindView
 import fr.cph.chicago.R
-import fr.cph.chicago.core.activity.station.StationActivity
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
@@ -98,7 +97,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
     private lateinit var divvyStation: BikeStation
     private var isFavorite: Boolean = false
 
-    override fun onCreate() {
+    override fun create(savedInstanceState: Bundle?) {
         divvyStation = intent.extras.getParcelable(bundleBikeStation)
         val latitude = divvyStation.latitude
         val longitude = divvyStation.longitude

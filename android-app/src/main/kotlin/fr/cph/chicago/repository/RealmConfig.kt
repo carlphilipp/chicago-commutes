@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.repository
 
+import android.os.Build
 import fr.cph.chicago.core.App
 import io.realm.Realm
 import io.realm.RealmConfiguration
@@ -37,9 +38,16 @@ object RealmConfig {
     private fun getRealmConfiguration(): RealmConfiguration {
         val context = App.instance.applicationContext
         val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)!!
-        return RealmConfiguration.Builder()
-            .schemaVersion(packageInfo.versionCode.toLong())
-            .deleteRealmIfMigrationNeeded()
-            .build()
+        return if (Build.VERSION.SDK_INT >= 28) {
+            RealmConfiguration.Builder()
+                .schemaVersion(packageInfo.longVersionCode)
+                .deleteRealmIfMigrationNeeded()
+                .build()
+        } else {
+            RealmConfiguration.Builder()
+                .schemaVersion(packageInfo.versionCode.toLong())
+                .deleteRealmIfMigrationNeeded()
+                .build()
+        }
     }
 }

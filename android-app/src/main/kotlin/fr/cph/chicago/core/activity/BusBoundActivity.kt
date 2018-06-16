@@ -30,18 +30,19 @@ import android.util.Log
 import android.view.WindowManager
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.ListView
 import butterknife.BindDrawable
 import butterknife.BindString
 import butterknife.BindView
 import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMapOptions
-import com.google.android.gms.maps.MapFragment
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolylineOptions
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.activity.butterknife.ButterKnifeListActivity
+import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.activity.station.BusStopActivity
 import fr.cph.chicago.core.adapter.BusBoundAdapter
 import fr.cph.chicago.core.model.BusPattern
@@ -58,7 +59,7 @@ import org.apache.commons.lang3.StringUtils
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BusBoundActivity : ButterKnifeListActivity(R.layout.activity_bus_bound) {
+class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
 
     @BindView(R.id.bellow)
     lateinit var layout: LinearLayout
@@ -66,6 +67,8 @@ class BusBoundActivity : ButterKnifeListActivity(R.layout.activity_bus_bound) {
     lateinit var toolbar: Toolbar
     @BindView(R.id.bus_filter)
     lateinit var filter: EditText
+    @BindView(R.id.list)
+    lateinit var listView: ListView
 
     @BindString(R.string.bundle_bus_stop_id)
     lateinit var bundleBusStopId: String
@@ -90,7 +93,7 @@ class BusBoundActivity : ButterKnifeListActivity(R.layout.activity_bus_bound) {
     private val observableUtil: ObservableUtil = ObservableUtil
     private val util: Util = Util
 
-    private lateinit var mapFragment: MapFragment
+    private lateinit var mapFragment: SupportMapFragment
     private lateinit var busRouteId: String
     private lateinit var busRouteName: String
     private lateinit var bound: String
@@ -109,8 +112,9 @@ class BusBoundActivity : ButterKnifeListActivity(R.layout.activity_bus_bound) {
         bound = intent.getStringExtra(bundleBusBound)
         boundTitle = intent.getStringExtra(bundleBusBoundTitle)
 
+        mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+
         busBoundAdapter = BusBoundAdapter()
-        listAdapter = busBoundAdapter
         listView.setOnItemClickListener { _, _, position, _ ->
             val busStop = busBoundAdapter.getItem(position) as BusStop
             val intent = Intent(applicationContext, BusStopActivity::class.java)
@@ -129,6 +133,7 @@ class BusBoundActivity : ButterKnifeListActivity(R.layout.activity_bus_bound) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
         }
+        listView.adapter = busBoundAdapter
 
         filter.addTextChangedListener(object : TextWatcher {
             private var busStopsFiltered: MutableList<BusStop> = mutableListOf()
@@ -171,19 +176,10 @@ class BusBoundActivity : ButterKnifeListActivity(R.layout.activity_bus_bound) {
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
     }
 
-    public override fun onStart() {
-        super.onStart()
-        val options = GoogleMapOptions()
-        val camera = CameraPosition(PositionUtil.chicago, 7f, 0f, 0f)
-        options.camera(camera)
-        mapFragment = MapFragment.newInstance(options)
-        mapFragment.retainInstance = true
-        fragmentManager.beginTransaction().replace(R.id.map, mapFragment).commit()
-    }
-
     public override fun onResume() {
         super.onResume()
         mapFragment.getMapAsync { googleMap ->
+            googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition(PositionUtil.chicago, 7f, 0f, 0f)))
             googleMap.uiSettings.isMyLocationButtonEnabled = false
             googleMap.uiSettings.isZoomControlsEnabled = false
             googleMap.uiSettings.isMapToolbarEnabled = false
@@ -199,7 +195,7 @@ class BusBoundActivity : ButterKnifeListActivity(R.layout.activity_bus_bound) {
                             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7f))
                             googleMap.animateCamera(CameraUpdateFactory.zoomTo(9f), 500, null)
                         }
-                        drawPattern(busPattern)
+                        drawPattern(googleMap, busPattern)
                     } else {
                         util.showMessage(this, R.string.message_error_could_not_load_path)
                     }
@@ -210,16 +206,16 @@ class BusBoundActivity : ButterKnifeListActivity(R.layout.activity_bus_bound) {
         }
     }
 
-    private fun drawPattern(pattern: BusPattern) {
-        mapFragment.getMapAsync { googleMap ->
-            val poly = PolylineOptions()
-            poly.geodesic(true).color(Color.BLACK)
-            poly.width((application as App).lineWidth)
-            pattern.points
-                .map { patternPoint -> LatLng(patternPoint.position.latitude, patternPoint.position.longitude) }
-                .forEach { poly.add(it) }
-            googleMap.addPolyline(poly)
-        }
+    private fun drawPattern(googleMap: GoogleMap, pattern: BusPattern) {
+        val poly = PolylineOptions()
+            .geodesic(true)
+            .color(Color.BLACK)
+            .width(App.instance.lineWidth)
+            .addAll(pattern.points.map { patternPoint -> LatLng(patternPoint.position.latitude, patternPoint.position.longitude) })
+        pattern.points
+            .map { patternPoint -> LatLng(patternPoint.position.latitude, patternPoint.position.longitude) }
+            .forEach { poly.add(it) }
+        googleMap.addPolyline(poly)
     }
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {

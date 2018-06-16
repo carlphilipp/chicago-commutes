@@ -45,10 +45,10 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
-import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.Stop
 import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.core.model.TrainEta
+import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.rx.ObservableUtil
@@ -139,7 +139,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
         super.onCreate(savedInstanceState)
     }
 
-    override fun onCreate() {
+    override fun create(savedInstanceState: Bundle?) {
         // Get train station id from bundle
         stationId = intent.extras.getInt(bundleTrainStationId, 0)
         if (stationId != 0) {

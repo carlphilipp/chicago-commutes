@@ -60,7 +60,7 @@ class BaseActivity : ButterKnifeActivity(R.layout.loading) {
     private val realmConfig: RealmConfig = RealmConfig
     private val observableUtil: ObservableUtil = ObservableUtil
 
-    override fun onCreate() {
+    override fun create(savedInstanceState: Bundle?) {
         setUpRealm()
         loadLocalAndFavoritesData()
     }

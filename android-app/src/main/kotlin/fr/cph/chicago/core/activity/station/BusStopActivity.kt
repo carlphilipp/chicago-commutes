@@ -33,7 +33,6 @@ import butterknife.BindString
 import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.activity.station.StationActivity
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
@@ -132,7 +131,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
         super.onCreate(savedInstanceState)
     }
 
-    override fun onCreate() {
+    override fun create(savedInstanceState: Bundle?) {
         busStopId = intent.getIntExtra(bundleBusStopId, 0)
         busRouteId = intent.getStringExtra(bundleBusRouteId)
         bound = intent.getStringExtra(bundleBusBound)
