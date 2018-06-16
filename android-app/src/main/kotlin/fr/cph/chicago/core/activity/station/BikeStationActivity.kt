@@ -147,6 +147,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
 
     private fun drawData() {
         val bikeResultLayout = LayoutUtil.buildBikeStationLayout(divvyStation)
+        container.removeAllViews()
         container.addView(bikeResultLayout)
     }
 

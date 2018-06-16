@@ -271,11 +271,13 @@ object LayoutUtil {
                     val arrivalTextView = TextView(App.instance)
                     arrivalTextView.text = formatArrivalTime(it.value[0])
                     arrivalTextView.layoutParams = createLineValueLayoutParams(lineTitleTextView.id)
+                    arrivalTextView.setTextColor(util.grey5)
                     left.addView(arrivalTextView)
 
                     it.value.drop(1).forEach {
                         val textView = TextView(App.instance)
                         textView.text = formatArrivalTime(it)
+                        textView.setTextColor(util.grey5)
                         line.addView(textView)
                     }
                 }
