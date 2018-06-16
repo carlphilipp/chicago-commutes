@@ -95,7 +95,7 @@
 -keep,includedescriptorclasses class io.realm.internal.fields.FieldDescriptor$SchemaProxy { *; }
 -keep,includedescriptorclasses class com.sothree.slidinguppanel.SlidingUpPanelLayout { *; }
 -keep,includedescriptorclasses class io.realm.internal.android.AndroidRealmNotifier { *; }
--keep class kotlin.reflect.** { *; }
+-keep,includedescriptorclasses class kotlin.reflect.** { *; }
 -keep class kotlin.Metadata { *; }
 
 -keepclassmembers class * {
