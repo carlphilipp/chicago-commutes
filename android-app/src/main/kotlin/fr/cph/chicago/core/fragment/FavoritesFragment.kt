@@ -156,7 +156,6 @@ class FavoritesFragment : AbstractFragment() {
 
     override fun onResume() {
         super.onResume()
-        Log.i(TAG, "on fragment resume")
         if (App.instance.refresh) {
             App.instance.refresh = false
             fetchData()
