@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.core.activity
 
-import android.app.ListActivity
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.Drawable
@@ -34,7 +33,6 @@ import android.widget.LinearLayout
 import butterknife.BindDrawable
 import butterknife.BindString
 import butterknife.BindView
-import butterknife.ButterKnife
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.MapFragment
@@ -58,7 +56,7 @@ import org.apache.commons.lang3.StringUtils
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BusBoundActivity : ListActivity()  {
+class BusBoundActivity : ButterKnifeListActivity(R.layout.activity_bus_bound) {
 
     @BindView(R.id.bellow)
     lateinit var layout: LinearLayout
@@ -99,78 +97,76 @@ class BusBoundActivity : ListActivity()  {
     private var busStops: List<BusStop> = listOf()
 
     public override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         App.checkBusData(this)
-        if (!this.isFinishing) {
-            setContentView(R.layout.activity_bus_bound)
-            ButterKnife.bind(this)
+        super.onCreate(savedInstanceState)
+    }
 
-            busRouteId = intent.getStringExtra(bundleBusRouteId)
-            busRouteName = intent.getStringExtra(bundleBusRouteName)
-            bound = intent.getStringExtra(bundleBusBound)
-            boundTitle = intent.getStringExtra(bundleBusBoundTitle)
+    override fun create(savedInstanceState: Bundle?) {
+        busRouteId = intent.getStringExtra(bundleBusRouteId)
+        busRouteName = intent.getStringExtra(bundleBusRouteName)
+        bound = intent.getStringExtra(bundleBusBound)
+        boundTitle = intent.getStringExtra(bundleBusBoundTitle)
 
-            busBoundAdapter = BusBoundAdapter()
-            listAdapter = busBoundAdapter
-            listView.setOnItemClickListener { _, _, position, _ ->
-                val busStop = busBoundAdapter.getItem(position) as BusStop
-                val intent = Intent(applicationContext, BusStopActivity::class.java)
+        busBoundAdapter = BusBoundAdapter()
+        listAdapter = busBoundAdapter
+        listView.setOnItemClickListener { _, _, position, _ ->
+            val busStop = busBoundAdapter.getItem(position) as BusStop
+            val intent = Intent(applicationContext, BusStopActivity::class.java)
 
-                val extras = Bundle()
-                extras.putInt(bundleBusStopId, busStop.id)
-                extras.putString(bundleBusStopName, busStop.name)
-                extras.putString(bundleBusRouteId, busRouteId)
-                extras.putString(bundleBusRouteName, busRouteName)
-                extras.putString(bundleBusBound, bound)
-                extras.putString(bundleBusBoundTitle, boundTitle)
-                extras.putDouble(bundleBusLatitude, busStop.position.latitude)
-                extras.putDouble(bundleBusLongitude, busStop.position.longitude)
+            val extras = Bundle()
+            extras.putInt(bundleBusStopId, busStop.id)
+            extras.putString(bundleBusStopName, busStop.name)
+            extras.putString(bundleBusRouteId, busRouteId)
+            extras.putString(bundleBusRouteName, busRouteName)
+            extras.putString(bundleBusBound, bound)
+            extras.putString(bundleBusBoundTitle, boundTitle)
+            extras.putDouble(bundleBusLatitude, busStop.position.latitude)
+            extras.putDouble(bundleBusLongitude, busStop.position.longitude)
 
-                intent.putExtras(extras)
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                startActivity(intent)
+            intent.putExtras(extras)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+        }
+
+        filter.addTextChangedListener(object : TextWatcher {
+            private var busStopsFiltered: MutableList<BusStop> = mutableListOf()
+
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+                busStopsFiltered = mutableListOf()
             }
 
-            filter.addTextChangedListener(object : TextWatcher {
-                private var busStopsFiltered: MutableList<BusStop> = mutableListOf()
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                busStops
+                    .filter { busStop -> StringUtils.containsIgnoreCase(busStop.name, s) }
+                    .forEach { busStopsFiltered.add(it) }
+            }
 
-                override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-                    busStopsFiltered = mutableListOf()
-                }
-
-                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                    busStops
-                        .filter { busStop -> StringUtils.containsIgnoreCase(busStop.name, s) }
-                        .forEach { busStopsFiltered.add(it) }
-                }
-
-                override fun afterTextChanged(s: Editable) {
-                    busBoundAdapter.updateBusStops(busStopsFiltered)
-                    busBoundAdapter.notifyDataSetChanged()
-                }
-            })
+            override fun afterTextChanged(s: Editable) {
+                busBoundAdapter.updateBusStops(busStopsFiltered)
+                busBoundAdapter.notifyDataSetChanged()
+            }
+        })
 
 
-            util.setWindowsColor(this, toolbar, TrainLine.NA)
-            toolbar.title = busRouteId + " - " + boundTitle
+        util.setWindowsColor(this, toolbar, TrainLine.NA)
+        toolbar.title = busRouteId + " - " + boundTitle
 
-            toolbar.navigationIcon = arrowBackWhite
-            toolbar.setOnClickListener { _ -> finish() }
+        toolbar.navigationIcon = arrowBackWhite
+        toolbar.setOnClickListener { _ -> finish() }
 
-            observableUtil.createBusStopBoundObservable(busRouteId, bound)
-                .subscribe({ onNext ->
-                    busStops = onNext
-                    busBoundAdapter.updateBusStops(onNext)
-                    busBoundAdapter.notifyDataSetChanged()
-                }
-                ) { onError ->
-                    Log.e(TAG, onError.message, onError)
-                    util.showOopsSomethingWentWrong(listView)
-                }
+        observableUtil.createBusStopBoundObservable(busRouteId, bound)
+            .subscribe({ onNext ->
+                busStops = onNext
+                busBoundAdapter.updateBusStops(onNext)
+                busBoundAdapter.notifyDataSetChanged()
+            }
+            ) { onError ->
+                Log.e(TAG, onError.message, onError)
+                util.showOopsSomethingWentWrong(listView)
+            }
 
-            // Preventing keyboard from moving background when showing up
-            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
-        }
+        // Preventing keyboard from moving background when showing up
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
     }
 
     public override fun onStart() {
@@ -190,24 +186,22 @@ class BusBoundActivity : ListActivity()  {
             googleMap.uiSettings.isZoomControlsEnabled = false
             googleMap.uiSettings.isMapToolbarEnabled = false
             observableUtil.createBusPatternObservable(busRouteId, bound)
-                .subscribe(
-                    { busPattern ->
-                        if (busPattern.direction != "error") {
-                            val center = busPattern.points.size / 2
-                            val position = busPattern.points[center].position
-                            if (position.latitude == 0.0 && position.longitude == 0.0) {
-                                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(PositionUtil.chicago, 10f))
-                            } else {
-                                val latLng = LatLng(position.latitude, position.longitude)
-                                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7f))
-                                googleMap.animateCamera(CameraUpdateFactory.zoomTo(9f), 500, null)
-                            }
-                            drawPattern(busPattern)
+                .subscribe({ busPattern ->
+                    if (busPattern.direction != "error") {
+                        val center = busPattern.points.size / 2
+                        val position = busPattern.points[center].position
+                        if (position.latitude == 0.0 && position.longitude == 0.0) {
+                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(PositionUtil.chicago, 10f))
                         } else {
-                            util.showMessage(this, R.string.message_error_could_not_load_path)
+                            val latLng = LatLng(position.latitude, position.longitude)
+                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7f))
+                            googleMap.animateCamera(CameraUpdateFactory.zoomTo(9f), 500, null)
                         }
+                        drawPattern(busPattern)
+                    } else {
+                        util.showMessage(this, R.string.message_error_could_not_load_path)
                     }
-                ) { onError ->
+                }) { onError ->
                     util.handleConnectOrParserException(onError, null, layout, layout)
                     Log.e(TAG, onError.message, onError)
                 }
@@ -221,7 +215,7 @@ class BusBoundActivity : ListActivity()  {
             poly.width((application as App).lineWidth)
             pattern.points
                 .map { patternPoint -> LatLng(patternPoint.position.latitude, patternPoint.position.longitude) }
-                .forEach({ poly.add(it) })
+                .forEach { poly.add(it) }
             googleMap.addPolyline(poly)
         }
     }

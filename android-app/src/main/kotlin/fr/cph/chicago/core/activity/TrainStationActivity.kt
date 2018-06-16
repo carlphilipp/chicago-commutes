@@ -40,7 +40,6 @@ import butterknife.BindDimen
 import butterknife.BindDrawable
 import butterknife.BindString
 import butterknife.BindView
-import butterknife.ButterKnife
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
@@ -67,7 +66,7 @@ import java.util.Random
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class TrainStationActivity : AbstractStationActivity(R.layout.activity_station) {
+class TrainStationActivity : StationActivity(R.layout.activity_station) {
 
     @BindView(android.R.id.content)
     lateinit var viewGroup: ViewGroup

@@ -48,7 +48,7 @@ import fr.cph.chicago.util.Util
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BikeStationActivity : AbstractStationActivity(R.layout.activity_bike_station) {
+class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
 
     @BindView(R.id.activity_station_swipe_refresh_layout)
     lateinit var swipeRefreshLayout: SwipeRefreshLayout

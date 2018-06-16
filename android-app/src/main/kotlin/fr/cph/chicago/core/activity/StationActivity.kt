@@ -30,7 +30,7 @@ import io.reactivex.ObservableEmitter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
-abstract class AbstractStationActivity(contentView: Int) : ButterKnifeActivity(contentView) {
+abstract class StationActivity(contentView: Int) : ButterKnifeActivity(contentView) {
 
     fun loadGoogleStreetImage(position: Position, streetViewImage: ImageView, streetViewText: TextView) {
         Observable.create { observableOnSubscribe: ObservableEmitter<Drawable> ->
@@ -43,7 +43,7 @@ abstract class AbstractStationActivity(contentView: Int) : ButterKnifeActivity(c
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { drawable ->
                 streetViewImage.setImageDrawable(drawable)
-                streetViewText.text = this@AbstractStationActivity.applicationContext.getString(R.string.station_activity_street_view)
+                streetViewText.text = this@StationActivity.applicationContext.getString(R.string.station_activity_street_view)
             }
     }
 

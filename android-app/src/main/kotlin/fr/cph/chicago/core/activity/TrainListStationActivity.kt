@@ -19,14 +19,12 @@
 
 package fr.cph.chicago.core.activity
 
-import android.app.ListActivity
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.support.v7.widget.Toolbar
 import butterknife.BindDrawable
 import butterknife.BindString
 import butterknife.BindView
-import butterknife.ButterKnife
 import fr.cph.chicago.R
 import fr.cph.chicago.core.adapter.TrainAdapter
 import fr.cph.chicago.core.model.enumeration.TrainLine
@@ -38,7 +36,7 @@ import fr.cph.chicago.util.Util
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class TrainListStationActivity : ListActivity() {
+class TrainListStationActivity : ButterKnifeListActivity(R.layout.activity_train_station) {
 
     @BindView(R.id.toolbar)
     lateinit var toolbar: Toolbar
@@ -50,27 +48,21 @@ class TrainListStationActivity : ListActivity() {
     private lateinit var trainLine: TrainLine
     private lateinit var lineParam: String
 
-    public override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (!this.isFinishing) {
-            setContentView(R.layout.activity_train_station)
-            ButterKnife.bind(this)
+    override fun create(savedInstanceState: Bundle?) {
+        // Load data
+        lineParam = if (savedInstanceState != null) savedInstanceState.getString(bundleTrainLine) else intent.getStringExtra(bundleTrainLine)
 
-            // Load data
-            lineParam = if (savedInstanceState != null) savedInstanceState.getString(bundleTrainLine) else intent.getStringExtra(bundleTrainLine)
+        trainLine = TrainLine.fromString(lineParam)
+        title = trainLine.toStringWithLine()
 
-            trainLine = TrainLine.fromString(lineParam)
-            title = trainLine.toStringWithLine()
+        Util.setWindowsColor(this, toolbar, trainLine)
+        toolbar.title = trainLine.toStringWithLine()
 
-            Util.setWindowsColor(this, toolbar, trainLine)
-            toolbar.title = trainLine.toStringWithLine()
+        toolbar.navigationIcon = arrowBackWhite
+        toolbar.setOnClickListener { _ -> finish() }
 
-            toolbar.navigationIcon = arrowBackWhite
-            toolbar.setOnClickListener { _ -> finish() }
-
-            val ada = TrainAdapter(trainLine)
-            listAdapter = ada
-        }
+        val ada = TrainAdapter(trainLine)
+        listAdapter = ada
     }
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {

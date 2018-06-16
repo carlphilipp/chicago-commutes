@@ -53,7 +53,7 @@ import fr.cph.chicago.util.Util
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BusStopActivity : AbstractStationActivity(R.layout.activity_bus) {
+class BusStopActivity : StationActivity(R.layout.activity_bus) {
 
     @BindView(R.id.activity_bus_stop_swipe_refresh_layout)
     lateinit var scrollView: SwipeRefreshLayout
