@@ -71,7 +71,7 @@ android {
         versionCode 151
         versionName '5.5.0'
 
-        minSdkVersion 14
+        minSdkVersion 21
         targetSdkVersion 28
         multiDexEnabled true
 
