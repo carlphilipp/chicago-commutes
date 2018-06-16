@@ -30,9 +30,7 @@ import android.support.annotation.DrawableRes
 import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ProgressBar
@@ -73,7 +71,7 @@ import pub.devrel.easypermissions.EasyPermissions
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class NearbyFragment : AbstractFragment(), EasyPermissions.PermissionCallbacks {
+class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.PermissionCallbacks {
 
     @BindView(R.id.activity_bar)
     lateinit var progressBar: ProgressBar
@@ -103,25 +101,19 @@ class NearbyFragment : AbstractFragment(), EasyPermissions.PermissionCallbacks {
         App.checkBusData(mainActivity)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater.inflate(R.layout.fragment_nearby, container, false)
-        if (!mainActivity.isFinishing) {
-            setBinder(rootView)
-            slidingUpAdapter = SlidingUpAdapter(this)
-            markerDataHolder = MarkerDataHolder()
-            searchAreaButton.setOnClickListener { view ->
-                view.visibility = View.INVISIBLE
-                mapFragment.getMapAsync { googleMap ->
-                    googleMap.clear()
-                    markerDataHolder.clear()
-
-                    val target = googleMap.cameraPosition.target
-                    handleNearbyData(Position(target.latitude, target.longitude))
-                }
+    override fun onCreateView() {
+        slidingUpAdapter = SlidingUpAdapter(this)
+        markerDataHolder = MarkerDataHolder()
+        searchAreaButton.setOnClickListener { view ->
+            view.visibility = View.INVISIBLE
+            mapFragment.getMapAsync { googleMap ->
+                googleMap.clear()
+                markerDataHolder.clear()
+                val target = googleMap.cameraPosition.target
+                handleNearbyData(Position(target.latitude, target.longitude))
             }
-            showProgress(true)
         }
-        return rootView
+        showProgress(true)
     }
 
     override fun onStart() {
@@ -292,7 +284,7 @@ class NearbyFragment : AbstractFragment(), EasyPermissions.PermissionCallbacks {
         private val TAG = NearbyFragment::class.java.simpleName
 
         fun newInstance(sectionNumber: Int): NearbyFragment {
-            return AbstractFragment.Companion.fragmentWithBundle(NearbyFragment(), sectionNumber) as NearbyFragment
+            return Fragment.Companion.fragmentWithBundle(NearbyFragment(), sectionNumber) as NearbyFragment
         }
     }
 }

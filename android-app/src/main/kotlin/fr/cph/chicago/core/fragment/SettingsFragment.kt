@@ -25,10 +25,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import butterknife.BindView
@@ -40,7 +36,7 @@ import fr.cph.chicago.util.Util
 import java.io.File
 import java.util.Random
 
-class SettingsFragment : AbstractFragment() {
+class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
     @BindView(R.id.clear_cache)
     lateinit var clearCache: LinearLayout
@@ -52,32 +48,27 @@ class SettingsFragment : AbstractFragment() {
     private val preferenceService: PreferenceService = PreferenceService
     private val realmConfig: RealmConfig = RealmConfig
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater.inflate(R.layout.fragment_settings, container, false)
-        if (!mainActivity.isFinishing) {
-            setBinder(rootView)
-            val version = "Version " + util.getCurrentVersion()
-            versionNumber.text = version
-            clearCache.setOnClickListener { _ ->
-                val dialogClickListener = { _: Any, which: Any ->
-                    when (which) {
-                        DialogInterface.BUTTON_POSITIVE -> {
-                            cleanLocalData()
-                            restartApp()
-                        }
-                        DialogInterface.BUTTON_NEGATIVE -> {
-                        }
+    override fun onCreateView() {
+        val version = "Version " + util.getCurrentVersion()
+        versionNumber.text = version
+        clearCache.setOnClickListener { _ ->
+            val dialogClickListener = { _: Any, which: Any ->
+                when (which) {
+                    DialogInterface.BUTTON_POSITIVE -> {
+                        cleanLocalData()
+                        restartApp()
+                    }
+                    DialogInterface.BUTTON_NEGATIVE -> {
                     }
                 }
-
-                AlertDialog.Builder(context)
-                    .setMessage("This is going to:\n\n- Delete all your favorites\n- Clear application cache\n- Restart the application")
-                    .setPositiveButton("Yes", dialogClickListener)
-                    .setNegativeButton("No", dialogClickListener)
-                    .show()
             }
+
+            AlertDialog.Builder(context)
+                .setMessage("This is going to:\n\n- Delete all your favorites\n- Clear application cache\n- Restart the application")
+                .setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener)
+                .show()
         }
-        return rootView
     }
 
     private fun restartApp() {
@@ -121,7 +112,7 @@ class SettingsFragment : AbstractFragment() {
     companion object {
 
         fun newInstance(sectionNumber: Int): SettingsFragment {
-            return AbstractFragment.Companion.fragmentWithBundle(SettingsFragment(), sectionNumber) as SettingsFragment
+            return Fragment.Companion.fragmentWithBundle(SettingsFragment(), sectionNumber) as SettingsFragment
         }
     }
 }

@@ -22,7 +22,6 @@ package fr.cph.chicago.core.fragment
 import android.content.Intent
 import android.os.AsyncTask
 import android.os.AsyncTask.Status
-import android.os.Bundle
 import android.os.Parcelable
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.widget.SwipeRefreshLayout
@@ -30,9 +29,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.util.SparseArray
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.RelativeLayout
 import butterknife.BindString
 import butterknife.BindView
@@ -56,7 +53,7 @@ import fr.cph.chicago.util.Util
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class FavoritesFragment : AbstractFragment() {
+class FavoritesFragment : Fragment(R.layout.fragment_main) {
 
     @BindView(R.id.welcome)
     lateinit var welcomeLayout: RelativeLayout
@@ -67,6 +64,10 @@ class FavoritesFragment : AbstractFragment() {
     @BindView(R.id.floating_button)
     lateinit var floatingButton: FloatingActionButton
 
+    @BindString(R.string.bundle_train_arrivals)
+    lateinit var bundleTrainArrivals: String
+    @BindString(R.string.bundle_bus_arrivals)
+    lateinit var bundleBusArrivals: String
     @BindString(R.string.bundle_bike_stations)
     lateinit var bundleBikeStation: String
 
@@ -79,64 +80,51 @@ class FavoritesFragment : AbstractFragment() {
     private lateinit var refreshTimingTask: RefreshTimingTask
     private lateinit var divvyStations: List<BikeStation>
 
-    private lateinit var rootView: View
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreateView() {
         val intent = mainActivity.intent
-        val busArrivals: List<BusArrival> = intent.getParcelableArrayListExtra(getString(R.string.bundle_bus_arrivals))
-            ?: listOf()
-        val trainArrivals: SparseArray<TrainArrival> = intent.extras.getSparseParcelableArray(getString(R.string.bundle_train_arrivals))
-            ?: SparseArray()
-        divvyStations = intent.getParcelableArrayListExtra(getString(R.string.bundle_bike_stations)) ?: listOf()
+        val busArrivals: List<BusArrival> = intent.getParcelableArrayListExtra(bundleBusArrivals) ?: listOf()
+        val trainArrivals: SparseArray<TrainArrival> = intent.extras.getSparseParcelableArray(bundleTrainArrivals) ?: SparseArray()
+        divvyStations = intent.getParcelableArrayListExtra(bundleBikeStation) ?: listOf()
 
         favoritesAdapter = FavoritesAdapter(mainActivity)
         favoritesAdapter.updateData(trainArrivals, busArrivals, divvyStations)
         favoritesAdapter.refreshFavorites()
 
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        if (!mainActivity.isFinishing) {
-            rootView = inflater.inflate(R.layout.fragment_main, container, false)
-            setBinder(rootView)
-            recyclerView.adapter = favoritesAdapter
-            recyclerView.layoutManager = LinearLayoutManager(mainActivity)
-            floatingButton.setOnClickListener { _ ->
-                if (divvyStations.isEmpty()) {
-                    util.showMessage(mainActivity, R.string.message_too_fast)
-                } else {
-                    val intent = Intent(mainActivity, SearchActivity::class.java)
-                    intent.putParcelableArrayListExtra(bundleBikeStation, util.asParcelableArrayList(divvyStations))
-                    mainActivity.startActivity(intent)
-                }
+        recyclerView.adapter = favoritesAdapter
+        recyclerView.layoutManager = LinearLayoutManager(mainActivity)
+        floatingButton.setOnClickListener { _ ->
+            if (divvyStations.isEmpty()) {
+                util.showMessage(mainActivity, R.string.message_too_fast)
+            } else {
+                val i = Intent(mainActivity, SearchActivity::class.java)
+                i.putParcelableArrayListExtra(bundleBikeStation, util.asParcelableArrayList(divvyStations))
+                mainActivity.startActivity(i)
             }
-
-            recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    if (dy > 0 && floatingButton.isShown) {
-                        floatingButton.hide()
-                    } else if (dy < 0 && !floatingButton.isShown) {
-                        floatingButton.show()
-                    }
-                }
-            })
-
-            swipeRefreshLayout.setOnRefreshListener {
-                swipeRefreshLayout.setColorSchemeColors(util.randomColor)
-
-                if (busService.getBusRoutes().isEmpty()
-                    || mainActivity.intent.getParcelableArrayListExtra<Parcelable>(bundleBikeStation) == null
-                    || mainActivity.intent.getParcelableArrayListExtra<Parcelable>(bundleBikeStation).size == 0) {
-                    mainActivity.loadFirstData()
-                }
-                fetchData()
-            }
-
-            startRefreshTask()
-            util.displayRateSnackBarIfNeeded(swipeRefreshLayout, mainActivity)
         }
-        return rootView
+
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (dy > 0 && floatingButton.isShown) {
+                    floatingButton.hide()
+                } else if (dy < 0 && !floatingButton.isShown) {
+                    floatingButton.show()
+                }
+            }
+        })
+
+        swipeRefreshLayout.setOnRefreshListener {
+            swipeRefreshLayout.setColorSchemeColors(util.randomColor)
+
+            if (busService.getBusRoutes().isEmpty()
+                || mainActivity.intent.getParcelableArrayListExtra<Parcelable>(bundleBikeStation) == null
+                || mainActivity.intent.getParcelableArrayListExtra<Parcelable>(bundleBikeStation).size == 0) {
+                mainActivity.loadFirstData()
+            }
+            fetchData()
+        }
+
+        startRefreshTask()
+        util.displayRateSnackBarIfNeeded(swipeRefreshLayout, mainActivity)
     }
 
     override fun onPause() {
@@ -170,7 +158,10 @@ class FavoritesFragment : AbstractFragment() {
     }
 
     fun reloadData(favoritesDTO: FavoritesDTO) {
+        mainActivity.intent.extras.putSparseParcelableArray(bundleTrainArrivals, favoritesDTO.trainArrivalDTO.trainArrivalSparseArray)
+        mainActivity.intent.putParcelableArrayListExtra(bundleBusArrivals, util.asParcelableArrayList(favoritesDTO.busArrivalDTO.busArrivals))
         mainActivity.intent.putParcelableArrayListExtra(bundleBikeStation, util.asParcelableArrayList(favoritesDTO.bikeStations))
+
         divvyStations = favoritesDTO.bikeStations
         favoritesAdapter.updateData(favoritesDTO.trainArrivalDTO.trainArrivalSparseArray, favoritesDTO.busArrivalDTO.busArrivals, favoritesDTO.bikeStations)
         favoritesAdapter.refreshFavorites()
@@ -248,7 +239,7 @@ class FavoritesFragment : AbstractFragment() {
          * @return a favorite fragment
          */
         fun newInstance(sectionNumber: Int): FavoritesFragment {
-            return AbstractFragment.fragmentWithBundle(FavoritesFragment(), sectionNumber) as FavoritesFragment
+            return Fragment.fragmentWithBundle(FavoritesFragment(), sectionNumber) as FavoritesFragment
         }
     }
 }

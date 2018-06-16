@@ -22,9 +22,6 @@ package fr.cph.chicago.core.fragment
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ListView
 import android.widget.TextView
@@ -42,7 +39,8 @@ import org.apache.commons.lang3.StringUtils
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BusFragment : AbstractFragment() {
+class BusFragment : Fragment(R.layout.fragment_bus) {
+
 
     @BindView(R.id.bus_filter)
     lateinit var textFilter: EditText
@@ -54,17 +52,12 @@ class BusFragment : AbstractFragment() {
     private lateinit var busAdapter: BusAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         App.checkBusData(mainActivity)
+        super.onCreate(savedInstanceState)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater.inflate(R.layout.fragment_bus, container, false)
-        if (!mainActivity.isFinishing) {
-            setBinder(rootView)
-            addView()
-        }
-        return rootView
+    override fun onCreateView() {
+        addView()
     }
 
     fun update() {
@@ -105,7 +98,7 @@ class BusFragment : AbstractFragment() {
          * @return the fragment
          */
         fun newInstance(sectionNumber: Int): BusFragment {
-            return AbstractFragment.fragmentWithBundle(BusFragment(), sectionNumber) as BusFragment
+            return Fragment.fragmentWithBundle(BusFragment(), sectionNumber) as BusFragment
         }
     }
 }

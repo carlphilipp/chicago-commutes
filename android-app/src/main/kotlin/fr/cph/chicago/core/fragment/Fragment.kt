@@ -21,18 +21,20 @@ package fr.cph.chicago.core.fragment
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import butterknife.ButterKnife
 import butterknife.Unbinder
 import fr.cph.chicago.core.activity.MainActivity
 
-open class AbstractFragment : Fragment() {
+abstract class Fragment(private val layout: Int) : android.support.v4.app.Fragment() {
 
     protected lateinit var mainActivity: MainActivity
+    protected lateinit var rootView: View
     private lateinit var unbinder: Unbinder
 
-    fun setBinder(rootView: View) {
+    private fun setBinder(rootView: View) {
         unbinder = ButterKnife.bind(this, rootView)
     }
 
@@ -45,6 +47,17 @@ open class AbstractFragment : Fragment() {
         super.onDestroyView()
         unbinder.unbind()
     }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        if (!mainActivity.isFinishing) {
+            rootView = inflater.inflate(layout, container, false)
+            setBinder(rootView)
+            onCreateView()
+        }
+        return rootView
+    }
+
+    abstract fun onCreateView()
 
     companion object {
 

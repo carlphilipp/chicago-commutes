@@ -21,9 +21,6 @@ package fr.cph.chicago.core.fragment
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.ListView
 import butterknife.BindString
 import butterknife.BindView
@@ -38,16 +35,14 @@ import fr.cph.chicago.core.model.enumeration.TrainLine
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class TrainFragment : AbstractFragment() {
+class TrainFragment : Fragment(R.layout.fragment_train) {
 
     @BindView(R.id.train_list)
     lateinit var listView: ListView
     @BindString(R.string.bundle_train_line)
     lateinit var bundleTrainLine: String
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater.inflate(R.layout.fragment_train, container, false)
-        setBinder(rootView)
+    override fun onCreateView() {
         val ada = TrainStationAdapter()
         listView.adapter = ada
         listView.setOnItemClickListener { _, _, position, _ ->
@@ -58,7 +53,6 @@ class TrainFragment : AbstractFragment() {
             intent.putExtras(extras)
             startActivity(intent)
         }
-        return rootView
     }
 
     companion object {
@@ -70,7 +64,7 @@ class TrainFragment : AbstractFragment() {
          * @return a train fragment
          */
         fun newInstance(sectionNumber: Int): TrainFragment {
-            return AbstractFragment.Companion.fragmentWithBundle(TrainFragment(), sectionNumber) as TrainFragment
+            return Fragment.Companion.fragmentWithBundle(TrainFragment(), sectionNumber) as TrainFragment
         }
     }
 }

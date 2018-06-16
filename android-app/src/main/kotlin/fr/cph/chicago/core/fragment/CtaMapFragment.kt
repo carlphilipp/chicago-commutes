@@ -21,10 +21,6 @@ package fr.cph.chicago.core.fragment
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import butterknife.BindView
 import com.github.chrisbanes.photoview.PhotoView
 import fr.cph.chicago.R
@@ -32,19 +28,14 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
-class CtaMapFragment : AbstractFragment() {
+class CtaMapFragment : Fragment(R.layout.fragment_cta_map) {
 
     @BindView(R.id.cta_map)
     lateinit var ctaMap: PhotoView
     private var bitmapCache: Bitmap? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater.inflate(R.layout.fragment_cta_map, container, false)
-        if (!mainActivity.isFinishing) {
-            setBinder(rootView)
-            loadBitmap()
-        }
-        return rootView
+    override fun onCreateView() {
+        loadBitmap()
     }
 
     private fun loadBitmap() {
@@ -62,7 +53,7 @@ class CtaMapFragment : AbstractFragment() {
 
     companion object {
         fun newInstance(sectionNumber: Int): CtaMapFragment {
-            return AbstractFragment.Companion.fragmentWithBundle(CtaMapFragment(), sectionNumber) as CtaMapFragment
+            return Fragment.fragmentWithBundle(CtaMapFragment(), sectionNumber) as CtaMapFragment
         }
     }
 }

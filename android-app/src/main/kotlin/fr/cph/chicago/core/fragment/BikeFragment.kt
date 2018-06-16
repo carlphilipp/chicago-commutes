@@ -22,9 +22,6 @@ package fr.cph.chicago.core.fragment
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ListView
 import android.widget.RelativeLayout
@@ -41,7 +38,7 @@ import org.apache.commons.lang3.StringUtils
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BikeFragment : AbstractFragment() {
+class BikeFragment : Fragment(R.layout.fragment_bike) {
 
     @BindView(R.id.loading_relativeLayout)
     lateinit var loadingLayout: RelativeLayout
@@ -60,22 +57,16 @@ class BikeFragment : AbstractFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater.inflate(R.layout.fragment_bike, container, false)
-        if (!mainActivity.isFinishing) {
-            setBinder(rootView)
-            divvyStations = mainActivity.intent.getParcelableArrayListExtra(bundleBikeStations) ?: listOf()
-            if (divvyStations.isEmpty()) {
-                loadError()
-            } else {
-                loadList()
-            }
+    override fun onCreateView() {
+        divvyStations = mainActivity.intent.getParcelableArrayListExtra(bundleBikeStations) ?: listOf()
+        if (divvyStations.isEmpty()) {
+            loadError()
+        } else {
+            loadList()
         }
-        return rootView
     }
 
     private fun loadList() {
@@ -124,7 +115,7 @@ class BikeFragment : AbstractFragment() {
          * @return the fragment
          */
         fun newInstance(sectionNumber: Int): BikeFragment {
-            return AbstractFragment.fragmentWithBundle(BikeFragment(), sectionNumber) as BikeFragment
+            return Fragment.fragmentWithBundle(BikeFragment(), sectionNumber) as BikeFragment
         }
     }
 }

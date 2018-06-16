@@ -23,9 +23,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ListView
 import butterknife.BindView
@@ -43,21 +40,14 @@ import org.apache.commons.lang3.StringUtils
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class AlertFragment : AbstractFragment() {
+class AlertFragment : Fragment(R.layout.fragment_alert) {
 
     @BindView(R.id.alert_filter)
     lateinit var textFilter: EditText
     @BindView(R.id.alert_list)
     lateinit var listView: ListView
 
-    override fun onResume() {
-        super.onResume()
-        textFilter.setText("")
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater.inflate(R.layout.fragment_alert, container, false)
-        setBinder(rootView)
+    override fun onCreateView() {
         ObservableUtil.createAlertRoutesObservable().subscribe { routesAlerts ->
             val alertAdapter = AlertAdapter(routesAlerts)
             listView.adapter = alertAdapter
@@ -94,7 +84,11 @@ class AlertFragment : AbstractFragment() {
                 }
             })
         }
-        return rootView
+    }
+
+    override fun onResume() {
+        super.onResume()
+        textFilter.setText("")
     }
 
     companion object {
@@ -106,7 +100,7 @@ class AlertFragment : AbstractFragment() {
          * @return a train fragment
          */
         fun newInstance(sectionNumber: Int): AlertFragment {
-            return AbstractFragment.fragmentWithBundle(AlertFragment(), sectionNumber) as AlertFragment
+            return Fragment.fragmentWithBundle(AlertFragment(), sectionNumber) as AlertFragment
         }
     }
 }
