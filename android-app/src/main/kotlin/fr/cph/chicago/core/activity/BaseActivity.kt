@@ -63,10 +63,6 @@ class BaseActivity : ButterKnifeActivity(R.layout.loading) {
     private val observableUtil: ObservableUtil = ObservableUtil
 
     override fun create(savedInstanceState: Bundle?) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val derp = NetworkSecurityPolicy.getInstance().isCleartextTrafficPermitted
-            Log.i("DERP", "$derp")
-        }
         setUpRealm()
         loadLocalAndFavoritesData()
     }
