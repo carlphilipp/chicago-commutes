@@ -77,22 +77,20 @@ class BusFragment : AbstractFragment() {
         textFilter.visibility = TextView.VISIBLE
         textFilter.addTextChangedListener(object : TextWatcher {
 
-            private lateinit var busRoutes: MutableList<BusRoute>
+            private var busRoutes: List<BusRoute> = listOf()
 
             override fun beforeTextChanged(c: CharSequence, start: Int, count: Int, after: Int) {
-                busRoutes = mutableListOf()
+                busRoutes = listOf()
             }
 
             override fun onTextChanged(c: CharSequence, start: Int, before: Int, count: Int) {
                 val busRoutes = busService.getBusRoutes()
                 val trimmed = c.toString().trim { it <= ' ' }
-                this.busRoutes.addAll(
-                    busRoutes.filter { (id, name) -> StringUtils.containsIgnoreCase(id, trimmed) || StringUtils.containsIgnoreCase(name, trimmed) }
-                )
+                this.busRoutes = busRoutes.filter { (id, name) -> StringUtils.containsIgnoreCase(id, trimmed) || StringUtils.containsIgnoreCase(name, trimmed) }
             }
 
             override fun afterTextChanged(s: Editable) {
-                busAdapter.busRoutes = busRoutes.toList()
+                busAdapter.busRoutes = this.busRoutes
                 busAdapter.notifyDataSetChanged()
             }
         })

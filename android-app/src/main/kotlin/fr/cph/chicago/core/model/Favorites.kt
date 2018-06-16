@@ -53,7 +53,7 @@ object Favorites {
     private var trainFavorites: List<Int> = listOf()
     private var busFavorites: List<String> = listOf()
     private var fakeBusFavorites: List<String> = listOf()
-    private val bikeFavorites: MutableList<String> = mutableListOf()
+    private var bikeFavorites: List<String> = listOf()
 
     /**
      * Get the size of the current model
@@ -118,16 +118,13 @@ object Favorites {
         trainFavorites = preferenceService.getTrainFavorites()
         busFavorites = preferenceService.getBusFavorites()
         fakeBusFavorites = calculateActualRouteNumberBusFavorites(busFavorites)
-        bikeFavorites.clear()
-        val bikeFavoritesTemp = preferenceService.getBikeFavorites()
-        if (bikeStations.isNotEmpty()) {
-            bikeFavoritesTemp
+        bikeFavorites = if (bikeStations.isNotEmpty()) {
+            preferenceService.getBikeFavorites()
                 .flatMap { bikeStationId -> bikeStations.filter { st -> st.id.toString() == bikeStationId } }
                 .sortedWith(util.bikeStationComparator)
                 .map { st -> st.id.toString() }
-                .forEach { bikeFavorites.add(it) }
         } else {
-            bikeFavorites.addAll(bikeFavoritesTemp)
+            preferenceService.getBikeFavorites()
         }
     }
 

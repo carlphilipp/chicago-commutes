@@ -57,7 +57,7 @@ class TrainMapActivity : FragmentMapActivity() {
     private lateinit var line: String
     private lateinit var refreshTrainMarkers: RefreshTrainMarkers
     private var status: MutableMap<Marker, Boolean> = mutableMapOf()
-    private var markers: MutableList<Marker> = mutableListOf()
+    private var markers: List<Marker> = listOf()
 
     private var centerMap = true
     private var drawLine = true
@@ -130,30 +130,24 @@ class TrainMapActivity : FragmentMapActivity() {
     }
 
     private fun drawTrains(trains: List<Train>) {
-        // TODO see if views can actually be null.
-        views.clear()
-
-        cleanAllMarkers()
+        resetData()
         val bitmapDesc = refreshTrainMarkers.currentDescriptor
-        trains.forEach { (routeNumber, destName, _, position, heading) ->
+        markers = trains.map { (routeNumber, destName, _, position, heading) ->
             val point = LatLng(position.latitude, position.longitude)
-            val title = "To " + destName
+            val title = "To $destName"
             val snippet = routeNumber.toString()
-
-            val marker = googleMap.addMarker(MarkerOptions().position(point).title(title).snippet(snippet).icon(bitmapDesc).anchor(0.5f, 0.5f).rotation(heading.toFloat()).flat(true))
-            markers.add(marker)
-
+            googleMap.addMarker(MarkerOptions().position(point).title(title).snippet(snippet).icon(bitmapDesc).anchor(0.5f, 0.5f).rotation(heading.toFloat()).flat(true))
+        }.onEach { marker ->
             val view = layoutInflater.inflate(R.layout.marker, viewGroup, false)
             val title2 = view.findViewById<TextView>(R.id.title)
-            title2.text = title
-
+            title2.text = marker.title
             views[marker] = view
         }
     }
 
-    private fun cleanAllMarkers() {
-        markers.forEach({ it.remove() })
-        markers.clear()
+    private fun resetData() {
+        views.clear()
+        markers.forEach { it.remove() }
     }
 
     private fun drawLine(positions: List<Position>) {
@@ -162,7 +156,7 @@ class TrainMapActivity : FragmentMapActivity() {
         poly.geodesic(true).color(TrainLine.fromXmlString(line).color)
         positions
             .map { position -> LatLng(position.latitude, position.longitude) }
-            .forEach({ poly.add(it) })
+            .forEach { poly.add(it) }
 
         googleMap.addPolyline(poly)
         drawLine = false

@@ -66,10 +66,10 @@ class BusMapActivity : FragmentMapActivity() {
     private val observableUtil: ObservableUtil = ObservableUtil
     private val busService: BusService = BusService
 
-    private var busMarkers: MutableList<Marker> = mutableListOf()
-    private var busStationMarkers: MutableList<Marker> = mutableListOf()
-    private var views: MutableMap<Marker, View> = mutableMapOf()
-    private var status: MutableMap<Marker, Boolean> = mutableMapOf()
+    private var busMarkers: List<Marker> = listOf()
+    private val busStationMarkers: MutableList<Marker> = mutableListOf()
+    private val views: MutableMap<Marker, View> = mutableMapOf()
+    private val status: MutableMap<Marker, Boolean> = mutableMapOf()
 
     private var busId: Int = 0
     private lateinit var busRouteId: String
@@ -132,32 +132,29 @@ class BusMapActivity : FragmentMapActivity() {
     fun drawBuses(buses: List<Bus>) {
         cleanAllMarkers()
         val bitmapDesc = refreshBusesBitmap.currentDescriptor
-        buses.forEach { bus ->
+        busMarkers = buses.map { bus ->
             val point = LatLng(bus.position.latitude, bus.position.longitude)
             val marker = googleMap.addMarker(
                 MarkerOptions()
                     .position(point)
-                    .title("To " + bus.destination)
-                    .snippet(bus.id.toString() + "")
+                    .title("To ${bus.destination}")
+                    .snippet(bus.id.toString())
                     .icon(bitmapDesc)
                     .anchor(0.5f, 0.5f)
                     .rotation(bus.heading.toFloat())
-                    .flat(true)
-            )
-            busMarkers.add(marker)
-
+                    .flat(true))
+            marker
+        }.onEach { marker ->
             val layoutInflater = this@BusMapActivity.baseContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val view = layoutInflater.inflate(R.layout.marker, viewGroup, false)
             val title = view.findViewById<TextView>(R.id.title)
             title.text = marker.title
-
             views[marker] = view
         }
     }
 
     private fun cleanAllMarkers() {
         busMarkers.forEach { it.remove() }
-        busMarkers.clear()
     }
 
     private fun drawPattern(patterns: List<BusPattern>) {
@@ -167,7 +164,8 @@ class BusMapActivity : FragmentMapActivity() {
         patterns.forEach { pattern ->
             val poly = PolylineOptions()
                 .color(if (index[0] == 0) Color.RED else if (index[0] == 1) Color.BLUE else Color.YELLOW)
-                .width((application as App).lineWidth).geodesic(true)
+                .width(App.instance.lineWidth)
+                .geodesic(true)
             pattern.points
                 .map { patternPoint ->
                     val point = LatLng(patternPoint.position.latitude, patternPoint.position.longitude)
@@ -186,7 +184,7 @@ class BusMapActivity : FragmentMapActivity() {
                     marker
                 }
                 .filter { marker -> marker != null }
-                .forEach({ busStationMarkers.add(it!!) })
+                .forEach { busStationMarkers.add(it!!) }
             googleMap.addPolyline(poly)
             index[0]++
         }

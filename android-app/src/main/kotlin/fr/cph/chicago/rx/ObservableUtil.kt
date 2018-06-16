@@ -30,10 +30,10 @@ import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.core.model.TrainEta
+import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusArrivalDTO
 import fr.cph.chicago.core.model.dto.FavoritesDTO
 import fr.cph.chicago.core.model.dto.FirstLoadDTO
@@ -86,18 +86,12 @@ object ObservableUtil {
 
     fun createBusArrivalsObservable(busStop: BusStop): Observable<List<BusArrival>> {
         return createObservableFromCallable(Callable { busService.loadAroundBusArrivals(busStop) })
-            .onErrorReturn { throwable ->
-                Log.e(TAG, throwable.message, throwable)
-                mutableListOf()
-            }
+            .onErrorReturn(handleError())
     }
 
     fun createAllBikeStationsObservable(): Observable<List<BikeStation>> {
         return createObservableFromCallable(Callable { bikeService.loadAllBikeStations() })
-            .onErrorReturn { throwable ->
-                Log.e(TAG, throwable.message, throwable)
-                mutableListOf()
-            }
+            .onErrorReturn(handleError())
     }
 
     fun createBikeStationsObservable(divvyStation: BikeStation): Observable<BikeStation> {
@@ -133,30 +127,17 @@ object ObservableUtil {
 
     fun createOnFirstLoadObservable(): Observable<FirstLoadDTO> {
         val busRoutesObs = createObservableFromCallable(Callable { busService.loadBusRoutes() })
-            .onErrorReturn { throwable ->
-                Log.e(TAG, throwable.message, throwable)
-                mutableListOf()
-            }
+            .onErrorReturn(handleError())
 
         val bikeStationsObs = createObservableFromCallable(Callable { bikeService.loadAllBikeStations() })
-            .onErrorReturn { throwable ->
-                Log.e(TAG, throwable.message, throwable)
-                // Do not change that to listOf().
-                // It needs to be ArrayList for being parcelable
-                mutableListOf()
-            }
+            .onErrorReturn(handleError())
 
         return Observable.zip(busRoutesObs, bikeStationsObs, BiFunction { busRoutes, bikeStations -> FirstLoadDTO(busRoutes.isEmpty(), bikeStations.isEmpty(), busRoutes, bikeStations) })
     }
 
     fun createFollowBusObservable(busId: String): Observable<List<BusArrival>> {
         return createObservableFromCallable(Callable { busService.loadFollowBus(busId) })
-            .onErrorReturn { throwable ->
-                Log.e(TAG, throwable.message, throwable)
-                // Do not change that to listOf().
-                // It needs to be ArrayList for being parcelable
-                mutableListOf()
-            }
+            .onErrorReturn(handleError())
     }
 
     fun createBusPatternObservable(busRouteId: String, bound: String): Observable<BusPattern> {
@@ -169,78 +150,42 @@ object ObservableUtil {
 
     fun createBusListObservable(busRouteId: String): Observable<List<Bus>> {
         return createObservableFromCallable(Callable { busService.loadBus(busRouteId) })
-            .onErrorReturn { throwable ->
-                Log.e(TAG, throwable.message, throwable)
-                // Do not change that to listOf().
-                // It needs to be ArrayList for being parcelable
-                mutableListOf()
-            }
+            .onErrorReturn(handleError())
     }
 
     fun createTrainLocationObservable(line: String): Observable<List<Train>> {
         return createObservableFromCallable(Callable { trainService.getTrainLocation(line) })
-            .onErrorReturn { throwable ->
-                Log.e(TAG, throwable.message, throwable)
-                // Do not change that to listOf().
-                // It needs to be ArrayList for being parcelable
-                mutableListOf()
-            }
+            .onErrorReturn(handleError())
     }
 
     fun createTrainPatternObservable(line: String): Observable<List<Position>> {
         return createObservableFromCallable(Callable { trainService.readPattern(TrainLine.fromXmlString(line)) })
-            .onErrorReturn { throwable ->
-                Log.e(TAG, throwable.message, throwable)
-                // Do not change that to listOf().
-                // It needs to be ArrayList for being parcelable
-                mutableListOf()
-            }
+            .onErrorReturn(handleError())
     }
 
     fun createTrainStationAroundObservable(position: Position): Observable<List<TrainStation>> {
         return createObservableFromCallable(Callable { trainService.readNearbyStation(position) })
-            .onErrorReturn { throwable ->
-                Log.e(TAG, throwable.message, throwable)
-                // Do not change that to listOf().
-                // It needs to be ArrayList for being parcelable
-                mutableListOf()
-            }
+            .onErrorReturn(handleError())
     }
 
     fun createBusStopsAroundObservable(position: Position): Observable<List<BusStop>> {
         return createObservableFromCallable(Callable { busService.getBusStopsAround(position) })
-            .onErrorReturn { throwable ->
-                Log.e(TAG, throwable.message, throwable)
-                // Do not change that to listOf().
-                // It needs to be ArrayList for being parcelable
-                mutableListOf()
-            }
+            .onErrorReturn(handleError())
     }
 
     fun createBikeStationAroundObservable(position: Position, divvyStations: List<BikeStation>): Observable<List<BikeStation>> {
         return createObservableFromCallable(Callable { positionUtil.readNearbyStation(divvyStations, position) })
-            .onErrorReturn { throwable ->
-                Log.e(TAG, throwable.message, throwable)
-                // Do not change that to listOf().
-                // It needs to be ArrayList for being parcelable
-                mutableListOf()
-            }
+            .onErrorReturn(handleError())
     }
 
     fun createLoadTrainEtaObservable(runNumber: String, loadAll: Boolean): Observable<List<TrainEta>> {
         return createObservableFromCallable(Callable { trainService.loadTrainEta(runNumber, loadAll) })
-            .onErrorReturn { throwable ->
-                Log.e(TAG, throwable.message, throwable)
-                mutableListOf()
-            }
+            .onErrorReturn(handleError())
     }
 
     fun createAlertRoutesObservable(): Observable<List<RoutesAlertsDTO>> {
         return createObservableFromCallable(Callable { alertService.getAlerts() })
-            .onErrorReturn { throwable ->
-                Log.e(TAG, throwable.message, throwable)
-                mutableListOf()
-            }
+            .onErrorReturn(handleError())
     }
 
     fun createAlertRouteObservable(id: String): Observable<List<RouteAlertsDTO>> {
@@ -251,5 +196,10 @@ object ObservableUtil {
         return Observable.fromCallable(supplier)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    private fun <T> handleError(): (Throwable) -> List<T> = { throwable ->
+        Log.e(TAG, throwable.message, throwable)
+        ArrayList()
     }
 }

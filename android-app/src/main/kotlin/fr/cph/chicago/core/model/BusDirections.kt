@@ -29,7 +29,7 @@ import fr.cph.chicago.core.model.enumeration.BusDirection
  */
 class BusDirections(val id: String) {
 
-    // FIXME: Use a set instead
+    // Need a list because we access with indexes
     val busDirections: MutableList<BusDirection> = mutableListOf()
 
     fun addBusDirection(busDirection: BusDirection) {
