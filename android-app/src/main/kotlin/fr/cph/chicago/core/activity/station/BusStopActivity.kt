@@ -29,7 +29,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
-import butterknife.BindColor
 import butterknife.BindString
 import butterknife.BindView
 import fr.cph.chicago.R
@@ -37,7 +36,6 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
-import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
@@ -46,9 +44,9 @@ import fr.cph.chicago.exception.ParserException
 import fr.cph.chicago.exception.TrackerException
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.PreferenceService
+import fr.cph.chicago.util.Color
 import fr.cph.chicago.util.LayoutUtil
 import fr.cph.chicago.util.Util
-import java.util.Date
 
 /**
  * Activity that represents the bus stop
@@ -110,16 +108,6 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
     @BindString(R.string.request_stop_id)
     lateinit var requestStopId: String
 
-    @JvmField
-    @BindColor(R.color.grey_5)
-    internal var grey5: Int = 0
-    @JvmField
-    @BindColor(R.color.grey)
-    internal var grey: Int = 0
-    @JvmField
-    @BindColor(R.color.yellowLineDark)
-    internal var yellowLineDark: Int = 0
-
     private val util = Util
     private val preferenceService = PreferenceService
     private val busService = BusService
@@ -154,11 +142,11 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
 
         isFavorite = isFavorite()
 
-        mapImage.setColorFilter(grey5)
-        directionImage.setColorFilter(grey5)
+        mapImage.setColorFilter(Color.grey5)
+        directionImage.setColorFilter(Color.grey5)
         favoritesImageContainer.setOnClickListener { _ -> switchFavorite() }
 
-        favoritesImage.setColorFilter(if (isFavorite) yellowLineDark else grey5)
+        favoritesImage.setColorFilter(if (isFavorite) Color.yellowLineDark else Color.grey5)
 
         scrollView.setOnRefreshListener { LoadStationDataTask().execute() }
         streetViewImage.setOnClickListener(GoogleStreetOnClickListener(latitude, longitude))
@@ -227,7 +215,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
         } else {
             val key1 = busArrivals.keys.iterator().next()
             destinationTextView.text = key1
-            arrivalsTextView.text = busArrivals[key1]!!.joinToString(separator = " ") { LayoutUtil.formatArrivalTime(it) }
+            arrivalsTextView.text = busArrivals[key1]!!.joinToString(separator = " ") { util.formatArrivalTime(it) }
 
             var idBellowTitle = destinationTextView.id
             var idBellowArrival = arrivalsTextView.id
@@ -236,15 +224,15 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
                 belowTitle.text = it.key
                 belowTitle.id = util.generateViewId()
                 belowTitle.setSingleLine(true)
-                belowTitle.setTextColor(util.grey5)
+                belowTitle.setTextColor(Color.grey5)
                 belowTitle.layoutParams = LayoutUtil.createLineBelowLayoutParams(idBellowTitle)
                 idBellowTitle = belowTitle.id
 
                 val belowArrival = TextView(App.instance)
-                belowArrival.text = it.value.joinToString(separator = " ") { LayoutUtil.formatArrivalTime(it) }
+                belowArrival.text = it.value.joinToString(separator = " ") { util.formatArrivalTime(it) }
                 belowArrival.id = util.generateViewId()
                 belowArrival.setSingleLine(true)
-                belowArrival.setTextColor(util.grey5)
+                belowArrival.setTextColor(Color.grey5)
                 belowArrival.layoutParams = LayoutUtil.createLineBelowLayoutParams(idBellowArrival)
                 idBellowArrival = belowArrival.id
 
@@ -278,13 +266,13 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
     private fun switchFavorite() {
         isFavorite = if (isFavorite) {
             preferenceService.removeFromBusFavorites(busRouteId, busStopId.toString(), boundTitle, scrollView)
-            favoritesImage.setColorFilter(grey5)
+            favoritesImage.setColorFilter(Color.grey5)
             false
         } else {
             preferenceService.addToBusFavorites(busRouteId, busStopId.toString(), boundTitle, scrollView)
             preferenceService.addBusRouteNameMapping(busStopId.toString(), busRouteName)
             preferenceService.addBusStopNameMapping(busStopId.toString(), busStopName)
-            favoritesImage.setColorFilter(yellowLineDark)
+            favoritesImage.setColorFilter(Color.yellowLineDark)
             App.instance.refresh = true
             true
         }

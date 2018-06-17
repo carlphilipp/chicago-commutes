@@ -38,6 +38,7 @@ import com.google.android.gms.maps.model.LatLng
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.dto.BusFavoriteDTO
@@ -75,10 +76,6 @@ object Util {
 
     val dpToPixel16d: Int by lazy {
         dpToPixel16 / 2
-    }
-
-    val grey5: Int by lazy {
-        ContextCompat.getColor(App.instance, R.color.grey_5)
     }
 
     fun generateViewId(): Int {
@@ -330,5 +327,13 @@ object Util {
         } else {
             list as ArrayList
         }
+    }
+
+    fun formatBikesDocksValues(num: Int): String {
+        return if (num >= 10) num.toString() else "  $num"
+    }
+
+    fun formatArrivalTime(busArrival: BusArrival): String {
+        return if (busArrival.isDelay) " Delay" else " " + busArrival.timeLeft
     }
 }

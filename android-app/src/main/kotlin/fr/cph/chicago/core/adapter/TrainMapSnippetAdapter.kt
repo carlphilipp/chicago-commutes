@@ -29,6 +29,7 @@ import android.widget.BaseAdapter
 import android.widget.TextView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.TrainEta
+import fr.cph.chicago.util.Color
 
 /**
  * @author Carl-Philipp Harmant
@@ -70,10 +71,10 @@ class TrainMapSnippetAdapter(private val trainEtas: List<TrainEta>) : BaseAdapte
         holder.name.text = eta.trainStation.name
         if (!(position == trainEtas.size - 1 && "0 min" == eta.timeLeftDueDelay)) {
             holder.time.text = eta.timeLeftDueDelay
-            holder.name.setTextColor(ContextCompat.getColor(parent.context, R.color.grey_5))
+            holder.name.setTextColor(Color.grey5)
             holder.name.gravity = Gravity.START
         } else {
-            holder.name.setTextColor(ContextCompat.getColor(parent.context, R.color.grey))
+            holder.name.setTextColor(Color.grey5)
             holder.name.gravity = Gravity.CENTER
         }
         return view

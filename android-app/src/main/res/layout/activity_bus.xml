@@ -15,7 +15,6 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -136,7 +135,6 @@
                             android:lines="1" />
                     </RelativeLayout>
                 </LinearLayout>
-
             </LinearLayout>
         </ScrollView>
     </android.support.v4.widget.SwipeRefreshLayout>

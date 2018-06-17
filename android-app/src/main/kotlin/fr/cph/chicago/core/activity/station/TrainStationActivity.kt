@@ -35,7 +35,6 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.ScrollView
 import android.widget.TextView
-import butterknife.BindColor
 import butterknife.BindDimen
 import butterknife.BindDrawable
 import butterknife.BindString
@@ -55,6 +54,7 @@ import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.rx.TrainArrivalObserver
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
+import fr.cph.chicago.util.Color
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
@@ -108,18 +108,6 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
     @BindDimen(R.dimen.activity_station_stops_line3_padding_top)
     internal var line3PaddingTop: Int = 0
 
-    @JvmField
-    @BindColor(R.color.grey_5)
-    internal var grey5: Int = 0
-    @JvmField
-    @BindColor(R.color.grey)
-    internal var grey: Int = 0
-    @JvmField
-    @BindColor(R.color.yellowLineDark)
-    internal var yellowLineDark: Int = 0
-    @JvmField
-    @BindColor(R.color.yellowLine)
-    internal var yellowLine: Int = 0
     @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
     lateinit var arrowBackWhite: Drawable
 
@@ -162,12 +150,12 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
             streetViewImage.layoutParams = params
             streetViewText.setTypeface(null, Typeface.BOLD)
             swipeRefreshLayout.setOnRefreshListener { trainArrivalObservable.subscribe(TrainArrivalObserver(this, swipeRefreshLayout)) }
-            favoritesImage.setColorFilter(if (isFavorite) yellowLineDark else grey5)
+            favoritesImage.setColorFilter(if (isFavorite) Color.yellowLineDark else Color.grey5)
 
             params.height = height
             params.width = layoutParams.width
-            mapImage.setColorFilter(grey5)
-            directionImage.setColorFilter(grey5)
+            mapImage.setColorFilter(Color.grey5)
+            directionImage.setColorFilter(Color.grey5)
             favoritesImageContainer.setOnClickListener { _ -> switchFavorite() }
             mapContainer.setOnClickListener(GoogleMapOnClickListener(position.latitude, position.longitude))
             walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(position.latitude, position.longitude))
@@ -191,7 +179,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
             testView.text = line.toStringWithLine()
             testView.setBackgroundColor(line.color)
             if (line === TrainLine.YELLOW) {
-                testView.setBackgroundColor(yellowLine)
+                testView.setBackgroundColor(Color.yellowLine)
             }
 
             stopsView.addView(lineTitleView)
@@ -211,19 +199,19 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
                 checkBox.isChecked = preferenceService.getTrainFilter(stationId, line, stop.direction)
                 checkBox.setTypeface(checkBox.typeface, Typeface.BOLD)
                 checkBox.text = stop.direction.toString()
-                checkBox.setTextColor(grey)
+                checkBox.setTextColor(Color.grey)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     checkBox.backgroundTintList = ColorStateList.valueOf(line.color)
                     checkBox.buttonTintList = ColorStateList.valueOf(line.color)
                     if (line === TrainLine.YELLOW) {
-                        checkBox.backgroundTintList = ColorStateList.valueOf(yellowLine)
-                        checkBox.buttonTintList = ColorStateList.valueOf(yellowLine)
+                        checkBox.backgroundTintList = ColorStateList.valueOf(Color.yellowLine)
+                        checkBox.buttonTintList = ColorStateList.valueOf(Color.yellowLine)
                     }
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     checkBox.foregroundTintList = ColorStateList.valueOf(line.color)
                     if (line === TrainLine.YELLOW) {
-                        checkBox.foregroundTintList = ColorStateList.valueOf(yellowLine)
+                        checkBox.foregroundTintList = ColorStateList.valueOf(Color.yellowLine)
                     }
                 }
 
@@ -336,14 +324,14 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
                 val stopName = TextView(this)
                 val stopNameData = trainEta.destName + ": "
                 stopName.text = stopNameData
-                stopName.setTextColor(grey)
+                stopName.setTextColor(Color.grey)
                 stopName.setPadding(line3PaddingLeft, line3PaddingTop, 0, 0)
                 insideLayout.addView(stopName)
 
                 val timing = TextView(this)
                 val timingData = trainEta.timeLeftDueDelay + " "
                 timing.text = timingData
-                timing.setTextColor(grey)
+                timing.setTextColor(Color.grey)
                 timing.setLines(1)
                 timing.ellipsize = TruncateAt.END
                 insideLayout.addView(timing)
@@ -365,10 +353,10 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
     private fun switchFavorite() {
         if (isFavorite) {
             preferenceService.removeFromTrainFavorites(stationId, scrollView)
-            favoritesImage.setColorFilter(grey)
+            favoritesImage.setColorFilter(Color.grey)
         } else {
             preferenceService.addToTrainFavorites(stationId, scrollView)
-            favoritesImage.setColorFilter(yellowLineDark)
+            favoritesImage.setColorFilter(Color.yellowLineDark)
             App.instance.refresh = true
         }
         isFavorite = !isFavorite

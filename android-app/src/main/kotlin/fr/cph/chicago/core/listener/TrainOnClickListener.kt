@@ -33,6 +33,7 @@ import fr.cph.chicago.core.activity.map.TrainMapActivity
 import fr.cph.chicago.core.activity.station.TrainStationActivity
 import fr.cph.chicago.core.adapter.PopupTrainAdapter
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.util.Color
 import fr.cph.chicago.util.Util
 
 /**
@@ -53,7 +54,7 @@ class TrainOnClickListener(private val context: Context,
             val colors = mutableListOf<Int>()
             for (line in trainLines) {
                 values.add(line.toString() + " line - See trains")
-                colors.add(if (line !== TrainLine.YELLOW) line.color else ContextCompat.getColor(view.context, R.color.yellowLine))
+                colors.add(if (line !== TrainLine.YELLOW) line.color else Color.yellowLine)
             }
             val ada = PopupTrainAdapter(view.context, values, colors)
 

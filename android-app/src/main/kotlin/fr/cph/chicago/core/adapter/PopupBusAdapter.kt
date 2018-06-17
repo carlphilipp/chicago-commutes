@@ -28,6 +28,7 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import fr.cph.chicago.R
+import fr.cph.chicago.util.Color
 
 /**
  * @author Carl-Philipp Harmant
@@ -43,7 +44,7 @@ class PopupBusAdapter(context: Context, private val values: List<String>) : Arra
         } else {
             view = vi.inflate(R.layout.popup_bus_cell, parent, false)
             val imageView: ImageView = view.findViewById(R.id.popup_map_map)
-            imageView.setColorFilter(ContextCompat.getColor(parent.context, R.color.grey_5))
+            imageView.setColorFilter(Color.grey5)
         }
         val textView: TextView = view.findViewById(R.id.label)
         textView.text = values[position]

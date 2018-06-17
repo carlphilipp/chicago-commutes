@@ -11,6 +11,7 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.map.TrainMapActivity
 import fr.cph.chicago.core.adapter.PopupFavoritesTrainAdapter
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.util.Color
 
 class TrainMapButtonOnClickListener(private val activity: Activity, private val trainLines: Set<TrainLine>) : NetworkCheckListener(activity) {
 
@@ -21,7 +22,7 @@ class TrainMapButtonOnClickListener(private val activity: Activity, private val 
             val colors = mutableListOf<Int>()
             val values = trainLines
                 .flatMap { line ->
-                    val color = if (line !== TrainLine.YELLOW) line.color else ContextCompat.getColor(activity.applicationContext, R.color.yellowLine)
+                    val color = if (line !== TrainLine.YELLOW) line.color else Color.yellowLine
                     colors.add(color)
                     listOf(line.toStringWithLine())
                 }

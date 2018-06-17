@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.util
 
-import android.support.v4.content.ContextCompat
 import android.text.SpannableString
 import android.text.TextUtils
 import android.text.style.ForegroundColorSpan
@@ -114,7 +113,7 @@ object LayoutUtil {
         val leftString = if (busDirection == null) stopNameTrimmed else stopNameTrimmed + " " + busDirection.shortLowerCase
         val destinationSpannable = SpannableString(leftString)
         destinationSpannable.setSpan(RelativeSizeSpan(0.65f), stopNameTrimmed.length, leftString.length, 0) // set size
-        destinationSpannable.setSpan(ForegroundColorSpan(util.grey5), 0, leftString.length, 0) // set color
+        destinationSpannable.setSpan(ForegroundColorSpan(Color.grey5), 0, leftString.length, 0) // set color
 
         val boundCustomTextView = TextView(App.instance)
         boundCustomTextView.text = destinationSpannable
@@ -138,7 +137,7 @@ object LayoutUtil {
         arrivalText.text = currentEtas
         arrivalText.gravity = Gravity.END
         arrivalText.setSingleLine(true)
-        arrivalText.setTextColor(util.grey5)
+        arrivalText.setTextColor(Color.grey5)
         arrivalText.ellipsize = TextUtils.TruncateAt.END
 
         right.addView(arrivalText)
@@ -170,7 +169,7 @@ object LayoutUtil {
 
         val destination = entry.key
         val destinationTextView = TextView(App.instance)
-        destinationTextView.setTextColor(util.grey5)
+        destinationTextView.setTextColor(Color.grey5)
         destinationTextView.text = destination
         destinationTextView.setLines(1)
         destinationTextView.layoutParams = destinationParams
@@ -190,7 +189,7 @@ object LayoutUtil {
         arrivalText.text = currentEtas
         arrivalText.gravity = Gravity.END
         arrivalText.setSingleLine(true)
-        arrivalText.setTextColor(util.grey5)
+        arrivalText.setTextColor(Color.grey5)
         arrivalText.ellipsize = TextUtils.TruncateAt.END
 
         right.addView(arrivalText)
@@ -206,14 +205,6 @@ object LayoutUtil {
         val linearLayout = (container.getChildAt(0) as LinearLayout)
         linearLayout.addView(createBikeLine(App.instance.getString(R.string.bike_available_bikes), bikeStation.availableBikes, true))
         linearLayout.addView(createBikeLine(App.instance.getString(R.string.bike_available_docks), bikeStation.availableDocks, true))
-        return container
-    }
-
-    fun buildBikeStationLayout(bikeStation: BikeStation): LinearLayout {
-        val container = buildBusBikeLayout()
-        val linearLayout = (container.getChildAt(0) as LinearLayout)
-        linearLayout.addView(createBikeLine(App.instance.getString(R.string.bike_available_bikes), bikeStation.availableBikes, false))
-        linearLayout.addView(createBikeLine(App.instance.getString(R.string.bike_available_docks), bikeStation.availableDocks, false))
         return container
     }
 
@@ -252,11 +243,11 @@ object LayoutUtil {
         val amountBike = TextView(App.instance)
         if (lineValue == -1) {
             amountBike.text = "?"
-            amountBike.setTextColor(ContextCompat.getColor(App.instance, R.color.orange))
+            amountBike.setTextColor(Color.orange)
         } else {
-            amountBike.text = formatBikesDocksValues(lineValue)
-            val color = if (lineValue == 0) R.color.red else R.color.green
-            amountBike.setTextColor(ContextCompat.getColor(App.instance, color))
+            amountBike.text = Util.formatBikesDocksValues(lineValue)
+            val color = if (lineValue == 0) Color.red else Color.green
+            amountBike.setTextColor(color)
         }
         amountBike.layoutParams = createLineValueLayoutParams(lineTitleTextView.id)
 
@@ -312,17 +303,8 @@ object LayoutUtil {
         lineTitleTextView.layoutParams = layoutParams
         lineTitleTextView.id = util.generateViewId()
         lineTitleTextView.setSingleLine(true)
-        lineTitleTextView.setTextColor(util.grey5)
+        lineTitleTextView.setTextColor(Color.grey5)
         lineTitleTextView.measure(0, 0)
         return lineTitleTextView
-    }
-
-    private fun formatBikesDocksValues(num: Int): String {
-        return if (num >= 10) num.toString() else "  $num"
-    }
-
-    // TODO move to appropriate utility class
-    fun formatArrivalTime(busArrival: BusArrival): String {
-        return if (busArrival.isDelay) " Delay" else " " + busArrival.timeLeft
     }
 }

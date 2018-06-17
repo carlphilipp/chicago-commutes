@@ -29,6 +29,7 @@ import android.widget.BaseAdapter
 import android.widget.TextView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.model.BusArrival
+import fr.cph.chicago.util.Color
 
 /**
  * Adapter that will handle bus map
@@ -67,12 +68,12 @@ class BusMapSnippetAdapter(private val arrivals: List<BusArrival>) : BaseAdapter
         }
         viewHolder.stationName.text = arrival.stopName
         if (position == (arrivals.size - 1) && "No service" == arrival.timeLeftDueDelay) {
-            viewHolder.stationName.setTextColor(ContextCompat.getColor(parent.context, R.color.grey))
+            viewHolder.stationName.setTextColor(Color.grey)
             viewHolder.stationName.gravity = Gravity.CENTER
         } else {
             viewHolder.time.text = arrival.timeLeftDueDelay
             viewHolder.stationName.gravity = Gravity.START
-            viewHolder.stationName.setTextColor(ContextCompat.getColor(parent.context, R.color.grey_5))
+            viewHolder.stationName.setTextColor(Color.grey5)
         }
         return view
     }

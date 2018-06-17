@@ -149,8 +149,6 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
                 )
                 busDetailsDTOs.add(busDetails)
 
-                // FIXME it seems to produce double arrival time on the screen
-
                 // Build UI
                 val containParams = layoutUtil.getInsideParams(newLine, i == boundMap.size - 1)
                 val container = layoutUtil.createFavoritesBusArrivalsLayout(containParams, stopNameTrimmed, BusDirection.fromString(key), value as MutableList<out BusArrival>)
