@@ -64,7 +64,8 @@ class BusArrivalStopMappedDTO : TreeMap<String, MutableMap<String, MutableList<B
         if (containsKey(busArrival.stopName)) {
             val tempMap = get(busArrival.stopName)!!
             if (tempMap.containsKey(busArrival.routeDirection)) {
-                tempMap[busArrival.routeDirection]!!.add(busArrival)
+                val list = tempMap[busArrival.routeDirection]!!
+                if (!list.contains(busArrival)) list.add(busArrival)
             } else {
                 tempMap[busArrival.routeDirection] = mutableListOf(busArrival)
             }

@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.core.adapter
 
-import android.os.Build
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
@@ -59,7 +58,6 @@ import java.util.Calendar
  * @author Carl-Philipp Harmant
  * @version 1
  */
-// TODO to analyze and refactor
 class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder>() {
 
     private val util = Util
@@ -93,9 +91,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         val mapButton: Button = view.findViewById(R.id.view_map_button)
 
         init {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                this.mainLayout.background = ContextCompat.getDrawable(parent.context, R.drawable.any_selector)
-            }
+            this.mainLayout.background = ContextCompat.getDrawable(parent.context, R.drawable.any_selector)
             this.stationNameTextView.setLines(1)
             this.stationNameTextView.ellipsize = TextUtils.TruncateAt.END
         }
@@ -141,7 +137,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
             for ((key, value) in boundMap) {
 
                 // Build data for button outside of the loop
-                val (_, _, _, stopId, _, routeId, boundTitle) = value[0]
+                val (_, _, _, stopId, _, routeId, boundTitle) = value.iterator().next()//value[0]
                 val busDirectionEnum: BusDirection = BusDirection.fromString(boundTitle)
                 val busDetails = BusDetailsDTO(
                     routeId,
@@ -152,6 +148,8 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
                     stopName
                 )
                 busDetailsDTOs.add(busDetails)
+
+                // FIXME it seems to produce double arrival time on the screen
 
                 // Build UI
                 val containParams = layoutUtil.getInsideParams(newLine, i == boundMap.size - 1)
