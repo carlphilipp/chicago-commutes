@@ -17,13 +17,11 @@
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:paddingBottom="14dp"
     android:paddingEnd="@dimen/activity_train_line_padding_right"
-    android:paddingLeft="16dp"
-    android:paddingRight="@dimen/activity_train_line_padding_right"
     android:paddingStart="16dp"
     android:paddingTop="14dp">
 
@@ -33,7 +31,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/grey_M_B"
         android:textSize="15sp"
-        android:textStyle="bold"/>
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/description"
@@ -41,7 +39,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/grey_M_B"
         android:textSize="15sp"
-        android:textStyle="normal"/>
+        android:textStyle="normal" />
 
     <TextView
         android:id="@+id/impact"
@@ -49,7 +47,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/grey_M_B"
         android:textSize="15sp"
-        android:textStyle="italic"/>
+        android:textStyle="italic" />
 
     <TextView
         android:id="@+id/start"

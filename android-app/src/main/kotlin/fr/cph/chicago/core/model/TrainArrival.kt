@@ -22,7 +22,6 @@ package fr.cph.chicago.core.model
 import android.os.Parcel
 import android.os.Parcelable
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import java.io.Serializable
 
 /**
  * Train Arrival entity

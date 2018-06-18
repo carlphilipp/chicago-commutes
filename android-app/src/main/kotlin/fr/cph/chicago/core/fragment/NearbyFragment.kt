@@ -268,7 +268,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
             util.showSnackBar(mainActivity, R.string.message_cant_find_location, Snackbar.LENGTH_LONG)
         }
 
-        val finalPosition = if (chicago == null) position else chicago
+        val finalPosition = chicago ?: position
         val trainStationAroundObservable = observableUtil.createTrainStationAroundObservable(finalPosition)
         val busStopsAroundObservable = observableUtil.createBusStopsAroundObservable(finalPosition)
         val bikeStationsObservable = observableUtil.createBikeStationAroundObservable(finalPosition, bikeStations)
@@ -284,7 +284,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
         private val TAG = NearbyFragment::class.java.simpleName
 
         fun newInstance(sectionNumber: Int): NearbyFragment {
-            return Fragment.Companion.fragmentWithBundle(NearbyFragment(), sectionNumber) as NearbyFragment
+            return Fragment.fragmentWithBundle(NearbyFragment(), sectionNumber) as NearbyFragment
         }
     }
 }

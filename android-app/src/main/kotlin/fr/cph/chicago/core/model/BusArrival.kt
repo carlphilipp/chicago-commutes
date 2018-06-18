@@ -54,15 +54,15 @@ data class BusArrival(
         routeDirection = source.readString(),
         busDestination = source.readString(),
         predictionTime = Date(source.readLong()),
-        isDelay = source.readString().toBoolean())
+        isDelay = source.readString()!!.toBoolean())
 
     val timeLeft: String
         get() {
-            if (StringUtils.EMPTY == errorMessage) {
+            return if (StringUtils.EMPTY == errorMessage) {
                 val time = predictionTime.time - timeStamp.time
-                return String.format(Locale.ENGLISH, "%d min", TimeUnit.MILLISECONDS.toMinutes(time))
+                String.format(Locale.ENGLISH, "%d min", TimeUnit.MILLISECONDS.toMinutes(time))
             } else {
-                return NO_SERVICE
+                NO_SERVICE
             }
         }
 

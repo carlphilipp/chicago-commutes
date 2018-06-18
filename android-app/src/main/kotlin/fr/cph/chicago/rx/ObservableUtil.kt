@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.rx
 
-import android.app.Application
 import android.util.Log
 import android.util.SparseArray
 import fr.cph.chicago.core.App

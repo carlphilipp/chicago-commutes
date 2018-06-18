@@ -16,8 +16,7 @@
   limitations under the License.
 -->
 
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -52,22 +51,20 @@
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp"
                     android:paddingTop="16dp"
-                    android:tint="@color/grey_5"/>
+                    android:tint="@color/grey_5" />
 
                 <TextView
                     android:id="@+id/favorites_station_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_toEndOf="@+id/favorites_icon"
-                    android:layout_toLeftOf="@+id/last_update"
-                    android:layout_toRightOf="@+id/favorites_icon"
                     android:layout_toStartOf="@+id/last_update"
                     android:paddingBottom="16dp"
                     android:paddingTop="16dp"
                     android:text="@string/station_name"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="@color/black"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/last_update"
@@ -75,28 +72,27 @@
                     android:layout_height="wrap_content"
                     android:layout_alignBaseline="@+id/favorites_station_name"
                     android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
                     android:paddingLeft="16dp"
-                    android:paddingRight="16dp"/>
+                    android:paddingRight="16dp" />
             </RelativeLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginBottom="8dp"
-                android:background="?android:attr/listDivider"/>
+                android:background="?android:attr/listDivider" />
 
             <LinearLayout
                 android:id="@+id/favorites_arrival_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"/>
+                android:orientation="vertical" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="8dp"
-                android:background="?android:attr/listDivider"/>
+                android:background="?android:attr/listDivider" />
 
             <RelativeLayout
                 android:id="@+id/favorites_buttons"
@@ -109,14 +105,13 @@
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toLeftOf="@+id/view_map_button"
                     android:layout_toStartOf="@+id/view_map_button"
                     android:paddingBottom="16dp"
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp"
                     android:paddingTop="16dp"
                     android:text="@string/favorites_detail"
-                    android:theme="@style/MyButton"/>
+                    android:theme="@style/MyButton" />
 
                 <Button
                     android:id="@+id/view_map_button"
@@ -124,13 +119,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
                     android:paddingBottom="16dp"
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp"
                     android:paddingTop="16dp"
                     android:text="@string/favorites_view_trains"
-                    android:theme="@style/MyButton"/>
+                    android:theme="@style/MyButton" />
             </RelativeLayout>
         </LinearLayout>
     </android.support.v7.widget.CardView>

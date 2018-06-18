@@ -51,8 +51,8 @@ data class TrainEta(
         destName = source.readString(),
         predictionDate = Date(source.readLong()),
         arrivalDepartureDate = Date(source.readLong()),
-        isApp = source.readString().toBoolean(),
-        isDly = source.readString().toBoolean()
+        isApp = source.readString()!!.toBoolean(),
+        isDly = source.readString()!!.toBoolean()
     )
 
     private val timeLeft: String

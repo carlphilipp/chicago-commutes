@@ -44,7 +44,7 @@ data class Stop(
         description = source.readString(),
         direction = TrainDirection.fromString(source.readString()),
         position = source.readParcelable<Position>(Position::class.java.classLoader),
-        ada = source.readString().toBoolean(),
+        ada = source.readString()!!.toBoolean(),
         lines = source.createStringArrayList().map { TrainLine.fromXmlString(it) }.toSet()
     )
 

@@ -19,12 +19,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingBottom="4dp"
     android:paddingEnd="@dimen/activity_train_line_padding_right"
-    android:paddingLeft="16dp"
-    android:paddingRight="@dimen/activity_train_line_padding_right"
     android:paddingStart="16dp"
-    android:paddingTop="4dp"
-    android:paddingBottom="4dp">
+    android:paddingTop="4dp">
 
     <LinearLayout
         android:id="@+id/station_color_value"
@@ -40,11 +38,8 @@
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
         android:layout_toEndOf="@+id/station_color_value"
-        android:layout_toRightOf="@+id/station_color_value"
         android:orientation="vertical"
         android:paddingEnd="@dimen/activity_station_stops_0dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="@dimen/activity_station_stops_0dp"
         android:paddingStart="16dp">
 
         <TextView
@@ -70,23 +65,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toEndOf="@+id/text_content"
-        android:layout_toRightOf="@+id/text_content">
+        android:layout_toEndOf="@+id/text_content">
 
         <ImageView
             android:id="@+id/alert_warning"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/grey_M_B"
-            android:textIsSelectable="false"
-            android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_centerInParent="true"
+            android:contentDescription="@string/cta_alert"
             android:src="@drawable/ic_action_alert_warning"
+            android:textColor="@color/grey_M_B"
+            android:textIsSelectable="false"
             android:tint="@color/red"
-            android:visibility="invisible"
-            android:contentDescription="@string/cta_alert" />
-
+            android:visibility="invisible" />
     </RelativeLayout>
 
 </RelativeLayout>

@@ -66,7 +66,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
             .subscribe(
                 { result ->
                     val busArrivalRouteDTO = BusArrivalRouteDTO(BusArrivalRouteDTO.busComparator)
-                    result.forEach({ busArrivalRouteDTO.addBusArrival(it) })
+                    result.forEach { busArrivalRouteDTO.addBusArrival(it) }
                     nearbyFragment.slidingUpAdapter.addBusArrival(busArrivalRouteDTO)
                 }
             ) { onError -> Log.e(TAG, onError.message, onError) }

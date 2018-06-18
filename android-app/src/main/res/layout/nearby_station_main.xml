@@ -22,8 +22,6 @@
     android:background="@drawable/any_selector"
     android:paddingBottom="@dimen/activity_train_line_padding_bottom"
     android:paddingEnd="@dimen/activity_train_line_padding_right"
-    android:paddingLeft="@dimen/activity_train_line_padding_left"
-    android:paddingRight="@dimen/activity_train_line_padding_right"
     android:paddingStart="@dimen/activity_train_line_padding_left"
     android:paddingTop="@dimen/activity_train_line_padding_top">
 
@@ -48,11 +46,8 @@
             android:layout_alignBottom="@+id/icon"
             android:layout_alignParentTop="true"
             android:layout_toEndOf="@+id/icon"
-            android:layout_toRightOf="@+id/icon"
             android:gravity="center"
             android:paddingEnd="@dimen/activity_train_line_padding_left"
-            android:paddingLeft="@dimen/activity_train_line_padding_left"
-            android:paddingRight="@dimen/activity_train_line_padding_right"
             android:paddingStart="@dimen/activity_train_line_padding_right"
             android:textColor="@color/black"
             android:textIsSelectable="false"

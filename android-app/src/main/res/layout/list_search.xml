@@ -41,15 +41,11 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/icon"
         android:layout_toEndOf="@+id/icon"
-        android:layout_toLeftOf="@+id/station_color"
-        android:layout_toRightOf="@+id/icon"
         android:layout_toStartOf="@+id/station_color"
         android:ellipsize="end"
-        android:paddingEnd="@dimen/activity_station_stops_0dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="@dimen/activity_station_stops_0dp"
-        android:paddingStart="16dp"
         android:maxLines="1"
+        android:paddingEnd="@dimen/activity_station_stops_0dp"
+        android:paddingStart="16dp"
         android:textColor="@color/black"
         android:textIsSelectable="false" />
 
@@ -58,7 +54,6 @@
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:orientation="horizontal" />
 
@@ -67,10 +62,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/icon"
-        android:paddingLeft="15dp"
-        android:paddingStart="15dp"
-        android:paddingRight="@dimen/activity_station_stops_0dp"
         android:paddingEnd="@dimen/activity_station_stops_0dp"
+        android:paddingStart="15dp"
         android:paddingTop="5dp"
         android:text="@string/progress_message"
         android:textColor="@color/black"

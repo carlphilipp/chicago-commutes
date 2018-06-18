@@ -24,8 +24,6 @@ import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import android.os.Build
-import android.os.Bundle
-import android.support.v4.app.FragmentActivity
 import android.support.v7.widget.Toolbar
 import android.view.ViewGroup
 import android.widget.LinearLayout
@@ -48,16 +46,16 @@ import pub.devrel.easypermissions.EasyPermissions
 abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), EasyPermissions.PermissionCallbacks, GoogleMap.OnCameraIdleListener, OnMapReadyCallback {
 
     @BindView(android.R.id.content)
-    lateinit var viewGroup: ViewGroup
+    protected lateinit var viewGroup: ViewGroup
     @BindView(R.id.map_container)
-    lateinit var layout: LinearLayout
+    protected lateinit var layout: LinearLayout
     @BindView(R.id.toolbar)
-    lateinit var toolbar: Toolbar
+    protected lateinit var toolbar: Toolbar
 
     @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
     lateinit var arrowBackWhite: Drawable
 
-    lateinit var selectedMarker: Marker
+    protected lateinit var selectedMarker: Marker
     protected lateinit var googleMap: GoogleMap
     protected var refreshingInfoWindow = false
 

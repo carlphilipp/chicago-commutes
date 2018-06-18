@@ -20,9 +20,7 @@
 package fr.cph.chicago.core.activity
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.security.NetworkSecurityPolicy
 import android.util.Log
 import butterknife.BindString
 import fr.cph.chicago.R

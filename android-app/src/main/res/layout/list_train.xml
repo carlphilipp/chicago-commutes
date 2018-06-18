@@ -17,39 +17,35 @@
 -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="?android:attr/selectableItemBackground"
-                android:paddingBottom="14dp"
-                android:paddingEnd="16dp"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:paddingStart="16dp"
-                android:paddingTop="14dp">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/selectableItemBackground"
+    android:paddingBottom="14dp"
+    android:paddingEnd="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingStart="16dp"
+    android:paddingTop="14dp">
 
     <TextView
         android:id="@+id/station_name_value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/station_color"
         android:layout_toStartOf="@+id/station_color"
         android:ellipsize="end"
         android:maxLines="1"
         android:textColor="@color/grey_M_B"
         android:textIsSelectable="false"
-        android:textSize="16sp"/>
+        android:textSize="16sp" />
 
     <LinearLayout
         android:id="@+id/station_color"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:orientation="horizontal">
-    </LinearLayout>
+        android:orientation="horizontal" />
 
 </RelativeLayout>

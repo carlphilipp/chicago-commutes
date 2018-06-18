@@ -44,10 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toEndOf="@+id/popup_train_map"
-            android:layout_toRightOf="@+id/popup_train_map"
             android:paddingEnd="@dimen/activity_station_stops_0dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="@dimen/activity_station_stops_0dp"
             android:paddingStart="10dp" />
     </RelativeLayout>
 

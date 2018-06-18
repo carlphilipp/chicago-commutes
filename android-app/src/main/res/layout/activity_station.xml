@@ -42,8 +42,6 @@
             android:background="@drawable/bg_selector"
             android:paddingBottom="@dimen/activity_train_line_padding_bottom"
             android:paddingEnd="@dimen/activity_train_line_padding_right"
-            android:paddingLeft="@dimen/activity_train_line_padding_left"
-            android:paddingRight="@dimen/activity_train_line_padding_right"
             android:paddingStart="@dimen/activity_train_line_padding_left"
             android:paddingTop="@dimen/activity_train_line_padding_top">
 
@@ -54,8 +52,6 @@
                 android:orientation="vertical"
                 android:paddingBottom="@dimen/activity_train_line_padding_bottom"
                 android:paddingEnd="@dimen/activity_train_line_padding_right"
-                android:paddingLeft="@dimen/activity_train_line_padding_left"
-                android:paddingRight="@dimen/activity_train_line_padding_right"
                 android:paddingStart="@dimen/activity_train_line_padding_left"
                 android:paddingTop="@dimen/activity_train_line_padding_top">
 
@@ -83,7 +79,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentBottom="true"
-                            android:layout_marginLeft="4dp"
                             android:layout_marginStart="4dp"
                             android:textColor="@color/white" />
                     </RelativeLayout>

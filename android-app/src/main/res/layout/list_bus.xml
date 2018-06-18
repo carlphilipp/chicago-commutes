@@ -43,7 +43,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:textColor="@color/black"
             android:textIsSelectable="false" />
     </RelativeLayout>
@@ -60,8 +59,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingEnd="@dimen/activity_station_stops_0dp"
-            android:paddingLeft="15dp"
-            android:paddingRight="@dimen/activity_station_stops_0dp"
             android:paddingStart="15dp"
             android:paddingTop="5dp"
             android:text="@string/progress_message"

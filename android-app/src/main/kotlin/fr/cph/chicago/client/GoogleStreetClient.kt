@@ -60,7 +60,7 @@ object GoogleStreetClient {
      * @return a drawable map
      */
     private fun connectUrl(address: String): Drawable {
-        Log.v(TAG, "Address: " + address)
+        Log.v(TAG, "Address: $address")
         var inputStream: InputStream? = null
         return try {
             inputStream = URL(address).content as InputStream

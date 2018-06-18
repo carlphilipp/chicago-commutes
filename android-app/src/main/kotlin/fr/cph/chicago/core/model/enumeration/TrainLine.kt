@@ -65,7 +65,7 @@ enum class TrainLine constructor(private val text: String, private val fullText:
         fun fromXmlString(text: String): TrainLine {
             return TrainLine.values()
                 .filter { trainLine -> text.equals(trainLine.text, ignoreCase = true) }
-                .getOrElse(0, { NA })
+                .getOrElse(0) { NA }
         }
 
         /**
@@ -77,7 +77,7 @@ enum class TrainLine constructor(private val text: String, private val fullText:
         fun fromString(text: String): TrainLine {
             return TrainLine.values()
                 .filter { trainLine -> trainLine.name.equals(text, ignoreCase = true) }
-                .getOrElse(0, { NA })
+                .getOrElse(0) { NA }
         }
 
         fun size(): Int {

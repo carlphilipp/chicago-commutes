@@ -41,7 +41,6 @@ import io.reactivex.disposables.Disposable
 
 class BusDirectionObserver(private val screenWidth: Int, private val parent: ViewGroup, private val convertView: View, private val busRoute: BusRoute) : Observer<BusDirections> {
 
-    private val TAG = BusDirectionObserver::class.java.simpleName
     private val util = Util
 
     override fun onSubscribe(d: Disposable) {}
@@ -101,5 +100,9 @@ class BusDirectionObserver(private val screenWidth: Int, private val parent: Vie
 
     override fun onComplete() {
         convertView.visibility = LinearLayout.GONE
+    }
+
+    companion object {
+        private val TAG = BusDirectionObserver::class.java.simpleName
     }
 }

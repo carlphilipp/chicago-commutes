@@ -21,8 +21,6 @@
     android:layout_height="match_parent"
     android:paddingBottom="14dp"
     android:paddingEnd="@dimen/activity_train_line_padding_right"
-    android:paddingLeft="16dp"
-    android:paddingRight="@dimen/activity_train_line_padding_right"
     android:paddingStart="16dp"
     android:paddingTop="14dp">
 
@@ -40,10 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_toEndOf="@+id/station_color_value"
-        android:layout_toRightOf="@+id/station_color_value"
         android:paddingEnd="@dimen/activity_station_stops_0dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="@dimen/activity_station_stops_0dp"
         android:paddingStart="16dp"
         android:textColor="@color/grey_M_B"
         android:textIsSelectable="false"

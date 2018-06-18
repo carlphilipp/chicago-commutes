@@ -39,69 +39,14 @@ class AlertsRouteResponse(
         val headline: String,
         @JsonProperty("ShortDescription")
         val shortDescription: String,
-        @JsonProperty("FullDescription")
-        val fullDescription: FullDescription,
         @JsonProperty("SeverityScore")
         val severityScore: String,
-        @JsonProperty("SeverityColor")
-        val severityColor: String,
-        @JsonProperty("SeverityCSS")
-        val severityCSS: String,
         @JsonProperty("Impact")
         val impact: String,
         @JsonProperty("EventStart")
         val eventStart: String,
         @JsonProperty("EventEnd")
-        var eventEnd: String? = null,
-        @JsonProperty("TBD")
-        val tbd: String,
-        @JsonProperty("MajorAlert")
-        val majorAlert: String,
-        @JsonProperty("AlertURL")
-        val alertURL: AlertURL,
-        @JsonProperty("ImpactedService")
-        val impactedService: ImpactedService,
-        val ttim: String,
-        @JsonProperty("GUID")
-        val guid: String)
-
-    class AlertURL(
-        @JsonProperty("#cdata-section")
-        var cdataSection: String? = null
-    )
-
-    class FullDescription(
-        @JsonProperty("#cdata-section")
-        var cdataSection: String? = null
-    )
-
-    class ImpactedService(
-        @JsonProperty("Service")
-        var service: List<Service>? = null
-    )
-
-    class Service(
-        @JsonProperty("ServiceType")
-        var serviceType: String? = null,
-        @JsonProperty("ServiceTypeDescription")
-        var serviceTypeDescription: String? = null,
-        @JsonProperty("ServiceName")
-        var serviceName: String? = null,
-        @JsonProperty("ServiceId")
-        var serviceId: String? = null,
-        @JsonProperty("ServiceBackColor")
-        var serviceBackColor: String? = null,
-        @JsonProperty("ServiceTextColor")
-        var serviceTextColor: String? = null,
-        @JsonProperty("ServiceURL")
-        var serviceURL: ServiceURL? = null
-    )
-
-    class ServiceURL(
-        @JsonProperty("#cdata-section")
-        var cdataSection: String? = null
-    )
-
+        var eventEnd: String? = null)
 }
 
 data class AlertsRoutesResponse(@JsonProperty("CTARoutes") val ctaRoutes: CTARoutes) {
@@ -127,8 +72,5 @@ data class AlertsRoutesResponse(@JsonProperty("CTARoutes") val ctaRoutes: CTARou
         @JsonProperty("RouteStatusColor")
         var routeStatusColor: String? = null)
 
-    class RouteURL(
-        @JsonProperty("#cdata-section")
-        var cdataSection: String? = null)
-
+    class RouteURL
 }

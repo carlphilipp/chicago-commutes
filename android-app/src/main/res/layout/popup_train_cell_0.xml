@@ -27,8 +27,6 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:paddingEnd="@dimen/activity_station_stops_0dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="@dimen/activity_station_stops_0dp"
         android:paddingStart="10dp" />
 
 </RelativeLayout>

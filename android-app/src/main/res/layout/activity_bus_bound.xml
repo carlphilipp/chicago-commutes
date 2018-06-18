@@ -60,10 +60,9 @@
             android:id="@+id/bus_filter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="text"
             android:hint="@string/bus_fragment_filter"
             android:paddingEnd="@dimen/activity_train_line_padding_right"
-            android:paddingLeft="16dp"
-            android:paddingRight="@dimen/activity_train_line_padding_right"
             android:paddingStart="16dp">
         </EditText>
 

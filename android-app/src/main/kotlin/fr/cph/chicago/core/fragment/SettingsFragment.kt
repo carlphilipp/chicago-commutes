@@ -112,7 +112,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     companion object {
 
         fun newInstance(sectionNumber: Int): SettingsFragment {
-            return Fragment.Companion.fragmentWithBundle(SettingsFragment(), sectionNumber) as SettingsFragment
+            return Fragment.fragmentWithBundle(SettingsFragment(), sectionNumber) as SettingsFragment
         }
     }
 }

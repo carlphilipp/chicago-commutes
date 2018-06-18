@@ -35,10 +35,10 @@
         <item name="color">@android:color/white</item>
     </style>
 
-    <style name="popupAnimation" parent="android:Animation">
+<!--    <style name="popupAnimation" parent="android:Animation">
         <item name="android:windowEnterAnimation">@anim/popup_on</item>
         <item name="android:windowExitAnimation">@anim/popup_off</item>
-    </style>
+    </style>-->
 
     <style name="MyButton" parent="Theme.AppCompat.Light">
         <item name="colorControlHighlight">@color/colorTextPrimary</item>
