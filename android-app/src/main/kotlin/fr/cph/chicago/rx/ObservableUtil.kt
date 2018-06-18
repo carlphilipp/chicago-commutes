@@ -158,7 +158,7 @@ object ObservableUtil {
     }
 
     fun createTrainPatternObservable(line: String): Observable<List<Position>> {
-        return createObservableFromCallable(Callable { trainService.readPattern(TrainLine.fromXmlString(line)) })
+        return createObservableFromCallable(Callable { trainService.readPatterns(TrainLine.fromXmlString(line)) })
             .onErrorReturn(handleError())
     }
 

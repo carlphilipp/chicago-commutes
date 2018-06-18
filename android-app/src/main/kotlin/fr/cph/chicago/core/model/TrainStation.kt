@@ -35,7 +35,7 @@ import java.util.TreeSet
 class TrainStation(
     id: Int,
     name: String,
-    var stops: MutableList<Stop>) : Comparable<TrainStation>, Parcelable, Station(id, name) {
+    var stops: List<Stop>) : Comparable<TrainStation>, Parcelable, Station(id, name) {
 
     private constructor(source: Parcel) : this(
         id = source.readInt(),
@@ -49,7 +49,7 @@ class TrainStation(
                 .fold(TreeSet()) { accumulator, item -> accumulator.addAll(item); accumulator }
         }
 
-    val stopByLines: Map<TrainLine, MutableList<Stop>>
+    val stopByLines: Map<TrainLine, List<Stop>>
         get() {
             val result = TreeMap<TrainLine, MutableList<Stop>>()
             for (stop in stops) {

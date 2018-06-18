@@ -28,11 +28,11 @@ import fr.cph.chicago.client.CtaRequestType.TRAIN_FOLLOW
 import fr.cph.chicago.client.CtaRequestType.TRAIN_LOCATION
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.Stop
 import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.core.model.TrainEta
+import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.entity.TrainArrivalResponse
 import fr.cph.chicago.entity.TrainLocationResponse
@@ -164,8 +164,18 @@ object TrainService {
         return trainRepository.getStation(id)
     }
 
-    fun readPattern(line: TrainLine): List<Position> {
-        return trainRepository.readPattern(line)
+    fun readPatterns(line: TrainLine): List<Position> {
+        return when (line) {
+            TrainLine.BLUE -> trainRepository.blueLinePatterns
+            TrainLine.BROWN -> trainRepository.brownLinePatterns
+            TrainLine.GREEN -> trainRepository.greenLinePatterns
+            TrainLine.ORANGE -> trainRepository.orangeLinePatterns
+            TrainLine.PINK -> trainRepository.pinkLinePatterns
+            TrainLine.PURPLE -> trainRepository.purpleLinePatterns
+            TrainLine.RED -> trainRepository.redLinePatterns
+            TrainLine.YELLOW -> trainRepository.yellowLinePatterns
+            TrainLine.NA -> throw RuntimeException("NA not available")
+        }
     }
 
     fun readNearbyStation(position: Position): List<TrainStation> {
@@ -211,7 +221,8 @@ object TrainService {
                 else
                     eta.destNm
 
-            val trainEta = TrainEta(trainStation = station,
+            val trainEta = TrainEta(
+                trainStation = station,
                 stop = stop,
                 routeName = routeName,
                 destName = destinationName,
@@ -235,7 +246,7 @@ object TrainService {
         return trainRepository.getStop(id)
     }
 
-    private fun getAllStations(): MutableMap<TrainLine, MutableList<TrainStation>> {
+    private fun getAllStations(): Map<TrainLine, List<TrainStation>> {
         return trainRepository.allStations
     }
 }

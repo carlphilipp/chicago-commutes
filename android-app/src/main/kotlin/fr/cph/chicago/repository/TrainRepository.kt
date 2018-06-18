@@ -57,7 +57,7 @@ object TrainRepository {
         parser = CsvParser(settings)
     }
 
-    private val inMemoryData: Triple<SparseArray<TrainStation>, SparseArray<Stop>, TreeMap<TrainLine, MutableList<TrainStation>>> by lazy {
+    private val inMemoryData: Triple<SparseArray<TrainStation>, SparseArray<Stop>, Map<TrainLine, List<TrainStation>>> by lazy {
         loadInMemoryStationsAndStops()
     }
 
@@ -72,13 +72,45 @@ object TrainRepository {
      *
      * @return a map containing all the stations ordered line
      */
-    val allStations: MutableMap<TrainLine, MutableList<TrainStation>>
+    val allStations: Map<TrainLine, List<TrainStation>>
         get() = inMemoryData.third
 
-    private fun loadInMemoryStationsAndStops(): Triple<SparseArray<TrainStation>, SparseArray<Stop>, TreeMap<TrainLine, MutableList<TrainStation>>> {
-        val stations: SparseArray<TrainStation> = SparseArray()
-        val stops: SparseArray<Stop> = SparseArray()
-        val stationsOrderByLineMap: TreeMap<TrainLine, MutableList<TrainStation>> = TreeMap()
+    val blueLinePatterns: List<Position> by lazy {
+        readPattern(TrainLine.BLUE)
+    }
+
+    val brownLinePatterns: List<Position> by lazy {
+        readPattern(TrainLine.BROWN)
+    }
+
+    val greenLinePatterns: List<Position> by lazy {
+        readPattern(TrainLine.GREEN)
+    }
+
+    val orangeLinePatterns: List<Position> by lazy {
+        readPattern(TrainLine.ORANGE)
+    }
+
+    val pinkLinePatterns: List<Position> by lazy {
+        readPattern(TrainLine.PINK)
+    }
+
+    val purpleLinePatterns: List<Position> by lazy {
+        readPattern(TrainLine.PURPLE)
+    }
+
+    val redLinePatterns: List<Position> by lazy {
+        readPattern(TrainLine.RED)
+    }
+
+    val yellowLinePatterns: List<Position> by lazy {
+        readPattern(TrainLine.YELLOW)
+    }
+
+    private fun loadInMemoryStationsAndStops(): Triple<SparseArray<TrainStation>, SparseArray<Stop>, Map<TrainLine, List<TrainStation>>> {
+        val stations = SparseArray<TrainStation>()
+        val stops = SparseArray<Stop>()
+        var stationsOrderByLine = TreeMap<TrainLine, List<TrainStation>>()
 
         var inputStreamReader: InputStreamReader? = null
         try {
@@ -143,17 +175,17 @@ object TrainRepository {
                     station.stops = mutableListOf(stop)
                     stations.append(parentStopId, station)
                 } else {
-                    currentStation.stops.add(stop)
+                    (currentStation.stops as MutableList).add(stop)
                 }
                 Log.d(TAG, "Load $station")
             }
-            stationsOrderByLineMap.putAll(sortStation(stations))
+            stationsOrderByLine = sortStation(stations)
         } catch (e: IOException) {
             Log.e(TAG, e.message, e)
         } finally {
             Util.closeQuietly(inputStreamReader)
         }
-        return Triple(stations, stops, stationsOrderByLineMap)
+        return Triple(stations, stops, stationsOrderByLine)
     }
 
     /**
@@ -201,7 +233,7 @@ object TrainRepository {
                         val trainLongitude = stopPosition.longitude
                         trainLatitude in latMin..latMax && trainLongitude <= lonMax && trainLongitude >= lonMin
                     }
-                    .getOrElse(0, { Position() })
+                    .getOrElse(0) { Position() }
                     .also { pos ->
                         if (pos.latitude != 0.0 && pos.longitude != 0.0) {
                             nearByStations.add(it)
@@ -211,12 +243,11 @@ object TrainRepository {
         return nearByStations
     }
 
-    fun readPattern(line: TrainLine): List<Position> {
+    private fun readPattern(line: TrainLine): List<Position> {
         var inputStreamReader: InputStreamReader? = null
         return try {
             inputStreamReader = InputStreamReader(App.instance.resources.assets.open("train_pattern/" + line.toTextString() + "_pattern.csv"))
-            val allRows = parser.parseAll(inputStreamReader)
-            allRows
+            parser.parseAll(inputStreamReader)
                 .map { row ->
                     val longitude = row[0].toDouble()
                     val latitude = row[1].toDouble()
@@ -230,20 +261,17 @@ object TrainRepository {
         }
     }
 
-    private fun sortStation(trainStationNotSorted: SparseArray<TrainStation>): TreeMap<TrainLine, MutableList<TrainStation>> {
-        val result = TreeMap<TrainLine, MutableList<TrainStation>>()
+    private fun sortStation(trainStationNotSorted: SparseArray<TrainStation>): TreeMap<TrainLine, List<TrainStation>> {
+        val result = TreeMap<TrainLine, List<TrainStation>>()
         for (i in 0 until trainStationNotSorted.size()) {
             val station = trainStationNotSorted.valueAt(i)
             val trainLines = station.lines
             for (trainLine in trainLines) {
                 if (result.containsKey(trainLine)) {
-                    val stations = result[trainLine]!!
-                    stations.add(station)
-                    stations.sort()
+                    (result[trainLine]!! as MutableList).add(station)
+                    (result[trainLine]!! as MutableList).sort()
                 } else {
-                    val stations = mutableListOf<TrainStation>()
-                    result[trainLine] = stations
-                    stations.add(station)
+                    result[trainLine] = mutableListOf(station)
                 }
             }
         }
