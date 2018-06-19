@@ -136,7 +136,7 @@ object TrainRepository {
             inputStreamReader = InputStreamReader(App.instance.resources.assets.open(TRAIN_FILE_PATH))
             val allRows = parser.parseAll(inputStreamReader)
             for (i in 1 until allRows.size) {
-                val row = allRows[i]
+                val row: Array<String> = allRows[i]
                 val stopId = row[0].toInt() // STOP_ID
                 val direction = TrainDirection.fromString(row[1]) // DIRECTION_ID
                 val stopName = row[2] // STOP_NAME
@@ -144,7 +144,6 @@ object TrainRepository {
                 // String stationDescription = row[4];//STATION_DESCRIPTIVE_NAME
                 val parentStopId = row[5].toInt()// MAP_ID (old PARENT_STOP_ID)
                 val ada = row[6].toBoolean()// ADA
-                val lines = mutableSetOf<TrainLine>()
                 val red = row[7].toBoolean()// Red
                 val blue = row[8].toBoolean()// Blue
                 val green = row[9].toBoolean()// G
@@ -154,38 +153,28 @@ object TrainRepository {
                 val yellow = row[13].toBoolean()// Y
                 val pink = row[14].toBoolean()// Pink
                 val orange = row[15].toBoolean()// Org
-                if (red) {
-                    lines.add(TrainLine.RED)
-                }
-                if (blue) {
-                    lines.add(TrainLine.BLUE)
-                }
-                if (brown) {
-                    lines.add(TrainLine.BROWN)
-                }
-                if (green) {
-                    lines.add(TrainLine.GREEN)
-                }
-                if (purple || purpleExp) {
-                    // Handle both purple and purple express
-                    lines.add(TrainLine.PURPLE)
-                }
-                if (yellow) {
-                    lines.add(TrainLine.YELLOW)
-                }
-                if (pink) {
-                    lines.add(TrainLine.PINK)
-                }
-                if (orange) {
-                    lines.add(TrainLine.ORANGE)
-                }
+
+                val lines = mutableSetOf<TrainLine>()
+                if (red) lines.add(TrainLine.RED)
+                if (blue) lines.add(TrainLine.BLUE)
+                if (brown) lines.add(TrainLine.BROWN)
+                if (green) lines.add(TrainLine.GREEN)
+                if (purple || purpleExp) lines.add(TrainLine.PURPLE)
+                if (yellow) lines.add(TrainLine.YELLOW)
+                if (pink) lines.add(TrainLine.PINK)
+                if (orange) lines.add(TrainLine.ORANGE)
+
                 val location = row[16]// Location
                 val locationTrunk = location.substring(1)
-                val coordinates = locationTrunk.substring(0, locationTrunk.length - 1).split(", ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+                val coordinates = locationTrunk
+                    .substring(0, locationTrunk.length - 1)
+                    .split(", ".toRegex())
+                    .dropLastWhile { it.isEmpty() }
+                    .toTypedArray()
                 val latitude = coordinates[0].toDouble()
                 val longitude = coordinates[1].toDouble()
 
-                val station = TrainStation(parentStopId, stationName, mutableListOf())
+                val station = TrainStation(parentStopId, stationName, listOf())
                 val stop = Stop(stopId, stopName, direction, Position(latitude, longitude), ada, lines)
                 stops.append(stopId, stop)
 
@@ -226,19 +215,19 @@ object TrainRepository {
     }
 
     private fun sortStation(trainStationNotSorted: SparseArray<TrainStation>): TreeMap<TrainLine, List<TrainStation>> {
-        val result = TreeMap<TrainLine, List<TrainStation>>()
-        for (i in 0 until trainStationNotSorted.size()) {
-            val station = trainStationNotSorted.valueAt(i)
-            val trainLines = station.lines
-            for (trainLine in trainLines) {
-                if (result.containsKey(trainLine)) {
-                    (result[trainLine]!! as MutableList).add(station)
-                    (result[trainLine]!! as MutableList).sort()
-                } else {
-                    result[trainLine] = mutableListOf(station)
+        return (0 until trainStationNotSorted.size())
+            .map { trainStationNotSorted.valueAt(it) }
+            .fold(TreeMap()) { accumulator, station ->
+                val trainLines = station.lines
+                for (trainLine in trainLines) {
+                    if (accumulator.containsKey(trainLine)) {
+                        (accumulator[trainLine]!! as MutableList).add(station)
+                        (accumulator[trainLine]!! as MutableList).sort()
+                    } else {
+                        accumulator[trainLine] = mutableListOf(station)
+                    }
                 }
+                accumulator
             }
-        }
-        return result
     }
 }
