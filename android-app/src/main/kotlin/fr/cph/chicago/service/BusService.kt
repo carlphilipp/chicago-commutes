@@ -242,7 +242,8 @@ object BusService {
                 if (accumulator.containsKey(busArrival.busDestination)) {
                     (accumulator[busArrival.busDestination] as MutableList).add(busArrival)
                 } else {
-                    accumulator[busArrival.busDestination] = mutableListOf(busArrival)
+                    //accumulator[busArrival.busDestination] = mutableListOf(busArrival)
+                    accumulator.put(busArrival.busDestination, mutableListOf(busArrival))
                 }
                 accumulator
             }

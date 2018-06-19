@@ -215,7 +215,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
         } else {
             val key1 = busArrivals.keys.iterator().next()
             destinationTextView.text = key1
-            arrivalsTextView.text = busArrivals[key1]!!.joinToString(separator = " ") { util.formatArrivalTime(it) }
+            arrivalsTextView.text = busArrivals.get(key1)!!.joinToString(separator = " ") { util.formatArrivalTime(it) }
 
             var idBellowTitle = destinationTextView.id
             var idBellowArrival = arrivalsTextView.id

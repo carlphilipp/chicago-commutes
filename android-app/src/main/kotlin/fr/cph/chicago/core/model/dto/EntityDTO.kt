@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.model.dto
 
+import android.util.ArrayMap
 import android.util.SparseArray
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusArrival
@@ -55,7 +56,40 @@ data class BusDetailsDTO(
 )
 
 // destination -> list of bus arrival
-class BusArrivalStopDTO : HashMap<String, List<BusArrival>>()
+class BusArrivalStopDTO(private val map: ArrayMap<String, List<BusArrival>> = ArrayMap()) : Map<String, List<BusArrival>> {
+
+    override val entries: Set<Map.Entry<String, List<BusArrival>>>
+        get() = map.entries
+
+    override val keys: Set<String>
+        get() = map.keys
+
+    override val size: Int
+        get() = map.size
+
+    override val values: Collection<List<BusArrival>>
+        get() = map.values
+
+    override fun containsKey(key: String): Boolean {
+        return map.containsKey(key)
+    }
+
+    override fun containsValue(value: List<BusArrival>): Boolean {
+        return map.containsValue(value)
+    }
+
+    override fun get(key: String): List<BusArrival>? {
+        return map[key]
+    }
+
+    override fun isEmpty(): Boolean {
+        return map.isEmpty()
+    }
+
+    fun put(key: String, value: List<BusArrival>) {
+        map[key] = value
+    }
+}
 
 class BusArrivalStopMappedDTO : TreeMap<String, MutableMap<String, MutableList<BusArrival>>>() {
     // stop name => { bound => BusArrival }
