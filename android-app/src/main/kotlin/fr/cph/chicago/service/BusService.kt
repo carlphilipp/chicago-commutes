@@ -106,11 +106,11 @@ object BusService {
     fun loadBusDirections(busRouteId: String): BusDirections {
         val params = ArrayListValuedHashMap<String, String>(1, 1)
         params.put(App.instance.getString(R.string.request_rt), busRouteId)
-        val busDirections = BusDirections(busRouteId)
         val result = ctaClient.get(BUS_DIRECTION, params, BusDirectionResponse::class.java)
         if (result.bustimeResponse.directions == null) {
             throw CtaException(result)
         }
+        val busDirections = BusDirections(busRouteId)
         result
             .bustimeResponse
             .directions
@@ -242,7 +242,6 @@ object BusService {
                 if (accumulator.containsKey(busArrival.busDestination)) {
                     (accumulator[busArrival.busDestination] as MutableList).add(busArrival)
                 } else {
-                    //accumulator[busArrival.busDestination] = mutableListOf(busArrival)
                     accumulator.put(busArrival.busDestination, mutableListOf(busArrival))
                 }
                 accumulator
