@@ -78,7 +78,7 @@ class App : Application() {
         val busService = BusService
 
         fun checkTrainData(activity: Activity): Boolean {
-            if (trainService.getStationError()) {
+            if (trainService.getTrainStationError()) {
                 startErrorActivity(activity)
                 return false
             }

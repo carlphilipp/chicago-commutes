@@ -47,6 +47,8 @@ import java.util.Locale
 object TrainService {
 
     private val TAG = TrainService::class.java.simpleName
+    private const val DEFAULT_RANGE = 0.008
+
     private val trainRepository = TrainRepository
     private val preferencesService = PreferenceService
     private val ctaClient = CtaClient
@@ -152,11 +154,11 @@ object TrainService {
             .map { route -> Train(route.rn.toInt(), route.destNm, route.isApp.toBoolean(), Position(route.lat.toDouble(), route.lon.toDouble()), route.heading.toInt()) }
     }
 
-    fun setStationError(value: Boolean) {
+    fun setTrainStationError(value: Boolean) {
         trainRepository.error = value
     }
 
-    fun getStationError(): Boolean {
+    fun getTrainStationError(): Boolean {
         return trainRepository.error
     }
 
@@ -179,15 +181,31 @@ object TrainService {
     }
 
     fun readNearbyStation(position: Position): List<TrainStation> {
-        return trainRepository.readNearbyStation(position)
+        val latMax = position.latitude + DEFAULT_RANGE
+        val latMin = position.latitude - DEFAULT_RANGE
+        val lonMax = position.longitude + DEFAULT_RANGE
+        val lonMin = position.longitude - DEFAULT_RANGE
+
+        return (0 until trainRepository.stations.size())
+            .map { trainRepository.stations.valueAt(it) }
+            .filter {
+                it.stopsPosition.any { stopPosition ->
+                    val trainLatitude = stopPosition.latitude
+                    val trainLongitude = stopPosition.longitude
+                    trainLatitude in latMin..latMax && trainLongitude <= lonMax && trainLongitude >= lonMin
+                }
+            }
     }
 
     fun getStationsForLine(line: TrainLine): List<TrainStation> {
-        return trainRepository.allStations[line]!!
+        if (trainRepository.allStations.containsKey(line))
+            return trainRepository.allStations[line]!!
+        else
+            throw RuntimeException("$line not found")
     }
 
     fun searchStations(query: String): List<TrainStation> {
-        return getAllStations().entries
+        return trainRepository.allStations.entries
             .flatMap { mutableEntry -> mutableEntry.value }
             .filter { station -> StringUtils.containsIgnoreCase(station.name, query) }
             .distinct()
@@ -244,9 +262,5 @@ object TrainService {
 
     private fun getStop(id: Int): Stop {
         return trainRepository.getStop(id)
-    }
-
-    private fun getAllStations(): Map<TrainLine, List<TrainStation>> {
-        return trainRepository.allStations
     }
 }

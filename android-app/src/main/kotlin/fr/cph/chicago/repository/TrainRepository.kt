@@ -43,7 +43,6 @@ import java.util.TreeMap
 object TrainRepository {
 
     private val TAG = TrainRepository::class.java.simpleName
-    private const val DEFAULT_RANGE = 0.008
     // https://data.cityofchicago.org/Transportation/CTA-System-Information-List-of-L-Stops/8pix-ypme
     private const val TRAIN_FILE_PATH = "train_stops.csv"
 
@@ -105,6 +104,26 @@ object TrainRepository {
 
     val yellowLinePatterns: List<Position> by lazy {
         readPattern(TrainLine.YELLOW)
+    }
+
+    /**
+     * Get a train station
+     *
+     * @param id the id of the train station
+     * @return the train station
+     */
+    fun getStation(id: Int): TrainStation {
+        return stations.get(id) ?: TrainStation.buildEmptyStation()
+    }
+
+    /**
+     * Get a stop
+     *
+     * @param id the id of the stop
+     * @return a stop
+     */
+    fun getStop(id: Int): Stop {
+        return stops.get(id, Stop.buildEmptyStop())
     }
 
     private fun loadInMemoryStationsAndStops(): Triple<SparseArray<TrainStation>, SparseArray<Stop>, Map<TrainLine, List<TrainStation>>> {
@@ -186,61 +205,6 @@ object TrainRepository {
             Util.closeQuietly(inputStreamReader)
         }
         return Triple(stations, stops, stationsOrderByLine)
-    }
-
-    /**
-     * Get a train station
-     *
-     * @param id the id of the train station
-     * @return the train station
-     */
-    fun getStation(id: Int): TrainStation {
-        return stations.get(id) ?: TrainStation.buildEmptyStation()
-    }
-
-    /**
-     * Get a stop
-     *
-     * @param id the id of the stop
-     * @return a stop
-     */
-    fun getStop(id: Int): Stop {
-        return stops.get(id, Stop.buildEmptyStop())
-    }
-
-    /**
-     * Read near by train station
-     *
-     * @param position the position
-     * @return a list of train station
-     */
-    fun readNearbyStation(position: Position): List<TrainStation> {
-        val latitude = position.latitude
-        val longitude = position.longitude
-
-        val latMax = latitude + DEFAULT_RANGE
-        val latMin = latitude - DEFAULT_RANGE
-        val lonMax = longitude + DEFAULT_RANGE
-        val lonMin = longitude - DEFAULT_RANGE
-
-        val nearByStations = mutableListOf<TrainStation>()
-        (0 until stations.size())
-            .map { stations.valueAt(it) }
-            .forEach {
-                it.stopsPosition
-                    .filter { stopPosition ->
-                        val trainLatitude = stopPosition.latitude
-                        val trainLongitude = stopPosition.longitude
-                        trainLatitude in latMin..latMax && trainLongitude <= lonMax && trainLongitude >= lonMin
-                    }
-                    .getOrElse(0) { Position() }
-                    .also { pos ->
-                        if (pos.latitude != 0.0 && pos.longitude != 0.0) {
-                            nearByStations.add(it)
-                        }
-                    }
-            }
-        return nearByStations
     }
 
     private fun readPattern(line: TrainLine): List<Position> {

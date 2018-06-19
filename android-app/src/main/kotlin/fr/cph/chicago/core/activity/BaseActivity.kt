@@ -101,7 +101,7 @@ class BaseActivity : ButterKnifeActivity(R.layout.loading) {
         Observable.zip(trainLocalData, busLocalData, BiFunction { _: Any, _: Any -> true })
             .doOnComplete {
                 Observable.zip(trainOnlineFavorites, busOnlineFavorites, BiFunction { trainArrivalsDTO: TrainArrivalDTO, busArrivalsDTO: BusArrivalDTO ->
-                    trainService.setStationError(false)
+                    trainService.setTrainStationError(false)
                     busService.setBusRouteError(false)
                     (application as App).lastUpdate = Calendar.getInstance().time
                     FavoritesDTO(trainArrivalsDTO, busArrivalsDTO, false, listOf())
@@ -134,7 +134,7 @@ class BaseActivity : ButterKnifeActivity(R.layout.loading) {
 
     private fun startErrorActivity() {
         // Set BusArrivalError
-        trainService.setStationError(true)
+        trainService.setTrainStationError(true)
         busService.setBusRouteError(true)
 
         // Start error activity
