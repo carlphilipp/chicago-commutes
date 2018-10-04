@@ -85,7 +85,7 @@ object PreferenceRepository {
 
     fun getBikeFavorites(): List<String> {
         val sharedPref = getPrivatePreferences()
-        val setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_BIKE, LinkedHashSet())
+        val setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_BIKE, LinkedHashSet()) ?: setOf()
         Log.v(TAG, "Read bike favorites : $setPref")
         return setPref.sorted()
     }
@@ -122,7 +122,7 @@ object PreferenceRepository {
 
     fun getBusFavorites(): List<String> {
         val sharedPref = getPrivatePreferences()
-        val setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_BUS, LinkedHashSet())
+        val setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_BUS, LinkedHashSet()) ?: setOf()
         Log.v(TAG, "Read bus favorites : $setPref")
         return setPref.sortedWith(Comparator { str1, str2 ->
             val str1Decoded = util.decodeBusFavorite(str1).routeId
@@ -172,6 +172,7 @@ object PreferenceRepository {
     fun getTrainFavorites(): List<Int> {
         val sharedPref = getPrivatePreferences()
         val setPref = sharedPref.getStringSet(PREFERENCE_FAVORITES_TRAIN, LinkedHashSet())
+            ?: setOf()
         Log.v(TAG, "Read train favorites : $setPref")
         return setPref
             .map { it.toInt() }

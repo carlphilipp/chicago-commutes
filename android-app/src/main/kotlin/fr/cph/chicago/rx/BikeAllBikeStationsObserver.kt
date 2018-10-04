@@ -38,7 +38,7 @@ class BikeAllBikeStationsObserver(private val activity: BikeStationActivity, pri
             .also { station ->
                 if (station.name != "error") {
                     activity.refreshStation(station)
-                    activity.intent.extras.putParcelable(activity.getString(R.string.bundle_bike_station), station)
+                    activity.intent.extras?.putParcelable(activity.getString(R.string.bundle_bike_station), station)
                 } else {
                     Log.w(TAG, "Train station id [$bikeStationId] not found")
                 }

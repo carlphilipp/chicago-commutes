@@ -260,7 +260,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
     }
 
     private fun handleNearbyData(position: Position) {
-        val bikeStations = mainActivity.intent.extras.getParcelableArrayList<BikeStation>(bundleBikeStations)
+        val bikeStations = mainActivity.intent.extras?.getParcelableArrayList(bundleBikeStations) ?: listOf<BikeStation>()
         var chicago: Position? = null
         if (position.longitude == 0.0 && position.latitude == 0.0) {
             Log.w(TAG, "Could not get current user location")

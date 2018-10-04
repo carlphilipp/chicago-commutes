@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.activity
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.Drawable
@@ -106,6 +107,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
         super.onCreate(savedInstanceState)
     }
 
+    @SuppressLint("CheckResult")
     override fun create(savedInstanceState: Bundle?) {
         busRouteId = intent.getStringExtra(bundleBusRouteId)
         busRouteName = intent.getStringExtra(bundleBusRouteName)
@@ -167,10 +169,10 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
                 busBoundAdapter.updateBusStops(onNext)
                 busBoundAdapter.notifyDataSetChanged()
             }
-            ) { onError ->
+            , { onError ->
                 Log.e(TAG, onError.message, onError)
                 util.showOopsSomethingWentWrong(listView)
-            }
+            })
 
         // Preventing keyboard from moving background when showing up
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
@@ -217,10 +219,10 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        busRouteId = savedInstanceState.getString(bundleBusRouteId)
-        busRouteName = savedInstanceState.getString(bundleBusRouteName)
-        bound = savedInstanceState.getString(bundleBusBound)
-        boundTitle = savedInstanceState.getString(bundleBusBoundTitle)
+        busRouteId = savedInstanceState.getString(bundleBusRouteId) ?: ""
+        busRouteName = savedInstanceState.getString(bundleBusRouteName) ?: ""
+        bound = savedInstanceState.getString(bundleBusBound) ?: ""
+        boundTitle = savedInstanceState.getString(bundleBusBoundTitle) ?: ""
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {

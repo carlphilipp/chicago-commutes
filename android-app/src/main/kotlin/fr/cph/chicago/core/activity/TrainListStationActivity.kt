@@ -54,7 +54,8 @@ class TrainListStationActivity : ButterKnifeActivity(R.layout.activity_train_sta
 
     override fun create(savedInstanceState: Bundle?) {
         // Load data
-        lineParam = if (savedInstanceState != null) savedInstanceState.getString(bundleTrainLine) else intent.getStringExtra(bundleTrainLine)
+        lineParam = if (savedInstanceState != null) savedInstanceState.getString(bundleTrainLine)
+            ?: "" else intent.getStringExtra(bundleTrainLine)
 
         trainLine = TrainLine.fromString(lineParam)
         title = trainLine.toStringWithLine()
@@ -70,7 +71,7 @@ class TrainListStationActivity : ButterKnifeActivity(R.layout.activity_train_sta
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        lineParam = savedInstanceState.getString(bundleTrainLine)
+        lineParam = savedInstanceState.getString(bundleTrainLine) ?: ""
         trainLine = TrainLine.fromString(lineParam)
     }
 

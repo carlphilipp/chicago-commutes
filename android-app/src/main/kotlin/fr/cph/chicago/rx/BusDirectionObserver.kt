@@ -87,9 +87,7 @@ class BusDirectionObserver(private val screenWidth: Int, private val parent: Vie
         alertDialog.setOnCancelListener { _ -> convertView.visibility = LinearLayout.GONE }
         val dialog = alertDialog.create()
         dialog.show()
-        if (dialog.window != null) {
-            dialog.window.setLayout((screenWidth * 0.7).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
-        }
+        dialog.window?.setLayout((screenWidth * 0.7).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
     override fun onError(throwable: Throwable) {

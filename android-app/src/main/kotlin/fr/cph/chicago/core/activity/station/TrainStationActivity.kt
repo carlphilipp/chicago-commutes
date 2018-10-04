@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.activity.station
 
+import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
@@ -129,7 +130,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
 
     override fun create(savedInstanceState: Bundle?) {
         // Get train station id from bundle
-        stationId = intent.extras.getInt(bundleTrainStationId, 0)
+        stationId = intent.extras?.getInt(bundleTrainStationId, 0) ?: 0
         if (stationId != 0) {
             // Get trainStation
             trainStation = TrainService.getStation(stationId)
@@ -260,6 +261,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
         super.onSaveInstanceState(savedInstanceState)
     }
 
+    @SuppressLint("CheckResult")
     public override fun onDestroy() {
         super.onDestroy()
         trainArrivalObservable.unsubscribeOn(Schedulers.io())

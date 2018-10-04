@@ -45,14 +45,15 @@ data class TrainEta(
     private var isDly: Boolean) : Comparable<TrainEta>, Parcelable, Serializable {
 
     constructor(source: Parcel) : this(
-        trainStation = source.readParcelable<TrainStation>(TrainStation::class.java.classLoader),
-        stop = source.readParcelable<Stop>(Stop::class.java.classLoader),
-        routeName = TrainLine.fromXmlString(source.readString()),
-        destName = source.readString(),
+        trainStation = source.readParcelable<TrainStation>(TrainStation::class.java.classLoader)
+            ?: TrainStation.buildEmptyStation(),
+        stop = source.readParcelable<Stop>(Stop::class.java.classLoader) ?: Stop.buildEmptyStop(),
+        routeName = TrainLine.fromXmlString(source.readString() ?: ""),
+        destName = source.readString() ?: "",
         predictionDate = Date(source.readLong()),
         arrivalDepartureDate = Date(source.readLong()),
-        isApp = source.readString()!!.toBoolean(),
-        isDly = source.readString()!!.toBoolean()
+        isApp = source.readString()?.toBoolean() ?: false,
+        isDly = source.readString()?.toBoolean() ?: false
     )
 
     private val timeLeft: String

@@ -182,11 +182,11 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         busStopId = savedInstanceState.getInt(bundleBusStopId)
-        busRouteId = savedInstanceState.getString(bundleBusRouteId)
-        bound = savedInstanceState.getString(bundleBusBound)
-        boundTitle = savedInstanceState.getString(bundleBusBoundTitle)
-        busStopName = savedInstanceState.getString(bundleBusStopName)
-        busRouteName = savedInstanceState.getString(bundleBusRouteName)
+        busRouteId = savedInstanceState.getString(bundleBusRouteId) ?: ""
+        bound = savedInstanceState.getString(bundleBusBound) ?: ""
+        boundTitle = savedInstanceState.getString(bundleBusBoundTitle) ?: ""
+        busStopName = savedInstanceState.getString(bundleBusStopName) ?: ""
+        busRouteName = savedInstanceState.getString(bundleBusRouteName) ?: ""
         latitude = savedInstanceState.getDouble(bundleBusLatitude)
         longitude = savedInstanceState.getDouble(bundleBusLongitude)
     }
@@ -215,7 +215,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
         } else {
             val key1 = busArrivals.keys.iterator().next()
             destinationTextView.text = key1
-            arrivalsTextView.text = busArrivals.get(key1)!!.joinToString(separator = " ") { util.formatArrivalTime(it) }
+            arrivalsTextView.text = busArrivals[key1]!!.joinToString(separator = " ") { util.formatArrivalTime(it) }
 
             var idBellowTitle = destinationTextView.id
             var idBellowArrival = arrivalsTextView.id

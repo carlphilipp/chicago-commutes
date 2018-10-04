@@ -15,12 +15,12 @@ class BikeStation(
 
     private constructor(source: Parcel) : this(
         id = source.readInt(),
-        name = source.readString(),
+        name = source.readString() ?: "",
         availableDocks = source.readInt(),
         availableBikes = source.readInt(),
         latitude = source.readDouble(),
         longitude = source.readDouble(),
-        address = source.readString())
+        address = source.readString() ?: "")
 
     override fun describeContents(): Int {
         return 0
@@ -37,6 +37,10 @@ class BikeStation(
     }
 
     companion object {
+
+        fun buildUnknownStation(): BikeStation {
+            return buildDefaultBikeStationWithName("Unknown")
+        }
 
         fun buildDefaultBikeStationWithName(name: String): BikeStation {
             return BikeStation(0, name, -1, -1, 0.0, 0.0, StringUtils.EMPTY)

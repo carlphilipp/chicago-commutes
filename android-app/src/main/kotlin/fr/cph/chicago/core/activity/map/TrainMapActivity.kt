@@ -69,7 +69,7 @@ class TrainMapActivity : FragmentMapActivity() {
 
     override fun create(savedInstanceState: Bundle?) {
         line = if (savedInstanceState != null)
-            savedInstanceState.getString(bundleTrainLine)
+            savedInstanceState.getString(bundleTrainLine) ?: ""
         else
             intent.getStringExtra(bundleTrainLine)
 
@@ -105,7 +105,7 @@ class TrainMapActivity : FragmentMapActivity() {
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        line = savedInstanceState.getString(bundleTrainLine)
+        line = savedInstanceState.getString(bundleTrainLine) ?: ""
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
@@ -196,7 +196,7 @@ class TrainMapActivity : FragmentMapActivity() {
                 if (!refreshingInfoWindow) {
                     selectedMarker = marker
                     val runNumber = marker.snippet
-                    val current = status.getOrDefault(marker, false)
+                    val current = status[marker] ?: false
                     observableUtil.createLoadTrainEtaObservable(runNumber, !current)
                         .subscribe(TrainEtaObserver(view!!, this@TrainMapActivity))
                     status[marker] = !current

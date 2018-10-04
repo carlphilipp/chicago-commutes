@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.listener
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
@@ -59,11 +60,12 @@ class BusStopOnClickListener(private val activity: Activity, private val parent:
             val dialog = builder.create()
             dialog.show()
             if (dialog.window != null) {
-                dialog.window.setLayout(((activity.application as App).screenWidth * 0.7).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
+                dialog.window?.setLayout(((activity.application as App).screenWidth * 0.7).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
             }
         }
     }
 
+    @SuppressLint("CheckResult")
     private fun loadBusDetails(view: View, busDetails: BusDetailsDTO) {
         observableUtil.createBusStopBoundObservable(busDetails.busRouteId, busDetails.boundTitle)
             .subscribe({ onNext ->

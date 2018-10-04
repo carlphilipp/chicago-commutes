@@ -70,7 +70,7 @@ class ErrorActivity : Activity() {
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        error = savedInstanceState.getString(bundleError)
+        error = savedInstanceState.getString(bundleError) ?: ""
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {

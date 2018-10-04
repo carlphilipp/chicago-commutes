@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.activity
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
@@ -86,8 +87,8 @@ class BusMapActivity : FragmentMapActivity() {
     override fun create(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
             busId = savedInstanceState.getInt(bundleBusId)
-            busRouteId = savedInstanceState.getString(bundleBusRouteId)
-            bounds = savedInstanceState.getStringArray(bundleBusBounds)
+            busRouteId = savedInstanceState.getString(bundleBusRouteId)?: ""
+            bounds = savedInstanceState.getStringArray(bundleBusBounds)?: arrayOf()
         } else {
             busId = intent.getIntExtra(bundleBusId, 0)
             busRouteId = intent.getStringExtra(bundleBusRouteId)
@@ -193,8 +194,8 @@ class BusMapActivity : FragmentMapActivity() {
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         busId = savedInstanceState.getInt(bundleBusId)
-        busRouteId = savedInstanceState.getString(bundleBusRouteId)
-        bounds = savedInstanceState.getStringArray(bundleBusBounds)
+        busRouteId = savedInstanceState.getString(bundleBusRouteId)?: ""
+        bounds = savedInstanceState.getStringArray(bundleBusBounds)?: arrayOf()
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
@@ -249,6 +250,7 @@ class BusMapActivity : FragmentMapActivity() {
         loadActivityData()
     }
 
+    @SuppressLint("CheckResult")
     private fun loadActivityData() {
         if (Util.isNetworkAvailable()) {
             observableUtil.createBusListObservable(busRouteId).subscribe(BusObserver(this@BusMapActivity, true, layout))

@@ -36,9 +36,9 @@ class BusStop(
 
     private constructor(source: Parcel) : this(
         id = source.readInt(),
-        name = source.readString(),
-        description = source.readString(),
-        position = source.readParcelable<Position>(Position::class.java.classLoader))
+        name = source.readString()?:"",
+        description = source.readString()?:"",
+        position = source.readParcelable<Position>(Position::class.java.classLoader) ?: Position())
 
     override fun toString(): String {
         return "[id:$id;name:$name;description:$description;position:$position]"

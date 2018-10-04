@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.activity
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.widget.SwipeRefreshLayout
@@ -54,8 +55,8 @@ class AlertActivity : ButterKnifeActivity(R.layout.activity_alert) {
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        routeId = savedInstanceState.getString("routeId")
-        title = savedInstanceState.getString("title")
+        routeId = savedInstanceState.getString("routeId") ?: ""
+        title = savedInstanceState.getString("title") ?: ""
     }
 
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
@@ -79,6 +80,7 @@ class AlertActivity : ButterKnifeActivity(R.layout.activity_alert) {
         toolbar.setOnClickListener { _ -> finish() }
     }
 
+    @SuppressLint("CheckResult")
     private fun refreshData() {
         ObservableUtil.createAlertRouteObservable(routeId).subscribe(
             { routeAlertsDTOS ->

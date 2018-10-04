@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.fragment
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.AsyncTask
 import android.os.AsyncTask.Status
@@ -83,7 +84,7 @@ class FavoritesFragment : Fragment(R.layout.fragment_main) {
     override fun onCreateView() {
         val intent = mainActivity.intent
         val busArrivals: List<BusArrival> = intent.getParcelableArrayListExtra(bundleBusArrivals) ?: listOf()
-        val trainArrivals: SparseArray<TrainArrival> = intent.extras.getSparseParcelableArray(bundleTrainArrivals) ?: SparseArray()
+        val trainArrivals: SparseArray<TrainArrival> = intent.extras?.getSparseParcelableArray(bundleTrainArrivals) ?: SparseArray()
         divvyStations = intent.getParcelableArrayListExtra(bundleBikeStation) ?: listOf()
 
         favoritesAdapter = FavoritesAdapter(mainActivity)
@@ -158,7 +159,7 @@ class FavoritesFragment : Fragment(R.layout.fragment_main) {
     }
 
     fun reloadData(favoritesDTO: FavoritesDTO) {
-        mainActivity.intent.extras.putSparseParcelableArray(bundleTrainArrivals, favoritesDTO.trainArrivalDTO.trainArrivalSparseArray)
+        mainActivity.intent.extras?.putSparseParcelableArray(bundleTrainArrivals, favoritesDTO.trainArrivalDTO.trainArrivalSparseArray)
         mainActivity.intent.putParcelableArrayListExtra(bundleBusArrivals, util.asParcelableArrayList(favoritesDTO.busArrivalDTO.busArrivals))
         mainActivity.intent.putParcelableArrayListExtra(bundleBikeStation, util.asParcelableArrayList(favoritesDTO.bikeStations))
 
@@ -205,6 +206,7 @@ class FavoritesFragment : Fragment(R.layout.fragment_main) {
         swipeRefreshLayout.isRefreshing = false
     }
 
+    @SuppressLint("CheckResult")
     private fun fetchData() {
         if (util.isNetworkAvailable()) {
             observableUtil.createAllDataObservable().subscribe(

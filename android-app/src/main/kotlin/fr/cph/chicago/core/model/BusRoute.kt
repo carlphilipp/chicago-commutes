@@ -31,8 +31,8 @@ import android.os.Parcelable
 data class BusRoute(val id: String, val name: String) : Parcelable {
 
     private constructor(source: Parcel) : this(
-        id = source.readString(),
-        name = source.readString()
+        id = source.readString() ?: "",
+        name = source.readString() ?: ""
     )
 
     override fun describeContents(): Int {

@@ -87,7 +87,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
     private var isFavorite: Boolean = false
 
     override fun create(savedInstanceState: Bundle?) {
-        divvyStation = intent.extras.getParcelable(bundleBikeStation)
+        divvyStation = intent.extras?.getParcelable(bundleBikeStation) ?: BikeStation.buildUnknownStation()
         val latitude = divvyStation.latitude
         val longitude = divvyStation.longitude
 
@@ -154,7 +154,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        divvyStation = savedInstanceState.getParcelable(bundleBikeStation)
+        divvyStation = savedInstanceState.getParcelable(bundleBikeStation) ?: BikeStation.buildUnknownStation()
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {

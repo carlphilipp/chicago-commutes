@@ -80,7 +80,7 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
         container.foreground.alpha = 0
 
         searchAdapter = SearchAdapter(this)
-        divvyStations = intent.extras.getParcelableArrayList(bundleBikeStations)
+        divvyStations = intent.extras?.getParcelableArrayList(bundleBikeStations) ?: listOf()
         handleIntent(intent)
 
         listView.adapter = searchAdapter
@@ -119,7 +119,7 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
     override fun startActivity(intent: Intent) {
         // check if search intent
         if (Intent.ACTION_SEARCH == intent.action) {
-            val bikeStations = getIntent().extras.getParcelableArrayList<BikeStation>(bundleBikeStations)
+            val bikeStations = getIntent().extras?.getParcelableArrayList(bundleBikeStations) ?: listOf<BikeStation>()
             intent.putParcelableArrayListExtra(bundleBikeStations, util.asParcelableArrayList(bikeStations))
         }
         super.startActivity(intent)

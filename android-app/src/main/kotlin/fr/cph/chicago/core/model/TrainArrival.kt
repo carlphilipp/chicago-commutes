@@ -31,7 +31,7 @@ import fr.cph.chicago.core.model.enumeration.TrainLine
  */
 data class TrainArrival(var trainEtas: MutableList<TrainEta> = mutableListOf()) : Parcelable {
 
-    private constructor(source: Parcel) : this(trainEtas = source.createTypedArray(TrainEta.CREATOR).toMutableList())
+    private constructor(source: Parcel) : this(trainEtas = source.createTypedArray(TrainEta.CREATOR)?.toMutableList()?: mutableListOf<TrainEta>())
 
     fun addEta(eta: TrainEta): TrainArrival {
         trainEtas.add(eta)

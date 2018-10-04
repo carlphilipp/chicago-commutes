@@ -41,11 +41,12 @@ data class Stop(
 
     private constructor(source: Parcel) : this(
         id = source.readInt(),
-        description = source.readString(),
-        direction = TrainDirection.fromString(source.readString()),
-        position = source.readParcelable<Position>(Position::class.java.classLoader),
+        description = source.readString() ?: "",
+        direction = TrainDirection.fromString(source.readString() ?: ""),
+        position = source.readParcelable<Position>(Position::class.java.classLoader) ?: Position(),
         ada = source.readString()!!.toBoolean(),
-        lines = source.createStringArrayList().map { TrainLine.fromXmlString(it) }.toSet()
+        lines = source.createStringArrayList()?.map { TrainLine.fromXmlString(it) }?.toSet()
+            ?: setOf()
     )
 
     override fun compareTo(other: Stop): Int {
