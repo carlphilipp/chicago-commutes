@@ -38,7 +38,8 @@ import com.google.android.gms.maps.model.Marker
 import fr.cph.chicago.Constants.Companion.GPS_ACCESS
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeFragmentMapActivity
-import fr.cph.chicago.util.PositionUtil
+import fr.cph.chicago.util.GoogleMapUtil
+import fr.cph.chicago.util.MapUtil
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 
@@ -104,7 +105,7 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), EasyPermi
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
         this.googleMap.setOnCameraIdleListener(this)
-        this.googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(PositionUtil.chicago, 10f))
+        this.googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(GoogleMapUtil.chicago, 10f))
         enableMyLocationOnMapIfAllowed()
     }
 

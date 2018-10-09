@@ -58,7 +58,8 @@ import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.marker.MarkerDataHolder
 import fr.cph.chicago.rx.ObservableUtil
-import fr.cph.chicago.util.PositionUtil
+import fr.cph.chicago.util.GoogleMapUtil
+import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable
 import io.reactivex.functions.Function3
@@ -86,6 +87,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
     lateinit var bundleBikeStations: String
 
     private val util: Util = Util
+    private val googleMapUtil = GoogleMapUtil
     private val observableUtil: ObservableUtil = ObservableUtil
 
     private lateinit var mapFragment: SupportMapFragment
@@ -122,7 +124,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
             .addApi(LocationServices.API)
             .build()
         val options = GoogleMapOptions()
-        val camera = CameraPosition(PositionUtil.chicago, 7f, 0f, 0f)
+        val camera = CameraPosition(GoogleMapUtil.chicago, 7f, 0f, 0f)
         options.camera(camera)
         mapFragment = SupportMapFragment.newInstance(options)
         mapFragment.retainInstance = true
@@ -261,19 +263,17 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
 
     private fun handleNearbyData(position: Position) {
         val bikeStations = mainActivity.intent.extras?.getParcelableArrayList(bundleBikeStations) ?: listOf<BikeStation>()
-        var chicago: Position? = null
         if (position.longitude == 0.0 && position.latitude == 0.0) {
             Log.w(TAG, "Could not get current user location")
-            chicago = Position(PositionUtil.chicago.latitude, PositionUtil.chicago.longitude)
             util.showSnackBar(mainActivity, R.string.message_cant_find_location, Snackbar.LENGTH_LONG)
         }
 
-        val finalPosition = chicago ?: position
+        val finalPosition = chicagoPosition
         val trainStationAroundObservable = observableUtil.createTrainStationAroundObservable(finalPosition)
         val busStopsAroundObservable = observableUtil.createBusStopsAroundObservable(finalPosition)
         val bikeStationsObservable = observableUtil.createBikeStationAroundObservable(finalPosition, bikeStations)
         Observable.zip(trainStationAroundObservable, busStopsAroundObservable, bikeStationsObservable, Function3 { trains: List<TrainStation>, buses: List<BusStop>, divvies: List<BikeStation> ->
-            util.centerMap(mapFragment, finalPosition)
+            googleMapUtil.centerMap(mapFragment, finalPosition)
             updateMarkersAndModel(buses, trains, divvies)
             Any()
         }).subscribe()

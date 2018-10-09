@@ -3,65 +3,6 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'realm-android'
 
-dependencies {
-
-    implementation(
-        // Kotlin
-        [group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: kotlin_version],
-
-        // Google
-        [group: 'com.android.support', name: 'design', version: google_support_version],
-        [group: 'com.android.support', name: 'cardview-v7', version: google_support_version],
-        [group: 'com.google.android.gms', name: 'play-services-maps', version: google_play_version],
-        [group: 'com.google.android.gms', name: 'play-services-location', version: google_play_version],
-
-        // Jackson
-        [group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jackson_version],
-        [group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jackson_version],
-        [group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: jackson_version],
-        [group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: jackson_version],
-
-        // RxJava
-        [group: 'io.reactivex.rxjava2', name: 'rxandroid', version: reactivex_android_version],
-        [group: 'io.reactivex.rxjava2', name: 'rxjava', version: reactivex_java_version],
-
-        // Tools
-        [group: 'com.jakewharton', name: 'butterknife', version: butterknife_version],
-        [group: 'pub.devrel', name: 'easypermissions', version: easypermissions_version],
-        [group: 'com.github.chrisbanes', name: 'PhotoView', version: photoview_version],
-        [group: 'com.sothree.slidinguppanel', name: 'library', version: sliding_up_panel_version],
-        [group: 'org.apache.commons', name: 'commons-collections4', version: commons_collections4_version],
-        [group: 'org.apache.commons', name: 'commons-text', version: commons_text],
-        [group: 'com.univocity', name: 'univocity-parsers', version: univocity_parsers_version],
-    )
-
-    kapt(
-        [group: 'com.jakewharton', name: 'butterknife-compiler', version: butterknife_version],
-    )
-
-    testImplementation(
-        testImplementation(group: 'junit', name: 'junit', version: junit_version) {
-            exclude group: 'org.hamcrest', module: 'hamcrest-core'
-        },
-        testImplementation(group: 'org.mockito', name: 'mockito-core', version: mockito_version) {
-            exclude group: 'org.hamcrest', module: 'hamcrest-core'
-        },
-        [group: 'org.hamcrest', name: 'hamcrest-all', version: hamcrect_version]
-    )
-
-    androidTestImplementation(
-        [group: 'com.android.support', name: 'support-annotations', version: google_support_version],
-        [group: 'com.android.support.test', name: 'runner', version: google_support_version_test],
-        [group: 'com.android.support.test', name: 'rules', version: google_support_version_test],
-        // Optional -- UI testing with Espresso
-        androidTestImplementation(group: 'com.android.support.test.espresso', name: 'espresso-core', version: google_support_version_test_espresso) {
-            exclude group: 'com.android.support', module: 'support-annotations'
-        },
-        // Optional -- UI testing with UI Automator
-        [group: 'com.android.support.test.uiautomator', name: 'uiautomator-v18', version: google_support_version_test_uiautomator]
-    )
-}
-
 android {
     compileSdkVersion 28
     buildToolsVersion '28.0.3'
@@ -107,10 +48,13 @@ android {
 
     sourceSets {
         main {
-            manifest.srcFile 'src/main/AndroidManifest.xml'
             java.srcDirs = ['src/main/kotlin']
-            res.srcDirs = ['src/main/res']
-            assets.srcDirs = ['src/main/assets']
+        }
+        googleplay {
+            java.srcDirs = ['src/googleplay/kotlin']
+        }
+        foss {
+            java.srcDirs = ['src/foss/kotlin']
         }
     }
 
@@ -146,6 +90,18 @@ android {
         }
     }
 
+    flavorDimensions "env"
+
+    productFlavors {
+        googleplay {
+            dimension "env"
+        }
+        foss {
+            dimension "env"
+            applicationIdSuffix ".fr.cph.chicago.foss"
+        }
+    }
+
     lintOptions {
         checkReleaseBuilds true
         abortOnError false
@@ -167,4 +123,65 @@ android {
         exclude 'META-INF/dependencies.txt'
         exclude 'META-INF/LGPL2.1'
     }
+}
+
+dependencies {
+
+    implementation(
+        // Kotlin
+        [group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: kotlin_version],
+
+        // Google
+        [group: 'com.android.support', name: 'design', version: google_support_version],
+        [group: 'com.google.android.gms', name: 'play-services-maps', version: google_play_version],
+
+        // Jackson
+        [group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jackson_version],
+        [group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jackson_version],
+        [group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: jackson_version],
+        [group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: jackson_version],
+
+        // RxJava
+        [group: 'io.reactivex.rxjava2', name: 'rxandroid', version: reactivex_android_version],
+        [group: 'io.reactivex.rxjava2', name: 'rxjava', version: reactivex_java_version],
+
+        // Tools
+        [group: 'com.jakewharton', name: 'butterknife', version: butterknife_version],
+        [group: 'pub.devrel', name: 'easypermissions', version: easypermissions_version],
+        [group: 'com.github.chrisbanes', name: 'PhotoView', version: photoview_version],
+        [group: 'com.sothree.slidinguppanel', name: 'library', version: sliding_up_panel_version],
+        [group: 'org.apache.commons', name: 'commons-collections4', version: commons_collections4_version],
+        [group: 'org.apache.commons', name: 'commons-text', version: commons_text],
+        [group: 'com.univocity', name: 'univocity-parsers', version: univocity_parsers_version],
+    )
+
+    googleplayImplementation(
+        [group: 'com.google.android.gms', name: 'play-services-location', version: google_play_version],
+    )
+
+    kapt(
+        [group: 'com.jakewharton', name: 'butterknife-compiler', version: butterknife_version],
+    )
+
+    testImplementation(
+        testImplementation(group: 'junit', name: 'junit', version: junit_version) {
+            exclude group: 'org.hamcrest', module: 'hamcrest-core'
+        },
+        testImplementation(group: 'org.mockito', name: 'mockito-core', version: mockito_version) {
+            exclude group: 'org.hamcrest', module: 'hamcrest-core'
+        },
+        [group: 'org.hamcrest', name: 'hamcrest-all', version: hamcrect_version]
+    )
+
+    androidTestImplementation(
+        [group: 'com.android.support', name: 'support-annotations', version: google_support_version],
+        [group: 'com.android.support.test', name: 'runner', version: google_support_version_test],
+        [group: 'com.android.support.test', name: 'rules', version: google_support_version_test],
+        // Optional -- UI testing with Espresso
+        androidTestImplementation(group: 'com.android.support.test.espresso', name: 'espresso-core', version: google_support_version_test_espresso) {
+            exclude group: 'com.android.support', module: 'support-annotations'
+        },
+        // Optional -- UI testing with UI Automator
+        [group: 'com.android.support.test.uiautomator', name: 'uiautomator-v18', version: google_support_version_test_uiautomator]
+    )
 }

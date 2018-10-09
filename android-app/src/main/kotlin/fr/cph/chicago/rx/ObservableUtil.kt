@@ -44,7 +44,7 @@ import fr.cph.chicago.service.AlertService
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
-import fr.cph.chicago.util.PositionUtil
+import fr.cph.chicago.util.MapUtil
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
@@ -61,7 +61,7 @@ object ObservableUtil {
     private val busService = BusService
     private val bikeService = BikeService
     private val alertService = AlertService
-    private val positionUtil = PositionUtil
+    private val positionUtil = MapUtil
 
     fun createFavoritesTrainArrivalsObservable(): Observable<TrainArrivalDTO> {
         return createObservableFromCallable(Callable { TrainArrivalDTO(trainService.loadFavoritesTrain(), false) })

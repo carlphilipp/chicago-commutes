@@ -50,7 +50,8 @@ import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.rx.ObservableUtil
-import fr.cph.chicago.util.PositionUtil
+import fr.cph.chicago.util.GoogleMapUtil
+import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
 
@@ -181,7 +182,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
     public override fun onResume() {
         super.onResume()
         mapFragment.getMapAsync { googleMap ->
-            googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition(PositionUtil.chicago, 7f, 0f, 0f)))
+            googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition(GoogleMapUtil.chicago, 7f, 0f, 0f)))
             googleMap.uiSettings.isMyLocationButtonEnabled = false
             googleMap.uiSettings.isZoomControlsEnabled = false
             googleMap.uiSettings.isMapToolbarEnabled = false
@@ -191,7 +192,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
                         val center = busPattern.points.size / 2
                         val position = busPattern.points[center].position
                         if (position.latitude == 0.0 && position.longitude == 0.0) {
-                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(PositionUtil.chicago, 10f))
+                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(GoogleMapUtil.chicago, 10f))
                         } else {
                             val latLng = LatLng(position.latitude, position.longitude)
                             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7f))

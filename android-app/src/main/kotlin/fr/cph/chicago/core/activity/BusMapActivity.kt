@@ -45,7 +45,7 @@ import fr.cph.chicago.rx.BusFollowObserver
 import fr.cph.chicago.rx.BusObserver
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.service.BusService
-import fr.cph.chicago.util.PositionUtil
+import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -125,7 +125,7 @@ class BusMapActivity : FragmentMapActivity() {
 
     fun centerMapOnBus(result: List<Bus>) {
         val sizeIsOne = result.size == 1
-        val position = if (sizeIsOne) result[0].position else PositionUtil.getBestPosition(result.map { it.position })
+        val position = if (sizeIsOne) result[0].position else MapUtil.getBestPosition(result.map { it.position })
         val zoom = if (sizeIsOne) 15 else 11 // FIXME magic numbers
         centerMapOn(position.latitude, position.longitude, zoom)
     }

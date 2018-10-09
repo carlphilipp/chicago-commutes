@@ -1,19 +1,14 @@
 package fr.cph.chicago.util
 
-import com.google.android.gms.maps.model.LatLng
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.Position
 
-object PositionUtil {
+object MapUtil {
 
     private const val DEFAULT_RANGE = 0.008
 
-    val chicago: LatLng by lazy {
-        LatLng(41.8819, -87.6278)
-    }
-
     val chicagoPosition: Position by lazy {
-        Position(chicago.latitude, chicago.longitude)
+        Position(41.8819, -87.6278)
     }
 
     fun getBestPosition(positions: List<Position>): Position {

@@ -37,7 +37,7 @@ import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.model.marker.RefreshTrainMarkers
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.rx.TrainEtaObserver
-import fr.cph.chicago.util.PositionUtil
+import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
@@ -118,12 +118,12 @@ class TrainMapActivity : FragmentMapActivity() {
         val zoom: Int
         if (result.size == 1) {
             position = if (result[0].position.latitude == 0.0 && result[0].position.longitude == 0.0)
-                PositionUtil.chicagoPosition
+                MapUtil.chicagoPosition
             else
                 result[0].position
             zoom = 15
         } else {
-            position = PositionUtil.getBestPosition(result.map { it.position })
+            position = MapUtil.getBestPosition(result.map { it.position })
             zoom = 11
         }
         centerMapOn(position.latitude, position.longitude, zoom)

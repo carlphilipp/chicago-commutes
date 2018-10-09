@@ -32,15 +32,11 @@ import android.support.v7.widget.Toolbar
 import android.util.TypedValue
 import android.view.View
 import android.widget.Toast
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.BusRoute
-import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.dto.BusFavoriteDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.exception.ConnectException
@@ -194,19 +190,6 @@ object Util {
             val keys = Arrays.asList(*TrainLine.values())
             return keys[random.nextInt(keys.size)].color
         }
-
-    @Throws(SecurityException::class)
-    fun centerMap(mapFragment: SupportMapFragment, position: Position?) {
-        mapFragment.getMapAsync { googleMap ->
-            googleMap.isMyLocationEnabled = true
-            if (position != null) {
-                val latLng = LatLng(position.latitude, position.longitude)
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
-            } else {
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(PositionUtil.chicago, 10f))
-            }
-        }
-    }
 
     fun convertDpToPixel(dp: Int): Int {
         val pixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp.toFloat(), App.instance.resources.displayMetrics)
