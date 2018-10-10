@@ -159,6 +159,10 @@ dependencies {
         [group: 'com.google.android.gms', name: 'play-services-location', version: google_play_version],
     )
 
+    fossImplementation(
+        [group: 'com.mapbox.mapboxsdk', name: 'mapbox-android-sdk', version: '6.5.0'],
+    )
+
     kapt(
         [group: 'com.jakewharton', name: 'butterknife-compiler', version: butterknife_version],
     )
