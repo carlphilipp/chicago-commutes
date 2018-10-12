@@ -18,9 +18,7 @@ android {
 
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
 
-        def appProperties = this.file('app.properties')
-        def props = new Properties()
-        props.load(new FileInputStream(appProperties))
+        def props = properties()
 
         resValue "string", "google_maps_api_key", props['google.streetmap.key']
         resValue "string", "cta_train_key", props['cta.train.key']
@@ -99,6 +97,7 @@ android {
         foss {
             dimension "env"
             applicationIdSuffix ".fr.cph.chicago.foss"
+            resValue "string", "mapbox_token", properties()['mapbox.token']
         }
     }
 
@@ -161,6 +160,7 @@ dependencies {
 
     fossImplementation(
         [group: 'com.mapbox.mapboxsdk', name: 'mapbox-android-sdk', version: '6.5.0'],
+        [group: 'com.mapbox.mapboxsdk', name: 'mapbox-android-plugin-locationlayer', version: '0.10.0'],
     )
 
     kapt(
@@ -188,4 +188,11 @@ dependencies {
         // Optional -- UI testing with UI Automator
         [group: 'com.android.support.test.uiautomator', name: 'uiautomator-v18', version: google_support_version_test_uiautomator]
     )
+}
+
+def properties() {
+    def appProperties = this.file('app.properties')
+    def props = new Properties()
+    props.load(new FileInputStream(appProperties))
+    return props
 }

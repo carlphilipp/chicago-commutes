@@ -4,3 +4,6 @@ cta.bus.key				=
 
 # Google
 google.streetmap.key	=
+
+# Mapbox
+mapbox.token            =

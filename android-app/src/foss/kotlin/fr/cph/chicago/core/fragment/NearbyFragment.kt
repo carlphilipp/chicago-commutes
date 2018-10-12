@@ -22,6 +22,7 @@ package fr.cph.chicago.core.fragment
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
+import android.location.Location
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.util.Log
@@ -32,12 +33,19 @@ import android.widget.ProgressBar
 import butterknife.BindString
 import butterknife.BindView
 import com.mapbox.android.core.location.LocationEngine
+import com.mapbox.android.core.location.LocationEngineListener
 import com.mapbox.android.core.location.LocationEnginePriority
 import com.mapbox.android.core.location.LocationEngineProvider
 import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
+import com.mapbox.mapboxsdk.maps.MapboxMap
+import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
+import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin
+import com.mapbox.mapboxsdk.plugins.locationlayer.modes.CameraMode
+import com.mapbox.mapboxsdk.plugins.locationlayer.modes.RenderMode
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import fr.cph.chicago.Constants.Companion.GPS_ACCESS
 import fr.cph.chicago.R
@@ -47,7 +55,6 @@ import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.rx.ObservableUtil
-import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable
@@ -61,7 +68,7 @@ import pub.devrel.easypermissions.EasyPermissions
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), EasyPermissions.PermissionCallbacks {
+class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCallback, LocationEngineListener, EasyPermissions.PermissionCallbacks {
 
     @BindView(R.id.activity_bar)
     lateinit var progressBar: ProgressBar
@@ -77,55 +84,25 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), EasyPermission
     lateinit var bundleBikeStations: String
 
     lateinit var slidingUpAdapter: SlidingUpAdapter
-    lateinit var locationEngine: LocationEngine
+    private lateinit var markerDataHolder: MarkerDataHolder
+
+    private var map: MapboxMap? = null
+    private var locationEngine: LocationEngine? = null
+    private var locationLayerPlugin: LocationLayerPlugin? = null
+    private var locationOrigin: Location? = null
 
     private val util: Util = Util
     private val observableUtil: ObservableUtil = ObservableUtil
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Mapbox.getInstance(this.context!!, "pk.eyJ1IjoiY2FybHBoaWxpcHAiLCJhIjoiY2puMmRlZXFsMGlxYjNxbzhsc2Rjb2JvayJ9.hTDfu1EZG4Qgy8_9P_eDdw")
+        Mapbox.getInstance(this.context!!, getString(R.string.mapbox_token))
         super.onCreate(savedInstanceState)
     }
 
     override fun onCreateView() {
         slidingUpAdapter = SlidingUpAdapter(this)
-        locationEngine = LocationEngineProvider(this.context).obtainBestLocationEngineAvailable()
-        locationEngine.priority = LocationEnginePriority.HIGH_ACCURACY
-        locationEngine.activate()
-        //val lastLocation = locationEngine.getLastLocation()
-        mapView.getMapAsync { mapboxMap ->
-            mapboxMap.cameraPosition = CameraPosition.Builder()
-                .target(LatLng(MapUtil.chicagoPosition.latitude, MapUtil.chicagoPosition.longitude))
-                .zoom(10.0)
-                .build()
-            mapboxMap.addOnCameraMoveListener {
-                searchAreaButton.visibility = View.VISIBLE
-                searchAreaButton.setOnClickListener { view ->
-                    view.visibility = View.INVISIBLE
-                    /*googleMap.clear()
-                    markerDataHolder.clear()
-                    val target = googleMap.cameraPosition.target
-                    handleNearbyData(Position(target.latitude, target.longitude))*/
-                }
-            }
-            showProgress(false)
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        loadNearbyIfAllowed()
-    }
-
-    fun showProgress(show: Boolean) {
-        if (isAdded) {
-            if (show) {
-                progressBar.visibility = View.VISIBLE
-                progressBar.progress = 50
-            } else {
-                progressBar.visibility = View.GONE
-            }
-        }
+        mapView.getMapAsync(this)
+        markerDataHolder = MarkerDataHolder()
     }
 
     @AfterPermissionGranted(GPS_ACCESS)
@@ -136,7 +113,6 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), EasyPermission
             EasyPermissions.requestPermissions(this, "To access that feature, we need to access your current location", GPS_ACCESS, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)
         }
     }
-
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
@@ -154,10 +130,10 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), EasyPermission
     private fun startLoadingNearby() {
         if (util.isNetworkAvailable()) {
             showProgress(true)
-            // TODO get current location
-            val lastLocation = locationEngine.lastLocation
-
-            val position = Position(lastLocation.latitude, lastLocation.longitude)
+            initLocationEngine()
+            initLocationLayer()
+            val position = if (locationOrigin == null) Position() else Position(locationOrigin!!.latitude, locationOrigin!!.longitude)
+            Log.i(TAG, "Current position: $position")
             handleNearbyData(position)
         } else {
             util.showNetworkErrorMessage(mainActivity)
@@ -168,26 +144,151 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), EasyPermission
     private fun handleNearbyData(position: Position) {
         val bikeStations = mainActivity.intent.extras?.getParcelableArrayList(bundleBikeStations)
             ?: listOf<BikeStation>()
+        var chicago: Position? = null
         if (position.longitude == 0.0 && position.latitude == 0.0) {
             Log.w(TAG, "Could not get current user location")
+            chicago = Position(chicagoPosition.latitude, chicagoPosition.longitude)
             util.showSnackBar(mainActivity, R.string.message_cant_find_location, Snackbar.LENGTH_LONG)
         }
 
-        val finalPosition = chicagoPosition
+        val finalPosition = chicago ?: position
         val trainStationAroundObservable = observableUtil.createTrainStationAroundObservable(finalPosition)
         val busStopsAroundObservable = observableUtil.createBusStopsAroundObservable(finalPosition)
         val bikeStationsObservable = observableUtil.createBikeStationAroundObservable(finalPosition, bikeStations)
         Observable.zip(trainStationAroundObservable, busStopsAroundObservable, bikeStationsObservable, Function3 { trains: List<TrainStation>, buses: List<BusStop>, divvies: List<BikeStation> ->
-            //googleMapUtil.centerMap(mapFragment, finalPosition)
-            //updateMarkersAndModel(buses, trains, divvies)
-            mapView.getMapAsync { mapboxMap ->
-                mapboxMap.cameraPosition = CameraPosition.Builder()
-                    .target(LatLng(MapUtil.chicagoPosition.latitude, MapUtil.chicagoPosition.longitude))
-                    .zoom(15.0)
-                    .build()
-            }
+            map!!.cameraPosition = CameraPosition.Builder()
+                .target(LatLng(finalPosition.latitude, finalPosition.longitude))
+                .zoom(15.0)
+                .build()
+            updateMarkersAndModel(buses, trains, divvies)
             Any()
         }).subscribe()
+    }
+
+
+    override fun onConnected() {
+
+    }
+
+    override fun onMapReady(mapboxMap: MapboxMap) {
+        map = mapboxMap
+        mapboxMap.addOnCameraMoveListener {
+            searchAreaButton.visibility = View.VISIBLE
+        }
+        searchAreaButton.setOnClickListener { view ->
+            view.visibility = View.INVISIBLE
+            val target = mapboxMap.cameraPosition.target
+            val position = Position(target.latitude, target.longitude)
+            Log.i(TAG, "Center of the screen: $position")
+            markerDataHolder.clear()
+            mapboxMap.removeAnnotations()
+            handleNearbyData(position)
+        }
+        loadNearbyIfAllowed()
+    }
+
+    override fun onLocationChanged(location: Location?) {
+        if (location != null) {
+            locationOrigin = location
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun initLocationEngine() {
+        if (locationEngine == null) {
+            locationEngine = LocationEngineProvider(this.context).obtainBestLocationEngineAvailable()
+        }
+        locationEngine?.priority = LocationEnginePriority.HIGH_ACCURACY
+        locationEngine?.activate()
+
+        val lastLocation = locationEngine?.lastLocation
+        if (lastLocation != null) {
+            locationOrigin = lastLocation
+        } else {
+            locationEngine!!.addLocationEngineListener(this)
+        }
+    }
+
+    private fun initLocationLayer() {
+        locationLayerPlugin = LocationLayerPlugin(mapView!!, map!!, locationEngine)
+        locationLayerPlugin!!.isLocationLayerEnabled = true
+        locationLayerPlugin!!.cameraMode = CameraMode.TRACKING
+        locationLayerPlugin!!.renderMode = RenderMode.NORMAL
+    }
+
+    private fun updateMarkersAndModel(
+        busStops: List<BusStop>,
+        trainStations: List<TrainStation>,
+        divvyStations: List<BikeStation>) {
+
+        busStops.forEach { busStop ->
+            val marker = map!!.addMarker(MarkerOptions()
+                .position(LatLng(busStop.position.latitude, busStop.position.longitude))
+                .title(busStop.name)
+                .snippet(busStop.description))
+            markerDataHolder.addData(marker, busStop)
+
+        }
+        trainStations.forEach { station ->
+            val position = station.stopsPosition.firstOrNull()
+            if (position != null) {
+                val marker = map!!.addMarker(MarkerOptions()
+                    .position(LatLng(position.latitude, position.longitude))
+                    .title(station.name))
+                markerDataHolder.addData(marker, station)
+            }
+        }
+        divvyStations.forEach { station ->
+            val marker = map!!.addMarker(MarkerOptions()
+                .position(LatLng(station.latitude, station.longitude))
+                .title(station.name))
+            markerDataHolder.addData(marker, station)
+        }
+        map?.setOnMarkerClickListener(OnMarkerClickListener(markerDataHolder, this@NearbyFragment))
+        showProgress(false)
+    }
+
+
+    fun showProgress(show: Boolean) {
+        if (isAdded) {
+            if (show) {
+                progressBar.visibility = View.VISIBLE
+                progressBar.progress = 50
+            } else {
+                progressBar.visibility = View.GONE
+            }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        locationEngine?.removeLocationUpdates()
+        locationLayerPlugin?.onStart()
+        mapView?.onStart()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mapView?.onResume()
+        slidingUpPanelLayout.panelState = SlidingUpPanelLayout.PanelState.HIDDEN
+    }
+
+    override fun onStop() {
+        super.onStop()
+        locationEngine?.removeLocationUpdates()
+        locationLayerPlugin?.onStop()
+        mapView?.onStop()
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        mapView?.onLowMemory()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        locationEngine?.deactivate()
+        //mapView?.onDestroy()
     }
 
     companion object {
