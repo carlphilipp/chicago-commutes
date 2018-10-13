@@ -42,7 +42,7 @@ class TrainFragment : Fragment(R.layout.fragment_train) {
     @BindString(R.string.bundle_train_line)
     lateinit var bundleTrainLine: String
 
-    override fun onCreateView() {
+    override fun onCreateView(savedInstanceState: Bundle?) {
         val ada = TrainStationAdapter()
         listView.adapter = ada
         listView.setOnItemClickListener { _, _, position, _ ->

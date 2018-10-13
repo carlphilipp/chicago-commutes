@@ -25,6 +25,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.os.Bundle
 import android.widget.LinearLayout
 import android.widget.TextView
 import butterknife.BindView
@@ -48,7 +49,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     private val preferenceService: PreferenceService = PreferenceService
     private val realmConfig: RealmConfig = RealmConfig
 
-    override fun onCreateView() {
+    override fun onCreateView(savedInstanceState: Bundle?) {
         val version = "Version " + util.getCurrentVersion()
         versionNumber.text = version
         clearCache.setOnClickListener { _ ->

@@ -23,6 +23,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.AsyncTask
 import android.os.AsyncTask.Status
+import android.os.Bundle
 import android.os.Parcelable
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.widget.SwipeRefreshLayout
@@ -81,7 +82,7 @@ class FavoritesFragment : Fragment(R.layout.fragment_main) {
     private lateinit var refreshTimingTask: RefreshTimingTask
     private lateinit var divvyStations: List<BikeStation>
 
-    override fun onCreateView() {
+    override fun onCreateView(savedInstanceState: Bundle?) {
         val intent = mainActivity.intent
         val busArrivals: List<BusArrival> = intent.getParcelableArrayListExtra(bundleBusArrivals) ?: listOf()
         val trainArrivals: SparseArray<TrainArrival> = intent.extras?.getSparseParcelableArray(bundleTrainArrivals) ?: SparseArray()

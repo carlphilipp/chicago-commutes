@@ -21,6 +21,7 @@ package fr.cph.chicago.core.fragment
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Bundle
 import butterknife.BindView
 import com.github.chrisbanes.photoview.PhotoView
 import fr.cph.chicago.R
@@ -34,7 +35,7 @@ class CtaMapFragment : Fragment(R.layout.fragment_cta_map) {
     lateinit var ctaMap: PhotoView
     private var bitmapCache: Bitmap? = null
 
-    override fun onCreateView() {
+    override fun onCreateView(savedInstanceState: Bundle?) {
         loadBitmap()
     }
 

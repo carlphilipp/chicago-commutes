@@ -52,12 +52,12 @@ abstract class Fragment(private val layout: Int) : android.support.v4.app.Fragme
         if (!mainActivity.isFinishing) {
             rootView = inflater.inflate(layout, container, false)
             setBinder(rootView)
-            onCreateView()
+            onCreateView(savedInstanceState)
         }
         return rootView
     }
 
-    abstract fun onCreateView()
+    abstract fun onCreateView(savedInstanceState: Bundle?)
 
     companion object {
 

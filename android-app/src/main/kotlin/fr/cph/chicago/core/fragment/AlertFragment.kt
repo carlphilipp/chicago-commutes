@@ -47,7 +47,7 @@ class AlertFragment : Fragment(R.layout.fragment_alert) {
     @BindView(R.id.alert_list)
     lateinit var listView: ListView
 
-    override fun onCreateView() {
+    override fun onCreateView(savedInstanceState: Bundle?) {
         ObservableUtil.createAlertRoutesObservable().subscribe { routesAlerts ->
             val alertAdapter = AlertAdapter(routesAlerts)
             listView.adapter = alertAdapter

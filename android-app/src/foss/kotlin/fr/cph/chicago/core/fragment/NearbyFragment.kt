@@ -22,9 +22,14 @@ package fr.cph.chicago.core.fragment
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.location.Location
 import android.os.Bundle
+import android.support.annotation.DrawableRes
 import android.support.design.widget.Snackbar
+import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -37,6 +42,7 @@ import com.mapbox.android.core.location.LocationEngineListener
 import com.mapbox.android.core.location.LocationEnginePriority
 import com.mapbox.android.core.location.LocationEngineProvider
 import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.annotations.IconFactory
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -61,6 +67,7 @@ import io.reactivex.Observable
 import io.reactivex.functions.Function3
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
+import java.util.UUID
 
 /**
  * Foss Nearby Fragment
@@ -79,7 +86,8 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
     @BindView(R.id.search_area)
     lateinit var searchAreaButton: Button
     @BindView(R.id.mapView)
-    lateinit var mapView: MapView
+    @JvmField
+    var mapView: MapView? = null
     @BindString(R.string.bundle_bike_stations)
     lateinit var bundleBikeStations: String
 
@@ -99,9 +107,9 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
         super.onCreate(savedInstanceState)
     }
 
-    override fun onCreateView() {
+    override fun onCreateView(savedInstanceState: Bundle?) {
         slidingUpAdapter = SlidingUpAdapter(this)
-        mapView.getMapAsync(this)
+        mapView?.getMapAsync(this)
         markerDataHolder = MarkerDataHolder()
     }
 
@@ -167,7 +175,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
 
 
     override fun onConnected() {
-
+        Log.i(TAG, "Connected")
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
@@ -210,10 +218,13 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
     }
 
     private fun initLocationLayer() {
-        locationLayerPlugin = LocationLayerPlugin(mapView!!, map!!, locationEngine)
-        locationLayerPlugin!!.isLocationLayerEnabled = true
-        locationLayerPlugin!!.cameraMode = CameraMode.TRACKING
-        locationLayerPlugin!!.renderMode = RenderMode.NORMAL
+        if (locationLayerPlugin == null) {
+            locationLayerPlugin = LocationLayerPlugin(mapView!!, map!!, locationEngine)
+        }
+        locationLayerPlugin?.isLocationLayerEnabled = true
+        locationLayerPlugin?.cameraMode = CameraMode.TRACKING
+        locationLayerPlugin?.renderMode = RenderMode.NORMAL
+        lifecycle.addObserver(locationLayerPlugin!!)
     }
 
     private fun updateMarkersAndModel(
@@ -221,27 +232,43 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
         trainStations: List<TrainStation>,
         divvyStations: List<BikeStation>) {
 
+        val bitmapBus = createStop(context, R.drawable.bus_stop_icon)
+        val bitmapTrain = createStop(context, R.drawable.train_station_icon)
+        val bitmapBike = createStop(context, R.drawable.bike_station_icon)
+
         busStops.forEach { busStop ->
-            val marker = map!!.addMarker(MarkerOptions()
+            val options = MarkerOptions()
                 .position(LatLng(busStop.position.latitude, busStop.position.longitude))
                 .title(busStop.name)
-                .snippet(busStop.description))
+                .snippet(busStop.description)
+            if (bitmapBus != null) {
+                options.icon = IconFactory.recreate(UUID.randomUUID().toString(), bitmapBus)
+            }
+            val marker = map!!.addMarker(options)
             markerDataHolder.addData(marker, busStop)
 
         }
         trainStations.forEach { station ->
             val position = station.stopsPosition.firstOrNull()
             if (position != null) {
-                val marker = map!!.addMarker(MarkerOptions()
+                val options = MarkerOptions()
                     .position(LatLng(position.latitude, position.longitude))
-                    .title(station.name))
+                    .title(station.name)
+                if (bitmapTrain != null) {
+                    options.icon = IconFactory.recreate(UUID.randomUUID().toString(), bitmapTrain)
+                }
+                val marker = map!!.addMarker(options)
                 markerDataHolder.addData(marker, station)
             }
         }
         divvyStations.forEach { station ->
-            val marker = map!!.addMarker(MarkerOptions()
+            val options = MarkerOptions()
                 .position(LatLng(station.latitude, station.longitude))
-                .title(station.name))
+                .title(station.name)
+            if (bitmapBike != null) {
+                options.icon = IconFactory.recreate(UUID.randomUUID().toString(), bitmapBike)
+            }
+            val marker = map!!.addMarker(options)
             markerDataHolder.addData(marker, station)
         }
         map?.setOnMarkerClickListener(OnMarkerClickListener(markerDataHolder, this@NearbyFragment))
@@ -288,7 +315,22 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
     override fun onDestroy() {
         super.onDestroy()
         locationEngine?.deactivate()
-        //mapView?.onDestroy()
+        mapView?.onDestroy()
+    }
+
+    // TODO to merge in main code
+    private fun createStop(context: Context?, @DrawableRes icon: Int): Bitmap? {
+        return if (context != null) {
+            val px = context.resources.getDimensionPixelSize(R.dimen.icon_shadow_2)
+            val bitMapBusStation = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitMapBusStation)
+            val shape = ContextCompat.getDrawable(context, icon)!!
+            shape.setBounds(0, 0, px, bitMapBusStation.height)
+            shape.draw(canvas)
+            bitMapBusStation
+        } else {
+            null
+        }
     }
 
     companion object {

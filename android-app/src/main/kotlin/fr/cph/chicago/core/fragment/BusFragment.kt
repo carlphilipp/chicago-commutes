@@ -56,7 +56,7 @@ class BusFragment : Fragment(R.layout.fragment_bus) {
         super.onCreate(savedInstanceState)
     }
 
-    override fun onCreateView() {
+    override fun onCreateView(savedInstanceState: Bundle?) {
         addView()
     }
 

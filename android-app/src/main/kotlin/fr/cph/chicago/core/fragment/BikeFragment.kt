@@ -60,7 +60,7 @@ class BikeFragment : Fragment(R.layout.fragment_bike) {
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateView() {
+    override fun onCreateView(savedInstanceState: Bundle?) {
         divvyStations = mainActivity.intent.getParcelableArrayListExtra(bundleBikeStations) ?: listOf()
         if (divvyStations.isEmpty()) {
             loadError()
