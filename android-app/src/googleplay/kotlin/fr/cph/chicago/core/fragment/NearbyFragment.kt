@@ -103,7 +103,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
         App.checkBusData(mainActivity)
     }
 
-    override fun onCreateView() {
+    override fun onCreateView(savedInstanceState: Bundle?) {
         slidingUpAdapter = SlidingUpAdapter(this)
         markerDataHolder = MarkerDataHolder()
         searchAreaButton.setOnClickListener { view ->
