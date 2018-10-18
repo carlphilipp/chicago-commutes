@@ -141,7 +141,6 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
             initLocationEngine()
             initLocationLayer()
             val position = if (locationOrigin == null) Position() else Position(locationOrigin!!.latitude, locationOrigin!!.longitude)
-            Log.i(TAG, "Current position: $position")
             handleNearbyData(position)
         } else {
             util.showNetworkErrorMessage(mainActivity)
@@ -154,7 +153,6 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
             ?: listOf<BikeStation>()
         var chicago: Position? = null
         if (position.longitude == 0.0 && position.latitude == 0.0) {
-            Log.w(TAG, "Could not get current user location")
             chicago = Position(chicagoPosition.latitude, chicagoPosition.longitude)
             util.showSnackBar(mainActivity, R.string.message_cant_find_location, Snackbar.LENGTH_LONG)
         }
@@ -175,7 +173,6 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
 
 
     override fun onConnected() {
-        Log.i(TAG, "Connected")
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
@@ -187,7 +184,6 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
             view.visibility = View.INVISIBLE
             val target = mapboxMap.cameraPosition.target
             val position = Position(target.latitude, target.longitude)
-            Log.i(TAG, "Center of the screen: $position")
             markerDataHolder.clear()
             mapboxMap.removeAnnotations()
             handleNearbyData(position)
