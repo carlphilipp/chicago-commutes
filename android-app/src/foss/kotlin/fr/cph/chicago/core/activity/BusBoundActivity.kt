@@ -35,22 +35,22 @@ import android.widget.ListView
 import butterknife.BindDrawable
 import butterknife.BindString
 import butterknife.BindView
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.PolylineOptions
+import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.annotations.PolylineOptions
+import com.mapbox.mapboxsdk.camera.CameraPosition
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
+import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.mapboxsdk.maps.MapView
+import com.mapbox.mapboxsdk.maps.MapboxMap
+import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.activity.station.BusStopActivity
 import fr.cph.chicago.core.adapter.BusBoundAdapter
-import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.rx.ObservableUtil
-import fr.cph.chicago.util.GoogleMapUtil
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
 
@@ -60,7 +60,7 @@ import org.apache.commons.lang3.StringUtils
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
+class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox), OnMapReadyCallback {
 
     @BindView(R.id.bellow)
     lateinit var layout: LinearLayout
@@ -87,6 +87,9 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
     lateinit var bundleBusLatitude: String
     @BindString(R.string.bundle_bus_longitude)
     lateinit var bundleBusLongitude: String
+    @BindView(R.id.mapView)
+    @JvmField
+    var mapView: MapView? = null
 
     @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
     lateinit var arrowBackWhite: Drawable
@@ -94,7 +97,6 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
     private val observableUtil: ObservableUtil = ObservableUtil
     private val util: Util = Util
 
-    private lateinit var mapFragment: SupportMapFragment
     private lateinit var busRouteId: String
     private lateinit var busRouteName: String
     private lateinit var bound: String
@@ -104,17 +106,19 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         App.checkBusData(this)
+        Mapbox.getInstance(this, getString(R.string.mapbox_token))
         super.onCreate(savedInstanceState)
     }
 
     @SuppressLint("CheckResult")
     override fun create(savedInstanceState: Bundle?) {
+        mapView!!.onCreate(savedInstanceState)
         busRouteId = intent.getStringExtra(bundleBusRouteId)
         busRouteName = intent.getStringExtra(bundleBusRouteName)
         bound = intent.getStringExtra(bundleBusBound)
         boundTitle = intent.getStringExtra(bundleBusBoundTitle)
 
-        mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        mapView?.getMapAsync(this)
 
         busBoundAdapter = BusBoundAdapter()
         listView.setOnItemClickListener { _, _, position, _ ->
@@ -169,7 +173,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
                 busBoundAdapter.updateBusStops(onNext)
                 busBoundAdapter.notifyDataSetChanged()
             }
-            , { onError ->
+                , { onError ->
                 Log.e(TAG, onError.message, onError)
                 util.showOopsSomethingWentWrong(listView)
             })
@@ -178,43 +182,40 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
     }
 
-    public override fun onResume() {
-        super.onResume()
-        mapFragment.getMapAsync { googleMap ->
-            googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition(GoogleMapUtil.chicago, 7f, 0f, 0f)))
-            googleMap.uiSettings.isMyLocationButtonEnabled = false
-            googleMap.uiSettings.isZoomControlsEnabled = false
-            googleMap.uiSettings.isMapToolbarEnabled = false
-            observableUtil.createBusPatternObservable(busRouteId, bound)
-                .subscribe({ busPattern ->
-                    if (busPattern.direction != "error") {
-                        val center = busPattern.points.size / 2
-                        val position = busPattern.points[center].position
-                        if (position.latitude == 0.0 && position.longitude == 0.0) {
-                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(GoogleMapUtil.chicago, 10f))
-                        } else {
-                            val latLng = LatLng(position.latitude, position.longitude)
-                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7f))
-                            googleMap.animateCamera(CameraUpdateFactory.zoomTo(9f), 500, null)
-                        }
-                        drawPattern(googleMap, busPattern)
+    override fun onMapReady(mapBox: MapboxMap) {
+        observableUtil.createBusPatternObservable(busRouteId, bound)
+            .subscribe({ busPattern ->
+                if (busPattern.direction != "error") {
+                    val center = busPattern.points.size / 2
+                    val position = busPattern.points[center].position
+                    if (position.latitude == 0.0 && position.longitude == 0.0) {
+
                     } else {
-                        util.showMessage(this, R.string.message_error_could_not_load_path)
+                        val position = CameraPosition.Builder()
+                            .target(LatLng(position.latitude, position.longitude))
+                            .zoom(9.0)
+                            .build()
+                        mapBox.animateCamera(CameraUpdateFactory.newCameraPosition(position), 500)
                     }
-                }) { onError ->
-                    util.handleConnectOrParserException(onError, null, layout, layout)
-                    Log.e(TAG, onError.message, onError)
+
+                    val poly = PolylineOptions()
+                        .addAll(busPattern.points.map { patternPoint -> LatLng(patternPoint.position.latitude, patternPoint.position.longitude) })
+                        .color(Color.BLACK)
+                        .width(App.instance.lineWidthMapBox)
+
+                    mapBox.addPolyline(poly)
+                } else {
+                    util.showMessage(this, R.string.message_error_could_not_load_path)
                 }
-        }
+            }) { onError ->
+                util.handleConnectOrParserException(onError, null, layout, layout)
+                Log.e(TAG, onError.message, onError)
+            }
     }
 
-    private fun drawPattern(googleMap: GoogleMap, pattern: BusPattern) {
-        val poly = PolylineOptions()
-            .geodesic(true)
-            .color(Color.BLACK)
-            .width(App.instance.lineWidth)
-            .addAll(pattern.points.map { patternPoint -> LatLng(patternPoint.position.latitude, patternPoint.position.longitude) })
-        googleMap.addPolyline(poly)
+    public override fun onResume() {
+        super.onResume()
+        mapView?.onResume()
     }
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -230,7 +231,28 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
         savedInstanceState.putString(bundleBusRouteName, busRouteName)
         savedInstanceState.putString(bundleBusBound, bound)
         savedInstanceState.putString(bundleBusBoundTitle, boundTitle)
+        mapView?.onSaveInstanceState(savedInstanceState)
         super.onSaveInstanceState(savedInstanceState)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        mapView?.onStart()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mapView?.onStop()
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        mapView?.onLowMemory()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mapView?.onDestroy()
     }
 
     companion object {

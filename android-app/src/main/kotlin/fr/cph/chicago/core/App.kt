@@ -47,10 +47,13 @@ class App : Application() {
         screenSize[0]
     }
 
-    val lineWidth: Float by lazy {
+    val lineWidthGoogleMap: Float by lazy {
         if (screenWidth > 1080) 7f else if (screenWidth > 480) 4f else 2f
     }
 
+    val lineWidthMapBox: Float by lazy {
+        if (screenWidth > 1080) 2f else if (screenWidth > 480) 4f else 2f
+    }
 
     override fun onCreate() {
         super.onCreate()

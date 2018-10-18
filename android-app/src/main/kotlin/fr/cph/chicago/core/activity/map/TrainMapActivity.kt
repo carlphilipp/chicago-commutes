@@ -152,7 +152,7 @@ class TrainMapActivity : FragmentMapActivity() {
 
     private fun drawLine(positions: List<Position>) {
         val poly = PolylineOptions()
-        poly.width((application as App).lineWidth)
+        poly.width((application as App).lineWidthGoogleMap)
         poly.geodesic(true).color(TrainLine.fromXmlString(line).color)
         positions
             .map { position -> LatLng(position.latitude, position.longitude) }

@@ -51,7 +51,6 @@ import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.util.GoogleMapUtil
-import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
 
@@ -213,7 +212,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
         val poly = PolylineOptions()
             .geodesic(true)
             .color(Color.BLACK)
-            .width(App.instance.lineWidth)
+            .width(App.instance.lineWidthGoogleMap)
             .addAll(pattern.points.map { patternPoint -> LatLng(patternPoint.position.latitude, patternPoint.position.longitude) })
         googleMap.addPolyline(poly)
     }

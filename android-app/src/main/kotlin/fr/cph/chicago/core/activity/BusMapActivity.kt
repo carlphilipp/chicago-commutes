@@ -165,7 +165,7 @@ class BusMapActivity : FragmentMapActivity() {
         patterns.forEach { pattern ->
             val poly = PolylineOptions()
                 .color(if (index[0] == 0) Color.RED else if (index[0] == 1) Color.BLUE else Color.YELLOW)
-                .width(App.instance.lineWidth)
+                .width(App.instance.lineWidthGoogleMap)
                 .geodesic(true)
             pattern.points
                 .map { patternPoint ->
