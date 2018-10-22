@@ -17,11 +17,14 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.core.model
+package fr.cph.chicago.core.model.marker
 
-data class Train(
-    val runNumber: Int,
-    val destName: String,
-    val app: Boolean,
-    val position: Position,
-    val heading: Int)
+import fr.cph.chicago.R
+
+/**
+ * Refresh train markers
+ *
+ * @author Carl-Philipp Harmant
+ * @version 1
+ */
+class RefreshTrainMarkers : RefreshMarkers(R.drawable.train)

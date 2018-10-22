@@ -17,11 +17,25 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.core.model
+package fr.cph.chicago.core.model.marker
 
-data class Train(
-    val runNumber: Int,
-    val destName: String,
-    val app: Boolean,
-    val position: Position,
-    val heading: Int)
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import fr.cph.chicago.core.model.Station
+
+class MarkerDataHolder {
+    private val data: MutableMap<LatLng, Station> = mutableMapOf()
+
+    fun addData(marker: Marker, station: Station) {
+        val latLng = marker.position
+        data[latLng] = station
+    }
+
+    fun clear() {
+        data.clear()
+    }
+
+    fun getStation(marker: Marker): Station? {
+        return data[marker.position]
+    }
+}

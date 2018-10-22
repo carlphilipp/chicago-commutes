@@ -17,31 +17,24 @@
  * limitations under the License.
  */
 
-package fr.cph.chicago.core.activity
+package fr.cph.chicago.core.activity.map
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.widget.TextView
 import butterknife.BindString
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
+import com.mapbox.mapboxsdk.maps.MapboxMap
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.activity.map.FragmentMapActivity
 import fr.cph.chicago.core.model.Bus
 import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.model.marker.RefreshBusMarkers
-import fr.cph.chicago.rx.BusFollowObserver
 import fr.cph.chicago.rx.BusObserver
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.service.BusService
@@ -127,15 +120,15 @@ class BusMapActivity : FragmentMapActivity() {
         val sizeIsOne = result.size == 1
         val position = if (sizeIsOne) result[0].position else MapUtil.getBestPosition(result.map { it.position })
         val zoom = if (sizeIsOne) 15 else 11 // FIXME magic numbers
-        centerMapOn(position.latitude, position.longitude, zoom)
+        centerMapOn(position.latitude, position.longitude, zoom.toDouble())
     }
 
     fun drawBuses(buses: List<Bus>) {
         cleanAllMarkers()
         val bitmapDesc = refreshBusesBitmap.currentDescriptor
-        busMarkers = buses.map { bus ->
+       /* busMarkers = buses.map { bus ->
             val point = LatLng(bus.position.latitude, bus.position.longitude)
-            val marker = googleMap.addMarker(
+            val marker = mapboxMap.addMarker(
                 MarkerOptions()
                     .position(point)
                     .title("To ${bus.destination}")
@@ -151,7 +144,7 @@ class BusMapActivity : FragmentMapActivity() {
             val title = view.findViewById<TextView>(R.id.title)
             title.text = marker.title
             views[marker] = view
-        }
+        }*/
     }
 
     private fun cleanAllMarkers() {
@@ -173,20 +166,20 @@ class BusMapActivity : FragmentMapActivity() {
                     poly.add(point)
                     var marker: Marker? = null
                     if ("S" == patternPoint.type) {
-                        marker = googleMap.addMarker(MarkerOptions()
+                       /* marker = mapboxMap.addMarker(MarkerOptions()
                             .position(point)
                             .title(patternPoint.stopName)
                             .snippet(pattern.direction)
                             .icon(if (index[0] == 0) red else blue)
                         )
-                        marker!!.isVisible = false
+                        marker!!.isVisible = false*/
                     }
                     // Potential null sent, if stream api change, it could fail
                     marker
                 }
                 .filter { marker -> marker != null }
                 .forEach { busStationMarkers.add(it!!) }
-            googleMap.addPolyline(poly)
+            //mapboxMap.addPolyline(poly)
             index[0]++
         }
     }
@@ -205,14 +198,14 @@ class BusMapActivity : FragmentMapActivity() {
         super.onSaveInstanceState(savedInstanceState)
     }
 
-    override fun onCameraIdle() {
+/*    override fun onCameraIdle() {
         refreshBusesBitmap.refreshBusAndStation(googleMap.cameraPosition, busMarkers, busStationMarkers)
-    }
+    }*/
 
-    override fun onMapReady(googleMap: GoogleMap) {
+    override fun onMapReady(googleMap: MapboxMap) {
         super.onMapReady(googleMap)
 
-        googleMap.setInfoWindowAdapter(object : InfoWindowAdapter {
+        /*googleMap.setInfoWindowAdapter(object : InfoWindowAdapter {
             override fun getInfoWindow(marker: Marker): View? {
                 return null
             }
@@ -233,8 +226,8 @@ class BusMapActivity : FragmentMapActivity() {
                 }
             }
         })
-
-        googleMap.setOnInfoWindowClickListener { marker ->
+*/
+        /*googleMap.setOnInfoWindowClickListener { marker ->
             if (marker.title.startsWith("To ")) {
                 val view = views[marker]
                 if (!refreshingInfoWindow) {
@@ -246,7 +239,7 @@ class BusMapActivity : FragmentMapActivity() {
                     status[marker] = !current
                 }
             }
-        }
+        }*/
         loadActivityData()
     }
 

@@ -31,7 +31,7 @@ import android.widget.LinearLayout
 import android.widget.ListView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.BusBoundActivity
-import fr.cph.chicago.core.activity.BusMapActivity
+import fr.cph.chicago.core.activity.map.BusMapActivity
 import fr.cph.chicago.core.adapter.PopupBusAdapter
 import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.BusRoute

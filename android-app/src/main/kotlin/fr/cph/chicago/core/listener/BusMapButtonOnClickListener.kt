@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.activity.BusMapActivity
+import fr.cph.chicago.core.activity.map.BusMapActivity
 import fr.cph.chicago.core.activity.MainActivity
 import fr.cph.chicago.core.model.BusRoute
 

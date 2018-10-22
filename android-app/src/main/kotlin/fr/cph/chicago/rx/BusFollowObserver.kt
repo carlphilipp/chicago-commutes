@@ -24,7 +24,7 @@ import android.view.View
 import android.widget.ListView
 import android.widget.TextView
 import fr.cph.chicago.R
-import fr.cph.chicago.core.activity.BusMapActivity
+import fr.cph.chicago.core.activity.map.BusMapActivity
 import fr.cph.chicago.core.adapter.BusMapSnippetAdapter
 import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.util.Util
