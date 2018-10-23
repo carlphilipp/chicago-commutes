@@ -52,7 +52,8 @@ class App : Application() {
     }
 
     val lineWidthMapBox: Float by lazy {
-        if (screenWidth > 1080) 2f else if (screenWidth > 480) 4f else 2f
+        System.out.println(screenWidth)
+        if (screenWidth > 1080) 2f else if (screenWidth > 480) 1f else 2f
     }
 
     override fun onCreate() {

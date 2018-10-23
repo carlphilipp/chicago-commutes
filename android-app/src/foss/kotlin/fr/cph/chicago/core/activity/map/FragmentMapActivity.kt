@@ -82,6 +82,10 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), EasyPermi
         mapboxMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom))
     }
 
+    protected fun centerMapOn(latLng: LatLng, zoom: Double) {
+        mapboxMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom))
+    }
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }

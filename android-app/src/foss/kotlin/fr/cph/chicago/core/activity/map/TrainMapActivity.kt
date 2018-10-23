@@ -20,21 +20,21 @@
 package fr.cph.chicago.core.activity.map
 
 import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import butterknife.BindString
 import com.mapbox.geojson.Feature
+import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
-import com.mapbox.geojson.Polygon
 import com.mapbox.mapboxsdk.annotations.Marker
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
-import com.mapbox.mapboxsdk.annotations.PolygonOptions
 import com.mapbox.mapboxsdk.annotations.PolylineOptions
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.style.expressions.Expression
-import com.mapbox.mapboxsdk.style.layers.Layer
+import com.mapbox.mapboxsdk.style.expressions.Expression.get
+import com.mapbox.mapboxsdk.style.expressions.Expression.step
+import com.mapbox.mapboxsdk.style.expressions.Expression.stop
+import com.mapbox.mapboxsdk.style.expressions.Expression.zoom
 import com.mapbox.mapboxsdk.style.layers.Property
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage
@@ -53,8 +53,6 @@ import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
-import java.util.ArrayList
-import java.util.UUID
 
 /**
  * @author Carl-Philipp Harmant
@@ -123,82 +121,33 @@ class TrainMapActivity : FragmentMapActivity() {
         super.onSaveInstanceState(savedInstanceState)
     }
 
-    private fun centerMapOnLine(result: List<Train>) {
-        /*val position: Position
-        val zoom: Int
-        if (result.size == 1) {
-            position = if (result[0].position.latitude == 0.0 && result[0].position.longitude == 0.0)
-                MapUtil.chicagoPosition
-            else
-                result[0].position
-            zoom = 15
-        } else {
-            position = MapUtil.getBestPosition(result.map { it.position })
-            zoom = 11
+    private fun centerMapOnLine() {
+        val pair: Pair<LatLng, Double> = when (trainLine) {
+            TrainLine.BLUE -> Pair(LatLng(41.895351487237065, -87.7658120473011), 9.712402653729297)
+            TrainLine.BROWN -> Pair(LatLng(41.917109926603494, -87.66789627065805), 11.182480413976615)
+            TrainLine.GREEN -> Pair(LatLng(41.83977485811293, -87.70335827378659), 10.112386603953428)
+            TrainLine.ORANGE -> Pair(LatLng(41.836677288834935, -87.67880795158356), 10.763237680550047)
+            TrainLine.PINK -> Pair(LatLng(41.86087730862362, -87.69142385608006), 10.78020744535134)
+            TrainLine.PURPLE -> Pair(LatLng(41.97621387448969, -87.66136527647143), 10.267667342991793)
+            TrainLine.RED -> Pair(LatLng(41.87368988294554, -87.64321964856293), 10.090815394650992)
+            TrainLine.YELLOW -> Pair(LatLng(42.020033618572555, -87.7147765617836), 11.633041915241225)
+            TrainLine.NA -> Pair(LatLng(41.8819, -87.6278), 11.0)
         }
-        centerMapOn(position.latitude, position.longitude, zoom)*/
-        // FIXME: find a better way
-        val position = MapUtil.getBestPosition(result.map { it.position })
-        val zoom: Double = when (trainLine) {
-            TrainLine.BLUE -> 9.7
-            TrainLine.BROWN -> 11.0
-            TrainLine.GREEN -> 10.0
-            TrainLine.ORANGE -> 10.5
-            TrainLine.PINK -> 10.5
-            TrainLine.PURPLE -> 10.0
-            TrainLine.RED -> 9.0
-            TrainLine.YELLOW -> 9.0
-            TrainLine.NA -> 9.0
-        }
-        centerMapOn(position.latitude, position.longitude, zoom)
+        centerMapOn(pair.first, pair.second)
     }
-
 
     private fun drawTrains(trains: List<Train>) {
-        if (runNumbers.isEmpty()) {
-            trains.forEach { train -> addTrainToMap(train) }
-        } else {
-            trains.forEach { train ->
-                val marker = mapboxMap.getLayer("marker-layer-${train.runNumber}")
-                if (marker != null) {
-                    val pair = runNumbers[train.runNumber]
-                    val newPosition = LatLng(train.position.latitude, train.position.longitude)
-                    if (pair!!.second != newPosition) {
-                        //val source = mapboxMap.getSourceAs<GeoJsonSource>("marker-source-${pair.first}")
-                        //val features = source?.querySourceFeatures(Expression.literal("Text"))
-                        //val point = features!!.get(0).geometry() as Point
-
-                        val geoJsonSource = mapboxMap.getSource("marker-source-${pair.first}") as GeoJsonSource?
-                        val feature = Feature.fromGeometry(Point.fromLngLat(train.position.longitude, train.position.latitude))
-                        geoJsonSource?.setGeoJson(feature)
-
-                        val symbolLayer = mapboxMap.getLayer("marker-layer-${train.runNumber}") as SymbolLayer
-                        symbolLayer.setProperties(iconRotate(train.heading.toFloat()))
-                    }
-                } else {
-                    addTrainToMap(train)
-                }
-            }
+        val features = trains.map { train ->
+            val feature = Feature.fromGeometry(Point.fromLngLat(train.position.longitude, train.position.latitude))
+            feature.addNumberProperty("heading", train.heading)
+            feature
         }
-    }
-
-    private fun addTrainToMap(train: Train) {
-        val feature = Feature.fromGeometry(Point.fromLngLat(train.position.longitude, train.position.latitude))
-        val latLng = LatLng(train.position.latitude, train.position.longitude)
-        val uuid = UUID.randomUUID().toString()
-        //val marker = mapboxMap.addMarker(MarkerOptions().position(latLng).title(train.destName))
-        runNumbers[train.runNumber] = Pair(uuid, latLng)
-
-        mapboxMap.addSource(GeoJsonSource("marker-source-$uuid", feature))
-        val symbolLayer = SymbolLayer("marker-layer-${train.runNumber}", "marker-source-$uuid")
-            .withProperties(
-                iconImage("image-train"),
-                iconRotate(train.heading.toFloat()),
-                iconSize(0.2f),
-                iconAllowOverlap(true),
-                iconRotationAlignment(Property.ICON_ROTATION_ALIGNMENT_MAP)
-            )
-        mapboxMap.addLayer(symbolLayer)
+        val source = mapboxMap.getSource("marker-source") as GeoJsonSource?
+        if (source == null) {
+            mapboxMap.addSource(GeoJsonSource("marker-source", FeatureCollection.fromFeatures(features)))
+        } else {
+            source.setGeoJson(FeatureCollection.fromFeatures(features))
+        }
     }
 
     private fun drawLine(positions: List<Position>) {
@@ -216,12 +165,36 @@ class TrainMapActivity : FragmentMapActivity() {
     override fun onMapReady(mapboxMap: MapboxMap) {
         super.onMapReady(mapboxMap)
         mapboxMap.uiSettings.isLogoEnabled = false
+        mapboxMap.uiSettings.isAttributionEnabled = false
+        mapboxMap.uiSettings.isRotateGesturesEnabled = false
+        mapboxMap.uiSettings.isTiltGesturesEnabled = false
+        mapboxMap.addOnCameraIdleListener {
+            Log.d("DERP", "target: ${mapboxMap.cameraPosition.target} - zoom: ${mapboxMap.cameraPosition.zoom}")
+        }
+
         mapboxMap.addImage("image-train", BitmapFactory.decodeResource(resources, R.drawable.train))
+        val symbolLayer = SymbolLayer("marker-layer", "marker-source")
+            .withProperties(
+                iconImage("image-train"),
+                iconRotate(get("heading")),
+                iconSize(
+                    step(zoom(), 0.05f,
+                        stop(9, 0.10f),
+                        stop(10.5, 0.15f),
+                        stop(12, 0.2f),
+                        stop(15, 0.3f)
+                    )
+                ),
+                iconAllowOverlap(true),
+                iconRotationAlignment(Property.ICON_ROTATION_ALIGNMENT_MAP)
+            )
+        mapboxMap.addLayer(symbolLayer)
+        centerMapOnLine()
         loadActivityData()
         mapboxMap.addOnMapClickListener { point: LatLng ->
             val finalPoint = mapboxMap.projection.toScreenLocation(point)
             //val features = mapboxMap.queryRenderedFeatures(finalPoint, "building")
-            val features = mapboxMap.queryRenderedFeatures(finalPoint, *runNumbers.keys.map { "marker-layer-$it" }.toTypedArray())
+            val features = mapboxMap.queryRenderedFeatures(finalPoint, *runNumbers.keys.map { "marker-layer" }.toTypedArray())
             if (features.size > 0) {
                 val featureId = features[0].id()
 
@@ -270,14 +243,9 @@ class TrainMapActivity : FragmentMapActivity() {
                 Observable.zip(trainsObservable, positionsObservable, BiFunction { trains: List<Train>, positions: List<Position> ->
                     drawTrains(trains)
                     drawLine(positions)
-                    if (trains.isNotEmpty()) {
-                        if (centerMap) {
-                            centerMapOnLine(trains)
-                        }
-                    } else {
+                    if (trains.isEmpty()) {
                         Util.showMessage(this@TrainMapActivity, R.string.message_no_train_found)
                     }
-
                     Any()
                 }).subscribe()
             } else {
