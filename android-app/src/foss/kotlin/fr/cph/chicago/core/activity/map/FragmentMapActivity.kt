@@ -27,6 +27,7 @@ import android.os.Build
 import android.support.v7.widget.Toolbar
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import butterknife.BindDrawable
 import butterknife.BindView
 import com.mapbox.mapboxsdk.annotations.Marker
@@ -72,10 +73,13 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), EasyPermi
     }
 
     fun refreshInfoWindow() {
-        refreshingInfoWindow = true
+        //refreshingInfoWindow = true
         //selectedMarker.showInfoWindow()
-        refreshingInfoWindow = false
+        //refreshingInfoWindow = false
+        //refreshSource()
     }
+
+    abstract fun refreshSource()
 
     protected fun centerMapOn(latitude: Double, longitude: Double, zoom: Double) {
         val latLng = LatLng(latitude, longitude)

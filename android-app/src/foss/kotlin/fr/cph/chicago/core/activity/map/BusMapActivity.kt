@@ -95,6 +95,9 @@ class BusMapActivity : FragmentMapActivity() {
         setToolbar()
     }
 
+    override fun refreshSource() {
+    }
+
     public override fun onStop() {
         super.onStop()
         loadPattern = false

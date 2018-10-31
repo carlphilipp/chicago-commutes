@@ -17,9 +17,9 @@
 -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:mapbox="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:mapbox="http://schemas.android.com/tools"
     android:baselineAligned="false"
     android:orientation="vertical">
 
@@ -40,12 +40,14 @@
             android:layout_height="match_parent"
             mapbox:mapbox_cameraTargetLat="40.73581"
             mapbox:mapbox_cameraTargetLng="-73.99155"
-            mapbox:mapbox_styleUrl="@string/mapbox_style_mapbox_streets"
-            mapbox:mapbox_cameraZoom="11">
+            mapbox:mapbox_cameraZoom="11"
+            mapbox:mapbox_styleUrl="@string/mapbox_style_mapbox_streets">
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1" >
+                android:layout_weight="1">
+
                 <Button
                     android:id="@+id/search_area"
                     android:layout_width="wrap_content"
@@ -53,7 +55,7 @@
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="false"
                     android:text="@string/search_area"
-                    android:visibility="invisible"/>
+                    android:visibility="invisible" />
             </RelativeLayout>
         </com.mapbox.mapboxsdk.maps.MapView>
 

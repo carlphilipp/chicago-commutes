@@ -20,24 +20,34 @@
 package fr.cph.chicago.core.activity.map
 
 import android.graphics.BitmapFactory
+import android.graphics.PointF
+import android.graphics.RectF
 import android.os.Bundle
-import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.ListView
+import android.widget.ProgressBar
+import android.widget.RelativeLayout
+import android.widget.TextView
 import butterknife.BindString
+import butterknife.BindView
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
-import com.mapbox.mapboxsdk.annotations.Marker
-import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.annotations.PolylineOptions
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
+import com.mapbox.mapboxsdk.style.expressions.Expression.eq
 import com.mapbox.mapboxsdk.style.expressions.Expression.get
+import com.mapbox.mapboxsdk.style.expressions.Expression.literal
 import com.mapbox.mapboxsdk.style.expressions.Expression.step
 import com.mapbox.mapboxsdk.style.expressions.Expression.stop
 import com.mapbox.mapboxsdk.style.expressions.Expression.zoom
 import com.mapbox.mapboxsdk.style.layers.Property
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAnchor
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconRotate
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconRotationAlignment
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconSize
@@ -45,11 +55,12 @@ import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
+import fr.cph.chicago.core.adapter.TrainMapSnippetAdapter
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.core.utils.BitmapGenerator
 import fr.cph.chicago.rx.ObservableUtil
-import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
@@ -60,6 +71,8 @@ import io.reactivex.functions.BiFunction
  */
 class TrainMapActivity : FragmentMapActivity() {
 
+    @BindView(R.id.activity_bar)
+    lateinit var progressBar: ProgressBar
     @BindString(R.string.bundle_train_line)
     lateinit var bundleTrainLine: String
 
@@ -70,13 +83,10 @@ class TrainMapActivity : FragmentMapActivity() {
         TrainLine.fromXmlString(line)
     }
 
+    private var source: GeoJsonSource? = null
+    private var featureCollection: FeatureCollection? = null
     private var centerMap = true
     private var drawLine = true
-    private val runNumbers = mutableMapOf<Int, Pair<String, LatLng>>()
-
-    internal var featureMarker: Marker? = null
-
-    private var selectedBuilding: com.mapbox.mapboxsdk.annotations.Polygon? = null
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         App.checkTrainData(this)
@@ -91,13 +101,15 @@ class TrainMapActivity : FragmentMapActivity() {
 
         mapView!!.getMapAsync(this)
 
+        progressBar.bringToFront()
+
         // Init toolbar
         setToolbar()
     }
 
     override fun setToolbar() {
         super.setToolbar()
-        toolbar.setOnMenuItemClickListener { _ ->
+        toolbar.setOnMenuItemClickListener {
             centerMap = false
             loadActivityData()
             false
@@ -121,6 +133,12 @@ class TrainMapActivity : FragmentMapActivity() {
         super.onSaveInstanceState(savedInstanceState)
     }
 
+    override fun refreshSource() {
+        if (source != null && featureCollection != null) {
+            source!!.setGeoJson(featureCollection)
+        }
+    }
+
     private fun centerMapOnLine() {
         val pair: Pair<LatLng, Double> = when (trainLine) {
             TrainLine.BLUE -> Pair(LatLng(41.895351487237065, -87.7658120473011), 9.712402653729297)
@@ -140,13 +158,19 @@ class TrainMapActivity : FragmentMapActivity() {
         val features = trains.map { train ->
             val feature = Feature.fromGeometry(Point.fromLngLat(train.position.longitude, train.position.latitude))
             feature.addNumberProperty("heading", train.heading)
+            feature.addStringProperty(PROPERTY_TITLE, train.runNumber.toString())
+            feature.addStringProperty(PROPERTY_DESTINATION, "To ${train.destName}")
+            feature.addBooleanProperty(PROPERTY_FAVOURITE, false)
             feature
         }
-        val source = mapboxMap.getSource("marker-source") as GeoJsonSource?
+
+        featureCollection = FeatureCollection.fromFeatures(features)
+        source = mapboxMap.getSource(SOURCE_ID) as GeoJsonSource?
         if (source == null) {
-            mapboxMap.addSource(GeoJsonSource("marker-source", FeatureCollection.fromFeatures(features)))
+            source = GeoJsonSource(SOURCE_ID, featureCollection)
+            mapboxMap.addSource(source!!)
         } else {
-            source.setGeoJson(FeatureCollection.fromFeatures(features))
+            source!!.setGeoJson(featureCollection)
         }
     }
 
@@ -168,12 +192,10 @@ class TrainMapActivity : FragmentMapActivity() {
         mapboxMap.uiSettings.isAttributionEnabled = false
         mapboxMap.uiSettings.isRotateGesturesEnabled = false
         mapboxMap.uiSettings.isTiltGesturesEnabled = false
-        mapboxMap.addOnCameraIdleListener {
-            Log.d("DERP", "target: ${mapboxMap.cameraPosition.target} - zoom: ${mapboxMap.cameraPosition.zoom}")
-        }
 
         mapboxMap.addImage("image-train", BitmapFactory.decodeResource(resources, R.drawable.train))
-        val symbolLayer = SymbolLayer("marker-layer", "marker-source")
+
+        val symbolLayer = SymbolLayer(MARKER_LAYER_ID, SOURCE_ID)
             .withProperties(
                 iconImage("image-train"),
                 iconRotate(get("heading")),
@@ -182,54 +204,163 @@ class TrainMapActivity : FragmentMapActivity() {
                         stop(9, 0.10f),
                         stop(10.5, 0.15f),
                         stop(12, 0.2f),
-                        stop(15, 0.3f)
+                        stop(15, 0.3f),
+                        stop(17, 0.5f)
                     )
                 ),
                 iconAllowOverlap(true),
                 iconRotationAlignment(Property.ICON_ROTATION_ALIGNMENT_MAP)
             )
         mapboxMap.addLayer(symbolLayer)
+
+        mapboxMap.addLayer(SymbolLayer(CALLOUT_LAYER_ID, SOURCE_ID)
+            .withProperties(
+                // show image with id title based on the value of the title feature property
+                iconImage("{title}"),
+                // set anchor of icon to bottom-left
+                iconAnchor(Property.ICON_ANCHOR_BOTTOM_LEFT),
+                // offset icon slightly to match bubble layout
+                iconOffset(arrayOf(-20.0f, -10.0f))
+            )
+            // add a filter to show only when selected feature property is true
+            .withFilter(eq(get(PROPERTY_SELECTED), literal(true))))
+
         centerMapOnLine()
         loadActivityData()
         mapboxMap.addOnMapClickListener { point: LatLng ->
             val finalPoint = mapboxMap.projection.toScreenLocation(point)
-            //val features = mapboxMap.queryRenderedFeatures(finalPoint, "building")
-            val features = mapboxMap.queryRenderedFeatures(finalPoint, *runNumbers.keys.map { "marker-layer" }.toTypedArray())
-            if (features.size > 0) {
-                val featureId = features[0].id()
-
-                for (a in features.indices) {
-                    if (featureId == features[a].id()) {
-                        val pol = features[a].geometry()
-                        if (pol is Point) {
-                            val p = pol as Point
-                            /*val list = ArrayList<LatLng>()
-                            for (i in 0 until (features[a].geometry() as Point).coordinates()!!.size) {
-                                for (j in 0 until (features[a].geometry() as Point).coordinates()!![i].size) {
-                                    list.add(LatLng(
-                                        (features[a].geometry() as Point).coordinates()!![i][j].latitude(),
-                                        (features[a].geometry() as Point).coordinates()!![i][j].longitude()
-                                    ))
-                                }
-                            }*/
-
-                            val marker = mapboxMap.addMarker(
-                                MarkerOptions()
-                                    .title("derp")
-                                    .position(point)
-                                    .snippet("detail snippet")
-                            )
-                            marker.showInfoWindow(mapboxMap, mapView!!)
-
-                            /*selectedBuilding = mapboxMap.addPolygon(PolygonOptions()
-                                .addAll(list)
-                                .fillColor(Color.parseColor("#8A8ACB"))
-                            )*/
+            val features = mapboxMap.queryRenderedFeatures(finalPoint, CALLOUT_LAYER_ID)
+            if (!features.isEmpty()) {
+                val feature = features[0]
+                handleClickCallout(feature)
+            } else {
+                val features = mapboxMap.queryRenderedFeatures(toRect(finalPoint), MARKER_LAYER_ID)
+                if (!features.isEmpty()) {
+                    val title = features[0].getStringProperty(PROPERTY_TITLE)
+                    val featureList = featureCollection!!.features()
+                    for (i in featureList!!.indices) {
+                        if (featureList[i].getStringProperty(PROPERTY_TITLE) == title) {
+                            setSelected(i)
                         }
                     }
+                } else {
+                    deselectAll()
+                    refreshSource()
                 }
             }
         }
+    }
+
+    private fun showProgress(show: Boolean) {
+        if (show) {
+            progressBar.visibility = View.VISIBLE
+            progressBar.progress = 50
+        } else {
+            progressBar.visibility = View.GONE
+        }
+    }
+
+    private fun toRect(point: PointF): RectF {
+        return RectF(
+            point.x - DEFAULT_EXTRAPOLATION,
+            point.y + DEFAULT_EXTRAPOLATION,
+            point.x + DEFAULT_EXTRAPOLATION,
+            point.y - DEFAULT_EXTRAPOLATION)
+    }
+
+    private fun handleClickCallout(feature: Feature) {
+        showProgress(true)
+        val runNumber = feature.getStringProperty(PROPERTY_TITLE)
+        observableUtil.createLoadTrainEtaObservable(runNumber, true)
+            .subscribe { trains ->
+                // FIXME: create its own subsribe to share it with the duplicated code
+                val view = createView(feature)
+                val arrivals: ListView = view.findViewById(R.id.arrivals)
+                val error: TextView = view.findViewById(R.id.error)
+                val container: RelativeLayout = view.findViewById(R.id.container)
+
+                val params = container.layoutParams
+                params.width = Util.convertDpToPixel(200)
+                params.height = (Util.convertDpToPixel(21) * trains.size) + Util.convertDpToPixel(30)
+                container.layoutParams = params
+
+                if (trains.isNotEmpty()) {
+                    val ada = TrainMapSnippetAdapter(trains)
+                    arrivals.adapter = ada
+                    arrivals.visibility = ListView.VISIBLE
+                    error.visibility = TextView.GONE
+                } else {
+                    arrivals.visibility = ListView.GONE
+                    error.visibility = TextView.VISIBLE
+                }
+                mapboxMap.addImage(runNumber, BitmapGenerator.generate(view))
+                refreshSource()
+                showProgress(false)
+            }
+    }
+
+    private fun convertToLatLng(feature: Feature): LatLng {
+        val symbolPoint = feature.geometry() as Point?
+        return LatLng(symbolPoint!!.latitude(), symbolPoint.longitude())
+    }
+
+    private fun deselectAll() {
+        for (feature in featureCollection!!.features()!!) {
+            feature.properties()!!.addProperty(PROPERTY_SELECTED, false)
+        }
+    }
+
+    private fun setSelected(index: Int) {
+        showProgress(true)
+        deselectAll()
+
+        val feature = featureCollection!!.features()!![index]
+
+        val runNumber = feature.getStringProperty(PROPERTY_TITLE)
+        val id = feature.getStringProperty(PROPERTY_TITLE)
+
+        observableUtil.createLoadTrainEtaObservable(runNumber, false)
+            .subscribe { trains ->
+                // FIXME: create its own subsribe to share it with the duplicated code
+                val view = createView(feature)
+                val arrivals: ListView = view.findViewById(R.id.arrivals)
+                val error: TextView = view.findViewById(R.id.error)
+
+                if (trains.isNotEmpty()) {
+                    val container: RelativeLayout = view.findViewById(R.id.container)
+
+                    val params = container.layoutParams
+                    params.width = Util.convertDpToPixel(200)
+                    params.height = (Util.convertDpToPixel(21) * trains.size) + Util.convertDpToPixel(30)
+                    container.layoutParams = params
+
+                    val ada = TrainMapSnippetAdapter(trains)
+                    arrivals.adapter = ada
+                    arrivals.visibility = ListView.VISIBLE
+                    error.visibility = TextView.GONE
+                } else {
+                    arrivals.visibility = ListView.GONE
+                    error.visibility = TextView.VISIBLE
+                }
+                mapboxMap.addImage(id, BitmapGenerator.generate(view))
+
+                selectFeature(feature)
+                refreshSource()
+                showProgress(false)
+            }
+    }
+
+    private fun createView(feature: Feature): View {
+        val inflater = LayoutInflater.from(this)
+        val view = inflater.inflate(R.layout.marker_mapbox, null)
+        val destination = feature.getStringProperty(PROPERTY_DESTINATION)
+        val title = view.findViewById(R.id.title) as TextView
+        title.text = destination
+        return view
+    }
+
+    private fun selectFeature(feature: Feature) {
+        feature.properties()!!.addProperty(PROPERTY_SELECTED, true)
     }
 
     private fun loadActivityData() {
@@ -263,5 +394,17 @@ class TrainMapActivity : FragmentMapActivity() {
         } else {
             Util.showNetworkErrorMessage(layout)
         }
+    }
+
+    companion object {
+        private val TAG = TrainMapActivity::class.java.simpleName
+        private const val DEFAULT_EXTRAPOLATION = 100
+        private const val SOURCE_ID = "chicago.commutes.source"
+        private const val MARKER_LAYER_ID = "chicago.commutes.marker"
+        private const val CALLOUT_LAYER_ID = "chicago.commutes.callout"
+        private const val PROPERTY_TITLE = "title"
+        private const val PROPERTY_DESTINATION = "destination"
+        private const val PROPERTY_SELECTED = "selected"
+        private const val PROPERTY_FAVOURITE = "favourite"
     }
 }
