@@ -11,8 +11,7 @@ import fr.cph.chicago.R
 abstract class ButterKnifeFragmentMapActivity : FragmentActivity() {
 
     @BindView(R.id.mapView)
-    @JvmField
-    protected var mapView: MapView? = null
+    lateinit var mapView: MapView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,7 +19,7 @@ abstract class ButterKnifeFragmentMapActivity : FragmentActivity() {
             Mapbox.getInstance(this, getString(R.string.mapbox_token))
             setContentView(R.layout.activity_map_mapbox)
             ButterKnife.bind(this)
-            mapView!!.onCreate(savedInstanceState)
+            mapView.onCreate(savedInstanceState)
             create(savedInstanceState)
         }
     }

@@ -170,7 +170,6 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
         }).subscribe()
     }
 
-
     override fun onConnected() {
     }
 

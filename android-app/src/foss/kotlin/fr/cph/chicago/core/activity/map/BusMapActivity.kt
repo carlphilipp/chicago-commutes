@@ -126,6 +126,10 @@ class BusMapActivity : FragmentMapActivity() {
         centerMapOn(position.latitude, position.longitude, zoom.toDouble())
     }
 
+    override fun centerMap() {
+        TODO()
+    }
+
     fun drawBuses(buses: List<Bus>) {
         cleanAllMarkers()
         val bitmapDesc = refreshBusesBitmap.currentDescriptor

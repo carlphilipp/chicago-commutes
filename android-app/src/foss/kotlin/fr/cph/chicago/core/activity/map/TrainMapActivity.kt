@@ -23,12 +23,8 @@ import android.graphics.BitmapFactory
 import android.graphics.PointF
 import android.graphics.RectF
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.widget.ListView
 import android.widget.ProgressBar
-import android.widget.RelativeLayout
-import android.widget.TextView
 import butterknife.BindString
 import butterknife.BindView
 import com.mapbox.geojson.Feature
@@ -55,12 +51,12 @@ import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.adapter.TrainMapSnippetAdapter
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.utils.BitmapGenerator
 import fr.cph.chicago.rx.ObservableUtil
+import fr.cph.chicago.rx.TrainsConsumer
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
@@ -85,7 +81,6 @@ class TrainMapActivity : FragmentMapActivity() {
 
     private var source: GeoJsonSource? = null
     private var featureCollection: FeatureCollection? = null
-    private var centerMap = true
     private var drawLine = true
 
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,28 +94,19 @@ class TrainMapActivity : FragmentMapActivity() {
         else
             intent.getStringExtra(bundleTrainLine)
 
-        mapView!!.getMapAsync(this)
+        initData()
 
-        progressBar.bringToFront()
-
-        // Init toolbar
         setToolbar()
     }
 
     override fun setToolbar() {
         super.setToolbar()
         toolbar.setOnMenuItemClickListener {
-            centerMap = false
             loadActivityData()
             false
         }
         Util.setWindowsColor(this, toolbar, trainLine)
         toolbar.title = trainLine.toStringWithLine()
-    }
-
-    public override fun onStop() {
-        super.onStop()
-        centerMap = false
     }
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -139,7 +125,7 @@ class TrainMapActivity : FragmentMapActivity() {
         }
     }
 
-    private fun centerMapOnLine() {
+    override fun centerMap() {
         val pair: Pair<LatLng, Double> = when (trainLine) {
             TrainLine.BLUE -> Pair(LatLng(41.895351487237065, -87.7658120473011), 9.712402653729297)
             TrainLine.BROWN -> Pair(LatLng(41.917109926603494, -87.66789627065805), 11.182480413976615)
@@ -152,6 +138,76 @@ class TrainMapActivity : FragmentMapActivity() {
             TrainLine.NA -> Pair(LatLng(41.8819, -87.6278), 11.0)
         }
         centerMapOn(pair.first, pair.second)
+    }
+
+    override fun onMapReady(mapboxMap: MapboxMap) {
+        super.onMapReady(mapboxMap)
+
+        this.mapboxMap.addImage("image-train", BitmapFactory.decodeResource(resources, R.drawable.train))
+
+        val symbolLayer = SymbolLayer(MARKER_LAYER_ID, SOURCE_ID)
+            .withProperties(
+                iconImage("image-train"),
+                iconRotate(get("heading")),
+                iconSize(
+                    step(zoom(), 0.05f,
+                        stop(9, 0.10f),
+                        stop(10.5, 0.15f),
+                        stop(12, 0.2f),
+                        stop(15, 0.3f),
+                        stop(17, 0.5f)
+                    )
+                ),
+                iconAllowOverlap(true),
+                iconRotationAlignment(Property.ICON_ROTATION_ALIGNMENT_MAP)
+            )
+        this.mapboxMap.addLayer(symbolLayer)
+
+        this.mapboxMap.addLayer(SymbolLayer(CALLOUT_LAYER_ID, SOURCE_ID)
+            .withProperties(
+                // show image with id title based on the value of the title feature property
+                iconImage("{title}"),
+                // set anchor of icon to bottom-left
+                iconAnchor(Property.ICON_ANCHOR_BOTTOM_LEFT),
+                // offset icon slightly to match bubble layout
+                iconOffset(arrayOf(-20.0f, -10.0f))
+            )
+            // add a filter to show only when selected feature property is true
+            .withFilter(eq(get(PROPERTY_SELECTED), literal(true))))
+
+        centerMap()
+        loadActivityData()
+        this.mapboxMap.addOnMapClickListener { point: LatLng ->
+            val finalPoint = this.mapboxMap.projection.toScreenLocation(point)
+            val features = this.mapboxMap.queryRenderedFeatures(finalPoint, CALLOUT_LAYER_ID)
+            if (!features.isEmpty()) {
+                val feature = features[0]
+                handleClickCallout(feature)
+            } else {
+                val features = this.mapboxMap.queryRenderedFeatures(toRect(finalPoint), MARKER_LAYER_ID)
+                if (!features.isEmpty()) {
+                    val title = features[0].getStringProperty(PROPERTY_TITLE)
+                    val featureList = featureCollection!!.features()
+                    for (i in featureList!!.indices) {
+                        if (featureList[i].getStringProperty(PROPERTY_TITLE) == title) {
+                            setSelected(i)
+                        }
+                    }
+                } else {
+                    deselectAll()
+                    refreshSource()
+                }
+            }
+        }
+    }
+
+    fun update(feature: Feature, runNumber: String, view: View) {
+        // TODO: see if the view generation can be done not in the main thread
+        mapboxMap.addImage(runNumber, BitmapGenerator.generate(view))
+
+        feature.properties()?.addProperty(PROPERTY_SELECTED, true)
+        refreshSource()
+        showProgress(false)
     }
 
     private fun drawTrains(trains: List<Train>) {
@@ -186,71 +242,6 @@ class TrainMapActivity : FragmentMapActivity() {
         drawLine = false
     }
 
-    override fun onMapReady(mapboxMap: MapboxMap) {
-        super.onMapReady(mapboxMap)
-        mapboxMap.uiSettings.isLogoEnabled = false
-        mapboxMap.uiSettings.isAttributionEnabled = false
-        mapboxMap.uiSettings.isRotateGesturesEnabled = false
-        mapboxMap.uiSettings.isTiltGesturesEnabled = false
-
-        mapboxMap.addImage("image-train", BitmapFactory.decodeResource(resources, R.drawable.train))
-
-        val symbolLayer = SymbolLayer(MARKER_LAYER_ID, SOURCE_ID)
-            .withProperties(
-                iconImage("image-train"),
-                iconRotate(get("heading")),
-                iconSize(
-                    step(zoom(), 0.05f,
-                        stop(9, 0.10f),
-                        stop(10.5, 0.15f),
-                        stop(12, 0.2f),
-                        stop(15, 0.3f),
-                        stop(17, 0.5f)
-                    )
-                ),
-                iconAllowOverlap(true),
-                iconRotationAlignment(Property.ICON_ROTATION_ALIGNMENT_MAP)
-            )
-        mapboxMap.addLayer(symbolLayer)
-
-        mapboxMap.addLayer(SymbolLayer(CALLOUT_LAYER_ID, SOURCE_ID)
-            .withProperties(
-                // show image with id title based on the value of the title feature property
-                iconImage("{title}"),
-                // set anchor of icon to bottom-left
-                iconAnchor(Property.ICON_ANCHOR_BOTTOM_LEFT),
-                // offset icon slightly to match bubble layout
-                iconOffset(arrayOf(-20.0f, -10.0f))
-            )
-            // add a filter to show only when selected feature property is true
-            .withFilter(eq(get(PROPERTY_SELECTED), literal(true))))
-
-        centerMapOnLine()
-        loadActivityData()
-        mapboxMap.addOnMapClickListener { point: LatLng ->
-            val finalPoint = mapboxMap.projection.toScreenLocation(point)
-            val features = mapboxMap.queryRenderedFeatures(finalPoint, CALLOUT_LAYER_ID)
-            if (!features.isEmpty()) {
-                val feature = features[0]
-                handleClickCallout(feature)
-            } else {
-                val features = mapboxMap.queryRenderedFeatures(toRect(finalPoint), MARKER_LAYER_ID)
-                if (!features.isEmpty()) {
-                    val title = features[0].getStringProperty(PROPERTY_TITLE)
-                    val featureList = featureCollection!!.features()
-                    for (i in featureList!!.indices) {
-                        if (featureList[i].getStringProperty(PROPERTY_TITLE) == title) {
-                            setSelected(i)
-                        }
-                    }
-                } else {
-                    deselectAll()
-                    refreshSource()
-                }
-            }
-        }
-    }
-
     private fun showProgress(show: Boolean) {
         if (show) {
             progressBar.visibility = View.VISIBLE
@@ -272,105 +263,30 @@ class TrainMapActivity : FragmentMapActivity() {
         showProgress(true)
         val runNumber = feature.getStringProperty(PROPERTY_TITLE)
         observableUtil.createLoadTrainEtaObservable(runNumber, true)
-            .subscribe { trains ->
-                // FIXME: create its own subsribe to share it with the duplicated code
-                val view = createView(feature)
-                val arrivals: ListView = view.findViewById(R.id.arrivals)
-                val error: TextView = view.findViewById(R.id.error)
-                val container: RelativeLayout = view.findViewById(R.id.container)
-
-                val params = container.layoutParams
-                params.width = Util.convertDpToPixel(200)
-                params.height = (Util.convertDpToPixel(21) * trains.size) + Util.convertDpToPixel(30)
-                container.layoutParams = params
-
-                if (trains.isNotEmpty()) {
-                    val ada = TrainMapSnippetAdapter(trains)
-                    arrivals.adapter = ada
-                    arrivals.visibility = ListView.VISIBLE
-                    error.visibility = TextView.GONE
-                } else {
-                    arrivals.visibility = ListView.GONE
-                    error.visibility = TextView.VISIBLE
-                }
-                mapboxMap.addImage(runNumber, BitmapGenerator.generate(view))
-                refreshSource()
-                showProgress(false)
-            }
-    }
-
-    private fun convertToLatLng(feature: Feature): LatLng {
-        val symbolPoint = feature.geometry() as Point?
-        return LatLng(symbolPoint!!.latitude(), symbolPoint.longitude())
+            .subscribe(TrainsConsumer(this, feature, runNumber))
     }
 
     private fun deselectAll() {
-        for (feature in featureCollection!!.features()!!) {
-            feature.properties()!!.addProperty(PROPERTY_SELECTED, false)
-        }
+        featureCollection?.features()?.forEach { feature -> feature.properties()?.addProperty(PROPERTY_SELECTED, false) }
     }
 
     private fun setSelected(index: Int) {
         showProgress(true)
         deselectAll()
-
         val feature = featureCollection!!.features()!![index]
-
         val runNumber = feature.getStringProperty(PROPERTY_TITLE)
-        val id = feature.getStringProperty(PROPERTY_TITLE)
-
-        observableUtil.createLoadTrainEtaObservable(runNumber, false)
-            .subscribe { trains ->
-                // FIXME: create its own subsribe to share it with the duplicated code
-                val view = createView(feature)
-                val arrivals: ListView = view.findViewById(R.id.arrivals)
-                val error: TextView = view.findViewById(R.id.error)
-
-                if (trains.isNotEmpty()) {
-                    val container: RelativeLayout = view.findViewById(R.id.container)
-
-                    val params = container.layoutParams
-                    params.width = Util.convertDpToPixel(200)
-                    params.height = (Util.convertDpToPixel(21) * trains.size) + Util.convertDpToPixel(30)
-                    container.layoutParams = params
-
-                    val ada = TrainMapSnippetAdapter(trains)
-                    arrivals.adapter = ada
-                    arrivals.visibility = ListView.VISIBLE
-                    error.visibility = TextView.GONE
-                } else {
-                    arrivals.visibility = ListView.GONE
-                    error.visibility = TextView.VISIBLE
-                }
-                mapboxMap.addImage(id, BitmapGenerator.generate(view))
-
-                selectFeature(feature)
-                refreshSource()
-                showProgress(false)
-            }
-    }
-
-    private fun createView(feature: Feature): View {
-        val inflater = LayoutInflater.from(this)
-        val view = inflater.inflate(R.layout.marker_mapbox, null)
-        val destination = feature.getStringProperty(PROPERTY_DESTINATION)
-        val title = view.findViewById(R.id.title) as TextView
-        title.text = destination
-        return view
-    }
-
-    private fun selectFeature(feature: Feature) {
-        feature.properties()!!.addProperty(PROPERTY_SELECTED, true)
+        observableUtil.createLoadTrainEtaObservable(runNumber, false).subscribe(TrainsConsumer(this, feature, runNumber))
     }
 
     private fun loadActivityData() {
         if (Util.isNetworkAvailable()) {
             // Load train location
             val trainsObservable = observableUtil.createTrainLocationObservable(line)
-            // Load pattern from local file
-            val positionsObservable = observableUtil.createTrainPatternObservable(line)
 
             if (drawLine) {
+                // Load pattern from local file
+                val positionsObservable = observableUtil.createTrainPatternObservable(line)
+
                 Observable.zip(trainsObservable, positionsObservable, BiFunction { trains: List<Train>, positions: List<Position> ->
                     drawTrains(trains)
                     drawLine(positions)
@@ -378,9 +294,9 @@ class TrainMapActivity : FragmentMapActivity() {
                         Util.showMessage(this@TrainMapActivity, R.string.message_no_train_found)
                     }
                     Any()
-                }).subscribe()
+                }).subscribe({}, { Util.showMessage(this@TrainMapActivity, R.string.message_error_while_loading_data) })
             } else {
-                trainsObservable.subscribe { trains ->
+                trainsObservable.subscribe({ trains ->
                     if (trains != null) {
                         drawTrains(trains)
                         if (trains.isEmpty()) {
@@ -389,7 +305,9 @@ class TrainMapActivity : FragmentMapActivity() {
                     } else {
                         Util.showMessage(this@TrainMapActivity, R.string.message_error_while_loading_data)
                     }
-                }
+                }, {
+                    Util.showMessage(this@TrainMapActivity, R.string.message_error_while_loading_data)
+                })
             }
         } else {
             Util.showNetworkErrorMessage(layout)
@@ -403,7 +321,7 @@ class TrainMapActivity : FragmentMapActivity() {
         private const val MARKER_LAYER_ID = "chicago.commutes.marker"
         private const val CALLOUT_LAYER_ID = "chicago.commutes.callout"
         private const val PROPERTY_TITLE = "title"
-        private const val PROPERTY_DESTINATION = "destination"
+        const val PROPERTY_DESTINATION = "destination"
         private const val PROPERTY_SELECTED = "selected"
         private const val PROPERTY_FAVOURITE = "favourite"
     }
