@@ -51,7 +51,6 @@ import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.utils.BitmapGenerator
@@ -59,7 +58,10 @@ import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.rx.TrainsConsumer
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
+import io.reactivex.schedulers.Schedulers
 
 /**
  * @author Carl-Philipp Harmant
@@ -145,7 +147,7 @@ class TrainMapActivity : FragmentMapActivity() {
 
         this.mapboxMap.addImage("image-train", BitmapFactory.decodeResource(resources, R.drawable.train))
 
-        val symbolLayer = SymbolLayer(MARKER_LAYER_ID, SOURCE_ID)
+        this.mapboxMap.addLayer(SymbolLayer(MARKER_LAYER_ID, SOURCE_ID)
             .withProperties(
                 iconImage("image-train"),
                 iconRotate(get("heading")),
@@ -159,11 +161,9 @@ class TrainMapActivity : FragmentMapActivity() {
                     )
                 ),
                 iconAllowOverlap(true),
-                iconRotationAlignment(Property.ICON_ROTATION_ALIGNMENT_MAP)
-            )
-        this.mapboxMap.addLayer(symbolLayer)
+                iconRotationAlignment(Property.ICON_ROTATION_ALIGNMENT_MAP)))
 
-        this.mapboxMap.addLayer(SymbolLayer(CALLOUT_LAYER_ID, SOURCE_ID)
+        this.mapboxMap.addLayer(SymbolLayer(INFO_LAYER_ID, SOURCE_ID)
             .withProperties(
                 // show image with id title based on the value of the title feature property
                 iconImage("{title}"),
@@ -172,25 +172,26 @@ class TrainMapActivity : FragmentMapActivity() {
                 // offset icon slightly to match bubble layout
                 iconOffset(arrayOf(-20.0f, -10.0f))
             )
-            // add a filter to show only when selected feature property is true
             .withFilter(eq(get(PROPERTY_SELECTED), literal(true))))
 
         centerMap()
         loadActivityData()
+
         this.mapboxMap.addOnMapClickListener { point: LatLng ->
             val finalPoint = this.mapboxMap.projection.toScreenLocation(point)
-            val features = this.mapboxMap.queryRenderedFeatures(finalPoint, CALLOUT_LAYER_ID)
-            if (!features.isEmpty()) {
-                val feature = features[0]
-                handleClickCallout(feature)
+            val infoFeatures = this.mapboxMap.queryRenderedFeatures(finalPoint, INFO_LAYER_ID)
+            if (!infoFeatures.isEmpty()) {
+                val feature = infoFeatures[0]
+                handleClickInfo(feature)
             } else {
-                val features = this.mapboxMap.queryRenderedFeatures(toRect(finalPoint), MARKER_LAYER_ID)
-                if (!features.isEmpty()) {
-                    val title = features[0].getStringProperty(PROPERTY_TITLE)
+                val markerFeatures = this.mapboxMap.queryRenderedFeatures(toRect(finalPoint), MARKER_LAYER_ID)
+                if (!markerFeatures.isEmpty()) {
+                    val title = markerFeatures[0].getStringProperty(PROPERTY_TITLE)
                     val featureList = featureCollection!!.features()
                     for (i in featureList!!.indices) {
                         if (featureList[i].getStringProperty(PROPERTY_TITLE) == title) {
-                            setSelected(i)
+                            val feature = featureCollection!!.features()!![i]
+                            setSelected(feature)
                         }
                     }
                 } else {
@@ -210,17 +211,8 @@ class TrainMapActivity : FragmentMapActivity() {
         showProgress(false)
     }
 
-    private fun drawTrains(trains: List<Train>) {
-        val features = trains.map { train ->
-            val feature = Feature.fromGeometry(Point.fromLngLat(train.position.longitude, train.position.latitude))
-            feature.addNumberProperty("heading", train.heading)
-            feature.addStringProperty(PROPERTY_TITLE, train.runNumber.toString())
-            feature.addStringProperty(PROPERTY_DESTINATION, "To ${train.destName}")
-            feature.addBooleanProperty(PROPERTY_FAVOURITE, false)
-            feature
-        }
-
-        featureCollection = FeatureCollection.fromFeatures(features)
+    private fun addFeatureCollection(featureCollection: FeatureCollection) {
+        this.featureCollection = featureCollection
         source = mapboxMap.getSource(SOURCE_ID) as GeoJsonSource?
         if (source == null) {
             source = GeoJsonSource(SOURCE_ID, featureCollection)
@@ -230,15 +222,8 @@ class TrainMapActivity : FragmentMapActivity() {
         }
     }
 
-    private fun drawLine(positions: List<Position>) {
-        val poly = PolylineOptions()
-        poly.width((application as App).lineWidthMapBox)
-        poly.color(TrainLine.fromXmlString(line).color)
-        positions
-            .map { position -> LatLng(position.latitude, position.longitude) }
-            .forEach { poly.add(it) }
-
-        mapboxMap.addPolyline(poly)
+    private fun drawPolyline(polyline: PolylineOptions) {
+        mapboxMap.addPolyline(polyline)
         drawLine = false
     }
 
@@ -259,7 +244,7 @@ class TrainMapActivity : FragmentMapActivity() {
             point.y - DEFAULT_EXTRAPOLATION)
     }
 
-    private fun handleClickCallout(feature: Feature) {
+    private fun handleClickInfo(feature: Feature) {
         showProgress(true)
         val runNumber = feature.getStringProperty(PROPERTY_TITLE)
         observableUtil.createLoadTrainEtaObservable(runNumber, true)
@@ -270,10 +255,9 @@ class TrainMapActivity : FragmentMapActivity() {
         featureCollection?.features()?.forEach { feature -> feature.properties()?.addProperty(PROPERTY_SELECTED, false) }
     }
 
-    private fun setSelected(index: Int) {
+    private fun setSelected(feature: Feature) {
         showProgress(true)
         deselectAll()
-        val feature = featureCollection!!.features()!![index]
         val runNumber = feature.getStringProperty(PROPERTY_TITLE)
         observableUtil.createLoadTrainEtaObservable(runNumber, false).subscribe(TrainsConsumer(this, feature, runNumber))
     }
@@ -281,25 +265,42 @@ class TrainMapActivity : FragmentMapActivity() {
     private fun loadActivityData() {
         if (Util.isNetworkAvailable()) {
             // Load train location
-            val trainsObservable = observableUtil.createTrainLocationObservable(line)
+            val featuresObs: Observable<FeatureCollection> = observableUtil.createTrainLocationObservable(line)
+                .map { trains: List<Train> ->
+                    val features = trains.map { train ->
+                        val feature = Feature.fromGeometry(Point.fromLngLat(train.position.longitude, train.position.latitude))
+                        feature.addNumberProperty("heading", train.heading)
+                        feature.addStringProperty(PROPERTY_TITLE, train.runNumber.toString())
+                        feature.addStringProperty(PROPERTY_DESTINATION, "To ${train.destName}")
+                        feature.addBooleanProperty(PROPERTY_FAVOURITE, false)
+                        feature
+                    }
+                    FeatureCollection.fromFeatures(features)
+                }
 
             if (drawLine) {
                 // Load pattern from local file
-                val positionsObservable = observableUtil.createTrainPatternObservable(line)
+                val polylineObs: Observable<PolylineOptions> = observableUtil.createTrainPatternObservable(line)
+                    .map { positions ->
+                        PolylineOptions()
+                            .width((application as App).lineWidthMapBox)
+                            .color(TrainLine.fromXmlString(line).color)
+                            .addAll(positions.map { position -> LatLng(position.latitude, position.longitude) })
+                    }
 
-                Observable.zip(trainsObservable, positionsObservable, BiFunction { trains: List<Train>, positions: List<Position> ->
-                    drawTrains(trains)
-                    drawLine(positions)
-                    if (trains.isEmpty()) {
+                Observable.zip(featuresObs, polylineObs, BiFunction { collections: FeatureCollection, polyline: PolylineOptions ->
+                    addFeatureCollection(collections)
+                    drawPolyline(polyline)
+                    if (collections.features() != null && collections.features()!!.isEmpty()) {
                         Util.showMessage(this@TrainMapActivity, R.string.message_no_train_found)
                     }
                     Any()
                 }).subscribe({}, { Util.showMessage(this@TrainMapActivity, R.string.message_error_while_loading_data) })
             } else {
-                trainsObservable.subscribe({ trains ->
-                    if (trains != null) {
-                        drawTrains(trains)
-                        if (trains.isEmpty()) {
+                featuresObs.subscribe({ featureCollection ->
+                    if (featureCollection != null) {
+                        addFeatureCollection(featureCollection)
+                        if (featureCollection.features() != null && featureCollection.features()!!.isEmpty()) {
                             Util.showMessage(this@TrainMapActivity, R.string.message_no_train_found)
                         }
                     } else {
@@ -319,7 +320,7 @@ class TrainMapActivity : FragmentMapActivity() {
         private const val DEFAULT_EXTRAPOLATION = 100
         private const val SOURCE_ID = "chicago.commutes.source"
         private const val MARKER_LAYER_ID = "chicago.commutes.marker"
-        private const val CALLOUT_LAYER_ID = "chicago.commutes.callout"
+        private const val INFO_LAYER_ID = "chicago.commutes.info"
         private const val PROPERTY_TITLE = "title"
         const val PROPERTY_DESTINATION = "destination"
         private const val PROPERTY_SELECTED = "selected"
