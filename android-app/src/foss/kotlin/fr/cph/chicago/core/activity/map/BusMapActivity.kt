@@ -27,7 +27,9 @@ import butterknife.BindString
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
-import com.mapbox.mapboxsdk.annotations.Marker
+import com.mapbox.mapboxsdk.annotations.Icon
+import com.mapbox.mapboxsdk.annotations.IconFactory
+import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.annotations.PolylineOptions
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
@@ -52,7 +54,6 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Bus
 import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import fr.cph.chicago.core.model.marker.RefreshBusMarkers
 import fr.cph.chicago.core.utils.BitmapGenerator
 import fr.cph.chicago.rx.BusesConsumer
 import fr.cph.chicago.rx.ObservableUtil
@@ -79,15 +80,11 @@ class BusMapActivity : FragmentMapActivity() {
     private val observableUtil: ObservableUtil = ObservableUtil
     private val busService: BusService = BusService
 
-    //private var busMarkers: List<Marker> = listOf()
-    //private val busStationMarkers: MutableList<Marker> = mutableListOf()
-    //private val views: MutableMap<Marker, View> = mutableMapOf()
-    //private val status: MutableMap<Marker, Boolean> = mutableMapOf()
-
     private var busId: Int = 0
     private lateinit var busRouteId: String
     private lateinit var bounds: Array<String>
-    private lateinit var refreshBusesBitmap: RefreshBusMarkers
+    private var markerOptions = listOf<MarkerOptions>()
+    private var showStops = false
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         App.checkBusData(this)
@@ -142,66 +139,7 @@ class BusMapActivity : FragmentMapActivity() {
     }
 
     override fun centerMap() {
-        TODO()
-    }
-
-    fun drawBuses(buses: List<Bus>) {
-        cleanAllMarkers()
-        val bitmapDesc = refreshBusesBitmap.currentDescriptor
-        /* busMarkers = buses.map { bus ->
-             val point = LatLng(bus.position.latitude, bus.position.longitude)
-             val marker = mapboxMap.addMarker(
-                 MarkerOptions()
-                     .position(point)
-                     .title("To ${bus.destination}")
-                     .snippet(bus.id.toString())
-                     .icon(bitmapDesc)
-                     .anchor(0.5f, 0.5f)
-                     .rotation(bus.heading.toFloat())
-                     .flat(true))
-             marker
-         }.onEach { marker ->
-             val layoutInflater = this@BusMapActivity.baseContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-             val view = layoutInflater.inflate(R.layout.marker, viewGroup, false)
-             val title = view.findViewById<TextView>(R.id.title)
-             title.text = marker.title
-             views[marker] = view
-         }*/
-    }
-
-    private fun cleanAllMarkers() {
-        //busMarkers.forEach { it.remove() }
-    }
-
-    private fun drawPattern(patterns: List<BusPattern>) {
-        val index = intArrayOf(0)
-        //val red = BitmapDescriptorFactory.defaultMarker()
-        //val blue = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
-        patterns.forEach { pattern ->
-            val poly = PolylineOptions()
-                .color(if (index[0] == 0) Color.RED else if (index[0] == 1) Color.BLUE else Color.YELLOW)
-                .width(App.instance.lineWidthGoogleMap)
-            // .geodesic(true)
-
-            pattern.points
-                .map { patternPoint ->
-                    val point = LatLng(patternPoint.position.latitude, patternPoint.position.longitude)
-                    poly.add(point)
-                    var marker: Marker? = null
-                    if ("S" == patternPoint.type) {
-                        //marker = mapboxMap.addMarker(MarkerOptions()
-                        //    .position(point)
-                        //    .title(patternPoint.stopName)
-                        //     .snippet(pattern.direction)
-                        //     .icon(if (index[0] == 0) red else blue))
-                        // marker!!.isVisible = false
-                    }
-                }
-                .filter { marker -> marker != null }
-            //.forEach { busStationMarkers.add(it!!) }
-            mapboxMap.addPolyline(poly)
-            index[0]++
-        }
+        //TODO()
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
@@ -236,7 +174,7 @@ class BusMapActivity : FragmentMapActivity() {
             )
             .withFilter(eq(get(PROPERTY_SELECTED), literal(true))))
 
-        //centerMap()
+        centerMap()
         loadActivityData()
 
         this.mapboxMap.addOnMapClickListener { point: LatLng ->
@@ -262,6 +200,14 @@ class BusMapActivity : FragmentMapActivity() {
                 }
             }
         }
+
+        this.mapboxMap.addOnCameraIdleListener {
+            if (this.mapboxMap.cameraPosition.zoom >= 15 && !showStops) {
+                this.mapboxMap.addMarkers(markerOptions)
+            } else if (this.mapboxMap.markers.isNotEmpty()) {
+                this.mapboxMap.markers.forEach { this.mapboxMap.removeMarker(it) }
+            }
+        }
     }
 
     private fun loadActivityData() {
@@ -281,20 +227,42 @@ class BusMapActivity : FragmentMapActivity() {
                 }
                     .map { patterns ->
                         patterns.map { pattern ->
+                            val positions = pattern.points.map { patternPoint ->
+                                val latLng = LatLng(patternPoint.position.latitude, patternPoint.position.longitude)
+                                var marketOptions: MarkerOptions? = null
+                                if ("S" == patternPoint.type) {
+                                    marketOptions = MarkerOptions()
+                                        .position(latLng)
+                                        .title(patternPoint.stopName)
+                                        .snippet(pattern.direction)
+                                    if (index[0] != 0) {
+                                        marketOptions.icon(blueIcon)
+                                    }
+                                }
+                                Pair(latLng, marketOptions)
+                            }
+
                             val poly = PolylineOptions()
                                 .color(if (index[0] == 0) Color.RED else if (index[0] == 1) Color.BLUE else Color.YELLOW)
                                 .width((application as App).lineWidthMapBox)
-                                .addAll(pattern.points.map { patternPoint -> LatLng(patternPoint.position.latitude, patternPoint.position.longitude) })
+                                .addAll(positions.map { it.first })
 
                             index[0]++
-                            poly
+                            Pair<PolylineOptions, List<MarkerOptions>>(
+                                poly,
+                                positions
+                                    .map { it.second }
+                                    .filter { markerOptions -> markerOptions != null }
+                                    .map { markerOptions -> markerOptions!! }
+                            )
                         }
                     }
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { result ->
                         if (result != null) {
-                            drawPolyline(result)
+                            drawPolyline(result.map { pair -> pair.first })
+                            this.markerOptions = result.flatMap { pair -> pair.second }
                         } else {
                             Util.showNetworkErrorMessage(layout)
                         }
@@ -356,5 +324,9 @@ class BusMapActivity : FragmentMapActivity() {
             }, {
                 Util.showMessage(this@BusMapActivity, R.string.message_error_while_loading_data)
             })
+    }
+
+    private val blueIcon: Icon by lazy {
+        IconFactory.getInstance(this@BusMapActivity).fromResource(R.drawable.blue_marker)
     }
 }

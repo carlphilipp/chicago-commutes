@@ -47,8 +47,6 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
 
     @BindView(R.id.activity_bar)
     lateinit var progressBar: ProgressBar
-    @BindView(android.R.id.content)
-    protected lateinit var viewGroup: ViewGroup
     @BindView(R.id.map_container)
     protected lateinit var layout: LinearLayout
     @BindView(R.id.toolbar)
