@@ -34,20 +34,4 @@ class TrainsConsumer(trainMapActivity: TrainMapActivity, private val feature: Fe
         }
         activity.get()?.update(feature, runNumber, view)
     }
-
-/*    private fun addParams(container: RelativeLayout, size: Int) {
-        val params = container.layoutParams
-        params.width = Util.convertDpToPixel(200)
-        params.height = (Util.convertDpToPixel(21) * size) + Util.convertDpToPixel(30)
-        container.layoutParams = params
-    }
-
-    private fun createView(feature: Feature): View {
-        val inflater = LayoutInflater.from(activity.get())
-        val view = inflater.inflate(R.layout.marker_mapbox, null)
-        val destination = feature.getStringProperty(PROPERTY_DESTINATION)
-        val title = view.findViewById(R.id.title) as TextView
-        title.text = destination
-        return view
-    }*/
 }

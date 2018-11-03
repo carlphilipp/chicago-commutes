@@ -20,7 +20,6 @@ abstract class AConsumer {
         container.layoutParams = params
     }
 
-    // FIXME: duplicated code
     protected fun createView(feature: Feature, activity: WeakReference<out Activity>): View {
         val inflater = LayoutInflater.from(activity.get())
         val view = inflater.inflate(R.layout.marker_mapbox, null)
@@ -29,5 +28,4 @@ abstract class AConsumer {
         title.text = destination
         return view
     }
-
 }
