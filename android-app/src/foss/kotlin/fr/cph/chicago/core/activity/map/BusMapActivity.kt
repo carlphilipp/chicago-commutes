@@ -19,23 +19,42 @@
 
 package fr.cph.chicago.core.activity.map
 
-import android.annotation.SuppressLint
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import butterknife.BindString
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.PolylineOptions
+import com.mapbox.geojson.Feature
+import com.mapbox.geojson.FeatureCollection
+import com.mapbox.geojson.Point
+import com.mapbox.mapboxsdk.annotations.Marker
+import com.mapbox.mapboxsdk.annotations.PolylineOptions
+import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
+import com.mapbox.mapboxsdk.style.expressions.Expression
+import com.mapbox.mapboxsdk.style.expressions.Expression.eq
+import com.mapbox.mapboxsdk.style.expressions.Expression.get
+import com.mapbox.mapboxsdk.style.expressions.Expression.literal
+import com.mapbox.mapboxsdk.style.expressions.Expression.step
+import com.mapbox.mapboxsdk.style.expressions.Expression.stop
+import com.mapbox.mapboxsdk.style.expressions.Expression.zoom
+import com.mapbox.mapboxsdk.style.layers.Property
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAnchor
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconRotate
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconRotationAlignment
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconSize
+import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Bus
 import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.model.marker.RefreshBusMarkers
-import fr.cph.chicago.rx.BusObserver
+import fr.cph.chicago.core.utils.BitmapGenerator
+import fr.cph.chicago.rx.BusConsumer
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.MapUtil
@@ -60,17 +79,15 @@ class BusMapActivity : FragmentMapActivity() {
     private val observableUtil: ObservableUtil = ObservableUtil
     private val busService: BusService = BusService
 
-    private var busMarkers: List<Marker> = listOf()
-    private val busStationMarkers: MutableList<Marker> = mutableListOf()
-    private val views: MutableMap<Marker, View> = mutableMapOf()
-    private val status: MutableMap<Marker, Boolean> = mutableMapOf()
+    //private var busMarkers: List<Marker> = listOf()
+    //private val busStationMarkers: MutableList<Marker> = mutableListOf()
+    //private val views: MutableMap<Marker, View> = mutableMapOf()
+    //private val status: MutableMap<Marker, Boolean> = mutableMapOf()
 
     private var busId: Int = 0
     private lateinit var busRouteId: String
     private lateinit var bounds: Array<String>
     private lateinit var refreshBusesBitmap: RefreshBusMarkers
-
-    private var loadPattern = true
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         App.checkBusData(this)
@@ -80,43 +97,41 @@ class BusMapActivity : FragmentMapActivity() {
     override fun create(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
             busId = savedInstanceState.getInt(bundleBusId)
-            busRouteId = savedInstanceState.getString(bundleBusRouteId)?: ""
-            bounds = savedInstanceState.getStringArray(bundleBusBounds)?: arrayOf()
+            busRouteId = savedInstanceState.getString(bundleBusRouteId) ?: ""
+            bounds = savedInstanceState.getStringArray(bundleBusBounds) ?: arrayOf()
         } else {
             busId = intent.getIntExtra(bundleBusId, 0)
             busRouteId = intent.getStringExtra(bundleBusRouteId)
             bounds = intent.getStringArrayExtra(bundleBusBounds)
         }
 
-        // Init data
         initData()
 
-        // Init toolbar
         setToolbar()
-    }
-
-    override fun refreshSource() {
-    }
-
-    public override fun onStop() {
-        super.onStop()
-        loadPattern = false
-    }
-
-    override fun initData() {
-        super.initData()
-        refreshBusesBitmap = RefreshBusMarkers()
     }
 
     override fun setToolbar() {
         super.setToolbar()
-        toolbar.setOnMenuItemClickListener { _ ->
-            observableUtil.createBusListObservable(busRouteId).subscribe(BusObserver(this@BusMapActivity, false, layout))
+        toolbar.setOnMenuItemClickListener {
+            loadBuses()
             false
         }
-
         Util.setWindowsColor(this, toolbar, TrainLine.NA)
         toolbar.title = busRouteId
+    }
+
+    public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        busId = savedInstanceState.getInt(bundleBusId)
+        busRouteId = savedInstanceState.getString(bundleBusRouteId) ?: ""
+        bounds = savedInstanceState.getStringArray(bundleBusBounds) ?: arrayOf()
+    }
+
+    public override fun onSaveInstanceState(savedInstanceState: Bundle) {
+        savedInstanceState.putInt(bundleBusId, busId)
+        savedInstanceState.putString(bundleBusRouteId, busRouteId)
+        savedInstanceState.putStringArray(bundleBusBounds, bounds)
+        super.onSaveInstanceState(savedInstanceState)
     }
 
     fun centerMapOnBus(result: List<Bus>) {
@@ -133,128 +148,127 @@ class BusMapActivity : FragmentMapActivity() {
     fun drawBuses(buses: List<Bus>) {
         cleanAllMarkers()
         val bitmapDesc = refreshBusesBitmap.currentDescriptor
-       /* busMarkers = buses.map { bus ->
-            val point = LatLng(bus.position.latitude, bus.position.longitude)
-            val marker = mapboxMap.addMarker(
-                MarkerOptions()
-                    .position(point)
-                    .title("To ${bus.destination}")
-                    .snippet(bus.id.toString())
-                    .icon(bitmapDesc)
-                    .anchor(0.5f, 0.5f)
-                    .rotation(bus.heading.toFloat())
-                    .flat(true))
-            marker
-        }.onEach { marker ->
-            val layoutInflater = this@BusMapActivity.baseContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            val view = layoutInflater.inflate(R.layout.marker, viewGroup, false)
-            val title = view.findViewById<TextView>(R.id.title)
-            title.text = marker.title
-            views[marker] = view
-        }*/
+        /* busMarkers = buses.map { bus ->
+             val point = LatLng(bus.position.latitude, bus.position.longitude)
+             val marker = mapboxMap.addMarker(
+                 MarkerOptions()
+                     .position(point)
+                     .title("To ${bus.destination}")
+                     .snippet(bus.id.toString())
+                     .icon(bitmapDesc)
+                     .anchor(0.5f, 0.5f)
+                     .rotation(bus.heading.toFloat())
+                     .flat(true))
+             marker
+         }.onEach { marker ->
+             val layoutInflater = this@BusMapActivity.baseContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+             val view = layoutInflater.inflate(R.layout.marker, viewGroup, false)
+             val title = view.findViewById<TextView>(R.id.title)
+             title.text = marker.title
+             views[marker] = view
+         }*/
     }
 
     private fun cleanAllMarkers() {
-        busMarkers.forEach { it.remove() }
+        //busMarkers.forEach { it.remove() }
     }
 
     private fun drawPattern(patterns: List<BusPattern>) {
         val index = intArrayOf(0)
-        val red = BitmapDescriptorFactory.defaultMarker()
-        val blue = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
+        //val red = BitmapDescriptorFactory.defaultMarker()
+        //val blue = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
         patterns.forEach { pattern ->
             val poly = PolylineOptions()
                 .color(if (index[0] == 0) Color.RED else if (index[0] == 1) Color.BLUE else Color.YELLOW)
                 .width(App.instance.lineWidthGoogleMap)
-                .geodesic(true)
+            // .geodesic(true)
+
             pattern.points
                 .map { patternPoint ->
                     val point = LatLng(patternPoint.position.latitude, patternPoint.position.longitude)
                     poly.add(point)
                     var marker: Marker? = null
                     if ("S" == patternPoint.type) {
-                       /* marker = mapboxMap.addMarker(MarkerOptions()
-                            .position(point)
-                            .title(patternPoint.stopName)
-                            .snippet(pattern.direction)
-                            .icon(if (index[0] == 0) red else blue)
-                        )
-                        marker!!.isVisible = false*/
+                        //marker = mapboxMap.addMarker(MarkerOptions()
+                        //    .position(point)
+                        //    .title(patternPoint.stopName)
+                        //     .snippet(pattern.direction)
+                        //     .icon(if (index[0] == 0) red else blue))
+                        // marker!!.isVisible = false
                     }
-                    // Potential null sent, if stream api change, it could fail
-                    marker
                 }
                 .filter { marker -> marker != null }
-                .forEach { busStationMarkers.add(it!!) }
-            //mapboxMap.addPolyline(poly)
+            //.forEach { busStationMarkers.add(it!!) }
+            mapboxMap.addPolyline(poly)
             index[0]++
         }
     }
 
-    public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        busId = savedInstanceState.getInt(bundleBusId)
-        busRouteId = savedInstanceState.getString(bundleBusRouteId)?: ""
-        bounds = savedInstanceState.getStringArray(bundleBusBounds)?: arrayOf()
-    }
+    override fun onMapReady(mapboxMap: MapboxMap) {
+        super.onMapReady(mapboxMap)
 
-    public override fun onSaveInstanceState(savedInstanceState: Bundle) {
-        savedInstanceState.putInt(bundleBusId, busId)
-        savedInstanceState.putString(bundleBusRouteId, busRouteId)
-        savedInstanceState.putStringArray(bundleBusBounds, bounds)
-        super.onSaveInstanceState(savedInstanceState)
-    }
+        this.mapboxMap.addImage("image-bus", BitmapFactory.decodeResource(resources, R.drawable.bus))
 
-/*    override fun onCameraIdle() {
-        refreshBusesBitmap.refreshBusAndStation(googleMap.cameraPosition, busMarkers, busStationMarkers)
-    }*/
+        this.mapboxMap.addLayer(SymbolLayer(MARKER_LAYER_ID, SOURCE_ID)
+            .withProperties(
+                iconImage("image-bus"),
+                iconRotate(Expression.get("heading")),
+                iconSize(
+                    step(zoom(), 0.05f,
+                        stop(9, 0.10f),
+                        stop(10.5, 0.15f),
+                        stop(12, 0.2f),
+                        stop(15, 0.3f),
+                        stop(17, 0.5f)
+                    )
+                ),
+                iconAllowOverlap(true),
+                iconRotationAlignment(Property.ICON_ROTATION_ALIGNMENT_MAP)))
 
-    override fun onMapReady(googleMap: MapboxMap) {
-        super.onMapReady(googleMap)
+        this.mapboxMap.addLayer(SymbolLayer(INFO_LAYER_ID, SOURCE_ID)
+            .withProperties(
+                // show image with id title based on the value of the title feature property
+                iconImage("{title}"),
+                // set anchor of icon to bottom-left
+                iconAnchor(Property.ICON_ANCHOR_BOTTOM_LEFT),
+                // offset icon slightly to match bubble layout
+                iconOffset(arrayOf(-20.0f, -10.0f))
+            )
+            .withFilter(eq(get(PROPERTY_SELECTED), literal(true))))
 
-        /*googleMap.setInfoWindowAdapter(object : InfoWindowAdapter {
-            override fun getInfoWindow(marker: Marker): View? {
-                return null
-            }
-
-            override fun getInfoContents(marker: Marker): View? {
-                return if (marker.title.startsWith("To ")) {
-                    val view = views[marker]
-                    if (!refreshingInfoWindow) {
-                        selectedMarker = marker
-                        val busId = marker.snippet
-                        observableUtil.createFollowBusObservable(busId)
-                            .subscribe(BusFollowObserver(this@BusMapActivity, layout, view!!, false))
-                        status[marker] = false
-                    }
-                    view
-                } else {
-                    null
-                }
-            }
-        })
-*/
-        /*googleMap.setOnInfoWindowClickListener { marker ->
-            if (marker.title.startsWith("To ")) {
-                val view = views[marker]
-                if (!refreshingInfoWindow) {
-                    selectedMarker = marker
-                    val runNumber = marker.snippet
-                    val current = status[marker]
-                    observableUtil.createFollowBusObservable(runNumber)
-                        .subscribe(BusFollowObserver(this@BusMapActivity, layout, view!!, !current!!))
-                    status[marker] = !current
-                }
-            }
-        }*/
+        //centerMap()
         loadActivityData()
+
+        this.mapboxMap.addOnMapClickListener { point: LatLng ->
+            val finalPoint = this.mapboxMap.projection.toScreenLocation(point)
+            val infoFeatures = this.mapboxMap.queryRenderedFeatures(finalPoint, INFO_LAYER_ID)
+            if (!infoFeatures.isEmpty()) {
+                val feature = infoFeatures[0]
+                handleClickInfo(feature)
+            } else {
+                val markerFeatures = this.mapboxMap.queryRenderedFeatures(toRect(finalPoint), MARKER_LAYER_ID)
+                if (!markerFeatures.isEmpty()) {
+                    val title = markerFeatures[0].getStringProperty(PROPERTY_TITLE)
+                    val featureList = featureCollection!!.features()
+                    for (i in featureList!!.indices) {
+                        if (featureList[i].getStringProperty(PROPERTY_TITLE) == title) {
+                            val feature = featureCollection!!.features()!![i]
+                            setSelected(feature)
+                        }
+                    }
+                } else {
+                    deselectAll()
+                    refreshSource()
+                }
+            }
+        }
     }
 
-    @SuppressLint("CheckResult")
     private fun loadActivityData() {
         if (Util.isNetworkAvailable()) {
-            observableUtil.createBusListObservable(busRouteId).subscribe(BusObserver(this@BusMapActivity, true, layout))
-            if (loadPattern) {
+            loadBuses()
+            if (drawLine) {
+                val index = intArrayOf(0)
                 Observable.fromCallable {
                     val patterns: MutableList<BusPattern> = mutableListOf()
                     if (busId == 0) {
@@ -265,11 +279,22 @@ class BusMapActivity : FragmentMapActivity() {
                     busService.loadBusPattern(busRouteId, bounds).forEach { patterns.add(it) }
                     patterns
                 }
+                    .map { patterns ->
+                        patterns.map { pattern ->
+                            val poly = PolylineOptions()
+                                .color(if (index[0] == 0) Color.RED else if (index[0] == 1) Color.BLUE else Color.YELLOW)
+                                .width((application as App).lineWidthMapBox)
+                                .addAll(pattern.points.map { patternPoint -> LatLng(patternPoint.position.latitude, patternPoint.position.longitude) })
+
+                            index[0]++
+                            poly
+                        }
+                    }
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe { result ->
                         if (result != null) {
-                            drawPattern(result)
+                            drawPolyline(result)
                         } else {
                             Util.showNetworkErrorMessage(layout)
                         }
@@ -278,5 +303,58 @@ class BusMapActivity : FragmentMapActivity() {
         } else {
             Util.showNetworkErrorMessage(layout)
         }
+    }
+
+    private fun handleClickInfo(feature: Feature) {
+        showProgress(true)
+        val runNumber = feature.getStringProperty(PROPERTY_TITLE)
+        observableUtil.createFollowBusObservable(runNumber)
+            // TODO move what's possible into other thread
+            .subscribe(BusConsumer(this@BusMapActivity, feature, true, runNumber))
+    }
+
+    override fun setSelected(feature: Feature) {
+        showProgress(true)
+        deselectAll()
+        val id = feature.getStringProperty(PROPERTY_TITLE)
+        observableUtil.createFollowBusObservable(id)
+            .subscribe(BusConsumer(this@BusMapActivity, feature, false, id))
+    }
+
+    // FIXME: Duplicated code!
+    fun update(feature: Feature, runNumber: String, view: View) {
+        // TODO: see if the view generation can be done not in the main thread
+        mapboxMap.addImage(runNumber, BitmapGenerator.generate(view))
+
+        feature.properties()?.addProperty(PROPERTY_SELECTED, true)
+        refreshSource()
+        showProgress(false)
+    }
+
+    private fun loadBuses() {
+        observableUtil.createBusListObservable(busRouteId)
+            .map { buses ->
+                val features = buses.map { bus ->
+                    val feature = Feature.fromGeometry(Point.fromLngLat(bus.position.longitude, bus.position.latitude))
+                    feature.addNumberProperty("heading", bus.heading)
+                    feature.addStringProperty(PROPERTY_TITLE, bus.id.toString())
+                    feature.addStringProperty(PROPERTY_DESTINATION, "To ${bus.destination}")
+                    feature.addBooleanProperty(PROPERTY_FAVOURITE, false)
+                    feature
+                }
+                FeatureCollection.fromFeatures(features)
+            }
+            .subscribe({ featureCollection ->
+                if (featureCollection != null) {
+                    addFeatureCollection(featureCollection)
+                    if (featureCollection.features() != null && featureCollection.features()!!.isEmpty()) {
+                        Util.showMessage(this@BusMapActivity, R.string.message_no_bus_found)
+                    }
+                } else {
+                    Util.showMessage(this@BusMapActivity, R.string.message_error_while_loading_data)
+                }
+            }, {
+                Util.showMessage(this@BusMapActivity, R.string.message_error_while_loading_data)
+            })
     }
 }

@@ -7,28 +7,36 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import com.mapbox.geojson.Feature
 import fr.cph.chicago.R
+import fr.cph.chicago.core.activity.map.BusMapActivity
 import fr.cph.chicago.core.activity.map.PROPERTY_DESTINATION
-import fr.cph.chicago.core.activity.map.TrainMapActivity
-import fr.cph.chicago.core.adapter.TrainMapSnippetAdapter
-import fr.cph.chicago.core.model.TrainEta
+import fr.cph.chicago.core.adapter.BusMapSnippetAdapter
+import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.util.Util
 import io.reactivex.functions.Consumer
+import org.apache.commons.lang3.StringUtils
 import java.lang.ref.WeakReference
+import java.util.Date
 
-class TrainsConsumer(trainMapActivity: TrainMapActivity, private val feature: Feature, private val runNumber: String) : Consumer<List<TrainEta>> {
+class BusConsumer(busMapActivity: BusMapActivity, private val feature: Feature, private val loadAll: Boolean,  private val runNumber: String) : Consumer<List<BusArrival>> {
 
-    val activity: WeakReference<TrainMapActivity> = WeakReference(trainMapActivity)
+    val activity: WeakReference<BusMapActivity> = WeakReference(busMapActivity)
 
-    override fun accept(trains: List<TrainEta>) {
+    override fun accept(busArrivalsRes: List<BusArrival>) {
         val view = createView(feature)
         val arrivals: ListView = view.findViewById(R.id.arrivals)
         val error: TextView = view.findViewById(R.id.error)
 
-        if (trains.isNotEmpty()) {
+        var busArrivals = busArrivalsRes.toMutableList()
+        if (!loadAll && busArrivals.size > 7) {
+            busArrivals = busArrivals.subList(0, 6)
+            val busArrival = BusArrival(Date(), "added bus", view.context.getString(R.string.bus_all_results), 0, 0, "", "", StringUtils.EMPTY, Date(), false)
+            busArrivals.add(busArrival)
+        }
+        if (busArrivals.isNotEmpty()) {
             val container: RelativeLayout = view.findViewById(R.id.container)
-            addParams(container, trains.size)
+            addParams(container, busArrivals.size)
 
-            val ada = TrainMapSnippetAdapter(trains)
+            val ada = BusMapSnippetAdapter(busArrivals)
             arrivals.adapter = ada
             arrivals.visibility = ListView.VISIBLE
             error.visibility = TextView.GONE
@@ -39,6 +47,7 @@ class TrainsConsumer(trainMapActivity: TrainMapActivity, private val feature: Fe
         activity.get()?.update(feature, runNumber, view)
     }
 
+    // FIXME: duplicated code
     private fun addParams(container: RelativeLayout, size: Int) {
         val params = container.layoutParams
         params.width = Util.convertDpToPixel(200)
@@ -46,6 +55,7 @@ class TrainsConsumer(trainMapActivity: TrainMapActivity, private val feature: Fe
         container.layoutParams = params
     }
 
+    // FIXME: duplicated code
     private fun createView(feature: Feature): View {
         val inflater = LayoutInflater.from(activity.get())
         val view = inflater.inflate(R.layout.marker_mapbox, null)

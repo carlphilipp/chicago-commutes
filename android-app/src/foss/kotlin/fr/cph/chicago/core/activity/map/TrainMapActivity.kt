@@ -20,13 +20,9 @@
 package fr.cph.chicago.core.activity.map
 
 import android.graphics.BitmapFactory
-import android.graphics.PointF
-import android.graphics.RectF
 import android.os.Bundle
 import android.view.View
-import android.widget.ProgressBar
 import butterknife.BindString
-import butterknife.BindView
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
@@ -48,7 +44,6 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconRotate
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconRotationAlignment
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconSize
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Train
@@ -58,10 +53,7 @@ import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.rx.TrainsConsumer
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
-import io.reactivex.schedulers.Schedulers
 
 /**
  * @author Carl-Philipp Harmant
@@ -69,8 +61,6 @@ import io.reactivex.schedulers.Schedulers
  */
 class TrainMapActivity : FragmentMapActivity() {
 
-    @BindView(R.id.activity_bar)
-    lateinit var progressBar: ProgressBar
     @BindString(R.string.bundle_train_line)
     lateinit var bundleTrainLine: String
 
@@ -80,10 +70,6 @@ class TrainMapActivity : FragmentMapActivity() {
     val trainLine: TrainLine by lazy {
         TrainLine.fromXmlString(line)
     }
-
-    private var source: GeoJsonSource? = null
-    private var featureCollection: FeatureCollection? = null
-    private var drawLine = true
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         App.checkTrainData(this)
@@ -119,12 +105,6 @@ class TrainMapActivity : FragmentMapActivity() {
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
         savedInstanceState.putString(bundleTrainLine, line)
         super.onSaveInstanceState(savedInstanceState)
-    }
-
-    override fun refreshSource() {
-        if (source != null && featureCollection != null) {
-            source!!.setGeoJson(featureCollection)
-        }
     }
 
     override fun centerMap() {
@@ -211,51 +191,15 @@ class TrainMapActivity : FragmentMapActivity() {
         showProgress(false)
     }
 
-    private fun addFeatureCollection(featureCollection: FeatureCollection) {
-        this.featureCollection = featureCollection
-        source = mapboxMap.getSource(SOURCE_ID) as GeoJsonSource?
-        if (source == null) {
-            source = GeoJsonSource(SOURCE_ID, featureCollection)
-            mapboxMap.addSource(source!!)
-        } else {
-            source!!.setGeoJson(featureCollection)
-        }
-    }
-
-    private fun drawPolyline(polyline: PolylineOptions) {
-        mapboxMap.addPolyline(polyline)
-        drawLine = false
-    }
-
-    private fun showProgress(show: Boolean) {
-        if (show) {
-            progressBar.visibility = View.VISIBLE
-            progressBar.progress = 50
-        } else {
-            progressBar.visibility = View.GONE
-        }
-    }
-
-    private fun toRect(point: PointF): RectF {
-        return RectF(
-            point.x - DEFAULT_EXTRAPOLATION,
-            point.y + DEFAULT_EXTRAPOLATION,
-            point.x + DEFAULT_EXTRAPOLATION,
-            point.y - DEFAULT_EXTRAPOLATION)
-    }
-
     private fun handleClickInfo(feature: Feature) {
         showProgress(true)
         val runNumber = feature.getStringProperty(PROPERTY_TITLE)
         observableUtil.createLoadTrainEtaObservable(runNumber, true)
+            // TODO move what's possible into other thread
             .subscribe(TrainsConsumer(this, feature, runNumber))
     }
 
-    private fun deselectAll() {
-        featureCollection?.features()?.forEach { feature -> feature.properties()?.addProperty(PROPERTY_SELECTED, false) }
-    }
-
-    private fun setSelected(feature: Feature) {
+    override fun setSelected(feature: Feature) {
         showProgress(true)
         deselectAll()
         val runNumber = feature.getStringProperty(PROPERTY_TITLE)
@@ -290,7 +234,7 @@ class TrainMapActivity : FragmentMapActivity() {
 
                 Observable.zip(featuresObs, polylineObs, BiFunction { collections: FeatureCollection, polyline: PolylineOptions ->
                     addFeatureCollection(collections)
-                    drawPolyline(polyline)
+                    drawPolyline(listOf(polyline))
                     if (collections.features() != null && collections.features()!!.isEmpty()) {
                         Util.showMessage(this@TrainMapActivity, R.string.message_no_train_found)
                     }
@@ -313,17 +257,5 @@ class TrainMapActivity : FragmentMapActivity() {
         } else {
             Util.showNetworkErrorMessage(layout)
         }
-    }
-
-    companion object {
-        private val TAG = TrainMapActivity::class.java.simpleName
-        private const val DEFAULT_EXTRAPOLATION = 100
-        private const val SOURCE_ID = "chicago.commutes.source"
-        private const val MARKER_LAYER_ID = "chicago.commutes.marker"
-        private const val INFO_LAYER_ID = "chicago.commutes.info"
-        private const val PROPERTY_TITLE = "title"
-        const val PROPERTY_DESTINATION = "destination"
-        private const val PROPERTY_SELECTED = "selected"
-        private const val PROPERTY_FAVOURITE = "favourite"
     }
 }

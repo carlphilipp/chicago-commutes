@@ -20,23 +20,33 @@
 package fr.cph.chicago.core.activity.map
 
 import android.annotation.SuppressLint
+import android.graphics.PointF
+import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.support.v7.widget.Toolbar
+import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import butterknife.BindDrawable
 import butterknife.BindView
+import com.mapbox.geojson.Feature
+import com.mapbox.geojson.FeatureCollection
+import com.mapbox.mapboxsdk.annotations.PolylineOptions
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeFragmentMapActivity
 
 @SuppressLint("Registered")
 abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapReadyCallback {
 
+    @BindView(R.id.activity_bar)
+    lateinit var progressBar: ProgressBar
     @BindView(android.R.id.content)
     protected lateinit var viewGroup: ViewGroup
     @BindView(R.id.map_container)
@@ -48,6 +58,9 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
     lateinit var arrowBackWhite: Drawable
 
     protected lateinit var mapboxMap: MapboxMap
+    protected var source: GeoJsonSource? = null
+    protected var featureCollection: FeatureCollection? = null
+    protected var drawLine = true
 
     protected open fun initData() {
         mapView.getMapAsync(this)
@@ -67,9 +80,15 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
     fun refreshInfoWindow() {
     }
 
-    abstract fun refreshSource()
+    protected fun refreshSource() {
+        if (source != null && featureCollection != null) {
+            source!!.setGeoJson(featureCollection)
+        }
+    }
 
     abstract fun centerMap()
+
+    abstract fun setSelected(feature: Feature)
 
     @Deprecated(message = "To remove when google components are in its own package")
     protected fun centerMapOn(latitude: Double, longitude: Double, zoom: Double) {
@@ -79,6 +98,43 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
 
     protected fun centerMapOn(latLng: LatLng, zoom: Double) {
         mapboxMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom))
+    }
+
+    protected fun toRect(point: PointF): RectF {
+        return RectF(
+            point.x - DEFAULT_EXTRAPOLATION,
+            point.y + DEFAULT_EXTRAPOLATION,
+            point.x + DEFAULT_EXTRAPOLATION,
+            point.y - DEFAULT_EXTRAPOLATION)
+    }
+
+    protected fun addFeatureCollection(featureCollection: FeatureCollection) {
+        this.featureCollection = featureCollection
+        source = mapboxMap.getSource(SOURCE_ID) as GeoJsonSource?
+        if (source == null) {
+            source = GeoJsonSource(SOURCE_ID, featureCollection)
+            mapboxMap.addSource(source!!)
+        } else {
+            source!!.setGeoJson(featureCollection)
+        }
+    }
+
+    protected fun drawPolyline(polylines: List<PolylineOptions>) {
+        mapboxMap.addPolylines(polylines)
+        drawLine = false
+    }
+
+    protected fun deselectAll() {
+        featureCollection?.features()?.forEach { feature -> feature.properties()?.addProperty(PROPERTY_SELECTED, false) }
+    }
+
+    protected fun showProgress(show: Boolean) {
+        if (show) {
+            progressBar.visibility = View.VISIBLE
+            progressBar.progress = 50
+        } else {
+            progressBar.visibility = View.GONE
+        }
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
@@ -107,5 +163,8 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
     override fun onDestroy() {
         super.onDestroy()
         mapView.onDestroy()
+    }
+    companion object {
+        protected const val DEFAULT_EXTRAPOLATION = 100
     }
 }
