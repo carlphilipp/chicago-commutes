@@ -1,12 +1,14 @@
-package fr.cph.chicago.core.fragment
+package fr.cph.chicago.core.listener
 
 import android.util.Log
 import com.mapbox.mapboxsdk.annotations.Marker
+import fr.cph.chicago.core.fragment.NearbyFragment
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Station
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusArrivalRouteDTO
+import fr.cph.chicago.core.model.marker.MarkerDataHolder
 import fr.cph.chicago.rx.ObservableUtil
 
 class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, private val nearbyFragment: NearbyFragment) : com.mapbox.mapboxsdk.maps.MapboxMap.OnMarkerClickListener {

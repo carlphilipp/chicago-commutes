@@ -1,26 +1,22 @@
 package fr.cph.chicago.rx
 
-import android.view.LayoutInflater
-import android.view.View
 import android.widget.ListView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.mapbox.geojson.Feature
 import fr.cph.chicago.R
-import fr.cph.chicago.core.activity.map.PROPERTY_DESTINATION
 import fr.cph.chicago.core.activity.map.TrainMapActivity
 import fr.cph.chicago.core.adapter.TrainMapSnippetAdapter
 import fr.cph.chicago.core.model.TrainEta
-import fr.cph.chicago.util.Util
 import io.reactivex.functions.Consumer
 import java.lang.ref.WeakReference
 
-class TrainsConsumer(trainMapActivity: TrainMapActivity, private val feature: Feature, private val runNumber: String) : Consumer<List<TrainEta>> {
+class TrainsConsumer(trainMapActivity: TrainMapActivity, private val feature: Feature, private val runNumber: String) : Consumer<List<TrainEta>>, AConsumer() {
 
     val activity: WeakReference<TrainMapActivity> = WeakReference(trainMapActivity)
 
     override fun accept(trains: List<TrainEta>) {
-        val view = createView(feature)
+        val view = createView(feature, activity)
         val arrivals: ListView = view.findViewById(R.id.arrivals)
         val error: TextView = view.findViewById(R.id.error)
 
@@ -39,7 +35,7 @@ class TrainsConsumer(trainMapActivity: TrainMapActivity, private val feature: Fe
         activity.get()?.update(feature, runNumber, view)
     }
 
-    private fun addParams(container: RelativeLayout, size: Int) {
+/*    private fun addParams(container: RelativeLayout, size: Int) {
         val params = container.layoutParams
         params.width = Util.convertDpToPixel(200)
         params.height = (Util.convertDpToPixel(21) * size) + Util.convertDpToPixel(30)
@@ -53,5 +49,5 @@ class TrainsConsumer(trainMapActivity: TrainMapActivity, private val feature: Fe
         val title = view.findViewById(R.id.title) as TextView
         title.text = destination
         return view
-    }
+    }*/
 }

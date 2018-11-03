@@ -55,10 +55,12 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import fr.cph.chicago.Constants.Companion.GPS_ACCESS
 import fr.cph.chicago.R
 import fr.cph.chicago.core.adapter.SlidingUpAdapter
+import fr.cph.chicago.core.listener.OnMarkerClickListener
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.TrainStation
+import fr.cph.chicago.core.model.marker.MarkerDataHolder
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.Util

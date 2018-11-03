@@ -1,4 +1,4 @@
-package fr.cph.chicago.core.fragment
+package fr.cph.chicago.core.model.marker
 
 import com.mapbox.mapboxsdk.annotations.Marker
 import com.mapbox.mapboxsdk.geometry.LatLng

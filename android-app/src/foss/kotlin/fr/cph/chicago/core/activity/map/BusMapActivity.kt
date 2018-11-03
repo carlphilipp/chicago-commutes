@@ -54,7 +54,7 @@ import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.model.marker.RefreshBusMarkers
 import fr.cph.chicago.core.utils.BitmapGenerator
-import fr.cph.chicago.rx.BusConsumer
+import fr.cph.chicago.rx.BusesConsumer
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.MapUtil
@@ -310,7 +310,7 @@ class BusMapActivity : FragmentMapActivity() {
         val runNumber = feature.getStringProperty(PROPERTY_TITLE)
         observableUtil.createFollowBusObservable(runNumber)
             // TODO move what's possible into other thread
-            .subscribe(BusConsumer(this@BusMapActivity, feature, true, runNumber))
+            .subscribe(BusesConsumer(this@BusMapActivity, feature, true, runNumber))
     }
 
     override fun setSelected(feature: Feature) {
@@ -318,7 +318,7 @@ class BusMapActivity : FragmentMapActivity() {
         deselectAll()
         val id = feature.getStringProperty(PROPERTY_TITLE)
         observableUtil.createFollowBusObservable(id)
-            .subscribe(BusConsumer(this@BusMapActivity, feature, false, id))
+            .subscribe(BusesConsumer(this@BusMapActivity, feature, false, id))
     }
 
     // FIXME: Duplicated code!
