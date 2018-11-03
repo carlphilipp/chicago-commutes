@@ -132,7 +132,6 @@ dependencies {
 
         // Google
         [group: 'com.android.support', name: 'design', version: google_support_version],
-        [group: 'com.google.android.gms', name: 'play-services-maps', version: google_play_version],
 
         // Jackson
         [group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jackson_version],
@@ -155,6 +154,7 @@ dependencies {
     )
 
     googleplayImplementation(
+        [group: 'com.google.android.gms', name: 'play-services-maps', version: google_play_version],
         [group: 'com.google.android.gms', name: 'play-services-location', version: google_play_version],
     )
 
