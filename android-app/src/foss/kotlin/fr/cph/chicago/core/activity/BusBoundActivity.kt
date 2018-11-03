@@ -183,6 +183,10 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
     }
 
     override fun onMapReady(mapBox: MapboxMap) {
+        mapBox.uiSettings.isLogoEnabled = false
+        mapBox.uiSettings.isAttributionEnabled = false
+        mapBox.uiSettings.isRotateGesturesEnabled = false
+        mapBox.uiSettings.isTiltGesturesEnabled = false
         observableUtil.createBusPatternObservable(busRouteId, bound)
             .subscribe({ busPattern ->
                 if (busPattern.direction != "error") {
