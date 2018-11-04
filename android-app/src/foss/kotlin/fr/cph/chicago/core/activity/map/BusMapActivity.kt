@@ -22,7 +22,6 @@ package fr.cph.chicago.core.activity.map
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
-import android.view.View
 import butterknife.BindString
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
@@ -33,7 +32,6 @@ import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.annotations.PolylineOptions
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.style.expressions.Expression
 import com.mapbox.mapboxsdk.style.expressions.Expression.eq
 import com.mapbox.mapboxsdk.style.expressions.Expression.get
 import com.mapbox.mapboxsdk.style.expressions.Expression.literal
@@ -54,7 +52,6 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Bus
 import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import fr.cph.chicago.core.utils.BitmapGenerator
 import fr.cph.chicago.rx.BusesFunction
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.service.BusService
@@ -150,7 +147,7 @@ class BusMapActivity : FragmentMapActivity() {
         this.mapboxMap.addLayer(SymbolLayer(MARKER_LAYER_ID, SOURCE_ID)
             .withProperties(
                 iconImage("image-bus"),
-                iconRotate(Expression.get("heading")),
+                iconRotate(get("heading")),
                 iconSize(
                     step(zoom(), 0.05f,
                         stop(9, 0.10f),
@@ -225,6 +222,7 @@ class BusMapActivity : FragmentMapActivity() {
                     busService.loadBusPattern(busRouteId, bounds).forEach { patterns.add(it) }
                     patterns
                 }
+                    .observeOn(Schedulers.computation())
                     .map { patterns ->
                         patterns.map { pattern ->
                             val positions = pattern.points.map { patternPoint ->
@@ -284,8 +282,7 @@ class BusMapActivity : FragmentMapActivity() {
     }
 
     override fun setSelected(feature: Feature) {
-        showProgress(true)
-        deselectAll()
+        super.setSelected(feature)
         val id = feature.getStringProperty(PROPERTY_TITLE)
         observableUtil.createFollowBusObservable(id)
             .observeOn(Schedulers.computation())
@@ -296,6 +293,7 @@ class BusMapActivity : FragmentMapActivity() {
 
     private fun loadBuses() {
         observableUtil.createBusListObservable(busRouteId)
+            .observeOn(Schedulers.computation())
             .map { buses ->
                 val features = buses.map { bus ->
                     val feature = Feature.fromGeometry(Point.fromLngLat(bus.position.longitude, bus.position.latitude))
@@ -307,14 +305,11 @@ class BusMapActivity : FragmentMapActivity() {
                 }
                 FeatureCollection.fromFeatures(features)
             }
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ featureCollection ->
-                if (featureCollection != null) {
-                    addFeatureCollection(featureCollection)
-                    if (featureCollection.features() != null && featureCollection.features()!!.isEmpty()) {
-                        Util.showMessage(this@BusMapActivity, R.string.message_no_bus_found)
-                    }
-                } else {
-                    Util.showMessage(this@BusMapActivity, R.string.message_error_while_loading_data)
+                addFeatureCollection(featureCollection)
+                if (featureCollection.features() != null && featureCollection.features()!!.isEmpty()) {
+                    Util.showMessage(this@BusMapActivity, R.string.message_no_bus_found)
                 }
             }, {
                 Util.showMessage(this@BusMapActivity, R.string.message_error_while_loading_data)

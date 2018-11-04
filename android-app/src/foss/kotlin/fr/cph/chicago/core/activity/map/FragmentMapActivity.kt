@@ -89,7 +89,10 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
 
     abstract fun centerMap()
 
-    abstract fun setSelected(feature: Feature)
+    protected open fun setSelected(feature: Feature) {
+        showProgress(true)
+        deselectAll()
+    }
 
     @Deprecated(message = "To remove when google components are in its own package")
     protected fun centerMapOn(latitude: Double, longitude: Double, zoom: Double) {

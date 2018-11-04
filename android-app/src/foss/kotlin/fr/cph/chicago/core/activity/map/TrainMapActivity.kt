@@ -196,8 +196,7 @@ class TrainMapActivity : FragmentMapActivity() {
     }
 
     override fun setSelected(feature: Feature) {
-        showProgress(true)
-        deselectAll()
+        super.setSelected(feature)
         val runNumber = feature.getStringProperty(PROPERTY_TITLE)
         observableUtil.createLoadTrainEtaObservable(runNumber, false)
             .observeOn(Schedulers.computation())
