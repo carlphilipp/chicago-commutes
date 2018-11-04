@@ -37,9 +37,9 @@ import butterknife.BindString
 import butterknife.BindView
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.annotations.PolylineOptions
-import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
@@ -48,10 +48,14 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.activity.station.BusStopActivity
 import fr.cph.chicago.core.adapter.BusBoundAdapter
+import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.rx.ObservableUtil
+import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.Util
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import org.apache.commons.lang3.StringUtils
 
 /**
@@ -160,24 +164,23 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
             }
         })
 
-
         util.setWindowsColor(this, toolbar, TrainLine.NA)
         toolbar.title = "$busRouteId - $boundTitle"
 
         toolbar.navigationIcon = arrowBackWhite
-        toolbar.setOnClickListener { _ -> finish() }
+        toolbar.setOnClickListener { finish() }
 
         observableUtil.createBusStopBoundObservable(busRouteId, bound)
-            .subscribe({ onNext ->
-                busStops = onNext
-                busBoundAdapter.updateBusStops(onNext)
-                busBoundAdapter.notifyDataSetChanged()
-            }
-                , { onError ->
-                Log.e(TAG, onError.message, onError)
-                util.showOopsSomethingWentWrong(listView)
-            })
-
+            .subscribe(
+                { onNext ->
+                    busStops = onNext
+                    busBoundAdapter.updateBusStops(onNext)
+                    busBoundAdapter.notifyDataSetChanged()
+                },
+                { onError ->
+                    Log.e(TAG, onError.message, onError)
+                    util.showOopsSomethingWentWrong(listView)
+                })
         // Preventing keyboard from moving background when showing up
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
     }
@@ -188,33 +191,29 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
         mapBox.uiSettings.isRotateGesturesEnabled = false
         mapBox.uiSettings.isTiltGesturesEnabled = false
         observableUtil.createBusPatternObservable(busRouteId, bound)
-            .subscribe({ busPattern ->
-                if (busPattern.direction != "error") {
-                    val center = busPattern.points.size / 2
-                    val position = busPattern.points[center].position
-                    if (position.latitude == 0.0 && position.longitude == 0.0) {
-
-                    } else {
-                        val cameraPosition = CameraPosition.Builder()
-                            .target(LatLng(position.latitude, position.longitude))
-                            .zoom(9.0)
-                            .build()
-                        mapBox.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 500)
-                    }
-
-                    val poly = PolylineOptions()
-                        .addAll(busPattern.points.map { patternPoint -> LatLng(patternPoint.position.latitude, patternPoint.position.longitude) })
-                        .color(Color.BLACK)
-                        .width(App.instance.lineWidthMapBox)
-
-                    mapBox.addPolyline(poly)
-                } else {
-                    util.showMessage(this, R.string.message_error_could_not_load_path)
-                }
-            }) { onError ->
-                util.handleConnectOrParserException(onError, null, layout, layout)
-                Log.e(TAG, onError.message, onError)
+            .observeOn(Schedulers.computation())
+            .map { busPattern: BusPattern ->
+                val pair = MapUtil.getBounds(busPattern.points.map { it.position })
+                val latLngBounds = LatLngBounds.Builder()
+                    .include(LatLng(pair.first.latitude, pair.first.longitude))
+                    .include(LatLng(pair.second.latitude, pair.second.longitude))
+                    .build()
+                val poly = PolylineOptions()
+                    .addAll(busPattern.points.map { patternPoint -> LatLng(patternPoint.position.latitude, patternPoint.position.longitude) })
+                    .color(Color.BLACK)
+                    .width(App.instance.lineWidthMapBox)
+                Pair(latLngBounds, poly)
             }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { pair ->
+                    mapBox.easeCamera(CameraUpdateFactory.newLatLngBounds(pair.first, 50), 500)
+                    mapBox.addPolyline(pair.second)
+                },
+                { onError ->
+                    util.handleConnectOrParserException(onError, null, layout, layout)
+                    Log.e(TAG, onError.message, onError)
+                })
     }
 
     public override fun onResume() {
