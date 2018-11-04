@@ -195,11 +195,11 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
                     if (position.latitude == 0.0 && position.longitude == 0.0) {
 
                     } else {
-                        val position = CameraPosition.Builder()
+                        val cameraPosition = CameraPosition.Builder()
                             .target(LatLng(position.latitude, position.longitude))
                             .zoom(9.0)
                             .build()
-                        mapBox.animateCamera(CameraUpdateFactory.newCameraPosition(position), 500)
+                        mapBox.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 500)
                     }
 
                     val poly = PolylineOptions()
