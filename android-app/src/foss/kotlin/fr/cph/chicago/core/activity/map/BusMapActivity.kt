@@ -294,16 +294,6 @@ class BusMapActivity : FragmentMapActivity() {
             .subscribe { view -> update(feature, id, view) }
     }
 
-    // FIXME: Duplicated code!
-    fun update(feature: Feature, runNumber: String, view: View) {
-        // TODO: see if the view generation can be done not in the main thread
-        mapboxMap.addImage(runNumber, BitmapGenerator.generate(view))
-
-        feature.properties()?.addProperty(PROPERTY_SELECTED, true)
-        refreshSource()
-        showProgress(false)
-    }
-
     private fun loadBuses() {
         observableUtil.createBusListObservable(busRouteId)
             .map { buses ->

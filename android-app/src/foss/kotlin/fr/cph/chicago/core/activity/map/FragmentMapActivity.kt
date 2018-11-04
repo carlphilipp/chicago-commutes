@@ -26,7 +26,6 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.support.v7.widget.Toolbar
 import android.view.View
-import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import butterknife.BindDrawable
@@ -41,6 +40,10 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeFragmentMapActivity
+import fr.cph.chicago.core.utils.BitmapGenerator
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 @SuppressLint("Registered")
 abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapReadyCallback {
@@ -133,6 +136,18 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
         } else {
             progressBar.visibility = View.GONE
         }
+    }
+
+    protected fun update(feature: Feature, id: String, view: View) {
+        Single.defer { Single.just(BitmapGenerator.generate(view)) }
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { bitmap ->
+                mapboxMap.addImage(id, bitmap)
+                feature.properties()?.addProperty(PROPERTY_SELECTED, true)
+                refreshSource()
+                showProgress(false)
+            }
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {

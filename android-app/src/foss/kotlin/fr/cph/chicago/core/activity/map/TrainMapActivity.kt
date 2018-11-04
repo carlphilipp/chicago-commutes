@@ -185,18 +185,6 @@ class TrainMapActivity : FragmentMapActivity() {
         }
     }
 
-    fun update(feature: Feature, runNumber: String, view: View) {
-        Single.defer { Single.just(BitmapGenerator.generate(view)) }
-            .subscribeOn(Schedulers.computation())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { bitmap ->
-                mapboxMap.addImage(runNumber, bitmap)
-                feature.properties()?.addProperty(PROPERTY_SELECTED, true)
-                refreshSource()
-                showProgress(false)
-            }
-    }
-
     private fun handleClickInfo(feature: Feature) {
         showProgress(true)
         val runNumber = feature.getStringProperty(PROPERTY_TITLE)
