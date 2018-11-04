@@ -1,5 +1,6 @@
 package fr.cph.chicago.rx
 
+import android.view.View
 import android.widget.ListView
 import android.widget.RelativeLayout
 import android.widget.TextView
@@ -8,16 +9,16 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.map.BusMapActivity
 import fr.cph.chicago.core.adapter.BusMapSnippetAdapter
 import fr.cph.chicago.core.model.BusArrival
-import io.reactivex.functions.Consumer
+import io.reactivex.functions.Function
 import org.apache.commons.lang3.StringUtils
 import java.lang.ref.WeakReference
 import java.util.Date
 
-class BusesConsumer(busMapActivity: BusMapActivity, private val feature: Feature, private val loadAll: Boolean, private val runNumber: String) : Consumer<List<BusArrival>>, AConsumer() {
+class BusesFunction(busMapActivity: BusMapActivity, private val feature: Feature, private val loadAll: Boolean) : Function<List<BusArrival>, View>, AConsumer() {
 
     val activity: WeakReference<BusMapActivity> = WeakReference(busMapActivity)
 
-    override fun accept(busArrivalsRes: List<BusArrival>) {
+    override fun apply(busArrivalsRes: List<BusArrival>): View {
         val view = createView(feature, activity)
         val arrivals: ListView = view.findViewById(R.id.arrivals)
         val error: TextView = view.findViewById(R.id.error)
@@ -40,6 +41,6 @@ class BusesConsumer(busMapActivity: BusMapActivity, private val feature: Feature
             arrivals.visibility = ListView.GONE
             error.visibility = TextView.VISIBLE
         }
-        activity.get()?.update(feature, runNumber, view)
+        return view
     }
 }

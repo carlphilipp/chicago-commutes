@@ -55,7 +55,7 @@ import fr.cph.chicago.core.model.Bus
 import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.utils.BitmapGenerator
-import fr.cph.chicago.rx.BusesConsumer
+import fr.cph.chicago.rx.BusesFunction
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.MapUtil
@@ -275,10 +275,12 @@ class BusMapActivity : FragmentMapActivity() {
 
     private fun handleClickInfo(feature: Feature) {
         showProgress(true)
-        val runNumber = feature.getStringProperty(PROPERTY_TITLE)
-        observableUtil.createFollowBusObservable(runNumber)
-            // TODO move what's possible into other thread
-            .subscribe(BusesConsumer(this@BusMapActivity, feature, true, runNumber))
+        val id = feature.getStringProperty(PROPERTY_TITLE)
+        observableUtil.createFollowBusObservable(id)
+            .observeOn(Schedulers.computation())
+            .map(BusesFunction(this@BusMapActivity, feature, true))
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { view -> update(feature, id, view) }
     }
 
     override fun setSelected(feature: Feature) {
@@ -286,7 +288,10 @@ class BusMapActivity : FragmentMapActivity() {
         deselectAll()
         val id = feature.getStringProperty(PROPERTY_TITLE)
         observableUtil.createFollowBusObservable(id)
-            .subscribe(BusesConsumer(this@BusMapActivity, feature, false, id))
+            .observeOn(Schedulers.computation())
+            .map(BusesFunction(this@BusMapActivity, feature, false))
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { view -> update(feature, id, view) }
     }
 
     // FIXME: Duplicated code!

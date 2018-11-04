@@ -50,10 +50,13 @@ import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.utils.BitmapGenerator
 import fr.cph.chicago.rx.ObservableUtil
-import fr.cph.chicago.rx.TrainsConsumer
+import fr.cph.chicago.rx.TrainsFunction
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
+import io.reactivex.schedulers.Schedulers
 
 /**
  * @author Carl-Philipp Harmant
@@ -183,27 +186,36 @@ class TrainMapActivity : FragmentMapActivity() {
     }
 
     fun update(feature: Feature, runNumber: String, view: View) {
-        // TODO: see if the view generation can be done not in the main thread
-        mapboxMap.addImage(runNumber, BitmapGenerator.generate(view))
-
-        feature.properties()?.addProperty(PROPERTY_SELECTED, true)
-        refreshSource()
-        showProgress(false)
+        Single.defer { Single.just(BitmapGenerator.generate(view)) }
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { bitmap ->
+                mapboxMap.addImage(runNumber, bitmap)
+                feature.properties()?.addProperty(PROPERTY_SELECTED, true)
+                refreshSource()
+                showProgress(false)
+            }
     }
 
     private fun handleClickInfo(feature: Feature) {
         showProgress(true)
         val runNumber = feature.getStringProperty(PROPERTY_TITLE)
         observableUtil.createLoadTrainEtaObservable(runNumber, true)
-            // TODO move what's possible into other thread
-            .subscribe(TrainsConsumer(this, feature, runNumber))
+            .observeOn(Schedulers.computation())
+            .map(TrainsFunction(this@TrainMapActivity, feature))
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { view -> update(feature, runNumber, view) }
     }
 
     override fun setSelected(feature: Feature) {
         showProgress(true)
         deselectAll()
         val runNumber = feature.getStringProperty(PROPERTY_TITLE)
-        observableUtil.createLoadTrainEtaObservable(runNumber, false).subscribe(TrainsConsumer(this, feature, runNumber))
+        observableUtil.createLoadTrainEtaObservable(runNumber, false)
+            .observeOn(Schedulers.computation())
+            .map(TrainsFunction(this@TrainMapActivity, feature))
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { view -> update(feature, runNumber, view) }
     }
 
     private fun loadActivityData() {
