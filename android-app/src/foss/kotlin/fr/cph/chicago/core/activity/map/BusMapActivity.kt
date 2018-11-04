@@ -128,19 +128,9 @@ class BusMapActivity : FragmentMapActivity() {
         super.onSaveInstanceState(savedInstanceState)
     }
 
-    fun centerMapOnBus(result: List<Bus>) {
-        val sizeIsOne = result.size == 1
-        val position = if (sizeIsOne) result[0].position else MapUtil.getBestPosition(result.map { it.position })
-        val zoom = if (sizeIsOne) 15 else 11 // FIXME magic numbers
-        centerMapOn(position.latitude, position.longitude, zoom.toDouble())
-    }
-
-    override fun centerMap() {
-        //TODO()
-    }
-
     override fun onMapReady(mapboxMap: MapboxMap) {
         super.onMapReady(mapboxMap)
+        this.mapboxMap.addOnMapClickListener(this)
 
         this.mapboxMap.addImage("image-bus", BitmapFactory.decodeResource(resources, R.drawable.bus))
 
@@ -171,38 +161,37 @@ class BusMapActivity : FragmentMapActivity() {
             )
             .withFilter(eq(get(PROPERTY_SELECTED), literal(true))))
 
-        centerMap()
         loadActivityData()
-
-        this.mapboxMap.addOnMapClickListener { point: LatLng ->
-            val finalPoint = this.mapboxMap.projection.toScreenLocation(point)
-            val infoFeatures = this.mapboxMap.queryRenderedFeatures(finalPoint, INFO_LAYER_ID)
-            if (!infoFeatures.isEmpty()) {
-                val feature = infoFeatures[0]
-                handleClickInfo(feature)
-            } else {
-                val markerFeatures = this.mapboxMap.queryRenderedFeatures(toRect(finalPoint), MARKER_LAYER_ID)
-                if (!markerFeatures.isEmpty()) {
-                    val title = markerFeatures[0].getStringProperty(PROPERTY_TITLE)
-                    val featureList = featureCollection!!.features()
-                    for (i in featureList!!.indices) {
-                        if (featureList[i].getStringProperty(PROPERTY_TITLE) == title) {
-                            val feature = featureCollection!!.features()!![i]
-                            setSelected(feature)
-                        }
-                    }
-                } else {
-                    deselectAll()
-                    refreshSource()
-                }
-            }
-        }
 
         this.mapboxMap.addOnCameraIdleListener {
             if (this.mapboxMap.cameraPosition.zoom >= 15 && !showStops) {
                 this.mapboxMap.addMarkers(markerOptions)
             } else if (this.mapboxMap.markers.isNotEmpty()) {
                 this.mapboxMap.markers.forEach { this.mapboxMap.removeMarker(it) }
+            }
+        }
+    }
+
+    override fun onMapClick(point: LatLng) {
+        val finalPoint = this.mapboxMap.projection.toScreenLocation(point)
+        val infoFeatures = this.mapboxMap.queryRenderedFeatures(finalPoint, INFO_LAYER_ID)
+        if (!infoFeatures.isEmpty()) {
+            val feature = infoFeatures[0]
+            handleClickInfo(feature)
+        } else {
+            val markerFeatures = this.mapboxMap.queryRenderedFeatures(toRect(finalPoint), MARKER_LAYER_ID)
+            if (!markerFeatures.isEmpty()) {
+                val title = markerFeatures[0].getStringProperty(PROPERTY_TITLE)
+                val featureList = featureCollection!!.features()
+                for (i in featureList!!.indices) {
+                    if (featureList[i].getStringProperty(PROPERTY_TITLE) == title) {
+                        val feature = featureCollection!!.features()!![i]
+                        setSelected(feature)
+                    }
+                }
+            } else {
+                deselectAll()
+                refreshSource()
             }
         }
     }
@@ -224,6 +213,7 @@ class BusMapActivity : FragmentMapActivity() {
                 }
                     .observeOn(Schedulers.computation())
                     .map { patterns ->
+                        centerMap(patterns.flatMap { it.points.map { patternPoint -> LatLng(patternPoint.position.latitude, patternPoint.position.longitude) } })
                         patterns.map { pattern ->
                             val positions = pattern.points.map { patternPoint ->
                                 val latLng = LatLng(patternPoint.position.latitude, patternPoint.position.longitude)

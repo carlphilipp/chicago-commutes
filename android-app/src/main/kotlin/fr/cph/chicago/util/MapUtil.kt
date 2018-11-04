@@ -11,6 +11,39 @@ object MapUtil {
         Position(41.8819, -87.6278)
     }
 
+    fun getBounds(positions: List<Position>): Pair<Position, Position> {
+        var maxLatitude = 0.0
+        var minLatitude = 0.0
+        var maxLongitude = 0.0
+        var minLongitude = 0.0
+        positions
+            .filter { it.latitude != 0.0 && it.latitude != 0.0 }
+            .forEachIndexed { i, temp ->
+                if (i == 0) {
+                    maxLatitude = temp.latitude
+                    minLatitude = temp.latitude
+                    maxLongitude = temp.longitude
+                    minLongitude = temp.longitude
+                } else {
+                    if (temp.latitude > maxLatitude) {
+                        maxLatitude = temp.latitude
+                    }
+                    if (temp.latitude < minLatitude) {
+                        minLatitude = temp.latitude
+                    }
+                    if (temp.longitude > maxLongitude) {
+                        maxLongitude = temp.longitude
+                    }
+                    if (temp.longitude < minLongitude) {
+                        minLongitude = temp.longitude
+                    }
+                }
+            }
+        val topLeft = Position(minLatitude, maxLongitude)
+        val bottomRight = Position(maxLatitude, minLongitude)
+        return Pair(topLeft, bottomRight)
+    }
+
     fun getBestPosition(positions: List<Position>): Position {
         var maxLatitude = 0.0
         var minLatitude = 0.0

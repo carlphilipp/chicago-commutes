@@ -21,7 +21,6 @@ package fr.cph.chicago.core.activity.map
 
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.view.View
 import butterknife.BindString
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
@@ -48,12 +47,10 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import fr.cph.chicago.core.utils.BitmapGenerator
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.rx.TrainsFunction
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable
-import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
@@ -110,23 +107,9 @@ class TrainMapActivity : FragmentMapActivity() {
         super.onSaveInstanceState(savedInstanceState)
     }
 
-    override fun centerMap() {
-        val pair: Pair<LatLng, Double> = when (trainLine) {
-            TrainLine.BLUE -> Pair(LatLng(41.895351487237065, -87.7658120473011), 9.712402653729297)
-            TrainLine.BROWN -> Pair(LatLng(41.917109926603494, -87.66789627065805), 11.182480413976615)
-            TrainLine.GREEN -> Pair(LatLng(41.83977485811293, -87.70335827378659), 10.112386603953428)
-            TrainLine.ORANGE -> Pair(LatLng(41.836677288834935, -87.67880795158356), 10.763237680550047)
-            TrainLine.PINK -> Pair(LatLng(41.86087730862362, -87.69142385608006), 10.78020744535134)
-            TrainLine.PURPLE -> Pair(LatLng(41.97621387448969, -87.66136527647143), 10.267667342991793)
-            TrainLine.RED -> Pair(LatLng(41.87368988294554, -87.64321964856293), 10.090815394650992)
-            TrainLine.YELLOW -> Pair(LatLng(42.020033618572555, -87.7147765617836), 11.633041915241225)
-            TrainLine.NA -> Pair(LatLng(41.8819, -87.6278), 11.0)
-        }
-        centerMapOn(pair.first, pair.second)
-    }
-
     override fun onMapReady(mapboxMap: MapboxMap) {
         super.onMapReady(mapboxMap)
+        this.mapboxMap.addOnMapClickListener(this)
 
         this.mapboxMap.addImage("image-train", BitmapFactory.decodeResource(resources, R.drawable.train))
 
@@ -157,30 +140,30 @@ class TrainMapActivity : FragmentMapActivity() {
             )
             .withFilter(eq(get(PROPERTY_SELECTED), literal(true))))
 
-        centerMap()
+        //centerMap()
         loadActivityData()
+    }
 
-        this.mapboxMap.addOnMapClickListener { point: LatLng ->
-            val finalPoint = this.mapboxMap.projection.toScreenLocation(point)
-            val infoFeatures = this.mapboxMap.queryRenderedFeatures(finalPoint, INFO_LAYER_ID)
-            if (!infoFeatures.isEmpty()) {
-                val feature = infoFeatures[0]
-                handleClickInfo(feature)
-            } else {
-                val markerFeatures = this.mapboxMap.queryRenderedFeatures(toRect(finalPoint), MARKER_LAYER_ID)
-                if (!markerFeatures.isEmpty()) {
-                    val title = markerFeatures[0].getStringProperty(PROPERTY_TITLE)
-                    val featureList = featureCollection!!.features()
-                    for (i in featureList!!.indices) {
-                        if (featureList[i].getStringProperty(PROPERTY_TITLE) == title) {
-                            val feature = featureCollection!!.features()!![i]
-                            setSelected(feature)
-                        }
+    override fun onMapClick(point: LatLng) {
+        val finalPoint = this.mapboxMap.projection.toScreenLocation(point)
+        val infoFeatures = this.mapboxMap.queryRenderedFeatures(finalPoint, INFO_LAYER_ID)
+        if (!infoFeatures.isEmpty()) {
+            val feature = infoFeatures[0]
+            handleClickInfo(feature)
+        } else {
+            val markerFeatures = this.mapboxMap.queryRenderedFeatures(toRect(finalPoint), MARKER_LAYER_ID)
+            if (!markerFeatures.isEmpty()) {
+                val title = markerFeatures[0].getStringProperty(PROPERTY_TITLE)
+                val featureList = featureCollection!!.features()
+                for (i in featureList!!.indices) {
+                    if (featureList[i].getStringProperty(PROPERTY_TITLE) == title) {
+                        val feature = featureCollection!!.features()!![i]
+                        setSelected(feature)
                     }
-                } else {
-                    deselectAll()
-                    refreshSource()
                 }
+            } else {
+                deselectAll()
+                refreshSource()
             }
         }
     }
@@ -237,8 +220,13 @@ class TrainMapActivity : FragmentMapActivity() {
                     if (collections.features() != null && collections.features()!!.isEmpty()) {
                         Util.showMessage(this@TrainMapActivity, R.string.message_no_train_found)
                     }
-                    Any()
-                }).subscribe({}, { Util.showMessage(this@TrainMapActivity, R.string.message_error_while_loading_data) })
+                    polyline.points
+                })
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                        { points -> centerMap(points) },
+                        { Util.showMessage(this@TrainMapActivity, R.string.message_error_while_loading_data) }
+                    )
             } else {
                 featuresObs.subscribe({ featureCollection ->
                     if (featureCollection != null) {

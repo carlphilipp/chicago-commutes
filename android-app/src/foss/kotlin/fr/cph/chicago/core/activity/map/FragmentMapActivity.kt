@@ -35,18 +35,22 @@ import com.mapbox.geojson.FeatureCollection
 import com.mapbox.mapboxsdk.annotations.PolylineOptions
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.maps.MapboxMap
+import com.mapbox.mapboxsdk.maps.MapboxMap.OnMapClickListener
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeFragmentMapActivity
+import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.utils.BitmapGenerator
+import fr.cph.chicago.util.MapUtil
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
 @SuppressLint("Registered")
-abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapReadyCallback {
+abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapReadyCallback, OnMapClickListener {
 
     @BindView(R.id.activity_bar)
     lateinit var progressBar: ProgressBar
@@ -87,7 +91,20 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
         }
     }
 
-    abstract fun centerMap()
+    protected fun centerMap(points: List<LatLng>) {
+        Single.defer { Single.just(points) }
+            .map { latLngs -> MapUtil.getBounds(latLngs.map { latLng -> Position(latLng.latitude, latLng.longitude) }) }
+            .map { pair ->
+                val latLngBounds = LatLngBounds.Builder()
+                    .include(LatLng(pair.first.latitude, pair.first.longitude))
+                    .include(LatLng(pair.second.latitude, pair.second.longitude))
+                    .build()
+                latLngBounds
+            }
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { latLngBounds -> mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 50), 500) }
+    }
 
     protected open fun setSelected(feature: Feature) {
         showProgress(true)
@@ -180,6 +197,7 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
         super.onDestroy()
         mapView.onDestroy()
     }
+
     companion object {
         protected const val DEFAULT_EXTRAPOLATION = 100
     }
