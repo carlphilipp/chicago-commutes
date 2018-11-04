@@ -22,6 +22,7 @@ package fr.cph.chicago.core.activity.map
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import butterknife.BindString
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
@@ -49,13 +50,11 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconSize
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.model.Bus
 import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.rx.BusesFunction
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.service.BusService
-import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -247,14 +246,20 @@ class BusMapActivity : FragmentMapActivity() {
                     }
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe { result ->
-                        if (result != null) {
-                            drawPolyline(result.map { pair -> pair.first })
-                            this.markerOptions = result.flatMap { pair -> pair.second }
-                        } else {
-                            Util.showNetworkErrorMessage(layout)
+                    .subscribe(
+                        { result ->
+                            if (result != null) {
+                                drawPolyline(result.map { pair -> pair.first })
+                                this.markerOptions = result.flatMap { pair -> pair.second }
+                            } else {
+                                Util.showMessage(layout, R.string.message_no_pattern_found)
+                            }
+                        },
+                        { error ->
+                            Log.e(TAG, error.message, error)
+                            Util.showMessage(layout, R.string.message_no_pattern_found)
                         }
-                    }
+                    )
             }
         } else {
             Util.showNetworkErrorMessage(layout)
@@ -296,17 +301,24 @@ class BusMapActivity : FragmentMapActivity() {
                 FeatureCollection.fromFeatures(features)
             }
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ featureCollection ->
-                addFeatureCollection(featureCollection)
-                if (featureCollection.features() != null && featureCollection.features()!!.isEmpty()) {
-                    Util.showMessage(this@BusMapActivity, R.string.message_no_bus_found)
-                }
-            }, {
-                Util.showMessage(this@BusMapActivity, R.string.message_error_while_loading_data)
-            })
+            .subscribe(
+                { featureCollection ->
+                    addFeatureCollection(featureCollection)
+                    if (featureCollection.features() != null && featureCollection.features()!!.isEmpty()) {
+                        Util.showMessage(layout, R.string.message_no_bus_found)
+                    }
+                },
+                { error ->
+                    Log.e(TAG, error.message, error)
+                    Util.showMessage(layout, R.string.message_error_while_loading_data)
+                })
     }
 
     private val blueIcon: Icon by lazy {
         IconFactory.getInstance(this@BusMapActivity).fromResource(R.drawable.blue_marker)
+    }
+
+    companion object {
+        private val TAG = BusMapActivity::class.java.simpleName
     }
 }
