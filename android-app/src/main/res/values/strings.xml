@@ -135,6 +135,7 @@
     <string name="time_hour">&#160;h&#160;</string>
 
     <!-- Message -->
+    <string name="message_no_data">Could not load data!</string>
     <string name="message_no_pattern_found">No pattern found!</string>
     <string name="message_no_bus_found">No bus found!</string>
     <string name="message_no_train_found">No trains found!</string>

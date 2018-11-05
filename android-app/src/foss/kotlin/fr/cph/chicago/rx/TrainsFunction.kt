@@ -12,7 +12,7 @@ import fr.cph.chicago.core.model.TrainEta
 import io.reactivex.functions.Function
 import java.lang.ref.WeakReference
 
-class TrainsFunction(trainMapActivity: TrainMapActivity, private val feature: Feature) : Function<List<TrainEta>, View>, AConsumer() {
+class TrainsFunction(trainMapActivity: TrainMapActivity, private val feature: Feature) : Function<List<TrainEta>, View>, AFunction() {
 
     val activity: WeakReference<TrainMapActivity> = WeakReference(trainMapActivity)
 

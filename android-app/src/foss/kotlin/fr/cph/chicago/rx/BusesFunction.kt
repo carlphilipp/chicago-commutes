@@ -14,7 +14,7 @@ import org.apache.commons.lang3.StringUtils
 import java.lang.ref.WeakReference
 import java.util.Date
 
-class BusesFunction(busMapActivity: BusMapActivity, private val feature: Feature, private val loadAll: Boolean) : Function<List<BusArrival>, View>, AConsumer() {
+class BusesFunction(busMapActivity: BusMapActivity, private val feature: Feature, private val loadAll: Boolean) : Function<List<BusArrival>, View>, AFunction() {
 
     val activity: WeakReference<BusMapActivity> = WeakReference(busMapActivity)
 

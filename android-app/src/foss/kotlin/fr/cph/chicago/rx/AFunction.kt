@@ -11,7 +11,7 @@ import fr.cph.chicago.core.activity.map.PROPERTY_DESTINATION
 import fr.cph.chicago.util.Util
 import java.lang.ref.WeakReference
 
-abstract class AConsumer {
+abstract class AFunction {
 
     protected fun addParams(container: RelativeLayout, size: Int) {
         val params = container.layoutParams

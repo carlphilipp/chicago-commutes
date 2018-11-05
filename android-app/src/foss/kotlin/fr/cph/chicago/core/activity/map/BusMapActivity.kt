@@ -273,7 +273,13 @@ class BusMapActivity : FragmentMapActivity() {
             .observeOn(Schedulers.computation())
             .map(BusesFunction(this@BusMapActivity, feature, true))
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { view -> update(feature, id, view) }
+            .subscribe(
+                { view -> update(feature, id, view) },
+                { error ->
+                    Log.e(TAG, error.message, error)
+                    Util.showMessage(layout, R.string.message_no_data)
+                }
+            )
     }
 
     override fun setSelected(feature: Feature) {
@@ -283,7 +289,13 @@ class BusMapActivity : FragmentMapActivity() {
             .observeOn(Schedulers.computation())
             .map(BusesFunction(this@BusMapActivity, feature, false))
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { view -> update(feature, id, view) }
+            .subscribe(
+                { view -> update(feature, id, view) },
+                { error ->
+                    Log.e(TAG, error.message, error)
+                    Util.showMessage(layout, R.string.message_no_data)
+                }
+            )
     }
 
     private fun loadBuses() {
