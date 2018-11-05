@@ -91,8 +91,8 @@ class AlertActivity : ButterKnifeActivity(R.layout.activity_alert) {
                 }
                 hideAnimation()
             },
-            { onError ->
-                Log.e(TAG, onError.message, onError)
+            { error ->
+                Log.e(TAG, error.message, error)
                 Util.showOopsSomethingWentWrong(listView)
                 hideAnimation()
             })

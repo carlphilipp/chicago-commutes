@@ -106,10 +106,14 @@ class BaseActivity : ButterKnifeActivity(R.layout.loading) {
                     (application as App).lastUpdate = Calendar.getInstance().time
                     FavoritesDTO(trainArrivalsDTO, busArrivalsDTO, false, listOf())
                 })
-                    .subscribe({ this.startMainActivity(it) }, { onError ->
-                        Log.e(TAG, onError.message, onError)
-                        startErrorActivity()
-                    })
+                    .subscribe(
+                        { favoritesDTO ->
+                            this.startMainActivity(favoritesDTO)
+                        },
+                        { error ->
+                            Log.e(TAG, error.message, error)
+                            startErrorActivity()
+                        })
             }.subscribe()
     }
 

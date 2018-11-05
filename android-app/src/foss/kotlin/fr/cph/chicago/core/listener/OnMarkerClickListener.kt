@@ -38,7 +38,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
         observableUtil.createTrainArrivalsObservable(trainTrainStation)
             .subscribe(
                 { nearbyFragment.slidingUpAdapter.addTrainStation(it) },
-                { onError -> Log.e(TAG, onError.message, onError) }
+                { error -> Log.e(TAG, error.message, error) }
             )
     }
 
@@ -51,7 +51,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
                     result.forEach { busArrivalRouteDTO.addBusArrival(it) }
                     nearbyFragment.slidingUpAdapter.addBusArrival(busArrivalRouteDTO)
                 },
-                { onError -> Log.e(TAG, onError.message, onError) }
+                { error -> Log.e(TAG, error.message, error) }
             )
     }
 
@@ -60,7 +60,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
         observableUtil.createBikeStationsObservable(divvyStation)
             .subscribe(
                 { nearbyFragment.slidingUpAdapter.addBike(it) },
-                { onError -> Log.e(TAG, onError.message, onError) }
+                { error -> Log.e(TAG, error.message, error) }
             )
     }
 

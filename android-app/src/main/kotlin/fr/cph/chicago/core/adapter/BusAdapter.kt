@@ -76,7 +76,7 @@ class BusAdapter : BaseAdapter() {
         holder.routeNameView.text = route.name
         holder.routeNumberView.text = route.id
 
-        view?.setOnClickListener { _ ->
+        view?.setOnClickListener {
             holder.detailsLayout.visibility = LinearLayout.VISIBLE
             ObservableUtil.createBusDirectionsObservable(route.id)
                 .doOnError { throwable: Throwable ->

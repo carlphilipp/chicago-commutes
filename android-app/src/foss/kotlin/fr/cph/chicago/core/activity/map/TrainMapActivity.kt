@@ -21,6 +21,7 @@ package fr.cph.chicago.core.activity.map
 
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Log
 import butterknife.BindString
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
@@ -82,7 +83,7 @@ class TrainMapActivity : FragmentMapActivity() {
         else
             intent.getStringExtra(bundleTrainLine)
 
-        initData()
+        initMap()
 
         setToolbar()
     }
@@ -107,13 +108,13 @@ class TrainMapActivity : FragmentMapActivity() {
         super.onSaveInstanceState(savedInstanceState)
     }
 
-    override fun onMapReady(mapboxMap: MapboxMap) {
-        super.onMapReady(mapboxMap)
-        this.mapboxMap.addOnMapClickListener(this)
+    override fun onMapReady(map: MapboxMap) {
+        super.onMapReady(map)
+        this.map.addOnMapClickListener(this)
 
-        this.mapboxMap.addImage("image-train", BitmapFactory.decodeResource(resources, R.drawable.train))
+        this.map.addImage("image-train", BitmapFactory.decodeResource(resources, R.drawable.train))
 
-        this.mapboxMap.addLayer(SymbolLayer(MARKER_LAYER_ID, SOURCE_ID)
+        this.map.addLayer(SymbolLayer(MARKER_LAYER_ID, SOURCE_ID)
             .withProperties(
                 iconImage("image-train"),
                 iconRotate(get("heading")),
@@ -129,7 +130,7 @@ class TrainMapActivity : FragmentMapActivity() {
                 iconAllowOverlap(true),
                 iconRotationAlignment(Property.ICON_ROTATION_ALIGNMENT_MAP)))
 
-        this.mapboxMap.addLayer(SymbolLayer(INFO_LAYER_ID, SOURCE_ID)
+        this.map.addLayer(SymbolLayer(INFO_LAYER_ID, SOURCE_ID)
             .withProperties(
                 // show image with id title based on the value of the title feature property
                 iconImage("{title}"),
@@ -140,25 +141,24 @@ class TrainMapActivity : FragmentMapActivity() {
             )
             .withFilter(eq(get(PROPERTY_SELECTED), literal(true))))
 
-        //centerMap()
         loadActivityData()
     }
 
     override fun onMapClick(point: LatLng) {
-        val finalPoint = this.mapboxMap.projection.toScreenLocation(point)
-        val infoFeatures = this.mapboxMap.queryRenderedFeatures(finalPoint, INFO_LAYER_ID)
+        val finalPoint = this.map.projection.toScreenLocation(point)
+        val infoFeatures = this.map.queryRenderedFeatures(finalPoint, INFO_LAYER_ID)
         if (!infoFeatures.isEmpty()) {
             val feature = infoFeatures[0]
-            handleClickInfo(feature)
+            clickOnInfo(feature)
         } else {
-            val markerFeatures = this.mapboxMap.queryRenderedFeatures(toRect(finalPoint), MARKER_LAYER_ID)
+            val markerFeatures = this.map.queryRenderedFeatures(toRect(finalPoint), MARKER_LAYER_ID)
             if (!markerFeatures.isEmpty()) {
                 val title = markerFeatures[0].getStringProperty(PROPERTY_TITLE)
                 val featureList = featureCollection!!.features()
                 for (i in featureList!!.indices) {
                     if (featureList[i].getStringProperty(PROPERTY_TITLE) == title) {
                         val feature = featureCollection!!.features()!![i]
-                        setSelected(feature)
+                        selectFeature(feature)
                     }
                 }
             } else {
@@ -168,30 +168,35 @@ class TrainMapActivity : FragmentMapActivity() {
         }
     }
 
-    private fun handleClickInfo(feature: Feature) {
+    private fun clickOnInfo(feature: Feature) {
         showProgress(true)
-        val runNumber = feature.getStringProperty(PROPERTY_TITLE)
-        observableUtil.createLoadTrainEtaObservable(runNumber, true)
-            .observeOn(Schedulers.computation())
-            .map(TrainsFunction(this@TrainMapActivity, feature))
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { view -> update(feature, runNumber, view) }
+        loadAndUpdateTrainArrivalFeature(feature, true)
     }
 
-    override fun setSelected(feature: Feature) {
-        super.setSelected(feature)
+    override fun selectFeature(feature: Feature) {
+        super.selectFeature(feature)
+        loadAndUpdateTrainArrivalFeature(feature, false)
+    }
+
+    private fun loadAndUpdateTrainArrivalFeature(feature: Feature, loadAll: Boolean) {
         val runNumber = feature.getStringProperty(PROPERTY_TITLE)
-        observableUtil.createLoadTrainEtaObservable(runNumber, false)
+        observableUtil.createLoadTrainEtaObservable(runNumber, loadAll)
             .observeOn(Schedulers.computation())
             .map(TrainsFunction(this@TrainMapActivity, feature))
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { view -> update(feature, runNumber, view) }
+            .subscribe(
+                { view -> update(feature, runNumber, view) },
+                { error ->
+                    Log.e(TAG, error.message, error)
+                    Util.showMessage(layout, R.string.message_no_data)
+                    showProgress(false)
+                })
     }
 
     private fun loadActivityData() {
         if (Util.isNetworkAvailable()) {
             // Load train location
-            val featuresObs: Observable<FeatureCollection> = observableUtil.createTrainLocationObservable(line)
+            val featuresObs = observableUtil.createTrainLocationObservable(line)
                 .map { trains: List<Train> ->
                     val features = trains.map { train ->
                         val feature = Feature.fromGeometry(Point.fromLngLat(train.position.longitude, train.position.latitude))
@@ -225,24 +230,33 @@ class TrainMapActivity : FragmentMapActivity() {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                         { points -> centerMap(points) },
-                        { Util.showMessage(this@TrainMapActivity, R.string.message_error_while_loading_data) }
-                    )
+                        { error ->
+                            Log.e(TAG, error.message, error)
+                            Util.showMessage(this@TrainMapActivity, R.string.message_error_while_loading_data)
+                        })
             } else {
-                featuresObs.subscribe({ featureCollection ->
-                    if (featureCollection != null) {
-                        addFeatureCollection(featureCollection)
-                        if (featureCollection.features() != null && featureCollection.features()!!.isEmpty()) {
-                            Util.showMessage(this@TrainMapActivity, R.string.message_no_train_found)
+                featuresObs.subscribe(
+                    { featureCollection ->
+                        if (featureCollection != null) {
+                            addFeatureCollection(featureCollection)
+                            if (featureCollection.features() != null && featureCollection.features()!!.isEmpty()) {
+                                Util.showMessage(this@TrainMapActivity, R.string.message_no_train_found)
+                            }
+                        } else {
+                            Util.showMessage(this@TrainMapActivity, R.string.message_error_while_loading_data)
                         }
-                    } else {
+                    },
+                    { error ->
+                        Log.e(TAG, error.message, error)
                         Util.showMessage(this@TrainMapActivity, R.string.message_error_while_loading_data)
-                    }
-                }, {
-                    Util.showMessage(this@TrainMapActivity, R.string.message_error_while_loading_data)
-                })
+                    })
             }
         } else {
             Util.showNetworkErrorMessage(layout)
         }
+    }
+
+    companion object {
+        private val TAG = TrainMapActivity::class.java.simpleName
     }
 }

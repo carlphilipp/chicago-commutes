@@ -177,8 +177,8 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
                     busBoundAdapter.updateBusStops(onNext)
                     busBoundAdapter.notifyDataSetChanged()
                 },
-                { onError ->
-                    Log.e(TAG, onError.message, onError)
+                { error ->
+                    Log.e(TAG, error.message, error)
                     util.showOopsSomethingWentWrong(listView)
                 })
         // Preventing keyboard from moving background when showing up
@@ -210,9 +210,9 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
                     mapBox.easeCamera(CameraUpdateFactory.newLatLngBounds(pair.first, 50), 500)
                     mapBox.addPolyline(pair.second)
                 },
-                { onError ->
-                    util.handleConnectOrParserException(onError, null, layout, layout)
-                    Log.e(TAG, onError.message, onError)
+                { error ->
+                    Log.e(TAG, error.message, error)
+                    util.handleConnectOrParserException(error, null, layout, layout)
                 })
     }
 

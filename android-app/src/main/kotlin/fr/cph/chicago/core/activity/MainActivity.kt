@@ -175,8 +175,8 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
                 }
                 val zipped = observableUtil.createAllDataObservable()
                 zipped.subscribe({ favoritesResult -> favoritesFragment?.reloadData(favoritesResult) })
-                { onError ->
-                    Log.e(TAG, onError.message, onError)
+                { error ->
+                    Log.e(TAG, error.message, error)
                     favoritesFragment!!.displayError(R.string.message_something_went_wrong)
                 }
             } else {
@@ -201,8 +201,8 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
                     util.showSnackBar(this, R.string.message_something_went_wrong, Snackbar.LENGTH_SHORT)
                 }
             },
-            { throwable ->
-                Log.e(TAG, "Error while loading data", throwable)
+            { error ->
+                Log.e(TAG, "Error while loading data", error)
                 util.showSnackBar(this, R.string.message_something_went_wrong, Snackbar.LENGTH_SHORT)
             }
         )

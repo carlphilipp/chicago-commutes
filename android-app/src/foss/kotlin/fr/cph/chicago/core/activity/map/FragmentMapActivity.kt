@@ -62,12 +62,12 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
     @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
     lateinit var arrowBackWhite: Drawable
 
-    protected lateinit var mapboxMap: MapboxMap
+    protected lateinit var map: MapboxMap
     protected var source: GeoJsonSource? = null
     protected var featureCollection: FeatureCollection? = null
     protected var drawLine = true
 
-    protected open fun initData() {
+    protected open fun initMap() {
         mapView.getMapAsync(this)
     }
 
@@ -79,10 +79,6 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
 
         toolbar.navigationIcon = arrowBackWhite
         toolbar.setOnClickListener { finish() }
-    }
-
-    @Deprecated(message = "To remove when google components are in its own package")
-    fun refreshInfoWindow() {
     }
 
     protected fun refreshSource() {
@@ -103,22 +99,12 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
             }
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { latLngBounds -> mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 50), 500) }
+            .subscribe { latLngBounds -> map.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 50), 500) }
     }
 
-    protected open fun setSelected(feature: Feature) {
+    protected open fun selectFeature(feature: Feature) {
         showProgress(true)
         deselectAll()
-    }
-
-    @Deprecated(message = "To remove when google components are in its own package")
-    protected fun centerMapOn(latitude: Double, longitude: Double, zoom: Double) {
-        val latLng = LatLng(latitude, longitude)
-        mapboxMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom))
-    }
-
-    protected fun centerMapOn(latLng: LatLng, zoom: Double) {
-        mapboxMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom))
     }
 
     protected fun toRect(point: PointF): RectF {
@@ -131,17 +117,17 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
 
     protected fun addFeatureCollection(featureCollection: FeatureCollection) {
         this.featureCollection = featureCollection
-        source = mapboxMap.getSource(SOURCE_ID) as GeoJsonSource?
+        source = map.getSource(SOURCE_ID) as GeoJsonSource?
         if (source == null) {
             source = GeoJsonSource(SOURCE_ID, featureCollection)
-            mapboxMap.addSource(source!!)
+            map.addSource(source!!)
         } else {
             source!!.setGeoJson(featureCollection)
         }
     }
 
     protected fun drawPolyline(polylines: List<PolylineOptions>) {
-        mapboxMap.addPolylines(polylines)
+        map.addPolylines(polylines)
         drawLine = false
     }
 
@@ -163,19 +149,19 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
             .subscribeOn(Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { bitmap ->
-                mapboxMap.addImage(id, bitmap)
+                map.addImage(id, bitmap)
                 feature.properties()?.addProperty(PROPERTY_SELECTED, true)
                 refreshSource()
                 showProgress(false)
             }
     }
 
-    override fun onMapReady(mapboxMap: MapboxMap) {
-        this.mapboxMap = mapboxMap
-        this.mapboxMap.uiSettings.isLogoEnabled = false
-        this.mapboxMap.uiSettings.isAttributionEnabled = false
-        this.mapboxMap.uiSettings.isRotateGesturesEnabled = false
-        this.mapboxMap.uiSettings.isTiltGesturesEnabled = false
+    override fun onMapReady(map: MapboxMap) {
+        this.map = map
+        this.map.uiSettings.isLogoEnabled = false
+        this.map.uiSettings.isAttributionEnabled = false
+        this.map.uiSettings.isRotateGesturesEnabled = false
+        this.map.uiSettings.isTiltGesturesEnabled = false
     }
 
     override fun onStart() {

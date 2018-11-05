@@ -273,5 +273,7 @@ object BusService {
                     predictionTime = simpleDateFormatBus.parse(prd.prdtm),
                     isDelay = prd.dly)
             }
+            // limiting the number of bus arrival returned so it's not too ugly on the map
+            .subList(0, 20)
     }
 }

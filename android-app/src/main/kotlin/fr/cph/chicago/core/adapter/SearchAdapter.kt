@@ -105,12 +105,12 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
                 routeName.text = name
 
                 val loadingTextView: TextView = view.findViewById(R.id.loading_text_view)
-                view.setOnClickListener { _ ->
+                view.setOnClickListener {
                     loadingTextView.visibility = LinearLayout.VISIBLE
                     observableUtil.createBusDirectionsObservable(busRoute.id)
-                        .doOnError { throwable ->
-                            util.handleConnectOrParserException(throwable, activity, null, loadingTextView)
-                            Log.e(TAG, throwable.message, throwable)
+                        .doOnError { error ->
+                            util.handleConnectOrParserException(error, activity, null, loadingTextView)
+                            Log.e(TAG, error.message, error)
                         }.subscribe(BusDirectionObserver(App.instance.screenWidth, parent, loadingTextView, busRoute))
                 }
             }
