@@ -40,7 +40,7 @@
             mapbox:mapbox_cameraTargetLat="41.8819"
             mapbox:mapbox_cameraTargetLng="-87.6278"
             mapbox:mapbox_cameraZoom="7"
-            mapbox:mapbox_styleUrl="@string/mapbox_style_mapbox_streets" />
+            mapbox:mapbox_styleUrl="@string/mapbox_style_light" />
 
         <!-- Progress bar put after the previous panel to insure it's on the top of it -->
         <ProgressBar
