@@ -40,7 +40,9 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
             nearbyFragment.layoutContainer.removeViewAt(0)
         }
         //FIXME handle the case a null is returned
-        loadArrivals(station!!)
+        if (station != null) {
+            loadArrivals(station)
+        }
         return false
     }
 
