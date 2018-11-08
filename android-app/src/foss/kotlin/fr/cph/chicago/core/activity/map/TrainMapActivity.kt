@@ -247,21 +247,23 @@ class TrainMapActivity : FragmentMapActivity() {
                             Util.showMessage(this@TrainMapActivity, R.string.message_error_while_loading_data)
                         })
             } else {
-                featuresObs.subscribe(
-                    { featureCollection ->
-                        if (featureCollection != null) {
-                            addFeatureCollection(featureCollection)
-                            if (featureCollection.features() != null && featureCollection.features()!!.isEmpty()) {
-                                Util.showMessage(this@TrainMapActivity, R.string.message_no_train_found)
+                featuresObs
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                        { featureCollection ->
+                            if (featureCollection != null) {
+                                addFeatureCollection(featureCollection)
+                                if (featureCollection.features() != null && featureCollection.features()!!.isEmpty()) {
+                                    Util.showMessage(this@TrainMapActivity, R.string.message_no_train_found)
+                                }
+                            } else {
+                                Util.showMessage(this@TrainMapActivity, R.string.message_error_while_loading_data)
                             }
-                        } else {
+                        },
+                        { error ->
+                            Log.e(TAG, error.message, error)
                             Util.showMessage(this@TrainMapActivity, R.string.message_error_while_loading_data)
-                        }
-                    },
-                    { error ->
-                        Log.e(TAG, error.message, error)
-                        Util.showMessage(this@TrainMapActivity, R.string.message_error_while_loading_data)
-                    })
+                        })
             }
         } else {
             Util.showNetworkErrorMessage(layout)
@@ -270,7 +272,19 @@ class TrainMapActivity : FragmentMapActivity() {
 
     private fun drawStations(trainStationPatterns: List<TrainStationPattern>) {
         trainStationPatterns.forEach { trainStationPattern ->
+            val icon = when (trainLine) {
+                TrainLine.BLUE -> blueIcon
+                TrainLine.BROWN -> brownIcon
+                TrainLine.GREEN -> greenIcon
+                TrainLine.ORANGE -> orangeIcon
+                TrainLine.PINK -> pinkIcon
+                TrainLine.PURPLE -> purpleIcon
+                TrainLine.RED -> redIcon
+                TrainLine.YELLOW -> yellowIcon
+                TrainLine.NA -> redIcon
+            }
             map.addMarker(MarkerOptions()
+                .icon(icon)
                 .position(LatLng(trainStationPattern.position.latitude, trainStationPattern.position.longitude))
                 .title(trainStationPattern.stationName)
             )

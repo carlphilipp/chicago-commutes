@@ -27,8 +27,6 @@ import butterknife.BindString
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
-import com.mapbox.mapboxsdk.annotations.Icon
-import com.mapbox.mapboxsdk.annotations.IconFactory
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.annotations.PolylineOptions
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -323,10 +321,6 @@ class BusMapActivity : FragmentMapActivity() {
                     Log.e(TAG, error.message, error)
                     Util.showMessage(layout, R.string.message_error_while_loading_data)
                 })
-    }
-
-    private val blueIcon: Icon by lazy {
-        IconFactory.getInstance(this@BusMapActivity).fromResource(R.drawable.blue_marker)
     }
 
     companion object {
