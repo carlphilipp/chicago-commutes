@@ -35,7 +35,7 @@ import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.BusStop
-import fr.cph.chicago.core.model.PatternPoint
+import fr.cph.chicago.core.model.BusStopPattern
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
 import fr.cph.chicago.core.model.enumeration.BusDirection
@@ -148,10 +148,8 @@ object BusService {
             .map { ptr ->
                 BusPattern(
                     direction = ptr.rtdir,
-                    points = ptr.pt
-                        .map { pt ->
-                            PatternPoint(Position(pt.lat, pt.lon), pt.typ, pt.stpnm ?: "")
-                        }
+                    busStopsPatterns = ptr.pt
+                        .map { pt -> BusStopPattern(Position(pt.lat, pt.lon), pt.typ, pt.stpnm ?: "") }
                         .toMutableList()
                 )
             }
@@ -258,7 +256,7 @@ object BusService {
             }
             throw CtaException(result)
         }
-        return result.bustimeResponse
+        val buses = result.bustimeResponse
             .prd!!
             .map { prd ->
                 BusArrival(
@@ -273,7 +271,7 @@ object BusService {
                     predictionTime = simpleDateFormatBus.parse(prd.prdtm),
                     isDelay = prd.dly)
             }
-            // limiting the number of bus arrival returned so it's not too ugly on the map
-            .subList(0, 20)
+        // limiting the number of bus arrival returned so it's not too ugly on the map
+        return if (buses.size >= 20) buses.subList(0, 19) else buses
     }
 }

@@ -19,4 +19,4 @@
 
 package fr.cph.chicago.core.model
 
-data class BusPattern(val direction: String, val points: MutableList<PatternPoint>)
+data class BusPattern(val direction: String, val busStopsPatterns: MutableList<BusStopPattern>)

@@ -37,7 +37,6 @@ class TrainArrivalObserver(private val trainStationActivity: TrainStationActivit
     }
 
     override fun onError(e: Throwable) {
-        Log.e(TAG, "BusArrivalError while getting trains arrival time: " + e.message, e)
         if (swipeRefreshLayout.isRefreshing) {
             swipeRefreshLayout.isRefreshing = false
         }

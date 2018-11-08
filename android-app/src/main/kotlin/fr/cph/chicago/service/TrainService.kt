@@ -33,6 +33,7 @@ import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.TrainStation
+import fr.cph.chicago.core.model.TrainStationPattern
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.entity.TrainArrivalResponse
 import fr.cph.chicago.entity.TrainLocationResponse
@@ -166,7 +167,7 @@ object TrainService {
         return trainRepository.getStation(id)
     }
 
-    fun readPatterns(line: TrainLine): List<Position> {
+    fun readPatterns(line: TrainLine): List<TrainStationPattern> {
         return when (line) {
             TrainLine.BLUE -> trainRepository.blueLinePatterns
             TrainLine.BROWN -> trainRepository.brownLinePatterns

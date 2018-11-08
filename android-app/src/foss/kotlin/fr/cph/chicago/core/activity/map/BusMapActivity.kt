@@ -212,9 +212,9 @@ class BusMapActivity : FragmentMapActivity() {
                 }
                     .observeOn(Schedulers.computation())
                     .map { patterns ->
-                        centerMap(patterns.flatMap { it.points.map { patternPoint -> LatLng(patternPoint.position.latitude, patternPoint.position.longitude) } })
+                        centerMap(patterns.flatMap { it.busStopsPatterns.map { patternPoint -> LatLng(patternPoint.position.latitude, patternPoint.position.longitude) } })
                         patterns.map { pattern ->
-                            val positions = pattern.points.map { patternPoint ->
+                            val positions = pattern.busStopsPatterns.map { patternPoint ->
                                 val latLng = LatLng(patternPoint.position.latitude, patternPoint.position.longitude)
                                 var marketOptions: MarkerOptions? = null
                                 if ("S" == patternPoint.type) {

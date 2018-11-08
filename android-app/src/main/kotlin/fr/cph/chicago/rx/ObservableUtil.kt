@@ -33,6 +33,7 @@ import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.TrainStation
+import fr.cph.chicago.core.model.TrainStationPattern
 import fr.cph.chicago.core.model.dto.BusArrivalDTO
 import fr.cph.chicago.core.model.dto.FavoritesDTO
 import fr.cph.chicago.core.model.dto.FirstLoadDTO
@@ -153,7 +154,7 @@ object ObservableUtil {
             .onErrorReturn(handleError())
     }
 
-    fun createTrainPatternObservable(line: String): Observable<List<Position>> {
+    fun createTrainPatternObservable(line: String): Observable<List<TrainStationPattern>> {
         return createObservableFromCallable(Callable { trainService.readPatterns(TrainLine.fromXmlString(line)) })
             .onErrorReturn(handleError())
     }

@@ -27,6 +27,7 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Stop
 import fr.cph.chicago.core.model.TrainStation
+import fr.cph.chicago.core.model.TrainStationPattern
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.util.Util
@@ -74,35 +75,35 @@ object TrainRepository {
     val allStations: Map<TrainLine, List<TrainStation>>
         get() = inMemoryData.third
 
-    val blueLinePatterns: List<Position> by lazy {
+    val blueLinePatterns: List<TrainStationPattern> by lazy {
         readPattern(TrainLine.BLUE)
     }
 
-    val brownLinePatterns: List<Position> by lazy {
+    val brownLinePatterns: List<TrainStationPattern> by lazy {
         readPattern(TrainLine.BROWN)
     }
 
-    val greenLinePatterns: List<Position> by lazy {
+    val greenLinePatterns: List<TrainStationPattern> by lazy {
         readPattern(TrainLine.GREEN)
     }
 
-    val orangeLinePatterns: List<Position> by lazy {
+    val orangeLinePatterns: List<TrainStationPattern> by lazy {
         readPattern(TrainLine.ORANGE)
     }
 
-    val pinkLinePatterns: List<Position> by lazy {
+    val pinkLinePatterns: List<TrainStationPattern> by lazy {
         readPattern(TrainLine.PINK)
     }
 
-    val purpleLinePatterns: List<Position> by lazy {
+    val purpleLinePatterns: List<TrainStationPattern> by lazy {
         readPattern(TrainLine.PURPLE)
     }
 
-    val redLinePatterns: List<Position> by lazy {
+    val redLinePatterns: List<TrainStationPattern> by lazy {
         readPattern(TrainLine.RED)
     }
 
-    val yellowLinePatterns: List<Position> by lazy {
+    val yellowLinePatterns: List<TrainStationPattern> by lazy {
         readPattern(TrainLine.YELLOW)
     }
 
@@ -196,7 +197,7 @@ object TrainRepository {
         return Triple(stations, stops, stationsOrderByLine)
     }
 
-    private fun readPattern(line: TrainLine): List<Position> {
+    private fun readPattern(line: TrainLine): List<TrainStationPattern> {
         var inputStreamReader: InputStreamReader? = null
         return try {
             inputStreamReader = InputStreamReader(App.instance.resources.assets.open("train_pattern/" + line.toTextString() + "_pattern.csv"))
@@ -204,7 +205,11 @@ object TrainRepository {
                 .map { row ->
                     val longitude = row[0].toDouble()
                     val latitude = row[1].toDouble()
-                    Position(latitude, longitude)
+                    var name: String? = null
+                    if (row.size == 3) {
+                        name = row[2]
+                    }
+                    TrainStationPattern(name, Position(latitude, longitude))
                 }
         } catch (e: IOException) {
             Log.e(TAG, e.message, e)

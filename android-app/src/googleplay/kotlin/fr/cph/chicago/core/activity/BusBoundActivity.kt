@@ -188,8 +188,8 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
             observableUtil.createBusPatternObservable(busRouteId, bound)
                 .subscribe({ busPattern ->
                     if (busPattern.direction != "error") {
-                        val center = busPattern.points.size / 2
-                        val position = busPattern.points[center].position
+                        val center = busPattern.busStopsPatterns.size / 2
+                        val position = busPattern.busStopsPatterns[center].position
                         if (position.latitude == 0.0 && position.longitude == 0.0) {
                             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(GoogleMapUtil.chicago, 10f))
                         } else {
@@ -213,7 +213,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
             .geodesic(true)
             .color(Color.BLACK)
             .width(App.instance.lineWidthGoogleMap)
-            .addAll(pattern.points.map { patternPoint -> LatLng(patternPoint.position.latitude, patternPoint.position.longitude) })
+            .addAll(pattern.busStopsPatterns.map { patternPoint -> LatLng(patternPoint.position.latitude, patternPoint.position.longitude) })
         googleMap.addPolyline(poly)
     }
 

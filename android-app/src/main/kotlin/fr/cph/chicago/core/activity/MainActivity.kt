@@ -257,7 +257,7 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
                     .delay(500, TimeUnit.MILLISECONDS)
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnError { throwable -> Log.e(TAG, throwable.message, throwable) }
-                    .subscribe { _ -> supportFragmentManager.beginTransaction().replace(R.id.container, nearbyFragment as Fragment).commitAllowingStateLoss() }
+                    .subscribe { supportFragmentManager.beginTransaction().replace(R.id.container, nearbyFragment as Fragment).commitAllowingStateLoss() }
                 drawerLayout.closeDrawer(GravityCompat.START)
                 hideActionBarMenu()
             }

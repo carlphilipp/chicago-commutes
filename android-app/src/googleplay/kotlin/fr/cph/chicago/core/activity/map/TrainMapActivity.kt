@@ -33,6 +33,7 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Train
+import fr.cph.chicago.core.model.TrainStationPattern
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.model.marker.RefreshTrainMarkers
 import fr.cph.chicago.rx.ObservableUtil
@@ -214,9 +215,9 @@ class TrainMapActivity : FragmentMapActivity() {
             val positionsObservable = observableUtil.createTrainPatternObservable(line)
 
             if (drawLine) {
-                Observable.zip(trainsObservable, positionsObservable, BiFunction { trains: List<Train>, positions: List<Position> ->
+                Observable.zip(trainsObservable, positionsObservable, BiFunction { trains: List<Train>, positions: List<TrainStationPattern> ->
                     drawTrains(trains)
-                    drawLine(positions)
+                    drawLine(positions.map { it.position })
                     if (trains.isNotEmpty()) {
                         if (centerMap) {
                             centerMapOnTrain(trains)
