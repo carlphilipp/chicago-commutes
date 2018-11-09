@@ -65,8 +65,10 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
     lateinit var arrowBackWhite: Drawable
 
     protected lateinit var map: MapboxMap
-    protected var source: GeoJsonSource? = null
-    protected var featureCollection: FeatureCollection? = null
+    protected var vehicleSource: GeoJsonSource? = null
+    protected var vehicleFeatureCollection: FeatureCollection? = null
+    protected var stationSource: GeoJsonSource? = null
+    protected var stationFeatureCollection: FeatureCollection? = null
     protected var drawLine = true
 
     protected open fun initMap() {
@@ -84,8 +86,8 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
     }
 
     protected fun refreshSource() {
-        if (source != null && featureCollection != null) {
-            source!!.setGeoJson(featureCollection)
+        if (vehicleSource != null && vehicleFeatureCollection != null) {
+            vehicleSource!!.setGeoJson(vehicleFeatureCollection)
         }
     }
 
@@ -117,14 +119,25 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
             point.y - DEFAULT_EXTRAPOLATION)
     }
 
-    protected fun addFeatureCollection(featureCollection: FeatureCollection) {
-        this.featureCollection = featureCollection
-        source = map.getSource(SOURCE_ID) as GeoJsonSource?
-        if (source == null) {
-            source = GeoJsonSource(SOURCE_ID, featureCollection)
-            map.addSource(source!!)
+    protected fun addVehicleFeatureCollection(featureCollection: FeatureCollection) {
+        vehicleFeatureCollection = featureCollection
+        vehicleSource = map.getSource(VEHICLE_SOURCE_ID) as GeoJsonSource?
+        if (vehicleSource == null) {
+            vehicleSource = GeoJsonSource(VEHICLE_SOURCE_ID, featureCollection)
+            map.addSource(vehicleSource!!)
         } else {
-            source!!.setGeoJson(featureCollection)
+            vehicleSource!!.setGeoJson(featureCollection)
+        }
+    }
+
+    protected fun addStationFeatureCollection(featureCollection: FeatureCollection) {
+        this.stationFeatureCollection = featureCollection
+        stationSource = map.getSource(STATION_SOURCE_ID) as GeoJsonSource?
+        if (stationSource == null) {
+            stationSource = GeoJsonSource(STATION_SOURCE_ID, featureCollection)
+            map.addSource(stationSource!!)
+        } else {
+            stationSource!!.setGeoJson(featureCollection)
         }
     }
 
@@ -134,7 +147,7 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
     }
 
     protected fun deselectAll() {
-        featureCollection?.features()?.forEach { feature -> feature.properties()?.addProperty(PROPERTY_SELECTED, false) }
+        vehicleFeatureCollection?.features()?.forEach { feature -> feature.properties()?.addProperty(PROPERTY_SELECTED, false) }
     }
 
     protected fun showProgress(show: Boolean) {

@@ -131,7 +131,7 @@ class BusMapActivity : FragmentMapActivity() {
 
         this.map.addImage("image-bus", BitmapFactory.decodeResource(resources, R.drawable.bus))
 
-        this.map.addLayer(SymbolLayer(MARKER_LAYER_ID, SOURCE_ID)
+        this.map.addLayer(SymbolLayer(VEHICLE_LAYER_ID, VEHICLE_SOURCE_ID)
             .withProperties(
                 iconImage("image-bus"),
                 iconRotate(get("heading")),
@@ -147,7 +147,7 @@ class BusMapActivity : FragmentMapActivity() {
                 iconAllowOverlap(true),
                 iconRotationAlignment(Property.ICON_ROTATION_ALIGNMENT_MAP)))
 
-        this.map.addLayer(SymbolLayer(INFO_LAYER_ID, SOURCE_ID)
+        this.map.addLayer(SymbolLayer(VEHICLE_INFO_LAYER_ID, VEHICLE_SOURCE_ID)
             .withProperties(
                 // show image with id title based on the value of the title feature property
                 iconImage("{title}"),
@@ -171,18 +171,18 @@ class BusMapActivity : FragmentMapActivity() {
 
     override fun onMapClick(point: LatLng) {
         val finalPoint = this.map.projection.toScreenLocation(point)
-        val infoFeatures = this.map.queryRenderedFeatures(finalPoint, INFO_LAYER_ID)
+        val infoFeatures = this.map.queryRenderedFeatures(finalPoint, VEHICLE_INFO_LAYER_ID)
         if (!infoFeatures.isEmpty()) {
             val feature = infoFeatures[0]
             clickOnInfo(feature)
         } else {
-            val markerFeatures = this.map.queryRenderedFeatures(toRect(finalPoint), MARKER_LAYER_ID)
+            val markerFeatures = this.map.queryRenderedFeatures(toRect(finalPoint), VEHICLE_LAYER_ID)
             if (!markerFeatures.isEmpty()) {
                 val title = markerFeatures[0].getStringProperty(PROPERTY_TITLE)
-                val featureList = featureCollection!!.features()
+                val featureList = vehicleFeatureCollection!!.features()
                 for (i in featureList!!.indices) {
                     if (featureList[i].getStringProperty(PROPERTY_TITLE) == title) {
-                        val feature = featureCollection!!.features()!![i]
+                        val feature = vehicleFeatureCollection!!.features()!![i]
                         selectFeature(feature)
                     }
                 }
@@ -312,7 +312,7 @@ class BusMapActivity : FragmentMapActivity() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { featureCollection ->
-                    addFeatureCollection(featureCollection)
+                    //addVehicleFeatureCollection(vehicleFeatureCollection)
                     if (featureCollection.features() != null && featureCollection.features()!!.isEmpty()) {
                         Util.showMessage(layout, R.string.message_no_bus_found)
                     }
