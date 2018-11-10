@@ -65,11 +65,13 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
     lateinit var arrowBackWhite: Drawable
 
     protected lateinit var map: MapboxMap
+    protected var drawLine = true
+
     protected var vehicleSource: GeoJsonSource? = null
     protected var vehicleFeatureCollection: FeatureCollection? = null
+
     protected var stationSource: GeoJsonSource? = null
     protected var stationFeatureCollection: FeatureCollection? = null
-    protected var drawLine = true
 
     protected open fun initMap() {
         mapView.getMapAsync(this)
@@ -85,10 +87,12 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
         toolbar.setOnClickListener { finish() }
     }
 
-    protected fun refreshSource() {
-        if (vehicleSource != null && vehicleFeatureCollection != null) {
-            vehicleSource!!.setGeoJson(vehicleFeatureCollection)
-        }
+    protected fun refreshVehicles() {
+        vehicleSource?.setGeoJson(vehicleFeatureCollection)
+    }
+
+    protected fun refreshStations() {
+        stationSource?.setGeoJson(stationFeatureCollection)
     }
 
     protected fun centerMap(points: List<LatLng>) {
@@ -106,7 +110,7 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
             .subscribe { latLngBounds -> map.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 50), 500) }
     }
 
-    protected open fun selectFeature(feature: Feature) {
+    protected open fun selectVehicle(feature: Feature) {
         showProgress(true)
         deselectAll()
     }
@@ -131,7 +135,7 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
     }
 
     protected fun addStationFeatureCollection(featureCollection: FeatureCollection) {
-        this.stationFeatureCollection = featureCollection
+        stationFeatureCollection = featureCollection
         stationSource = map.getSource(STATION_SOURCE_ID) as GeoJsonSource?
         if (stationSource == null) {
             stationSource = GeoJsonSource(STATION_SOURCE_ID, featureCollection)
@@ -148,6 +152,9 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
 
     protected fun deselectAll() {
         vehicleFeatureCollection?.features()?.forEach { feature -> feature.properties()?.addProperty(PROPERTY_SELECTED, false) }
+        stationFeatureCollection?.features()?.forEach { feature -> feature.properties()?.addProperty(PROPERTY_SELECTED, false) }
+        refreshStations()
+        refreshVehicles()
     }
 
     protected fun showProgress(show: Boolean) {
@@ -166,7 +173,7 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
             .subscribe { bitmap ->
                 map.addImage(id, bitmap)
                 feature.properties()?.addProperty(PROPERTY_SELECTED, true)
-                refreshSource()
+                refreshVehicles()
                 showProgress(false)
             }
     }

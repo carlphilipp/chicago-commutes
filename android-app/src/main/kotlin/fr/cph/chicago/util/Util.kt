@@ -225,11 +225,11 @@ object Util {
     }
 
     fun showSnackBar(view: View, message: Int) {
-        Snackbar.make(view, App.instance.getString(message), Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(view, App.instance.getString(message), Snackbar.LENGTH_LONG).show()
     }
 
     fun showOopsSomethingWentWrong(view: View) {
-        Snackbar.make(view, App.instance.getString(R.string.message_something_went_wrong), Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(view, App.instance.getString(R.string.message_something_went_wrong), Snackbar.LENGTH_LONG).show()
     }
 
     private fun showRateSnackBar(view: View, activity: Activity) {

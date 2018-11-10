@@ -19,14 +19,17 @@
 
 package fr.cph.chicago.core.activity.map
 
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.widget.TextView
 import butterknife.BindString
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
-import com.mapbox.mapboxsdk.annotations.MarkerOptions
+import com.mapbox.mapboxsdk.annotations.BubbleLayout
 import com.mapbox.mapboxsdk.annotations.PolylineOptions
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
@@ -36,7 +39,7 @@ import com.mapbox.mapboxsdk.style.expressions.Expression.literal
 import com.mapbox.mapboxsdk.style.expressions.Expression.step
 import com.mapbox.mapboxsdk.style.expressions.Expression.stop
 import com.mapbox.mapboxsdk.style.expressions.Expression.zoom
-import com.mapbox.mapboxsdk.style.layers.Property
+import com.mapbox.mapboxsdk.style.layers.Property.ICON_ANCHOR_BOTTOM_LEFT
 import com.mapbox.mapboxsdk.style.layers.Property.ICON_ROTATION_ALIGNMENT_MAP
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAnchor
@@ -51,6 +54,7 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.TrainStationPattern
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.core.utils.BitmapGenerator
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.rx.TrainsFunction
 import fr.cph.chicago.util.Util
@@ -116,22 +120,24 @@ class TrainMapActivity : FragmentMapActivity() {
         this.map.addOnMapClickListener(this)
 
         this.map.addImage("image-train", BitmapFactory.decodeResource(resources, R.drawable.train))
+        this.map.addImage("station-marker", BitmapFactory.decodeResource(resources, colorDrawable()))
 
-        this.map.addLayer(SymbolLayer(VEHICLE_LAYER_ID, VEHICLE_SOURCE_ID)
-            .withProperties(
-                iconImage("image-train"),
-                iconRotate(get("heading")),
-                iconSize(
-                    step(zoom(), 0.05f,
-                        stop(9, 0.10f),
-                        stop(10.5, 0.15f),
-                        stop(12, 0.2f),
-                        stop(15, 0.3f),
-                        stop(17, 0.5f)
-                    )
-                ),
-                iconAllowOverlap(true),
-                iconRotationAlignment(ICON_ROTATION_ALIGNMENT_MAP)))
+        this.map.addLayer(
+            SymbolLayer(VEHICLE_LAYER_ID, VEHICLE_SOURCE_ID)
+                .withProperties(
+                    iconImage("image-train"),
+                    iconRotate(get(PROPERTY_HEADING)),
+                    iconSize(
+                        step(zoom(), 0.05f,
+                            stop(9, 0.10f),
+                            stop(10.5, 0.15f),
+                            stop(12, 0.2f),
+                            stop(15, 0.3f),
+                            stop(17, 0.5f)
+                        )
+                    ),
+                    iconAllowOverlap(true),
+                    iconRotationAlignment(ICON_ROTATION_ALIGNMENT_MAP)))
 
         this.map.addLayer(
             SymbolLayer(VEHICLE_INFO_LAYER_ID, VEHICLE_SOURCE_ID)
@@ -139,14 +145,12 @@ class TrainMapActivity : FragmentMapActivity() {
                     // show image with id title based on the value of the title feature property
                     iconImage("{title}"),
                     // set anchor of icon to bottom-left
-                    iconAnchor(Property.ICON_ANCHOR_BOTTOM_LEFT),
+                    iconAnchor(ICON_ANCHOR_BOTTOM_LEFT),
                     // offset icon slightly to match bubble layout
                     iconOffset(arrayOf(-20.0f, -10.0f)),
                     iconAllowOverlap(true)
                 )
                 .withFilter(eq(get(PROPERTY_SELECTED), literal(true))))
-
-        this.map.addImage("station-marker", BitmapFactory.decodeResource(resources, drawble()))
 
         this.map.addLayerBelow(
             SymbolLayer(STATION_LAYER_ID, STATION_SOURCE_ID)
@@ -168,9 +172,14 @@ class TrainMapActivity : FragmentMapActivity() {
                     // show image with id title based on the value of the title feature property
                     iconImage("{title}"),
                     // set anchor of icon to bottom-left
-                    iconAnchor(Property.ICON_ANCHOR_BOTTOM_LEFT),
+                    iconAnchor(ICON_ANCHOR_BOTTOM_LEFT),
+                    iconSize(
+                        step(zoom(), 0f,
+                            stop(13, 1f)
+                        )
+                    ),
                     // offset icon slightly to match bubble layout
-                    iconOffset(arrayOf(-20.0f, -10.0f)),
+                    iconOffset(arrayOf(-20.0f, -24.0f)),
                     iconAllowOverlap(true)
                 )
                 .withFilter(eq(get(PROPERTY_SELECTED), literal(true))))
@@ -180,38 +189,55 @@ class TrainMapActivity : FragmentMapActivity() {
 
     override fun onMapClick(point: LatLng) {
         val finalPoint = map.projection.toScreenLocation(point)
-
-
         val vehicleInfoFeatures = map.queryRenderedFeatures(finalPoint, VEHICLE_INFO_LAYER_ID)
         if (!vehicleInfoFeatures.isEmpty()) {
             val feature = vehicleInfoFeatures[0]
             clickOnVehicleInfo(feature)
         } else {
-            val markerFeatures = map.queryRenderedFeatures(toRect(finalPoint), VEHICLE_LAYER_ID)
+            val rectangle = toRect(finalPoint)
+            val markerFeatures = map.queryRenderedFeatures(rectangle, VEHICLE_LAYER_ID)
             if (!markerFeatures.isEmpty()) {
                 val title = markerFeatures[0].getStringProperty(PROPERTY_TITLE)
                 val featureList = vehicleFeatureCollection!!.features()
                 for (i in featureList!!.indices) {
                     if (featureList[i].getStringProperty(PROPERTY_TITLE) == title) {
                         val feature = vehicleFeatureCollection!!.features()!![i]
-                        selectFeature(feature)
+                        selectVehicle(feature)
                     }
                 }
             } else {
-                deselectAll()
-                refreshSource()
+                val stationsInfoFeatures = map.queryRenderedFeatures(rectangle, STATION_LAYER_ID)
+                if (!stationsInfoFeatures.isEmpty()) {
+                    val title = stationsInfoFeatures[0].getStringProperty(PROPERTY_TITLE)
+                    val featureList = stationFeatureCollection!!.features()
+                    for (i in featureList!!.indices) {
+                        if (featureList[i].getStringProperty(PROPERTY_TITLE) == title) {
+                            val feature = stationFeatureCollection!!.features()!![i]
+                            selectStation(feature)
+                        }
+                    }
+                } else {
+                    deselectAll()
+                    refreshVehicles()
+                }
             }
         }
+    }
+
+    override fun selectVehicle(feature: Feature) {
+        super.selectVehicle(feature)
+        loadAndUpdateTrainArrivalFeature(feature, false)
+    }
+
+    private fun selectStation(feature: Feature) {
+        deselectAll()
+        feature.properties()?.addProperty(PROPERTY_SELECTED, true)
+        refreshStations()
     }
 
     private fun clickOnVehicleInfo(feature: Feature) {
         showProgress(true)
         loadAndUpdateTrainArrivalFeature(feature, true)
-    }
-
-    override fun selectFeature(feature: Feature) {
-        super.selectFeature(feature)
-        loadAndUpdateTrainArrivalFeature(feature, false)
     }
 
     private fun loadAndUpdateTrainArrivalFeature(feature: Feature, loadAll: Boolean) {
@@ -237,7 +263,7 @@ class TrainMapActivity : FragmentMapActivity() {
                 .map { trains: List<Train> ->
                     val features = trains.map { train ->
                         val feature = Feature.fromGeometry(Point.fromLngLat(train.position.longitude, train.position.latitude))
-                        feature.addNumberProperty("heading", train.heading)
+                        feature.addNumberProperty(PROPERTY_HEADING, train.heading)
                         feature.addStringProperty(PROPERTY_TITLE, train.runNumber.toString())
                         feature.addStringProperty(PROPERTY_DESTINATION, "To ${train.destName}")
                         feature.addBooleanProperty(PROPERTY_FAVOURITE, false)
@@ -274,10 +300,10 @@ class TrainMapActivity : FragmentMapActivity() {
                     BiFunction { featuresTrain: FeatureCollection, pair: Pair<PolylineOptions, FeatureCollection> ->
                         addVehicleFeatureCollection(featuresTrain)
                         addStationFeatureCollection(pair.second)
+                        addStationOnMap(pair.second)
                         drawPolyline(listOf(pair.first))
-                        //drawStations(pair.second)
                         if (featuresTrain.features() != null && featuresTrain.features()!!.isEmpty()) {
-                            Util.showMessage(this@TrainMapActivity, R.string.message_no_train_found)
+                            Util.showMessage(layout, R.string.message_no_train_found)
                         }
                         pair.first.points
                     })
@@ -285,7 +311,7 @@ class TrainMapActivity : FragmentMapActivity() {
                         { points -> centerMap(points) },
                         { error ->
                             Log.e(TAG, error.message, error)
-                            Util.showMessage(this@TrainMapActivity, R.string.message_error_while_loading_data)
+                            Util.showMessage(layout, R.string.message_error_while_loading_data)
                         })
             } else {
                 featuresTrains
@@ -295,15 +321,15 @@ class TrainMapActivity : FragmentMapActivity() {
                             if (featureCollection != null) {
                                 addVehicleFeatureCollection(featureCollection)
                                 if (featureCollection.features() != null && featureCollection.features()!!.isEmpty()) {
-                                    Util.showMessage(this@TrainMapActivity, R.string.message_no_train_found)
+                                    Util.showMessage(layout, R.string.message_no_train_found)
                                 }
                             } else {
-                                Util.showMessage(this@TrainMapActivity, R.string.message_error_while_loading_data)
+                                Util.showMessage(layout, R.string.message_error_while_loading_data)
                             }
                         },
                         { error ->
                             Log.e(TAG, error.message, error)
-                            Util.showMessage(this@TrainMapActivity, R.string.message_error_while_loading_data)
+                            Util.showMessage(layout, R.string.message_error_while_loading_data)
                         })
             }
         } else {
@@ -311,7 +337,23 @@ class TrainMapActivity : FragmentMapActivity() {
         }
     }
 
-    private fun drawble(): Int {
+    private fun addStationOnMap(stationInfoFeatureCollection: FeatureCollection) {
+        // TODO to process on computation thread
+        val res = stationInfoFeatureCollection.features()?.map { feature ->
+            val inflater = LayoutInflater.from(this@TrainMapActivity)
+            val bubbleLayout = inflater.inflate(R.layout.marker_mapbox, null) as BubbleLayout
+
+            val title = feature.getStringProperty(PROPERTY_TITLE)
+            val titleTextView = bubbleLayout.findViewById<TextView>(R.id.title)
+            titleTextView.text = title
+
+            val bitmap = BitmapGenerator.generate(bubbleLayout)
+            Pair(title, bitmap)
+        }?.toMap()
+        map.addImages(res as HashMap<String, Bitmap>)
+    }
+
+    private fun colorDrawable(): Int {
         return when (trainLine) {
             TrainLine.BLUE -> R.drawable.blue_marker
             TrainLine.BROWN -> R.drawable.brown_marker
@@ -322,27 +364,6 @@ class TrainMapActivity : FragmentMapActivity() {
             TrainLine.RED -> R.drawable.red_marker
             TrainLine.YELLOW -> R.drawable.yellow_marker
             TrainLine.NA -> R.drawable.red_marker
-        }
-    }
-
-    private fun drawStations(trainStationPatterns: List<TrainStationPattern>) {
-        trainStationPatterns.forEach { trainStationPattern ->
-            val icon = when (trainLine) {
-                TrainLine.BLUE -> blueIcon
-                TrainLine.BROWN -> brownIcon
-                TrainLine.GREEN -> greenIcon
-                TrainLine.ORANGE -> orangeIcon
-                TrainLine.PINK -> pinkIcon
-                TrainLine.PURPLE -> purpleIcon
-                TrainLine.RED -> redIcon
-                TrainLine.YELLOW -> yellowIcon
-                TrainLine.NA -> redIcon
-            }
-            map.addMarker(MarkerOptions()
-                .icon(icon)
-                .position(LatLng(trainStationPattern.position.latitude, trainStationPattern.position.longitude))
-                .title(trainStationPattern.stationName)
-            )
         }
     }
 

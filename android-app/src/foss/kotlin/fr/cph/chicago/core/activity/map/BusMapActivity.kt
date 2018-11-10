@@ -183,12 +183,12 @@ class BusMapActivity : FragmentMapActivity() {
                 for (i in featureList!!.indices) {
                     if (featureList[i].getStringProperty(PROPERTY_TITLE) == title) {
                         val feature = vehicleFeatureCollection!!.features()!![i]
-                        selectFeature(feature)
+                        selectVehicle(feature)
                     }
                 }
             } else {
                 deselectAll()
-                refreshSource()
+                refreshVehicles()
             }
         }
     }
@@ -279,8 +279,8 @@ class BusMapActivity : FragmentMapActivity() {
                 })
     }
 
-    override fun selectFeature(feature: Feature) {
-        super.selectFeature(feature)
+    override fun selectVehicle(feature: Feature) {
+        super.selectVehicle(feature)
         val id = feature.getStringProperty(PROPERTY_TITLE)
         observableUtil.createFollowBusObservable(id)
             .observeOn(Schedulers.computation())

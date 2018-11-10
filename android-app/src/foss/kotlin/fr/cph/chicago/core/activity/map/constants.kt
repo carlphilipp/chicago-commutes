@@ -9,6 +9,7 @@ const val STATION_LAYER_ID = "chicago.commutes.station.marker"
 const val STATION_INFO_LAYER_ID = "chicago.commutes.station.info"
 
 const val PROPERTY_TITLE = "title"
+const val PROPERTY_HEADING = "heading"
 const val PROPERTY_DESTINATION = "destination"
 const val PROPERTY_SELECTED = "selected"
 const val PROPERTY_FAVOURITE = "favourite"
