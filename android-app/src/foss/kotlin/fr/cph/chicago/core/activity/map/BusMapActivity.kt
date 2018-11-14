@@ -27,6 +27,8 @@ import butterknife.BindString
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
+import com.mapbox.mapboxsdk.annotations.Icon
+import com.mapbox.mapboxsdk.annotations.IconFactory
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.annotations.PolylineOptions
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -37,7 +39,8 @@ import com.mapbox.mapboxsdk.style.expressions.Expression.literal
 import com.mapbox.mapboxsdk.style.expressions.Expression.step
 import com.mapbox.mapboxsdk.style.expressions.Expression.stop
 import com.mapbox.mapboxsdk.style.expressions.Expression.zoom
-import com.mapbox.mapboxsdk.style.layers.Property
+import com.mapbox.mapboxsdk.style.layers.Property.ICON_ANCHOR_BOTTOM_LEFT
+import com.mapbox.mapboxsdk.style.layers.Property.ICON_ROTATION_ALIGNMENT_MAP
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAnchor
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage
@@ -131,32 +134,35 @@ class BusMapActivity : FragmentMapActivity() {
 
         this.map.addImage("image-bus", BitmapFactory.decodeResource(resources, R.drawable.bus))
 
-        this.map.addLayer(SymbolLayer(VEHICLE_LAYER_ID, VEHICLE_SOURCE_ID)
-            .withProperties(
-                iconImage("image-bus"),
-                iconRotate(get("heading")),
-                iconSize(
-                    step(zoom(), 0.05f,
-                        stop(9, 0.10f),
-                        stop(10.5, 0.15f),
-                        stop(12, 0.2f),
-                        stop(15, 0.3f),
-                        stop(17, 0.5f)
-                    )
-                ),
-                iconAllowOverlap(true),
-                iconRotationAlignment(Property.ICON_ROTATION_ALIGNMENT_MAP)))
+        this.map.addLayer(
+            SymbolLayer(VEHICLE_LAYER_ID, VEHICLE_SOURCE_ID)
+                .withProperties(
+                    iconImage("image-bus"),
+                    iconRotate(get(PROPERTY_HEADING)),
+                    iconSize(
+                        step(zoom(), 0.05f,
+                            stop(9, 0.10f),
+                            stop(10.5, 0.15f),
+                            stop(12, 0.2f),
+                            stop(15, 0.3f),
+                            stop(17, 0.5f)
+                        )
+                    ),
+                    iconAllowOverlap(true),
+                    iconRotationAlignment(ICON_ROTATION_ALIGNMENT_MAP)))
 
-        this.map.addLayer(SymbolLayer(VEHICLE_INFO_LAYER_ID, VEHICLE_SOURCE_ID)
-            .withProperties(
-                // show image with id title based on the value of the title feature property
-                iconImage("{title}"),
-                // set anchor of icon to bottom-left
-                iconAnchor(Property.ICON_ANCHOR_BOTTOM_LEFT),
-                // offset icon slightly to match bubble layout
-                iconOffset(arrayOf(-20.0f, -10.0f))
-            )
-            .withFilter(eq(get(PROPERTY_SELECTED), literal(true))))
+        this.map.addLayer(
+            SymbolLayer(VEHICLE_INFO_LAYER_ID, VEHICLE_SOURCE_ID)
+                .withProperties(
+                    // show image with id title based on the value of the title feature property
+                    iconImage("{title}"),
+                    // set anchor of icon to bottom-left
+                    iconAnchor(ICON_ANCHOR_BOTTOM_LEFT),
+                    // offset icon slightly to match bubble layout
+                    iconOffset(arrayOf(-20.0f, -10.0f)),
+                    iconAllowOverlap(true)
+                )
+                .withFilter(eq(get(PROPERTY_SELECTED), literal(true))))
 
         loadActivityData()
 
@@ -170,13 +176,13 @@ class BusMapActivity : FragmentMapActivity() {
     }
 
     override fun onMapClick(point: LatLng) {
-        val finalPoint = this.map.projection.toScreenLocation(point)
-        val infoFeatures = this.map.queryRenderedFeatures(finalPoint, VEHICLE_INFO_LAYER_ID)
+        val finalPoint = map.projection.toScreenLocation(point)
+        val infoFeatures = map.queryRenderedFeatures(finalPoint, VEHICLE_INFO_LAYER_ID)
         if (!infoFeatures.isEmpty()) {
             val feature = infoFeatures[0]
-            clickOnInfo(feature)
+            clickOnVehicleInfo(feature)
         } else {
-            val markerFeatures = this.map.queryRenderedFeatures(toRect(finalPoint), VEHICLE_LAYER_ID)
+            val markerFeatures = map.queryRenderedFeatures(toRect(finalPoint), VEHICLE_LAYER_ID)
             if (!markerFeatures.isEmpty()) {
                 val title = markerFeatures[0].getStringProperty(PROPERTY_TITLE)
                 val featureList = vehicleFeatureCollection!!.features()
@@ -191,6 +197,38 @@ class BusMapActivity : FragmentMapActivity() {
                 refreshVehicles()
             }
         }
+    }
+
+    override fun selectVehicle(feature: Feature) {
+        super.selectVehicle(feature)
+        val id = feature.getStringProperty(PROPERTY_TITLE)
+        observableUtil.createFollowBusObservable(id)
+            .observeOn(Schedulers.computation())
+            .map(BusesFunction(this@BusMapActivity, feature, false))
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { view -> update(feature, id, view) },
+                { error ->
+                    Log.e(TAG, error.message, error)
+                    Util.showMessage(layout, R.string.message_no_data)
+                    showProgress(false)
+                })
+    }
+
+    private fun clickOnVehicleInfo(feature: Feature) {
+        showProgress(true)
+        val id = feature.getStringProperty(PROPERTY_TITLE)
+        observableUtil.createFollowBusObservable(id)
+            .observeOn(Schedulers.computation())
+            .map(BusesFunction(this@BusMapActivity, feature, true))
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { view -> update(feature, id, view) },
+                { error ->
+                    Log.e(TAG, error.message, error)
+                    Util.showMessage(layout, R.string.message_no_data)
+                    showProgress(false)
+                })
     }
 
     private fun loadActivityData() {
@@ -222,6 +260,8 @@ class BusMapActivity : FragmentMapActivity() {
                                         .snippet(pattern.direction)
                                     if (index[0] != 0) {
                                         marketOptions.icon(blueIcon)
+                                    } else {
+                                        marketOptions.icon(redIcon)
                                     }
                                 }
                                 Pair(latLng, marketOptions)
@@ -263,45 +303,13 @@ class BusMapActivity : FragmentMapActivity() {
         }
     }
 
-    private fun clickOnInfo(feature: Feature) {
-        showProgress(true)
-        val id = feature.getStringProperty(PROPERTY_TITLE)
-        observableUtil.createFollowBusObservable(id)
-            .observeOn(Schedulers.computation())
-            .map(BusesFunction(this@BusMapActivity, feature, true))
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { view -> update(feature, id, view) },
-                { error ->
-                    Log.e(TAG, error.message, error)
-                    Util.showMessage(layout, R.string.message_no_data)
-                    showProgress(false)
-                })
-    }
-
-    override fun selectVehicle(feature: Feature) {
-        super.selectVehicle(feature)
-        val id = feature.getStringProperty(PROPERTY_TITLE)
-        observableUtil.createFollowBusObservable(id)
-            .observeOn(Schedulers.computation())
-            .map(BusesFunction(this@BusMapActivity, feature, false))
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { view -> update(feature, id, view) },
-                { error ->
-                    Log.e(TAG, error.message, error)
-                    Util.showMessage(layout, R.string.message_no_data)
-                    showProgress(false)
-                })
-    }
-
     private fun loadBuses() {
         observableUtil.createBusListObservable(busRouteId)
             .observeOn(Schedulers.computation())
             .map { buses ->
                 val features = buses.map { bus ->
                     val feature = Feature.fromGeometry(Point.fromLngLat(bus.position.longitude, bus.position.latitude))
-                    feature.addNumberProperty("heading", bus.heading)
+                    feature.addNumberProperty(PROPERTY_HEADING, bus.heading)
                     feature.addStringProperty(PROPERTY_TITLE, bus.id.toString())
                     feature.addStringProperty(PROPERTY_DESTINATION, "To ${bus.destination}")
                     feature.addBooleanProperty(PROPERTY_FAVOURITE, false)
@@ -311,8 +319,8 @@ class BusMapActivity : FragmentMapActivity() {
             }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { featureCollection ->
-                    //addVehicleFeatureCollection(vehicleFeatureCollection)
+                { featureCollection: FeatureCollection ->
+                    addVehicleFeatureCollection(featureCollection)
                     if (featureCollection.features() != null && featureCollection.features()!!.isEmpty()) {
                         Util.showMessage(layout, R.string.message_no_bus_found)
                     }
@@ -322,6 +330,15 @@ class BusMapActivity : FragmentMapActivity() {
                     Util.showMessage(layout, R.string.message_error_while_loading_data)
                 })
     }
+
+    private val blueIcon: Icon by lazy {
+        IconFactory.getInstance(this@BusMapActivity).fromResource(R.drawable.blue_marker)
+    }
+
+    private val redIcon: Icon by lazy {
+        IconFactory.getInstance(this@BusMapActivity).fromResource(R.drawable.red_marker)
+    }
+
 
     companion object {
         private val TAG = BusMapActivity::class.java.simpleName

@@ -314,7 +314,6 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
         mapView?.onDestroy()
     }
 
-    // TODO to merge in main code
     private fun createStop(context: Context?, @DrawableRes icon: Int): Bitmap? {
         return if (context != null) {
             val px = context.resources.getDimensionPixelSize(R.dimen.icon_shadow_2)

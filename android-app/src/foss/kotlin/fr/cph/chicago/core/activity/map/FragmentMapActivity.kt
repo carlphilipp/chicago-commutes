@@ -32,8 +32,6 @@ import butterknife.BindDrawable
 import butterknife.BindView
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
-import com.mapbox.mapboxsdk.annotations.Icon
-import com.mapbox.mapboxsdk.annotations.IconFactory
 import com.mapbox.mapboxsdk.annotations.PolylineOptions
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -204,38 +202,6 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
     override fun onDestroy() {
         super.onDestroy()
         mapView.onDestroy()
-    }
-
-    protected val blueIcon: Icon by lazy {
-        IconFactory.getInstance(this@FragmentMapActivity).fromResource(R.drawable.blue_marker)
-    }
-
-    protected val brownIcon: Icon by lazy {
-        IconFactory.getInstance(this@FragmentMapActivity).fromResource(R.drawable.brown_marker)
-    }
-
-    protected val greenIcon: Icon by lazy {
-        IconFactory.getInstance(this@FragmentMapActivity).fromResource(R.drawable.green_marker)
-    }
-
-    protected val orangeIcon: Icon by lazy {
-        IconFactory.getInstance(this@FragmentMapActivity).fromResource(R.drawable.orange_marker)
-    }
-
-    protected val pinkIcon: Icon by lazy {
-        IconFactory.getInstance(this@FragmentMapActivity).fromResource(R.drawable.pink_marker)
-    }
-
-    protected val purpleIcon: Icon by lazy {
-        IconFactory.getInstance(this@FragmentMapActivity).fromResource(R.drawable.purple_marker)
-    }
-
-    protected val redIcon: Icon by lazy {
-        IconFactory.getInstance(this@FragmentMapActivity).fromResource(R.drawable.red_marker)
-    }
-
-    protected val yellowIcon: Icon by lazy {
-        IconFactory.getInstance(this@FragmentMapActivity).fromResource(R.drawable.yellow_marker)
     }
 
     companion object {

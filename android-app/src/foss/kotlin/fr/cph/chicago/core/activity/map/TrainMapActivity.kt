@@ -59,6 +59,7 @@ import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.rx.TrainsFunction
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
@@ -318,13 +319,9 @@ class TrainMapActivity : FragmentMapActivity() {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                         { featureCollection ->
-                            if (featureCollection != null) {
-                                addVehicleFeatureCollection(featureCollection)
-                                if (featureCollection.features() != null && featureCollection.features()!!.isEmpty()) {
-                                    Util.showMessage(layout, R.string.message_no_train_found)
-                                }
-                            } else {
-                                Util.showMessage(layout, R.string.message_error_while_loading_data)
+                            addVehicleFeatureCollection(featureCollection)
+                            if (featureCollection.features() != null && featureCollection.features()!!.isEmpty()) {
+                                Util.showMessage(layout, R.string.message_no_train_found)
                             }
                         },
                         { error ->
@@ -338,19 +335,23 @@ class TrainMapActivity : FragmentMapActivity() {
     }
 
     private fun addStationOnMap(stationInfoFeatureCollection: FeatureCollection) {
-        // TODO to process on computation thread
-        val res = stationInfoFeatureCollection.features()?.map { feature ->
-            val inflater = LayoutInflater.from(this@TrainMapActivity)
-            val bubbleLayout = inflater.inflate(R.layout.marker_mapbox, null) as BubbleLayout
+        Single.defer {
+            val bitmaps = stationInfoFeatureCollection.features()?.map { feature ->
+                val inflater = LayoutInflater.from(this@TrainMapActivity)
+                val bubbleLayout = inflater.inflate(R.layout.marker_mapbox, null) as BubbleLayout
 
-            val title = feature.getStringProperty(PROPERTY_TITLE)
-            val titleTextView = bubbleLayout.findViewById<TextView>(R.id.title)
-            titleTextView.text = title
+                val title = feature.getStringProperty(PROPERTY_TITLE)
+                val titleTextView = bubbleLayout.findViewById<TextView>(R.id.title)
+                titleTextView.text = title
 
-            val bitmap = BitmapGenerator.generate(bubbleLayout)
-            Pair(title, bitmap)
-        }?.toMap()
-        map.addImages(res as HashMap<String, Bitmap>)
+                val bitmap = BitmapGenerator.generate(bubbleLayout)
+                Pair(title, bitmap)
+            }?.toMap()
+            Single.just(bitmaps)
+        }
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { bitmaps -> map.addImages(bitmaps as HashMap<String, Bitmap>) }
     }
 
     private fun colorDrawable(): Int {
