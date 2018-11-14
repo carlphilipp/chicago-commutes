@@ -339,7 +339,6 @@ class BusMapActivity : FragmentMapActivity() {
         IconFactory.getInstance(this@BusMapActivity).fromResource(R.drawable.red_marker)
     }
 
-
     companion object {
         private val TAG = BusMapActivity::class.java.simpleName
     }
