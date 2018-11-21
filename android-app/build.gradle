@@ -20,7 +20,7 @@ android {
 
         def props = properties()
 
-        resValue "string", "google_maps_api_key", props['google.streetmap.key']
+        resValue "string", "google_maps_api_key", props.getOrDefault('google.streetmap.key', '')
         resValue "string", "cta_train_key", props['cta.train.key']
         resValue "string", "cta_bus_key", props['cta.bus.key']
 
@@ -84,8 +84,10 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFile 'proguard-android-optimize.txt'
-            if (signingConfigs.release.storePassword != 'default') {
-                signingConfig signingConfigs.release
+            if (signingConfigs.hasProperty('release')) {
+                if (signingConfigs.release.storePassword != 'default') {
+                    signingConfig signingConfigs.release
+                }
             }
         }
     }
@@ -98,7 +100,7 @@ android {
         }
         foss {
             dimension "env"
-            applicationIdSuffix ".fr.cph.chicago.foss"
+            applicationIdSuffix ".foss"
             resValue "string", "mapbox_token", properties()['mapbox.token']
         }
     }
