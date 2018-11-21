@@ -84,7 +84,9 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFile 'proguard-android-optimize.txt'
-            signingConfig signingConfigs.release
+            if (signingConfigs.release.storePassword != 'default') {
+                signingConfig signingConfigs.release
+            }
         }
     }
 
@@ -191,8 +193,19 @@ dependencies {
 }
 
 def properties() {
-    def appProperties = this.file('app.properties')
     def props = new Properties()
-    props.load(new FileInputStream(appProperties))
+    if (project.hasProperty('cta.train.key') && project.hasProperty('cta.bus.key') && project.hasProperty('mapbox.token')) {
+        props.put("cta.train.key", project.getProperties().get('cta.train.key'))
+        props.put("cta.bus.key", project.getProperties().get('cta.bus.key'))
+        props.put("mapbox.token", project.getProperties().get('mapbox.token'))
+        props.put("google.streetmap.key", project.getProperties().getOrDefault('google.streetmap.key', 'no-key'))
+    } else {
+        def appProperties = this.file('app.properties')
+        if (appProperties.exists()) {
+            props.load(new FileInputStream(appProperties))
+        } else {
+            throw new AssertionError("No app.properties or gradle properties found")
+        }
+    }
     return props
 }
