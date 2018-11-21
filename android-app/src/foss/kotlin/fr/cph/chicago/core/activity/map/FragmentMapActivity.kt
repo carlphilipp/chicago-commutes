@@ -65,10 +65,10 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
     protected lateinit var map: MapboxMap
     protected var drawLine = true
 
-    protected var vehicleSource: GeoJsonSource? = null
+    private var vehicleSource: GeoJsonSource? = null
     protected var vehicleFeatureCollection: FeatureCollection? = null
 
-    protected var stationSource: GeoJsonSource? = null
+    private var stationSource: GeoJsonSource? = null
     protected var stationFeatureCollection: FeatureCollection? = null
 
     protected open fun initMap() {

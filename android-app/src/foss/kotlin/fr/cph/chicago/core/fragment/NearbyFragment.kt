@@ -95,7 +95,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
     lateinit var slidingUpAdapter: SlidingUpAdapter
     private lateinit var markerDataHolder: MarkerDataHolder
 
-    private var map: MapboxMap? = null
+    private lateinit var map: MapboxMap
     private var locationEngine: LocationEngine? = null
     private var locationLayerPlugin: LocationLayerPlugin? = null
     private var locationOrigin: Location? = null
@@ -163,7 +163,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
         val busStopsAroundObservable = observableUtil.createBusStopsAroundObservable(finalPosition)
         val bikeStationsObservable = observableUtil.createBikeStationAroundObservable(finalPosition, bikeStations)
         Observable.zip(trainStationAroundObservable, busStopsAroundObservable, bikeStationsObservable, Function3 { trains: List<TrainStation>, buses: List<BusStop>, divvies: List<BikeStation> ->
-            map!!.cameraPosition = CameraPosition.Builder()
+            map.cameraPosition = CameraPosition.Builder()
                 .target(LatLng(finalPosition.latitude, finalPosition.longitude))
                 .zoom(15.0)
                 .build()
@@ -176,16 +176,20 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
-        map = mapboxMap
-        mapboxMap.addOnCameraMoveListener {
+        this.map = mapboxMap
+        this.map.uiSettings.isLogoEnabled = false
+        this.map.uiSettings.isAttributionEnabled = false
+        this.map.uiSettings.isRotateGesturesEnabled = false
+        this.map.uiSettings.isTiltGesturesEnabled = false
+        this.map.addOnCameraMoveListener {
             searchAreaButton.visibility = View.VISIBLE
         }
         searchAreaButton.setOnClickListener { view ->
             view.visibility = View.INVISIBLE
-            val target = mapboxMap.cameraPosition.target
+            val target = this.map.cameraPosition.target
             val position = Position(target.latitude, target.longitude)
             markerDataHolder.clear()
-            mapboxMap.removeAnnotations()
+            this.map.removeAnnotations()
             handleNearbyData(position)
         }
         loadNearbyIfAllowed()
@@ -215,7 +219,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
 
     private fun initLocationLayer() {
         if (locationLayerPlugin == null) {
-            locationLayerPlugin = LocationLayerPlugin(mapView!!, map!!, locationEngine)
+            locationLayerPlugin = LocationLayerPlugin(mapView!!, map, locationEngine)
         }
         locationLayerPlugin?.isLocationLayerEnabled = true
         locationLayerPlugin?.cameraMode = CameraMode.TRACKING
@@ -240,7 +244,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
             if (bitmapBus != null) {
                 options.icon = IconFactory.recreate(UUID.randomUUID().toString(), bitmapBus)
             }
-            val marker = map!!.addMarker(options)
+            val marker = map.addMarker(options)
             markerDataHolder.addData(marker, busStop)
 
         }
@@ -253,7 +257,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
                 if (bitmapTrain != null) {
                     options.icon = IconFactory.recreate(UUID.randomUUID().toString(), bitmapTrain)
                 }
-                val marker = map!!.addMarker(options)
+                val marker = map.addMarker(options)
                 markerDataHolder.addData(marker, station)
             }
         }
@@ -264,10 +268,10 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
             if (bitmapBike != null) {
                 options.icon = IconFactory.recreate(UUID.randomUUID().toString(), bitmapBike)
             }
-            val marker = map!!.addMarker(options)
+            val marker = map.addMarker(options)
             markerDataHolder.addData(marker, station)
         }
-        map?.setOnMarkerClickListener(OnMarkerClickListener(markerDataHolder, this@NearbyFragment))
+        map.setOnMarkerClickListener(OnMarkerClickListener(markerDataHolder, this@NearbyFragment))
         showProgress(false)
     }
 
