@@ -1,7 +1,11 @@
 # Chicago Commutes
 
 <a href="https://play.google.com/store/apps/details?id=fr.cph.chicago"/>
-<img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/apps/en-play-badge-border.png" width="200"/>
+    <img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/apps/en-play-badge-border.png" width="200"/>
+</a>
+
+<a href="https://f-droid.org/en/packages/fr.cph.chicago"/>
+    <img src="https://f-droid.org/badge/get-it-on.png" height="75">
 </a>
 
 ## Description
