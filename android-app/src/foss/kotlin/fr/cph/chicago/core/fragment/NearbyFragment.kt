@@ -133,6 +133,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
 
     override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
         showProgress(false)
+        handleNearbyData(Position(0.0,0.0))
     }
 
     @SuppressLint("MissingPermission")
@@ -275,7 +276,6 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
         showProgress(false)
     }
 
-
     fun showProgress(show: Boolean) {
         if (isAdded) {
             if (show) {
@@ -333,9 +333,6 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
     }
 
     companion object {
-
-        private val TAG = NearbyFragment::class.java.simpleName
-
         fun newInstance(sectionNumber: Int): NearbyFragment {
             return Fragment.fragmentWithBundle(NearbyFragment(), sectionNumber) as NearbyFragment
         }
