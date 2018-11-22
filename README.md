@@ -26,8 +26,6 @@ Chicago Commutes is a brand new public transit tracker making it easier to trave
 * Read the last alerts from CTA.
 * Free! No Ads!
 
-Download on [play store](https://play.google.com/store/apps/details?id=fr.cph.chicago).
-
 ## Build
 
 * Duplicate `keystore.properties.template` and rename the copy to `keystore.properties`. Update the new file with correct information.
