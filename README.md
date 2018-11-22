@@ -16,7 +16,7 @@
 
 ## Description
 
-Chicago Commutes is a brand new public transit tracker making it easier to travel in Chicago. Easy and quick to use, Chicago Commutes has all levels of familiarity with the city in mind. Quick loading times and easy searchability for frequent transit users. For first time transit users Google Street View integration and internal bus and train locators ensure greater ease of travel.
+Chicago Commutes is a transit tracker making it easier to travel in Chicago. Easy and quick to use, Chicago Commutes has all levels of familiarity with the city in mind. Quick loading times and easy searchability for frequent transit users. For first time transit users Google Street View integration and internal bus and train locators ensure greater ease of travel.
 * Extremely user friendly UI.
 * Easy Filtering System: See only the buses and trains that you want to see and filter out the rest.
 * Locate Nearby Stations and Bus Stops: Chicago Commutes locates the nearest bus and train locations so that you don’t have to, making it easier for travel throughout the entire city of Chicago.
@@ -26,21 +26,33 @@ Chicago Commutes is a brand new public transit tracker making it easier to trave
 * Read the last alerts from CTA.
 * Free! No Ads!
 
-## Build
+## Screenshots
+![](screenshots/1.png)
+![](screenshots/2.png)
+![](screenshots/3.png)
+![](screenshots/4.png)
+//TODO
 
-* Duplicate `keystore.properties.template` and rename the copy to `keystore.properties`. Update the new file with correct information.
-* Do the same thing for `keystore.properties.template`.
-* You are ready to build it!
+## Development
 
-Build debug APK:
+[Developer notes](DEV.md)
 
-`./gradlew clean assembleDebug`
+## Questions?
+[Create an issue](https://github.com/carlphilipp/chicago-commutes/issues/new)
 
-Build prod APK:
+## License
+```
+Copyright 2018 Carl-Philipp Harmant
 
-`./gradlew clean build`
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
+    http://www.apache.org/licenses/LICENSE-2.0
 
-## Issues
-
-To fix the emulator not starting in arch linux: `ln -sf /usr/lib/libstdc++.so.6  $ANDROID_SDK/emulator/lib64/libstdc++`
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
