@@ -7,7 +7,7 @@
             </a>
         </td>
         <td>
-            <a href="https://f-droid.org/en/packages/fr.cph.chicago"/>
+            <a href="https://f-droid.org/en/packages/fr.cph.chicago.foss"/>
                 <img src="https://f-droid.org/badge/get-it-on.png" width="200">
             </a>
         </td>
