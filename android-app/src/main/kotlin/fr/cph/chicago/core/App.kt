@@ -24,6 +24,7 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.graphics.Point
+import android.util.Base64
 import android.view.WindowManager
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.BaseActivity
@@ -57,9 +58,9 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        ctaTrainKey = applicationContext.getString(R.string.cta_train_key)
-        ctaBusKey = applicationContext.getString(R.string.cta_bus_key)
-        googleStreetKey = applicationContext.getString(R.string.google_maps_api_key)
+        ctaTrainKey = String(Base64.decode(applicationContext.getString(R.string.cta_train_key), Base64.DEFAULT))
+        ctaBusKey = String(Base64.decode(applicationContext.getString(R.string.cta_bus_key), Base64.DEFAULT))
+        googleStreetKey = String(Base64.decode(applicationContext.getString(R.string.google_maps_api_key), Base64.DEFAULT))
         instance = this
     }
 
