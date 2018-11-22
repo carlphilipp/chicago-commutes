@@ -31,7 +31,6 @@ Chicago Commutes is a transit tracker making it easier to travel in Chicago. Eas
 ![](screenshots/2.png)
 ![](screenshots/3.png)
 ![](screenshots/4.png)
-//TODO
 
 ## Development
 
