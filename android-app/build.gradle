@@ -7,10 +7,12 @@ android {
     compileSdkVersion 28
     buildToolsVersion '28.0.3'
 
+    def version = version()
+
     defaultConfig {
         applicationId 'fr.cph.chicago'
-        versionCode 158
-        versionName '5.5.7'
+        versionCode Integer.parseInt(version['version.code'])
+        versionName version['version.name']
 
         minSdkVersion 21
         targetSdkVersion 28
@@ -194,6 +196,32 @@ dependencies {
     )
 }
 
+task bumpVersion {
+    doLast {
+        println('Bumping version')
+        def props = new Properties()
+        def version = this.file('version.properties')
+        props.load(new FileInputStream(version))
+        props['version.code'] = String.valueOf(Integer.parseInt(props['version.code']) + 1)
+        def versionName = props['version.name'].tokenize('.').toArray()
+        props['version.name'] = versionName[0] + "." + versionName[1] + "." + (Integer.parseInt(versionName[2]) + 1)
+        props.store(version.newWriter(), null)
+    }
+}
+
+task currentVersion {
+    doLast {
+        def props = new Properties()
+        def version = this.file('version.properties')
+        props.load(new FileInputStream(version))
+        println("Version name: " + props['version.name'])
+        println("Version code: " + props['version.code'])
+        println("FDroid tag: " + props['version.name'] + "-fdroid")
+    }
+}
+
+bumpVersion.finalizedBy currentVersion
+
 def properties() {
     def props = new Properties()
     def appProperties = this.file('app.properties')
@@ -202,5 +230,12 @@ def properties() {
     } else {
         throw new AssertionError("No app.properties or gradle properties found")
     }
+    return props
+}
+
+def version() {
+    def props = new Properties()
+    def version = this.file('version.properties')
+    props.load(new FileInputStream(version))
     return props
 }
