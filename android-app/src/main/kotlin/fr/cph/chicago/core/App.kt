@@ -58,9 +58,9 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        ctaTrainKey = String(Base64.decode(applicationContext.getString(R.string.cta_train_key), Base64.DEFAULT))
-        ctaBusKey = String(Base64.decode(applicationContext.getString(R.string.cta_bus_key), Base64.DEFAULT))
-        googleStreetKey = String(Base64.decode(applicationContext.getString(R.string.google_maps_api_key), Base64.DEFAULT))
+        ctaTrainKey = decode(applicationContext.getString(R.string.cta_train_key))
+        ctaBusKey = decode(applicationContext.getString(R.string.cta_bus_key))
+        googleStreetKey = decode(applicationContext.getString(R.string.google_maps_api_key))
         instance = this
     }
 
@@ -101,6 +101,10 @@ class App : Application() {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
             activity.startActivity(intent)
             activity.finish()
+        }
+
+        public fun decode(str: String): String {
+            return String(Base64.decode(str, Base64.DEFAULT))
         }
     }
 }

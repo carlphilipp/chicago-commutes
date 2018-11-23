@@ -12,10 +12,16 @@ Build prod APK:
 
 `./gradlew clean build`
 
-Build Fdroid APK:
+## F-Droid
+
+Build F-Droid APK:
 
 `./gradlew clean assembleFoss`
 
+Build with F-Droid tools:
+
+`fdroid build -v -l fr.cph.chicago.foss:<versionCode>`
+`fdroid publish -v fr.cph.chicago.foss:<versionCode>`
 
 ## Issues
 
