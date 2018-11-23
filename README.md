@@ -27,10 +27,10 @@ Chicago Commutes is a transit tracker making it easier to travel in Chicago. Eas
 * Free! No Ads!
 
 ## Screenshots
-![](screenshots/1.png)
-![](screenshots/2.png)
-![](screenshots/3.png)
-![](screenshots/4.png)
+![](metadata/en-US/phoneScreenshots/1.png)
+![](metadata/en-US/phoneScreenshots/2.png)
+![](metadata/en-US/phoneScreenshots/3.png)
+![](metadata/en-US/phoneScreenshots/4.png)
 
 ## Development
 
