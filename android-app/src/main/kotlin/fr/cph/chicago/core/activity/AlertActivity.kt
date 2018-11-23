@@ -67,7 +67,7 @@ class AlertActivity : ButterKnifeActivity(R.layout.activity_alert) {
 
     private fun setToolBar() {
         toolbar.inflateMenu(R.menu.main)
-        toolbar.setOnMenuItemClickListener { _ ->
+        toolbar.setOnMenuItemClickListener {
             scrollView.isRefreshing = true
             refreshData()
             false
@@ -77,7 +77,7 @@ class AlertActivity : ButterKnifeActivity(R.layout.activity_alert) {
         }
         toolbar.title = title
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp)
-        toolbar.setOnClickListener { _ -> finish() }
+        toolbar.setOnClickListener { finish() }
     }
 
     @SuppressLint("CheckResult")

@@ -157,7 +157,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
             params.width = layoutParams.width
             mapImage.setColorFilter(Color.grey5)
             directionImage.setColorFilter(Color.grey5)
-            favoritesImageContainer.setOnClickListener { _ -> switchFavorite() }
+            favoritesImageContainer.setOnClickListener { switchFavorite() }
             mapContainer.setOnClickListener(GoogleMapOnClickListener(position.latitude, position.longitude))
             walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(position.latitude, position.longitude))
 
@@ -233,7 +233,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
 
     private fun setToolBar(randomTrainLine: TrainLine) {
         toolbar.inflateMenu(R.menu.main)
-        toolbar.setOnMenuItemClickListener { _ ->
+        toolbar.setOnMenuItemClickListener {
             swipeRefreshLayout.isRefreshing = true
             trainArrivalObservable.subscribe(TrainArrivalObserver(this, swipeRefreshLayout))
             false
@@ -248,7 +248,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
         toolbar.title = trainStation.name
         toolbar.navigationIcon = arrowBackWhite
 
-        toolbar.setOnClickListener { _ -> finish() }
+        toolbar.setOnClickListener { finish() }
     }
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {

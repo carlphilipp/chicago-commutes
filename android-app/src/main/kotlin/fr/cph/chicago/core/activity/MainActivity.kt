@@ -163,7 +163,7 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
     }
 
     private fun setToolbar() {
-        toolbar.setOnMenuItemClickListener { _ ->
+        toolbar.setOnMenuItemClickListener {
             // Favorite fragment
             favoritesFragment!!.startRefreshing()
 

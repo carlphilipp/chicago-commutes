@@ -57,11 +57,11 @@ object BusRepository {
 
     fun saveBusStops(busStops: List<BusStop>) {
         val realm = Realm.getDefaultInstance()
-        realm.use {
-            it.executeTransaction {
+        realm.use { r ->
+            r.executeTransaction {
                 busStops
                     .map { busStop -> BusStopDb(busStop) }
-                    .forEach { busStopDb -> it.copyToRealm(busStopDb) }
+                    .forEach { busStopDb -> r.copyToRealm(busStopDb) }
             }
         }
     }

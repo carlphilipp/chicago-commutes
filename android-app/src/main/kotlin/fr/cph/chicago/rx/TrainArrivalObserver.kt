@@ -20,7 +20,6 @@
 package fr.cph.chicago.rx
 
 import android.support.v4.widget.SwipeRefreshLayout
-import android.util.Log
 import fr.cph.chicago.core.activity.station.TrainStationActivity
 import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.util.Util
@@ -47,9 +46,5 @@ class TrainArrivalObserver(private val trainStationActivity: TrainStationActivit
         if (swipeRefreshLayout.isRefreshing) {
             swipeRefreshLayout.isRefreshing = false
         }
-    }
-
-    companion object {
-        private val TAG = TrainArrivalObserver::class.java.simpleName
     }
 }

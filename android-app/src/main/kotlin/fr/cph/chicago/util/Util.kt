@@ -237,7 +237,7 @@ object Util {
         val snackBar1 = Snackbar.make(view, "Do you like this app?", Snackbar.LENGTH_LONG)
             .setAction("YES") { view1 ->
                 val snackBar2 = Snackbar.make(view1, "Rate this app on the market", Snackbar.LENGTH_LONG)
-                    .setAction("OK") { _ -> rateThisApp(activity) }
+                    .setAction("OK") { rateThisApp(activity) }
                     .setActionTextColor(textColor)
                     .setDuration(10000)
                 snackBar2.show()

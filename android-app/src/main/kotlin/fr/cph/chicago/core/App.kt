@@ -103,7 +103,7 @@ class App : Application() {
             activity.finish()
         }
 
-        public fun decode(str: String): String {
+        fun decode(str: String): String {
             return String(Base64.decode(str, Base64.DEFAULT))
         }
     }

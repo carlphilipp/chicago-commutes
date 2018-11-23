@@ -52,7 +52,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     override fun onCreateView(savedInstanceState: Bundle?) {
         val version = "Version " + util.getCurrentVersion()
         versionNumber.text = version
-        clearCache.setOnClickListener { _ ->
+        clearCache.setOnClickListener {
             val dialogClickListener = { _: Any, which: Any ->
                 when (which) {
                     DialogInterface.BUTTON_POSITIVE -> {

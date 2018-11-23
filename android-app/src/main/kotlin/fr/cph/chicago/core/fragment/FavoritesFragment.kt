@@ -94,7 +94,7 @@ class FavoritesFragment : Fragment(R.layout.fragment_main) {
 
         recyclerView.adapter = favoritesAdapter
         recyclerView.layoutManager = LinearLayoutManager(mainActivity)
-        floatingButton.setOnClickListener { _ ->
+        floatingButton.setOnClickListener {
             if (divvyStations.isEmpty()) {
                 util.showMessage(mainActivity, R.string.message_too_fast)
             } else {

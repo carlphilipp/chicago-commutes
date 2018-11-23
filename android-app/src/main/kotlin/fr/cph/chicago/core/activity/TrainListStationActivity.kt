@@ -64,7 +64,7 @@ class TrainListStationActivity : ButterKnifeActivity(R.layout.activity_train_sta
         toolbar.title = trainLine.toStringWithLine()
 
         toolbar.navigationIcon = arrowBackWhite
-        toolbar.setOnClickListener { _ -> finish() }
+        toolbar.setOnClickListener { finish() }
 
         listView.adapter = TrainAdapter(trainLine)
     }

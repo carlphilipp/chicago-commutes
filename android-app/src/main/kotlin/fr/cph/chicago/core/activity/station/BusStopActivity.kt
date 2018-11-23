@@ -144,7 +144,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
 
         mapImage.setColorFilter(Color.grey5)
         directionImage.setColorFilter(Color.grey5)
-        favoritesImageContainer.setOnClickListener { _ -> switchFavorite() }
+        favoritesImageContainer.setOnClickListener { switchFavorite() }
 
         favoritesImage.setColorFilter(if (isFavorite) Color.yellowLineDark else Color.grey5)
 
@@ -165,7 +165,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
 
     private fun setToolBar() {
         toolbar.inflateMenu(R.menu.main)
-        toolbar.setOnMenuItemClickListener { _ ->
+        toolbar.setOnMenuItemClickListener {
             scrollView.isRefreshing = true
             LoadStationDataTask().execute()
             false
@@ -176,7 +176,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
         }
         toolbar.title = "$busRouteId - $busStopName"
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp)
-        toolbar.setOnClickListener { _ -> finish() }
+        toolbar.setOnClickListener { finish() }
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {

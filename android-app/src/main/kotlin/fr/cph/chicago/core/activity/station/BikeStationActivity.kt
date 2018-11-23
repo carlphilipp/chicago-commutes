@@ -106,7 +106,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
 
         favoritesImage.setColorFilter(if (isFavorite) Color.yellowLineDark else Color.grey5)
 
-        favoritesImageContainer.setOnClickListener { _ -> switchFavorite() }
+        favoritesImageContainer.setOnClickListener { switchFavorite() }
         bikeStationValue.text = divvyStation.address
         streetViewImage.setOnClickListener(GoogleStreetOnClickListener(latitude, longitude))
         mapContainer.setOnClickListener(GoogleMapOnClickListener(latitude, longitude))
@@ -118,7 +118,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
 
     private fun setToolBar() {
         toolbar.inflateMenu(R.menu.main)
-        toolbar.setOnMenuItemClickListener { _ ->
+        toolbar.setOnMenuItemClickListener {
             swipeRefreshLayout.isRefreshing = true
             observableUtil.createAllBikeStationsObservable()
                 .subscribe(BikeAllBikeStationsObserver(this@BikeStationActivity, divvyStation.id, swipeRefreshLayout))
@@ -130,7 +130,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
         }
         toolbar.title = divvyStation.name
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp)
-        toolbar.setOnClickListener { _ -> finish() }
+        toolbar.setOnClickListener { finish() }
     }
 
     private fun drawData() {

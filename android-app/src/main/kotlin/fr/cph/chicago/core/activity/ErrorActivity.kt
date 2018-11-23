@@ -60,7 +60,7 @@ class ErrorActivity : Activity() {
 
         errorText.text = error
 
-        button.setOnClickListener { _ ->
+        button.setOnClickListener {
             val intent = Intent(this@ErrorActivity, BaseActivity::class.java)
             intent.putExtra(bundleError, true)
             finish()
