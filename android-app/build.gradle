@@ -22,9 +22,9 @@ android {
 
         def props = properties()
 
-        resValue "string", "google_maps_api_key", props['google.streetmap.key']
-        resValue "string", "cta_train_key", props['cta.train.key']
-        resValue "string", "cta_bus_key", props['cta.bus.key']
+        resValue "string", "google_maps_api_key", props.getOrDefault('google.streetmap.key', '')
+        resValue "string", "cta_train_key", props.getOrDefault('cta.train.key', '')
+        resValue "string", "cta_bus_key", props.getOrDefault('cta.bus.key', '')
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -103,7 +103,7 @@ android {
         foss {
             dimension "env"
             applicationIdSuffix ".foss"
-            resValue "string", "mapbox_token", properties()['mapbox.token']
+            resValue "string", "mapbox_token", properties().getOrDefault('mapbox.token', '')
         }
     }
 
@@ -206,7 +206,7 @@ task bumpVersion {
         def type = new String(System.console().readLine("\n\$ Bump type? [0: Bug fix | 1: Feature | 2: Major]"))
         def versionName = props['version.name'].tokenize('.').toArray()
         def newVersionName
-        switch(type) {
+        switch (type) {
             case "0":
                 // bug fix
                 newVersionName = versionName[0] + "." + versionName[1] + "." + (Integer.parseInt(versionName[2]) + 1)
@@ -246,7 +246,7 @@ def properties() {
     if (appProperties.exists()) {
         props.load(new FileInputStream(appProperties))
     } else {
-        throw new AssertionError("No app.properties or gradle properties found")
+        println("No app.properties found")
     }
     return props
 }
