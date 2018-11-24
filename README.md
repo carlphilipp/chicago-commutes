@@ -15,6 +15,8 @@
 </table>
 
 [![Build Status](https://travis-ci.org/carlphilipp/chicago-commutes.svg?branch=master)](https://travis-ci.org/carlphilipp/chicago-commutes)
+[![FDroid version](https://img.shields.io/f-droid/v/fr.cph.chicago.foss.svg)](https://f-droid.org/en/packages/fr.cph.chicago.foss)
+[![Project License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
 ## Description
 
