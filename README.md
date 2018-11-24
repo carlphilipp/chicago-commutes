@@ -1,26 +1,13 @@
 # Chicago Commutes
-<table border="0">
-    <tr>
-        <td>
-            <a href="https://play.google.com/store/apps/details?id=fr.cph.chicago"/>
-                <img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/apps/en-play-badge-border.png" width="200"/>
-            </a>
-        </td>
-        <td>
-            <a href="https://f-droid.org/en/packages/fr.cph.chicago.foss"/>
-                <img src="https://f-droid.org/badge/get-it-on.png" width="200">
-            </a>
-        </td>
-    </tr>
-</table>
 
 [![Build Status](https://travis-ci.org/carlphilipp/chicago-commutes.svg?branch=master)](https://travis-ci.org/carlphilipp/chicago-commutes)
 [![FDroid version](https://img.shields.io/f-droid/v/fr.cph.chicago.foss.svg)](https://f-droid.org/en/packages/fr.cph.chicago.foss)
-[![Project License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![Project License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE.txt)
 
 ## Description
 
 Chicago Commutes is a transit tracker making it easier to travel in Chicago. Easy and quick to use, Chicago Commutes has all levels of familiarity with the city in mind. Quick loading times and easy searchability for frequent transit users. For first time transit users Google Street View integration and internal bus and train locators ensure greater ease of travel.
+
 * Extremely user friendly UI.
 * Easy Filtering System: See only the buses and trains that you want to see and filter out the rest.
 * Locate Nearby Stations and Bus Stops: Chicago Commutes locates the nearest bus and train locations so that you don’t have to, making it easier for travel throughout the entire city of Chicago.
@@ -30,11 +17,22 @@ Chicago Commutes is a transit tracker making it easier to travel in Chicago. Eas
 * Read the last alerts from CTA.
 * Free! No Ads!
 
+## Download
+
+<a href="https://f-droid.org/en/packages/fr.cph.chicago.foss" target="_blank">
+    <img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" alt="Get it on F-Droid" height="70"/>
+</a>
+<a href="https://play.google.com/store/apps/details?id=fr.cph.chicago" target="_blank">
+    <img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" alt="Get it on Google Play" height="70"/>
+</a>
+
 ## Screenshots
-![](metadata/en-US/phoneScreenshots/1.png)
-![](metadata/en-US/phoneScreenshots/2.png)
-![](metadata/en-US/phoneScreenshots/3.png)
-![](metadata/en-US/phoneScreenshots/4.png)
+<p>
+    <img src="metadata/en-US/phoneScreenshots/1.png" width="210" />
+    <img src="metadata/en-US/phoneScreenshots/2.png" width="210" />
+    <img src="metadata/en-US/phoneScreenshots/3.png" width="210" />
+    <img src="metadata/en-US/phoneScreenshots/4.png" width="210" />
+</p>
 
 ## Development
 
