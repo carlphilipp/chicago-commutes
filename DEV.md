@@ -4,6 +4,10 @@
 * Do the same thing for `app.properties.template`.
 * You are ready to build it!
 
+Bump version:
+
+`./gradlew bumpVersion`
+
 Build debug APK:
 
 `./gradlew clean assembleDebug`
