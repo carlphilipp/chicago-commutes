@@ -14,6 +14,8 @@
     </tr>
 </table>
 
+[![Build Status](https://travis-ci.org/carlphilipp/chicago-commutes.svg?branch=master)](https://travis-ci.org/carlphilipp/chicago-commutes)
+
 ## Description
 
 Chicago Commutes is a transit tracker making it easier to travel in Chicago. Easy and quick to use, Chicago Commutes has all levels of familiarity with the city in mind. Quick loading times and easy searchability for frequent transit users. For first time transit users Google Street View integration and internal bus and train locators ensure greater ease of travel.
