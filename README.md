@@ -41,6 +41,12 @@ Chicago Commutes is a transit tracker making it easier to travel in Chicago. Eas
 ## Questions?
 [Create an issue](https://github.com/carlphilipp/chicago-commutes/issues/new)
 
+## Donations
+
+Donation can be made by Bitcoin to `13WUmCX1AePEKFGv5U1qRgBockFahsm21o`
+
+[![Bitcoin](images/qrcode.png)](bitcoin:13WUmCX1AePEKFGv5U1qRgBockFahsm21o)
+
 ## License
 ```
 Copyright 2018 Carl-Philipp Harmant
