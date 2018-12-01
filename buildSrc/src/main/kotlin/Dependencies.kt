@@ -1,4 +1,10 @@
 object Version {
+    val applicationId = "fr.cph.chicago"
+    val compileSdkVersion = 28
+    val buildToolsVersion = "28.0.3"
+    val minSdkVersion = 21
+    val targetSdkVersion = 28
+
     val kotlin = "1.3.10"
     val android_tools_build = "3.2.1"
     val realm = "5.7.0"
