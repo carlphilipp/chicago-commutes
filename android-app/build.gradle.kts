@@ -133,6 +133,7 @@ android {
 dependencies {
     // Kotlin
     implementation(Lib.kotlin)
+    implementation(Lib.kotlin_reflect)
 
     // Google
     implementation(Lib.google_support_design)

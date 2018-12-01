@@ -7,7 +7,7 @@ object Version {
 
     val kotlin = "1.3.10"
     val android_tools_build = "3.2.1"
-    val realm = "5.7.0"
+    val realm = "5.8.0"
 
     val butterknife = "8.8.1"
     val commons_collections4 = "4.1"
@@ -15,7 +15,7 @@ object Version {
     val easypermissions = "1.2.0"
     val google_play = "16.0.0"
     val google_support = "28.0.0"
-    val jackson = "2.9.5"
+    val jackson = "2.9.7"
     val mapbox = "6.5.0"
     val mapbox_location = "0.10.0"
     val photoview = "2.1.3"
@@ -47,6 +47,7 @@ object Lib {
     val commons_text = "org.apache.commons:commons-text:${Version.commons_text}"
     val easypermissions = "pub.devrel:easypermissions:${Version.easypermissions}"
     val kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Version.kotlin}"
+    val kotlin_reflect = "org.jetbrains.kotlin:kotlin-reflect:${Version.kotlin}"
     val google_services_map = "com.google.android.gms:play-services-maps:${Version.google_play}"
     val google_services_location = "com.google.android.gms:play-services-location:${Version.google_play}"
     val google_support_design = "com.android.support:design:${Version.google_support}"
