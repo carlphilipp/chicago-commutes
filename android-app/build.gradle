@@ -136,68 +136,42 @@ android {
 
 dependencies {
 
-    implementation(
-        // Kotlin
-        [group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: kotlin_version],
+    // Kotlin
+    implementation(Lib.kotlin)
 
-        // Google
-        [group: 'com.android.support', name: 'design', version: google_support_version],
+    // Google
+    implementation(Lib.google_support_design)
 
-        // Jackson
-        [group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jackson_version],
-        [group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jackson_version],
-        [group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: jackson_version],
-        [group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: jackson_version],
+    // Jackson
+    implementation(Lib.jackson_core)
+    implementation(Lib.jackson_databind)
+    implementation(Lib.jackson_annotations)
+    implementation(Lib.jackson_module_kotlin)
 
-        // RxJava
-        [group: 'io.reactivex.rxjava2', name: 'rxandroid', version: reactivex_android_version],
-        [group: 'io.reactivex.rxjava2', name: 'rxjava', version: reactivex_java_version],
+    // RxJava
+    implementation(Lib.rx)
+    implementation(Lib.rx_android)
 
-        // Tools
-        [group: 'com.jakewharton', name: 'butterknife', version: butterknife_version],
-        [group: 'pub.devrel', name: 'easypermissions', version: easypermissions_version],
-        [group: 'com.github.chrisbanes', name: 'PhotoView', version: photoview_version],
-        [group: 'com.sothree.slidinguppanel', name: 'library', version: sliding_up_panel_version],
-        [group: 'org.apache.commons', name: 'commons-collections4', version: commons_collections4_version],
-        [group: 'org.apache.commons', name: 'commons-text', version: commons_text],
-        [group: 'com.univocity', name: 'univocity-parsers', version: univocity_parsers_version],
-    )
+    // Tools
+    implementation(Lib.butterknife)
+    implementation(Lib.commons_collections4)
+    implementation(Lib.commons_text)
+    implementation(Lib.sliding_up_panel)
+    implementation(Lib.univocity)
+    implementation(Lib.easypermissions)
+    implementation(Lib.photoview)
 
-    googleplayImplementation(
-        [group: 'com.google.android.gms', name: 'play-services-maps', version: google_play_version],
-        [group: 'com.google.android.gms', name: 'play-services-location', version: google_play_version],
-    )
+    googleplayImplementation(Lib.google_services_map)
+    googleplayImplementation(Lib.google_services_location)
 
-    fossImplementation(
-        [group: 'com.mapbox.mapboxsdk', name: 'mapbox-android-sdk', version: '6.5.0'],
-        [group: 'com.mapbox.mapboxsdk', name: 'mapbox-android-plugin-locationlayer', version: '0.10.0'],
-    )
+    fossImplementation(Lib.mapbox)
+    fossImplementation(Lib.mapbox_location)
 
-    kapt(
-        [group: 'com.jakewharton', name: 'butterknife-compiler', version: butterknife_version],
-    )
+    kapt(Lib.butterknife_compiler)
 
-    testImplementation(
-        testImplementation(group: 'junit', name: 'junit', version: junit_version) {
-            exclude group: 'org.hamcrest', module: 'hamcrest-core'
-        },
-        testImplementation(group: 'org.mockito', name: 'mockito-core', version: mockito_version) {
-            exclude group: 'org.hamcrest', module: 'hamcrest-core'
-        },
-        [group: 'org.hamcrest', name: 'hamcrest-all', version: hamcrect_version]
-    )
-
-    androidTestImplementation(
-        [group: 'com.android.support', name: 'support-annotations', version: google_support_version],
-        [group: 'com.android.support.test', name: 'runner', version: google_support_version_test],
-        [group: 'com.android.support.test', name: 'rules', version: google_support_version_test],
-        // Optional -- UI testing with Espresso
-        androidTestImplementation(group: 'com.android.support.test.espresso', name: 'espresso-core', version: google_support_version_test_espresso) {
-            exclude group: 'com.android.support', module: 'support-annotations'
-        },
-        // Optional -- UI testing with UI Automator
-        [group: 'com.android.support.test.uiautomator', name: 'uiautomator-v18', version: google_support_version_test_uiautomator]
-    )
+    testImplementation(Lib.junit) { exclude group: 'org.hamcrest', module: 'hamcrest-core' }
+    testImplementation(Lib.mockito) { exclude group: 'org.hamcrest', module: 'hamcrest-core' }
+    testImplementation(Lib.hamcrest)
 }
 
 task bumpVersion {

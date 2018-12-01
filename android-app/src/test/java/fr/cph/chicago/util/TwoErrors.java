@@ -1,6 +1,5 @@
 package fr.cph.chicago.util;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -10,8 +9,6 @@ import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 
-// FIXME remove ignore
-@Ignore
 @RunWith(Parameterized.class)
 public class TwoErrors {
 
