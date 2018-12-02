@@ -157,7 +157,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
         var chicago: Position? = null
         if (position.longitude == 0.0 && position.latitude == 0.0) {
             chicago = Position(chicagoPosition.latitude, chicagoPosition.longitude)
-            util.showSnackBar(mainActivity, R.string.message_cant_find_location, Snackbar.LENGTH_LONG)
+            util.showMessage(mainActivity.drawer, R.string.message_cant_find_location)
         }
 
         val finalPosition = chicago ?: position
