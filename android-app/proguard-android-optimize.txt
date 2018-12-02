@@ -81,6 +81,8 @@
 -dontnote pub.devrel.easypermissions.EasyPermissions
 -dontnote kotlin.internal.PlatformImplementationsKt
 -dontnote kotlin.reflect.jvm.internal.ReflectionFactoryImpl
+-dontnote okio.BufferedSink
+-dontnote com.mapbox.mapboxsdk.maps.MapView
 
 -keep class com.github.chrisbanes.photoview.** { *; }
 -keepnames class com.fasterxml.jackson.** { *; }
@@ -97,6 +99,8 @@
 -keep,includedescriptorclasses class io.realm.internal.android.AndroidRealmNotifier { *; }
 -keep,includedescriptorclasses class kotlin.reflect.** { *; }
 -keep class kotlin.Metadata { *; }
+-keep class androidx.versionedparcelable.VersionedParcel { *; }
+-keep class androidx.versionedparcelable.VersionedParcelable { *; }
 
 -keepclassmembers class * {
      @com.fasterxml.jackson.annotation.JsonCreator *;

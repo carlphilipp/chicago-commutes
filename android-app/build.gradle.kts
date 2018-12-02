@@ -78,9 +78,9 @@ android {
 
     buildTypes {
         getByName("release") {
-            // FIXME: this should be turned on
-            isShrinkResources = false
-            isMinifyEnabled = false
+            // FIXME: this should be turned on (to delete if it works)
+            isShrinkResources = true
+            isMinifyEnabled = true
             proguardFiles("proguard-android-optimize.txt")
             if (signingConfigs["release"] != null) {
                 if (signingConfigs["release"].storePassword != "default") {
@@ -137,6 +137,10 @@ dependencies {
 
     // Google
     implementation(Lib.google_support_design)
+    implementation(Lib.google_support_compat)
+    implementation(Lib.google_support_vector)
+    implementation(Lib.google_support_media_compat)
+    implementation(Lib.google_support_v4)
 
     // Jackson
     implementation(Lib.jackson_core)
