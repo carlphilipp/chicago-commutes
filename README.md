@@ -3,10 +3,14 @@
 [![Build Status](https://travis-ci.org/carlphilipp/chicago-commutes.svg?branch=master)](https://travis-ci.org/carlphilipp/chicago-commutes)
 [![FDroid version](https://img.shields.io/f-droid/v/fr.cph.chicago.foss.svg)](https://f-droid.org/en/packages/fr.cph.chicago.foss)
 [![Project License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE.txt)
+![Libraries.io for GitHub](https://img.shields.io/librariesio/github/carlphilipp/chicago-commutes.svg)
 
 ## Description
 
+<img src="metadata/en-US/images/icon.png" align="left" width="100" hspace="10" vspace="10">
 Chicago Commutes is a transit tracker making it easier to travel in Chicago. Easy and quick to use, Chicago Commutes has all levels of familiarity with the city in mind. Quick loading times and easy searchability for frequent transit users. For first time transit users Google Street View integration and internal bus and train locators ensure greater ease of travel.
+
+<p />
 
 * Extremely user friendly UI.
 * Easy Filtering System: See only the buses and trains that you want to see and filter out the rest.

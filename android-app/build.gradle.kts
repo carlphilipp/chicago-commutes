@@ -78,7 +78,6 @@ android {
 
     buildTypes {
         getByName("release") {
-            // FIXME: this should be turned on (to delete if it works)
             isShrinkResources = true
             isMinifyEnabled = true
             proguardFiles("proguard-android-optimize.txt")
