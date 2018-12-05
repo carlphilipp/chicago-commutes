@@ -1,13 +1,24 @@
-# Chicago Commutes
+<p align="center"><img src="metadata/en-US/images/icon.png" align="center" width="150" hspace="10" vspace="10"></p>
+<h2 align="center"><b>Chicago Commutes</b></h2>
+<h4 align="center">Transit tracker making it easier to travel in Chicago, using the CTA and Divvy</h4>
+<p align="center">
+    <a href="https://f-droid.org/en/packages/fr.cph.chicago.foss" target="_blank">
+        <img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" alt="Get it on F-Droid" height="70"/>
+    </a>
+    <a href="https://play.google.com/store/apps/details?id=fr.cph.chicago" target="_blank">
+        <img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" alt="Get it on Google Play" height="70"/>
+    </a>
+</p>
 
-[![Build Status](https://travis-ci.org/carlphilipp/chicago-commutes.svg?branch=master)](https://travis-ci.org/carlphilipp/chicago-commutes)
-[![FDroid version](https://img.shields.io/f-droid/v/fr.cph.chicago.foss.svg)](https://f-droid.org/en/packages/fr.cph.chicago.foss)
-[![Project License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE.txt)
-![Libraries.io for GitHub](https://img.shields.io/librariesio/github/carlphilipp/chicago-commutes.svg)
+<p align="center">
+<a href="https://travis-ci.org/carlphilipp/chicago-commutes" alt="Build Status"><img src="https://travis-ci.org/carlphilipp/chicago-commutes.svg?branch=master"></a>
+<a href="https://f-droid.org/en/packages/fr.cph.chicago.foss" alt="FDroid version"><img src="https://img.shields.io/f-droid/v/fr.cph.chicago.foss.svg"></a>
+<a href="LICENSE.txt" alt="Project License"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg"></a>
+<a href="" alt="Libraries.io for GitHub"><img src="https://img.shields.io/librariesio/github/carlphilipp/chicago-commutes.svg"></a>
+</p>
 
 ## Description
 
-<img src="metadata/en-US/images/icon.png" align="left" width="100" hspace="10" vspace="10">
 Chicago Commutes is a transit tracker making it easier to travel in Chicago. Easy and quick to use, Chicago Commutes has all levels of familiarity with the city in mind. Quick loading times and easy searchability for frequent transit users. For first time transit users Google Street View integration and internal bus and train locators ensure greater ease of travel.
 
 <p />
@@ -20,15 +31,6 @@ Chicago Commutes is a transit tracker making it easier to travel in Chicago. Eas
 * Follow buses and trains live on the map
 * Read the last alerts from CTA.
 * Free! No Ads!
-
-## Download
-
-<a href="https://f-droid.org/en/packages/fr.cph.chicago.foss" target="_blank">
-    <img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" alt="Get it on F-Droid" height="70"/>
-</a>
-<a href="https://play.google.com/store/apps/details?id=fr.cph.chicago" target="_blank">
-    <img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" alt="Get it on Google Play" height="70"/>
-</a>
 
 ## Screenshots
 <p>
