@@ -152,7 +152,7 @@ object TrainService {
         }
         return result.ctatt.route!!
             .flatMap { route -> route.train }
-            .map { route -> Train(route.rn.toInt(), route.destNm, route.isApp.toBoolean(), Position(route.lat.toDouble(), route.lon.toDouble()), route.heading.toInt()) }
+            .map { route -> Train(route.rn.toInt(), route.destNm, route.approaching.toBoolean(), Position(route.lat.toDouble(), route.lon.toDouble()), route.heading.toInt()) }
     }
 
     fun setTrainStationError(value: Boolean) {
@@ -222,7 +222,7 @@ object TrainService {
         val result = SparseArray<TrainArrival>()
         if (trainArrivalResponse.ctatt.eta == null) {
             val error = trainArrivalResponse.ctatt.errNm
-            Log.e(TAG, error)
+            Log.e(TAG, "Error: $error")
             return result
         }
         trainArrivalResponse.ctatt.eta.map { eta ->

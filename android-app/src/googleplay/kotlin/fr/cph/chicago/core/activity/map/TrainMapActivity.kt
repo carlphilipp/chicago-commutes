@@ -20,6 +20,7 @@
 package fr.cph.chicago.core.activity.map
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import butterknife.BindString
@@ -215,7 +216,7 @@ class TrainMapActivity : FragmentMapActivity() {
             val positionsObservable = observableUtil.createTrainPatternObservable(line)
 
             if (drawLine) {
-                Observable.zip(trainsObservable, positionsObservable, BiFunction { trains: List<Train>, positions: List<TrainStationPattern> ->
+               Observable.zip(trainsObservable, positionsObservable, BiFunction { trains: List<Train>, positions: List<TrainStationPattern> ->
                     drawTrains(trains)
                     drawLine(positions.map { it.position })
                     if (trains.isNotEmpty()) {
@@ -225,9 +226,14 @@ class TrainMapActivity : FragmentMapActivity() {
                     } else {
                         Util.showMessage(this@TrainMapActivity, R.string.message_no_train_found)
                     }
-
                     Any()
-                }).subscribe()
+                }).subscribe(
+                    {},
+                    { throwable ->
+                        Util.showMessage(this@TrainMapActivity, R.string.message_error_while_loading_data)
+                        Log.e(TAG, "Error not handled", throwable)
+                    }
+                )
             } else {
                 trainsObservable.subscribe { trains ->
                     if (trains != null) {
@@ -243,5 +249,9 @@ class TrainMapActivity : FragmentMapActivity() {
         } else {
             Util.showNetworkErrorMessage(layout)
         }
+    }
+
+    companion object {
+        private val TAG = TrainMapActivity::class.java.simpleName
     }
 }

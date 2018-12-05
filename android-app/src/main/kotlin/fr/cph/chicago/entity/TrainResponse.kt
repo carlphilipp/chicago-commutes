@@ -73,8 +73,10 @@ data class TrainLocationResponse(val ctatt: Ctatt) {
         var nextStaNm: String,
         var prdt: String,
         var arrT: String,
-        var isApp: String,
-        var isDly: String,
+        @JsonProperty("isApp")
+        var approaching: String,
+        @JsonProperty("isDly")
+        var delay: String,
         var lat: String,
         var lon: String,
         var heading: String)

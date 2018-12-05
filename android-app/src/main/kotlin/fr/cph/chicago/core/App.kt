@@ -25,12 +25,15 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Point
 import android.util.Base64
+import android.util.Log
 import android.view.WindowManager
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.BaseActivity
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
+import io.reactivex.plugins.RxJavaPlugins
 import java.util.Date
+
 
 /**
  * Main class that extends Application. Mainly used to get the context from anywhere in the app.
@@ -62,6 +65,7 @@ class App : Application() {
         ctaBusKey = decode(applicationContext.getString(R.string.cta_bus_key))
         googleStreetKey = decode(applicationContext.getString(R.string.google_maps_api_key))
         instance = this
+        RxJavaPlugins.setErrorHandler { throwable -> Log.e(TAG, "Error not handled", throwable) }
     }
 
     private val screenSize: IntArray by lazy {
@@ -73,6 +77,8 @@ class App : Application() {
     }
 
     companion object {
+        private val TAG = App::class.java.simpleName
+
         lateinit var ctaTrainKey: String
         lateinit var ctaBusKey: String
         lateinit var googleStreetKey: String

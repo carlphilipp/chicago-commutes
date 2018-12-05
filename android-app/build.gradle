@@ -1,0 +1,198 @@
+import com.android.build.gradle.AppExtension
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'realm-android'
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
+
+    defaultConfig {
+        applicationId 'fr.cph.chicago'
+        versionCode 160
+        versionName '5.5.9'
+
+        minSdkVersion 21
+        targetSdkVersion 28
+        multiDexEnabled true
+
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+
+        def props = properties()
+
+        resValue "string", "google_maps_api_key", props.getOrDefault('google.streetmap.key', '')
+        resValue "string", "cta_train_key", props.getOrDefault('cta.train.key', '')
+        resValue "string", "cta_bus_key", props.getOrDefault('cta.bus.key', '')
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath false
+            }
+        }
+    }
+
+    // Change output apk name
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            outputFileName = "${parent.name}-${output.baseName}-${variant.versionName}.apk"
+        }
+    }
+
+    compileOptions {
+        def javaVersion = JavaVersion.VERSION_1_8
+        sourceCompatibility = javaVersion
+        targetCompatibility = javaVersion
+    }
+
+    sourceSets {
+        main {
+            java.srcDirs = ['src/main/kotlin']
+        }
+        googleplay {
+            java.srcDirs = ['src/googleplay/kotlin']
+        }
+        foss {
+            java.srcDirs = ['src/foss/kotlin']
+        }
+    }
+
+    signingConfigs {
+        release {
+            def propsFile = this.file('keystore.properties')
+            if (propsFile.exists() && gradle.startParameter.taskNames.any {
+                it.contains('Release') || it.contains('build')
+            }) {
+                def props = new Properties()
+                props.load(new FileInputStream(propsFile))
+                File storeF = new File(props['storeFile'].toString())
+
+                storeFile = storeF
+                storePassword new String(System.console().readPassword("\n\$ Enter keystore password: "))
+                keyAlias = props['keyAlias']
+                keyPassword new String(System.console().readPassword("\n\$ Enter alias password: "))
+            } else {
+                storeFile file('default')
+                storePassword 'default'
+                keyAlias 'default'
+                keyPassword 'default'
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFile 'proguard-android-optimize.txt'
+            if (signingConfigs.hasProperty('release')) {
+                if (signingConfigs.release.storePassword != 'default') {
+                    signingConfig signingConfigs.release
+                }
+            }
+        }
+    }
+
+    flavorDimensions "env"
+
+    productFlavors {
+        googleplay {
+            dimension "env"
+        }
+        foss {
+            dimension "env"
+            applicationIdSuffix ".foss"
+            resValue "string", "mapbox_token", properties().getOrDefault('mapbox.token', '')
+        }
+    }
+
+    lintOptions {
+        checkReleaseBuilds true
+        abortOnError false
+    }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES.txt'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/dependencies.txt'
+        exclude 'META-INF/LGPL2.1'
+    }
+}
+
+dependencies {
+    // Kotlin
+    implementation(Lib.kotlin)
+    implementation(Lib.kotlin_reflect)
+
+    // Google
+    implementation(Lib.google_support_design)
+    implementation(Lib.google_support_compat)
+    implementation(Lib.google_support_vector)
+    implementation(Lib.google_support_media_compat)
+    implementation(Lib.google_support_v4)
+
+    // Jackson
+    implementation(Lib.jackson_core)
+    implementation(Lib.jackson_databind)
+    implementation(Lib.jackson_annotations)
+    implementation(Lib.jackson_module_kotlin)
+
+    // RxJava
+    implementation(Lib.rx)
+    implementation(Lib.rx_android)
+
+    // Tools
+    implementation(Lib.butterknife)
+    implementation(Lib.commons_collections4)
+    implementation(Lib.commons_text)
+    implementation(Lib.sliding_up_panel)
+    implementation(Lib.univocity)
+    implementation(Lib.easypermissions)
+    implementation(Lib.photoview)
+
+
+    googleplayImplementation(Lib.google_services_map)
+    googleplayImplementation(Lib.google_services_location)
+
+    fossImplementation(Lib.mapbox)
+    fossImplementation(Lib.mapbox_location)
+
+    kapt(Lib.butterknife_compiler)
+
+    testImplementation(Lib.junit) { exclude group: "org.hamcrest", module: "hamcrest-core" }
+    testImplementation(Lib.mockito) { exclude group: "org.hamcrest", module: "hamcrest-core" }
+    testImplementation(Lib.hamcrest)
+}
+
+task currentVersion {
+    doLast {
+        def android = (AppExtension) project.extensions.findByName("android")
+        String versionName = android.defaultConfig.versionName
+        String versionCode = android.defaultConfig.versionCode
+        println("Version name: " + versionName)
+        println("Version code: " + versionCode)
+        println("FDroid tag: " + versionName + "-fdroid")
+    }
+}
+
+def properties() {
+    def props = new Properties()
+    def appProperties = this.file('app.properties')
+    if (appProperties.exists()) {
+        props.load(new FileInputStream(appProperties))
+    } else {
+        println("No app.properties found")
+    }
+    return props
+}
