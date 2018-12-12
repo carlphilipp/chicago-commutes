@@ -110,7 +110,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         App.checkBusData(this)
-        Mapbox.getInstance(this, App.decode(getString(R.string.mapbox_token)))
+        Mapbox.getInstance(this, getString(R.string.mapbox_token))
         super.onCreate(savedInstanceState)
     }
 

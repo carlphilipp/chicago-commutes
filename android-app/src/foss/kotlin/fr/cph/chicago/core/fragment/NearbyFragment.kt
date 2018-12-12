@@ -105,7 +105,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
     private val observableUtil: ObservableUtil = ObservableUtil
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Mapbox.getInstance(this.context!!, App.decode(getString(R.string.mapbox_token)))
+        Mapbox.getInstance(this.context!!, getString(R.string.mapbox_token))
         super.onCreate(savedInstanceState)
     }
 

@@ -17,7 +17,7 @@ abstract class ButterKnifeFragmentMapActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (!this.isFinishing) {
-            Mapbox.getInstance(this, App.decode(getString(R.string.mapbox_token)))
+            Mapbox.getInstance(this, getString(R.string.mapbox_token))
             setContentView(R.layout.activity_map_mapbox)
             ButterKnife.bind(this)
             mapView.onCreate(savedInstanceState)
