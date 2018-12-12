@@ -1,4 +1,5 @@
 import com.android.build.gradle.AppExtension
+import java.util.Base64
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
@@ -22,9 +23,9 @@ android {
 
         def props = properties()
 
-        resValue "string", "google_maps_api_key", props.getOrDefault('google.streetmap.key', '')
-        resValue "string", "cta_train_key", props.getOrDefault('cta.train.key', '')
-        resValue "string", "cta_bus_key", props.getOrDefault('cta.bus.key', '')
+        resValue "string", "google_maps_api_key", new String(Base64.getDecoder().decode(props.getOrDefault('google.streetmap.key', '')))
+        resValue "string", "cta_train_key", new String(Base64.getDecoder().decode(props.getOrDefault('cta.train.key', '')))
+        resValue "string", "cta_bus_key", new String(Base64.getDecoder().decode(props.getOrDefault('cta.bus.key', '')))
 
         javaCompileOptions {
             annotationProcessorOptions {
