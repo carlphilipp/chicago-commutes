@@ -7,12 +7,12 @@ import butterknife.ButterKnife
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.maps.MapView
 import fr.cph.chicago.R
-import fr.cph.chicago.core.App
 
 abstract class ButterKnifeFragmentMapActivity : FragmentActivity() {
 
     @BindView(R.id.mapView)
-    lateinit var mapView: MapView
+    @JvmField
+    var mapView: MapView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,7 +20,7 @@ abstract class ButterKnifeFragmentMapActivity : FragmentActivity() {
             Mapbox.getInstance(this, getString(R.string.mapbox_token))
             setContentView(R.layout.activity_map_mapbox)
             ButterKnife.bind(this)
-            mapView.onCreate(savedInstanceState)
+            mapView?.onCreate(savedInstanceState)
             create(savedInstanceState)
         }
     }

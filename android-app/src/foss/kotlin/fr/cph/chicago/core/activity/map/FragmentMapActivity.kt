@@ -72,7 +72,7 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
     protected var stationFeatureCollection: FeatureCollection? = null
 
     protected open fun initMap() {
-        mapView.getMapAsync(this)
+        mapView?.getMapAsync(this)
     }
 
     protected open fun setToolbar() {
@@ -177,31 +177,33 @@ abstract class FragmentMapActivity : ButterKnifeFragmentMapActivity(), OnMapRead
     }
 
     override fun onMapReady(map: MapboxMap) {
-        this.map = map
-        this.map.uiSettings.isLogoEnabled = false
-        this.map.uiSettings.isAttributionEnabled = false
-        this.map.uiSettings.isRotateGesturesEnabled = false
-        this.map.uiSettings.isTiltGesturesEnabled = false
+        this.map = with(map) {
+            uiSettings.isLogoEnabled = false
+            uiSettings.isAttributionEnabled = false
+            uiSettings.isRotateGesturesEnabled = false
+            uiSettings.isTiltGesturesEnabled = false
+            this
+        }
     }
 
     override fun onStart() {
         super.onStart()
-        mapView.onStart()
+        mapView?.onStart()
     }
 
     override fun onStop() {
         super.onStop()
-        mapView.onStop()
+        mapView?.onStop()
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
-        mapView.onLowMemory()
+        mapView?.onLowMemory()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        mapView.onDestroy()
+        mapView?.onDestroy()
     }
 
     companion object {

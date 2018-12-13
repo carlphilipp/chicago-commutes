@@ -199,10 +199,13 @@ object TrainService {
     }
 
     fun getStationsForLine(line: TrainLine): List<TrainStation> {
-        if (trainRepository.allStations.containsKey(line))
-            return trainRepository.allStations[line]!!
-        else
-            throw RuntimeException("$line not found")
+        return if (trainRepository.allStations.containsKey(line))
+            trainRepository.allStations[line]!!
+        else {
+            Log.e(TAG, "$line not found")
+            // Fallback to blue
+            trainRepository.allStations[TrainLine.BLUE]!!
+        }
     }
 
     fun searchStations(query: String): List<TrainStation> {

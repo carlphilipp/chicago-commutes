@@ -24,6 +24,7 @@ Build F-Droid APK:
 
 Build with F-Droid tools:
 
+`fdroid checkupdates -v fr.cph.chicago.foss`
 `fdroid build -v -l fr.cph.chicago.foss:<versionCode>`
 `fdroid publish -v fr.cph.chicago.foss:<versionCode>`
 

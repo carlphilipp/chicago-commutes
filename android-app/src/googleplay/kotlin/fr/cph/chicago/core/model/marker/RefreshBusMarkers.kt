@@ -41,7 +41,7 @@ class RefreshBusMarkers : RefreshMarkers(R.drawable.bus) {
             currentZoom = position.zoom
 
             // Handle stops markers
-            if (isIn(currentZoom, 21f, 16f) && !isIn(oldZoom, 21f, 16f)) {
+            if (isIn(currentZoom, 21f, 14.5f) && !isIn(oldZoom, 21f, 14.5f)) {
                 busStationMarkers.forEach { marker -> marker.isVisible = true }
             } else {
                 busStationMarkers.forEach { marker -> marker.isVisible = false }

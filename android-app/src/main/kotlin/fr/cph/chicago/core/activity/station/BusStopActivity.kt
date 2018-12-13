@@ -217,23 +217,27 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
             destinationTextView.text = key1
             arrivalsTextView.text = busArrivals[key1]!!.joinToString(separator = " ") { util.formatArrivalTime(it) }
 
-            var idBellowTitle = destinationTextView.id
+            var idBelowTitle = destinationTextView.id
             var idBellowArrival = arrivalsTextView.id
             busArrivals.entries.drop(1).forEach {
-                val belowTitle = TextView(App.instance)
-                belowTitle.text = it.key
-                belowTitle.id = util.generateViewId()
-                belowTitle.setSingleLine(true)
-                belowTitle.setTextColor(Color.grey5)
-                belowTitle.layoutParams = LayoutUtil.createLineBelowLayoutParams(idBellowTitle)
-                idBellowTitle = belowTitle.id
+                val belowTitle = with(TextView(App.instance)) {
+                    text = it.key
+                    id = util.generateViewId()
+                    setSingleLine(true)
+                    setTextColor(Color.grey5)
+                    layoutParams = LayoutUtil.createLineBelowLayoutParams(idBelowTitle)
+                    this
+                }
+                idBelowTitle = belowTitle.id
 
-                val belowArrival = TextView(App.instance)
-                belowArrival.text = it.value.joinToString(separator = " ") { util.formatArrivalTime(it) }
-                belowArrival.id = util.generateViewId()
-                belowArrival.setSingleLine(true)
-                belowArrival.setTextColor(Color.grey5)
-                belowArrival.layoutParams = LayoutUtil.createLineBelowLayoutParams(idBellowArrival)
+                val belowArrival = with(TextView(App.instance)) {
+                    text = it.value.joinToString(separator = " ") { util.formatArrivalTime(it) }
+                    id = util.generateViewId()
+                    setSingleLine(true)
+                    setTextColor(Color.grey5)
+                    layoutParams = LayoutUtil.createLineBelowLayoutParams(idBellowArrival)
+                    this
+                }
                 idBellowArrival = belowArrival.id
 
                 leftLayout.addView(belowTitle)

@@ -1,5 +1,4 @@
 import com.android.build.gradle.AppExtension
-import java.util.Base64
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
@@ -7,16 +6,16 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'realm-android'
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion '28.0.3'
+    compileSdkVersion Android.compile_sdk
+    buildToolsVersion Android.build_tools
 
     defaultConfig {
-        applicationId 'fr.cph.chicago'
+        applicationId Android.application_id
         versionCode 162
         versionName '5.5.11'
 
-        minSdkVersion 21
-        targetSdkVersion 28
+        minSdkVersion Android.min_sdk
+        targetSdkVersion Android.target_sdk
         multiDexEnabled true
 
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
@@ -100,11 +99,13 @@ android {
     productFlavors {
         googleplay {
             dimension "env"
+            resValue "string", "app_flavor", "gplay"
         }
         foss {
             dimension "env"
             applicationIdSuffix ".foss"
-            resValue "string", "mapbox_token", properties().getOrDefault('mapbox.token', '')
+            resValue "string", "mapbox_token", new String(Base64.getDecoder().decode(properties().getOrDefault('mapbox.token', '')))
+            resValue "string", "app_flavor", "fdroid"
         }
     }
 

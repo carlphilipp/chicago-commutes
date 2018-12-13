@@ -121,15 +121,17 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
             val busStop = busBoundAdapter.getItem(position) as BusStop
             val intent = Intent(applicationContext, BusStopActivity::class.java)
 
-            val extras = Bundle()
-            extras.putInt(bundleBusStopId, busStop.id)
-            extras.putString(bundleBusStopName, busStop.name)
-            extras.putString(bundleBusRouteId, busRouteId)
-            extras.putString(bundleBusRouteName, busRouteName)
-            extras.putString(bundleBusBound, bound)
-            extras.putString(bundleBusBoundTitle, boundTitle)
-            extras.putDouble(bundleBusLatitude, busStop.position.latitude)
-            extras.putDouble(bundleBusLongitude, busStop.position.longitude)
+            val extras = with(Bundle()) {
+                putInt(bundleBusStopId, busStop.id)
+                putString(bundleBusStopName, busStop.name)
+                putString(bundleBusRouteId, busRouteId)
+                putString(bundleBusRouteName, busRouteName)
+                putString(bundleBusBound, bound)
+                putString(bundleBusBoundTitle, boundTitle)
+                putDouble(bundleBusLatitude, busStop.position.latitude)
+                putDouble(bundleBusLongitude, busStop.position.longitude)
+                this
+            }
 
             intent.putExtras(extras)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -161,18 +163,19 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
         toolbar.title = "$busRouteId - $boundTitle"
 
         toolbar.navigationIcon = arrowBackWhite
-        toolbar.setOnClickListener { _ -> finish() }
+        toolbar.setOnClickListener { finish() }
 
         observableUtil.createBusStopBoundObservable(busRouteId, bound)
-            .subscribe({ onNext ->
-                busStops = onNext
-                busBoundAdapter.updateBusStops(onNext)
-                busBoundAdapter.notifyDataSetChanged()
-            }
-            , { onError ->
-                Log.e(TAG, onError.message, onError)
-                util.showOopsSomethingWentWrong(listView)
-            })
+            .subscribe(
+                { onNext ->
+                    busStops = onNext
+                    busBoundAdapter.updateBusStops(onNext)
+                    busBoundAdapter.notifyDataSetChanged()
+                },
+                { onError ->
+                    Log.e(TAG, onError.message, onError)
+                    util.showOopsSomethingWentWrong(listView)
+                })
 
         // Preventing keyboard from moving background when showing up
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
@@ -181,10 +184,12 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
     public override fun onResume() {
         super.onResume()
         mapFragment.getMapAsync { googleMap ->
-            googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition(GoogleMapUtil.chicago, 7f, 0f, 0f)))
-            googleMap.uiSettings.isMyLocationButtonEnabled = false
-            googleMap.uiSettings.isZoomControlsEnabled = false
-            googleMap.uiSettings.isMapToolbarEnabled = false
+            with(googleMap) {
+                moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition(GoogleMapUtil.chicago, 7f, 0f, 0f)))
+                uiSettings.isMyLocationButtonEnabled = false
+                uiSettings.isZoomControlsEnabled = false
+                uiSettings.isMapToolbarEnabled = false
+            }
             observableUtil.createBusPatternObservable(busRouteId, bound)
                 .subscribe({ busPattern ->
                     if (busPattern.direction != "error") {

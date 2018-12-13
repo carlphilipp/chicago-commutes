@@ -129,15 +129,17 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
             val busStop = busBoundAdapter.getItem(position) as BusStop
             val intent = Intent(applicationContext, BusStopActivity::class.java)
 
-            val extras = Bundle()
-            extras.putInt(bundleBusStopId, busStop.id)
-            extras.putString(bundleBusStopName, busStop.name)
-            extras.putString(bundleBusRouteId, busRouteId)
-            extras.putString(bundleBusRouteName, busRouteName)
-            extras.putString(bundleBusBound, bound)
-            extras.putString(bundleBusBoundTitle, boundTitle)
-            extras.putDouble(bundleBusLatitude, busStop.position.latitude)
-            extras.putDouble(bundleBusLongitude, busStop.position.longitude)
+            val extras = with(Bundle()) {
+                putInt(bundleBusStopId, busStop.id)
+                putString(bundleBusStopName, busStop.name)
+                putString(bundleBusRouteId, busRouteId)
+                putString(bundleBusRouteName, busRouteName)
+                putString(bundleBusBound, bound)
+                putString(bundleBusBoundTitle, boundTitle)
+                putDouble(bundleBusLatitude, busStop.position.latitude)
+                putDouble(bundleBusLongitude, busStop.position.longitude)
+                this
+            }
 
             intent.putExtras(extras)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -186,10 +188,12 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
     }
 
     override fun onMapReady(mapBox: MapboxMap) {
-        mapBox.uiSettings.isLogoEnabled = false
-        mapBox.uiSettings.isAttributionEnabled = false
-        mapBox.uiSettings.isRotateGesturesEnabled = false
-        mapBox.uiSettings.isTiltGesturesEnabled = false
+        with(mapBox) {
+            uiSettings.isLogoEnabled = false
+            uiSettings.isAttributionEnabled = false
+            uiSettings.isRotateGesturesEnabled = false
+            uiSettings.isTiltGesturesEnabled = false
+        }
         observableUtil.createBusPatternObservable(busRouteId, bound)
             .observeOn(Schedulers.computation())
             .map { busPattern: BusPattern ->

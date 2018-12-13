@@ -82,14 +82,16 @@ data class TrainEta(
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeParcelable(trainStation, flags)
-        dest.writeParcelable(stop, flags)
-        dest.writeString(routeName.toTextString())
-        dest.writeString(destName)
-        dest.writeLong(predictionDate.time)
-        dest.writeLong(arrivalDepartureDate.time)
-        dest.writeString(isApp.toString())
-        dest.writeString(isDly.toString())
+        with(dest) {
+            writeParcelable(trainStation, flags)
+            writeParcelable(stop, flags)
+            writeString(routeName.toTextString())
+            writeString(destName)
+            writeLong(predictionDate.time)
+            writeLong(arrivalDepartureDate.time)
+            writeString(isApp.toString())
+            writeString(isDly.toString())
+        }
     }
 
     companion object {

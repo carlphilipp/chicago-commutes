@@ -21,6 +21,7 @@ package fr.cph.chicago.core.activity.map
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -86,8 +87,8 @@ class BusMapActivity : FragmentMapActivity() {
     override fun create(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
             busId = savedInstanceState.getInt(bundleBusId)
-            busRouteId = savedInstanceState.getString(bundleBusRouteId)?: ""
-            bounds = savedInstanceState.getStringArray(bundleBusBounds)?: arrayOf()
+            busRouteId = savedInstanceState.getString(bundleBusRouteId) ?: ""
+            bounds = savedInstanceState.getStringArray(bundleBusBounds) ?: arrayOf()
         } else {
             busId = intent.getIntExtra(bundleBusId, 0)
             busRouteId = intent.getStringExtra(bundleBusRouteId)
@@ -159,8 +160,8 @@ class BusMapActivity : FragmentMapActivity() {
 
     private fun drawPattern(patterns: List<BusPattern>) {
         val index = intArrayOf(0)
-        val red = BitmapDescriptorFactory.defaultMarker()
-        val blue = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
+        val red = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(resources, R.drawable.red_marker_no_shade))
+        val blue = BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(resources, R.drawable.blue_marker_no_shade))
         patterns.forEach { pattern ->
             val poly = PolylineOptions()
                 .color(if (index[0] == 0) Color.RED else if (index[0] == 1) Color.BLUE else Color.YELLOW)
@@ -170,20 +171,24 @@ class BusMapActivity : FragmentMapActivity() {
                 .map { patternPoint ->
                     val point = LatLng(patternPoint.position.latitude, patternPoint.position.longitude)
                     poly.add(point)
-                    var marker: Marker? = null
+                    var markerOptions: MarkerOptions? = null
                     if ("S" == patternPoint.type) {
-                        marker = googleMap.addMarker(MarkerOptions()
+                        markerOptions = MarkerOptions()
                             .position(point)
                             .title(patternPoint.stopName)
                             .snippet(pattern.direction)
                             .icon(if (index[0] == 0) red else blue)
-                        )
-                        marker!!.isVisible = false
                     }
                     // Potential null sent, if stream api change, it could fail
-                    marker
+                    markerOptions
                 }
                 .filter { marker -> marker != null }
+                .distinct()
+                .map { markerOptions ->
+                    val marker = googleMap.addMarker(markerOptions)
+                    marker!!.isVisible = false
+                    marker
+                }
                 .forEach { busStationMarkers.add(it!!) }
             googleMap.addPolyline(poly)
             index[0]++
@@ -193,8 +198,8 @@ class BusMapActivity : FragmentMapActivity() {
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         busId = savedInstanceState.getInt(bundleBusId)
-        busRouteId = savedInstanceState.getString(bundleBusRouteId)?: ""
-        bounds = savedInstanceState.getStringArray(bundleBusBounds)?: arrayOf()
+        busRouteId = savedInstanceState.getString(bundleBusRouteId) ?: ""
+        bounds = savedInstanceState.getStringArray(bundleBusBounds) ?: arrayOf()
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {

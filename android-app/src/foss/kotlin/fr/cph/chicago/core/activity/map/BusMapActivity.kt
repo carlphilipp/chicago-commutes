@@ -308,12 +308,13 @@ class BusMapActivity : FragmentMapActivity() {
             .observeOn(Schedulers.computation())
             .map { buses ->
                 val features = buses.map { bus ->
-                    val feature = Feature.fromGeometry(Point.fromLngLat(bus.position.longitude, bus.position.latitude))
-                    feature.addNumberProperty(PROPERTY_HEADING, bus.heading)
-                    feature.addStringProperty(PROPERTY_TITLE, bus.id.toString())
-                    feature.addStringProperty(PROPERTY_DESTINATION, "To ${bus.destination}")
-                    feature.addBooleanProperty(PROPERTY_FAVOURITE, false)
-                    feature
+                    with(Feature.fromGeometry(Point.fromLngLat(bus.position.longitude, bus.position.latitude))) {
+                        addNumberProperty(PROPERTY_HEADING, bus.heading)
+                        addStringProperty(PROPERTY_TITLE, bus.id.toString())
+                        addStringProperty(PROPERTY_DESTINATION, "To ${bus.destination}")
+                        addBooleanProperty(PROPERTY_FAVOURITE, false)
+                        this
+                    }
                 }
                 FeatureCollection.fromFeatures(features)
             }

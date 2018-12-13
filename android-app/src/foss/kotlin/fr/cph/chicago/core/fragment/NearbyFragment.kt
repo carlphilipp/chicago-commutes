@@ -28,7 +28,6 @@ import android.graphics.Canvas
 import android.location.Location
 import android.os.Bundle
 import android.support.annotation.DrawableRes
-import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
 import android.view.View
 import android.widget.Button
@@ -134,7 +133,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
 
     override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
         showProgress(false)
-        handleNearbyData(Position(0.0,0.0))
+        handleNearbyData(Position(0.0, 0.0))
     }
 
     @SuppressLint("MissingPermission")
@@ -178,13 +177,15 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
-        this.map = mapboxMap
-        this.map.uiSettings.isLogoEnabled = false
-        this.map.uiSettings.isAttributionEnabled = false
-        this.map.uiSettings.isRotateGesturesEnabled = false
-        this.map.uiSettings.isTiltGesturesEnabled = false
-        this.map.addOnCameraMoveListener {
-            searchAreaButton.visibility = View.VISIBLE
+        this.map = with(mapboxMap) {
+            uiSettings.isLogoEnabled = false
+            uiSettings.isAttributionEnabled = false
+            uiSettings.isRotateGesturesEnabled = false
+            uiSettings.isTiltGesturesEnabled = false
+            addOnCameraMoveListener {
+                searchAreaButton.visibility = View.VISIBLE
+            }
+            this
         }
         searchAreaButton.setOnClickListener { view ->
             view.visibility = View.INVISIBLE

@@ -19,6 +19,8 @@
 
 package fr.cph.chicago.core.model.marker
 
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.Marker
 import fr.cph.chicago.R
 
 /**
@@ -27,4 +29,23 @@ import fr.cph.chicago.R
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class RefreshTrainMarkers : RefreshMarkers(R.drawable.train)
+class RefreshTrainMarkers : RefreshMarkers(R.drawable.train) {
+
+    fun refreshTrainAndStation(position: CameraPosition,
+                               trainMarkers: List<Marker>,
+                               stationMarkers: List<Marker>) {
+        refresh(position, trainMarkers)
+        var currentZoom = -1f
+        if (position.zoom != currentZoom) {
+            val oldZoom = currentZoom
+            currentZoom = position.zoom
+
+            // Handle stops markers
+            if (isIn(currentZoom, 21f, 14f) && !isIn(oldZoom, 21f, 14f)) {
+                stationMarkers.forEach { marker -> marker.isVisible = true }
+            } else {
+                stationMarkers.forEach { marker -> marker.isVisible = false }
+            }
+        }
+    }
+}

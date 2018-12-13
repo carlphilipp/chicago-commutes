@@ -151,9 +151,11 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
         divvyStations: List<BikeStation>) {
         if (isAdded) {
             mapFragment.getMapAsync { googleMap ->
-                googleMap.uiSettings.isMyLocationButtonEnabled = true
-                googleMap.uiSettings.isZoomControlsEnabled = false
-                googleMap.uiSettings.isMapToolbarEnabled = false
+                with(googleMap) {
+                    uiSettings.isMyLocationButtonEnabled = true
+                    uiSettings.isZoomControlsEnabled = false
+                    uiSettings.isMapToolbarEnabled = false
+                }
 
                 val bitmapDescriptorBus = createStop(context, R.drawable.bus_stop_icon)
                 val bitmapDescriptorTrain = createStop(context, R.drawable.train_station_icon)

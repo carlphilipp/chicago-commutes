@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.activity.map
 
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -26,6 +27,7 @@ import android.widget.TextView
 import butterknife.BindString
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
@@ -39,10 +41,13 @@ import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.model.marker.RefreshTrainMarkers
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.rx.TrainEtaObserver
+import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
+import io.reactivex.schedulers.Schedulers
 
 /**
  * @author Carl-Philipp Harmant
@@ -53,13 +58,15 @@ class TrainMapActivity : FragmentMapActivity() {
     @BindString(R.string.bundle_train_line)
     lateinit var bundleTrainLine: String
 
+    private val trainService = TrainService
     private val observableUtil: ObservableUtil = ObservableUtil
     private var views: MutableMap<Marker, View> = hashMapOf()
 
     private lateinit var line: String
     private lateinit var refreshTrainMarkers: RefreshTrainMarkers
     private var status: MutableMap<Marker, Boolean> = mutableMapOf()
-    private var markers: List<Marker> = listOf()
+    private var trainsMarker: List<Marker> = listOf()
+    private val stationMarkers: MutableList<Marker> = mutableListOf()
 
     private var centerMap = true
     private var drawLine = true
@@ -89,7 +96,7 @@ class TrainMapActivity : FragmentMapActivity() {
 
     override fun setToolbar() {
         super.setToolbar()
-        toolbar.setOnMenuItemClickListener { _ ->
+        toolbar.setOnMenuItemClickListener {
             centerMap = false
             loadActivityData()
             false
@@ -134,7 +141,7 @@ class TrainMapActivity : FragmentMapActivity() {
     private fun drawTrains(trains: List<Train>) {
         resetData()
         val bitmapDesc = refreshTrainMarkers.currentDescriptor
-        markers = trains.map { (routeNumber, destName, _, position, heading) ->
+        trainsMarker = trains.map { (routeNumber, destName, _, position, heading) ->
             val point = LatLng(position.latitude, position.longitude)
             val title = "To $destName"
             val snippet = routeNumber.toString()
@@ -149,7 +156,7 @@ class TrainMapActivity : FragmentMapActivity() {
 
     private fun resetData() {
         views.clear()
-        markers.forEach { it.remove() }
+        trainsMarker.forEach { it.remove() }
     }
 
     private fun drawLine(positions: List<Position>) {
@@ -165,30 +172,50 @@ class TrainMapActivity : FragmentMapActivity() {
     }
 
     override fun onCameraIdle() {
-        refreshTrainMarkers.refresh(googleMap.cameraPosition, markers)
+        refreshTrainMarkers.refreshTrainAndStation(googleMap.cameraPosition, trainsMarker, stationMarkers)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
         super.onMapReady(googleMap)
+
+        Observable.fromCallable { BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(resources, colorDrawable())) }
+            .flatMapIterable { icon -> trainService.getStationsForLine(TrainLine.fromXmlString(line)).map { Pair(it, icon) } }
+            .map { pair ->
+                val station = pair.first
+                val point = LatLng(station.stopsPosition[0].latitude, station.stopsPosition[0].longitude)
+                MarkerOptions()
+                    .position(point)
+                    .title(station.name)
+                    .icon(pair.second)
+            }
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { markerOptions ->
+                val marker = googleMap.addMarker(markerOptions)
+                marker.isVisible = false
+                stationMarkers.add(marker)
+            }
+
         googleMap.setInfoWindowAdapter(object : InfoWindowAdapter {
             override fun getInfoWindow(marker: Marker): View? {
                 return null
             }
 
             override fun getInfoContents(marker: Marker): View? {
-                return if ("" != marker.snippet) {
-                    // View can be null
-                    val view = views[marker]
-                    if (!refreshingInfoWindow) {
-                        selectedMarker = marker
-                        val runNumber = marker.snippet
-                        observableUtil.createLoadTrainEtaObservable(runNumber, false)
-                            .subscribe(TrainEtaObserver(view!!, this@TrainMapActivity))
-                        status[marker] = false
+                return when {
+                    stationMarkers.contains(marker) -> null
+                    "" != marker.snippet -> {
+                        val view = views[marker]
+                        if (!refreshingInfoWindow) {
+                            selectedMarker = marker
+                            val runNumber = marker.snippet
+                            observableUtil.createLoadTrainEtaObservable(runNumber, false)
+                                .subscribe(TrainEtaObserver(view!!, this@TrainMapActivity))
+                            status[marker] = false
+                        }
+                        view
                     }
-                    view
-                } else {
-                    null
+                    else -> null
                 }
             }
         })
@@ -216,7 +243,7 @@ class TrainMapActivity : FragmentMapActivity() {
             val positionsObservable = observableUtil.createTrainPatternObservable(line)
 
             if (drawLine) {
-               Observable.zip(trainsObservable, positionsObservable, BiFunction { trains: List<Train>, positions: List<TrainStationPattern> ->
+                Observable.zip(trainsObservable, positionsObservable, BiFunction { trains: List<Train>, positions: List<TrainStationPattern> ->
                     drawTrains(trains)
                     drawLine(positions.map { it.position })
                     if (trains.isNotEmpty()) {
@@ -248,6 +275,20 @@ class TrainMapActivity : FragmentMapActivity() {
             }
         } else {
             Util.showNetworkErrorMessage(layout)
+        }
+    }
+
+    private fun colorDrawable(): Int {
+        return when (TrainLine.fromXmlString(line)) {
+            TrainLine.BLUE -> R.drawable.blue_marker_no_shade
+            TrainLine.BROWN -> R.drawable.brown_marker_no_shade
+            TrainLine.GREEN -> R.drawable.green_marker_no_shade
+            TrainLine.ORANGE -> R.drawable.orange_marker_no_shade
+            TrainLine.PINK -> R.drawable.pink_marker_no_shade
+            TrainLine.PURPLE -> R.drawable.purple_marker_no_shade
+            TrainLine.RED -> R.drawable.red_marker_no_shade
+            TrainLine.YELLOW -> R.drawable.yellow_marker
+            TrainLine.NA -> R.drawable.red_marker_no_shade
         }
     }
 

@@ -288,7 +288,8 @@ object Util {
 
     fun getCurrentVersion(): String {
         val packageInfo = App.instance.packageManager.getPackageInfo(App.instance.packageName, 0)
-        return packageInfo.versionName
+        val flavor = App.instance.getString(R.string.app_flavor)
+        return "${packageInfo.versionName}-$flavor"
     }
 
     fun closeQuietly(inputStream: Reader?) {
