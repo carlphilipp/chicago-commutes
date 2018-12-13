@@ -11,8 +11,8 @@ android {
 
     defaultConfig {
         applicationId Android.application_id
-        versionCode 162
-        versionName '5.5.11'
+        versionCode 163
+        versionName '5.6.0'
 
         minSdkVersion Android.min_sdk
         targetSdkVersion Android.target_sdk
