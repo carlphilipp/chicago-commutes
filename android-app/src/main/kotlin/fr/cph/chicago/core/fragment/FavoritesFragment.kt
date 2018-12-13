@@ -78,19 +78,23 @@ class FavoritesFragment : Fragment(R.layout.fragment_main) {
     private val busService: BusService = BusService
     private val preferenceService: PreferenceService = PreferenceService
 
-    private lateinit var favoritesAdapter: FavoritesAdapter
+    private var favoritesAdapter: FavoritesAdapter? = null
     private lateinit var refreshTimingTask: RefreshTimingTask
     private lateinit var divvyStations: List<BikeStation>
 
     override fun onCreateView(savedInstanceState: Bundle?) {
         val intent = mainActivity.intent
-        val busArrivals: List<BusArrival> = intent.getParcelableArrayListExtra(bundleBusArrivals) ?: listOf()
-        val trainArrivals: SparseArray<TrainArrival> = intent.extras?.getSparseParcelableArray(bundleTrainArrivals) ?: SparseArray()
+        val busArrivals = intent.getParcelableArrayListExtra(bundleBusArrivals)
+            ?: listOf<BusArrival>()
+        val trainArrivals = intent.extras?.getSparseParcelableArray(bundleTrainArrivals)
+            ?: SparseArray<TrainArrival>()
         divvyStations = intent.getParcelableArrayListExtra(bundleBikeStation) ?: listOf()
 
-        favoritesAdapter = FavoritesAdapter(mainActivity)
-        favoritesAdapter.updateData(trainArrivals, busArrivals, divvyStations)
-        favoritesAdapter.refreshFavorites()
+        if (favoritesAdapter == null) {
+            favoritesAdapter = FavoritesAdapter(mainActivity)
+            favoritesAdapter!!.updateData(trainArrivals, busArrivals, divvyStations)
+            favoritesAdapter!!.refreshFavorites()
+        }
 
         recyclerView.adapter = favoritesAdapter
         recyclerView.layoutManager = LinearLayoutManager(mainActivity)
@@ -150,8 +154,8 @@ class FavoritesFragment : Fragment(R.layout.fragment_main) {
             App.instance.refresh = false
             fetchData()
         }
-        favoritesAdapter.refreshFavorites()
-        favoritesAdapter.notifyDataSetChanged()
+        favoritesAdapter?.refreshFavorites()
+        favoritesAdapter?.notifyDataSetChanged()
         if (refreshTimingTask.status == Status.FINISHED) {
             startRefreshTask()
         }
@@ -165,11 +169,11 @@ class FavoritesFragment : Fragment(R.layout.fragment_main) {
         mainActivity.intent.putParcelableArrayListExtra(bundleBikeStation, util.asParcelableArrayList(favoritesDTO.bikeStations))
 
         divvyStations = favoritesDTO.bikeStations
-        favoritesAdapter.updateData(favoritesDTO.trainArrivalDTO.trainArrivalSparseArray, favoritesDTO.busArrivalDTO.busArrivals, favoritesDTO.bikeStations)
-        favoritesAdapter.refreshFavorites()
-        favoritesAdapter.resetLastUpdate()
-        favoritesAdapter.updateModel()
-        favoritesAdapter.notifyDataSetChanged()
+        favoritesAdapter?.updateData(favoritesDTO.trainArrivalDTO.trainArrivalSparseArray, favoritesDTO.busArrivalDTO.busArrivals, favoritesDTO.bikeStations)
+        favoritesAdapter?.refreshFavorites()
+        favoritesAdapter?.resetLastUpdate()
+        favoritesAdapter?.updateModel()
+        favoritesAdapter?.notifyDataSetChanged()
 
         rootView.setBackgroundResource(R.drawable.highlight_selector)
         rootView.postDelayed({ rootView.setBackgroundResource(R.drawable.bg_selector) }, 100)
@@ -194,8 +198,8 @@ class FavoritesFragment : Fragment(R.layout.fragment_main) {
 
     fun setBikeStations(divvyStations: List<BikeStation>) {
         this.divvyStations = divvyStations
-        favoritesAdapter.updateBikeStations(divvyStations)
-        favoritesAdapter.notifyDataSetChanged()
+        favoritesAdapter?.updateBikeStations(divvyStations)
+        favoritesAdapter?.notifyDataSetChanged()
     }
 
     fun startRefreshing() {
@@ -227,8 +231,8 @@ class FavoritesFragment : Fragment(R.layout.fragment_main) {
      * Start refreshBusAndStation task
      */
     private fun startRefreshTask() {
-        refreshTimingTask = RefreshTimingTask(favoritesAdapter).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR) as RefreshTimingTask
-        favoritesAdapter.updateModel()
+        refreshTimingTask = RefreshTimingTask(favoritesAdapter!!).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR) as RefreshTimingTask
+        favoritesAdapter?.updateModel()
     }
 
     companion object {
