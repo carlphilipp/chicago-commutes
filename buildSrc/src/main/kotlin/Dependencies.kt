@@ -1,5 +1,4 @@
 object Android {
-    val application_id = "fr.cph.chicago"
     val compile_sdk = 28
     val build_tools = "28.0.3"
     val min_sdk = 21

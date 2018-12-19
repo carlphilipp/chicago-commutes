@@ -10,9 +10,9 @@ android {
     buildToolsVersion Android.build_tools
 
     defaultConfig {
-        applicationId Android.application_id
-        versionCode 163
-        versionName '5.6.0'
+        applicationId 'fr.cph.chicago'
+        versionCode 164
+        versionName '5.6.1'
 
         minSdkVersion Android.min_sdk
         targetSdkVersion Android.target_sdk
