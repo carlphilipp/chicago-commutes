@@ -55,7 +55,7 @@ Donation can be made by Bitcoin to `13WUmCX1AePEKFGv5U1qRgBockFahsm21o`
 
 ## License
 ```
-Copyright 2018 Carl-Philipp Harmant
+Copyright 2019 Carl-Philipp Harmant
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
