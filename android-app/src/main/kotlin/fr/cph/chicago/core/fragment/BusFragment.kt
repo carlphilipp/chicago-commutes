@@ -41,7 +41,6 @@ import org.apache.commons.lang3.StringUtils
  */
 class BusFragment : Fragment(R.layout.fragment_bus) {
 
-
     @BindView(R.id.bus_filter)
     lateinit var textFilter: EditText
     @BindView(R.id.bus_list)

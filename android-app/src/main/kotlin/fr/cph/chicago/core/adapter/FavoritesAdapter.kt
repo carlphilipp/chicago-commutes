@@ -91,6 +91,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         val mapButton: Button = view.findViewById(R.id.view_map_button)
 
         init {
+            // FIXME: possible them issue here
             this.mainLayout.background = ContextCompat.getDrawable(parent.context, R.drawable.any_selector)
             this.stationNameTextView.setLines(1)
             this.stationNameTextView.ellipsize = TextUtils.TruncateAt.END

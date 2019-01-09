@@ -87,7 +87,7 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
     lateinit var settings: String
 
     @JvmField
-    @BindColor(R.color.primaryColorDarker)
+    @BindColor(R.color.lightPrimaryColorDarker)
     internal var primaryColorDarker: Int = 0
 
     private val observableUtil: ObservableUtil = ObservableUtil
@@ -112,8 +112,6 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
 
     override fun create(savedInstanceState: Bundle?) {
         loadFirstData()
-
-        frameLayout.foreground.alpha = 0
 
         initView()
         setToolbar()
@@ -187,7 +185,7 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
         toolbar.inflateMenu(R.menu.main)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.elevation = 4f
-            window.navigationBarColor = primaryColorDarker
+            //window.navigationBarColor = primaryColorDarker
         }
     }
 

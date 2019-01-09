@@ -26,15 +26,7 @@
     <color name="white">#FFFFFF</color>
     <color name="green">#00A000</color>
     <color name="red">#A00000</color>
-    <!--<color name="blue">#009eda</color>-->
     <color name="orange">#FF8000</color>
-
-    <color name="primaryColor">#607D8B</color>
-    <color name="primaryColorDark">#455A64</color>
-    <color name="primaryColorDarker">#263238</color>
-    <color name="colorAccent">#37474F</color>
-    <color name="colorTextPrimary">#212121</color>
-    <color name="colorTextSecondary">#727272</color>
 
     <!-- Line colors -->
     <color name="blueLine">#2196f3</color>
@@ -53,4 +45,24 @@
     <color name="redLineDark">#D32F2F</color>
     <color name="yellowLine">#FDD835</color>
     <color name="yellowLineDark">#F9A825</color>
+
+    <!-- Light theme -->
+    <color name="lightPrimaryColor">#607D8B</color>
+    <color name="lightPrimaryColorDark">#455A64</color>
+    <color name="lightPrimaryColorDarker">#263238</color>
+    <color name="lightColorAccent">#37474f</color>
+    <color name="lightColorTextPrimary">#212121</color>
+    <color name="lightColorTextSecondary">#727272</color>
+    <color name="lightBackgroundColorStart">#aeaeae</color>
+    <color name="lightBackgroundColorEnd">#FFFFFFFF</color>
+
+    <!-- Dark theme -->
+    <color name="darkPrimaryColor">#212129</color>
+    <color name="darkPrimaryColorDarker">#131317</color>
+    <color name="darkNavigationBar">#0d0d10</color>
+    <color name="darkColorAccent">#323949</color>
+    <color name="darkColorTextPrimary">#fff</color>
+    <color name="darkColorTextSecondary">#fff</color>
+    <color name="darkBackgroundColorStart">#131317</color>
+    <color name="darkBackgroundColorEnd">#131317</color>
 </resources>

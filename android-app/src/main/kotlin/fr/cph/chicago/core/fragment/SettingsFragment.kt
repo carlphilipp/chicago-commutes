@@ -45,6 +45,12 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     @BindView(R.id.version_number)
     lateinit var versionNumber: TextView
 
+    @BindView(R.id.theme)
+    lateinit var theme: LinearLayout
+
+    @BindView(R.id.theme_name)
+    lateinit var themeName: TextView
+
     private val util: Util = Util
     private val preferenceService: PreferenceService = PreferenceService
     private val realmConfig: RealmConfig = RealmConfig
@@ -52,6 +58,28 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     override fun onCreateView(savedInstanceState: Bundle?) {
         val version = "Version " + util.getCurrentVersion()
         versionNumber.text = version
+        themeName.text = preferenceService.getTheme()
+
+        theme.setOnClickListener {
+            val builder = AlertDialog.Builder(context)
+            val choices = arrayOf("Light", "Dark")
+            val selected = choices.indexOf(preferenceService.getTheme())
+            builder.setTitle("Theme change")
+            builder.setSingleChoiceItems(choices, selected, null)
+            builder.setPositiveButton("Save & Restart") { dialog: DialogInterface, _ ->
+                val list = (dialog as AlertDialog).listView
+                for (i in 0 until list.count) {
+                    val checked = list.isItemChecked(i)
+                    if (checked) {
+                        preferenceService.saveTheme(choices[i])
+                        restartApp()
+                    }
+                }
+            }
+            builder.setNegativeButton("Cancel", null)
+            builder.show()
+        }
+
         clearCache.setOnClickListener {
             val dialogClickListener = { _: Any, which: Any ->
                 when (which) {

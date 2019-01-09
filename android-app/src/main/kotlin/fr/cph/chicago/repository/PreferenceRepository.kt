@@ -47,6 +47,7 @@ object PreferenceRepository {
     private val FORMAT = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
 
     private const val PREFERENCE_FAVORITES = "ChicagoTrackerFavorites"
+    private const val PREFERENCE_FAVORITES_THEME = "ChicagoTrackerTheme"
     private const val PREFERENCE_FAVORITES_TRAIN = "ChicagoTrackerFavoritesTrain"
     private const val PREFERENCE_FAVORITES_BUS = "ChicagoTrackerFavoritesBus"
     private const val PREFERENCE_FAVORITES_BUS_ROUTE_NAME_MAPPING = "ChicagoTrackerFavoritesBusNameMapping"
@@ -56,6 +57,17 @@ object PreferenceRepository {
 
     private val trainService = TrainService
     private val util = Util
+
+    fun getTheme(): String {
+        val sharedPref = getPrivatePreferences()
+        return sharedPref.getString(PREFERENCE_FAVORITES_THEME, "Light")!!
+    }
+
+    fun saveTheme(theme: String) {
+        val editor = getPrivatePreferences().edit()
+        editor.putString(PREFERENCE_FAVORITES_THEME, theme)
+        editor.apply()
+    }
 
     fun saveTrainFavorites(favorites: List<Int>) {
         val sharedPref = getPrivatePreferences()

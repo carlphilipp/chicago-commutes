@@ -22,11 +22,15 @@ package fr.cph.chicago.core.activity.butterknife
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import butterknife.ButterKnife
+import fr.cph.chicago.service.PreferenceService
 
 abstract class ButterKnifeActivity(private val contentView: Int) : AppCompatActivity() {
 
+    private val preferenceService: PreferenceService = PreferenceService
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setTheme(preferenceService.getCurrentTheme())
         if (!this.isFinishing) {
             setContentView(contentView)
             ButterKnife.bind(this)

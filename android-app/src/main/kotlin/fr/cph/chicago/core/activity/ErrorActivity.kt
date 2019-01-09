@@ -29,6 +29,7 @@ import butterknife.BindString
 import butterknife.BindView
 import butterknife.ButterKnife
 import fr.cph.chicago.R
+import fr.cph.chicago.service.PreferenceService
 
 /**
  * BusArrivalError activity that can be thrown from anywhere in the app
@@ -50,7 +51,10 @@ class ErrorActivity : Activity() {
 
     private lateinit var error: String
 
+    private val preferenceService: PreferenceService = PreferenceService
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(preferenceService.getCurrentTheme())
         super.onCreate(savedInstanceState)
         setContentView(R.layout.error)
         ButterKnife.bind(this)

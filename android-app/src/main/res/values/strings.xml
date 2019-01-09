@@ -70,8 +70,8 @@
 
     <!-- Favorites -->
     <string name="no_fav">Welcome to Chicago Commutes!</string>
-    <string name="add_fav">Add favorites from</string>
-    <string name="add_fav2">train/bus/bike tab</string>
+    <string name="add_fav">Add favorites from the</string>
+    <string name="add_fav2">train/bus/bike menu</string>
     <string name="favorites_detail">details</string>
     <string name="favorites_view_trains">view trains</string>
     <string name="favorites_view_buses">view buses</string>
@@ -159,6 +159,8 @@
     <string name="description">Description</string>
 
     <!-- Preferences -->
+    <string name="preferences_data_theme_title">Theme</string>
+    <string name="preferences_data_theme_default">\?</string>
     <string name="preferences_data_cache_title">Data cache</string>
     <string name="preferences_clear_cache_title">Clear cache</string>
     <string name="preferences_clear_cache_desc">Remove all cache data</string>

@@ -77,7 +77,7 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
     override fun create(savedInstanceState: Bundle?) {
         setupToolbar()
 
-        container.foreground.alpha = 0
+        //container.foreground.alpha = 0
 
         searchAdapter = SearchAdapter(this)
         divvyStations = intent.extras?.getParcelableArrayList(bundleBikeStations) ?: listOf()

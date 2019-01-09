@@ -175,8 +175,10 @@ class FavoritesFragment : Fragment(R.layout.fragment_main) {
         favoritesAdapter?.updateModel()
         favoritesAdapter?.notifyDataSetChanged()
 
+        // FIXME: possible theme issue with highlight
+        val currentBackground = rootView.background
         rootView.setBackgroundResource(R.drawable.highlight_selector)
-        rootView.postDelayed({ rootView.setBackgroundResource(R.drawable.bg_selector) }, 100)
+        rootView.postDelayed({ rootView.background = currentBackground }, 100)
         stopRefreshing()
         when {
             util.isAtLeastTwoErrors(favoritesDTO.trainArrivalDTO.error, favoritesDTO.busArrivalDTO.error, favoritesDTO.bikeError) -> util.showMessage(mainActivity, R.string.message_something_went_wrong)

@@ -35,6 +35,22 @@ object PreferenceService {
     private val repo = PreferenceRepository
     private val util = Util
 
+    fun getTheme(): String {
+        return repo.getTheme()
+    }
+
+    fun getCurrentTheme(): Int {
+        val theme = repo.getTheme()
+        return if (theme == "Light") R.style.AppTheme else R.style.AppThemeDark
+    }
+
+    fun saveTheme(theme: String) {
+        if (theme != "Light" && theme != "Dark") {
+            throw RuntimeException("The theme can only be Light or Dark")
+        }
+        repo.saveTheme(theme)
+    }
+
     fun isTrainStationFavorite(trainStationId: Int): Boolean {
         return repo.getTrainFavorites().any { it == trainStationId }
     }
