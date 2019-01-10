@@ -19,6 +19,6 @@
 <resources>
     <attr name="iconTint" format="color" />
     <attr name="favoriteCardBackground" format="color" />
-
     <attr name="favoriteButton" format="reference" />
+    <attr name="textAppearance" format="reference" />
 </resources>

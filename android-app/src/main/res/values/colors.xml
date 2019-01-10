@@ -52,7 +52,7 @@
     <color name="lightPrimaryColorDarker">#263238</color>
     <color name="lightColorAccent">#37474f</color>
     <color name="lightColorTextPrimary">#212121</color>
-    <color name="lightColorTextSecondary">#727272</color>
+    <color name="lightColorTextSecondary">#000</color>
     <color name="lightBackgroundColorStart">#aeaeae</color>
     <color name="lightBackgroundColorEnd">#FFFFFFFF</color>
 

@@ -185,7 +185,6 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
         toolbar.inflateMenu(R.menu.main)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.elevation = 4f
-            //window.navigationBarColor = primaryColorDarker
         }
     }
 

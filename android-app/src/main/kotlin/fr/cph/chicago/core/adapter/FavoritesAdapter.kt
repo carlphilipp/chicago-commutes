@@ -19,10 +19,11 @@
 
 package fr.cph.chicago.core.adapter
 
-import android.support.v4.content.ContextCompat
+import android.support.annotation.StyleRes
 import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
 import android.util.SparseArray
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -47,6 +48,7 @@ import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.model.enumeration.BusDirection
+import fr.cph.chicago.setTextAppearance
 import fr.cph.chicago.util.LayoutUtil
 import fr.cph.chicago.util.TimeUtil
 import fr.cph.chicago.util.Util
@@ -59,6 +61,14 @@ import java.util.Calendar
  * @version 1
  */
 class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder>() {
+
+    val textAppearance: Int
+
+    init {
+        val outValue = TypedValue()
+        activity.theme.resolveAttribute(R.attr.textAppearance, outValue, true)
+        textAppearance = outValue.resourceId
+    }
 
     private val util = Util
     private val favorites = Favorites
@@ -75,10 +85,11 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         holder.mainLayout.removeAllViews()
         val model = favorites.getObject(position)
         holder.lastUpdateTextView.text = lastUpdate
+
         when (model) {
-            is TrainStation -> handleStation(holder, model)
-            is BusRoute -> handleBusRoute(holder, model)
-            else -> handleBikeStation(holder, model as BikeStation)
+            is TrainStation -> handleStation(textAppearance, holder, model)
+            is BusRoute -> handleBusRoute(textAppearance, holder, model)
+            else -> handleBikeStation(textAppearance, holder, model as BikeStation)
         }
     }
 
@@ -91,14 +102,12 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         val mapButton: Button = view.findViewById(R.id.view_map_button)
 
         init {
-            // FIXME: possible them issue here
-            this.mainLayout.background = ContextCompat.getDrawable(parent.context, R.drawable.any_selector)
             this.stationNameTextView.setLines(1)
             this.stationNameTextView.ellipsize = TextUtils.TruncateAt.END
         }
     }
 
-    private fun handleStation(holder: FavoritesViewHolder, trainStation: TrainStation) {
+    private fun handleStation(@StyleRes textAppearance: Int, holder: FavoritesViewHolder, trainStation: TrainStation) {
         holder.favoriteImage.setImageResource(R.drawable.ic_train_white_24dp)
         holder.stationNameTextView.text = trainStation.name
         holder.detailsButton.setOnClickListener(TrainDetailsButtonOnClickListener(activity, trainStation.id))
@@ -111,7 +120,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
             val etas = favorites.getTrainArrivalByLine(trainStation.id, trainLine)
             for ((i, entry) in etas.entries.withIndex()) {
                 val containParams = layoutUtil.getInsideParams(newLine, i == etas.size - 1)
-                val container = layoutUtil.createTrainArrivalsLayout(containParams, entry, trainLine)
+                val container = layoutUtil.createTrainArrivalsLayout(textAppearance, containParams, entry, trainLine)
 
                 holder.mainLayout.addView(container)
 
@@ -120,7 +129,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         }
     }
 
-    private fun handleBusRoute(holder: FavoritesViewHolder, busRoute: BusRoute) {
+    private fun handleBusRoute(@StyleRes textAppearance: Int, holder: FavoritesViewHolder, busRoute: BusRoute) {
         holder.stationNameTextView.text = busRoute.id
         holder.favoriteImage.setImageResource(R.drawable.ic_directions_bus_white_24dp)
 
@@ -152,7 +161,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
 
                 // Build UI
                 val containParams = layoutUtil.getInsideParams(newLine, i == boundMap.size - 1)
-                val container = layoutUtil.createFavoritesBusArrivalsLayout(containParams, stopNameTrimmed, BusDirection.fromString(key), value as MutableList<out BusArrival>)
+                val container = layoutUtil.createFavoritesBusArrivalsLayout(textAppearance, containParams, stopNameTrimmed, BusDirection.fromString(key), value as MutableList<out BusArrival>)
 
                 holder.mainLayout.addView(container)
 
@@ -166,7 +175,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         holder.mapButton.setOnClickListener(BusMapButtonOnClickListener(activity, busRoute, busDetailsDTOs.map { it.bound }.toSet()))
     }
 
-    private fun handleBikeStation(holder: FavoritesViewHolder, divvyStation: BikeStation) {
+    private fun handleBikeStation(@StyleRes textAppearance: Int, holder: FavoritesViewHolder, divvyStation: BikeStation) {
         holder.stationNameTextView.text = divvyStation.name
         holder.favoriteImage.setImageResource(R.drawable.ic_directions_bike_white_24dp)
 
@@ -175,7 +184,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         holder.mapButton.text = App.instance.getString(R.string.favorites_view_station)
         holder.mapButton.setOnClickListener(GoogleMapOnClickListener(divvyStation.latitude, divvyStation.longitude))
 
-        val bikeResultLayout = layoutUtil.buildBikeFavoritesLayout(divvyStation)
+        val bikeResultLayout = layoutUtil.buildBikeFavoritesLayout(textAppearance, divvyStation)
 
         holder.mainLayout.addView(bikeResultLayout)
     }

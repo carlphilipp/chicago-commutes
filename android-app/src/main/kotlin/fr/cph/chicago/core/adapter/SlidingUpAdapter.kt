@@ -23,6 +23,7 @@ import android.content.Context
 import android.support.annotation.DrawableRes
 import android.support.v4.content.ContextCompat
 import android.text.TextUtils
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -41,6 +42,14 @@ import fr.cph.chicago.util.LayoutUtil
 import fr.cph.chicago.util.Util
 
 class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
+
+    val textAppearance: Int
+
+    init {
+        val outValue = TypedValue()
+        nearbyFragment.activity!!.theme.resolveAttribute(R.attr.textAppearance, outValue, true)
+        textAppearance = outValue.resourceId
+    }
 
     private var nbOfLine = intArrayOf(0)
 
@@ -97,7 +106,7 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
                 var newLine = true
                 for ((i, entry) in etas.entries.withIndex()) {
                     val containParams = LayoutUtil.getInsideParams(newLine, i == etas.size - 1)
-                    val container = LayoutUtil.createTrainArrivalsLayout(containParams, entry, trainLine)
+                    val container = LayoutUtil.createTrainArrivalsLayout(textAppearance, containParams, entry, trainLine)
 
                     linearLayout.addView(container)
                     newLine = false
@@ -127,7 +136,7 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
 
                 for ((i, entry2) in boundMap.entries.withIndex()) {
                     val containParams = LayoutUtil.getInsideParams(newLine, i == boundMap.size - 1)
-                    val container = LayoutUtil.createFavoritesBusArrivalsLayout(containParams, stopNameTrimmed, BusDirection.fromString(entry2.key), entry2.value as MutableList<out BusArrival>)
+                    val container = LayoutUtil.createFavoritesBusArrivalsLayout(textAppearance, containParams, stopNameTrimmed, BusDirection.fromString(entry2.key), entry2.value as MutableList<out BusArrival>)
 
                     linearLayout.addView(container)
                     newLine = false
@@ -152,7 +161,7 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
          * it just mean that the view has been updated already with a faster request.
          */
         if (linearLayout.childCount == 0 || "error" == divvyStation.name) {
-            val bikeResultLayout = LayoutUtil.buildBikeFavoritesLayout(divvyStation)
+            val bikeResultLayout = LayoutUtil.buildBikeFavoritesLayout(textAppearance, divvyStation)
             linearLayout.addView(bikeResultLayout)
             nearbyFragment.slidingUpPanelLayout.panelHeight = getSlidingPanelHeight(2)
             updatePanelState()
@@ -167,7 +176,7 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
 
     private fun handleNoResults(linearLayout: LinearLayout) {
         val containParams = LayoutUtil.getInsideParams(true, true)
-        val container = LayoutUtil.createFavoritesBusArrivalsNoResult(containParams)
+        val container = LayoutUtil.createFavoritesBusArrivalsNoResult(textAppearance, containParams)
         linearLayout.addView(container)
     }
 

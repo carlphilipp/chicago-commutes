@@ -19,9 +19,9 @@
 
 package fr.cph.chicago.util
 
+import android.support.annotation.StyleRes
 import android.text.SpannableString
 import android.text.TextUtils
-import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.view.Gravity
 import android.view.ViewGroup
@@ -35,6 +35,8 @@ import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
+import fr.cph.chicago.setTextAppearance
+
 
 /**
  * Layout util class
@@ -86,12 +88,12 @@ object LayoutUtil {
         return paramsLeft
     }
 
-    fun createFavoritesBusArrivalsNoResult(containParams: LinearLayout.LayoutParams): LinearLayout {
-        return createFavoritesBusArrivalsLayout(containParams, "No Results", null, mutableListOf())
+    fun createFavoritesBusArrivalsNoResult(@StyleRes textAppearance: Int, containParams: LinearLayout.LayoutParams): LinearLayout {
+        return createFavoritesBusArrivalsLayout(textAppearance, containParams, "No Results", null, mutableListOf())
     }
 
     // TODO Create XML files instead of doing all those methods in Java
-    fun createFavoritesBusArrivalsLayout(containParams: LinearLayout.LayoutParams, stopNameTrimmed: String, busDirection: BusDirection?, buses: MutableList<out BusArrival>): LinearLayout {
+    fun createFavoritesBusArrivalsLayout(@StyleRes textAppearance: Int, containParams: LinearLayout.LayoutParams, stopNameTrimmed: String, busDirection: BusDirection?, buses: MutableList<out BusArrival>): LinearLayout {
         val pixelsHalf = util.dpToPixel16 / 2
         val marginLeftPixel = util.convertDpToPixel(10)
 
@@ -113,12 +115,12 @@ object LayoutUtil {
         val leftString = if (busDirection == null) stopNameTrimmed else stopNameTrimmed + " " + busDirection.shortLowerCase
         val destinationSpannable = SpannableString(leftString)
         destinationSpannable.setSpan(RelativeSizeSpan(0.65f), stopNameTrimmed.length, leftString.length, 0) // set size
-        destinationSpannable.setSpan(ForegroundColorSpan(Color.grey5), 0, leftString.length, 0) // set color
 
         val boundCustomTextView = TextView(App.instance)
         boundCustomTextView.text = destinationSpannable
         boundCustomTextView.setSingleLine(true)
         boundCustomTextView.layoutParams = destinationParams
+        boundCustomTextView.setTextAppearance(textAppearance, App.instance)
 
         left.addView(lineIndication)
         left.addView(boundCustomTextView)
@@ -137,8 +139,8 @@ object LayoutUtil {
         arrivalText.text = currentEtas
         arrivalText.gravity = Gravity.END
         arrivalText.setSingleLine(true)
-        arrivalText.setTextColor(Color.grey5)
         arrivalText.ellipsize = TextUtils.TruncateAt.END
+        arrivalText.setTextAppearance(textAppearance, App.instance)
 
         right.addView(arrivalText)
 
@@ -147,10 +149,11 @@ object LayoutUtil {
         return container
     }
 
-    fun createTrainArrivalsLayout(containParams: LinearLayout.LayoutParams, entry: Map.Entry<String, String>, trainLine: TrainLine): LinearLayout {
+    fun createTrainArrivalsLayout(@StyleRes textAppearance: Int, containParams: LinearLayout.LayoutParams, entry: Map.Entry<String, String>, trainLine: TrainLine): LinearLayout {
         val pixels = util.dpToPixel16
         val pixelsHalf = pixels / 2
         val marginLeftPixel = util.convertDpToPixel(10)
+        //val color = ContextCompat.getColor(App.instance, android.R.color.primary_text_light)
 
         val container = LinearLayout(App.instance)
         container.orientation = LinearLayout.HORIZONTAL
@@ -169,10 +172,10 @@ object LayoutUtil {
 
         val destination = entry.key
         val destinationTextView = TextView(App.instance)
-        destinationTextView.setTextColor(Color.grey5)
         destinationTextView.text = destination
         destinationTextView.setLines(1)
         destinationTextView.layoutParams = destinationParams
+        destinationTextView.setTextAppearance(textAppearance, App.instance)
 
         left.addView(lineIndication)
         left.addView(destinationTextView)
@@ -189,8 +192,8 @@ object LayoutUtil {
         arrivalText.text = currentEtas
         arrivalText.gravity = Gravity.END
         arrivalText.setSingleLine(true)
-        arrivalText.setTextColor(Color.grey5)
         arrivalText.ellipsize = TextUtils.TruncateAt.END
+        arrivalText.setTextAppearance(textAppearance, App.instance)
 
         right.addView(arrivalText)
 
@@ -200,11 +203,11 @@ object LayoutUtil {
         return container
     }
 
-    fun buildBikeFavoritesLayout(bikeStation: BikeStation): LinearLayout {
+    fun buildBikeFavoritesLayout(@StyleRes textAppearance: Int, bikeStation: BikeStation): LinearLayout {
         val container = buildBusBikeLayout()
         val linearLayout = (container.getChildAt(0) as LinearLayout)
-        linearLayout.addView(createBikeLine(App.instance.getString(R.string.bike_available_bikes), bikeStation.availableBikes, true))
-        linearLayout.addView(createBikeLine(App.instance.getString(R.string.bike_available_docks), bikeStation.availableDocks, true))
+        linearLayout.addView(createBikeLine(textAppearance, App.instance.getString(R.string.bike_available_bikes), bikeStation.availableBikes, true))
+        linearLayout.addView(createBikeLine(textAppearance, App.instance.getString(R.string.bike_available_docks), bikeStation.availableDocks, true))
         return container
     }
 
@@ -227,7 +230,7 @@ object LayoutUtil {
         return container
     }
 
-    private fun createBikeLine(lineTitle: String, lineValue: Int, withDots: Boolean): LinearLayout {
+    private fun createBikeLine(@StyleRes textAppearance: Int, lineTitle: String, lineValue: Int, withDots: Boolean): LinearLayout {
         // Create line
         val line = createLineLayout()
 
@@ -236,6 +239,7 @@ object LayoutUtil {
         val lineId = util.generateViewId()
 
         val lineTitleTextView = createLineTitle(
+            textAppearance,
             lineTitle,
             if (withDots) createTitleParamsWithId(lineId) else createTitleParams(DEFAULT_SPACE_DP)
         )
@@ -297,14 +301,14 @@ object LayoutUtil {
         return arrivalLayoutParams
     }
 
-    private fun createLineTitle(title: String, layoutParams: RelativeLayout.LayoutParams): TextView {
+    private fun createLineTitle(@StyleRes textAppearance: Int, title: String, layoutParams: RelativeLayout.LayoutParams): TextView {
         val lineTitleTextView = TextView(App.instance)
         lineTitleTextView.text = title
         lineTitleTextView.layoutParams = layoutParams
         lineTitleTextView.id = util.generateViewId()
         lineTitleTextView.setSingleLine(true)
-        lineTitleTextView.setTextColor(Color.grey5)
         lineTitleTextView.measure(0, 0)
+        lineTitleTextView.setTextAppearance(textAppearance, App.instance)
         return lineTitleTextView
     }
 }

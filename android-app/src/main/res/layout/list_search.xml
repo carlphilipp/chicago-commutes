@@ -46,7 +46,6 @@
         android:maxLines="1"
         android:paddingEnd="@dimen/activity_station_stops_0dp"
         android:paddingStart="16dp"
-        android:textColor="@color/black"
         android:textIsSelectable="false" />
 
     <LinearLayout
@@ -66,7 +65,6 @@
         android:paddingStart="15dp"
         android:paddingTop="5dp"
         android:text="@string/progress_message"
-        android:textColor="@color/black"
         android:textIsSelectable="false"
         android:visibility="gone" />
 

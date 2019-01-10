@@ -224,7 +224,6 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
                     text = it.key
                     id = util.generateViewId()
                     setSingleLine(true)
-                    setTextColor(Color.grey5)
                     layoutParams = LayoutUtil.createLineBelowLayoutParams(idBelowTitle)
                     this
                 }
@@ -234,7 +233,6 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
                     text = it.value.joinToString(separator = " ") { util.formatArrivalTime(it) }
                     id = util.generateViewId()
                     setSingleLine(true)
-                    setTextColor(Color.grey5)
                     layoutParams = LayoutUtil.createLineBelowLayoutParams(idBellowArrival)
                     this
                 }

@@ -200,7 +200,6 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
                 checkBox.isChecked = preferenceService.getTrainFilter(stationId, line, stop.direction)
                 checkBox.setTypeface(checkBox.typeface, Typeface.BOLD)
                 checkBox.text = stop.direction.toString()
-                checkBox.setTextColor(Color.grey)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     checkBox.backgroundTintList = ColorStateList.valueOf(line.color)
                     checkBox.buttonTintList = ColorStateList.valueOf(line.color)
@@ -326,14 +325,12 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
                 val stopName = TextView(this)
                 val stopNameData = trainEta.destName + ": "
                 stopName.text = stopNameData
-                stopName.setTextColor(Color.grey)
                 stopName.setPadding(line3PaddingLeft, line3PaddingTop, 0, 0)
                 insideLayout.addView(stopName)
 
                 val timing = TextView(this)
                 val timingData = trainEta.timeLeftDueDelay + " "
                 timing.text = timingData
-                timing.setTextColor(Color.grey)
                 timing.setLines(1)
                 timing.ellipsize = TruncateAt.END
                 insideLayout.addView(timing)

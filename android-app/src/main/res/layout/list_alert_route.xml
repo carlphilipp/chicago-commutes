@@ -37,7 +37,6 @@
         android:id="@+id/description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/grey_M_B"
         android:textSize="15sp"
         android:textStyle="normal" />
 
@@ -45,20 +44,17 @@
         android:id="@+id/impact"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/grey_M_B"
         android:textSize="15sp"
         android:textStyle="italic" />
 
     <TextView
         android:id="@+id/start"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/grey_M_B" />
+        android:layout_height="wrap_content" />
 
     <TextView
         android:id="@+id/end"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/grey_M_B" />
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
