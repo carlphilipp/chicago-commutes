@@ -101,9 +101,6 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
         // Call google street api to load image
         loadGoogleStreetImage(Position(latitude, longitude), streetViewImage, streetViewText)
 
-        mapImage.setColorFilter(Color.grey5)
-        directionImage.setColorFilter(Color.grey5)
-
         favoritesImage.setColorFilter(if (isFavorite) Color.yellowLineDark else Color.grey5)
 
         favoritesImageContainer.setOnClickListener { switchFavorite() }
@@ -182,7 +179,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
     private fun switchFavorite() {
         isFavorite = if (isFavorite) {
             preferenceService.removeFromBikeFavorites(divvyStation.id, swipeRefreshLayout)
-            favoritesImage.setColorFilter(Color.grey5)
+            favoritesImage.setColorFilter(Color.white)
             false
         } else {
             preferenceService.addToBikeFavorites(divvyStation.id, swipeRefreshLayout)

@@ -26,6 +26,10 @@ object Color {
         ContextCompat.getColor(App.instance, R.color.orange)
     }
 
+    val white: Int by lazy {
+        ContextCompat.getColor(App.instance, R.color.white)
+    }
+
     val yellowLine: Int by lazy {
         ContextCompat.getColor(App.instance, R.color.yellowLine)
     }

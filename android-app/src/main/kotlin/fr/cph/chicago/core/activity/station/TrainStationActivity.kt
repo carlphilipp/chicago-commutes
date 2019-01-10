@@ -85,8 +85,6 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
     lateinit var mapImage: ImageView
     @BindView(R.id.map_container)
     lateinit var mapContainer: LinearLayout
-    @BindView(R.id.activity_map_direction)
-    lateinit var directionImage: ImageView
     @BindView(R.id.walk_container)
     lateinit var walkContainer: LinearLayout
     @BindView(R.id.favorites_container)
@@ -151,12 +149,12 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
             streetViewImage.layoutParams = params
             streetViewText.setTypeface(null, Typeface.BOLD)
             swipeRefreshLayout.setOnRefreshListener { trainArrivalObservable.subscribe(TrainArrivalObserver(this, swipeRefreshLayout)) }
-            favoritesImage.setColorFilter(if (isFavorite) Color.yellowLineDark else Color.grey5)
+            if (isFavorite) {
+                favoritesImage.setColorFilter(Color.yellowLineDark)
+            }
 
             params.height = height
             params.width = layoutParams.width
-            mapImage.setColorFilter(Color.grey5)
-            directionImage.setColorFilter(Color.grey5)
             favoritesImageContainer.setOnClickListener { switchFavorite() }
             mapContainer.setOnClickListener(GoogleMapOnClickListener(position.latitude, position.longitude))
             walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(position.latitude, position.longitude))
@@ -352,7 +350,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
     private fun switchFavorite() {
         if (isFavorite) {
             preferenceService.removeFromTrainFavorites(stationId, scrollView)
-            favoritesImage.setColorFilter(Color.grey)
+            favoritesImage.colorFilter = mapImage.colorFilter
         } else {
             preferenceService.addToTrainFavorites(stationId, scrollView)
             favoritesImage.setColorFilter(Color.yellowLineDark)

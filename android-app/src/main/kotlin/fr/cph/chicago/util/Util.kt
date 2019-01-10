@@ -136,7 +136,6 @@ object Util {
     fun setWindowsColor(activity: Activity, toolbar: Toolbar, trainLine: TrainLine) {
         var backgroundColor = 0
         var statusBarColor = 0
-        //int navigationBarColor = 0;
         val textTitleColor = R.color.white
         when (trainLine) {
             TrainLine.BLUE -> {
@@ -180,7 +179,6 @@ object Util {
         toolbar.setTitleTextColor(ContextCompat.getColor(App.instance, textTitleColor))
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             activity.window.statusBarColor = ContextCompat.getColor(activity, statusBarColor)
-            activity.window.navigationBarColor = ContextCompat.getColor(activity, R.color.lightPrimaryColorDarker)
         }
     }
 

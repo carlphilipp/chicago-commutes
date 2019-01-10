@@ -29,8 +29,8 @@ abstract class ButterKnifeActivity(private val contentView: Int) : AppCompatActi
     private val preferenceService: PreferenceService = PreferenceService
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         setTheme(preferenceService.getCurrentTheme())
+        super.onCreate(savedInstanceState)
         if (!this.isFinishing) {
             setContentView(contentView)
             ButterKnife.bind(this)

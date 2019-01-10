@@ -30,9 +30,8 @@
         android:id="@+id/favorites_container"
         android:layout_width="0px"
         android:layout_height="wrap_content"
-
         android:layout_weight="1"
-        android:background="@drawable/any_selector"
+        android:background="?attr/favoriteCardBackground"
         android:clickable="true"
         android:focusable="true"
         android:orientation="vertical"
@@ -45,7 +44,8 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="15dp"
             android:contentDescription="@string/station_activity_google_map_link_desc"
-            android:src="@drawable/ic_favorite_white_24dp" />
+            android:src="@drawable/ic_favorite_white_24dp"
+            android:tint="?attr/iconStationTint"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -62,9 +62,8 @@
         android:id="@+id/map_container"
         android:layout_width="0px"
         android:layout_height="wrap_content"
-
         android:layout_weight="1"
-        android:background="@drawable/any_selector"
+        android:background="?attr/favoriteCardBackground"
         android:focusable="true"
         android:clickable="true"
         android:orientation="vertical"
@@ -79,7 +78,8 @@
             android:clickable="true"
             android:contentDescription="@string/station_activity_google_map_link_desc"
             android:focusable="true"
-            android:src="@drawable/ic_place_white_24dp" />
+            android:src="@drawable/ic_place_white_24dp"
+            android:tint="?attr/iconStationTint"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -95,9 +95,8 @@
         android:id="@+id/walk_container"
         android:layout_width="0px"
         android:layout_height="wrap_content"
-
         android:layout_weight="1"
-        android:background="@drawable/any_selector"
+        android:background="?attr/favoriteCardBackground"
         android:clickable="true"
         android:focusable="true"
         android:orientation="vertical"
@@ -110,7 +109,8 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="15dp"
             android:contentDescription="@string/station_activity_google_map_link_desc"
-            android:src="@drawable/ic_directions_walk_white_24dp" />
+            android:src="@drawable/ic_directions_walk_white_24dp"
+            android:tint="?attr/iconStationTint"/>
 
         <TextView
             android:layout_width="wrap_content"

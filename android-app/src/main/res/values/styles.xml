@@ -31,6 +31,7 @@
         <item name="iconTint">@color/grey_5</item>
         <item name="favoriteButton">@style/FavoriteButtonLight</item>
         <item name="textAppearance">@style/AppTextAppearanceLight</item>
+        <item name="iconStationTint">@color/grey_5</item>
     </style>
 
     <style name="AppThemeDark" parent="Theme.AppCompat.NoActionBar">
@@ -46,6 +47,7 @@
         <item name="iconTint">@color/white</item>
         <item name="favoriteButton">@style/FavoriteButtonDark</item>
         <item name="textAppearance">@style/AppTextAppearanceDark</item>
+        <item name="iconStationTint">@color/white</item>
     </style>
 
     <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">
