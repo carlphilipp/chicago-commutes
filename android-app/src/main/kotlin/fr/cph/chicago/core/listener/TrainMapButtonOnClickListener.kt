@@ -1,9 +1,9 @@
 package fr.cph.chicago.core.listener
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.view.ViewGroup
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App

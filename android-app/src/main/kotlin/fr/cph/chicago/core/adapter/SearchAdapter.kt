@@ -93,7 +93,7 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
                     .map { layoutUtil.createColoredRoundForMultiple(it) }
                     .forEach { stationColorView.addView(it) }
 
-                view.setOnClickListener(TrainOnClickListener(parent.context, station.id, station.lines))
+                view.setOnClickListener(TrainOnClickListener(parent, station.id, station.lines))
             }
             position < trains.size + busRoutes.size -> {
                 val busRoute = getItem(position) as BusRoute

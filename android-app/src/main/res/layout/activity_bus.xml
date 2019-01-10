@@ -96,7 +96,6 @@
                     android:lines="1"
                     android:paddingTop="@dimen/activity_vertical_margin"
                     android:scrollHorizontally="true"
-                    android:textColor="@color/black"
                     android:textIsSelectable="false"
                     android:textStyle="bold" />
 

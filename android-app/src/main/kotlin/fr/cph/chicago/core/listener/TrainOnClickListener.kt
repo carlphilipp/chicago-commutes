@@ -19,10 +19,9 @@
 
 package fr.cph.chicago.core.listener
 
-import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
@@ -41,7 +40,7 @@ import fr.cph.chicago.util.Util
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class TrainOnClickListener(private val context: Context,
+class TrainOnClickListener(private val parent: ViewGroup,
                            private val stationId: Int,
                            private val trainLines: Set<TrainLine>) : OnClickListener {
 
@@ -55,13 +54,13 @@ class TrainOnClickListener(private val context: Context,
                 values.add(line.toString() + " line - See trains")
                 colors.add(if (line !== TrainLine.YELLOW) line.color else Color.yellowLine)
             }
-            val ada = PopupTrainAdapter(view.context, values, colors)
+            val ada = PopupTrainAdapter(parent.context.applicationContext, values, colors)
 
             val lines = mutableListOf<TrainLine>()
             lines.addAll(trainLines)
 
-            val builder = AlertDialog.Builder(context)
-            builder.setAdapter(ada) { _, position ->
+            val alertDialog = AlertDialog.Builder(parent.context)
+            alertDialog.setAdapter(ada) { _, position ->
                 val extras = Bundle()
                 val intent: Intent
                 if (position == 0) {
@@ -78,7 +77,7 @@ class TrainOnClickListener(private val context: Context,
                 view.context.startActivity(intent)
             }
 
-            val dialog = builder.create()
+            val dialog = alertDialog.create()
             dialog.show()
             dialog.window?.setLayout((App.instance.screenWidth * 0.7).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
         }

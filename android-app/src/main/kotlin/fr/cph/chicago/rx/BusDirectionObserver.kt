@@ -39,7 +39,10 @@ import fr.cph.chicago.util.Util
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 
-class BusDirectionObserver(private val screenWidth: Int, private val parent: ViewGroup, private val convertView: View, private val busRoute: BusRoute) : Observer<BusDirections> {
+class BusDirectionObserver(private val screenWidth: Int,
+                           private val parent: ViewGroup,
+                           private val convertView: View,
+                           private val busRoute: BusRoute) : Observer<BusDirections> {
 
     private val util = Util
 
@@ -59,7 +62,6 @@ class BusDirectionObserver(private val screenWidth: Int, private val parent: Vie
         listView.adapter = ada
 
         val alertDialog = AlertDialog.Builder(parent.context)
-
         alertDialog.setAdapter(ada) { _, pos ->
             val extras = Bundle()
             if (pos != data.size - 1) {

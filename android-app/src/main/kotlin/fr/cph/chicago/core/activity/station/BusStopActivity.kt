@@ -38,7 +38,6 @@ import fr.cph.chicago.core.listener.GoogleMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
-import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.exception.ConnectException
 import fr.cph.chicago.exception.ParserException
 import fr.cph.chicago.exception.TrackerException
@@ -70,8 +69,6 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
     lateinit var streetViewText: TextView
     @BindView(R.id.activity_map_image)
     lateinit var mapImage: ImageView
-    @BindView(R.id.activity_map_direction)
-    lateinit var directionImage: ImageView
     @BindView(R.id.favorites_container)
     lateinit var favoritesImageContainer: LinearLayout
     @BindView(R.id.walk_container)
@@ -144,7 +141,9 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
 
         favoritesImageContainer.setOnClickListener { switchFavorite() }
 
-        favoritesImage.setColorFilter(if (isFavorite) Color.yellowLineDark else Color.grey5)
+        if (isFavorite) {
+            favoritesImage.setColorFilter(Color.yellowLineDark)
+        }
 
         scrollView.setOnRefreshListener { LoadStationDataTask().execute() }
         streetViewImage.setOnClickListener(GoogleStreetOnClickListener(latitude, longitude))
@@ -168,7 +167,6 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
             LoadStationDataTask().execute()
             false
         }
-        util.setWindowsColor(this, toolbar, TrainLine.NA)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.elevation = 4f
         }
@@ -266,7 +264,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
     private fun switchFavorite() {
         isFavorite = if (isFavorite) {
             preferenceService.removeFromBusFavorites(busRouteId, busStopId.toString(), boundTitle, scrollView)
-            favoritesImage.setColorFilter(Color.white)
+            favoritesImage.colorFilter = mapImage.colorFilter
             false
         } else {
             preferenceService.addToBusFavorites(busRouteId, busStopId.toString(), boundTitle, scrollView)

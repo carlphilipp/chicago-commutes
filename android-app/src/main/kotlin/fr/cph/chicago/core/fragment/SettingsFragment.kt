@@ -20,12 +20,12 @@
 package fr.cph.chicago.core.fragment
 
 import android.app.AlarmManager
-import android.app.AlertDialog
 import android.app.PendingIntent
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.widget.LinearLayout
 import android.widget.TextView
 import butterknife.BindView
@@ -61,7 +61,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         themeName.text = preferenceService.getTheme()
 
         theme.setOnClickListener {
-            val builder = AlertDialog.Builder(context)
+            val builder = AlertDialog.Builder(context!!)
             val choices = arrayOf("Light", "Dark")
             val selected = choices.indexOf(preferenceService.getTheme())
             builder.setTitle("Theme change")
@@ -92,7 +92,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                 }
             }
 
-            AlertDialog.Builder(context)
+            AlertDialog.Builder(context!!)
                 .setMessage("This is going to:\n\n- Delete all your favorites\n- Clear application cache\n- Restart the application")
                 .setPositiveButton("Yes", dialogClickListener)
                 .setNegativeButton("No", dialogClickListener)

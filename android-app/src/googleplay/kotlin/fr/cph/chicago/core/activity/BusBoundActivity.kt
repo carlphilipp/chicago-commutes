@@ -48,7 +48,6 @@ import fr.cph.chicago.core.activity.station.BusStopActivity
 import fr.cph.chicago.core.adapter.BusBoundAdapter
 import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.BusStop
-import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.util.GoogleMapUtil
 import fr.cph.chicago.util.Util
@@ -158,8 +157,6 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
             }
         })
 
-
-        util.setWindowsColor(this, toolbar, TrainLine.NA)
         toolbar.title = "$busRouteId - $boundTitle"
 
         toolbar.navigationIcon = arrowBackWhite

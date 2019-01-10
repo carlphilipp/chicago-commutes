@@ -82,7 +82,7 @@ class TrainAdapter(line: TrainLine) : BaseAdapter() {
             .map { line -> layoutUtil.createColoredRoundForMultiple(line) }
             .forEach { layout -> holder.stationColorView.addView(layout) }
 
-        view?.setOnClickListener(TrainOnClickListener(parent.context, station.id, station.lines))
+        view?.setOnClickListener(TrainOnClickListener(parent, station.id, station.lines))
         return view
     }
 

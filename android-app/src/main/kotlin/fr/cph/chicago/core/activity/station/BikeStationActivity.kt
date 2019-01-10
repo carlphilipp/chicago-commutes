@@ -60,8 +60,6 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
     lateinit var streetViewText: TextView
     @BindView(R.id.activity_map_image)
     lateinit var mapImage: ImageView
-    @BindView(R.id.activity_map_direction)
-    lateinit var directionImage: ImageView
     @BindView(R.id.map_container)
     lateinit var mapContainer: LinearLayout
     @BindView(R.id.walk_container)
@@ -101,7 +99,9 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
         // Call google street api to load image
         loadGoogleStreetImage(Position(latitude, longitude), streetViewImage, streetViewText)
 
-        favoritesImage.setColorFilter(if (isFavorite) Color.yellowLineDark else Color.grey5)
+        if (isFavorite) {
+            favoritesImage.setColorFilter(Color.yellowLineDark)
+        }
 
         favoritesImageContainer.setOnClickListener { switchFavorite() }
         bikeStationValue.text = divvyStation.address
@@ -179,7 +179,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
     private fun switchFavorite() {
         isFavorite = if (isFavorite) {
             preferenceService.removeFromBikeFavorites(divvyStation.id, swipeRefreshLayout)
-            favoritesImage.setColorFilter(Color.white)
+            favoritesImage.colorFilter = mapImage.colorFilter
             false
         } else {
             preferenceService.addToBikeFavorites(divvyStation.id, swipeRefreshLayout)
