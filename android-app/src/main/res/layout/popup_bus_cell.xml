@@ -35,7 +35,8 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:contentDescription="@string/empty_string"
-            android:src="@drawable/ic_map_white_24dp" />
+            android:src="@drawable/ic_map_white_24dp"
+            android:tint="?attr/iconTint"/>
 
         <TextView
             android:id="@+id/label"

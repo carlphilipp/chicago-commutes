@@ -91,7 +91,6 @@
             android:focusableInTouchMode="false"
             android:text="@string/progress_message"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/black"
             android:textSize="22sp"
             android:textStyle="bold"/>
 
@@ -105,7 +104,6 @@
             android:focusableInTouchMode="false"
             android:text="@string/progress_wait"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/black"
             android:textSize="17sp"
             android:textStyle="normal"/>
     </RelativeLayout>

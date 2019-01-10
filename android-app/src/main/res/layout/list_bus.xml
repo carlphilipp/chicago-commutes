@@ -35,7 +35,6 @@
             android:id="@+id/route_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
             android:textIsSelectable="false" />
 
         <TextView
@@ -43,7 +42,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:textColor="@color/black"
             android:textIsSelectable="false" />
     </RelativeLayout>
 
@@ -62,7 +60,6 @@
             android:paddingStart="15dp"
             android:paddingTop="5dp"
             android:text="@string/progress_message"
-            android:textColor="@color/black"
             android:textIsSelectable="false" />
 
         <LinearLayout

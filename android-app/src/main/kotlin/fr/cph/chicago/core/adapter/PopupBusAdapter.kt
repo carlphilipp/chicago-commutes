@@ -38,12 +38,10 @@ class PopupBusAdapter(context: Context, private val values: List<String>) : Arra
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val vi = parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val view: View
-        if (position != values.size - 1) {
-            view = vi.inflate(R.layout.popup_bus_cell_0, parent, false)
+        view = if (position != values.size - 1) {
+            vi.inflate(R.layout.popup_bus_cell_0, parent, false)
         } else {
-            view = vi.inflate(R.layout.popup_bus_cell, parent, false)
-            val imageView: ImageView = view.findViewById(R.id.popup_map_map)
-            imageView.setColorFilter(Color.grey5)
+            vi.inflate(R.layout.popup_bus_cell, parent, false)
         }
         val textView: TextView = view.findViewById(R.id.label)
         textView.text = values[position]

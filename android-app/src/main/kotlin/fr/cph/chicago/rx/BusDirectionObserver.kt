@@ -19,10 +19,10 @@
 
 package fr.cph.chicago.rx
 
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -59,6 +59,7 @@ class BusDirectionObserver(private val screenWidth: Int, private val parent: Vie
         listView.adapter = ada
 
         val alertDialog = AlertDialog.Builder(parent.context)
+
         alertDialog.setAdapter(ada) { _, pos ->
             val extras = Bundle()
             if (pos != data.size - 1) {

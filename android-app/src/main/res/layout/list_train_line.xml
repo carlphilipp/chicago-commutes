@@ -39,7 +39,6 @@
         android:layout_toEndOf="@+id/station_color_value"
         android:paddingEnd="@dimen/activity_station_stops_0dp"
         android:paddingStart="16dp"
-        android:textColor="@color/grey_M_B"
         android:textIsSelectable="false"
         android:textSize="16sp"
         android:textStyle="normal" />

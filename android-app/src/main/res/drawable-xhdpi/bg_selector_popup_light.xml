@@ -14,13 +14,23 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
--->
+ -->
 
-<resources>
-    <attr name="iconTint" format="color" />
-    <attr name="favoriteCardBackground" format="color" />
-    <attr name="favoriteButton" format="reference" />
-    <attr name="iconStationTint" format="color" />
-    <attr name="textAppearance" format="reference" />
-    <attr name="popupBackground" format="reference" />
-</resources>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <stroke android:width="2dp" android:color="#000000" />
+            <padding
+                android:bottom="5dp"
+                android:left="5dp"
+                android:right="5dp"
+                android:top="5dp" />
+            <corners android:radius="11dp"/>
+            <gradient
+                android:angle="90"
+                android:endColor="#FFFFFFFF"
+                android:startColor="#aeaeae"
+                android:type="linear" />
+        </shape>
+    </item>
+</selector>

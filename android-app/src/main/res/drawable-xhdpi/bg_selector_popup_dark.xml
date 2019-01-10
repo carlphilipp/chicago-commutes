@@ -17,23 +17,20 @@
  -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-<item>
-    <shape>
-        <stroke android:width="2dp" android:color="#000000" />
-        <padding
-        	android:left="5dp"
-        	android:top="5dp"
-       	 	android:right="5dp"
-       	 	android:bottom="5dp"    >
-    	</padding>
-	    <corners
-	        android:radius="11dp"   >
-	    </corners>
-        <gradient
-            android:angle="90"
-            android:startColor="#aeaeae"
-            android:endColor="#FFFFFFFF"
-            android:type="linear" />
-    </shape>
-</item>
+    <item>
+        <shape>
+            <stroke android:width="2dp" android:color="#000000" />
+            <padding
+                android:bottom="5dp"
+                android:left="5dp"
+                android:right="5dp"
+                android:top="5dp" />
+            <corners android:radius="11dp"/>
+            <gradient
+                android:angle="90"
+                android:endColor="@color/darkPrimaryColorDarker"
+                android:startColor="@color/darkPrimaryColorDarker"
+                android:type="linear" />
+        </shape>
+    </item>
 </selector>

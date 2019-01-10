@@ -18,6 +18,7 @@
 
 <resources>
 
+    <!-- Light Theme -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/lightPrimaryColor</item>
         <item name="colorPrimaryDark">@color/lightPrimaryColorDark</item>
@@ -32,35 +33,11 @@
         <item name="favoriteButton">@style/FavoriteButtonLight</item>
         <item name="textAppearance">@style/AppTextAppearanceLight</item>
         <item name="iconStationTint">@color/grey_5</item>
-    </style>
-
-    <style name="AppThemeDark" parent="Theme.AppCompat.NoActionBar">
-        <item name="colorPrimary">@color/darkPrimaryColor</item>
-        <item name="colorPrimaryDark">@color/darkPrimaryColorDarker</item>
-        <item name="colorAccent">@color/darkColorAccent</item>
-        <item name="android:textColorPrimary">@color/darkColorTextPrimary</item>
-        <item name="android:textColorSecondary">@color/darkColorTextSecondary</item>
-        <item name="android:navigationBarColor">@color/darkNavigationBar</item>
-        <item name="favoriteCardBackground">@color/darkColorAccent</item>
-        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
-        <item name="android:windowBackground">@drawable/bg_selector_dark</item>
-        <item name="iconTint">@color/white</item>
-        <item name="favoriteButton">@style/FavoriteButtonDark</item>
-        <item name="textAppearance">@style/AppTextAppearanceDark</item>
-        <item name="iconStationTint">@color/white</item>
-    </style>
-
-    <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">
-        <item name="spinBars">true</item>
-        <item name="color">@android:color/white</item>
+        <item name="popupBackground">@drawable/bg_selector_popup_light</item>
+        <item name="alertDialogTheme">@style/AlertDialogLight</item>
     </style>
 
     <style name="FavoriteButtonLight" parent="Theme.AppCompat.Light">
-        <item name="colorControlHighlight">@color/lightColorTextPrimary</item>
-    </style>
-
-    <style name="FavoriteButtonDark" parent="Theme.AppCompat">
-        <item name="colorPrimary">@color/darkColorTextPrimary</item>
         <item name="colorControlHighlight">@color/lightColorTextPrimary</item>
     </style>
 
@@ -69,9 +46,48 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="AlertDialogLight" parent="Theme.AppCompat.Light.Dialog.Alert">
+
+    </style>
+
+    <!-- Dark Theme -->
+    <style name="AppThemeDark" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/darkPrimaryColor</item>
+        <item name="colorPrimaryDark">@color/darkPrimaryColorDarker</item>
+        <item name="colorAccent">@color/darkColorAccent</item>
+        <item name="android:textColorPrimary">@color/darkColorTextPrimary</item>
+        <item name="android:textColorSecondary">@color/darkColorTextSecondary</item>
+        <item name="android:navigationBarColor">@color/darkNavigationBar</item>
+        <item name="android:colorBackground">@color/yellowLine</item>
+        <item name="favoriteCardBackground">@color/darkColorAccent</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+        <item name="android:windowBackground">@drawable/bg_selector_dark</item>
+        <item name="iconTint">@color/white</item>
+        <item name="favoriteButton">@style/FavoriteButtonDark</item>
+        <item name="textAppearance">@style/AppTextAppearanceDark</item>
+        <item name="iconStationTint">@color/white</item>
+        <item name="popupBackground">@drawable/bg_selector_popup_dark</item>
+        <item name="alertDialogTheme">@style/AlertDialogDark</item>
+        <item name="colorControlHighlight">@color/darkPrimaryColor</item>
+    </style>
+
+    <style name="FavoriteButtonDark" parent="Theme.AppCompat">
+        <item name="colorPrimary">@color/darkColorTextPrimary</item>
+        <item name="colorControlHighlight">@color/lightColorTextPrimary</item>
+    </style>
+
     <style name="AppTextAppearanceDark" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="AlertDialogDark" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:windowBackground">@color/darkColorAccent</item>
+    </style>
+
+    <!-- Arrow style -->
+    <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="spinBars">true</item>
+        <item name="color">@android:color/white</item>
+    </style>
 </resources>
