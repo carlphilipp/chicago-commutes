@@ -20,9 +20,9 @@
 
     <!-- Light Theme -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/lightPrimaryColor</item>
-        <item name="colorPrimaryDark">@color/lightPrimaryColorDark</item>
-        <item name="colorAccent">@color/lightColorAccent</item>
+        <item name="colorPrimary">@color/lightPrimaryColor</item> <!-- Top action bar color -->
+        <item name="colorPrimaryDark">@color/lightPrimaryColorDark</item> <!-- Top status color -->
+        <item name="colorAccent">@color/lightColorAccent</item> <!-- Search bar / some windows -->
         <item name="android:textColorPrimary">@color/lightColorTextPrimary</item>
         <item name="android:textColorSecondary">@color/lightColorTextSecondary</item>
         <item name="android:navigationBarColor">@color/lightPrimaryColorDarker</item>
@@ -52,14 +52,14 @@
 
     <!-- Dark Theme -->
     <style name="AppThemeDark" parent="Theme.AppCompat.NoActionBar">
-        <item name="colorPrimary">@color/darkPrimaryColor</item>
-        <item name="colorPrimaryDark">@color/darkPrimaryColorDarker</item>
-        <item name="colorAccent">@color/darkColorAccent</item>
+        <item name="colorPrimary">@color/darkPrimaryColor</item> <!-- Top action bar color -->
+        <item name="colorPrimaryDark">@color/darkPrimaryColorDarker</item> <!-- Top status color -->
+        <item name="colorAccent">@color/darkColorAccent</item> <!-- Search bar / some windows -->
         <item name="android:textColorPrimary">@color/darkColorTextPrimary</item>
         <item name="android:textColorSecondary">@color/darkColorTextSecondary</item>
         <item name="android:navigationBarColor">@color/darkNavigationBar</item>
         <item name="android:colorBackground">@color/darkBackgroundColorStart</item>
-        <item name="favoriteCardBackground">@color/darkColorAccent</item>
+        <item name="favoriteCardBackground">@color/favoriteCardBackground</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
         <item name="android:windowBackground">@drawable/bg_selector_dark</item>
         <item name="iconTint">@color/white</item>
