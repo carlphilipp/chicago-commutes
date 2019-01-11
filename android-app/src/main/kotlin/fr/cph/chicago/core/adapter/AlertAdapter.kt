@@ -41,7 +41,6 @@ import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
  */
 class AlertAdapter(private var routesAlertsDTOS: List<RoutesAlertsDTO>) : BaseAdapter() {
 
-
     override fun getCount(): Int {
         return routesAlertsDTOS.size
     }

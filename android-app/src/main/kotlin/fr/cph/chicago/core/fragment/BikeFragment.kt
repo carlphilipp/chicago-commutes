@@ -55,16 +55,19 @@ class BikeFragment : Fragment(R.layout.fragment_bike) {
     private lateinit var bikeAdapter: BikeAdapter
     private lateinit var divvyStations: List<BikeStation>
 
+    private var isFailure = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
 
     override fun onCreateView(savedInstanceState: Bundle?) {
+        loadingState()
         divvyStations = mainActivity.intent.getParcelableArrayListExtra(bundleBikeStations) ?: listOf()
-        if (divvyStations.isEmpty()) {
-            loadError()
-        } else {
+        if (isFailure) {
+            errorState()
+        } else if (divvyStations.isNotEmpty()) {
             loadList()
         }
     }
@@ -90,20 +93,41 @@ class BikeFragment : Fragment(R.layout.fragment_bike) {
                 bikeAdapter.notifyDataSetChanged()
             }
         })
-        bikeListView.visibility = ListView.VISIBLE
+        successState()
+    }
+
+    private fun successState() {
         filter.visibility = ListView.VISIBLE
+        bikeListView.visibility = ListView.VISIBLE
+
         loadingLayout.visibility = RelativeLayout.INVISIBLE
         errorLayout.visibility = RelativeLayout.INVISIBLE
     }
 
-    private fun loadError() {
-        loadingLayout.visibility = RelativeLayout.INVISIBLE
+    private fun loadingState() {
+        loadingLayout.visibility = RelativeLayout.VISIBLE
+
+        errorLayout.visibility = RelativeLayout.INVISIBLE
+        filter.visibility = ListView.INVISIBLE
+        bikeListView.visibility = ListView.INVISIBLE
+    }
+
+    private fun errorState() {
         errorLayout.visibility = RelativeLayout.VISIBLE
+
+        loadingLayout.visibility = RelativeLayout.INVISIBLE
+        filter.visibility = ListView.INVISIBLE
+        bikeListView.visibility = ListView.INVISIBLE
     }
 
     fun setBikeStations(divvyStations: List<BikeStation>) {
+        this.isFailure = divvyStations.isEmpty()
         this.divvyStations = divvyStations
         loadList()
+    }
+
+    fun setFailure() {
+        isFailure = true
     }
 
     companion object {

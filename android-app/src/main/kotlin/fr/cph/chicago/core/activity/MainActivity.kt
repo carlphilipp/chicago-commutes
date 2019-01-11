@@ -19,17 +19,13 @@
 
 package fr.cph.chicago.core.activity
 
-import android.content.Context
 import android.content.res.Configuration
-import android.graphics.PorterDuff
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
-import android.support.annotation.ColorRes
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
-import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
@@ -53,7 +49,6 @@ import fr.cph.chicago.core.fragment.TrainFragment
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.service.BusService
-import fr.cph.chicago.util.Color
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -198,6 +193,9 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
             { (busRoutesError, bikeStationsError, busRoutes, bikeStations) ->
                 busService.saveBusRoutes(busRoutes)
                 refreshFirstLoadData(bikeStations)
+                if (bikeStationsError) {
+                    setBikeFailure()
+                }
                 if (bikeStationsError || busRoutesError) {
                     Log.w(TAG, "Bike station [$bikeStationsError] or Bus routes error [$busRoutesError]")
                     util.showSnackBar(this, R.string.message_something_went_wrong, Snackbar.LENGTH_SHORT)
@@ -208,6 +206,10 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
                 util.showSnackBar(this, R.string.message_something_went_wrong, Snackbar.LENGTH_SHORT)
             }
         )
+    }
+
+    private fun setBikeFailure() {
+        bikeFragment?.setFailure()
     }
 
     private fun refreshFirstLoadData(divvyStations: List<BikeStation>) {

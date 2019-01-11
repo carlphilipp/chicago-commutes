@@ -17,8 +17,8 @@
 -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <RelativeLayout
         android:id="@+id/error_layout"
@@ -39,69 +39,29 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/red"
             android:textSize="22sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
     </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/loading_relativeLayout"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:visibility="invisible">
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleLarge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:focusable="false"
-            android:focusableInTouchMode="false"/>
-
-        <TextView
-            android:id="@+id/loadingView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/progressBar"
-            android:layout_centerHorizontal="true"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:text="@string/progress_message"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="22sp"
-            android:textStyle="bold"/>
-
-        <TextView
-            android:id="@+id/loadingView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/progressBar"
-            android:layout_centerHorizontal="true"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:text="@string/progress_wait"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="17sp"
-            android:textStyle="normal"/>
-    </RelativeLayout>
+    <include
+        layout="@layout/fragment_loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
     <EditText
         android:id="@+id/bike_filter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="text"
         android:hint="@string/bike_fragment_filter"
-        android:paddingEnd="@dimen/activity_train_line_padding_right"
+        android:inputType="text"
         android:paddingStart="16dp"
-        android:visibility="invisible">
-    </EditText>
+        android:paddingEnd="@dimen/activity_train_line_padding_right"
+        android:visibility="invisible" />
 
     <ListView
         android:id="@+id/bike_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/bike_filter">
-    </ListView>
+        android:layout_below="@+id/bike_filter"
+        android:visibility="invisible" />
 
 </RelativeLayout>

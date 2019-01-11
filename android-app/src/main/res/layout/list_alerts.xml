@@ -46,7 +46,6 @@
             android:id="@+id/station_name_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/grey_M_B"
             android:textIsSelectable="false"
             android:textSize="15sp"
             android:textStyle="bold" />
@@ -55,7 +54,6 @@
             android:id="@+id/status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/grey_M_B"
             android:textIsSelectable="false"
             android:textSize="14sp"
             android:textStyle="normal" />

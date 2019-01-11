@@ -25,6 +25,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
 import android.widget.ListView
+import android.widget.RelativeLayout
 import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.AlertActivity
@@ -46,8 +47,11 @@ class AlertFragment : Fragment(R.layout.fragment_alert) {
     lateinit var textFilter: EditText
     @BindView(R.id.alert_list)
     lateinit var listView: ListView
+    @BindView(R.id.loading_relativeLayout)
+    lateinit var loading: RelativeLayout
 
     override fun onCreateView(savedInstanceState: Bundle?) {
+        loadingState()
         ObservableUtil.createAlertRoutesObservable().subscribe { routesAlerts ->
             val alertAdapter = AlertAdapter(routesAlerts)
             listView.adapter = alertAdapter
@@ -83,6 +87,7 @@ class AlertFragment : Fragment(R.layout.fragment_alert) {
                     alertAdapter.notifyDataSetChanged()
                 }
             })
+            successState()
         }
     }
 
@@ -90,6 +95,22 @@ class AlertFragment : Fragment(R.layout.fragment_alert) {
         super.onResume()
         textFilter.setText("")
     }
+
+    private fun successState() {
+        textFilter.visibility = ListView.VISIBLE
+        listView.visibility = ListView.VISIBLE
+
+        loading.visibility = RelativeLayout.INVISIBLE
+    }
+
+    private fun loadingState() {
+        loading.visibility = RelativeLayout.VISIBLE
+
+        textFilter.visibility = ListView.INVISIBLE
+        listView.visibility = ListView.INVISIBLE
+    }
+
+    // TODO: Create an error state
 
     companion object {
 
