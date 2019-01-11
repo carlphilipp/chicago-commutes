@@ -66,4 +66,9 @@
     <color name="darkColorTextSecondary">#fff</color>
     <color name="darkBackgroundColorStart">#131317</color>
     <color name="darkBackgroundColorEnd">#131317</color>
+
+    <!-- Map stops/stations icons -->
+    <color name="trainStations">@color/red</color>
+    <color name="busStops">#084179</color>
+    <color name="bikeStations">@color/greenLineDark</color>
 </resources>

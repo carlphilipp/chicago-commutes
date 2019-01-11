@@ -19,17 +19,17 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/any_selector"
-    android:paddingBottom="@dimen/activity_train_line_padding_bottom"
-    android:paddingEnd="@dimen/activity_train_line_padding_right"
+    android:background="?attr/favoriteCardBackground"
     android:paddingStart="@dimen/activity_train_line_padding_left"
-    android:paddingTop="@dimen/activity_train_line_padding_top">
+    android:paddingTop="@dimen/activity_train_line_padding_top"
+    android:paddingEnd="@dimen/activity_train_line_padding_right"
+    android:paddingBottom="@dimen/activity_train_line_padding_bottom">
 
     <RelativeLayout
+        android:id="@id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:id="@id/title"
         android:orientation="vertical">
 
         <ImageView
@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/description"
-            android:tint="@color/grey_5" />
+            android:tint="?attr/iconTint" />
 
         <TextView
             android:id="@+id/station_name"
@@ -47,9 +47,8 @@
             android:layout_alignParentTop="true"
             android:layout_toEndOf="@+id/icon"
             android:gravity="center"
-            android:paddingEnd="@dimen/activity_train_line_padding_left"
             android:paddingStart="@dimen/activity_train_line_padding_right"
-            android:textColor="@color/black"
+            android:paddingEnd="@dimen/activity_train_line_padding_left"
             android:textIsSelectable="false"
             android:textStyle="bold" />
 
@@ -59,8 +58,7 @@
         android:id="@+id/nearby_results"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/activity_station_stops_line1_padding_color"
         android:layout_below="@id/title"
-        android:orientation="vertical" />
-
+        android:orientation="vertical"
+        android:paddingTop="@dimen/activity_station_stops_line1_padding_color" />
 </RelativeLayout>
