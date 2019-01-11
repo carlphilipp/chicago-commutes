@@ -61,6 +61,7 @@
     <color name="darkPrimaryColorDarker">#131317</color>
     <color name="darkNavigationBar">#0d0d10</color>
     <color name="darkColorAccent">#323949</color>
+    <color name="darkDialogColorAccent">#586583</color>
     <color name="darkColorTextPrimary">#fff</color>
     <color name="darkColorTextSecondary">#fff</color>
     <color name="darkBackgroundColorStart">#131317</color>

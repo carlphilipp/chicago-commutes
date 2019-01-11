@@ -58,7 +58,7 @@
         <item name="android:textColorPrimary">@color/darkColorTextPrimary</item>
         <item name="android:textColorSecondary">@color/darkColorTextSecondary</item>
         <item name="android:navigationBarColor">@color/darkNavigationBar</item>
-        <item name="android:colorBackground">@color/yellowLine</item>
+        <item name="android:colorBackground">@color/darkBackgroundColorStart</item>
         <item name="favoriteCardBackground">@color/darkColorAccent</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
         <item name="android:windowBackground">@drawable/bg_selector_dark</item>
@@ -82,7 +82,8 @@
     </style>
 
     <style name="AlertDialogDark" parent="Theme.AppCompat.Dialog.Alert">
-        <item name="android:windowBackground">@color/darkColorAccent</item>
+        <item name="android:windowBackground">@color/darkPrimaryColorDarker</item>
+        <item name="colorAccent">@color/darkDialogColorAccent</item>
     </style>
 
     <!-- Arrow style -->
