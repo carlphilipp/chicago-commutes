@@ -121,7 +121,6 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
                 .subscribe(BikeAllBikeStationsObserver(this@BikeStationActivity, divvyStation.id, swipeRefreshLayout))
             false
         }
-        Util.setWindowsColor(this, toolbar, TrainLine.NA)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.elevation = 4f
         }
