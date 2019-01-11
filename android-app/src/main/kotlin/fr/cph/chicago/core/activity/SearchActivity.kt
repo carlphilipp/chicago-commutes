@@ -39,7 +39,6 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.adapter.SearchAdapter
 import fr.cph.chicago.core.model.BikeStation
-import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
@@ -64,6 +63,7 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
     private lateinit var searchView: SearchView
     private lateinit var searchAdapter: SearchAdapter
     private var divvyStations: List<BikeStation> = listOf()
+    private var query: String = ""
 
     private val supportActionBarNotNull: ActionBar
         get() = supportActionBar ?: throw RuntimeException()
@@ -77,10 +77,8 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
     override fun create(savedInstanceState: Bundle?) {
         setupToolbar()
 
-        //container.foreground.alpha = 0
-
         searchAdapter = SearchAdapter(this)
-        divvyStations = intent.extras?.getParcelableArrayList(bundleBikeStations) ?: listOf()
+        divvyStations = intent.getParcelableArrayListExtra(bundleBikeStations) ?: listOf()
         handleIntent(intent)
 
         listView.adapter = searchAdapter
@@ -119,7 +117,8 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
     override fun startActivity(intent: Intent) {
         // check if search intent
         if (Intent.ACTION_SEARCH == intent.action) {
-            val bikeStations = getIntent().extras?.getParcelableArrayList(bundleBikeStations) ?: listOf<BikeStation>()
+            val bikeStations = getIntent().extras?.getParcelableArrayList(bundleBikeStations)
+                ?: listOf<BikeStation>()
             intent.putParcelableArrayListExtra(bundleBikeStations, util.asParcelableArrayList(bikeStations))
         }
         super.startActivity(intent)
@@ -145,8 +144,19 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
         return super.onKeyDown(keyCode, event)
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString(SearchManager.QUERY, query)
+        super.onSaveInstanceState(outState)
+    }
+
+    public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        query = savedInstanceState.getString(SearchManager.QUERY, "")
+        // FIXME: For some reason the query does not appear in the search view
+        searchView.setQuery(query, true)
+    }
+
     private fun setupToolbar() {
-        util.setWindowsColor(this, toolbar, TrainLine.NA)
         setSupportActionBar(toolbar)
         val actionBar = supportActionBarNotNull
         actionBar.setDisplayShowHomeEnabled(true)
@@ -155,7 +165,7 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
 
     private fun handleIntent(intent: Intent) {
         if (Intent.ACTION_SEARCH == intent.action) {
-            val query = intent.getStringExtra(SearchManager.QUERY).trim { it <= ' ' }
+            query = intent.getStringExtra(SearchManager.QUERY).trim { it <= ' ' }
             val foundStations = trainService.searchStations(query)
             val foundBusRoutes = busService.searchBusRoutes(query)
             // TODO Consider doing in a different way how bikeStations is stored

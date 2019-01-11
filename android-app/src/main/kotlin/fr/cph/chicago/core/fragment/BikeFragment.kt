@@ -64,12 +64,17 @@ class BikeFragment : Fragment(R.layout.fragment_bike) {
 
     override fun onCreateView(savedInstanceState: Bundle?) {
         loadingState()
+    }
+
+    override fun onResume() {
+        super.onResume()
         divvyStations = mainActivity.intent.getParcelableArrayListExtra(bundleBikeStations) ?: listOf()
         if (isFailure) {
             errorState()
         } else if (divvyStations.isNotEmpty()) {
             loadList()
         }
+
     }
 
     private fun loadList() {

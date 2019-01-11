@@ -19,13 +19,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/any_selector"
-    android:paddingBottom="14dp"
-    android:paddingEnd="16dp"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
     android:paddingStart="16dp"
-    android:paddingTop="14dp">
+    android:paddingLeft="16dp"
+    android:paddingTop="14dp"
+    android:paddingEnd="16dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="14dp">
 
     <ImageView
         android:id="@+id/icon"
@@ -33,19 +32,19 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/description"
         android:src="@drawable/ic_train_white_24dp"
-        android:tint="@color/grey_5" />
+        android:tint="?attr/iconTint"/>
 
     <TextView
         android:id="@+id/station_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/icon"
-        android:layout_toEndOf="@+id/icon"
         android:layout_toStartOf="@+id/station_color"
+        android:layout_toEndOf="@+id/icon"
         android:ellipsize="end"
         android:maxLines="1"
-        android:paddingEnd="@dimen/activity_station_stops_0dp"
         android:paddingStart="16dp"
+        android:paddingEnd="@dimen/activity_station_stops_0dp"
         android:textIsSelectable="false" />
 
     <LinearLayout
@@ -61,9 +60,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/icon"
-        android:paddingEnd="@dimen/activity_station_stops_0dp"
         android:paddingStart="15dp"
         android:paddingTop="5dp"
+        android:paddingEnd="@dimen/activity_station_stops_0dp"
         android:text="@string/progress_message"
         android:textIsSelectable="false"
         android:visibility="gone" />

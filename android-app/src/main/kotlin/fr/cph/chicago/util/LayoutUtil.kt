@@ -37,7 +37,6 @@ import fr.cph.chicago.core.model.enumeration.BusDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.setTextAppearance
 
-
 /**
  * Layout util class
  *

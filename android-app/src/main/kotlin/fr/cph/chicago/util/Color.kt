@@ -10,10 +10,6 @@ object Color {
         ContextCompat.getColor(App.instance, R.color.grey)
     }
 
-    val grey5: Int by lazy {
-        ContextCompat.getColor(App.instance, R.color.grey_5)
-    }
-
     val red: Int by lazy {
         ContextCompat.getColor(App.instance, R.color.red)
     }

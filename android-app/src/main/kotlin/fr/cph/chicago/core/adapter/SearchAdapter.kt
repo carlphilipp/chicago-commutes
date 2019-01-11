@@ -51,8 +51,6 @@ import fr.cph.chicago.util.Util
  */
 class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
 
-    private val context: Context = activity.applicationContext
-
     private var trains: List<TrainStation> = listOf()
     private var busRoutes: List<BusRoute> = listOf()
     private var divvyStations: List<BikeStation> = listOf()
@@ -77,7 +75,7 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
 
     @SuppressLint("ViewHolder")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val vi = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val vi = activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val view = vi.inflate(R.layout.list_search, parent, false)
 
         val routeName: TextView = view.findViewById(R.id.station_name)

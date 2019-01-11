@@ -311,6 +311,7 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
         savedInstanceState.putInt(SELECTED_ID, currentPosition)
         savedInstanceState.putString(bundleTitle, title)
+        savedInstanceState.putParcelableArrayList(bundleBikeStations, intent.getParcelableArrayListExtra(bundleBikeStations))
         super.onSaveInstanceState(savedInstanceState)
     }
 
@@ -318,6 +319,8 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
         super.onRestoreInstanceState(savedInstanceState)
         title = savedInstanceState.getString(bundleTitle)
         currentPosition = savedInstanceState.getInt(SELECTED_ID)
+        val bikeStations = savedInstanceState.getParcelableArrayList<BikeStation>(bundleBikeStations)
+        intent.putParcelableArrayListExtra(bundleBikeStations, bikeStations)
     }
 
     private fun hideActionBarMenu() {
