@@ -23,7 +23,6 @@ import android.support.annotation.StyleRes
 import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
 import android.util.SparseArray
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -48,7 +47,6 @@ import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.model.enumeration.BusDirection
-import fr.cph.chicago.setTextAppearance
 import fr.cph.chicago.util.LayoutUtil
 import fr.cph.chicago.util.TimeUtil
 import fr.cph.chicago.util.Util
@@ -62,13 +60,7 @@ import java.util.Calendar
  */
 class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder>() {
 
-    val textAppearance: Int
-
-    init {
-        val outValue = TypedValue()
-        activity.theme.resolveAttribute(R.attr.textAppearance, outValue, true)
-        textAppearance = outValue.resourceId
-    }
+    val textAppearance: Int = Util.getAttribute(activity, R.attr.textAppearance)
 
     private val util = Util
     private val favorites = Favorites

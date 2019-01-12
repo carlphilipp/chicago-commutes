@@ -23,7 +23,6 @@ import android.content.Context
 import android.support.annotation.DrawableRes
 import android.support.v4.content.ContextCompat
 import android.text.TextUtils
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -43,13 +42,7 @@ import fr.cph.chicago.util.Util
 
 class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
 
-    val textAppearance: Int
-
-    init {
-        val outValue = TypedValue()
-        nearbyFragment.activity!!.theme.resolveAttribute(R.attr.textAppearance, outValue, true)
-        textAppearance = outValue.resourceId
-    }
+    val textAppearance: Int = Util.getAttribute(nearbyFragment.activity!!, R.attr.textAppearance)
 
     private var nbOfLine = intArrayOf(0)
 

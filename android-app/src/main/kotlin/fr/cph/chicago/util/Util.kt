@@ -211,26 +211,39 @@ object Util {
     }
 
     fun showSnackBar(view: View, message: String) {
-        Snackbar.make(view, message, Snackbar.LENGTH_LONG).show()
+        showSnackBar(view, message, Snackbar.LENGTH_LONG)
     }
 
     fun showSnackBar(activity: Activity, message: Int, length: Int) {
         if (activity.currentFocus != null) {
-            Snackbar.make(activity.currentFocus!!, activity.getString(message), length).show()
+            showSnackBar(activity.currentFocus!!, activity.getString(message), length)
         } else {
             Toast.makeText(activity, activity.getString(message), length).show()
         }
     }
 
     fun showSnackBar(view: View, message: Int) {
-        Snackbar.make(view, App.instance.getString(message), Snackbar.LENGTH_LONG).show()
+        showSnackBar(view, App.instance.getString(message), Snackbar.LENGTH_LONG)
     }
 
     fun showOopsSomethingWentWrong(view: View) {
-        Snackbar.make(view, App.instance.getString(R.string.message_something_went_wrong), Snackbar.LENGTH_LONG).show()
+        showSnackBar(view, App.instance.getString(R.string.message_something_went_wrong), Snackbar.LENGTH_LONG)
+    }
+
+    private fun showSnackBar(view: View, text: CharSequence, duration: Int) {
+        val snackBar = Snackbar.make(view, text, duration)
+        snackBar.view.setBackgroundColor(getAttribute(view.context, R.attr.colorAccent))
+        snackBar.show()
+    }
+
+    fun getAttribute(context: Context, resId: Int): Int {
+        val typedValue = TypedValue()
+        context.theme.resolveAttribute(resId, typedValue, true)
+        return typedValue.data
     }
 
     private fun showRateSnackBar(view: View, activity: Activity) {
+        val background = getAttribute(view.context, R.attr.colorAccent)
         val textColor = ContextCompat.getColor(App.instance, R.color.greenLineDark)
         val snackBar1 = Snackbar.make(view, "Do you like this app?", Snackbar.LENGTH_LONG)
             .setAction("YES") { view1 ->
@@ -238,10 +251,12 @@ object Util {
                     .setAction("OK") { rateThisApp(activity) }
                     .setActionTextColor(textColor)
                     .setDuration(10000)
+                snackBar2.view.setBackgroundColor(background)
                 snackBar2.show()
             }
             .setActionTextColor(textColor)
             .setDuration(10000)
+        snackBar1.view.setBackgroundColor(background)
         snackBar1.show()
     }
 
