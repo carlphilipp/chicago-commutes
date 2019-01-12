@@ -30,6 +30,7 @@ Chicago Commutes is a transit tracker making it easier to travel in Chicago. Eas
 * Search any train stop or bus route and get live arrival times.
 * Follow buses and trains live on the map
 * Read the last alerts from CTA.
+* Light and dark theme.
 * Free! No Ads!
 
 ## Screenshots
