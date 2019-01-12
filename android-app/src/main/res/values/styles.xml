@@ -47,7 +47,7 @@
     </style>
 
     <style name="AlertDialogLight" parent="Theme.AppCompat.Light.Dialog.Alert">
-
+        <item name="colorAccent">@color/lightPrimaryColorDark</item>
     </style>
 
     <!-- Dark Theme -->
