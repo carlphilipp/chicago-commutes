@@ -35,7 +35,6 @@ import fr.cph.chicago.core.listener.GoogleMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.rx.BikeAllBikeStationsObserver
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.service.PreferenceService

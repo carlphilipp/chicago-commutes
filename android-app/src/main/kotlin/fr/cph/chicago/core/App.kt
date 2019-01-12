@@ -24,7 +24,6 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.graphics.Point
-import android.util.Base64
 import android.util.Log
 import android.view.WindowManager
 import fr.cph.chicago.R

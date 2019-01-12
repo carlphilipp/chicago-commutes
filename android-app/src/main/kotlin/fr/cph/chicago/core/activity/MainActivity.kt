@@ -33,7 +33,6 @@ import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.MenuItem
 import android.widget.FrameLayout
-import butterknife.BindColor
 import butterknife.BindString
 import butterknife.BindView
 import fr.cph.chicago.R
@@ -85,10 +84,6 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
     lateinit var ctaAlert: String
     @BindString(R.string.settings)
     lateinit var settings: String
-
-    @JvmField
-    @BindColor(R.color.lightPrimaryColorDarker)
-    internal var primaryColorDarker: Int = 0
 
     private val observableUtil: ObservableUtil = ObservableUtil
     private val util: Util = Util
@@ -194,7 +189,7 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
                 busService.saveBusRoutes(busRoutes)
                 refreshFirstLoadData(bikeStations)
                 if (bikeStationsError) {
-                    setBikeFailure()
+                    bikeFragment?.setFailure()
                 }
                 if (bikeStationsError || busRoutesError) {
                     Log.w(TAG, "Bike station [$bikeStationsError] or Bus routes error [$busRoutesError]")
@@ -206,10 +201,6 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
                 util.showSnackBar(this, R.string.message_something_went_wrong, Snackbar.LENGTH_SHORT)
             }
         )
-    }
-
-    private fun setBikeFailure() {
-        bikeFragment?.setFailure()
     }
 
     private fun refreshFirstLoadData(divvyStations: List<BikeStation>) {

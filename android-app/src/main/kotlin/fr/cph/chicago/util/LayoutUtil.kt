@@ -152,7 +152,6 @@ object LayoutUtil {
         val pixels = util.dpToPixel16
         val pixelsHalf = pixels / 2
         val marginLeftPixel = util.convertDpToPixel(10)
-        //val color = ContextCompat.getColor(App.instance, android.R.color.primary_text_light)
 
         val container = LinearLayout(App.instance)
         container.orientation = LinearLayout.HORIZONTAL
