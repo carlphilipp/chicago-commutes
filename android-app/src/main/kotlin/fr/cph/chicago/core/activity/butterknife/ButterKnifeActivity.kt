@@ -20,7 +20,7 @@
 package fr.cph.chicago.core.activity.butterknife
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import butterknife.ButterKnife
 import fr.cph.chicago.service.PreferenceService
 

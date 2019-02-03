@@ -27,12 +27,12 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.location.Location
 import android.os.Bundle
-import android.support.annotation.DrawableRes
-import android.support.v4.content.ContextCompat
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ProgressBar
+import androidx.annotation.DrawableRes
+import androidx.core.content.ContextCompat
 import butterknife.BindString
 import butterknife.BindView
 import com.mapbox.android.core.location.LocationEngine

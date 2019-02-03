@@ -20,14 +20,14 @@
 package fr.cph.chicago.core.adapter
 
 import android.content.Context
-import android.support.annotation.DrawableRes
-import android.support.v4.content.ContextCompat
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.annotation.DrawableRes
+import androidx.core.content.ContextCompat
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import fr.cph.chicago.R
 import fr.cph.chicago.core.fragment.NearbyFragment

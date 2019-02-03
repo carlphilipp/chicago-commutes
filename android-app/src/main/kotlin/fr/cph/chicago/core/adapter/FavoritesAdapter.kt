@@ -19,8 +19,6 @@
 
 package fr.cph.chicago.core.adapter
 
-import android.support.annotation.StyleRes
-import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
 import android.util.SparseArray
 import android.view.LayoutInflater
@@ -30,6 +28,8 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.StyleRes
+import androidx.recyclerview.widget.RecyclerView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.MainActivity
@@ -85,7 +85,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         }
     }
 
-    class FavoritesViewHolder(view: View, val parent: ViewGroup) : RecyclerView.ViewHolder(view) {
+    class FavoritesViewHolder(view: View, val parent: ViewGroup) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view) {
         val mainLayout: LinearLayout = view.findViewById(R.id.favorites_arrival_layout)
         val lastUpdateTextView: TextView = view.findViewById(R.id.last_update)
         val stationNameTextView: TextView = view.findViewById(R.id.favorites_station_name)

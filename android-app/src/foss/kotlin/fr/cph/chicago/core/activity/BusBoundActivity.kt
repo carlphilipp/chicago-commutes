@@ -24,7 +24,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.support.v7.widget.Toolbar
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -32,6 +31,7 @@ import android.view.WindowManager
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ListView
+import androidx.appcompat.widget.Toolbar
 import butterknife.BindDrawable
 import butterknife.BindString
 import butterknife.BindView

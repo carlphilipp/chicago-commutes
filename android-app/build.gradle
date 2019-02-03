@@ -18,7 +18,7 @@ android {
         targetSdkVersion Android.target_sdk
         multiDexEnabled true
 
-        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
         def props = properties()
 
@@ -47,15 +47,9 @@ android {
     }
 
     sourceSets {
-        main {
-            java.srcDirs = ['src/main/kotlin']
-        }
-        googleplay {
-            java.srcDirs = ['src/googleplay/kotlin']
-        }
-        foss {
-            java.srcDirs = ['src/foss/kotlin']
-        }
+        main { java.srcDirs = ['src/main/kotlin'] }
+        googleplay { java.srcDirs = ['src/googleplay/kotlin'] }
+        foss { java.srcDirs = ['src/foss/kotlin'] }
     }
 
     signingConfigs {
@@ -138,11 +132,7 @@ dependencies {
     implementation(Lib.kotlin_reflect)
 
     // Google
-    implementation(Lib.google_support_design)
-    implementation(Lib.google_support_compat)
-    implementation(Lib.google_support_vector)
-    implementation(Lib.google_support_media_compat)
-    implementation(Lib.google_support_v4)
+    implementation(Lib.material)
 
     // Jackson
     implementation(Lib.jackson_core)
@@ -163,10 +153,11 @@ dependencies {
     implementation(Lib.easypermissions)
     implementation(Lib.photoview)
 
-
+    // Google play flavor
     googleplayImplementation(Lib.google_services_map)
     googleplayImplementation(Lib.google_services_location)
 
+    // Foss flavor
     fossImplementation(Lib.mapbox)
     fossImplementation(Lib.mapbox_location)
 

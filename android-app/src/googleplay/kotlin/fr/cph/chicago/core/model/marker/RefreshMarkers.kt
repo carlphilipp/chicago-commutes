@@ -21,7 +21,7 @@ package fr.cph.chicago.core.model.marker
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.support.annotation.DrawableRes
+import androidx.annotation.DrawableRes
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition

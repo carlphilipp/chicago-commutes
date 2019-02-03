@@ -1,6 +1,6 @@
 package fr.cph.chicago.util
 
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 

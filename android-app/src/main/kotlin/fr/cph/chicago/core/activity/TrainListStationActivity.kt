@@ -21,8 +21,8 @@ package fr.cph.chicago.core.activity
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.support.v7.widget.Toolbar
 import android.widget.ListView
+import androidx.appcompat.widget.Toolbar
 import butterknife.BindDrawable
 import butterknife.BindString
 import butterknife.BindView

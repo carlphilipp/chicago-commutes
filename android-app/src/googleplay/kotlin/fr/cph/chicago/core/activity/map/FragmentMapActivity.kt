@@ -24,9 +24,9 @@ import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import android.os.Build
-import android.support.v7.widget.Toolbar
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.appcompat.widget.Toolbar
 import butterknife.BindDrawable
 import butterknife.BindView
 import com.google.android.gms.maps.CameraUpdateFactory

@@ -23,12 +23,12 @@ import android.annotation.SuppressLint
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.widget.SwipeRefreshLayout
-import android.support.v7.widget.Toolbar
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.appcompat.widget.Toolbar
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import butterknife.BindString
 import butterknife.BindView
 import fr.cph.chicago.R

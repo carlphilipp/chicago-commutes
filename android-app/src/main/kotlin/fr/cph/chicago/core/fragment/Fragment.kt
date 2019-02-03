@@ -24,11 +24,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import butterknife.ButterKnife
 import butterknife.Unbinder
 import fr.cph.chicago.core.activity.MainActivity
 
-abstract class Fragment(private val layout: Int) : android.support.v4.app.Fragment() {
+abstract class Fragment(private val layout: Int) : Fragment() {
 
     protected lateinit var mainActivity: MainActivity
     protected lateinit var rootView: View

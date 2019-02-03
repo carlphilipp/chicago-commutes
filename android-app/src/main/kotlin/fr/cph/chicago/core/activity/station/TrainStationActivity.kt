@@ -25,9 +25,6 @@ import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.widget.SwipeRefreshLayout
-import android.support.v7.widget.AppCompatCheckBox
-import android.support.v7.widget.Toolbar
 import android.text.TextUtils.TruncateAt
 import android.view.View
 import android.view.ViewGroup
@@ -36,6 +33,9 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatCheckBox
+import androidx.appcompat.widget.Toolbar
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import butterknife.BindDimen
 import butterknife.BindDrawable
 import butterknife.BindString

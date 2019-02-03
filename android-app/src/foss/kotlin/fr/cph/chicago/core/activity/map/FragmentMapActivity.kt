@@ -24,10 +24,10 @@ import android.graphics.PointF
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.os.Build
-import android.support.v7.widget.Toolbar
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.ProgressBar
+import androidx.appcompat.widget.Toolbar
 import butterknife.BindDrawable
 import butterknife.BindView
 import com.mapbox.geojson.Feature

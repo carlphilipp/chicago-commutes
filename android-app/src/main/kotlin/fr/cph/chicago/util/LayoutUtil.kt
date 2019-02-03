@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.util
 
-import android.support.annotation.StyleRes
 import android.text.SpannableString
 import android.text.TextUtils
 import android.text.style.RelativeSizeSpan
@@ -29,6 +28,7 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.annotation.StyleRes
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.BikeStation

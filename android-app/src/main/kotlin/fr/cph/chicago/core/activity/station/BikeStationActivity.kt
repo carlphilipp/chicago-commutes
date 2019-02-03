@@ -21,11 +21,11 @@ package fr.cph.chicago.core.activity.station
 
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.widget.SwipeRefreshLayout
-import android.support.v7.widget.Toolbar
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.widget.Toolbar
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import butterknife.BindString
 import butterknife.BindView
 import fr.cph.chicago.R
@@ -84,7 +84,8 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
     private var isFavorite: Boolean = false
 
     override fun create(savedInstanceState: Bundle?) {
-        divvyStation = intent.extras?.getParcelable(bundleBikeStation) ?: BikeStation.buildUnknownStation()
+        divvyStation = intent.extras?.getParcelable(bundleBikeStation)
+            ?: BikeStation.buildUnknownStation()
         val latitude = divvyStation.latitude
         val longitude = divvyStation.longitude
 
@@ -149,7 +150,8 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        divvyStation = savedInstanceState.getParcelable(bundleBikeStation) ?: BikeStation.buildUnknownStation()
+        divvyStation = savedInstanceState.getParcelable(bundleBikeStation)
+            ?: BikeStation.buildUnknownStation()
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
