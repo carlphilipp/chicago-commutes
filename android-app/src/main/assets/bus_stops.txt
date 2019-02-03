@@ -1389,7 +1389,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 2108,2108,"King Drive & Burnside","King Drive & Burnside, Northbound, Northeast Corner",41.72696975,-87.61418333,0,,1
 2109,2109,"King Drive & 91st Street","King Drive & 91st Street, Northbound, Northeast Corner",41.72925462,-87.61424202,0,,1
 2110,2110,"King Drive & 90th Street","King Drive & 90th Street, Northbound, Northeast Corner",41.73110858,-87.61427778,0,,1
-2111,2111,"King Drive & 89th Street","King Drive & 89th Street, Northbound, Northeast Corner",41.73291483,-87.61428041,0,,1
 2112,2112,"King Drive & 88th Street","King Drive & 88th Street, Northbound, Northeast Corner",41.73469183,-87.61433041,0,,1
 2113,2113,"King Drive & 87th Street","King Drive & 87th Street, Northbound, Northeast Corner",41.73668187,-87.61446243,0,,1
 2114,2114,"King Drive & 86th Street","King Drive & 86th Street, Northbound, Northeast Corner",41.73836733,-87.61440562,0,,1
@@ -1733,7 +1732,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 2542,2542,"Cottage Grove & 40th Street","Cottage Grove & 40th Street, Southbound, Northwest Corner",41.821663,-87.606897,0,,1
 2543,2543,"Cottage Grove & 41st Street","Cottage Grove & 41st Street, Southbound, Northwest Corner",41.82042891,-87.60681935,0,,1
 2544,2544,"Cottage Grove & 42nd Street","Cottage Grove & 42nd Street, Southbound, Northwest Corner",41.81877,-87.60683,0,,1
-2547,2547,"Cottage Grove & 45th Street","Cottage Grove & 45th Street, Southbound, Northwest Corner",41.813325,-87.606723,0,,1
 2548,2548,"Cottage Grove & 46th Street","Cottage Grove & 46th Street, Southbound, Northwest Corner",41.811477,-87.606675,0,,1
 2549,2549,"Cottage Grove & 47th Street","Cottage Grove & 47th Street, Southbound, Northwest Corner",41.80964899,-87.60667736,0,,1
 2550,2550,"Cottage Grove & 48th Street","Cottage Grove & 48th Street, Southbound, Northwest Corner",41.807852,-87.606595,0,,1
@@ -2420,7 +2418,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 3469,3469,"95th Street & Laflin","95th Street & Laflin, Westbound, Northeast Corner",41.721353,-87.660065,0,,1
 3471,3471,"95th Street & Ashland","95th Street & Ashland, Westbound, Northwest Corner",41.72130603,-87.66319167,0,,1
 3473,3473,"95th Street & Wood","95th Street & Wood, Westbound, Northside of the Street",41.72126991,-87.66736916,0,,1
-3474,3474,"95th Street & Longwood","95th Street & Longwood, Westbound, Northside of the Street",41.72123722,-87.66922669,0,,1
+3474,3474,"95th Street & Longwood","95th Street & Longwood, Westbound, Northside of the Street",41.72123333,-87.66949209,0,,1
 3475,3475,"95th Street & Damen","95th Street & Damen, Westbound, Northside of the Street",41.72119766,-87.67220794,0,,1
 3477,3477,"95th Street & Leavitt","95th Street & Leavitt, Westbound, Northeast Corner",41.7211313,-87.67706988,0,,1
 3478,3478,"95th Street & Oakley","95th Street & Oakley, Westbound, Northeast Corner",41.72108919,-87.67945805,0,,1
@@ -2645,7 +2643,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 3748,3748,"Lawrence & Kedzie","Lawrence & Kedzie, Eastbound, Southwest Corner",41.9683548,-87.70861319,0,,1
 3749,3749,"Lawrence & Albany","Lawrence & Albany, Eastbound, Southwest Corner",41.96839625,-87.70614168,0,,1
 3750,3750,"Lawrence & Sacramento","Lawrence & Sacramento, Eastbound, Southwest Corner",41.96843198,-87.70371655,0,,1
-3751,3751,"2900 W Lawrence","2900 W Lawrence, Eastbound, Southside of the Street",41.96844411,-87.70106844,0,,1
 3752,3752,"Lawrence & California","Lawrence & California, Eastbound, Southside of the Street",41.96844651,-87.69886939,0,,1
 3753,3753,"Lawrence & Washtenaw","Lawrence & Washtenaw, Eastbound, Southwest Corner",41.96845261,-87.69632581,0,,1
 3755,3755,"Lawrence & Campbell","Lawrence & Campbell, Eastbound, Southwest Corner",41.96850046,-87.69148758,0,,1
@@ -2676,7 +2673,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 3792,3792,"Lawrence & Leavitt","Lawrence & Leavitt, Westbound, Northeast Corner",41.96877551,-87.6839312,0,,1
 3794,3794,"Lawrence & Western","Lawrence & Western, Westbound, Northeast Corner",41.96870994,-87.68868597,0,,1
 3795,3795,"Lawrence & Campbell","Lawrence & Campbell, Westbound, Northside of the Street",41.96867087,-87.69134421,0,,1
-3799,3799,"2900 W Lawrence","2900 W Lawrence, Westbound, Northside of the Street",41.968588,-87.701062,0,,1
 3801,3801,"Lawrence & Albany","Lawrence & Albany, Westbound, Northeast Corner",41.96854375,-87.70591784,0,,1
 3802,3802,"Lawrence & Kedzie","Lawrence & Kedzie, Westbound, Northeast Corner",41.96853249,-87.7082935,0,,1
 3803,3803,"Lawrence & Spaulding","Lawrence & Spaulding, Westbound, Northeast Corner",41.96848388,-87.71079556,0,,1
@@ -3474,7 +3470,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 5076,5076,"Racine & 54th Street","Racine & 54th Street, Northbound, Southeast Corner",41.795805,-87.654791,0,,1
 5077,5077,"Racine & 53rd Street","Racine & 53rd Street, Northbound, Southeast Corner",41.797627,-87.654832,0,,1
 5078,5078,"Racine & 52nd Street","Racine & 52nd Street, Northbound, Southeast Corner",41.799527,-87.654909,0,,1
-5079,5079,"Racine & 51st Street","Racine & 51st Street, Northbound, Southeast Corner",41.801335,-87.654959,0,,1
 5080,5080,"Racine & 50th Street","Racine & 50th Street, Northbound, Southeast Corner",41.80318881,-87.65500744,0,,1
 5081,5081,"Racine & 49th Street","Racine & 49th Street, Northbound, Northeast Corner",41.805324,-87.655044,0,,1
 5082,5082,"Racine & 48th Street","Racine & 48th Street, Northbound, Southeast Corner",41.806884,-87.655103,0,,1
@@ -3535,8 +3530,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 5159,5159,"Racine & 47th Street","Racine & 47th Street, Southbound, Southwest Corner",41.80854092,-87.65533046,0,,1
 5160,5160,"Racine & 48th Street","Racine & 48th Street, Southbound, Northwest Corner",41.807049,-87.655248,0,,1
 5161,5161,"Racine & 49th Street","Racine & 49th Street, Southbound, Northwest Corner",41.805229,-87.655191,0,,1
-5162,5162,"Racine & 50th Street","Racine & 50th Street, Southbound, Northwest Corner",41.80336852,-87.6551944,0,,1
-5163,5163,"Racine & 51st Street","Racine & 51st Street, Southbound, Northwest Corner",41.8015,-87.655104,0,,1
 5164,5164,"Racine & 52nd Street","Racine & 52nd Street, Southbound, Northwest Corner",41.799693,-87.655054,0,,1
 5165,5165,"Racine & 53rd Street","Racine & 53rd Street, Southbound, Westside of the Street",41.79784075,-87.65499283,0,,1
 5166,5166,"Racine & 54th Street","Racine & 54th Street, Southbound, Westside of the Street",41.795957,-87.654936,0,,1
@@ -3751,12 +3744,9 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 5447,5447,"Milwaukee & Kenneth","Milwaukee & Kenneth, Southeastbound, Westside of the Street",41.94895171,-87.74014262,0,,1
 5448,5448,"Milwaukee & Kostner","Milwaukee & Kostner, Southeastbound, Westside of the Street",41.94800319,-87.73859217,0,,1
 5450,5450,"Milwaukee & Addison","Milwaukee & Addison, Southeastbound, Northwest Corner",41.9463881,-87.73598605,0,,1
-5451,5451,"Milwaukee & Tripp","Milwaukee & Tripp, Southeastbound, Northwest Corner",41.94470235,-87.73313558,0,,1
 5452,5452,"Milwaukee & Keeler","Milwaukee & Keeler, Southeastbound, Northwest Corner",41.94411635,-87.73217558,0,,1
-5453,5453,"Milwaukee & Kedvale","Milwaukee & Kedvale, Southeastbound, Westside of the Street",41.94353135,-87.73122658,0,,1
 5454,5454,"Milwaukee & Karlov","Milwaukee & Karlov, Southeastbound, Northwest Corner",41.94266862,-87.72988796,0,,1
 5456,5456,"Milwaukee & Springfield","Milwaukee & Springfield, Southeastbound, Westside of the Street",41.939821,-87.725144,0,,1
-5457,5457,"Milwaukee & Belmont","Milwaukee & Belmont, Southeastbound, Northwest Corner",41.939257,-87.724247,0,,1
 5458,5458,"Milwaukee & Davlin","Milwaukee & Davlin, Southeastbound, Southwest Corner",41.93835638,-87.72275749,0,,1
 5459,5459,"Milwaukee & Hamlin","Milwaukee & Hamlin, Southeastbound, Northwest Corner",41.93699163,-87.72057086,0,,1
 5460,5460,"Milwaukee & Ridgeway","Milwaukee & Ridgeway, Southeastbound, Southwest Corner",41.935923,-87.71879,0,,1
@@ -3817,9 +3807,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 5568,5568,"Milwaukee & Hamlin","Milwaukee & Hamlin, Northwestbound, Southeast Corner",41.93794315,-87.72181367,0,,1
 5569,5569,"Milwaukee & Belmont","Milwaukee & Belmont, Northwestbound, Southeast Corner",41.93903555,-87.72346689,0,,1
 5572,5572,"Milwaukee & Karlov","Milwaukee & Karlov, Northwestbound, Southeast Corner",41.94249748,-87.72923391,0,,1
-5573,5573,"Milwaukee & Kedvale","Milwaukee & Kedvale, Northwestbound, Southeast Corner",41.94362431,-87.73115219,0,,1
-5574,5574,"Milwaukee & Keeler","Milwaukee & Keeler, Northwestbound, Southeast Corner",41.94420931,-87.73210119,0,,1
-5575,5575,"Milwaukee & Tripp","Milwaukee & Tripp, Northwestbound, Eastside of the Street",41.94479531,-87.73306119,0,,1
 5577,5577,"Milwaukee & Waveland","Milwaukee & Waveland, Northwestbound, Southeast Corner",41.94742828,-87.73726086,0,,1
 5578,5578,"Milwaukee & Kostner","Milwaukee & Kostner, Northwestbound, Southeast Corner",41.94802928,-87.73828723,0,,1
 5579,5579,"Milwaukee & Kilbourn","Milwaukee & Kilbourn, Northwestbound, Southeast Corner",41.94903878,-87.74004525,0,,1
@@ -4170,7 +4157,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 6140,6140,"Beverly & 103rd/Vincennes","Beverly & 103rd/Vincennes, Northbound, Northeast Corner",41.70732671,-87.65614552,0,,1
 6141,6141,"10113 S Beverly","10113 S Beverly, Northbound, Eastside of the Street",41.70975275,-87.65739229,0,,1
 6142,6142,"Beverly & 100th Place","Beverly & 100th Place, Northbound, Southeast Corner",41.711298,-87.658103,0,,1
-6143,6143,"Beverly & 99th Street","Beverly & 99th Street, Northbound, Southeast Corner",41.71392248,-87.65945244,0,,1
 6144,6144,"9800 S Beverly","9800 S Beverly, Northbound, Eastside of the Street",41.71586712,-87.66040016,0,,1
 6145,6145,"9653 S Beverly","9653 S Beverly, Northbound, Eastside of the Street",41.71732689,-87.66122315,0,,1
 6146,6146,"9600 S Beverly","9600 S Beverly, Northbound, Eastside of the Street",41.71907948,-87.6620775,0,,1
@@ -4518,9 +4504,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 6748,6748,"16th Street & Spaulding","16th Street & Spaulding, Eastbound, Southwest Corner",41.858997,-87.708,0,,1
 6750,6750,"16th Street & Albany","16th Street & Albany, Eastbound, Southwest Corner",41.859055,-87.703052,0,,1
 6751,6751,"16th Street & California","16th Street & California, Eastbound, Southeast Corner",41.85918036,-87.69555152,0,,1
-6752,6752,"16th Street & Washtenaw","16th Street & Washtenaw, Eastbound, Southwest Corner",41.85921761,-87.69328581,0,,1
-6753,6753,"16th Street & Rockwell","16th Street & Rockwell, Eastbound, Southwest Corner",41.8592524,-87.6907968,0,,1
-6754,6754,"16th Street & Western","16th Street & Western, Eastbound, Southwest Corner",41.8593023,-87.6859588,0,,1
 6755,6755,"18th Street & Western","18th Street & Western, Eastbound, Southeast Corner",41.85726658,-87.68537578,0,,1
 6756,6756,"18th Street & Oakley","18th Street & Oakley, Eastbound, Southwest Corner",41.857465,-87.68343,0,,1
 6757,6757,"18th Street & Leavitt","18th Street & Leavitt, Eastbound, Southwest Corner",41.857501,-87.680987,0,,1
@@ -4550,9 +4533,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 6821,6821,"18th Street & Leavitt","18th Street & Leavitt, Westbound, Northeast Corner",41.85766142,-87.68080115,0,,1
 6822,6822,"18th Street & Oakley","18th Street & Oakley, Westbound, Northside of the Street",41.85760308,-87.68331532,0,,1
 6823,6823,"18th Street & Western","18th Street & Western, Westbound, Northeast Corner",41.85732922,-87.68568274,0,,1
-6824,6824,"16th Street & Western","16th Street & Western, Westbound, Northwest Corner",41.85942684,-87.68603763,0,,1
-6825,6825,"16th Street & Rockwell","16th Street & Rockwell, Westbound, Northeast Corner",41.85935628,-87.69070558,0,,1
-6826,6826,"16th Street & Washtenaw","16th Street & Washtenaw, Westbound, Northeast Corner",41.85930576,-87.69317542,0,,1
 6827,6827,"Washtenaw & 15th Street","Washtenaw & 15th Street, Northbound, Southeast Corner",41.86099,-87.693176,0,,1
 6828,6828,"16th Street & Albany","16th Street & Albany, Westbound, Northwest Corner",41.85920543,-87.70307082,0,,1
 6829,6829,"16th Street & Kedzie","16th Street & Kedzie, Westbound, Northeast Corner",41.85913506,-87.70533056,0,,1
@@ -4985,7 +4965,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 7391,7391,"South Chicago & 79th Street/Stony Island","South Chicago & 79th Street/Stony Island, Northwestbound, Southeast Corner",41.75135855,-87.58519127,0,,1
 7392,7392,"South Chicago & 79th Street/Stony Island","South Chicago & 79th Street/Stony Island, Northwestbound, Northeast Corner",41.75220471,-87.58636168,0,,1
 7393,7393,"South Chicago & Harper","South Chicago & Harper, Northwestbound, Southeast Corner",41.75289604,-87.58731804,0,,1
-7395,7395,"South Chicago & Dante","South Chicago & Dante, Northwestbound, Southeast Corner",41.75471375,-87.58984858,0,,1
 7396,7396,"South Chicago & Dorchester","South Chicago & Dorchester, Northwestbound, Southeast Corner",41.75558466,-87.59104647,0,,1
 7397,7397,"South Chicago & 76th Street","South Chicago & 76th Street, Northwestbound, Southeast Corner",41.75678398,-87.59272689,0,,1
 7398,7398,"South Chicago & 75th Street/Woodlawn","South Chicago & 75th Street/Woodlawn, Northwestbound, Northeast Corner",41.75909997,-87.59591795,0,,1
@@ -5266,9 +5245,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 7866,7866,"Belmont & Washtenaw","Belmont & Washtenaw, Eastbound, Southwest Corner",41.93938594,-87.69542242,0,,1
 7867,7867,"Belmont & Rockwell","Belmont & Rockwell, Eastbound, Southwest Corner",41.93939695,-87.69316742,0,,1
 7868,7868,"Belmont & Campbell","Belmont & Campbell, Eastbound, Southside of the Street",41.93941395,-87.69073341,0,,1
-7888,7888,"Clybourn & Wisconsin","Clybourn & Wisconsin, Southeastbound, Northwest Corner",41.915,-87.6554,0,,1
 7903,7903,"Chicago & Orleans","Chicago & Orleans, Westbound, Northwest Corner",41.89664384,-87.63741076,0,,1
-7915,7915,"Clybourn & North Ave (Red Line)","Clybourn & North Ave (Red Line), Northwestbound, Southeast Corner",41.91077864,-87.64919993,0,,1
 7937,7937,"Belmont & Western/Clybourn","Belmont & Western/Clybourn, Westbound, Northwest Corner",41.93954747,-87.6884849,0,,1
 7938,7938,"Belmont & Campbell","Belmont & Campbell, Westbound, Northeast Corner",41.9395259,-87.69044478,0,,1
 7939,7939,"Belmont & Rockwell","Belmont & Rockwell, Westbound, Northside of the Street",41.93949956,-87.69307705,0,,1
@@ -5384,7 +5361,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 8158,8158,"47th Street & Hoyne","47th Street & Hoyne, Eastbound, Southwest Corner",41.80842774,-87.67721886,0,,1
 8160,8160,"47th Street & Damen","47th Street & Damen, Eastbound, Southwest Corner",41.80844666,-87.67483486,0,,1
 8161,8161,"47th Street & Wolcott","47th Street & Wolcott, Eastbound, Southwest Corner",41.80845588,-87.67232238,0,,1
-8165,8165,"47th Street & Laflin","47th Street & Laflin, Eastbound, Southwest Corner",41.80857956,-87.66261609,0,,1
 8166,8166,"47th Street & Loomis","47th Street & Loomis, Eastbound, Southwest Corner",41.80860083,-87.6602327,0,,1
 8167,8167,"47th Street & Throop","47th Street & Throop, Eastbound, Southwest Corner",41.80863283,-87.6577837,0,,1
 8168,8168,"47th Street & Racine","47th Street & Racine, Eastbound, Southwest Corner",41.80866398,-87.65539005,0,,1
@@ -5439,11 +5415,13 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 8289,8289,"Western & 61st Street","Western & 61st Street, Southbound, Northwest Corner",41.78303101,-87.68387747,0,,1
 8294,8294,"Western & 66th Street","Western & 66th Street, Southbound, Northwest Corner",41.773854,-87.683522,0,,1
 8297,8297,"Western & 69th Street","Western & 69th Street, Southbound, Northwest Corner",41.76845216,-87.68349472,0,,1
+8299,8299,"Western & 71st Street","Western & 71st Street, Southbound, Northwest Corner",41.7648462,-87.68338005,0,,1
 8302,8302,"Western & Columbus","Western & Columbus, Southbound, Southwest Corner",41.75882727,-87.6832268,0,,1
 8304,8304,"Western & 76th Street","Western & 76th Street, Southbound, Northwest Corner",41.75554513,-87.6830757,0,,1
 8305,8305,"Western & 77th Street","Western & 77th Street, Southbound, Northwest Corner",41.75385713,-87.6830307,0,,1
 8307,8307,"79th & Western Terminal","79th & Western Terminal, Westbound, Bus Terminal",41.75073303,-87.68263576,0,,1
 8313,8313,"Western & 73rd Street","Western & 73rd Street, Northbound, Southeast Corner",41.76095498,-87.68301522,0,,1
+8317,8317,"Western & 69th Street","Western & 69th Street, Northbound, Southeast Corner",41.76822045,-87.68320658,0,,1
 8319,8319,"Western & Marquette Rd","Western & Marquette Rd, Northbound, Southeast Corner",41.7718735,-87.68331275,0,,1
 8320,8320,"Western & 66th Street","Western & 66th Street, Northbound, Southeast Corner",41.773688,-87.683377,0,,1
 8321,8321,"Western & 65th Street","Western & 65th Street, Northbound, Southeast Corner",41.775523,-87.683422,0,,1
@@ -5478,14 +5456,12 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 8400,8400,"Western & Armitage","Western & Armitage, Northbound, Southeast Corner",41.91746248,-87.68728053,0,,1
 8402,8402,"Western & Palmer","Western & Palmer, Northbound, Southeast Corner",41.92179039,-87.68741663,0,,1
 8404,8404,"Western & Belden","Western & Belden, Northbound, Southeast Corner",41.92328978,-87.68746166,0,,1
-8405,8405,"Western & Fullerton","Western & Fullerton, Northbound, Southeast Corner",41.92480125,-87.6875098,0,,1
 8407,8407,"Western & Logan/Jones","Western & Logan/Jones, Northbound, Southeast Corner",41.92928617,-87.68764771,0,,1
 8408,8408,"Western & Schubert","Western & Schubert, Northbound, Southeast Corner",41.93024132,-87.68770221,0,,1
 8412,8412,"Western & Barry","Western & Barry, Northbound, Southeast Corner",41.93747124,-87.68783945,0,,1
 8415,8415,"Western & Roscoe","Western & Roscoe, Northbound, Southeast Corner",41.94294291,-87.68800704,0,,1
 8417,8417,"Western & Addison","Western & Addison, Northbound, Southeast Corner",41.94659346,-87.68810852,0,,1
 8419,8419,"Western & Grace","Western & Grace, Northbound, Southeast Corner",41.95029151,-87.68821429,0,,1
-8421,8421,"Western & Irving Park","Western & Irving Park, Northbound, Southeast Corner",41.9538837,-87.68833392,0,,1
 8422,8422,"Western & Belle Plaine","Western & Belle Plaine, Northbound, Southeast Corner",41.955734,-87.68838815,0,,1
 8423,8423,"Western & Berteau","Western & Berteau, Northbound, Southeast Corner",41.95755401,-87.688442,0,,1
 8427,8427,"Western & Wilson","Western & Wilson, Northbound, Southeast Corner",41.96477771,-87.68864154,0,,1
@@ -5974,6 +5950,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 9270,9270,"Belmont & Milwaukee","Belmont & Milwaukee, Eastbound, Southwest Corner",41.93906153,-87.72398399,0,,1
 9272,9272,"Belmont & Lawndale","Belmont & Lawndale, Eastbound, Southwest Corner",41.93911953,-87.71984299,0,,1
 9273,9273,"Belmont & Central Park","Belmont & Central Park, Eastbound, Southwest Corner",41.93914853,-87.71746099,0,,1
+9274,9274,"Belmont & St. Louis","Belmont & St. Louis, Eastbound, Southwest Corner",41.93921532,-87.71516327,0,,1
 9275,9275,"Belmont & Oakley","Belmont & Oakley, Eastbound, Southwest Corner",41.93940296,-87.68578066,0,,1
 9276,9276,"Belmont & Leavitt","Belmont & Leavitt, Eastbound, Southwest Corner",41.93946318,-87.68335407,0,,1
 9277,9277,"Belmont & Hoyne","Belmont & Hoyne, Eastbound, Southwest Corner",41.93945473,-87.68091927,0,,1
@@ -5998,6 +5975,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 9310,9310,"Belmont & Hoyne","Belmont & Hoyne, Westbound, Northeast Corner",41.93960424,-87.68059178,0,,1
 9311,9311,"Belmont & Leavitt","Belmont & Leavitt, Westbound, Northeast Corner",41.93957896,-87.68301672,0,,1
 9312,9312,"Belmont & Oakley","Belmont & Oakley, Westbound, Northeast Corner",41.93954491,-87.68551977,0,,1
+9313,9313,"Belmont & St. Louis","Belmont & St. Louis, Westbound, Northside of the Street",41.93930552,-87.71487205,0,,1
 9314,9314,"Belmont & Central Park","Belmont & Central Park, Westbound, Northeast Corner",41.93927553,-87.71726747,0,,1
 9315,9315,"Belmont & Lawndale","Belmont & Lawndale, Westbound, Northeast Corner",41.93922574,-87.71970048,0,,1
 9316,9316,"Belmont & Hamlin","Belmont & Hamlin, Westbound, Northeast Corner",41.93919721,-87.72204995,0,,1
@@ -6505,7 +6483,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 9967,9967,"Kedzie & 110th Street","Kedzie & 110th Street, Northbound, Eastside of the Street",41.693395,-87.700794,0,,1
 9968,9968,"Kedzie & 109th Street","Kedzie & 109th Street, Northbound, Southeast Corner",41.695129,-87.700872,0,,1
 9969,9969,"Kedzie & 108th Street","Kedzie & 108th Street, Northbound, Southeast Corner",41.696956,-87.700942,0,,1
-9970,9970,"Kedzie & 107th Street","Kedzie & 107th Street, Northbound, Southeast Corner",41.698785,-87.701005,0,,1
 9971,9971,"Kedzie & 106th Street","Kedzie & 106th Street, Northbound, Southeast Corner",41.700534,-87.701065,0,,1
 9972,9972,"Kedzie & 105th Street","Kedzie & 105th Street, Northbound, Southeast Corner",41.70243853,-87.70113286,0,,1
 9973,9973,"Kedzie & 104th Street","Kedzie & 104th Street, Northbound, Southeast Corner",41.70426478,-87.70120406,0,,1
@@ -6575,7 +6552,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 10047,10047,"Kedzie & 104th Street","Kedzie & 104th Street, Southbound, Northwest Corner",41.70444451,-87.70135857,0,,1
 10048,10048,"Kedzie & 105th Street","Kedzie & 105th Street, Southbound, Northwest Corner",41.70261033,-87.70129864,0,,1
 10049,10049,"Kedzie & 106th Street","Kedzie & 106th Street, Southbound, Northwest Corner",41.7007,-87.701209,0,,1
-10050,10050,"Kedzie & 107th Street","Kedzie & 107th Street, Southbound, Northwest Corner",41.69895595,-87.70117868,0,,1
 10051,10051,"Kedzie & 108th Street","Kedzie & 108th Street, Southbound, Northwest Corner",41.697122,-87.701086,0,,1
 10052,10052,"Kedzie & 109th Street","Kedzie & 109th Street, Southbound, Northwest Corner",41.695294,-87.701017,0,,1
 10053,10053,"Kedzie & 110th Street","Kedzie & 110th Street, Southbound, Northwest Corner",41.69348097,-87.70097306,0,,1
@@ -6633,6 +6609,11 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 10113,10113,"69th Street & Hoyne","69th Street & Hoyne, Westbound, Northeast Corner",41.76844938,-87.67585259,0,,1
 10115,10115,"69th Street & Bell","69th Street & Bell, Westbound, Northeast Corner",41.76843598,-87.67952142,0,,1
 10116,10116,"69th Street & Oakley","69th Street & Oakley, Westbound, Northeast Corner",41.76843698,-87.68062143,0,,1
+10117,10117,"Western & 69th Street","Western & 69th Street, Southbound, Southwest Corner",41.76814194,-87.68348863,0,,1
+10118,10118,"71st Street & Campbell","71st Street & Campbell, Westbound, Northeast Corner",41.764682,-87.685371,0,,1
+10119,10119,"71st Street & Rockwell","71st Street & Rockwell, Westbound, Northeast Corner",41.764633,-87.687916,0,,1
+10120,10120,"71st Street & Washtenaw","71st Street & Washtenaw, Westbound, Northeast Corner",41.76466285,-87.69049749,0,,1
+10121,10121,"71st Street & California","71st Street & California, Westbound, Northeast Corner",41.76460902,-87.69291621,0,,1
 10122,10122,"71st Street & Spaulding","71st Street & Spaulding, Westbound, Northside of the Street",41.764399,-87.7052,0,,1
 10123,10123,"71st Street & Homan","71st Street & Homan, Westbound, Northside of the Street",41.764366,-87.707693,0,,1
 10124,10124,"71st Street & St. Louis","71st Street & St. Louis, Westbound, Northside of the Street",41.764355,-87.710153,0,,1
@@ -6651,6 +6632,10 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 10139,10139,"71st Street & Spaulding","71st Street & Spaulding, Eastbound, Southeast Corner",41.76426566,-87.70515729,0,,1
 10140,10140,"71st Street & Kedzie","71st Street & Kedzie, Eastbound, Southeast Corner",41.76432434,-87.70248852,0,,1
 10141,10141,"71st Street & Albany","71st Street & Albany, Eastbound, Southwest Corner",41.764383,-87.700416,0,,1
+10144,10144,"71st Street & Washtenaw","71st Street & Washtenaw, Eastbound, Southwest Corner",41.76453,-87.690678,0,,1
+10145,10145,"71st Street & Rockwell","71st Street & Rockwell, Eastbound, Southwest Corner",41.764561,-87.688238,0,,1
+10146,10146,"71st Street & Campbell","71st Street & Campbell, Eastbound, Southwest Corner",41.764599,-87.68579,0,,1
+10147,10147,"Western & 71st Street","Western & 71st Street, Northbound, Northeast Corner",41.76492603,-87.6831168,0,,1
 10148,10148,"69th Street & Oakley","69th Street & Oakley, Eastbound, Southwest Corner",41.768322,-87.680888,0,,1
 10149,10149,"69th Street & Bell","69th Street & Bell, Eastbound, Southwest Corner",41.768337,-87.679677,0,,1
 10151,10151,"69th Street & Hoyne","69th Street & Hoyne, Eastbound, Southwest Corner",41.76837,-87.676164,0,,1
@@ -6908,7 +6893,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 10493,10493,"Irving Park & Avondale","Irving Park & Avondale, Eastbound, Southeast Corner",41.95350641,-87.73151277,0,,1
 10495,10495,"55th Street & Kilpatrick","55th Street & Kilpatrick, Eastbound, Southeast Corner",41.79294409,-87.73991156,0,,1
 10496,10496,"4600 W 55th Street","4600 W 55th Street, Eastbound, Southeast Corner",41.79299879,-87.73751922,0,,1
-10497,10497,"55th Street & Kilbourn","55th Street & Kilbourn, Eastbound, Southeast Corner",41.79304439,-87.73512757,0,,1
 10498,10498,"55th Street & Kostner","55th Street & Kostner, Eastbound, Southeast Corner",41.7930477,-87.73266122,0,,1
 10499,10499,"55th Street & Kildare","55th Street & Kildare, Eastbound, Southwest Corner",41.79306417,-87.7306153,0,,1
 10500,10500,"55th Street & Keeler","55th Street & Keeler, Eastbound, Southeast Corner",41.79308444,-87.72781254,0,,1
@@ -6953,6 +6937,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 10544,10544,"Garfield & State","Garfield & State, Eastbound, Southeast Corner",41.79425418,-87.62536785,0,,1
 10545,10545,"Garfield & Wabash","Garfield & Wabash, Eastbound, Southeast Corner",41.79428438,-87.62379865,0,,1
 10547,10547,"Garfield & Indiana","Garfield & Indiana, Eastbound, Southeast Corner",41.79434266,-87.62049817,0,,1
+10548,10548,"Garfield Green Line Station","Garfield Green Line Station, Eastbound, Southside of the Street",41.79435435,-87.61832588,0,,1
 10549,10549,"Garfield & King Drive","Garfield & King Drive, Eastbound, Southwest Corner",41.79441235,-87.6161524,0,,1
 10550,10550,"Morgan Drive & Russell Drive","Morgan Drive & Russell Drive, Eastbound, Southwest Corner",41.79362601,-87.61327329,0,,1
 10551,10551,"Payne Drive & 55th Street","Payne Drive & 55th Street, Northeastbound, Southwest Corner",41.79486326,-87.60735135,0,,1
@@ -7028,6 +7013,9 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 10784,10784,"71st Street & Prairie","71st Street & Prairie, Eastbound, Southwest Corner",41.765582,-87.618672,0,,1
 10785,10785,"71st Street & Calumet","71st Street & Calumet, Eastbound, Southwest Corner",41.765633,-87.617007,0,,1
 10786,10786,"71st Street & King Drive","71st Street & King Drive, Eastbound, Southwest Corner",41.76563,-87.61548,0,,1
+10789,10789,"71st Street & St. Lawrence","71st Street & St. Lawrence, Eastbound, Southwest Corner",41.76573,-87.610627,0,,1
+10790,10790,"71st Street & Langley","71st Street & Langley, Eastbound, Southwest Corner",41.76573529,-87.60864987,0,,1
+10791,10791,"71st Street & Cottage Grove/S. Chicago","71st Street & Cottage Grove/S. Chicago, Eastbound, Southwest Corner",41.76580787,-87.60579995,0,,1
 10792,10792,"71st Street & Cottage Grove/S. Chicago","71st Street & Cottage Grove/S. Chicago, Eastbound, Southeast Corner",41.765748,-87.60473,0,,1
 10793,10793,"71st Street & Drexel","71st Street & Drexel, Eastbound, Southwest Corner",41.76575374,-87.60323135,0,,1
 10794,10794,"71st Street & Ellis","71st Street & Ellis, Eastbound, Southwest Corner",41.765775,-87.600848,0,,1
@@ -7053,7 +7041,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 10819,10819,"71st Street & Yates","71st Street & Yates, Westbound, Northwest Corner",41.76636676,-87.56686634,0,,1
 10821,10821,"71st Street & Crandon","71st Street & Crandon, Westbound, Northeast Corner",41.7663412,-87.56965943,0,,1
 10822,10822,"71st Street & Paxton","71st Street & Paxton, Westbound, Northeast Corner",41.766337,-87.571218,0,,1
-10823,10823,"71st Street & Merrill","71st Street & Merrill, Westbound, Northeast Corner",41.766323,-87.572452,0,,1
 10826,10826,"71st Street & Euclid","71st Street & Euclid, Westbound, Northside of the Street",41.766267,-87.578583,0,,1
 10827,10827,"71st Street & Cregier","71st Street & Cregier, Westbound, Northside of the Street",41.766237,-87.581053,0,,1
 10828,10828,"71st Street & Cornell","71st Street & Cornell, Westbound, Northeast Corner",41.766205,-87.584138,0,,1
@@ -7067,6 +7054,11 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 10836,10836,"71st Street & Greenwood","71st Street & Greenwood, Westbound, Northside of the Street",41.76595,-87.59846,0,,1
 10837,10837,"71st Street & Ellis","71st Street & Ellis, Westbound, Northside of the Street",41.765913,-87.600655,0,,1
 10838,10838,"71st Street & Drexel","71st Street & Drexel, Westbound, Northside of the Street",41.765878,-87.603047,0,,1
+10839,10839,"71st Street & Cottage Grove/S. Chicago","71st Street & Cottage Grove/S. Chicago, Westbound, Northeast Corner",41.76594718,-87.60528103,0,,1
+10840,10840,"71st Street & Cottage Grove/S. Chicago","71st Street & Cottage Grove/S. Chicago, Westbound, Northwest Corner",41.76592888,-87.60633362,0,,1
+10841,10841,"71st Street & Langley","71st Street & Langley, Westbound, Northside of the Street",41.765905,-87.608825,0,,1
+10842,10842,"71st Street & St. Lawrence","71st Street & St. Lawrence, Westbound, Northeast Corner",41.765858,-87.610258,0,,1
+10845,10845,"71st Street & King Drive","71st Street & King Drive, Westbound, Northeast Corner",41.765773,-87.615075,0,,1
 10846,10846,"71st Street & Calumet","71st Street & Calumet, Westbound, Northeast Corner",41.765735,-87.616658,0,,1
 10847,10847,"71st Street & Prairie","71st Street & Prairie, Westbound, Northeast Corner",41.765717,-87.618247,0,,1
 10849,10849,"71st Street & Michigan","71st Street & Michigan, Westbound, Northeast Corner",41.765643,-87.621462,0,,1
@@ -7485,7 +7477,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 11341,11341,"Montrose & Albany","Montrose & Albany, Eastbound, Southwest Corner",41.961146,-87.705914,0,,1
 11342,11342,"Montrose & Sacramento","Montrose & Sacramento, Eastbound, Southwest Corner",41.96115477,-87.70345452,0,,1
 11343,11343,"Montrose & Francisco","Montrose & Francisco, Eastbound, Southwest Corner",41.96117463,-87.70102245,0,,1
-11345,11345,"2656 W Montrose","2656 W Montrose, Eastbound, Southside of the Street",41.96118846,-87.69564787,0,,1
 11346,11346,"Montrose & Rockwell","Montrose & Rockwell, Eastbound, Southside of the Street",41.961223,-87.69366,0,,1
 11347,11347,"Montrose & Campbell","Montrose & Campbell, Eastbound, Southwest Corner",41.961235,-87.691915,0,,1
 11349,11349,"Montrose & Oakley","Montrose & Oakley, Eastbound, Southwest Corner",41.961288,-87.686368,0,,1
@@ -7509,7 +7500,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 11379,11379,"Montrose & Western","Montrose & Western, Westbound, Northeast Corner",41.96138618,-87.68850147,0,,1
 11380,11380,"Montrose & Campbell","Montrose & Campbell, Westbound, Northwest Corner",41.96135052,-87.69149143,0,,1
 11381,11381,"Montrose & Rockwell","Montrose & Rockwell, Westbound, Northeast Corner",41.96133848,-87.69346253,0,,1
-11382,11382,"2656 W Montrose","2656 W Montrose, Westbound, Northside of the Street",41.961324,-87.69563,0,,1
 11383,11383,"Montrose & California","Montrose & California, Westbound, Northeast Corner",41.96130089,-87.69835416,0,,1
 11384,11384,"Montrose & Francisco","Montrose & Francisco, Westbound, Northeast Corner",41.96130089,-87.70075517,0,,1
 11386,11386,"Montrose & Albany","Montrose & Albany, Westbound, Northeast Corner",41.96125999,-87.70567586,0,,1
@@ -8259,7 +8249,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 12379,12379,"111th Street & St. Louis","111th Street & St. Louis, Westbound, Northeast Corner",41.69150933,-87.70805525,0,,1
 12380,12380,"111th Street & Central Park","111th Street & Central Park, Westbound, Northeast Corner",41.69147911,-87.71039425,0,,1
 12382,12382,"111th Street & Hamlin","111th Street & Hamlin, Westbound, Northeast Corner",41.69139881,-87.71534445,0,,1
-12383,12383,"111th Street & Springfield","111th Street & Springfield, Westbound, Northeast Corner",41.69135866,-87.71776021,0,,1
 12385,12385,"111th Street & Springfield","111th Street & Springfield, Eastbound, Southside of the Street",41.691244,-87.717895,0,,1
 12386,12386,"111th Street & Hamlin","111th Street & Hamlin, Eastbound, Southside of the Street",41.691277,-87.71546,0,,1
 12387,12387,"111th Street & Lawndale","111th Street & Lawndale, Eastbound, Southside of the Street",41.6913119,-87.7132621,0,,1
@@ -8394,7 +8383,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 12552,12552,"Addison & Halsted","Addison & Halsted, Westbound, Northeast Corner",41.94737081,-87.64931745,0,,1
 12553,12553,"Addison & Fremont","Addison & Fremont, Westbound, Northeast Corner",41.94734962,-87.65179573,0,,1
 12554,12554,"Addison Red Line Station","Addison Red Line Station, Westbound, Northside of the Street",41.94729888,-87.65361096,0,,1
-12555,12555,"Addison & Clark","Addison & Clark, Westbound, Northeast Corner",41.94727653,-87.65640515,0,,1
 12556,12556,"Addison & Racine","Addison & Racine, Westbound, Northeast Corner",41.94721081,-87.65903679,0,,1
 12557,12557,"Addison & Lakewood","Addison & Lakewood, Westbound, Northeast Corner",41.94716956,-87.66150477,0,,1
 12558,12558,"Addison & Southport","Addison & Southport, Westbound, Northeast Corner",41.94712923,-87.66388352,0,,1
@@ -8729,7 +8717,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 13155,13155,"Desplaines & Harrison Terminal","Desplaines & Harrison Terminal, Southbound, Bus Terminal",41.87444284,-87.64434548,0,,1
 13156,13156,"Dodge & Church","Dodge & Church, Southbound, Northwest Corner",42.04845372,-87.69908004,0,,1
 13180,13180,"Armitage & Clark","Armitage & Clark, Westbound, Northwest Corner",41.91844102,-87.63644615,0,,1
-13181,13181,"Clybourn Metra Station","Clybourn Metra Station, Eastbound, Southside of the Street",41.91604165,-87.66852869,0,,1
 13191,13191,"Ogden & Roosevelt","Ogden & Roosevelt, Northeastbound, Southeast Corner",41.86700028,-87.68316147,0,,1
 13192,13192,"Roosevelt & Damen","Roosevelt & Damen, Eastbound, Southeast Corner",41.86665512,-87.67575835,0,,1
 13193,13193,"Loomis & Blue Island","Loomis & Blue Island, Northbound, Southeast Corner",41.85762294,-87.66123267,0,,1
@@ -8737,10 +8724,13 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 13197,13197,"59th Street & Kimbark","59th Street & Kimbark, Westbound, Northeast Corner",41.78787138,-87.59450063,0,,1
 13198,13198,"Ontario & Wabash","Ontario & Wabash, Westbound, Northeast Corner",41.89329558,-87.62664133,0,,1
 14001,14001,"95th Red Line Station","95th Red Line Station, Eastbound, Bus Terminal",41.72140042,-87.62473371,0,40450,1
-14003,14003,"95th Red Line Station","95th Red Line Station, Northbound, Bus Terminal",41.72157696,-87.62532268,0,40450,1
-14004,14004,"95th Red Line Station","95th Red Line Station, Southbound, Bus Terminal",41.72116326,-87.62396581,0,40450,1
-14010,14010,"95th Red Line Station","95th Red Line Station, Southbound, Bus Terminal",41.72115386,-87.62473095,0,40450,1
-14011,14011,"95th Red Line Station","95th Red Line Station, Northbound, Bus Terminal",41.72095986,-87.62457049,0,40450,1
+14003,14003,"95th Red Line Station","95th Red Line Station, Northbound, Bus Terminal",41.72154005,-87.62463063,0,40450,1
+14004,14004,"95th Red Line Station","95th Red Line Station, Southbound, Bus Terminal",41.72135661,-87.62399601,0,40450,1
+14006,14006,"95th Red Line Station","95th Red Line Station, Northbound, Bus Terminal",41.72095268,-87.6243002,0,40450,1
+14007,14007,"95th Red Line Station","95th Red Line Station, Southbound, Bus Terminal",41.72184238,-87.62404271,0,40450,1
+14008,14008,"95th Red Line Station","95th Red Line Station, Southbound, Bus Terminal",41.72238778,-87.62494965,0,40450,1
+14010,14010,"95th Red Line Station","95th Red Line Station, Southbound, Bus Terminal",41.72193244,-87.62494419,0,40450,1
+14011,14011,"95th Red Line Station","95th Red Line Station, Northbound, Bus Terminal",41.72236315,-87.6240313,0,40450,1
 14019,14019,"60th Street & Ellis","60th Street & Ellis, Eastbound, Southeast Corner",41.78588821,-87.60088971,0,,1
 14020,14020,"60th Street & University","60th Street & University, Eastbound, Southeast Corner",41.78592162,-87.59772191,0,,1
 14023,14023,"59th Street & Drexel","59th Street & Drexel, Westbound, Northside of the Street",41.78776144,-87.60361666,0,,1
@@ -8789,12 +8779,12 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 14102,14102,"Jefferson Park Transit Center","Jefferson Park Transit Center, Southwestbound, Bus Terminal",41.96984927,-87.76185025,0,41280,1
 14103,14103,"Jefferson Park Transit Center","Jefferson Park Transit Center, Southwestbound, Bus Terminal",41.96980771,-87.76177878,0,41280,1
 14108,14108,"Jefferson Park Transit Center","Jefferson Park Transit Center, Southwestbound, Bus Terminal",41.96986885,-87.76190074,0,41280,1
-14116,14116,"Midway Orange Line Station","Midway Orange Line Station, Southwestbound, Bus Terminal",41.7863219,-87.73892387,0,,1
-14118,14118,"Midway Orange Line Station","Midway Orange Line Station, Southwestbound, Bus Terminal",41.78627355,-87.73897049,0,,1
-14120,14120,"Midway Orange Line Station","Midway Orange Line Station, Southwestbound, Bus Terminal",41.78643184,-87.73885056,0,,1
-14121,14121,"Midway Orange Line Station","Midway Orange Line Station, Southwestbound, Bus Terminal",41.7865518,-87.73924442,0,,1
-14122,14122,"Midway Orange Line Station","Midway Orange Line Station, Southwestbound, Bus Terminal",41.78622886,-87.73900346,0,,1
-14123,14123,"Midway Orange Line Station","Midway Orange Line Station, Southwestbound, Bus Terminal",41.78652565,-87.73878099,0,,1
+14116,14116,"Midway Orange Line Station","Midway Orange Line Station, Southwestbound, Bus Terminal",41.78646501,-87.73882191,0,,1
+14118,14118,"Midway Orange Line Station","Midway Orange Line Station, Southwestbound, Bus Terminal",41.78655188,-87.73876312,0,,1
+14120,14120,"Midway Orange Line Station","Midway Orange Line Station, Southwestbound, Bus Terminal",41.78626602,-87.73896561,0,,1
+14121,14121,"Midway Orange Line Station","Midway Orange Line Station, Southwestbound, Bus Terminal",41.78654689,-87.73914148,0,,1
+14122,14122,"Midway Orange Line Station","Midway Orange Line Station, Southwestbound, Bus Terminal",41.78636844,-87.73889567,0,,1
+14123,14123,"Midway Orange Line Station","Midway Orange Line Station, Southwestbound, Bus Terminal",41.78630975,-87.73835934,0,,1
 14124,14124,"Pulaski Orange Line Station","Pulaski Orange Line Station, Southbound, Bus Terminal",41.80024459,-87.72440024,0,,1
 14125,14125,"Pulaski Orange Line Station","Pulaski Orange Line Station, Southbound, Bus Terminal",41.8003078,-87.7244196,0,,1
 14126,14126,"Kedzie Orange Line Station","Kedzie Orange Line Station, Northeastbound, Bus Terminal",41.80486586,-87.70445607,0,,1
@@ -9862,10 +9852,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 15885,15885,"Montrose & Central","Montrose & Central, Westbound, Northwest Corner",41.96054985,-87.76755159,0,,1
 15886,15886,"87th Street Red Line Station","87th Street Red Line Station, Westbound, Northside of the Street",41.7364112,-87.62476573,0,,1
 15887,15887,"4251 N Marine Drive","4251 N Marine Drive, Northbound, Eastside of the Street",41.96012448,-87.64669198,0,,1
-15888,15888,"Cherry & North Bliss","Cherry & North Bliss, Southbound, Northwest Corner",41.90134873,-87.65239204,0,,1
-15889,15889,"Clybourn & North Ave (Red Line)","Clybourn & North Ave (Red Line), Southeastbound, Southwest Corner",41.91062583,-87.64925196,0,,1
-15890,15890,"Blackhawk & Cherry","Blackhawk & Cherry, Westbound, Northwest Corner",41.90719034,-87.65628229,0,,1
-15891,15891,"Cherry & Bliss","Cherry & Bliss, Northbound, Northeast Corner",41.90170896,-87.65249065,0,,1
 15894,15894,"Clark & Polk","Clark & Polk, Southbound, Southwest Corner",41.87200623,-87.63069157,0,,1
 15895,15895,"Clark & Harrison","Clark & Harrison, Southbound, Southwest Corner",41.87429511,-87.63075386,0,,1
 15902,15902,"Damen & Grand","Damen & Grand, Southbound, Southwest Corner",41.89061047,-87.6769913,0,,1
@@ -9927,7 +9913,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 15989,15989,"Kedzie & Fulton","Kedzie & Fulton, Southbound, Southwest Corner",41.88624961,-87.70635387,0,,1
 15992,15992,"Jackson & Campbell","Jackson & Campbell, Eastbound, Southwest Corner",41.87745393,-87.6888655,0,,1
 15993,15993,"Racine & Lexington","Racine & Lexington, Northbound, Eastside of the Street",41.87231854,-87.65673915,0,,1
-15999,15999,"State & 95th Street","State & 95th Street, Northbound, Southeast Corner",41.72143055,-87.62362907,0,,1
 16006,16006,"Austin & Cornelia","Austin & Cornelia, Southbound, Southwest Corner",41.94380942,-87.77649834,0,,1
 16007,16007,"Cicero & 74th Place","Cicero & 74th Place, Northbound, Southeast Corner",41.7571592,-87.74146377,0,,1
 16011,16011,"Chicago Avenue & South Blvd (Purple Line)","",42.02712735,-87.67805254,0,,1
@@ -9936,8 +9921,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 16015,16015,"Irving Park & Lavergne","Irving Park & Lavergne, Eastbound, Southeast Corner",41.95326677,-87.7520163,0,,1
 16018,16018,"Beverly Country Club","Beverly Country Club, Eastbound, Southside of the Street",41.73537843,-87.68465043,0,,1
 16019,16019,"Blue Island & Wood","Blue Island & Wood, Southwestbound, Northwest Corner",41.85035306,-87.67127208,0,,1
-16025,16025,"Cherry & Division","Cherry & Division, Southbound, Southwest Corner",41.90339724,-87.65408947,0,,1
-16026,16026,"Clybourn & Wisconsin","Clybourn & Wisconsin, Northwestbound, Northside of the Street",41.91519744,-87.65535568,0,,1
 16028,16028,"Grand & Rush","Grand & Rush, Westbound, Northwest Corner",41.89177539,-87.6256301,0,,1
 16030,16030,"Carver High School","Carver High School, Westbound, Northside of the Street",41.65627883,-87.59097662,0,,1
 16031,16031,"Cicero & Roosevelt","Cicero & Roosevelt, Northbound, Northeast Corner",41.86618591,-87.74465599,0,,1
@@ -10012,7 +9995,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 16174,16174,"Addison & Pulaski","Addison & Pulaski, Eastbound, Southeast Corner",41.94630968,-87.72707438,0,,1
 16175,16175,"Irving Park & Kilbourn","Irving Park & Kilbourn, Eastbound, Southeast Corner",41.9533972,-87.74078704,0,,1
 16186,16186,"Loomis & Cermak","Loomis & Cermak, Southbound, Northwest Corner",41.852533,-87.66125787,0,,1
-16190,16190,"Washtenaw & Ogden","Washtenaw & Ogden, Northbound, Southeast Corner",41.86200252,-87.69322237,0,,1
 16192,16192,"Lawrence & Sheridan","Lawrence & Sheridan, Eastbound, Southeast Corner",41.96903357,-87.65459087,0,,1
 16193,16193,"Cermak & Halsted","Cermak & Halsted, Westbound, Northwest Corner",41.85273736,-87.64662275,0,,1
 16194,16194,"Broadway & Wilson","Broadway & Wilson, Northbound, Northeast Corner",41.96559124,-87.65747542,0,,1
@@ -10064,6 +10046,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 17082,17082,"7150 S Cicero","7150 S Cicero, Southbound, Westside of the Street",41.76324861,-87.7420352,0,,1
 17084,17084,"Roosevelt & Michigan","Roosevelt & Michigan, Westbound, Northwest Corner",41.86759322,-87.62450326,0,,1
 17089,17089,"Ogden & Washtenaw","Ogden & Washtenaw, Southwestbound, Northwest Corner",41.86216183,-87.69348188,0,,1
+17090,17090,"71st Street & Eberhart","71st Street & Eberhart, Westbound, Northwest Corner",41.76582986,-87.6129794,0,,1
 17093,17093,"1916 W 119th Street","1916 W 119th Street, Westbound, Northside of the Street",41.67750041,-87.66877633,0,,1
 17094,17094,"119th & Division","119th & Division, Eastbound, Southwest Corner",41.67733926,-87.66899253,0,,1
 17096,17096,"Pulaski & Belmont","Pulaski & Belmont, Northbound, Northeast Corner",41.93931828,-87.72709927,0,,1
@@ -10109,6 +10092,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 17145,17145,"Addison & Oak Park","Addison & Oak Park, Eastbound, Southeast Corner",41.94542061,-87.79577806,0,,1
 17146,17146,"Addison & Cicero","Addison & Cicero, Eastbound, Southeast Corner",41.94605835,-87.74679575,0,,1
 17147,17147,"Addison & Cicero","Addison & Cicero, Westbound, Northwest Corner",41.94618302,-87.74739674,0,,1
+17148,17148,"71st Street & Eberhart","71st Street & Eberhart, Eastbound, Southeast Corner",41.76569533,-87.61264704,0,,1
 17149,17149,"Root & Union","Root & Union, Eastbound, Southside of the Street",41.81889414,-87.64318186,0,,1
 17150,17150,"Ridge & Austin","",42.02544678,-87.68516234,0,,1
 17152,17152,"Clark & 18th Street","Clark & 18th Street, Southbound, Southwest Corner",41.85760487,-87.6303276,0,,1
@@ -10353,7 +10337,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 17482,17482,"Belmont & Narragansett","Belmont & Narragansett, Westbound, Northwest Corner",41.9383814,-87.78629643,0,,1
 17483,17483,"Belmont & Sayre","Belmont & Sayre, Westbound, Northwest Corner",41.93813126,-87.80157796,0,,1
 17484,17484,"Cicero & Lawrence","Cicero & Lawrence, Northbound, Northeast Corner",41.96822887,-87.7475478,0,,1
-17485,17485,"Cherry & Division","Cherry & Division, Northbound, Northeast Corner",41.90382509,-87.65426058,0,,1
 17487,17487,"Halsted & Lincoln/Fullerton","Halsted & Lincoln/Fullerton, Northbound, Northeast Corner",41.92571877,-87.64867694,0,,1
 17492,17492,"Halsted & 99th Street","Halsted & 99th Street, Southbound, Southwest Corner",41.71375847,-87.64318179,0,,1
 17493,17493,"Irving Park & Western","Irving Park & Western, Eastbound, Southeast Corner",41.95392486,-87.68816718,0,,1
@@ -10518,11 +10501,10 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 17785,17785,"Armitage Station (Brown Line)","Armitage Station (Brown Line), Eastbound, Southside of the Street",41.91803615,-87.65257153,0,,1
 17786,17786,"Rockwell & Addison","Rockwell & Addison, Northbound, Eastside of the Street",41.94598672,-87.6939588,0,,1
 17787,17787,"California & Addison","California & Addison, Southbound, Southwest Corner",41.9463121,-87.69813181,0,,1
-17790,17790,"95th Street Red Line Station","95th Street Red Line Station, Westbound, Northside of the Street",41.72141953,-87.62399735,0,,1
+17790,17790,"95th Street Red Line Station","95th Street Red Line Station, Westbound, Northside of the Street",41.72184977,-87.6245549,0,,1
 17815,17815,"47th Street & Calumet","47th Street & Calumet, Eastbound, Southwest Corner",41.80925927,-87.6182758,0,,1
 17816,17816,"47th Street & Prairie","47th Street & Prairie, Westbound, Northeast Corner",41.80939943,-87.61953534,0,,1
 17817,17817,"47th Street & Indiana","47th Street & Indiana, Westbound, Northwest Corner",41.80937983,-87.62132675,0,,1
-17828,17828,"Garfield Green Line Station","Garfield Green Line Station, Eastbound, Southwest Corner",41.79438061,-87.61963361,0,,1
 17831,17831,"Addison & Central","Addison & Central, Westbound, Northwest Corner",41.94593508,-87.7671953,0,,1
 17832,17832,"Addison & Kimball","Addison & Kimball, Eastbound, Southeast Corner",41.94650634,-87.71237031,0,,1
 17833,17833,"Belmont & Greenview","Belmont & Greenview, Eastbound, Southeast Corner",41.9396756,-87.66589055,0,,1
@@ -10583,6 +10565,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 17921,17921,"North Ave & Mayfield","North Ave & Mayfield, Eastbound, Southwest Corner",41.90917172,-87.77333283,0,,1
 17922,17922,"Fullerton & Seminary","Fullerton & Seminary, Westbound, Northeast Corner",41.92541214,-87.65586333,0,,1
 17923,17923,"Fullerton & Lakewood","Fullerton & Lakewood, Eastbound, Southwest Corner",41.9251654,-87.66108654,0,,1
+17924,17924,"71st Street & California","71st Street & California, Eastbound, Southeast Corner",41.76447849,-87.69284258,0,,1
 17925,17925,"69th Street & Damen","69th Street & Damen, Westbound, Northwest Corner",41.76851202,-87.67387022,0,,1
 17926,17926,"McClurg & Grand","McClurg & Grand, Northbound, Southeast Corner",41.89171071,-87.61760718,0,,1
 17943,17943,"7100 W Forest Preserve Avenue","7100 W Forest Preserve Avenue, Northeastbound, Southside of the Street",41.95420249,-87.80634756,0,,1
@@ -10812,7 +10795,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 18346,18346,"Western & Roscoe","Western & Roscoe, Southbound, Southwest Corner",41.94287784,-87.68828745,0,,1
 18347,18347,"Fullerton & Elston","Fullerton & Elston, Westbound, Northwest Corner",41.92515193,-87.67611866,0,,1
 18348,18348,"Fullerton & Damen","Fullerton & Damen, Eastbound, Southeast Corner",41.92494986,-87.67750921,0,,1
-18349,18349,"Clarendon & Montrose","Clarendon & Montrose, Southbound, Southwest Corner",41.96175832,-87.64995808,0,,1
 18352,18352,"Lawrence & Washtenaw","Lawrence & Washtenaw, Westbound, Northwest Corner",41.96863828,-87.69648863,0,,1
 18353,18353,"Cermak & Prairie","Cermak & Prairie, Westbound, Northwest Corner",41.85302648,-87.62083344,0,,1
 18354,18354,"Sheridan & Emerson","Sheridan & Emerson, Northbound, Eastside of the Street",42.05220009,-87.67712517,0,,1
@@ -10830,7 +10812,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 18368,18368,"3700 S. Cicero","3700 S. Cicero, Southbound, Westside of the Street",41.82619517,-87.74372701,0,,1
 18369,18369,"3700 S. Cicero","3700 S. Cicero, Northbound, Eastside of the Street",41.8238729,-87.74337011,0,,1
 18370,18370,"Cicero & 24th Place","Cicero & 24th Place, Northbound, Eastside of the Street",41.84683037,-87.74398125,0,,1
-18373,18373,"9771 S. State","9771 S. State, Northbound, Eastside of the Street",41.71729,-87.62289,0,,1
 18374,18374,"Grand & Homan","Grand & Homan, Southeastbound, Southside of the Street",41.90007725,-87.71148735,0,,1
 18375,18375,"Grand & Augusta","Grand & Augusta, Eastbound, Southeast Corner",41.89893187,-87.70841722,0,,1
 18376,18376,"Grand & Augusta","Grand & Augusta, Westbound, Northwest Corner",41.89937404,-87.70892413,0,,1
@@ -10842,24 +10823,18 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 18382,18382,"Meade & 64th Place","Meade & 64th Place, Southbound, Southwest Corner",41.77516268,-87.77388922,0,,1
 18383,18383,"26th Street & Homan","26th Street & Homan, Eastbound, Southeast Corner",41.84439808,-87.70968611,0,,1
 18384,18384,"95th Red Line Station","95th Red Line Station, Southbound, Bus Terminal",41.72107346,-87.62400439,0,,1
-18385,18385,"Cottage Grove & 44th Street","Cottage Grove & 44th Street, Southbound, Southwest Corner",41.81478039,-87.60679338,0,,1
 18386,18386,"Broadway & Roscoe","Broadway & Roscoe, Southbound, Westside of the Street",41.94317652,-87.64480283,0,,1
 18387,18387,"South Chicago & 69th Street","South Chicago & 69th Street, Southeastbound, Southwest Corner",41.76906439,-87.61022177,0,,1
 18388,18388,"Central & Lawrence","Central & Lawrence, Southbound, Southwest Corner",41.96758799,-87.7675645,0,,1
 18389,18389,"Central & Lawrence","Central & Lawrence, Northbound, Northeast Corner",41.96794389,-87.76739305,0,,1
 18390,18390,"95th Red Line Station","95th Red Line Station, Southbound, Bus Terminal",41.72153702,-87.62407419,0,,1
-18391,18391,"95th Red Line Station","95th Red Line Station, Southbound, Bus Terminal",41.72153877,-87.62441407,0,,1
 18393,18393,"Broadway & Lawrence","Broadway & Lawrence, Southbound, Southwest Corner",41.96886619,-87.65976769,0,,1
 18395,18395,"Roosevelt & Ashland","Roosevelt & Ashland, Westbound, Northwest Corner",41.86696079,-87.66672245,0,,1
 18396,18396,"Michigan & Monroe","Michigan & Monroe, Southbound, Southwest Corner",41.88062493,-87.62451644,0,,1
-18398,18398,"Diversey & Damen/Clybourn","Diversey & Damen/Clybourn, Westbound, Northeast Corner",41.9323564,-87.67784133,0,,1
 18400,18400,"47th Street & Hoyne","47th Street & Hoyne, Westbound, Northside of the Street",41.80857067,-87.67740132,0,,1
 18401,18401,"Ashland & Farwell","Ashland & Farwell, Northbound, Southeast Corner",42.00651087,-87.66991398,0,,1
 18402,18402,"Orleans & Oak","Orleans & Oak, Northbound, Northeast Corner",41.90071376,-87.6372401,0,,1
 18403,18403,"Harlem & 61st Place","Harlem & 61st Place, Southbound, Northwest Corner",41.78012432,-87.80123731,0,,1
-18404,18404,"State & 57th Street","State & 57th Street, Northbound, Northeast Corner",41.79121463,-87.62549244,0,,1
-18406,18406,"Halsted & Chicago","Halsted & Chicago, Northbound, Northeast Corner",41.89671578,-87.6476005,0,,1
-18407,18407,"Belmont & Kimball (Blue Line)","Belmont & Kimball (Blue Line), Westbound, Northwest Corner",41.93935038,-87.71309301,0,,1
 18408,18408,"Jefferson Park Transit Center","Jefferson Park Transit Center, Northwestbound, Eastside of the Street",41.97034693,-87.76278385,0,,1
 18409,18409,"Jefferson Park Transit Center","",41.96970371,-87.76249045,0,,1
 18410,18410,"Jefferson Park Transit Center","Jefferson Park Transit Center, Southwestbound, Bus Terminal",41.96966986,-87.76152502,0,,1
@@ -10867,7 +10842,16 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 18412,18412,"Walton & Clark","Walton & Clark, Westbound, Northwest Corner",41.89986678,-87.63100262,0,,1
 18414,18414,"Vincennes & 77th Street","Vincennes & 77th Street, Southbound, Southwest Corner",41.75426333,-87.63334695,0,,1
 18415,18415,"8401 S Holland","8401 S Holland, Northbound, Northeast Corner",41.74149142,-87.63189751,0,,1
-18416,18416,"Division & Larrabee","Division & Larrabee, Eastbound, Southeast Corner",41.90363837,-87.64280977,0,,1
+18417,18417,"47th Street & Laflin","47th Street & Laflin, Eastbound, Southeast Corner",41.80858446,-87.66234948,0,,1
+18418,18418,"South Chicago & Dante","South Chicago & Dante, Northwestbound, Northeast Corner",41.75485831,-87.5900531,0,,1
+18419,18419,"Racine & 51st Street","Racine & 51st Street, Northbound, Northeast Corner",41.80157104,-87.65499162,0,,1
+18420,18420,"Racine & 51st Street","Racine & 51st Street, Southbound, Southwest Corner",41.80132982,-87.65515511,0,,1
+18421,18421,"Kedzie & 107th Street","Kedzie & 107th Street, Northbound, Northeast Corner",41.69897406,-87.70099967,0,,1
+18422,18422,"Kedzie & 107th Street","Kedzie & 107th Street, Southbound, Southwest Corner",41.69876091,-87.70119378,0,,1
+18423,18423,"55th Street & Kenneth","55th Street & Kenneth, Eastbound, Southeast Corner",41.79303528,-87.73399953,0,,1
+18424,18424,"Milwaukee & Belmont","Milwaukee & Belmont, Southeastbound, Southwest Corner",41.93899328,-87.72384771,0,,1
+18425,18425,"Milwaukee & Keeler","Milwaukee & Keeler, Northwestbound, Northeast Corner",41.94439974,-87.73242613,0,,1
+18427,18427,"Bryn Mawr 7 Nagle","",41.98296062,-87.79043308,0,,1
 30001,,"Austin-Blue","",41.870851,-87.776812,0,40010,0
 30002,,"Austin-Blue","",41.870851,-87.776812,0,40010,0
 30003,,"Harlem-Green","",41.886848,-87.803176,0,40020,1
@@ -11309,12 +11293,17 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 41680,,"Oakton-Skokie","",42.02624348,-87.74722084,1,,1
 41690,,"Cermak-McCormick Place","",41.853115,-87.626402,1,,1
 41700,,"Washington/Wabash","",41.88322,-87.626189,1,,1
-60000,,"Clark/Division (Clark St Entrance)","East entrance",41.9039993,-87.6313019,2,40630,2
-60001,,"Clark/Division (LaSalle Blvd Entrance)","West entrance, accessible",41.903801,-87.6327972,2,40630,1
-60002,,"Harlem/Lake (Harlem Ave Entrance)","Main entrance on Harlem  Ave",41.886795,-87.805087,2,40020,1
-60003,,"Harlem/Lake (Marion St Entrance)","Accessible entrance with connection to Metra UP-W Oak Park Station",41.8867989,-87.803299,2,40020,2
-60004,,"Sox-35th (33rd St Entrance)","Auxiliary entrance, farecard required",41.8345985,-87.6307983,2,40190,2
-60005,,"Sox-35th (35th St Entrance)","Main entrance, accessible",41.831081,-87.630642,2,40190,1
-60006,,"Wilson (Wilson Ave - South Side Entrance)","Main entrance on south side of Wilson, accessible via elevators",41.96528,-87.657906,2,40540,1
-60007,,"Wilson (Sunnyside Ave Entrance )","Entrance on Sunnyside, west of Broadway, accessible via ramps",41.963503,-87.657345,2,40540,1
-60008,,"Wilson (Wilson Ave - North Side Entrance)","Auxiliary entrance on north side of Wilson",41.965531,-87.657968,2,40540,2
+60000,,"Clark/Division (NW corner)","Stairs from NW corner of Clark & Division",41.904,-87.6315,2,40630,1
+60001,,"Clark/Division (NE corner)","Stairs from NE corner of Clark & Division",41.904,-87.6314,2,40630,2
+60002,,"Clark/Division (SW corner)","Stairs from SW corner of Clark & Division",41.9038,-87.6315,2,40630,2
+60003,,"Clark/Division (SE corner)","Stairs from SE corner of Clark & Division",41.9038,-87.6314,2,40630,1
+60004,,"Clark/Division (LaSalle/Division NE corner)","Stairs from NE corner of LaSalle & Division",41.904,-87.6328,2,40630,1
+60005,,"Clark/Divison (LaSalle/Division SE corner)","Stairs from SE corner of LaSalle & Division",41.9038,-87.6328,2,40630,1
+60006,,"Clark/Division (LaSalle/Division SE corner elevator)","Elevator from SE corner of LaSalle & Division",41.90382,-87.6328,2,40630,2
+60007,,"Harlem/Lake (Harlem Av entry)","Main entrance on Harlem",41.8868,-87.8051,2,40020,2
+60008,,"Harlem/Lake (Marion St entry)","Accessible entrance with connection to Metra UP-W Oak Park Station",41.8868,-87.8033,2,40020,2
+60009,,"Sox-35th (33rd St entry)","Auxiliary entrance, farecard required",41.83458,-87.6307,2,40190,2
+60010,,"Sox-35th (35th St entry)","Main entrance, accessible",41.83106,-87.6307,2,40190,2
+60011,,"Wilson (Wilson Av south side entry)","Main entrance on south side of Wilson, accessible via elevators",41.96528,-87.6579,2,40540,2
+60012,,"Wilson (Sunnyside Av entry)","Entrance on Sunnyside, west of B'way, accessible via ramps",41.9635,-87.6573,2,40540,2
+60013,,"Wilson (Wilson Av north side entry)","Auxiliary entrance on north side of Wilson, farecard required",41.96553,-87.658,2,40540,1
