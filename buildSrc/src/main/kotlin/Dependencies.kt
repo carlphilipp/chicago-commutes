@@ -51,6 +51,7 @@ object Lib {
     val kotlin_reflect = "org.jetbrains.kotlin:kotlin-reflect:${Version.kotlin}"
     val google_services_map = "com.google.android.gms:play-services-maps:${Version.google_play}"
     val google_services_location = "com.google.android.gms:play-services-location:${Version.google_play}"
+    // TODO Migrate to AndroidX https://developer.android.com/jetpack/androidx/
     val google_support_design = "com.android.support:design:${Version.google_support}"
     val google_support_compat = "com.android.support:support-compat:${Version.google_support}"
     val google_support_media_compat = "com.android.support:support-media-compat:${Version.google_support}"
