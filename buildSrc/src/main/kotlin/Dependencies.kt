@@ -6,9 +6,9 @@ object Android {
 }
 
 object Version {
-    val kotlin = "1.3.10"
-    val android_tools_build = "3.2.1"
-    val realm = "5.8.0"
+    val kotlin = "1.3.20"
+    val android_tools_build = "3.3.0"
+    val realm = "5.9.0"
 
     val butterknife = "8.8.1"
     val commons_collections4 = "4.1"
@@ -16,14 +16,14 @@ object Version {
     val easypermissions = "1.2.0"
     val google_play = "16.0.0"
     val google_support = "28.0.0"
-    val jackson = "2.9.7"
+    val jackson = "2.9.8"
     val mapbox = "6.5.0"
     val mapbox_location = "0.10.0"
-    val photoview = "2.1.3"
-    val rx = "2.2.2"
+    val photoview = "2.1.4"
+    val rx = "2.2.6"
     val rx_android = "2.1.0"
     val sliding_up_panel = "3.4.0"
-    val univocity = "2.5.9"
+    val univocity = "2.8.0"
 
     // Update
     val commons_io = "2.5"
