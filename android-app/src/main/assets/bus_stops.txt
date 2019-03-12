@@ -1338,6 +1338,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 2014,2014,"Division & Ashland (Blue Line)","Division & Ashland (Blue Line), Eastbound, Southwest Corner",41.903237,-87.66769294,0,,1
 2020,2020,"Division & Elston","Division & Elston, Eastbound, Southwest Corner",41.90339748,-87.65886604,0,,1
 2022,2022,"Division & Cherry","Division & Cherry, Eastbound, Southwest Corner",41.90347183,-87.65423416,0,,1
+2028,2028,"Division & Larrabee","Division & Larrabee, Eastbound, Southwest Corner",41.90362586,-87.64368981,0,,1
 2032,2032,"311 W Division","311 W Division, Eastbound, Southside of the Street",41.90375329,-87.63603037,0,,1
 2033,2033,"Division & Wells","Division & Wells, Eastbound, Southwest Corner",41.90378504,-87.63465985,0,,1
 2034,2034,"Division & LaSalle","Division & LaSalle, Eastbound, Southwest Corner",41.90380272,-87.63314459,0,,1
@@ -2452,8 +2453,8 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 3521,3521,"Howard & Florence","",42.01948654,-87.69475471,0,,1
 3522,3522,"Howard & Dewey","",42.01946684,-87.69618282,0,,1
 3523,3523,"Howard & California/Dodge","Howard & California/Dodge, Westbound, Northeast Corner",42.01939922,-87.69942136,0,,1
-3524,3524,"Dodge & Brummel","",42.02119952,-87.6993905,0,,1
-3525,3525,"Dodge & Mulford","",42.02295552,-87.69942549,0,,1
+3524,3524,"Dodge & Brummel","Dodge & Brummel, Northbound, Southeast Corner",42.02119952,-87.6993905,0,,1
+3525,3525,"Dodge & Mulford","Dodge & Mulford, Northbound, Southeast Corner",42.02295552,-87.69942549,0,,1
 3526,3526,"Dodge & Kirk","Dodge & Kirk, Northbound, Southeast Corner",42.02472252,-87.69936449,0,,1
 3527,3527,"Oakton & Dodge","Oakton & Dodge, Westbound, Northwest Corner",42.02662732,-87.69973713,0,,1
 3529,3529,"Oakton & Hartrey","Oakton & Hartrey, Westbound, Northeast Corner",42.02655021,-87.70403408,0,,1
@@ -2537,9 +2538,9 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 3615,3615,"2310 W Oakton","",42.02646486,-87.7054827,0,,1
 3616,3616,"Oakton & Hartrey","",42.02646611,-87.70414177,0,,1
 3618,3618,"Oakton & Dodge","",42.026497,-87.699602,0,,1
-3619,3619,"Dodge & Kirk","",42.02480838,-87.6995232,0,,1
-3620,3620,"Dodge & Mulford","",42.02304138,-87.6995842,0,,1
-3621,3621,"Dodge & Brummel","",42.02131779,-87.69957576,0,,1
+3619,3619,"Dodge & Kirk","Dodge & Kirk, Southbound, Westside of the Street",42.02480838,-87.6995232,0,,1
+3620,3620,"Dodge & Mulford","Dodge & Mulford, Southbound, Northwest Corner",42.02304138,-87.6995842,0,,1
+3621,3621,"Dodge & Brummel","Dodge & Brummel, Southbound, Northwest Corner",42.02131779,-87.69957576,0,,1
 3622,3622,"Howard & California/Dodge","Howard & California/Dodge, Eastbound, Southeast Corner",42.0192656,-87.69930843,0,,1
 3623,3623,"Howard & Washtenaw","Howard & Washtenaw, Eastbound, Southwest Corner",42.01931592,-87.69740817,0,,1
 3624,3624,"Howard & Rockwell","Howard & Rockwell, Eastbound, Southwest Corner",42.01937013,-87.6949912,0,,1
@@ -4060,7 +4061,6 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 5928,5928,"Halsted & Maxwell","Halsted & Maxwell, Northbound, Southeast Corner",41.864681,-87.646764,0,,1
 5931,5931,"Halsted & Monroe","Halsted & Monroe, Northbound, Southeast Corner",41.880379,-87.647245,0,,1
 5936,5936,"Halsted & Hubbard","Halsted & Hubbard, Northbound, Northeast Corner",41.89038506,-87.6475202,0,,1
-5941,5941,"Halsted & Chicago","Halsted & Chicago, Northbound, Northeast Corner",41.89671578,-87.6476005,0,,1
 5947,5947,"Halsted & Evergreen","Halsted & Evergreen, Northbound, Southeast Corner",41.90626798,-87.64805468,0,,1
 5950,5950,"Halsted & North Ave","Halsted & North Ave, Northbound, Southeast Corner",41.91082974,-87.64817993,0,,1
 5951,5951,"1700 N Halsted","1700 N Halsted, Northbound, Eastside of the Street",41.91246191,-87.64825579,0,,1
@@ -8475,9 +8475,9 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 12693,12693,"Ridge & Grove","Ridge & Grove, Northbound, Southeast Corner",42.04554952,-87.68845752,0,,1
 12694,12694,"Ridge & Main","Ridge & Main, Northbound, Southeast Corner",42.03386751,-87.68654287,0,,1
 12695,12695,"Ridge & Main","Ridge & Main, Southbound, Northwest Corner",42.03408252,-87.68691502,0,,1
-12697,12697,"Dodge & Emerson","",42.05199433,-87.69876658,0,,1
-12698,12698,"Dodge & Main","",42.03372229,-87.69908484,0,,1
-12699,12699,"Dodge & Main","",42.0339723,-87.69943728,0,,1
+12697,12697,"Dodge & Emerson","Dodge & Emerson, Northbound, Southeast Corner",42.05199433,-87.69876658,0,,1
+12698,12698,"Dodge & Main","Dodge & Main, Northbound, Southeast Corner",42.03372229,-87.69908484,0,,1
+12699,12699,"Dodge & Main","Dodge & Main, Southbound, Northwest Corner",42.0339723,-87.69943728,0,,1
 12701,12701,"Central Street & Crawford","",42.06441722,-87.72753573,0,,1
 12702,12702,"Central Street & Crawford","Central Street & Crawford, Westbound, Northeast Corner",42.06466968,-87.72712907,0,,1
 12703,12703,"Chicago Avenue & Main (Purple Line)","",42.03402607,-87.67944272,0,,1
@@ -8700,7 +8700,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 13092,13092,"59th Street & Kildare","59th Street & Kildare, Westbound, Northeast Corner",41.78592288,-87.73015445,0,,1
 13093,13093,"59th Street & Kostner","59th Street & Kostner, Westbound, Northeast Corner",41.785896,-87.732387,0,,1
 13094,13094,"59th Street & Kilbourn","59th Street & Kilbourn, Westbound, Northeast Corner",41.78586641,-87.73502956,0,,1
-13112,13112,"Dodge & Lake","",42.04409494,-87.69899215,0,,1
+13112,13112,"Dodge & Lake","Dodge & Lake, Northbound, Southeast Corner",42.04409494,-87.69899215,0,,1
 13125,13125,"Oakton & Asbury","",42.02648577,-87.69016076,0,,1
 13126,13126,"Oakton & Asbury","",42.02682815,-87.69019555,0,,1
 13127,13127,"Oakton & Dodge","",42.02647821,-87.6991306,0,,1
@@ -8906,11 +8906,11 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 14367,14367,"Dodge & Washington","",42.03256526,-87.69924948,0,,1
 14368,14368,"Dodge & Lee","",42.03557743,-87.69908952,0,,1
 14369,14369,"Dodge & Lee","",42.03570362,-87.69927714,0,,1
-14370,14370,"Dodge & Greenleaf","",42.03736048,-87.69900883,0,,1
-14371,14371,"Dodge & Greenleaf","",42.03747126,-87.69923858,0,,1
-14372,14372,"Dodge & Crain","",42.03919092,-87.69901161,0,,1
-14373,14373,"Dodge & Crain","",42.03931712,-87.69919924,0,,1
-14374,14374,"Dodge & Dempster","",42.04094315,-87.69901517,0,,1
+14370,14370,"Dodge & Greenleaf","Dodge & Greenleaf, Northbound, Southeast Corner",42.03736048,-87.69900883,0,,1
+14371,14371,"Dodge & Greenleaf","Dodge & Greenleaf, Southbound, Northwest Corner",42.03747126,-87.69923858,0,,1
+14372,14372,"Dodge & Crain","Dodge & Crain, Northbound, Southeast Corner",42.03919092,-87.69901161,0,,1
+14373,14373,"Dodge & Crain","Dodge & Crain, Southbound, Westside of the Street",42.03931712,-87.69919924,0,,1
+14374,14374,"Dodge & Dempster","Dodge & Dempster, Northbound, Southeast Corner",42.04094315,-87.69901517,0,,1
 14376,14376,"Dodge & Greenwood","",42.04260128,-87.69897769,0,,1
 14377,14377,"Dodge & Greenwood","",42.0428429,-87.69922715,0,,1
 14378,14378,"Green Bay Rd & Lincoln","",42.06205003,-87.69669935,0,,1
@@ -9117,16 +9117,16 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 14709,14709,"Church & Chicago Avenue","Church & Chicago Avenue, Eastbound, Southwest Corner",42.04768615,-87.67905301,0,,1
 14726,14726,"Ashland & Payne Street","",42.05711,-87.69424,0,,1
 14727,14727,"Simpson & Darrow","",42.05568,-87.69713,0,,1
-14728,14728,"Dodge & Lyons","",42.05027,-87.69899,0,,1
-14729,14729,"Dodge & Evanston Township HS","",42.04547559,-87.69915574,0,,1
+14728,14728,"Dodge & Lyons","Dodge & Lyons, Southbound, Westside of the Street",42.05027,-87.69899,0,,1
+14729,14729,"Dodge & Evanston Township HS","Dodge & Evanston Township HS, Southbound, Westside of the Street",42.04547559,-87.69915574,0,,1
 14730,14730,"Dodge & Davis","",42.04692,-87.69894,0,,1
 14732,14732,"California/Dodge & Howard","California/Dodge & Howard, Northbound, Southeast Corner",42.0192,-87.69952,0,,1
-14733,14733,"Dodge & Oakton","",42.02648,-87.69939,0,,1
+14733,14733,"Dodge & Oakton","Dodge & Oakton, Northbound, Southeast Corner",42.02648,-87.69939,0,,1
 14734,14734,"Emerson & Ashland","",42.05212156,-87.69365423,0,,1
 14735,14735,"Emerson & Asbury","",42.05210877,-87.69033072,0,,1
 14737,14737,"Emerson & Asbury","",42.05232,-87.68993,0,,1
-14738,14738,"Dodge & Oakton","",42.02665914,-87.699609,0,,1
-14739,14739,"Dodge/California & Howard","",42.01943475,-87.69967885,0,,1
+14738,14738,"Dodge & Oakton","Dodge & Oakton, Southbound, Northwest Corner",42.02665914,-87.699609,0,,1
+14739,14739,"Dodge/California & Howard","Dodge/California & Howard, Southbound, Northwest Corner",42.01943475,-87.69967885,0,,1
 14747,14747,"Kedzie & Jarvis","Kedzie & Jarvis, Northbound, Southeast Corner",42.01543778,-87.70863852,0,,1
 14748,14748,"Kedzie & Birchwood","Kedzie & Birchwood, Northbound, Southeast Corner",42.01723777,-87.70859812,0,,1
 14749,14749,"Kedzie & Birchwood","Kedzie & Birchwood, Southbound, Westside of the Street",42.01734084,-87.70881348,0,,1
@@ -10558,7 +10558,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 17907,17907,"Sheridan & Buena","Sheridan & Buena, Northbound, Southeast Corner",41.95818855,-87.65452785,0,,1
 17908,17908,"Dodge & Washington","",42.03279335,-87.69941536,0,,1
 17910,17910,"Central Street & Cowper","",42.06450993,-87.72404774,0,,1
-17911,17911,"Dodge & Lake","",42.04397241,-87.69921817,0,,1
+17911,17911,"Dodge & Lake","Dodge & Lake, Southbound, Southwest Corner",42.04397241,-87.69921817,0,,1
 17913,17913,"Chicago & LaSalle","Chicago & LaSalle, Westbound, Northwest Corner",41.89672181,-87.63290017,0,,1
 17914,17914,"Western Blue Line Station","Western Blue Line Station, Northbound, Eastside of the Street",41.91587816,-87.68727141,0,,1
 17917,17917,"Milwaukee & Western","Milwaukee & Western, Southeastbound, Southwest Corner",41.91651624,-87.68705668,0,,1
@@ -10609,7 +10609,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 18010,18010,"Broadway & Foster","Broadway & Foster, Southbound, Southwest Corner",41.97611807,-87.6599698,0,,1
 18011,18011,"Halsted & Randolph","Halsted & Randolph, Northbound, Northeast Corner",41.88472497,-87.6473529,0,,1
 18012,18012,"5800 S Ellis","5800 S Ellis, Southbound, Westside of the Street",41.78940828,-87.60131855,0,,1
-18015,18015,"Dodge & Dempster","",42.04096142,-87.69923754,0,,1
+18015,18015,"Dodge & Dempster","Dodge & Dempster, Southbound, Southwest Corner",42.04096142,-87.69923754,0,,1
 18016,18016,"State & 94th Street","State & 94th Street, Northbound, Northeast Corner",41.72388276,-87.62372808,0,,1
 18018,18018,"55th Street & University","55th Street & University, Eastbound, Southeast Corner",41.79496181,-87.59790885,0,,1
 18019,18019,"Pershing & Ashland","Pershing & Ashland, Eastbound, Southeast Corner",41.82306072,-87.66435378,0,,1
@@ -10858,8 +10858,8 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 30004,,"Harlem-Green","",41.886848,-87.803176,0,40020,1
 30005,,"Pulaski-Green","",41.885412,-87.725404,0,40030,1
 30006,,"Pulaski-Green","",41.885412,-87.725404,0,40030,1
-30007,,"Quincy/Wells","",41.878723,-87.63374,0,40040,0
-30008,,"Quincy/Wells","",41.878723,-87.63374,0,40040,0
+30007,,"Quincy","",41.878723,-87.63374,0,40040,1
+30008,,"Quincy","",41.878723,-87.63374,0,40040,1
 30009,,"Cicero-Green","",41.886519,-87.744698,0,40480,1
 30010,,"Davis","",42.04771,-87.683543,0,40050,1
 30011,,"Davis","",42.04771,-87.683543,0,40050,1
@@ -10913,8 +10913,8 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 30061,,"Western-Orange","",41.804546,-87.684019,0,40310,1
 30062,,"Division","",41.903355,-87.666496,0,40320,0
 30063,,"Division","",41.903355,-87.666496,0,40320,0
-30064,,"Grand-Red","",41.891665,-87.628021,0,40330,0
-30065,,"Grand-Red","",41.891665,-87.628021,0,40330,0
+30064,,"Grand-Red","",41.891665,-87.628021,0,40330,1
+30065,,"Grand-Red","",41.891665,-87.628021,0,40330,1
 30066,,"Berwyn","",41.977984,-87.658668,0,40340,0
 30067,,"Berwyn","",41.977984,-87.658668,0,40340,0
 30068,,"UIC-Halsted","",41.875474,-87.649707,0,40350,1
@@ -11084,8 +11084,8 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 30236,,"Fullerton","",41.925051,-87.652866,0,41220,1
 30237,,"47th-Red","",41.810318,-87.63094,0,41230,1
 30238,,"47th-Red","",41.810318,-87.63094,0,41230,1
-30239,,"Addison-Blue","",41.94738,-87.71906,0,41240,0
-30240,,"Addison-Blue","",41.94738,-87.71906,0,41240,0
+30239,,"Addison-Blue","",41.94738,-87.71906,0,41240,1
+30240,,"Addison-Blue","",41.94738,-87.71906,0,41240,1
 30241,,"Central-Purple","",42.063987,-87.685617,0,41250,0
 30242,,"Central-Purple","",42.063987,-87.685617,0,41250,0
 30243,,"Austin-Green","",41.887293,-87.774135,0,41260,0
@@ -11153,7 +11153,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 40010,,"Austin (Blue)","",41.870851,-87.776812,1,,0
 40020,,"Harlem/Lake","",41.886848,-87.803176,1,,1
 40030,,"Pulaski (Green)","",41.885412,-87.725404,1,,1
-40040,,"Quincy/Wells","",41.878723,-87.63374,1,,0
+40040,,"Quincy","",41.878723,-87.63374,1,,1
 40050,,"Davis","",42.04771,-87.683543,1,,1
 40060,,"Belmont (Blue)","",41.9391107041,-87.71225212,1,,0
 40070,,"Jackson (Blue)","",41.878183,-87.629296,1,,1
@@ -11180,7 +11180,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 40300,,"Indiana","",41.821732,-87.621371,1,,1
 40310,,"Western (Orange)","",41.804546,-87.684019,1,,1
 40320,,"Division","",41.903355,-87.666496,1,,0
-40330,,"Grand (Red)","",41.891665,-87.628021,1,,0
+40330,,"Grand (Red)","",41.891665,-87.628021,1,,1
 40340,,"Berwyn","",41.977984,-87.658668,1,,0
 40350,,"UIC-Halsted","",41.875474,-87.649707,1,,1
 40360,,"Southport","",41.943744,-87.663619,1,,1
@@ -11199,7 +11199,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 40510,,"Garfield (Green)","",41.795172,-87.618327,1,,1
 40520,,"Foster","",42.05416,-87.68356,1,,0
 40530,,"Diversey (Brown/Purple)","",41.932732,-87.653131,1,,1
-40540,,"Wilson","",41.965481568,-87.6579258145,1,,0
+40540,,"Wilson","",41.965481568,-87.6579258145,1,,1
 40550,,"Irving Park (Blue)","",41.952925,-87.729229,1,,0
 40560,,"Jackson (Red)","",41.878153,-87.627596,1,,1
 40570,,"California (Blue)","",41.9221583097,-87.6972439537,1,,0
@@ -11263,7 +11263,7 @@ stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_sta
 41210,,"Wellington (Brown/Purple)","",41.936033,-87.653266,1,,1
 41220,,"Fullerton","",41.9253003719,-87.6528684398,1,,1
 41230,,"47th (Red)","",41.810318,-87.63094,1,,1
-41240,,"Addison (Blue)","",41.9466037164,-87.7184584172,1,,0
+41240,,"Addison (Blue)","",41.9466037164,-87.7184584172,1,,1
 41250,,"Central (Purple)","",42.063987,-87.685617,1,,0
 41260,,"Austin (Green)","",41.887293,-87.774135,1,,0
 41270,,"43rd","",41.816462,-87.619021,1,,1
