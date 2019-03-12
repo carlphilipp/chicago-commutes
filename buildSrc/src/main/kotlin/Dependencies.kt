@@ -17,7 +17,7 @@ object Version {
     val google_play = "16.0.0"
     val jackson = "2.9.8"
     val material = "1.0.0"
-    val mapbox = "6.5.0"
+    val mapbox = "6.5.0" // TODO: Migrate to last mapbox version
     val mapbox_location = "0.10.0"
     val photoview = "v2.0.0"
     val rx = "2.2.7"
