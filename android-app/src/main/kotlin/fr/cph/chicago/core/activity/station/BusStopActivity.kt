@@ -23,6 +23,7 @@ import android.annotation.SuppressLint
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
@@ -38,9 +39,6 @@ import fr.cph.chicago.core.listener.GoogleMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
-import fr.cph.chicago.exception.ConnectException
-import fr.cph.chicago.exception.ParserException
-import fr.cph.chicago.exception.TrackerException
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.Color
@@ -279,15 +277,13 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
     @SuppressLint("StaticFieldLeak")
     private inner class LoadStationDataTask : AsyncTask<Void, Void, BusArrivalStopDTO>() {
 
-        private var trackerException: TrackerException? = null
+        private var ex: Exception? = null
 
         override fun doInBackground(vararg params: Void): BusArrivalStopDTO {
             try {
                 return busService.loadBusArrivals(requestRt, busRouteId, requestStopId, busStopId, bound, boundTitle)
-            } catch (e: ParserException) {
-                this.trackerException = e
-            } catch (e: ConnectException) {
-                this.trackerException = e
+            } catch (e: Exception) {
+                this.ex = e
             }
             return BusArrivalStopDTO()
         }
@@ -295,12 +291,17 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
         override fun onProgressUpdate(vararg values: Void) {}
 
         override fun onPostExecute(result: BusArrivalStopDTO) {
-            if (trackerException == null) {
+            if (ex == null) {
                 refreshActivity(result)
             } else {
+                Log.e(TAG, ex?.message, ex)
                 util.showNetworkErrorMessage(scrollView)
             }
             scrollView.isRefreshing = false
         }
+    }
+
+    companion object {
+        private val TAG = BusStopActivity::class.java.simpleName
     }
 }
