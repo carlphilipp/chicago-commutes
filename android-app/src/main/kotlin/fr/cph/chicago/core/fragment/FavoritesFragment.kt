@@ -47,6 +47,7 @@ import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.task.RefreshTimingTask
+import fr.cph.chicago.util.RateUtil
 import fr.cph.chicago.util.Util
 
 /**
@@ -73,6 +74,7 @@ class FavoritesFragment : Fragment(R.layout.fragment_main) {
     @BindString(R.string.bundle_bike_stations)
     lateinit var bundleBikeStation: String
 
+    private val rateUtil: RateUtil = RateUtil
     private val util: Util = Util
     private val observableUtil: ObservableUtil = ObservableUtil
     private val busService: BusService = BusService
@@ -130,7 +132,7 @@ class FavoritesFragment : Fragment(R.layout.fragment_main) {
         }
 
         startRefreshTask()
-        util.displayRateSnackBarIfNeeded(swipeRefreshLayout, mainActivity)
+        rateUtil.displayRateSnackBarIfNeeded(swipeRefreshLayout, mainActivity)
     }
 
     override fun onPause() {

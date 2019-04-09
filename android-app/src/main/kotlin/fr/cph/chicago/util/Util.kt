@@ -21,11 +21,8 @@ package fr.cph.chicago.util
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.net.ConnectivityManager
-import android.net.Uri
 import android.os.Build
-import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.widget.Toast
@@ -42,16 +39,11 @@ import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.exception.ConnectException
 import fr.cph.chicago.exception.ParserException
 import fr.cph.chicago.service.PreferenceService
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import java.io.Closeable
 import java.io.IOException
 import java.io.Reader
 import java.util.Arrays
-import java.util.Date
 import java.util.Random
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.regex.Pattern
 
@@ -245,47 +237,6 @@ object Util {
         val typedValue = TypedValue()
         context.theme.resolveAttribute(resId, typedValue, true)
         return typedValue.data
-    }
-
-    private fun showRateSnackBar(view: View, activity: Activity) {
-        val background = getAttribute(view.context, R.attr.colorAccent)
-        val textColor = ContextCompat.getColor(App.instance, R.color.greenLineDark)
-        val snackBar1 = Snackbar.make(view, "Do you like this app?", Snackbar.LENGTH_LONG)
-            .setAction("YES") { view1 ->
-                val snackBar2 = Snackbar.make(view1, "Rate this app on the market", Snackbar.LENGTH_LONG)
-                    .setAction("OK") { rateThisApp(activity) }
-                    .setActionTextColor(textColor)
-                    .setDuration(10000)
-                snackBar2.view.setBackgroundColor(background)
-                snackBar2.show()
-            }
-            .setActionTextColor(textColor)
-            .setDuration(10000)
-        snackBar1.view.setBackgroundColor(background)
-        snackBar1.show()
-    }
-
-    fun displayRateSnackBarIfNeeded(view: View, activity: Activity) {
-        Observable.fromCallable { preferenceService.getRateLastSeen() }
-            .delay(2L, TimeUnit.SECONDS)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { lastSeen ->
-                    val now = Date()
-                    // if it has been more than 30 days or if it's the first time
-                    if (now.time - lastSeen.time > 2592000000L) {
-                        showRateSnackBar(view, activity)
-                        preferenceService.setRateLastSeen()
-                    }
-                },
-                { error -> Log.e(TAG, error.message, error) })
-    }
-
-    fun rateThisApp(activity: Activity) {
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.data = Uri.parse("market://details?id=fr.cph.chicago")
-        activity.startActivity(intent)
     }
 
     fun handleConnectOrParserException(throwable: Throwable, activity: Activity?, connectView: View?, parserView: View) {

@@ -46,6 +46,7 @@ import fr.cph.chicago.core.fragment.TrainFragment
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.service.BusService
+import fr.cph.chicago.util.RateUtil
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -83,6 +84,7 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
 
     private val observableUtil: ObservableUtil = ObservableUtil
     private val util: Util = Util
+    private val rateUtil: RateUtil = RateUtil
     private val busService: BusService = BusService
 
     private var currentPosition: Int = 0
@@ -264,7 +266,7 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
                 supportFragmentManager.beginTransaction().replace(R.id.container, alertFragment as androidx.fragment.app.Fragment).commit()
                 closeDrawerAndUpdateActionBar(false)
             }
-            R.id.rate_this_app -> util.rateThisApp(this)
+            R.id.rate_this_app -> rateUtil.rateThisApp(this)
             R.id.settings -> {
                 setBarTitle(settings)
                 settingsFragment = settingsFragment ?: SettingsFragment.newInstance(position + 1)
