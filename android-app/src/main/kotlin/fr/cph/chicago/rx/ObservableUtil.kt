@@ -64,6 +64,22 @@ object ObservableUtil {
     private val alertService = AlertService
     private val positionUtil = MapUtil
 
+    fun createLocalTrainData(): Observable<SparseArray<TrainStation>> {
+        return createObservableFromCallable(Callable { trainService.loadLocalTrainData() })
+            .onErrorReturn { throwable ->
+                Log.e(TAG, throwable.message, throwable)
+                SparseArray()
+            }
+    }
+
+    fun createLocalBusData(): Observable<Any> {
+        return createObservableFromCallable(Callable { busService.loadLocalBusData() })
+            .onErrorReturn { throwable ->
+                Log.e(TAG, throwable.message, throwable)
+                Any()
+            }
+    }
+
     fun createFavoritesTrainArrivalsObservable(): Observable<TrainArrivalDTO> {
         return createObservableFromCallable(Callable { TrainArrivalDTO(trainService.loadFavoritesTrain(), false) })
             .onErrorReturn { throwable ->

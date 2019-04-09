@@ -35,10 +35,7 @@ import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable
-import io.reactivex.ObservableEmitter
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
-import io.reactivex.schedulers.Schedulers
 import java.util.Calendar
 
 /**
@@ -72,24 +69,10 @@ class BaseActivity : ButterKnifeActivity(R.layout.loading) {
     private fun loadLocalAndFavoritesData() {
 
         // Train local data
-        val trainLocalData = Observable.create { observableOnSubscribe: ObservableEmitter<Any> ->
-            if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(trainService.loadLocalTrainData())
-                observableOnSubscribe.onComplete()
-            }
-        }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+        val trainLocalData = ObservableUtil.createLocalTrainData()
 
         // Bus local data
-        val busLocalData = Observable.create { observableOnSubscribe: ObservableEmitter<Any> ->
-            if (!observableOnSubscribe.isDisposed) {
-                observableOnSubscribe.onNext(busService.loadLocalBusData())
-                observableOnSubscribe.onComplete()
-            }
-        }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+        val busLocalData = ObservableUtil.createLocalBusData()
 
         // Train online favorites
         val trainOnlineFavorites = observableUtil.createFavoritesTrainArrivalsObservable()
@@ -107,13 +90,8 @@ class BaseActivity : ButterKnifeActivity(R.layout.loading) {
                     FavoritesDTO(trainArrivalsDTO, busArrivalsDTO, false, listOf())
                 })
                     .subscribe(
-                        { favoritesDTO ->
-                            this.startMainActivity(favoritesDTO)
-                        },
-                        { error ->
-                            Log.e(TAG, error.message, error)
-                            startErrorActivity()
-                        })
+                        { favoritesDTO -> startMainActivity(favoritesDTO) },
+                        { error -> startErrorActivity(error) })
             }.subscribe()
     }
 
@@ -136,7 +114,9 @@ class BaseActivity : ButterKnifeActivity(R.layout.loading) {
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
     }
 
-    private fun startErrorActivity() {
+    private fun startErrorActivity(error: Throwable) {
+        Log.e(TAG, error.message, error)
+
         // Set BusArrivalError
         trainService.setTrainStationError(true)
         busService.setBusRouteError(true)
