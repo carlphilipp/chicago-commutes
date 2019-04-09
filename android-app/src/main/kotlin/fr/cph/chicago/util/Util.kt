@@ -25,7 +25,7 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
-import android.os.Handler
+import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.widget.Toast
@@ -42,12 +42,16 @@ import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.exception.ConnectException
 import fr.cph.chicago.exception.ParserException
 import fr.cph.chicago.service.PreferenceService
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import java.io.Closeable
 import java.io.IOException
 import java.io.Reader
 import java.util.Arrays
 import java.util.Date
 import java.util.Random
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.regex.Pattern
 
@@ -59,6 +63,7 @@ import java.util.regex.Pattern
  */
 object Util {
 
+    private val TAG = Util::class.java.simpleName
     val bikeStationComparator: Comparator<BikeStation> by lazy { BikeStationComparator() }
     val busStopComparatorByName: Comparator<BusRoute> by lazy { BusStopComparator() }
     private val preferenceService = PreferenceService
@@ -261,17 +266,20 @@ object Util {
     }
 
     fun displayRateSnackBarIfNeeded(view: View, activity: Activity) {
-        val handler = Handler()
-        val r = {
-            val now = Date()
-            val lastSeen = preferenceService.getRateLastSeen()
-            // if it has been more than 30 days or if it's the first time
-            if (now.time - lastSeen.time > 2592000000L || now.time - lastSeen.time < 1000L) {
-                showRateSnackBar(view, activity)
-                preferenceService.setRateLastSeen()
-            }
-        }
-        handler.postDelayed(r, 2500L)
+        Observable.fromCallable { preferenceService.getRateLastSeen() }
+            .delay(2L, TimeUnit.SECONDS)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { lastSeen ->
+                    val now = Date()
+                    // if it has been more than 30 days or if it's the first time
+                    if (now.time - lastSeen.time > 2592000000L) {
+                        showRateSnackBar(view, activity)
+                        preferenceService.setRateLastSeen()
+                    }
+                },
+                { error -> Log.e(TAG, error.message, error) })
     }
 
     fun rateThisApp(activity: Activity) {
