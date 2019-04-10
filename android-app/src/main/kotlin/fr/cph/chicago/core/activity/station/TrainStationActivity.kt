@@ -30,6 +30,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -71,16 +72,16 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
 
     @BindView(android.R.id.content)
     lateinit var viewGroup: ViewGroup
-    @BindView(R.id.activity_train_station_streetview_image)
+    @BindView(R.id.activity_station_streetview_image)
     lateinit var streetViewImage: ImageView
+    @BindView(R.id.street_view_progress_bar)
+    lateinit var streetViewProgressBar: ProgressBar
     @BindView(R.id.scrollViewStation)
     lateinit var scrollView: ScrollView
     @BindView(R.id.activity_station_swipe_refresh_layout)
     lateinit var swipeRefreshLayout: SwipeRefreshLayout
     @BindView(R.id.activity_favorite_star)
     lateinit var favoritesImage: ImageView
-    @BindView(R.id.activity_train_station_steetview_text)
-    lateinit var streetViewText: TextView
     @BindView(R.id.activity_map_image)
     lateinit var mapImage: ImageView
     @BindView(R.id.map_container)
@@ -142,12 +143,11 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
 
             isFavorite = isFavorite()
 
-            loadGoogleStreetImage(position, streetViewImage, streetViewText)
+            loadGoogleStreetImage(position, streetViewImage, streetViewProgressBar)
             trainArrivalObservable.subscribe(TrainArrivalObserver(this, swipeRefreshLayout))
 
             streetViewImage.setOnClickListener(GoogleStreetOnClickListener(position.latitude, position.longitude))
             streetViewImage.layoutParams = params
-            streetViewText.setTypeface(null, Typeface.BOLD)
             swipeRefreshLayout.setOnRefreshListener { trainArrivalObservable.subscribe(TrainArrivalObserver(this, swipeRefreshLayout)) }
             if (isFavorite) {
                 favoritesImage.setColorFilter(Color.yellowLineDark)

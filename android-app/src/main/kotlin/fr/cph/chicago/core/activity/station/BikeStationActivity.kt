@@ -23,6 +23,7 @@ import android.os.Build
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -53,10 +54,10 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
     lateinit var swipeRefreshLayout: SwipeRefreshLayout
     @BindView(R.id.activity_favorite_star)
     lateinit var favoritesImage: ImageView
-    @BindView(R.id.activity_bike_station_streetview_image)
+    @BindView(R.id.activity_station_streetview_image)
     lateinit var streetViewImage: ImageView
-    @BindView(R.id.activity_bike_station_steetview_text)
-    lateinit var streetViewText: TextView
+    @BindView(R.id.street_view_progress_bar)
+    lateinit var streetViewProgressBar: ProgressBar
     @BindView(R.id.activity_map_image)
     lateinit var mapImage: ImageView
     @BindView(R.id.map_container)
@@ -97,7 +98,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
         isFavorite = isFavorite()
 
         // Call google street api to load image
-        loadGoogleStreetImage(Position(latitude, longitude), streetViewImage, streetViewText)
+        loadGoogleStreetImage(Position(latitude, longitude), streetViewImage, streetViewProgressBar)
 
         if (isFavorite) {
             favoritesImage.setColorFilter(Color.yellowLineDark)

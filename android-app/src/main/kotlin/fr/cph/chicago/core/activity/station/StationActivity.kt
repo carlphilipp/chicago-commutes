@@ -19,9 +19,12 @@
 
 package fr.cph.chicago.core.activity.station
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.util.Log
+import android.view.View
 import android.widget.ImageView
-import android.widget.TextView
-import fr.cph.chicago.R
+import android.widget.ProgressBar
 import fr.cph.chicago.client.GoogleStreetClient
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.model.Position
@@ -31,15 +34,23 @@ import io.reactivex.schedulers.Schedulers
 
 abstract class StationActivity(contentView: Int) : ButterKnifeActivity(contentView) {
 
-    fun loadGoogleStreetImage(position: Position, streetViewImage: ImageView, streetViewText: TextView) {
+    fun loadGoogleStreetImage(position: Position, streetViewImage: ImageView, streetViewProgressBar: ProgressBar) {
         Observable.fromCallable { GoogleStreetClient.connect(position.latitude, position.longitude) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { drawable ->
-                streetViewImage.setImageDrawable(drawable)
-                streetViewText.text = this@StationActivity.applicationContext.getString(R.string.station_activity_street_view)
-            }
+            .doFinally { streetViewProgressBar.visibility = View.GONE }
+            .subscribe(
+                { drawable -> streetViewImage.setImageDrawable(drawable) },
+                { error ->
+                    Log.e(TAG, error.message, error)
+                    streetViewImage.setImageDrawable(ColorDrawable(Color.TRANSPARENT))
+                }
+            )
     }
 
     protected abstract fun isFavorite(): Boolean
+
+    companion object {
+        private val TAG = StationActivity::class.java.simpleName
+    }
 }

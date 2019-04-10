@@ -54,39 +54,10 @@
                 android:paddingEnd="@dimen/activity_train_line_padding_right"
                 android:paddingBottom="@dimen/activity_train_line_padding_bottom">
 
-                <LinearLayout
+                <include
+                    layout="@layout/activity_station_header_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="#fff"
-                    android:elevation="10dp"
-                    android:orientation="vertical">
-
-                    <RelativeLayout
-                        android:id="@+id/activity_train_station_streetview_container"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <ImageView
-                            android:id="@+id/activity_train_station_streetview_image"
-                            android:layout_width="match_parent"
-                            android:layout_height="@dimen/activity_station_street_map_height"
-                            android:contentDescription="@string/station_activity_google_map_link_desc"
-                            android:scaleType="centerCrop" />
-
-                        <TextView
-                            android:id="@+id/activity_train_station_steetview_text"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentBottom="true"
-                            android:layout_marginStart="4dp"
-                            android:textColor="@color/white" />
-                    </RelativeLayout>
-
-                    <include
-                        layout="@layout/activity_header_fav_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
+                    android:layout_height="wrap_content" />
 
                 <LinearLayout
                     android:id="@+id/activity_train_station_details"

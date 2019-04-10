@@ -19,8 +19,6 @@
 
 package fr.cph.chicago.client
 
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.util.Log
 import fr.cph.chicago.Constants.Companion.GOOGLE_STREET_VIEW_URL
@@ -40,16 +38,10 @@ object GoogleStreetClient {
     private val TAG = GoogleStreetClient::class.java.simpleName
     private const val WIDTH = 1000
     private const val HEIGHT = 300
+    private const val FOV = 120
 
     fun connect(latitude: Double, longitude: Double): Drawable {
-        val address = GOOGLE_STREET_VIEW_URL + "?key=" +
-            App.googleStreetKey +
-            "&sensor=false" +
-            "&size=" + WIDTH + "x" + HEIGHT +
-            "&fov=120" +
-            "&location=" +
-            latitude +
-            "," + longitude
+        val address = "$GOOGLE_STREET_VIEW_URL?key=${App.googleStreetKey}&sensor=false&size=${WIDTH}x$HEIGHT&fov=$FOV&location=$latitude,$longitude"
         return connectUrl(address)
     }
 
@@ -65,10 +57,6 @@ object GoogleStreetClient {
         return try {
             inputStream = URL(address).content as InputStream
             Drawable.createFromStream(inputStream, "src name")
-        } catch (e: Exception) {
-            Log.e(TAG, e.message, e)
-            // TODO add a temporary image here
-            ColorDrawable(Color.TRANSPARENT)
         } finally {
             Util.closeQuietly(inputStream)
         }

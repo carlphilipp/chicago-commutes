@@ -26,6 +26,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
@@ -61,10 +62,10 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
     lateinit var leftLayout: RelativeLayout
     @BindView(R.id.right_layout)
     lateinit var rightLayout: RelativeLayout
-    @BindView(R.id.activity_bus_streetview_image)
+    @BindView(R.id.activity_station_streetview_image)
     lateinit var streetViewImage: ImageView
-    @BindView(R.id.activity_bus_steetview_text)
-    lateinit var streetViewText: TextView
+    @BindView(R.id.street_view_progress_bar)
+    lateinit var streetViewProgressBar: ProgressBar
     @BindView(R.id.activity_map_image)
     lateinit var mapImage: ImageView
     @BindView(R.id.favorites_container)
@@ -148,11 +149,11 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
         mapContainer.setOnClickListener(GoogleMapOnClickListener(latitude, longitude))
         walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(latitude, longitude))
 
-        val busRouteName2 = "$busRouteName ($boundTitle)"
-        busRouteNameView.text = busRouteName2
+        val busRouteNameDisplay = "$busRouteName ($boundTitle)"
+        busRouteNameView.text = busRouteNameDisplay
 
         // Load google street picture and data
-        loadGoogleStreetImage(position, streetViewImage, streetViewText)
+        loadGoogleStreetImage(position, streetViewImage, streetViewProgressBar)
         LoadStationDataTask().execute()
 
         setToolBar()

@@ -38,54 +38,25 @@
             android:id="@+id/scrollViewBusStop"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingBottom="@dimen/activity_train_line_padding_bottom"
-            android:paddingEnd="@dimen/activity_train_line_padding_right"
             android:paddingStart="@dimen/activity_train_line_padding_left"
-            android:paddingTop="@dimen/activity_train_line_padding_top">
+            android:paddingTop="@dimen/activity_train_line_padding_top"
+            android:paddingEnd="@dimen/activity_train_line_padding_right"
+            android:paddingBottom="@dimen/activity_train_line_padding_bottom">
 
             <!-- Main container. Vertical layout -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingBottom="@dimen/activity_train_line_padding_bottom"
-                android:paddingEnd="@dimen/activity_train_line_padding_right"
                 android:paddingStart="@dimen/activity_train_line_padding_left"
-                android:paddingTop="@dimen/activity_train_line_padding_top">
+                android:paddingTop="@dimen/activity_train_line_padding_top"
+                android:paddingEnd="@dimen/activity_train_line_padding_right"
+                android:paddingBottom="@dimen/activity_train_line_padding_bottom">
 
-                <LinearLayout
+                <include
+                    layout="@layout/activity_station_header_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="#fff"
-                    android:elevation="10dp"
-                    android:orientation="vertical">
-
-                    <RelativeLayout
-                        android:id="@+id/activity_bus_streetview_container"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <ImageView
-                            android:id="@+id/activity_bus_streetview_image"
-                            android:layout_width="match_parent"
-                            android:layout_height="@dimen/activity_station_street_map_height"
-                            android:contentDescription="@string/bus_activity_google_map_link_desc"
-                            android:scaleType="centerCrop" />
-
-                        <TextView
-                            android:id="@+id/activity_bus_steetview_text"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentBottom="true"
-                            android:layout_marginStart="4dp"
-                            android:textColor="@color/white" />
-                    </RelativeLayout>
-
-                    <include
-                        layout="@layout/activity_header_fav_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
+                    android:layout_height="wrap_content" />
 
                 <TextView
                     android:id="@+id/activity_bus_station_value"
