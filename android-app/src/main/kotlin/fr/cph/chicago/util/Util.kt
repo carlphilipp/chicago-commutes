@@ -38,7 +38,6 @@ import fr.cph.chicago.core.model.dto.BusFavoriteDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.exception.ConnectException
 import fr.cph.chicago.exception.ParserException
-import fr.cph.chicago.service.PreferenceService
 import java.io.Closeable
 import java.io.IOException
 import java.io.Reader
@@ -55,10 +54,8 @@ import java.util.regex.Pattern
  */
 object Util {
 
-    private val TAG = Util::class.java.simpleName
     val bikeStationComparator: Comparator<BikeStation> by lazy { BikeStationComparator() }
     val busStopComparatorByName: Comparator<BusRoute> by lazy { BusStopComparator() }
-    private val preferenceService = PreferenceService
 
     private val PATTERN = Pattern.compile("(\\d{1,3})")
     private val nextGeneratedId = AtomicInteger(1)
@@ -187,7 +184,7 @@ object Util {
         }
 
     fun convertDpToPixel(dp: Int): Int {
-        val pixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp.toFloat(), App.instance.resources.displayMetrics)
+        val pixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, dp.toFloat(), App.instance.resources.displayMetrics)
         return pixels.toInt()
     }
 
