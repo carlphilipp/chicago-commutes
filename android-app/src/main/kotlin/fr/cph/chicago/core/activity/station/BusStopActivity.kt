@@ -20,6 +20,7 @@
 package fr.cph.chicago.core.activity.station
 
 import android.annotation.SuppressLint
+import android.graphics.drawable.ColorDrawable
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
@@ -55,7 +56,7 @@ import fr.cph.chicago.util.Util
 class BusStopActivity : StationActivity(R.layout.activity_bus) {
 
     @BindView(R.id.activity_bus_stop_swipe_refresh_layout)
-    lateinit var scrollView: SwipeRefreshLayout
+    lateinit var swipeRefreshLayout: SwipeRefreshLayout
     @BindView(R.id.activity_favorite_star)
     lateinit var favoritesImage: ImageView
     @BindView(R.id.left_layout)
@@ -144,7 +145,12 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
             favoritesImage.setColorFilter(Color.yellowLineDark)
         }
 
-        scrollView.setOnRefreshListener { LoadStationDataTask().execute() }
+        swipeRefreshLayout.setOnRefreshListener {
+            LoadStationDataTask().execute()
+            if (streetViewImage.drawable is ColorDrawable) {
+                loadGoogleStreetImage(position, streetViewImage, streetViewProgressBar)
+            }
+        }
         streetViewImage.setOnClickListener(GoogleStreetOnClickListener(latitude, longitude))
         mapContainer.setOnClickListener(GoogleMapOnClickListener(latitude, longitude))
         walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(latitude, longitude))
@@ -162,7 +168,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
     private fun setToolBar() {
         toolbar.inflateMenu(R.menu.main)
         toolbar.setOnMenuItemClickListener {
-            scrollView.isRefreshing = true
+            swipeRefreshLayout.isRefreshing = true
             LoadStationDataTask().execute()
             false
         }
@@ -262,11 +268,11 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
      */
     private fun switchFavorite() {
         isFavorite = if (isFavorite) {
-            preferenceService.removeFromBusFavorites(busRouteId, busStopId.toString(), boundTitle, scrollView)
+            preferenceService.removeFromBusFavorites(busRouteId, busStopId.toString(), boundTitle, swipeRefreshLayout)
             favoritesImage.colorFilter = mapImage.colorFilter
             false
         } else {
-            preferenceService.addToBusFavorites(busRouteId, busStopId.toString(), boundTitle, scrollView)
+            preferenceService.addToBusFavorites(busRouteId, busStopId.toString(), boundTitle, swipeRefreshLayout)
             preferenceService.addBusRouteNameMapping(busStopId.toString(), busRouteName)
             preferenceService.addBusStopNameMapping(busStopId.toString(), busStopName)
             favoritesImage.setColorFilter(Color.yellowLineDark)
@@ -296,9 +302,9 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
                 refreshActivity(result)
             } else {
                 Log.e(TAG, ex?.message, ex)
-                util.showNetworkErrorMessage(scrollView)
+                util.showNetworkErrorMessage(swipeRefreshLayout)
             }
-            scrollView.isRefreshing = false
+            swipeRefreshLayout.isRefreshing = false
         }
     }
 

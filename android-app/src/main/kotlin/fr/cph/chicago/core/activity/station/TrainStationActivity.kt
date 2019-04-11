@@ -21,7 +21,7 @@ package fr.cph.chicago.core.activity.station
 
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
-import android.graphics.Typeface
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
@@ -144,11 +144,16 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
             isFavorite = isFavorite()
 
             loadGoogleStreetImage(position, streetViewImage, streetViewProgressBar)
-            trainArrivalObservable.subscribe(TrainArrivalObserver(this, swipeRefreshLayout))
+            trainArrivalObservable.subscribe(TrainArrivalObserver(this))
 
             streetViewImage.setOnClickListener(GoogleStreetOnClickListener(position.latitude, position.longitude))
             streetViewImage.layoutParams = params
-            swipeRefreshLayout.setOnRefreshListener { trainArrivalObservable.subscribe(TrainArrivalObserver(this, swipeRefreshLayout)) }
+            swipeRefreshLayout.setOnRefreshListener {
+                trainArrivalObservable.subscribe(TrainArrivalObserver(this))
+                if (streetViewImage.drawable is ColorDrawable) {
+                    loadGoogleStreetImage(position, streetViewImage, streetViewProgressBar)
+                }
+            }
             if (isFavorite) {
                 favoritesImage.setColorFilter(Color.yellowLineDark)
             }
@@ -170,6 +175,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
     private fun setUpStopLayouts(stopByLines: Map<TrainLine, List<Stop>>) {
         stopByLines.entries
         stopByLines.entries.forEach { entry ->
+
             val line = entry.key
             val stops = entry.value
             val lineTitleView = layoutInflater.inflate(R.layout.activity_station_line_title, viewGroup, false)
@@ -184,19 +190,15 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
             stopsView.addView(lineTitleView)
 
             stops.sorted().forEach { stop ->
-                val linearLayout = LinearLayout(this)
-                linearLayout.orientation = LinearLayout.HORIZONTAL
-                linearLayout.layoutParams = paramsStop
-
-                val checkBox = AppCompatCheckBox(this)
+                val view = View.inflate(this, R.layout.activity_train_station_direction, null)
+                val checkBox = view.findViewById<AppCompatCheckBox>(R.id.checkbox)
                 checkBox.setOnCheckedChangeListener { _, isChecked -> preferenceService.saveTrainFilter(stationId, line, stop.direction, isChecked) }
                 checkBox.setOnClickListener {
                     if (checkBox.isChecked) {
-                        trainArrivalObservable.subscribe(TrainArrivalObserver(this, swipeRefreshLayout))
+                        trainArrivalObservable.subscribe(TrainArrivalObserver(this))
                     }
                 }
                 checkBox.isChecked = preferenceService.getTrainFilter(stationId, line, stop.direction)
-                checkBox.setTypeface(checkBox.typeface, Typeface.BOLD)
                 checkBox.text = stop.direction.toString()
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     checkBox.backgroundTintList = ColorStateList.valueOf(line.color)
@@ -213,17 +215,11 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
                     }
                 }
 
-                linearLayout.addView(checkBox)
-
-                val arrivalTrainsLayout = LinearLayout(this)
-                arrivalTrainsLayout.orientation = LinearLayout.VERTICAL
-                arrivalTrainsLayout.layoutParams = paramsStop
+                val arrivalTrainsLayout = view.findViewById<LinearLayout>(R.id.arrivals)
                 val id = util.generateViewId()
                 arrivalTrainsLayout.id = id
                 ids[line.toString() + "_" + stop.direction.toString()] = id
-
-                linearLayout.addView(arrivalTrainsLayout)
-                stopsView.addView(linearLayout)
+                stopsView.addView(view)
             }
         }
     }
@@ -232,7 +228,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
         toolbar.inflateMenu(R.menu.main)
         toolbar.setOnMenuItemClickListener {
             swipeRefreshLayout.isRefreshing = true
-            trainArrivalObservable.subscribe(TrainArrivalObserver(this, swipeRefreshLayout))
+            trainArrivalObservable.subscribe(TrainArrivalObserver(this))
             false
         }
 
@@ -281,12 +277,12 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
             .forEach { key ->
                 if (ids.containsKey(key)) {
                     val id = ids[key]
-                    val line3View = findViewById<LinearLayout>(id!!)
-                    if (line3View != null) {
-                        line3View.visibility = View.GONE
-                        if (line3View.childCount > 0) {
-                            (0 until line3View.childCount).forEach { i ->
-                                val view = line3View.getChildAt(i) as LinearLayout
+                    val arrivalTrainsLayout = findViewById<LinearLayout>(id!!)
+                    if (arrivalTrainsLayout != null) {
+                        arrivalTrainsLayout.visibility = View.GONE
+                        if (arrivalTrainsLayout.childCount > 0) {
+                            (0 until arrivalTrainsLayout.childCount).forEach { i ->
+                                val view = arrivalTrainsLayout.getChildAt(i) as LinearLayout
                                 val timing = view.getChildAt(1) as TextView?
                                 if (timing != null) {
                                     timing.text = ""
@@ -310,7 +306,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
         // viewId might be not there if CTA API provide wrong data
         if (ids.containsKey(key)) {
             val viewId = ids[key]
-            val line3View = findViewById<LinearLayout>(viewId!!)
+            val arrivalTrainsLayout = findViewById<LinearLayout>(viewId!!)
             val id = ids[line.toString() + "_" + stop.direction.toString() + "_" + trainEta.destName]
             if (id == null) {
                 val insideLayout = LinearLayout(this)
@@ -323,7 +319,6 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
                 val stopName = TextView(this)
                 val stopNameData = trainEta.destName + ": "
                 stopName.text = stopNameData
-                stopName.setPadding(line3PaddingLeft, line3PaddingTop, 0, 0)
                 insideLayout.addView(stopName)
 
                 val timing = TextView(this)
@@ -332,15 +327,14 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
                 timing.setLines(1)
                 timing.ellipsize = TruncateAt.END
                 insideLayout.addView(timing)
-
-                line3View.addView(insideLayout)
+                arrivalTrainsLayout.addView(insideLayout)
             } else {
                 val insideLayout = findViewById<LinearLayout>(id)
                 val timing = insideLayout.getChildAt(1) as TextView
                 val timingData = timing.text.toString() + trainEta.timeLeftDueDelay + " "
                 timing.text = timingData
             }
-            line3View.visibility = View.VISIBLE
+            arrivalTrainsLayout.visibility = View.VISIBLE
         }
     }
 

@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.activity.station
 
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.widget.ImageView
@@ -93,6 +94,9 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
         swipeRefreshLayout.setOnRefreshListener {
             observableUtil.createAllBikeStationsObservable()
                 .subscribe(BikeAllBikeStationsObserver(this, divvyStation.id, swipeRefreshLayout))
+            if (streetViewImage.drawable is ColorDrawable) {
+                loadGoogleStreetImage(Position(latitude, longitude), streetViewImage, streetViewProgressBar)
+            }
         }
 
         isFavorite = isFavorite()

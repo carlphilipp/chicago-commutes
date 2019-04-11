@@ -23,8 +23,8 @@
     <!-- Font activity train station -->
     <dimen name="activity_station_stops_0dp">0dp</dimen>
     <dimen name="activity_station_stops_line1_padding_color">4dp</dimen>
-    <dimen name="activity_station_stops_line3_padding_left">7dp</dimen>
-    <dimen name="activity_station_stops_line3_padding_top">6dp</dimen>
+    <dimen name="activity_station_stops_line3_padding_left">2dp</dimen>
+    <dimen name="activity_station_stops_line3_padding_top">2dp</dimen>
     <!-- Activity train station google street image size -->
     <dimen name="activity_station_street_map_height">150dp</dimen>
     <!-- Activity train station -->
@@ -32,6 +32,9 @@
     <dimen name="activity_train_line_padding_top">8dp</dimen>
     <dimen name="activity_train_line_padding_bottom">8dp</dimen>
     <dimen name="activity_train_line_padding_right">10dp</dimen>
+
+    <!-- Checkbox size -->
+    <dimen name="checkbox_train_direction">100dp</dimen>
 
     <!-- Layout dimension -->
     <dimen name="layout_round_height">11dp</dimen>

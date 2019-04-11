@@ -19,32 +19,49 @@
 
 package fr.cph.chicago.rx
 
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import android.util.Log
 import fr.cph.chicago.core.activity.station.TrainStationActivity
 import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.util.Util
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 
-class TrainArrivalObserver(private val trainStationActivity: TrainStationActivity, private val swipeRefreshLayout: SwipeRefreshLayout) : Observer<TrainArrival> {
+class TrainArrivalObserver(private val trainStationActivity: TrainStationActivity) : Observer<TrainArrival> {
 
     override fun onSubscribe(d: Disposable) {}
 
     override fun onNext(trainArrival: TrainArrival) {
-        trainStationActivity.hideAllArrivalViews()
-        trainArrival.trainEtas.forEach { trainStationActivity.drawAllArrivalsTrain(it) }
+        try {
+            trainStationActivity.hideAllArrivalViews()
+            trainArrival.trainEtas.forEach { trainStationActivity.drawAllArrivalsTrain(it) }
+        } catch (ex: Throwable) {
+            handleOnNextError(ex)
+        }
     }
 
     override fun onError(e: Throwable) {
-        if (swipeRefreshLayout.isRefreshing) {
-            swipeRefreshLayout.isRefreshing = false
-        }
-        Util.showNetworkErrorMessage(swipeRefreshLayout)
+        Log.e(TAG, e.message, e)
+        stopRefreshingIfNeeded()
+        Util.showNetworkErrorMessage(trainStationActivity.swipeRefreshLayout)
     }
 
     override fun onComplete() {
-        if (swipeRefreshLayout.isRefreshing) {
-            swipeRefreshLayout.isRefreshing = false
+        stopRefreshingIfNeeded()
+    }
+
+    private fun handleOnNextError(ex: Throwable) {
+        Log.e(TAG, ex.message, ex)
+        stopRefreshingIfNeeded()
+        Util.showOopsSomethingWentWrong(trainStationActivity.swipeRefreshLayout)
+    }
+
+    private fun stopRefreshingIfNeeded() {
+        if (trainStationActivity.swipeRefreshLayout.isRefreshing) {
+            trainStationActivity.swipeRefreshLayout.isRefreshing = false
         }
+    }
+
+    companion object {
+        private val TAG = TrainArrivalObserver::class.java.simpleName
     }
 }
