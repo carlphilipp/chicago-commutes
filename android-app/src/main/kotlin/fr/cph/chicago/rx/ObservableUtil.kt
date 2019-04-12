@@ -51,6 +51,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function3
 import io.reactivex.schedulers.Schedulers
+import java.net.UnknownHostException
 import java.util.Calendar
 import java.util.concurrent.Callable
 
@@ -64,18 +65,18 @@ object ObservableUtil {
     private val alertService = AlertService
     private val positionUtil = MapUtil
 
-    fun createLocalTrainData(): Observable<SparseArray<TrainStation>> {
+    fun createLocalTrainDataObservable(): Observable<SparseArray<TrainStation>> {
         return createObservableFromCallable(Callable { trainService.loadLocalTrainData() })
             .onErrorReturn { throwable ->
-                Log.e(TAG, throwable.message, throwable)
+                Log.e(TAG, "Could not create local train data", throwable)
                 SparseArray()
             }
     }
 
-    fun createLocalBusData(): Observable<Any> {
+    fun createLocalBusDataObservable(): Observable<Any> {
         return createObservableFromCallable(Callable { busService.loadLocalBusData() })
             .onErrorReturn { throwable ->
-                Log.e(TAG, throwable.message, throwable)
+                Log.e(TAG, "Could not create local bus data", throwable)
                 Any()
             }
     }
@@ -83,7 +84,7 @@ object ObservableUtil {
     fun createFavoritesTrainArrivalsObservable(): Observable<TrainArrivalDTO> {
         return createObservableFromCallable(Callable { TrainArrivalDTO(trainService.loadFavoritesTrain(), false) })
             .onErrorReturn { throwable ->
-                Log.e(TAG, throwable.message, throwable)
+                Log.e(TAG, "Could not load favorites trains", throwable)
                 TrainArrivalDTO(SparseArray(), true)
             }
     }
@@ -95,7 +96,7 @@ object ObservableUtil {
     fun createFavoritesBusArrivalsObservable(): Observable<BusArrivalDTO> {
         return createObservableFromCallable(Callable { BusArrivalDTO(busService.loadFavoritesBuses(), false) })
             .onErrorReturn { throwable ->
-                Log.e(TAG, throwable.message, throwable)
+                Log.e(TAG, "Could not load bus arrivals", throwable)
                 BusArrivalDTO()
             }
     }
@@ -113,7 +114,7 @@ object ObservableUtil {
     fun createBikeStationsObservable(divvyStation: BikeStation): Observable<BikeStation> {
         return createObservableFromCallable(Callable { bikeService.findBikeStation(divvyStation.id) })
             .onErrorReturn { throwable ->
-                Log.e(TAG, throwable.message, throwable)
+                Log.e(TAG, "Could not load bike stations", throwable)
                 BikeStation.buildDefaultBikeStationWithName("error")
             }
     }

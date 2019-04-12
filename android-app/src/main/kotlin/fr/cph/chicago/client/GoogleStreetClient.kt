@@ -55,7 +55,7 @@ object GoogleStreetClient {
         Log.v(TAG, "Address: $address")
         var inputStream: InputStream? = null
         return try {
-            inputStream = URL(address).content as InputStream
+            inputStream = HttpClient.connect(address)
             Drawable.createFromStream(inputStream, "src name")
         } finally {
             Util.closeQuietly(inputStream)

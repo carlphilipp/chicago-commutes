@@ -28,12 +28,17 @@ import java.net.URL
 object HttpClient {
 
     private val TAG = HttpClient::class.java.simpleName
+    private const val TIMEOUT = 500
 
     @Throws(ConnectException::class)
     fun connect(address: String): InputStream {
         try {
             Log.v(TAG, "Address: $address")
-            return URL(address).readBytes().inputStream()
+            val url = URL(address)
+            val con = url.openConnection()
+            con.connectTimeout = TIMEOUT
+            con.readTimeout = TIMEOUT
+            return con.getInputStream()
         } catch (e: IOException) {
             Log.e(TAG, e.message, e)
             throw ConnectException.defaultException(e)
