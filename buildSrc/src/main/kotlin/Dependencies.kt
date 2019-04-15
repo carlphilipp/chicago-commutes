@@ -7,14 +7,15 @@ object Android {
 
 object Version {
     val kotlin = "1.3.20"
-    val android_tools_build = "3.3.0"
-    val realm = "5.9.0"
+    val android_tools_build = "3.3.2"
+    val realm = "5.10.0"
 
     val butterknife = "10.1.0"
     val commons_collections4 = "4.1"
     val commons_text = "1.1"
     val easypermissions = "1.3.0"
-    val google_play = "16.0.0"
+    val google_play_maps = "16.1.0"
+    val google_play_location = "16.0.0"
     val jackson = "2.9.8"
     val material = "1.0.0"
     val mapbox = "6.5.0" // TODO: Migrate to last mapbox version
@@ -49,8 +50,8 @@ object Lib {
     val easypermissions = "pub.devrel:easypermissions:${Version.easypermissions}"
     val kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Version.kotlin}"
     val kotlin_reflect = "org.jetbrains.kotlin:kotlin-reflect:${Version.kotlin}"
-    val google_services_map = "com.google.android.gms:play-services-maps:${Version.google_play}"
-    val google_services_location = "com.google.android.gms:play-services-location:${Version.google_play}"
+    val google_services_map = "com.google.android.gms:play-services-maps:${Version.google_play_maps}"
+    val google_services_location = "com.google.android.gms:play-services-location:${Version.google_play_location}"
     val material = "com.google.android.material:material:${Version.material}"
     val jackson_core = "com.fasterxml.jackson.core:jackson-core:${Version.jackson}"
     val jackson_databind = "com.fasterxml.jackson.core:jackson-databind:${Version.jackson}"

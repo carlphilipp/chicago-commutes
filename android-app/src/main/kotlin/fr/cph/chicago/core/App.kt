@@ -60,7 +60,7 @@ class App : Application() {
     }
 
     val streetViewPlaceHolder: Drawable by lazy {
-        resources.getDrawable(R.drawable.placeholder_street_view)
+        resources.getDrawable(R.drawable.placeholder_street_view, this.theme)
     }
 
     override fun onCreate() {
