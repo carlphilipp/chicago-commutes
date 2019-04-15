@@ -16,7 +16,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package fr.cph.chicago.rx
 
 import android.util.Log
@@ -39,20 +38,22 @@ class TrainArrivalObserver(private val trainStationActivity: TrainStationActivit
         }
     }
 
-    override fun onError(e: Throwable) {
-        Log.e(TAG, e.message, e)
-        stopRefreshingIfNeeded()
-        Util.showNetworkErrorMessage(trainStationActivity.swipeRefreshLayout)
+    override fun onError(throwable: Throwable) {
+        handleError(throwable)
     }
 
     override fun onComplete() {
         stopRefreshingIfNeeded()
     }
 
-    private fun handleOnNextError(ex: Throwable) {
-        Log.e(TAG, ex.message, ex)
+    private fun handleOnNextError(throwable: Throwable) {
+        handleError(throwable)
+    }
+
+    private fun handleError(throwable: Throwable) {
+        Log.e(TAG, throwable.message, throwable)
         stopRefreshingIfNeeded()
-        Util.showOopsSomethingWentWrong(trainStationActivity.swipeRefreshLayout)
+        util.showOopsSomethingWentWrong(trainStationActivity.swipeRefreshLayout)
     }
 
     private fun stopRefreshingIfNeeded() {
@@ -63,5 +64,6 @@ class TrainArrivalObserver(private val trainStationActivity: TrainStationActivit
 
     companion object {
         private val TAG = TrainArrivalObserver::class.java.simpleName
+        private val util = Util
     }
 }

@@ -24,6 +24,7 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.graphics.Point
+import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.WindowManager
 import fr.cph.chicago.R
@@ -56,6 +57,10 @@ class App : Application() {
 
     val lineWidthMapBox: Float by lazy {
         if (screenWidth > 1080) 2f else if (screenWidth > 480) 1f else 2f
+    }
+
+    val streetViewPlaceHolder: Drawable by lazy {
+        resources.getDrawable(R.drawable.placeholder_street_view)
     }
 
     override fun onCreate() {

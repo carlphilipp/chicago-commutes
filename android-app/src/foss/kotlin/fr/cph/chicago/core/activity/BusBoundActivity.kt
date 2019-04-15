@@ -216,7 +216,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
                 },
                 { error ->
                     Log.e(TAG, error.message, error)
-                    util.handleConnectOrParserException(error, null, layout, layout)
+                    util.handleConnectOrParserException(error, layout)
                 })
     }
 

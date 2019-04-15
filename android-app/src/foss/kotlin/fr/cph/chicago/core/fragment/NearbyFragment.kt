@@ -144,7 +144,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
             val position = if (locationOrigin == null) Position() else Position(locationOrigin!!.latitude, locationOrigin!!.longitude)
             handleNearbyData(position)
         } else {
-            util.showNetworkErrorMessage(mainActivity)
+            util.showNetworkErrorMessage(mainActivity.drawerLayout)
             showProgress(false)
         }
     }
@@ -155,7 +155,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
         var chicago: Position? = null
         if (position.longitude == 0.0 && position.latitude == 0.0) {
             chicago = Position(chicagoPosition.latitude, chicagoPosition.longitude)
-            util.showMessage(mainActivity.drawer, R.string.message_cant_find_location)
+            util.showSnackBar(mainActivity.drawer, R.string.message_cant_find_location)
         }
 
         val finalPosition = chicago ?: position
@@ -335,7 +335,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
 
     companion object {
         fun newInstance(sectionNumber: Int): NearbyFragment {
-            return Fragment.fragmentWithBundle(NearbyFragment(), sectionNumber) as NearbyFragment
+            return fragmentWithBundle(NearbyFragment(), sectionNumber) as NearbyFragment
         }
     }
 }

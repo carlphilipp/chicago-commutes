@@ -188,25 +188,27 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
                 uiSettings.isMapToolbarEnabled = false
             }
             observableUtil.createBusPatternObservable(busRouteId, bound)
-                .subscribe({ busPattern ->
-                    if (busPattern.direction != "error") {
-                        val center = busPattern.busStopsPatterns.size / 2
-                        val position = busPattern.busStopsPatterns[center].position
-                        if (position.latitude == 0.0 && position.longitude == 0.0) {
-                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(GoogleMapUtil.chicago, 10f))
+                .subscribe(
+                    { busPattern ->
+                        if (busPattern.direction != "error") {
+                            val center = busPattern.busStopsPatterns.size / 2
+                            val position = busPattern.busStopsPatterns[center].position
+                            if (position.latitude == 0.0 && position.longitude == 0.0) {
+                                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(GoogleMapUtil.chicago, 10f))
+                            } else {
+                                val latLng = LatLng(position.latitude, position.longitude)
+                                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7f))
+                                googleMap.animateCamera(CameraUpdateFactory.zoomTo(9f), 500, null)
+                            }
+                            drawPattern(googleMap, busPattern)
                         } else {
-                            val latLng = LatLng(position.latitude, position.longitude)
-                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7f))
-                            googleMap.animateCamera(CameraUpdateFactory.zoomTo(9f), 500, null)
+                            util.showSnackBar(this.layout, R.string.message_error_could_not_load_path)
                         }
-                        drawPattern(googleMap, busPattern)
-                    } else {
-                        util.showMessage(this, R.string.message_error_could_not_load_path)
-                    }
-                }) { onError ->
-                    util.handleConnectOrParserException(onError, null, layout, layout)
-                    Log.e(TAG, onError.message, onError)
-                }
+                    },
+                    { onError ->
+                        util.handleConnectOrParserException(onError, layout)
+                        Log.e(TAG, onError.message, onError)
+                    })
         }
     }
 

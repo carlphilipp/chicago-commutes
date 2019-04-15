@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.core.activity.station
 
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.widget.ImageView
@@ -79,7 +78,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
     @BindString(R.string.bundle_bike_station)
     lateinit var bundleBikeStation: String
 
-    private val observableUtil: ObservableUtil = ObservableUtil
+    private val bikeStationsObservable = ObservableUtil.createAllBikeStationsObservable()
     private val preferenceService: PreferenceService = PreferenceService
 
     private lateinit var divvyStation: BikeStation
@@ -92,9 +91,9 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
         val longitude = divvyStation.longitude
 
         swipeRefreshLayout.setOnRefreshListener {
-            observableUtil.createAllBikeStationsObservable()
-                .subscribe(BikeAllBikeStationsObserver(this, divvyStation.id, swipeRefreshLayout))
-            if (streetViewImage.drawable is ColorDrawable) {
+            bikeStationsObservable.subscribe(BikeAllBikeStationsObserver(this, divvyStation.id))
+            // FIXME: Identify if it's the place holder or not. This is not great
+            if (streetViewImage.scaleType == ImageView.ScaleType.CENTER) {
                 loadGoogleStreetImage(Position(latitude, longitude), streetViewImage, streetViewProgressBar)
             }
         }
@@ -122,8 +121,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
         toolbar.inflateMenu(R.menu.main)
         toolbar.setOnMenuItemClickListener {
             swipeRefreshLayout.isRefreshing = true
-            observableUtil.createAllBikeStationsObservable()
-                .subscribe(BikeAllBikeStationsObserver(this@BikeStationActivity, divvyStation.id, swipeRefreshLayout))
+            bikeStationsObservable.subscribe(BikeAllBikeStationsObserver(this@BikeStationActivity, divvyStation.id))
             false
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

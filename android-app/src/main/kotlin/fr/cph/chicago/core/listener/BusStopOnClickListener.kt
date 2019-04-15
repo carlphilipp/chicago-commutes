@@ -68,35 +68,37 @@ class BusStopOnClickListener(private val activity: Activity, private val parent:
     @SuppressLint("CheckResult")
     private fun loadBusDetails(view: View, busDetails: BusDetailsDTO) {
         observableUtil.createBusStopBoundObservable(busDetails.busRouteId, busDetails.boundTitle)
-            .subscribe({ onNext ->
-                Observable.fromIterable(onNext)
-                    .filter { busStop -> busStop.id.toString() == busDetails.stopId }
-                    .firstElement()
-                    .subscribe({ busStop: BusStop ->
-                        val intent = Intent(activity, BusStopActivity::class.java)
-                        val extras = Bundle()
-                        extras.putInt(activity.getString(R.string.bundle_bus_stop_id), busStop.id)
-                        extras.putString(activity.getString(R.string.bundle_bus_stop_name), busStop.name)
-                        extras.putString(activity.getString(R.string.bundle_bus_route_id), busDetails.busRouteId)
-                        extras.putString(activity.getString(R.string.bundle_bus_route_name), busDetails.routeName)
-                        extras.putString(activity.getString(R.string.bundle_bus_bound), busDetails.bound)
-                        extras.putString(activity.getString(R.string.bundle_bus_bound_title), busDetails.boundTitle)
-                        extras.putDouble(activity.getString(R.string.bundle_bus_latitude), busStop.position.latitude)
-                        extras.putDouble(activity.getString(R.string.bundle_bus_longitude), busStop.position.longitude)
+            .subscribe(
+                { onNext ->
+                    Observable.fromIterable(onNext)
+                        .filter { busStop -> busStop.id.toString() == busDetails.stopId }
+                        .firstElement()
+                        .subscribe(
+                            { busStop: BusStop ->
+                                val intent = Intent(activity, BusStopActivity::class.java)
+                                val extras = Bundle()
+                                extras.putInt(activity.getString(R.string.bundle_bus_stop_id), busStop.id)
+                                extras.putString(activity.getString(R.string.bundle_bus_stop_name), busStop.name)
+                                extras.putString(activity.getString(R.string.bundle_bus_route_id), busDetails.busRouteId)
+                                extras.putString(activity.getString(R.string.bundle_bus_route_name), busDetails.routeName)
+                                extras.putString(activity.getString(R.string.bundle_bus_bound), busDetails.bound)
+                                extras.putString(activity.getString(R.string.bundle_bus_bound_title), busDetails.boundTitle)
+                                extras.putDouble(activity.getString(R.string.bundle_bus_latitude), busStop.position.latitude)
+                                extras.putDouble(activity.getString(R.string.bundle_bus_longitude), busStop.position.longitude)
 
-                        intent.putExtras(extras)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        activity.startActivity(intent)
-                    }
-                    ) { onError ->
-                        Log.e(TAG, onError.message, onError)
-                        util.showOopsSomethingWentWrong(parent)
-                    }
-            }
-            ) { onError ->
-                Log.e(TAG, onError.message, onError)
-                util.showNetworkErrorMessage(view)
-            }
+                                intent.putExtras(extras)
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                activity.startActivity(intent)
+                            },
+                            { onError ->
+                                Log.e(TAG, onError.message, onError)
+                                util.showOopsSomethingWentWrong(parent)
+                            })
+                },
+                { onError ->
+                    Log.e(TAG, onError.message, onError)
+                    util.showNetworkErrorMessage(view)
+                })
     }
 
     companion object {

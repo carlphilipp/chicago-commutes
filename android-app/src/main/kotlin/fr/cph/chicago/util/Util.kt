@@ -25,7 +25,6 @@ import android.net.ConnectivityManager
 import android.os.Build
 import android.util.TypedValue
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
@@ -188,61 +187,31 @@ object Util {
         return pixels.toInt()
     }
 
-    fun showNetworkErrorMessage(activity: Activity) {
-        showSnackBar(activity, R.string.message_network_error, Snackbar.LENGTH_SHORT)
-    }
-
-    fun showNetworkErrorMessage(view: View) {
-        showSnackBar(view, R.string.message_network_error)
-    }
-
-    fun showMessage(activity: Activity, message: Int) {
-        showSnackBar(activity, message, Snackbar.LENGTH_SHORT)
-    }
-
-    fun showMessage(view: View, message: Int) {
-        showSnackBar(view, message)
-    }
-
-    fun showSnackBar(view: View, message: String) {
-        showSnackBar(view, message, Snackbar.LENGTH_LONG)
-    }
-
-    fun showSnackBar(activity: Activity, message: Int, length: Int) {
-        if (activity.currentFocus != null) {
-            showSnackBar(activity.currentFocus!!, activity.getString(message), length)
-        } else {
-            Toast.makeText(activity, activity.getString(message), length).show()
-        }
-    }
-
-    fun showSnackBar(view: View, message: Int) {
-        showSnackBar(view, App.instance.getString(message), Snackbar.LENGTH_LONG)
-    }
-
-    fun showOopsSomethingWentWrong(view: View) {
-        showSnackBar(view, App.instance.getString(R.string.message_something_went_wrong), Snackbar.LENGTH_LONG)
-    }
-
-    private fun showSnackBar(view: View, text: CharSequence, duration: Int) {
-        val snackBar = Snackbar.make(view, text, duration)
-        snackBar.view.setBackgroundColor(getAttribute(view.context, R.attr.colorAccent))
-        snackBar.show()
-    }
-
     fun getAttribute(context: Context, resId: Int): Int {
         val typedValue = TypedValue()
         context.theme.resolveAttribute(resId, typedValue, true)
         return typedValue.data
     }
 
-    fun handleConnectOrParserException(throwable: Throwable, activity: Activity?, connectView: View?, parserView: View) {
+    fun showNetworkErrorMessage(view: View) {
+        showSnackBar(view, R.string.message_network_error)
+    }
+
+    fun showOopsSomethingWentWrong(view: View) {
+        showSnackBar(view, App.instance.getString(R.string.message_something_went_wrong))
+    }
+
+    fun showSnackBar(view: View, message: Int) {
+        showSnackBar(view, App.instance.getString(message))
+    }
+
+    fun showSnackBar(view: View, text: CharSequence) {
+        Snackbar.make(view, text, Snackbar.LENGTH_LONG).show()
+    }
+
+    fun handleConnectOrParserException(throwable: Throwable, parserView: View) {
         if (throwable.cause is ConnectException) {
-            if (activity != null) {
-                showNetworkErrorMessage(activity)
-            } else if (connectView != null) {
-                showNetworkErrorMessage(connectView)
-            }
+            showNetworkErrorMessage(parserView)
         } else if (throwable.cause is ParserException) {
             showOopsSomethingWentWrong(parserView)
         }

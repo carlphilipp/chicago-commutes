@@ -64,7 +64,7 @@ class TrainFragment : Fragment(R.layout.fragment_train) {
          * @return a train fragment
          */
         fun newInstance(sectionNumber: Int): TrainFragment {
-            return Fragment.fragmentWithBundle(TrainFragment(), sectionNumber) as TrainFragment
+            return fragmentWithBundle(TrainFragment(), sectionNumber) as TrainFragment
         }
     }
 }

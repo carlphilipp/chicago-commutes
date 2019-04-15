@@ -251,13 +251,13 @@ class TrainMapActivity : FragmentMapActivity() {
                             centerMapOnTrain(trains)
                         }
                     } else {
-                        Util.showMessage(this@TrainMapActivity, R.string.message_no_train_found)
+                        Util.showSnackBar(this@TrainMapActivity.currentFocus!!, R.string.message_no_train_found)
                     }
                     Any()
                 }).subscribe(
                     {},
                     { throwable ->
-                        Util.showMessage(this@TrainMapActivity, R.string.message_error_while_loading_data)
+                        Util.showSnackBar(this@TrainMapActivity.currentFocus!!, R.string.message_error_while_loading_data)
                         Log.e(TAG, "Error not handled", throwable)
                     }
                 )
@@ -266,10 +266,10 @@ class TrainMapActivity : FragmentMapActivity() {
                     if (trains != null) {
                         drawTrains(trains)
                         if (trains.isEmpty()) {
-                            Util.showMessage(this@TrainMapActivity, R.string.message_no_train_found)
+                            Util.showSnackBar(this@TrainMapActivity.currentFocus!!, R.string.message_no_train_found)
                         }
                     } else {
-                        Util.showMessage(this@TrainMapActivity, R.string.message_error_while_loading_data)
+                        Util.showSnackBar(this@TrainMapActivity.currentFocus!!, R.string.message_error_while_loading_data)
                     }
                 }
             }

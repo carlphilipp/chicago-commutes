@@ -19,13 +19,13 @@
 
 package fr.cph.chicago.core.activity.station
 
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
+import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
+import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.model.Position
 import io.reactivex.Observable
@@ -40,10 +40,15 @@ abstract class StationActivity(contentView: Int) : ButterKnifeActivity(contentVi
             .observeOn(AndroidSchedulers.mainThread())
             .doFinally { streetViewProgressBar.visibility = View.GONE }
             .subscribe(
-                { drawable -> streetViewImage.setImageDrawable(drawable) },
+                { drawable ->
+                    streetViewImage.setImageDrawable(drawable)
+                    streetViewImage.scaleType = ImageView.ScaleType.CENTER_CROP
+                },
                 { error ->
                     Log.e(TAG, error.message, error)
-                    streetViewImage.setImageDrawable(ColorDrawable(Color.TRANSPARENT))
+                    val placeHolder = App.instance.streetViewPlaceHolder
+                    streetViewImage.setImageDrawable(placeHolder)
+                    streetViewImage.scaleType = ImageView.ScaleType.CENTER
                 }
             )
     }

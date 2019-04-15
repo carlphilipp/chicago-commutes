@@ -20,12 +20,10 @@
 package fr.cph.chicago.client
 
 import android.graphics.drawable.Drawable
-import android.util.Log
 import fr.cph.chicago.Constants.Companion.GOOGLE_STREET_VIEW_URL
 import fr.cph.chicago.core.App
 import fr.cph.chicago.util.Util
 import java.io.InputStream
-import java.net.URL
 
 /**
  * Class that access google street api. Singleton
@@ -35,13 +33,12 @@ import java.net.URL
  */
 object GoogleStreetClient {
 
-    private val TAG = GoogleStreetClient::class.java.simpleName
     private const val WIDTH = 1000
     private const val HEIGHT = 300
     private const val FOV = 120
 
     fun connect(latitude: Double, longitude: Double): Drawable {
-        val address = "$GOOGLE_STREET_VIEW_URL?key=${App.googleStreetKey}&sensor=false&size=${WIDTH}x$HEIGHT&fov=$FOV&location=$latitude,$longitude"
+        val address = "$GOOGLE_STREET_VIEW_URL?key=${App.googleStreetKey}&sensor=false&size=${WIDTH}x$HEIGHT&fov=$FOV&location=$latitude,$longitude&source=outdoor"
         return connectUrl(address)
     }
 
@@ -52,7 +49,6 @@ object GoogleStreetClient {
      * @return a drawable map
      */
     private fun connectUrl(address: String): Drawable {
-        Log.v(TAG, "Address: $address")
         var inputStream: InputStream? = null
         return try {
             inputStream = HttpClient.connect(address)

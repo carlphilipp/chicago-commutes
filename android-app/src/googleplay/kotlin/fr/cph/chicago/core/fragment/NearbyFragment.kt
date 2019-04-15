@@ -257,7 +257,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
                 handleNearbyData(position)
             }
         } else {
-            util.showNetworkErrorMessage(mainActivity)
+            util.showNetworkErrorMessage(mainActivity.drawerLayout)
             showProgress(false)
         }
     }
@@ -268,7 +268,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
         var finalPosition = position
         if (position.longitude == 0.0 && position.latitude == 0.0) {
             Log.w(TAG, "Could not get current user location")
-            util.showMessage(mainActivity.drawer, R.string.message_cant_find_location)
+            util.showSnackBar(mainActivity.drawer, R.string.message_cant_find_location)
             finalPosition = chicagoPosition
         }
 

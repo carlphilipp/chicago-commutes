@@ -94,20 +94,16 @@ class FavoritesFragment : Fragment(R.layout.fragment_main) {
 
         if (favoritesAdapter == null) {
             favoritesAdapter = FavoritesAdapter(mainActivity)
-            favoritesAdapter!!.updateData(trainArrivals, busArrivals, divvyStations)
-            favoritesAdapter!!.refreshFavorites()
+            favoritesAdapter?.updateData(trainArrivals, busArrivals, divvyStations)
+            favoritesAdapter?.refreshFavorites()
         }
 
         recyclerView.adapter = favoritesAdapter
         recyclerView.layoutManager = LinearLayoutManager(mainActivity)
         floatingButton.setOnClickListener {
-            if (divvyStations.isEmpty()) {
-                util.showMessage(mainActivity, R.string.message_too_fast)
-            } else {
-                val i = Intent(mainActivity, SearchActivity::class.java)
-                i.putParcelableArrayListExtra(bundleBikeStation, util.asParcelableArrayList(divvyStations))
-                mainActivity.startActivity(i)
-            }
+            val i = Intent(mainActivity, SearchActivity::class.java)
+            i.putParcelableArrayListExtra(bundleBikeStation, util.asParcelableArrayList(divvyStations))
+            mainActivity.startActivity(i)
         }
 
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -183,10 +179,10 @@ class FavoritesFragment : Fragment(R.layout.fragment_main) {
         rootView.postDelayed({ rootView.background = currentBackground }, 100)
         stopRefreshing()
         when {
-            util.isAtLeastTwoErrors(favoritesDTO.trainArrivalDTO.error, favoritesDTO.busArrivalDTO.error, favoritesDTO.bikeError) -> util.showMessage(mainActivity, R.string.message_something_went_wrong)
-            favoritesDTO.trainArrivalDTO.error -> util.showMessage(mainActivity, R.string.message_error_train_favorites)
-            favoritesDTO.busArrivalDTO.error -> util.showMessage(mainActivity, R.string.message_error_bus_favorites)
-            favoritesDTO.bikeError -> util.showMessage(mainActivity, R.string.message_error_bike_favorites)
+            util.isAtLeastTwoErrors(favoritesDTO.trainArrivalDTO.error, favoritesDTO.busArrivalDTO.error, favoritesDTO.bikeError) -> util.showSnackBar(mainActivity.drawerLayout, R.string.message_something_went_wrong)
+            favoritesDTO.trainArrivalDTO.error -> util.showSnackBar(mainActivity.drawerLayout, R.string.message_error_train_favorites)
+            favoritesDTO.busArrivalDTO.error -> util.showSnackBar(mainActivity.drawerLayout, R.string.message_error_bus_favorites)
+            favoritesDTO.bikeError -> util.showSnackBar(mainActivity.drawerLayout, R.string.message_error_bike_favorites)
         }
     }
 
@@ -196,7 +192,7 @@ class FavoritesFragment : Fragment(R.layout.fragment_main) {
      * @param message the message
      */
     fun displayError(message: Int) {
-        util.showMessage(mainActivity, message)
+        util.showSnackBar(mainActivity.drawerLayout, message)
         stopRefreshing()
     }
 
@@ -219,9 +215,7 @@ class FavoritesFragment : Fragment(R.layout.fragment_main) {
     private fun fetchData() {
         if (util.isNetworkAvailable()) {
             observableUtil.createAllDataObservable().subscribe(
-                {
-                    this.reloadData(it)
-                },
+                { this.reloadData(it) },
                 { onError ->
                     Log.e(TAG, onError.message, onError)
                     this.displayError(R.string.message_something_went_wrong)
@@ -250,7 +244,7 @@ class FavoritesFragment : Fragment(R.layout.fragment_main) {
          * @return a favorite fragment
          */
         fun newInstance(sectionNumber: Int): FavoritesFragment {
-            return Fragment.fragmentWithBundle(FavoritesFragment(), sectionNumber) as FavoritesFragment
+            return fragmentWithBundle(FavoritesFragment(), sectionNumber) as FavoritesFragment
         }
     }
 }

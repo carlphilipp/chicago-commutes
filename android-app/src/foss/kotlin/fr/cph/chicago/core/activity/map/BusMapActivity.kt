@@ -210,7 +210,7 @@ class BusMapActivity : FragmentMapActivity() {
                 { view -> update(feature, id, view) },
                 { error ->
                     Log.e(TAG, error.message, error)
-                    Util.showMessage(layout, R.string.message_no_data)
+                    Util.showSnackBar(layout, R.string.message_no_data)
                     showProgress(false)
                 })
     }
@@ -226,7 +226,7 @@ class BusMapActivity : FragmentMapActivity() {
                 { view -> update(feature, id, view) },
                 { error ->
                     Log.e(TAG, error.message, error)
-                    Util.showMessage(layout, R.string.message_no_data)
+                    Util.showSnackBar(layout, R.string.message_no_data)
                     showProgress(false)
                 })
     }
@@ -290,12 +290,12 @@ class BusMapActivity : FragmentMapActivity() {
                                 drawPolyline(result.map { pair -> pair.first })
                                 this.markerOptions = result.flatMap { pair -> pair.second }
                             } else {
-                                Util.showMessage(layout, R.string.message_no_pattern_found)
+                                Util.showSnackBar(layout, R.string.message_no_pattern_found)
                             }
                         },
                         { error ->
                             Log.e(TAG, error.message, error)
-                            Util.showMessage(layout, R.string.message_no_pattern_found)
+                            Util.showSnackBar(layout, R.string.message_no_pattern_found)
                         })
             }
         } else {
@@ -323,12 +323,12 @@ class BusMapActivity : FragmentMapActivity() {
                 { featureCollection: FeatureCollection ->
                     addVehicleFeatureCollection(featureCollection)
                     if (featureCollection.features() != null && featureCollection.features()!!.isEmpty()) {
-                        Util.showMessage(layout, R.string.message_no_bus_found)
+                        Util.showSnackBar(layout, R.string.message_no_bus_found)
                     }
                 },
                 { error ->
                     Log.e(TAG, error.message, error)
-                    Util.showMessage(layout, R.string.message_error_while_loading_data)
+                    Util.showSnackBar(layout, R.string.message_error_while_loading_data)
                 })
     }
 

@@ -121,7 +121,7 @@ class AlertFragment : Fragment(R.layout.fragment_alert) {
          * @return a train fragment
          */
         fun newInstance(sectionNumber: Int): AlertFragment {
-            return Fragment.fragmentWithBundle(AlertFragment(), sectionNumber) as AlertFragment
+            return fragmentWithBundle(AlertFragment(), sectionNumber) as AlertFragment
         }
     }
 }

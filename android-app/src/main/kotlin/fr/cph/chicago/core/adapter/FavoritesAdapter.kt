@@ -69,8 +69,8 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavoritesViewHolder {
         // create a new view
-        val v = LayoutInflater.from(parent.context).inflate(R.layout.list_favorites_train, parent, false)
-        return FavoritesViewHolder(v, parent)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.list_favorites, parent, false)
+        return FavoritesViewHolder(view, parent)
     }
 
     override fun onBindViewHolder(holder: FavoritesViewHolder, position: Int) {
@@ -79,7 +79,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         holder.lastUpdateTextView.text = lastUpdate
 
         when (model) {
-            is TrainStation -> handleStation(textAppearance, holder, model)
+            is TrainStation -> handleTrainStation(textAppearance, holder, model)
             is BusRoute -> handleBusRoute(textAppearance, holder, model)
             else -> handleBikeStation(textAppearance, holder, model as BikeStation)
         }
@@ -99,10 +99,11 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         }
     }
 
-    private fun handleStation(@StyleRes textAppearance: Int, holder: FavoritesViewHolder, trainStation: TrainStation) {
+    private fun handleTrainStation(@StyleRes textAppearance: Int, holder: FavoritesViewHolder, trainStation: TrainStation) {
         holder.favoriteImage.setImageResource(R.drawable.ic_train_white_24dp)
         holder.stationNameTextView.text = trainStation.name
-        holder.detailsButton.setOnClickListener(TrainDetailsButtonOnClickListener(activity, trainStation.id))
+        holder.detailsButton.setOnClickListener(TrainDetailsButtonOnClickListener(trainStation.id))
+        holder.detailsButton.isEnabled = true
 
         holder.mapButton.text = App.instance.getString(R.string.favorites_view_trains)
         holder.mapButton.setOnClickListener(TrainMapButtonOnClickListener(activity, trainStation.lines))
@@ -164,6 +165,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
 
         holder.mapButton.text = App.instance.getString(R.string.favorites_view_buses)
         holder.detailsButton.setOnClickListener(BusStopOnClickListener(activity, holder.parent, busDetailsDTOs))
+        holder.detailsButton.isEnabled = true
         holder.mapButton.setOnClickListener(BusMapButtonOnClickListener(activity, busRoute, busDetailsDTOs.map { it.bound }.toSet()))
     }
 
@@ -171,6 +173,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         holder.stationNameTextView.text = divvyStation.name
         holder.favoriteImage.setImageResource(R.drawable.ic_directions_bike_white_24dp)
 
+        holder.detailsButton.isEnabled = divvyStation.latitude != 0.0 && divvyStation.longitude!= 0.0
         holder.detailsButton.setOnClickListener(BikeDetailsButtonOnClickListener(activity, divvyStation))
 
         holder.mapButton.text = App.instance.getString(R.string.favorites_view_station)

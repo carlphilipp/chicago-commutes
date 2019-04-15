@@ -54,7 +54,7 @@ class CtaMapFragment : Fragment(R.layout.fragment_cta_map) {
 
     companion object {
         fun newInstance(sectionNumber: Int): CtaMapFragment {
-            return Fragment.fragmentWithBundle(CtaMapFragment(), sectionNumber) as CtaMapFragment
+            return fragmentWithBundle(CtaMapFragment(), sectionNumber) as CtaMapFragment
         }
     }
 }

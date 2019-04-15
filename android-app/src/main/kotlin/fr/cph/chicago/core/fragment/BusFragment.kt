@@ -97,7 +97,7 @@ class BusFragment : Fragment(R.layout.fragment_bus) {
          * @return the fragment
          */
         fun newInstance(sectionNumber: Int): BusFragment {
-            return Fragment.fragmentWithBundle(BusFragment(), sectionNumber) as BusFragment
+            return fragmentWithBundle(BusFragment(), sectionNumber) as BusFragment
         }
     }
 }

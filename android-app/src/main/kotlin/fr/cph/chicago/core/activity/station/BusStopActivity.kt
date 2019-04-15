@@ -20,7 +20,6 @@
 package fr.cph.chicago.core.activity.station
 
 import android.annotation.SuppressLint
-import android.graphics.drawable.ColorDrawable
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
@@ -147,7 +146,8 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
 
         swipeRefreshLayout.setOnRefreshListener {
             LoadStationDataTask().execute()
-            if (streetViewImage.drawable is ColorDrawable) {
+            // FIXME: Identify if it's the place holder or not. This is not great
+            if (streetViewImage.scaleType == ImageView.ScaleType.CENTER) {
                 loadGoogleStreetImage(position, streetViewImage, streetViewProgressBar)
             }
         }

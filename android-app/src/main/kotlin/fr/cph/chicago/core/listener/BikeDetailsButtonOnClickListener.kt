@@ -3,14 +3,16 @@ package fr.cph.chicago.core.listener
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.station.BikeStationActivity
 import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.util.Util
 
-class BikeDetailsButtonOnClickListener(private val activity: Activity, private val divvyStation: BikeStation) : NetworkCheckListener(activity) {
+class BikeDetailsButtonOnClickListener(private val activity: Activity, private val divvyStation: BikeStation) : View.OnClickListener {
 
-    override fun onClick() {
+    override fun onClick(view: View?) {
         if (divvyStation.latitude != 0.0 && divvyStation.longitude != 0.0) {
             val intent = Intent(activity.applicationContext, BikeStationActivity::class.java)
             val extras = Bundle()
@@ -18,7 +20,11 @@ class BikeDetailsButtonOnClickListener(private val activity: Activity, private v
             intent.putExtras(extras)
             activity.startActivity(intent)
         } else {
-            util.showMessage(activity, R.string.message_not_ready)
+            util.showNetworkErrorMessage(view!!)
         }
+    }
+
+    companion object {
+        private val util = Util
     }
 }

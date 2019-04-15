@@ -25,9 +25,9 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.BaseActivity
@@ -141,7 +141,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     companion object {
 
         fun newInstance(sectionNumber: Int): SettingsFragment {
-            return Fragment.fragmentWithBundle(SettingsFragment(), sectionNumber) as SettingsFragment
+            return fragmentWithBundle(SettingsFragment(), sectionNumber) as SettingsFragment
         }
     }
 }

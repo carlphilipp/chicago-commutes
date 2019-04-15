@@ -28,7 +28,7 @@ import java.net.URL
 object HttpClient {
 
     private val TAG = HttpClient::class.java.simpleName
-    private const val TIMEOUT = 500
+    private const val TIMEOUT = 3000
 
     @Throws(ConnectException::class)
     fun connect(address: String): InputStream {

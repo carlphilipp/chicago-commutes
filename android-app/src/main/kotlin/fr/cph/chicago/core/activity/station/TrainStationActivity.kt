@@ -21,7 +21,6 @@ package fr.cph.chicago.core.activity.station
 
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
@@ -150,7 +149,8 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
             streetViewImage.layoutParams = params
             swipeRefreshLayout.setOnRefreshListener {
                 trainArrivalObservable.subscribe(TrainArrivalObserver(this))
-                if (streetViewImage.drawable is ColorDrawable) {
+                // FIXME: Identify if it's the place holder or not. This is not great
+                if (streetViewImage.scaleType == ImageView.ScaleType.CENTER) {
                     loadGoogleStreetImage(position, streetViewImage, streetViewProgressBar)
                 }
             }

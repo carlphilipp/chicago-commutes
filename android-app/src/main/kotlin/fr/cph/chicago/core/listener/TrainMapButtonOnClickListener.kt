@@ -3,6 +3,7 @@ package fr.cph.chicago.core.listener
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import fr.cph.chicago.R
@@ -12,9 +13,9 @@ import fr.cph.chicago.core.adapter.PopupFavoritesTrainAdapter
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.util.Color
 
-class TrainMapButtonOnClickListener(private val activity: Activity, private val trainLines: Set<TrainLine>) : NetworkCheckListener(activity) {
+class TrainMapButtonOnClickListener(private val activity: Activity, private val trainLines: Set<TrainLine>) : View.OnClickListener {
 
-    override fun onClick() {
+    override fun onClick(v: View?) {
         if (trainLines.size == 1) {
             startTrainMapActivity(trainLines.iterator().next())
         } else {

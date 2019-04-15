@@ -32,7 +32,6 @@ import androidx.drawerlayout.widget.DrawerLayout
 import butterknife.BindString
 import butterknife.BindView
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.snackbar.Snackbar
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.fragment.AlertFragment
@@ -124,12 +123,12 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
         val isBusError = intent.getBooleanExtra(getString(R.string.bundle_bus_error), false)
         // FIXME The snackbar does not move up the search button
         if (isTrainError && isBusError) {
-            util.showSnackBar(this, R.string.message_something_went_wrong, Snackbar.LENGTH_SHORT)
+            util.showOopsSomethingWentWrong(drawerLayout)
         } else {
             if (isTrainError) {
-                util.showSnackBar(this, R.string.message_error_train_favorites, Snackbar.LENGTH_SHORT)
+                util.showSnackBar(drawerLayout, R.string.message_error_train_favorites)
             } else if (isBusError) {
-                util.showSnackBar(this, R.string.message_error_bus_favorites, Snackbar.LENGTH_SHORT)
+                util.showSnackBar(drawerLayout, R.string.message_error_bus_favorites)
             }
         }
     }
@@ -155,8 +154,7 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
 
     private fun setToolbar() {
         toolbar.setOnMenuItemClickListener {
-            // Favorite fragment
-            favoritesFragment!!.startRefreshing()
+            favoritesFragment?.startRefreshing()
 
             if (util.isNetworkAvailable()) {
                 if (busService.getBusRoutes().isEmpty()
@@ -165,13 +163,14 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
                     loadFirstData()
                 }
                 val zipped = observableUtil.createAllDataObservable()
-                zipped.subscribe({ favoritesResult -> favoritesFragment?.reloadData(favoritesResult) })
-                { error ->
-                    Log.e(TAG, error.message, error)
-                    favoritesFragment!!.displayError(R.string.message_something_went_wrong)
-                }
+                zipped.subscribe(
+                    { favoritesResult -> favoritesFragment?.reloadData(favoritesResult) },
+                    { error ->
+                        Log.e(TAG, error.message, error)
+                        favoritesFragment?.displayError(R.string.message_something_went_wrong)
+                    })
             } else {
-                favoritesFragment!!.displayError(R.string.message_network_error)
+                favoritesFragment?.displayError(R.string.message_network_error)
             }
             true
         }
@@ -182,23 +181,23 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
     }
 
     fun loadFirstData() {
-        observableUtil.createOnFirstLoadObservable().subscribe(
-            { (busRoutesError, bikeStationsError, busRoutes, bikeStations) ->
-                busService.saveBusRoutes(busRoutes)
-                refreshFirstLoadData(bikeStations)
-                if (bikeStationsError) {
-                    bikeFragment?.setFailure()
-                }
-                if (bikeStationsError || busRoutesError) {
-                    Log.w(TAG, "Bike station [$bikeStationsError] or Bus routes error [$busRoutesError]")
-                    util.showSnackBar(this, R.string.message_something_went_wrong, Snackbar.LENGTH_SHORT)
-                }
-            },
-            { error ->
-                Log.e(TAG, "Error while loading data", error)
-                util.showSnackBar(this, R.string.message_something_went_wrong, Snackbar.LENGTH_SHORT)
-            }
-        )
+        observableUtil.createOnFirstLoadObservable()
+            .subscribe(
+                { (busRoutesError, bikeStationsError, busRoutes, bikeStations) ->
+                    busService.saveBusRoutes(busRoutes)
+                    refreshFirstLoadData(bikeStations)
+                    if (bikeStationsError) {
+                        bikeFragment?.setFailure()
+                    }
+                    if (bikeStationsError || busRoutesError) {
+                        Log.w(TAG, "Bike station [$bikeStationsError] or Bus routes error [$busRoutesError]")
+                        util.showOopsSomethingWentWrong(drawerLayout)
+                    }
+                },
+                { error ->
+                    Log.e(TAG, "Error while loading data", error)
+                    util.showOopsSomethingWentWrong(drawerLayout)
+                })
     }
 
     private fun refreshFirstLoadData(divvyStations: List<BikeStation>) {

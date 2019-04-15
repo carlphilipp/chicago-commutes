@@ -68,7 +68,8 @@ class BikeFragment : Fragment(R.layout.fragment_bike) {
 
     override fun onResume() {
         super.onResume()
-        divvyStations = mainActivity.intent.getParcelableArrayListExtra(bundleBikeStations) ?: listOf()
+        divvyStations = mainActivity.intent.getParcelableArrayListExtra(bundleBikeStations)
+            ?: listOf()
         if (isFailure) {
             errorState()
         } else if (divvyStations.isNotEmpty()) {
@@ -144,7 +145,7 @@ class BikeFragment : Fragment(R.layout.fragment_bike) {
          * @return the fragment
          */
         fun newInstance(sectionNumber: Int): BikeFragment {
-            return Fragment.fragmentWithBundle(BikeFragment(), sectionNumber) as BikeFragment
+            return fragmentWithBundle(BikeFragment(), sectionNumber) as BikeFragment
         }
     }
 }

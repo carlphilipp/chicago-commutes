@@ -251,7 +251,7 @@ class TrainMapActivity : FragmentMapActivity() {
                 { view -> update(feature, runNumber, view) },
                 { error ->
                     Log.e(TAG, error.message, error)
-                    Util.showMessage(layout, R.string.message_no_data)
+                    Util.showSnackBar(layout, R.string.message_no_data)
                     showProgress(false)
                 })
     }
@@ -304,7 +304,7 @@ class TrainMapActivity : FragmentMapActivity() {
                         addStationOnMap(pair.second)
                         drawPolyline(listOf(pair.first))
                         if (featuresTrain.features() != null && featuresTrain.features()!!.isEmpty()) {
-                            Util.showMessage(layout, R.string.message_no_train_found)
+                            Util.showSnackBar(layout, R.string.message_no_train_found)
                         }
                         pair.first.points
                     })
@@ -312,7 +312,7 @@ class TrainMapActivity : FragmentMapActivity() {
                         { points -> centerMap(points) },
                         { error ->
                             Log.e(TAG, error.message, error)
-                            Util.showMessage(layout, R.string.message_error_while_loading_data)
+                            Util.showSnackBar(layout, R.string.message_error_while_loading_data)
                         })
             } else {
                 featuresTrains
@@ -321,12 +321,12 @@ class TrainMapActivity : FragmentMapActivity() {
                         { featureCollection ->
                             addVehicleFeatureCollection(featureCollection)
                             if (featureCollection.features() != null && featureCollection.features()!!.isEmpty()) {
-                                Util.showMessage(layout, R.string.message_no_train_found)
+                                Util.showSnackBar(layout, R.string.message_no_train_found)
                             }
                         },
                         { error ->
                             Log.e(TAG, error.message, error)
-                            Util.showMessage(layout, R.string.message_error_while_loading_data)
+                            Util.showSnackBar(layout, R.string.message_error_while_loading_data)
                         })
             }
         } else {

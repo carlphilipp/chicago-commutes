@@ -80,7 +80,7 @@ class BusAdapter : BaseAdapter() {
             holder.detailsLayout.visibility = LinearLayout.VISIBLE
             ObservableUtil.createBusDirectionsObservable(route.id)
                 .doOnError { throwable: Throwable ->
-                    Util.handleConnectOrParserException(throwable, null, view, holder.detailsLayout)
+                    Util.handleConnectOrParserException(throwable, holder.detailsLayout)
                     Log.e(TAG, throwable.message, throwable)
                 }
                 .subscribe(BusDirectionObserver(App.instance.screenWidth, parent, holder.detailsLayout, route))

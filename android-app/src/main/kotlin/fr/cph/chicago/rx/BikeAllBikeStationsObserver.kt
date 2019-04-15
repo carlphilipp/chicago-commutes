@@ -19,7 +19,6 @@
 package fr.cph.chicago.rx
 
 import android.util.Log
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.station.BikeStationActivity
 import fr.cph.chicago.core.model.BikeStation
@@ -27,30 +26,51 @@ import fr.cph.chicago.util.Util
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 
-class BikeAllBikeStationsObserver(private val activity: BikeStationActivity, private val bikeStationId: Int, private val swipeRefreshLayout: SwipeRefreshLayout) : Observer<List<BikeStation>> {
+class BikeAllBikeStationsObserver(private val activity: BikeStationActivity, private val bikeStationId: Int) : Observer<List<BikeStation>> {
 
     override fun onSubscribe(d: Disposable) {}
 
     override fun onNext(divvyStations: List<BikeStation>) {
-        divvyStations
-            .filter { station -> bikeStationId == station.id }
-            .elementAtOrElse(0) { BikeStation.buildDefaultBikeStationWithName("error") }
-            .also { station ->
-                if (station.name != "error") {
-                    activity.refreshStation(station)
-                    activity.intent.extras?.putParcelable(activity.getString(R.string.bundle_bike_station), station)
-                } else {
-                    Log.w(TAG, "Train station id [$bikeStationId] not found")
+        try {
+            divvyStations
+                .filter { station -> bikeStationId == station.id }
+                .elementAtOrElse(0) { BikeStation.buildDefaultBikeStationWithName("error") }
+                .also { station ->
+                    if (station.name != "error") {
+                        activity.refreshStation(station)
+                        activity.intent.extras?.putParcelable(activity.getString(R.string.bundle_bike_station), station)
+                    } else {
+                        Log.w(TAG, "Train station id [$bikeStationId] not found")
+                        util.showOopsSomethingWentWrong(activity.swipeRefreshLayout)
+                    }
                 }
-            }
+        } catch (ex: Throwable) {
+            handleOnNextError(ex)
+        }
     }
 
     override fun onError(throwable: Throwable) {
-        util.showOopsSomethingWentWrong(swipeRefreshLayout)
+        handleError(throwable)
     }
 
     override fun onComplete() {
-        swipeRefreshLayout.isRefreshing = false
+        stopRefreshingIfNeeded()
+    }
+
+    private fun handleOnNextError(throwable: Throwable) {
+        handleError(throwable)
+    }
+
+    private fun handleError(throwable: Throwable) {
+        Log.e(TAG, throwable.message, throwable)
+        stopRefreshingIfNeeded()
+        util.showOopsSomethingWentWrong(activity.swipeRefreshLayout)
+    }
+
+    private fun stopRefreshingIfNeeded() {
+        if (activity.swipeRefreshLayout.isRefreshing) {
+            activity.swipeRefreshLayout.isRefreshing = false
+        }
     }
 
     companion object {
