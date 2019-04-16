@@ -32,7 +32,6 @@ import fr.cph.chicago.core.activity.station.TrainStationActivity
 import fr.cph.chicago.core.adapter.PopupTrainAdapter
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.util.Color
-import fr.cph.chicago.util.Util
 
 /**
  * Favorites train on click listener
@@ -45,45 +44,37 @@ class TrainOnClickListener(private val parent: ViewGroup,
                            private val trainLines: Set<TrainLine>) : OnClickListener {
 
     override fun onClick(view: View) {
-        if (!util.isNetworkAvailable()) {
-            util.showNetworkErrorMessage(view)
-        } else {
-            val values = mutableListOf<String>(view.context.getString(R.string.message_open_details))
-            val colors = mutableListOf<Int>()
-            for (line in trainLines) {
-                values.add(line.toString() + " line - See trains")
-                colors.add(if (line !== TrainLine.YELLOW) line.color else Color.yellowLine)
-            }
-            val ada = PopupTrainAdapter(parent.context.applicationContext, values, colors)
-
-            val lines = mutableListOf<TrainLine>()
-            lines.addAll(trainLines)
-
-            val alertDialog = AlertDialog.Builder(parent.context)
-            alertDialog.setAdapter(ada) { _, position ->
-                val extras = Bundle()
-                val intent: Intent
-                if (position == 0) {
-                    // Start train station activity
-                    intent = Intent(view.context, TrainStationActivity::class.java)
-                    extras.putInt(view.context.getString(R.string.bundle_train_stationId), stationId)
-                } else {
-                    // Follow all trains from given line on google map view
-                    intent = Intent(view.context, TrainMapActivity::class.java)
-                    extras.putString(view.context.getString(R.string.bundle_train_line), lines[position - 1].toTextString())
-                }
-                intent.putExtras(extras)
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                view.context.startActivity(intent)
-            }
-
-            val dialog = alertDialog.create()
-            dialog.show()
-            dialog.window?.setLayout((App.instance.screenWidth * 0.7).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
+        val values = mutableListOf<String>(view.context.getString(R.string.message_open_details))
+        val colors = mutableListOf<Int>()
+        for (line in trainLines) {
+            values.add("$line line - See trains")
+            colors.add(if (line !== TrainLine.YELLOW) line.color else Color.yellowLine)
         }
-    }
+        val ada = PopupTrainAdapter(parent.context.applicationContext, values, colors)
 
-    companion object {
-        private val util = Util
+        val lines = mutableListOf<TrainLine>()
+        lines.addAll(trainLines)
+
+        val alertDialog = AlertDialog.Builder(parent.context)
+        alertDialog.setAdapter(ada) { _, position ->
+            val extras = Bundle()
+            val intent: Intent
+            if (position == 0) {
+                // Start train station activity
+                intent = Intent(view.context, TrainStationActivity::class.java)
+                extras.putInt(view.context.getString(R.string.bundle_train_stationId), stationId)
+            } else {
+                // Follow all trains from given line on google map view
+                intent = Intent(view.context, TrainMapActivity::class.java)
+                extras.putString(view.context.getString(R.string.bundle_train_line), lines[position - 1].toTextString())
+            }
+            intent.putExtras(extras)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            view.context.startActivity(intent)
+        }
+
+        val dialog = alertDialog.create()
+        dialog.show()
+        dialog.window?.setLayout((App.instance.screenWidth * 0.7).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 }

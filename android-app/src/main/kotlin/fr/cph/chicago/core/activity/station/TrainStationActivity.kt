@@ -175,7 +175,6 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
     private fun setUpStopLayouts(stopByLines: Map<TrainLine, List<Stop>>) {
         stopByLines.entries
         stopByLines.entries.forEach { entry ->
-
             val line = entry.key
             val stops = entry.value
             val lineTitleView = layoutInflater.inflate(R.layout.activity_station_line_title, viewGroup, false)

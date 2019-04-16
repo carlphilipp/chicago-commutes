@@ -36,7 +36,6 @@ import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.dto.BusFavoriteDTO
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.exception.ConnectException
-import fr.cph.chicago.exception.ParserException
 import java.io.Closeable
 import java.io.IOException
 import java.io.Reader
@@ -210,9 +209,9 @@ object Util {
     }
 
     fun handleConnectOrParserException(throwable: Throwable, parserView: View) {
-        if (throwable.cause is ConnectException) {
+        if (throwable is ConnectException) {
             showNetworkErrorMessage(parserView)
-        } else if (throwable.cause is ParserException) {
+        } else {
             showOopsSomethingWentWrong(parserView)
         }
     }

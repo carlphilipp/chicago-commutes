@@ -94,7 +94,7 @@ class BusDirectionObserver(private val screenWidth: Int,
     }
 
     override fun onError(throwable: Throwable) {
-        util.showOopsSomethingWentWrong(convertView)
+        util.handleConnectOrParserException(throwable, convertView)
         convertView.visibility = LinearLayout.GONE
         Log.e(TAG, throwable.message, throwable)
     }

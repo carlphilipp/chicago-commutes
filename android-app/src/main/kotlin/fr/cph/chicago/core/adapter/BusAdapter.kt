@@ -20,7 +20,6 @@
 package fr.cph.chicago.core.adapter
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,7 +32,6 @@ import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.rx.BusDirectionObserver
 import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.service.BusService
-import fr.cph.chicago.util.Util
 
 /**
  * Adapter that will handle buses
@@ -79,10 +77,6 @@ class BusAdapter : BaseAdapter() {
         view?.setOnClickListener {
             holder.detailsLayout.visibility = LinearLayout.VISIBLE
             ObservableUtil.createBusDirectionsObs(route.id)
-                .doOnError { throwable: Throwable ->
-                    Util.handleConnectOrParserException(throwable, holder.detailsLayout)
-                    Log.e(TAG, throwable.message, throwable)
-                }
                 .subscribe(BusDirectionObserver(App.instance.screenWidth, parent, holder.detailsLayout, route))
         }
         return view
@@ -93,8 +87,4 @@ class BusAdapter : BaseAdapter() {
         val routeNumberView: TextView,
         val detailsLayout: LinearLayout
     )
-
-    companion object {
-        private val TAG = BusAdapter::class.java.simpleName
-    }
 }

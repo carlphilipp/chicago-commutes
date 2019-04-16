@@ -53,7 +53,7 @@ class TrainArrivalObserver(private val trainStationActivity: TrainStationActivit
     private fun handleError(throwable: Throwable) {
         Log.e(TAG, throwable.message, throwable)
         stopRefreshingIfNeeded()
-        util.showOopsSomethingWentWrong(trainStationActivity.swipeRefreshLayout)
+        util.handleConnectOrParserException(throwable, trainStationActivity.swipeRefreshLayout)
     }
 
     private fun stopRefreshingIfNeeded() {
