@@ -69,16 +69,16 @@ class BaseActivity : ButterKnifeActivity(R.layout.loading) {
     private fun loadLocalAndFavoritesData() {
 
         // Train local data
-        val trainLocalData = observableUtil.createLocalTrainDataObservable()
+        val trainLocalData = observableUtil.createLocalTrainDataObs()
 
         // Bus local data
-        val busLocalData = observableUtil.createLocalBusDataObservable()
+        val busLocalData = observableUtil.createLocalBusDataObs()
 
         // Train online favorites
-        val trainOnlineFavorites = observableUtil.createFavoritesTrainArrivalsObservable()
+        val trainOnlineFavorites = observableUtil.createFavoritesTrainArrivalsObs()
 
         // Bus online favorites
-        val busOnlineFavorites = observableUtil.createFavoritesBusArrivalsObservable()
+        val busOnlineFavorites = observableUtil.createFavoritesBusArrivalsObs()
 
         // Run local first and then online: Ensure that local data is loaded first
         Observable.zip(trainLocalData, busLocalData, BiFunction { _: Any, _: Any -> true })

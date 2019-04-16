@@ -50,7 +50,7 @@ data class BusDetailsDTO(
     val busRouteId: String,
     val bound: String,
     val boundTitle: String,
-    val stopId: String,
+    val stopId: Int,
     val routeName: String,
     val stopName: String
 )

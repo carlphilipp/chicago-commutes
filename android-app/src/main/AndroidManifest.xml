@@ -81,6 +81,10 @@
             android:label="@string/bus_bound_activity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".core.activity.station.BusStopActivity"
+            android:label="@string/bus_bound_activity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".core.activity.ErrorActivity"
             android:label="@string/bus_bound_activity"
             android:screenOrientation="portrait" />

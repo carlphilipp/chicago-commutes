@@ -52,7 +52,7 @@ class AlertFragment : Fragment(R.layout.fragment_alert) {
 
     override fun onCreateView(savedInstanceState: Bundle?) {
         loadingState()
-        ObservableUtil.createAlertRoutesObservable().subscribe { routesAlerts ->
+        ObservableUtil.createAlertRoutesObs().subscribe { routesAlerts ->
             val alertAdapter = AlertAdapter(routesAlerts)
             listView.adapter = alertAdapter
             listView.setOnItemClickListener { _, _, position, _ ->

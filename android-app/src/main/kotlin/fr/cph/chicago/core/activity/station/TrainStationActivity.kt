@@ -132,7 +132,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
         if (stationId != 0) {
             // Get trainStation
             trainStation = TrainService.getStation(stationId)
-            trainArrivalObservable = ObservableUtil.createTrainArrivalsObservable(trainStation)
+            trainArrivalObservable = ObservableUtil.createTrainArrivalsObs(trainStation)
 
             paramsStop = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
 

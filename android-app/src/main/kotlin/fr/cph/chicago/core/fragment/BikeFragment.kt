@@ -46,8 +46,6 @@ class BikeFragment : Fragment(R.layout.fragment_bike) {
     lateinit var bikeListView: ListView
     @BindView(R.id.bike_filter)
     lateinit var filter: EditText
-    @BindView(R.id.error_layout)
-    lateinit var errorLayout: RelativeLayout
 
     @BindString(R.string.bundle_bike_stations)
     lateinit var bundleBikeStations: String
@@ -75,7 +73,6 @@ class BikeFragment : Fragment(R.layout.fragment_bike) {
         } else if (divvyStations.isNotEmpty()) {
             loadList()
         }
-
     }
 
     private fun loadList() {
@@ -107,20 +104,16 @@ class BikeFragment : Fragment(R.layout.fragment_bike) {
         bikeListView.visibility = ListView.VISIBLE
 
         loadingLayout.visibility = RelativeLayout.INVISIBLE
-        errorLayout.visibility = RelativeLayout.INVISIBLE
     }
 
     private fun loadingState() {
         loadingLayout.visibility = RelativeLayout.VISIBLE
 
-        errorLayout.visibility = RelativeLayout.INVISIBLE
         filter.visibility = ListView.INVISIBLE
         bikeListView.visibility = ListView.INVISIBLE
     }
 
     private fun errorState() {
-        errorLayout.visibility = RelativeLayout.VISIBLE
-
         loadingLayout.visibility = RelativeLayout.INVISIBLE
         filter.visibility = ListView.INVISIBLE
         bikeListView.visibility = ListView.INVISIBLE
@@ -132,8 +125,8 @@ class BikeFragment : Fragment(R.layout.fragment_bike) {
         loadList()
     }
 
-    fun setFailure() {
-        isFailure = true
+    fun setFailure(failure: Boolean) {
+        isFailure = failure
     }
 
     companion object {

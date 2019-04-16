@@ -77,9 +77,9 @@ object BusService {
         return getBusArrivals(params)
     }
 
-    fun loadOneBusStop(stopId: String, bound: String): List<BusStop> {
+    fun loadAllBusStopsForRouteBound(route: String, bound: String): List<BusStop> {
         val params = ArrayListValuedHashMap<String, String>(2, 1)
-        params.put(App.instance.getString(R.string.request_rt), stopId)
+        params.put(App.instance.getString(R.string.request_rt), route)
         params.put(App.instance.getString(R.string.request_dir), bound)
         val result = ctaClient.get(BUS_STOP_LIST, params, BusStopsResponse::class.java)
         if (result.bustimeResponse.stops == null) {
@@ -212,7 +212,7 @@ object BusService {
 
     private fun getBusRouteFromFavorites(routeId: String): BusRoute {
         val routeName = preferenceService.getBusRouteNameMapping(routeId)
-        return BusRoute(routeId, routeName ?: "")
+        return BusRoute(routeId, routeName ?: "?")
     }
 
     fun busRouteError(): Boolean {

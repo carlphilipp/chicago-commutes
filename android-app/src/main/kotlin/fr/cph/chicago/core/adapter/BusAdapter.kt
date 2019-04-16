@@ -78,7 +78,7 @@ class BusAdapter : BaseAdapter() {
 
         view?.setOnClickListener {
             holder.detailsLayout.visibility = LinearLayout.VISIBLE
-            ObservableUtil.createBusDirectionsObservable(route.id)
+            ObservableUtil.createBusDirectionsObs(route.id)
                 .doOnError { throwable: Throwable ->
                     Util.handleConnectOrParserException(throwable, holder.detailsLayout)
                     Log.e(TAG, throwable.message, throwable)

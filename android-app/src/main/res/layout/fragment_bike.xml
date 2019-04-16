@@ -20,32 +20,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
-        android:id="@+id/error_layout"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:visibility="invisible">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:text="@string/progress_error"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/red"
-            android:textSize="22sp"
-            android:textStyle="bold" />
-    </RelativeLayout>
-
     <include
         layout="@layout/fragment_loading"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
     <EditText
         android:id="@+id/bike_filter"

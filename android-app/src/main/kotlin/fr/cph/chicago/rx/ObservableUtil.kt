@@ -35,6 +35,7 @@ import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.TrainStationPattern
 import fr.cph.chicago.core.model.dto.BusArrivalDTO
+import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
 import fr.cph.chicago.core.model.dto.FavoritesDTO
 import fr.cph.chicago.core.model.dto.FirstLoadDTO
 import fr.cph.chicago.core.model.dto.RouteAlertsDTO
@@ -64,7 +65,8 @@ object ObservableUtil {
     private val alertService = AlertService
     private val positionUtil = MapUtil
 
-    fun createLocalTrainDataObservable(): Observable<SparseArray<TrainStation>> {
+    // Local
+    fun createLocalTrainDataObs(): Observable<SparseArray<TrainStation>> {
         return createObservableFromCallable(Callable { trainService.loadLocalTrainData() })
             .onErrorReturn { throwable ->
                 Log.e(TAG, "Could not create local train data", throwable)
@@ -72,7 +74,7 @@ object ObservableUtil {
             }
     }
 
-    fun createLocalBusDataObservable(): Observable<Any> {
+    fun createLocalBusDataObs(): Observable<Any> {
         return createObservableFromCallable(Callable { busService.loadLocalBusData() })
             .onErrorReturn { throwable ->
                 Log.e(TAG, "Could not create local bus data", throwable)
@@ -80,7 +82,12 @@ object ObservableUtil {
             }
     }
 
-    fun createFavoritesTrainArrivalsObservable(): Observable<TrainArrivalDTO> {
+    // Http call
+    fun createBusArrivalObs(requestRt: String, busRouteId: String, requestStopId: String, busStopId: Int, bound: String, boundTitle: String): Observable<BusArrivalStopDTO> {
+        return createObservableFromCallable(Callable { busService.loadBusArrivals(requestRt, busRouteId, requestStopId, busStopId, bound, boundTitle) })
+    }
+
+    fun createFavoritesTrainArrivalsObs(): Observable<TrainArrivalDTO> {
         return createObservableFromCallable(Callable { TrainArrivalDTO(trainService.loadFavoritesTrain(), false) })
             .onErrorReturn { throwable ->
                 Log.e(TAG, "Could not load favorites trains", throwable)
@@ -88,11 +95,11 @@ object ObservableUtil {
             }
     }
 
-    fun createTrainArrivalsObservable(trainStation: TrainStation): Observable<TrainArrival> {
+    fun createTrainArrivalsObs(trainStation: TrainStation): Observable<TrainArrival> {
         return createObservableFromCallable(Callable { trainService.loadStationTrainArrival(trainStation.id) })
     }
 
-    fun createFavoritesBusArrivalsObservable(): Observable<BusArrivalDTO> {
+    fun createFavoritesBusArrivalsObs(): Observable<BusArrivalDTO> {
         return createObservableFromCallable(Callable { BusArrivalDTO(busService.loadFavoritesBuses(), false) })
             .onErrorReturn { throwable ->
                 Log.e(TAG, "Could not load bus arrivals", throwable)
@@ -100,17 +107,17 @@ object ObservableUtil {
             }
     }
 
-    fun createBusArrivalsObservable(busStop: BusStop): Observable<List<BusArrival>> {
+    fun createBusArrivalsObs(busStop: BusStop): Observable<List<BusArrival>> {
         return createObservableFromCallable(Callable { busService.loadAroundBusArrivals(busStop) })
             .onErrorReturn(handleError())
     }
 
-    fun createAllBikeStationsObservable(): Observable<List<BikeStation>> {
+    fun createAllBikeStationsObs(): Observable<List<BikeStation>> {
         return createObservableFromCallable(Callable { bikeService.loadAllBikeStations() })
             .onErrorReturn(handleError())
     }
 
-    fun createBikeStationsObservable(divvyStation: BikeStation): Observable<BikeStation> {
+    fun createBikeStationsObs(divvyStation: BikeStation): Observable<BikeStation> {
         return createObservableFromCallable(Callable { bikeService.findBikeStation(divvyStation.id) })
             .onErrorReturn { throwable ->
                 Log.e(TAG, "Could not load bike stations", throwable)
@@ -118,13 +125,13 @@ object ObservableUtil {
             }
     }
 
-    fun createAllDataObservable(): Observable<FavoritesDTO> {
+    fun createAllDataObs(): Observable<FavoritesDTO> {
         // Train online favorites
-        val trainArrivalsObservable = createFavoritesTrainArrivalsObservable()
+        val trainArrivalsObservable = createFavoritesTrainArrivalsObs()
         // Bus online favorites
-        val busArrivalsObservable = createFavoritesBusArrivalsObservable()
+        val busArrivalsObservable = createFavoritesBusArrivalsObs()
         // Bikes online all stations
-        val bikeStationsObservable = createAllBikeStationsObservable()
+        val bikeStationsObservable = createAllBikeStationsObs()
         return Observable.zip(busArrivalsObservable, trainArrivalsObservable, bikeStationsObservable,
             Function3 { busArrivalDTO: BusArrivalDTO, trainArrivalsDTO: TrainArrivalDTO, divvyStations: List<BikeStation>
                 ->
@@ -133,15 +140,15 @@ object ObservableUtil {
             })
     }
 
-    fun createBusStopBoundObservable(stopId: String, bound: String): Observable<List<BusStop>> {
-        return createObservableFromCallable(Callable { busService.loadOneBusStop(stopId, bound) })
+    fun createBusStopsForRouteBoundObs(route: String, bound: String): Observable<List<BusStop>> {
+        return createObservableFromCallable(Callable { busService.loadAllBusStopsForRouteBound(route, bound) })
     }
 
-    fun createBusDirectionsObservable(busRouteId: String): Observable<BusDirections> {
+    fun createBusDirectionsObs(busRouteId: String): Observable<BusDirections> {
         return createObservableFromCallable(Callable { busService.loadBusDirections(busRouteId) })
     }
 
-    fun createOnFirstLoadObservable(): Observable<FirstLoadDTO> {
+    fun createOnFirstLoadObs(): Observable<FirstLoadDTO> {
         val busRoutesObs = createObservableFromCallable(Callable { busService.loadBusRoutes() })
             .onErrorReturn(handleError())
 
@@ -151,56 +158,56 @@ object ObservableUtil {
         return Observable.zip(busRoutesObs, bikeStationsObs, BiFunction { busRoutes, bikeStations -> FirstLoadDTO(busRoutes.isEmpty(), bikeStations.isEmpty(), busRoutes, bikeStations) })
     }
 
-    fun createFollowBusObservable(busId: String): Observable<List<BusArrival>> {
+    fun createFollowBusObs(busId: String): Observable<List<BusArrival>> {
         return createObservableFromCallable(Callable { busService.loadFollowBus(busId) })
             .onErrorReturn(handleError())
     }
 
-    fun createBusPatternObservable(busRouteId: String, bound: String): Observable<BusPattern> {
+    fun createBusPatternObs(busRouteId: String, bound: String): Observable<BusPattern> {
         return createObservableFromCallable(Callable { busService.loadBusPattern(busRouteId, bound) })
     }
 
-    fun createBusListObservable(busRouteId: String): Observable<List<Bus>> {
+    fun createBusListObs(busRouteId: String): Observable<List<Bus>> {
         return createObservableFromCallable(Callable { busService.loadBus(busRouteId) })
             .onErrorReturn(handleError())
     }
 
-    fun createTrainLocationObservable(line: String): Observable<List<Train>> {
+    fun createTrainLocationObs(line: String): Observable<List<Train>> {
         return createObservableFromCallable(Callable { trainService.getTrainLocation(line) })
             .onErrorReturn(handleError())
     }
 
-    fun createTrainPatternObservable(line: String): Observable<List<TrainStationPattern>> {
+    fun createTrainPatternObs(line: String): Observable<List<TrainStationPattern>> {
         return createObservableFromCallable(Callable { trainService.readPatterns(TrainLine.fromXmlString(line)) })
             .onErrorReturn(handleError())
     }
 
-    fun createTrainStationAroundObservable(position: Position): Observable<List<TrainStation>> {
+    fun createTrainStationAroundObs(position: Position): Observable<List<TrainStation>> {
         return createObservableFromCallable(Callable { trainService.readNearbyStation(position) })
             .onErrorReturn(handleError())
     }
 
-    fun createBusStopsAroundObservable(position: Position): Observable<List<BusStop>> {
+    fun createBusStopsAroundObs(position: Position): Observable<List<BusStop>> {
         return createObservableFromCallable(Callable { busService.getBusStopsAround(position) })
             .onErrorReturn(handleError())
     }
 
-    fun createBikeStationAroundObservable(position: Position, divvyStations: List<BikeStation>): Observable<List<BikeStation>> {
+    fun createBikeStationAroundObs(position: Position, divvyStations: List<BikeStation>): Observable<List<BikeStation>> {
         return createObservableFromCallable(Callable { positionUtil.readNearbyStation(divvyStations, position) })
             .onErrorReturn(handleError())
     }
 
-    fun createLoadTrainEtaObservable(runNumber: String, loadAll: Boolean): Observable<List<TrainEta>> {
+    fun createLoadTrainEtaObs(runNumber: String, loadAll: Boolean): Observable<List<TrainEta>> {
         return createObservableFromCallable(Callable { trainService.loadTrainEta(runNumber, loadAll) })
             .onErrorReturn(handleError())
     }
 
-    fun createAlertRoutesObservable(): Observable<List<RoutesAlertsDTO>> {
+    fun createAlertRoutesObs(): Observable<List<RoutesAlertsDTO>> {
         return createObservableFromCallable(Callable { alertService.getAlerts() })
             .onErrorReturn(handleError())
     }
 
-    fun createAlertRouteObservable(id: String): Observable<List<RouteAlertsDTO>> {
+    fun createAlertRouteObs(id: String): Observable<List<RouteAlertsDTO>> {
         return createObservableFromCallable(Callable { alertService.getRouteAlert(id) })
     }
 

@@ -214,7 +214,7 @@ class FavoritesFragment : Fragment(R.layout.fragment_main) {
     @SuppressLint("CheckResult")
     private fun fetchData() {
         if (util.isNetworkAvailable()) {
-            observableUtil.createAllDataObservable().subscribe(
+            observableUtil.createAllDataObs().subscribe(
                 { this.reloadData(it) },
                 { onError ->
                     Log.e(TAG, onError.message, onError)

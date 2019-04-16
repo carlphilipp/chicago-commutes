@@ -115,7 +115,7 @@ class BusMapActivity : FragmentMapActivity() {
     override fun setToolbar() {
         super.setToolbar()
         toolbar.setOnMenuItemClickListener { _ ->
-            observableUtil.createBusListObservable(busRouteId).subscribe(BusObserver(this@BusMapActivity, false, layout))
+            observableUtil.createBusListObs(busRouteId).subscribe(BusObserver(this@BusMapActivity, false, layout))
             false
         }
 
@@ -227,7 +227,7 @@ class BusMapActivity : FragmentMapActivity() {
                     if (!refreshingInfoWindow) {
                         selectedMarker = marker
                         val busId = marker.snippet
-                        observableUtil.createFollowBusObservable(busId)
+                        observableUtil.createFollowBusObs(busId)
                             .subscribe(BusFollowObserver(this@BusMapActivity, layout, view!!, false))
                         status[marker] = false
                     }
@@ -245,7 +245,7 @@ class BusMapActivity : FragmentMapActivity() {
                     selectedMarker = marker
                     val runNumber = marker.snippet
                     val current = status[marker]
-                    observableUtil.createFollowBusObservable(runNumber)
+                    observableUtil.createFollowBusObs(runNumber)
                         .subscribe(BusFollowObserver(this@BusMapActivity, layout, view!!, !current!!))
                     status[marker] = !current
                 }
@@ -257,7 +257,7 @@ class BusMapActivity : FragmentMapActivity() {
     @SuppressLint("CheckResult")
     private fun loadActivityData() {
         if (Util.isNetworkAvailable()) {
-            observableUtil.createBusListObservable(busRouteId).subscribe(BusObserver(this@BusMapActivity, true, layout))
+            observableUtil.createBusListObs(busRouteId).subscribe(BusObserver(this@BusMapActivity, true, layout))
             if (loadPattern) {
                 Observable.fromCallable {
                     val patterns: MutableList<BusPattern> = mutableListOf()

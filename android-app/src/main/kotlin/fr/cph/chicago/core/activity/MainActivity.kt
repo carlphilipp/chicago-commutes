@@ -99,6 +99,7 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
     private var ctaMapFragment: CtaMapFragment? = null
     private var alertFragment: AlertFragment? = null
     private var settingsFragment: SettingsFragment? = null
+    private var bikeStationsError: Boolean = false
 
     private var title: String? = null
 
@@ -162,7 +163,7 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
                     || intent.getParcelableArrayListExtra<Parcelable>(bundleBikeStations).size == 0) {
                     loadFirstData()
                 }
-                val zipped = observableUtil.createAllDataObservable()
+                val zipped = observableUtil.createAllDataObs()
                 zipped.subscribe(
                     { favoritesResult -> favoritesFragment?.reloadData(favoritesResult) },
                     { error ->
@@ -181,13 +182,13 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
     }
 
     fun loadFirstData() {
-        observableUtil.createOnFirstLoadObservable()
+        observableUtil.createOnFirstLoadObs()
             .subscribe(
                 { (busRoutesError, bikeStationsError, busRoutes, bikeStations) ->
                     busService.saveBusRoutes(busRoutes)
                     refreshFirstLoadData(bikeStations)
                     if (bikeStationsError) {
-                        bikeFragment?.setFailure()
+                        this.bikeStationsError = bikeStationsError
                     }
                     if (bikeStationsError || busRoutesError) {
                         Log.w(TAG, "Bike station [$bikeStationsError] or Bus routes error [$busRoutesError]")
@@ -239,6 +240,7 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
             R.id.navigation_bike -> {
                 setBarTitle(divvy)
                 bikeFragment = bikeFragment ?: BikeFragment.newInstance(position + 1)
+                bikeFragment!!.setFailure(bikeStationsError)
                 supportFragmentManager.beginTransaction().replace(R.id.container, bikeFragment as androidx.fragment.app.Fragment).commit()
                 closeDrawerAndUpdateActionBar(false)
             }

@@ -19,11 +19,10 @@
 
 package fr.cph.chicago.core.activity.station
 
-import android.annotation.SuppressLint
-import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
@@ -38,13 +37,17 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
+import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
-import fr.cph.chicago.service.BusService
+import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.Color
 import fr.cph.chicago.util.LayoutUtil
 import fr.cph.chicago.util.Util
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 /**
  * Activity that represents the bus stop
@@ -106,7 +109,6 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
 
     private val util = Util
     private val preferenceService = PreferenceService
-    private val busService = BusService
 
     private var busArrivals: BusArrivalStopDTO = BusArrivalStopDTO()
     private lateinit var busRouteId: String
@@ -119,22 +121,12 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
     private var longitude: Double = 0.0
     private var isFavorite: Boolean = false
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        App.checkBusData(this)
-        super.onCreate(savedInstanceState)
-    }
-
     override fun create(savedInstanceState: Bundle?) {
         busStopId = intent.getIntExtra(bundleBusStopId, 0)
         busRouteId = intent.getStringExtra(bundleBusRouteId)
         bound = intent.getStringExtra(bundleBusBound)
         boundTitle = intent.getStringExtra(bundleBusBoundTitle)
-        busStopName = intent.getStringExtra(bundleBusStopName)
         busRouteName = intent.getStringExtra(bundleBusRouteName)
-        latitude = intent.getDoubleExtra(bundleBusLatitude, 0.0)
-        longitude = intent.getDoubleExtra(bundleBusLongitude, 0.0)
-
-        val position = Position(latitude, longitude)
 
         isFavorite = isFavorite()
 
@@ -145,37 +137,94 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
         }
 
         swipeRefreshLayout.setOnRefreshListener {
-            LoadStationDataTask().execute()
-            // FIXME: Identify if it's the place holder or not. This is not great
-            if (streetViewImage.scaleType == ImageView.ScaleType.CENTER) {
-                loadGoogleStreetImage(position, streetViewImage, streetViewProgressBar)
+            if (latitude == 0.0 && longitude == 0.0) {
+                loadData()
+            } else {
+                loadArrivals()
+                // FIXME: Identify if it's the place holder or not. This is not great
+                if (streetViewImage.scaleType == ImageView.ScaleType.CENTER) {
+                    loadGoogleStreetImage(Position(latitude, longitude), streetViewImage, streetViewProgressBar)
+                }
             }
         }
-        streetViewImage.setOnClickListener(GoogleStreetOnClickListener(latitude, longitude))
-        mapContainer.setOnClickListener(GoogleMapOnClickListener(latitude, longitude))
-        walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(latitude, longitude))
 
         val busRouteNameDisplay = "$busRouteName ($boundTitle)"
         busRouteNameView.text = busRouteNameDisplay
 
-        // Load google street picture and data
-        loadGoogleStreetImage(position, streetViewImage, streetViewProgressBar)
-        LoadStationDataTask().execute()
-
         setToolBar()
+
+        loadData()
+    }
+
+    private fun loadData() {
+        // Load buses arrivals
+        loadArrivals()
+
+        // Load bus stop details and google street image
+        ObservableUtil.createBusStopsForRouteBoundObs(busRouteId, boundTitle)
+            .observeOn(Schedulers.computation())
+            .flatMap { stops ->
+                val busStop: BusStop? = stops.firstOrNull { busStop -> busStop.id == busStopId }
+                Observable.just(busStop!!)
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { busStop ->
+                toolbar.title = "$busRouteId - ${busStop.name}"
+                busStop
+            }
+            .map { busStop ->
+                loadGoogleStreetImage(busStop.position, streetViewImage, streetViewProgressBar)
+                busStop
+            }
+            .doOnError { throwable ->
+                Log.e(TAG, throwable.message, throwable)
+                onError()
+            }
+            .subscribe(
+                { busStop ->
+                    latitude = busStop.position.latitude
+                    longitude = busStop.position.longitude
+                    busStopName = busStop.name
+                    streetViewImage.setOnClickListener(GoogleStreetOnClickListener(latitude, longitude))
+                    mapContainer.setOnClickListener(GoogleMapOnClickListener(latitude, longitude))
+                    walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(latitude, longitude))
+                },
+                { throwable ->
+                    Log.e(TAG, throwable.message, throwable)
+                    onError()
+                })
+    }
+
+    private fun loadArrivals() {
+        ObservableUtil.createBusArrivalObs(requestRt, busRouteId, requestStopId, busStopId, bound, boundTitle)
+            .doOnError { util.showOopsSomethingWentWrong(swipeRefreshLayout) }
+            .doFinally {
+                if (swipeRefreshLayout.isRefreshing) {
+                    swipeRefreshLayout.isRefreshing = false
+                }
+            }
+            .subscribe(
+                { result -> refreshActivity(result) },
+                { util.showOopsSomethingWentWrong(swipeRefreshLayout) })
+    }
+
+    private fun onError() {
+        util.showOopsSomethingWentWrong(swipeRefreshLayout)
+        failStreetViewImage(streetViewImage)
+        streetViewProgressBar.visibility = View.GONE
     }
 
     private fun setToolBar() {
         toolbar.inflateMenu(R.menu.main)
         toolbar.setOnMenuItemClickListener {
             swipeRefreshLayout.isRefreshing = true
-            LoadStationDataTask().execute()
+            loadArrivals()
             false
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.elevation = 4f
         }
-        toolbar.title = "$busRouteId - $busStopName"
+        toolbar.title = busRouteId
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp)
         toolbar.setOnClickListener { finish() }
     }
@@ -207,7 +256,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
     /**
      * Draw arrivals in current layout
      */
-    fun refreshActivity(busArrivals: BusArrivalStopDTO) {
+    private fun refreshActivity(busArrivals: BusArrivalStopDTO) {
         this.busArrivals = busArrivals
         cleanLayout()
         if (busArrivals.isEmpty()) {
@@ -278,33 +327,6 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
             favoritesImage.setColorFilter(Color.yellowLineDark)
             App.instance.refresh = true
             true
-        }
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    private inner class LoadStationDataTask : AsyncTask<Void, Void, BusArrivalStopDTO>() {
-
-        private var ex: Exception? = null
-
-        override fun doInBackground(vararg params: Void): BusArrivalStopDTO {
-            try {
-                return busService.loadBusArrivals(requestRt, busRouteId, requestStopId, busStopId, bound, boundTitle)
-            } catch (e: Exception) {
-                this.ex = e
-            }
-            return BusArrivalStopDTO()
-        }
-
-        override fun onProgressUpdate(vararg values: Void) {}
-
-        override fun onPostExecute(result: BusArrivalStopDTO) {
-            if (ex == null) {
-                refreshActivity(result)
-            } else {
-                Log.e(TAG, ex?.message, ex)
-                util.showNetworkErrorMessage(swipeRefreshLayout)
-            }
-            swipeRefreshLayout.isRefreshing = false
         }
     }
 

@@ -162,7 +162,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
         toolbar.navigationIcon = arrowBackWhite
         toolbar.setOnClickListener { finish() }
 
-        observableUtil.createBusStopBoundObservable(busRouteId, bound)
+        observableUtil.createBusStopsForRouteBoundObs(busRouteId, bound)
             .subscribe(
                 { onNext ->
                     busStops = onNext
@@ -187,7 +187,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
                 uiSettings.isZoomControlsEnabled = false
                 uiSettings.isMapToolbarEnabled = false
             }
-            observableUtil.createBusPatternObservable(busRouteId, bound)
+            observableUtil.createBusPatternObs(busRouteId, bound)
                 .subscribe(
                     { busPattern ->
                         if (busPattern.direction != "error") {

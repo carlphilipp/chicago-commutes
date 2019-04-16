@@ -85,7 +85,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         }
     }
 
-    class FavoritesViewHolder(view: View, val parent: ViewGroup) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view) {
+    class FavoritesViewHolder(view: View, val parent: ViewGroup) : RecyclerView.ViewHolder(view) {
         val mainLayout: LinearLayout = view.findViewById(R.id.favorites_arrival_layout)
         val lastUpdateTextView: TextView = view.findViewById(R.id.last_update)
         val stationNameTextView: TextView = view.findViewById(R.id.favorites_station_name)
@@ -140,13 +140,13 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
             for ((key, value) in boundMap) {
 
                 // Build data for button outside of the loop
-                val (_, _, _, stopId, _, routeId, boundTitle) = value.iterator().next()//value[0]
+                val (_, _, _, stopId, _, routeId, boundTitle) = value.iterator().next()
                 val busDirectionEnum: BusDirection = BusDirection.fromString(boundTitle)
                 val busDetails = BusDetailsDTO(
                     routeId,
                     busDirectionEnum.shortUpperCase,
                     boundTitle,
-                    stopId.toString(),
+                    stopId,
                     busRoute.name,
                     stopName
                 )
@@ -173,7 +173,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         holder.stationNameTextView.text = divvyStation.name
         holder.favoriteImage.setImageResource(R.drawable.ic_directions_bike_white_24dp)
 
-        holder.detailsButton.isEnabled = divvyStation.latitude != 0.0 && divvyStation.longitude!= 0.0
+        holder.detailsButton.isEnabled = divvyStation.latitude != 0.0 && divvyStation.longitude != 0.0
         holder.detailsButton.setOnClickListener(BikeDetailsButtonOnClickListener(activity, divvyStation))
 
         holder.mapButton.text = App.instance.getString(R.string.favorites_view_station)

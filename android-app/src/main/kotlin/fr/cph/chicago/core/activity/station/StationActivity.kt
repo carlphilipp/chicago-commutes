@@ -46,11 +46,15 @@ abstract class StationActivity(contentView: Int) : ButterKnifeActivity(contentVi
                 },
                 { error ->
                     Log.e(TAG, error.message, error)
-                    val placeHolder = App.instance.streetViewPlaceHolder
-                    streetViewImage.setImageDrawable(placeHolder)
-                    streetViewImage.scaleType = ImageView.ScaleType.CENTER
+                    failStreetViewImage(streetViewImage)
                 }
             )
+    }
+
+    protected fun failStreetViewImage(streetViewImage: ImageView) {
+        val placeHolder = App.instance.streetViewPlaceHolder
+        streetViewImage.setImageDrawable(placeHolder)
+        streetViewImage.scaleType = ImageView.ScaleType.CENTER
     }
 
     protected abstract fun isFavorite(): Boolean

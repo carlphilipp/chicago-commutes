@@ -78,7 +78,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
     @BindString(R.string.bundle_bike_station)
     lateinit var bundleBikeStation: String
 
-    private val bikeStationsObservable = ObservableUtil.createAllBikeStationsObservable()
+    private val bikeStationsObservable = ObservableUtil.createAllBikeStationsObs()
     private val preferenceService: PreferenceService = PreferenceService
 
     private lateinit var divvyStation: BikeStation
