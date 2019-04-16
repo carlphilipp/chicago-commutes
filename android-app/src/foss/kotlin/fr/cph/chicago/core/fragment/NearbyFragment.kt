@@ -159,9 +159,9 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
         }
 
         val finalPosition = chicago ?: position
-        val trainStationAroundObservable = observableUtil.createTrainStationAroundObservable(finalPosition)
-        val busStopsAroundObservable = observableUtil.createBusStopsAroundObservable(finalPosition)
-        val bikeStationsObservable = observableUtil.createBikeStationAroundObservable(finalPosition, bikeStations)
+        val trainStationAroundObservable = observableUtil.createTrainStationAroundObs(finalPosition)
+        val busStopsAroundObservable = observableUtil.createBusStopsAroundObs(finalPosition)
+        val bikeStationsObservable = observableUtil.createBikeStationAroundObs(finalPosition, bikeStations)
         Observable.zip(trainStationAroundObservable, busStopsAroundObservable, bikeStationsObservable, Function3 { trains: List<TrainStation>, buses: List<BusStop>, divvies: List<BikeStation> ->
             map.cameraPosition = CameraPosition.Builder()
                 .target(LatLng(finalPosition.latitude, finalPosition.longitude))

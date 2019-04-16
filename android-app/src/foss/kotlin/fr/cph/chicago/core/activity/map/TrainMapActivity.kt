@@ -243,7 +243,7 @@ class TrainMapActivity : FragmentMapActivity() {
 
     private fun loadAndUpdateTrainArrivalFeature(feature: Feature, loadAll: Boolean) {
         val runNumber = feature.getStringProperty(PROPERTY_TITLE)
-        observableUtil.createLoadTrainEtaObservable(runNumber, loadAll)
+        observableUtil.createLoadTrainEtaObs(runNumber, loadAll)
             .observeOn(Schedulers.computation())
             .map(TrainsFunction(this@TrainMapActivity, feature))
             .observeOn(AndroidSchedulers.mainThread())
@@ -259,7 +259,7 @@ class TrainMapActivity : FragmentMapActivity() {
     private fun loadActivityData() {
         if (Util.isNetworkAvailable()) {
             // Load train location
-            val featuresTrains = observableUtil.createTrainLocationObservable(line)
+            val featuresTrains = observableUtil.createTrainLocationObs(line)
                 .observeOn(Schedulers.computation())
                 .map { trains: List<Train> ->
                     val features = trains.map { train ->
@@ -275,7 +275,7 @@ class TrainMapActivity : FragmentMapActivity() {
 
             if (drawLine) {
                 // Load pattern from local file
-                val polylineObs: Observable<Pair<PolylineOptions, FeatureCollection>> = observableUtil.createTrainPatternObservable(line)
+                val polylineObs: Observable<Pair<PolylineOptions, FeatureCollection>> = observableUtil.createTrainPatternObs(line)
                     .observeOn(Schedulers.computation())
                     .map { trainStationPatterns ->
                         val poly = PolylineOptions()

@@ -202,7 +202,7 @@ class BusMapActivity : FragmentMapActivity() {
     override fun selectVehicle(feature: Feature) {
         super.selectVehicle(feature)
         val id = feature.getStringProperty(PROPERTY_TITLE)
-        observableUtil.createFollowBusObservable(id)
+        observableUtil.createFollowBusObs(id)
             .observeOn(Schedulers.computation())
             .map(BusesFunction(this@BusMapActivity, feature, false))
             .observeOn(AndroidSchedulers.mainThread())
@@ -218,7 +218,7 @@ class BusMapActivity : FragmentMapActivity() {
     private fun clickOnVehicleInfo(feature: Feature) {
         showProgress(true)
         val id = feature.getStringProperty(PROPERTY_TITLE)
-        observableUtil.createFollowBusObservable(id)
+        observableUtil.createFollowBusObs(id)
             .observeOn(Schedulers.computation())
             .map(BusesFunction(this@BusMapActivity, feature, true))
             .observeOn(AndroidSchedulers.mainThread())
@@ -304,7 +304,7 @@ class BusMapActivity : FragmentMapActivity() {
     }
 
     private fun loadBuses() {
-        observableUtil.createBusListObservable(busRouteId)
+        observableUtil.createBusListObs(busRouteId)
             .observeOn(Schedulers.computation())
             .map { buses ->
                 val features = buses.map { bus ->
