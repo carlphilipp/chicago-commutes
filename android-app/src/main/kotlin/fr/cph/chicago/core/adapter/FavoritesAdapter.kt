@@ -60,7 +60,7 @@ import java.util.Calendar
  */
 class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder>() {
 
-    val textAppearance: Int = Util.getAttribute(activity, R.attr.textAppearance)
+    private val textAppearance: Int = Util.getAttribute(activity, R.attr.textAppearance)
 
     private val util = Util
     private val favorites = Favorites

@@ -100,6 +100,31 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:id="@+id/dec"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toStartOf="@+id/inc"
+                    android:paddingLeft="16dp"
+                    android:paddingTop="16dp"
+                    android:paddingRight="16dp"
+                    android:paddingBottom="16dp"
+                    android:text="DEC"
+                    android:theme="?attr/favoriteButton" />
+
+                <Button
+                    android:id="@+id/inc"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toStartOf="@+id/details_button"
+                    android:paddingLeft="16dp"
+                    android:paddingTop="16dp"
+                    android:paddingRight="16dp"
+                    android:paddingBottom="16dp"
+                    android:text="INC"
+                    android:theme="?attr/favoriteButton" />
+                <Button
                     android:id="@+id/details_button"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="wrap_content"
@@ -124,6 +149,7 @@
                     android:paddingBottom="16dp"
                     android:text="@string/favorites_view_trains"
                     android:theme="?attr/favoriteButton" />
+
             </RelativeLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>

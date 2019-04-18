@@ -152,6 +152,7 @@ dependencies {
     implementation(Lib.univocity)
     implementation(Lib.easypermissions)
     implementation(Lib.photoview)
+    implementation("org.rekotlin:rekotlin:1.0.0")
 
     // Google play flavor
     googleplayImplementation(Lib.google_services_map)
