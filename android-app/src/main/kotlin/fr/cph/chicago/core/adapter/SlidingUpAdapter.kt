@@ -147,14 +147,14 @@ class SlidingUpAdapter(private val nearbyFragment: NearbyFragment) {
         }
     }
 
-    fun addBike(divvyStation: BikeStation) {
+    fun addBike(bikeStation: BikeStation) {
         val linearLayout = nearbyResultsView
         /*
          * Handle the case where a user clicks quickly from one marker to another. Will not update anything if a child view is already present,
          * it just mean that the view has been updated already with a faster request.
          */
-        if (linearLayout.childCount == 0 || "error" == divvyStation.name) {
-            val bikeResultLayout = LayoutUtil.buildBikeFavoritesLayout(textAppearance, divvyStation)
+        if (linearLayout.childCount == 0 || "error" == bikeStation.name) {
+            val bikeResultLayout = LayoutUtil.buildBikeFavoritesLayout(textAppearance, bikeStation)
             linearLayout.addView(bikeResultLayout)
             nearbyFragment.slidingUpPanelLayout.panelHeight = getSlidingPanelHeight(2)
             updatePanelState()

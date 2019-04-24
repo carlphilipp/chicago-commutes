@@ -25,12 +25,14 @@ import android.text.TextWatcher
 import android.widget.EditText
 import android.widget.ListView
 import android.widget.RelativeLayout
-import butterknife.BindString
 import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.adapter.BikeAdapter
 import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.redux.AppState
+import fr.cph.chicago.redux.mainStore
 import org.apache.commons.lang3.StringUtils
+import org.rekotlin.StoreSubscriber
 
 /**
  * Bike Fragment
@@ -38,7 +40,7 @@ import org.apache.commons.lang3.StringUtils
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BikeFragment : Fragment(R.layout.fragment_bike) {
+class BikeFragment : Fragment(R.layout.fragment_bike), StoreSubscriber<AppState> {
 
     @BindView(R.id.loading_relativeLayout)
     lateinit var loadingLayout: RelativeLayout
@@ -47,18 +49,8 @@ class BikeFragment : Fragment(R.layout.fragment_bike) {
     @BindView(R.id.bike_filter)
     lateinit var filter: EditText
 
-    @BindString(R.string.bundle_bike_stations)
-    lateinit var bundleBikeStations: String
-
     private lateinit var bikeAdapter: BikeAdapter
-    private lateinit var divvyStations: List<BikeStation>
-
-    private var isFailure = false
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
+    private var bikeStations = listOf<BikeStation>()
 
     override fun onCreateView(savedInstanceState: Bundle?) {
         loadingState()
@@ -66,17 +58,25 @@ class BikeFragment : Fragment(R.layout.fragment_bike) {
 
     override fun onResume() {
         super.onResume()
-        divvyStations = mainActivity.intent.getParcelableArrayListExtra(bundleBikeStations)
-            ?: listOf()
-        if (isFailure) {
+        mainStore.subscribe(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mainStore.unsubscribe(this)
+    }
+
+    override fun newState(state: AppState) {
+        this.bikeStations = state.bikeStations
+        if (bikeStations.isEmpty()) {
             errorState()
-        } else if (divvyStations.isNotEmpty()) {
-            loadList()
+        } else {
+            displayData()
         }
     }
 
-    private fun loadList() {
-        bikeAdapter = BikeAdapter(divvyStations)
+    private fun displayData() {
+        bikeAdapter = BikeAdapter(bikeStations)
         bikeListView.adapter = bikeAdapter
         filter.addTextChangedListener(object : TextWatcher {
 
@@ -87,7 +87,7 @@ class BikeFragment : Fragment(R.layout.fragment_bike) {
             }
 
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                divvyStations = this@BikeFragment.divvyStations
+                divvyStations = this@BikeFragment.bikeStations
                     .filter { station -> StringUtils.containsIgnoreCase(station.name, s.toString().trim { it <= ' ' }) }
             }
 
@@ -117,16 +117,6 @@ class BikeFragment : Fragment(R.layout.fragment_bike) {
         loadingLayout.visibility = RelativeLayout.INVISIBLE
         filter.visibility = ListView.INVISIBLE
         bikeListView.visibility = ListView.INVISIBLE
-    }
-
-    fun setBikeStations(divvyStations: List<BikeStation>) {
-        this.isFailure = divvyStations.isEmpty()
-        this.divvyStations = divvyStations
-        loadList()
-    }
-
-    fun setFailure(failure: Boolean) {
-        isFailure = failure
     }
 
     companion object {

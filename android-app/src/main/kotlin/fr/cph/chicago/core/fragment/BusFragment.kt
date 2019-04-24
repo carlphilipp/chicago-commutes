@@ -27,11 +27,12 @@ import android.widget.ListView
 import android.widget.TextView
 import butterknife.BindView
 import fr.cph.chicago.R
-import fr.cph.chicago.core.App
 import fr.cph.chicago.core.adapter.BusAdapter
 import fr.cph.chicago.core.model.BusRoute
-import fr.cph.chicago.service.BusService
+import fr.cph.chicago.redux.AppState
+import fr.cph.chicago.redux.mainStore
 import org.apache.commons.lang3.StringUtils
+import org.rekotlin.StoreSubscriber
 
 /**
  * Bus Fragment
@@ -39,32 +40,37 @@ import org.apache.commons.lang3.StringUtils
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BusFragment : Fragment(R.layout.fragment_bus) {
+class BusFragment : Fragment(R.layout.fragment_bus), StoreSubscriber<AppState> {
 
     @BindView(R.id.bus_filter)
     lateinit var textFilter: EditText
     @BindView(R.id.bus_list)
     lateinit var listView: ListView
 
-    private val busService: BusService = BusService
-
     private lateinit var busAdapter: BusAdapter
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        App.checkBusData(mainActivity)
-        super.onCreate(savedInstanceState)
-    }
+    private var busRoutes = listOf<BusRoute>()
 
     override fun onCreateView(savedInstanceState: Bundle?) {
-        addView()
+        // no-op
     }
 
-    fun update() {
-        addView()
+    override fun onResume() {
+        super.onResume()
+        mainStore.subscribe(this)
     }
 
-    private fun addView() {
-        busAdapter = BusAdapter()
+    override fun onPause() {
+        super.onPause()
+        mainStore.unsubscribe(this)
+    }
+
+    override fun newState(state: AppState) {
+        this.busRoutes = state.busRoutes
+        displayData()
+    }
+
+    private fun displayData() {
+        busAdapter = BusAdapter(this.busRoutes)
         listView.adapter = busAdapter
         textFilter.visibility = TextView.VISIBLE
         textFilter.addTextChangedListener(object : TextWatcher {
@@ -76,13 +82,13 @@ class BusFragment : Fragment(R.layout.fragment_bus) {
             }
 
             override fun onTextChanged(c: CharSequence, start: Int, before: Int, count: Int) {
-                val busRoutes = busService.getBusRoutes()
+                val busRoutes = this@BusFragment.busRoutes
                 val trimmed = c.toString().trim { it <= ' ' }
                 this.busRoutes = busRoutes.filter { (id, name) -> StringUtils.containsIgnoreCase(id, trimmed) || StringUtils.containsIgnoreCase(name, trimmed) }
             }
 
             override fun afterTextChanged(s: Editable) {
-                busAdapter.busRoutes = this.busRoutes
+                busAdapter.updateBusRoutes(this.busRoutes)
                 busAdapter.notifyDataSetChanged()
             }
         })

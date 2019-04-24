@@ -147,7 +147,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
     private fun updateMarkersAndModel(
         busStops: List<BusStop>,
         trainTrainStation: List<TrainStation>,
-        divvyStations: List<BikeStation>) {
+        bikeStations: List<BikeStation>) {
         if (isAdded) {
             mapFragment.getMapAsync { googleMap ->
                 with(googleMap) {
@@ -184,7 +184,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
                         }
                     }
 
-                divvyStations
+                bikeStations
                     .forEach { station ->
                         val markerOptions = MarkerOptions()
                             .position(LatLng(station.latitude, station.longitude))

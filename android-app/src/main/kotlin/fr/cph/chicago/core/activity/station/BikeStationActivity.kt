@@ -81,17 +81,17 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
     private val bikeStationsObservable = ObservableUtil.createAllBikeStationsObs()
     private val preferenceService: PreferenceService = PreferenceService
 
-    private lateinit var divvyStation: BikeStation
+    private lateinit var bikeStation: BikeStation
     private var isFavorite: Boolean = false
 
     override fun create(savedInstanceState: Bundle?) {
-        divvyStation = intent.extras?.getParcelable(bundleBikeStation)
+        bikeStation = intent.extras?.getParcelable(bundleBikeStation)
             ?: BikeStation.buildUnknownStation()
-        val latitude = divvyStation.latitude
-        val longitude = divvyStation.longitude
+        val latitude = bikeStation.latitude
+        val longitude = bikeStation.longitude
 
         swipeRefreshLayout.setOnRefreshListener {
-            bikeStationsObservable.subscribe(BikeAllBikeStationsObserver(this, divvyStation.id))
+            bikeStationsObservable.subscribe(BikeAllBikeStationsObserver(this, bikeStation.id))
             // FIXME: Identify if it's the place holder or not. This is not great
             if (streetViewImage.scaleType == ImageView.ScaleType.CENTER) {
                 loadGoogleStreetImage(Position(latitude, longitude), streetViewImage, streetViewProgressBar)
@@ -108,7 +108,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
         }
 
         favoritesImageContainer.setOnClickListener { switchFavorite() }
-        bikeStationValue.text = divvyStation.address
+        bikeStationValue.text = bikeStation.address
         streetViewImage.setOnClickListener(GoogleStreetOnClickListener(latitude, longitude))
         mapContainer.setOnClickListener(GoogleMapOnClickListener(latitude, longitude))
         walkContainer.setOnClickListener(GoogleMapDirectionOnClickListener(latitude, longitude))
@@ -121,44 +121,44 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
         toolbar.inflateMenu(R.menu.main)
         toolbar.setOnMenuItemClickListener {
             swipeRefreshLayout.isRefreshing = true
-            bikeStationsObservable.subscribe(BikeAllBikeStationsObserver(this@BikeStationActivity, divvyStation.id))
+            bikeStationsObservable.subscribe(BikeAllBikeStationsObserver(this@BikeStationActivity, bikeStation.id))
             false
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.elevation = 4f
         }
-        toolbar.title = divvyStation.name
+        toolbar.title = bikeStation.name
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp)
         toolbar.setOnClickListener { finish() }
     }
 
     private fun drawData() {
-        if (divvyStation.availableBikes == -1) {
+        if (bikeStation.availableBikes == -1) {
             availableBikes.text = "?"
             availableBikes.setTextColor(Color.orange)
         } else {
-            availableBikes.text = Util.formatBikesDocksValues(divvyStation.availableBikes)
-            val color = if (divvyStation.availableBikes == 0) Color.red else Color.green
+            availableBikes.text = Util.formatBikesDocksValues(bikeStation.availableBikes)
+            val color = if (bikeStation.availableBikes == 0) Color.red else Color.green
             availableBikes.setTextColor(color)
         }
-        if (divvyStation.availableDocks == -1) {
+        if (bikeStation.availableDocks == -1) {
             availableDocks.text = "?"
             availableDocks.setTextColor(Color.orange)
         } else {
-            availableDocks.text = Util.formatBikesDocksValues(divvyStation.availableDocks)
-            val color = if (divvyStation.availableDocks == 0) Color.red else Color.green
+            availableDocks.text = Util.formatBikesDocksValues(bikeStation.availableDocks)
+            val color = if (bikeStation.availableDocks == 0) Color.red else Color.green
             availableDocks.setTextColor(color)
         }
     }
 
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        divvyStation = savedInstanceState.getParcelable(bundleBikeStation)
+        bikeStation = savedInstanceState.getParcelable(bundleBikeStation)
             ?: BikeStation.buildUnknownStation()
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
-        savedInstanceState.putParcelable(bundleBikeStation, divvyStation)
+        savedInstanceState.putParcelable(bundleBikeStation, bikeStation)
         super.onSaveInstanceState(savedInstanceState)
     }
 
@@ -168,11 +168,11 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
      * @return if the train station is favorite
      */
     override fun isFavorite(): Boolean {
-        return preferenceService.isBikeStationFavorite(divvyStation.id)
+        return preferenceService.isBikeStationFavorite(bikeStation.id)
     }
 
     fun refreshStation(station: BikeStation) {
-        this.divvyStation = station
+        this.bikeStation = station
         drawData()
     }
 
@@ -181,12 +181,12 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
      */
     private fun switchFavorite() {
         isFavorite = if (isFavorite) {
-            preferenceService.removeFromBikeFavorites(divvyStation.id, swipeRefreshLayout)
+            preferenceService.removeFromBikeFavorites(bikeStation.id, swipeRefreshLayout)
             favoritesImage.colorFilter = mapImage.colorFilter
             false
         } else {
-            preferenceService.addToBikeFavorites(divvyStation.id, swipeRefreshLayout)
-            preferenceService.addBikeRouteNameMapping(divvyStation.id.toString(), divvyStation.name)
+            preferenceService.addToBikeFavorites(bikeStation.id, swipeRefreshLayout)
+            preferenceService.addBikeRouteNameMapping(bikeStation.id.toString(), bikeStation.name)
             favoritesImage.setColorFilter(Color.yellowLineDark)
             App.instance.refresh = true
             true

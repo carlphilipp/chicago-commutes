@@ -22,7 +22,6 @@ package fr.cph.chicago.core.activity
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
-import android.os.Parcelable
 import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -34,19 +33,8 @@ import butterknife.BindView
 import com.google.android.material.navigation.NavigationView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
-import fr.cph.chicago.core.fragment.AlertFragment
-import fr.cph.chicago.core.fragment.BikeFragment
-import fr.cph.chicago.core.fragment.BusFragment
-import fr.cph.chicago.core.fragment.CtaMapFragment
-import fr.cph.chicago.core.fragment.FavoritesFragment
-import fr.cph.chicago.core.fragment.NearbyFragment
-import fr.cph.chicago.core.fragment.SettingsFragment
-import fr.cph.chicago.core.fragment.TrainFragment
-import fr.cph.chicago.core.model.BikeStation
-import fr.cph.chicago.rx.ObservableUtil
-import fr.cph.chicago.service.BusService
+import fr.cph.chicago.core.fragment.*
 import fr.cph.chicago.util.RateUtil
-import fr.cph.chicago.util.Util
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import java.util.concurrent.TimeUnit
@@ -60,8 +48,6 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
     @BindView(R.id.drawer_layout)
     lateinit var drawerLayout: DrawerLayout
 
-    @BindString(R.string.bundle_bike_stations)
-    lateinit var bundleBikeStations: String
     @BindString(R.string.bundle_title)
     lateinit var bundleTitle: String
     @BindString(R.string.favorites)
@@ -81,10 +67,7 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
     @BindString(R.string.settings)
     lateinit var settings: String
 
-    private val observableUtil: ObservableUtil = ObservableUtil
-    private val util: Util = Util
     private val rateUtil: RateUtil = RateUtil
-    private val busService: BusService = BusService
 
     private var currentPosition: Int = 0
 
@@ -104,8 +87,6 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
     private var title: String? = null
 
     override fun create(savedInstanceState: Bundle?) {
-        loadFirstData()
-
         initView()
         setToolbar()
 
@@ -120,18 +101,6 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
     }
 
     private fun checkForErrorInBundle() {
-        val isTrainError = intent.getBooleanExtra(getString(R.string.bundle_train_error), false)
-        val isBusError = intent.getBooleanExtra(getString(R.string.bundle_bus_error), false)
-        // FIXME The snackbar does not move up the search button
-        if (isTrainError && isBusError) {
-            util.showOopsSomethingWentWrong(drawerLayout)
-        } else {
-            if (isTrainError) {
-                util.showSnackBar(drawerLayout, R.string.message_error_train_favorites)
-            } else if (isBusError) {
-                util.showSnackBar(drawerLayout, R.string.message_error_bus_favorites)
-            }
-        }
     }
 
     override fun onBackPressed() {
@@ -154,60 +123,9 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
     }
 
     private fun setToolbar() {
-        toolbar.setOnMenuItemClickListener {
-            favoritesFragment?.startRefreshing()
-
-            if (util.isNetworkAvailable()) {
-                if (busService.getBusRoutes().isEmpty()
-                    || intent.getParcelableArrayListExtra<Parcelable>(bundleBikeStations) == null
-                    || intent.getParcelableArrayListExtra<Parcelable>(bundleBikeStations).size == 0) {
-                    loadFirstData()
-                }
-                val zipped = observableUtil.createAllDataObs()
-                zipped.subscribe(
-                    { favoritesResult -> favoritesFragment?.reloadData(favoritesResult) },
-                    { error ->
-                        Log.e(TAG, error.message, error)
-                        favoritesFragment?.displayError(R.string.message_something_went_wrong)
-                    })
-            } else {
-                favoritesFragment?.displayError(R.string.message_network_error)
-            }
-            true
-        }
         toolbar.inflateMenu(R.menu.main)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             toolbar.elevation = 4f
-        }
-    }
-
-    fun loadFirstData() {
-        observableUtil.createOnFirstLoadObs()
-            .subscribe(
-                { (busRoutesError, bikeStationsError, busRoutes, bikeStations) ->
-                    busService.saveBusRoutes(busRoutes)
-                    refreshFirstLoadData(bikeStations)
-                    if (bikeStationsError) {
-                        this.bikeStationsError = bikeStationsError
-                    }
-                    if (bikeStationsError || busRoutesError) {
-                        Log.w(TAG, "Bike station [$bikeStationsError] or Bus routes error [$busRoutesError]")
-                        util.showOopsSomethingWentWrong(drawerLayout)
-                    }
-                },
-                { error ->
-                    Log.e(TAG, "Error while loading data", error)
-                    util.showOopsSomethingWentWrong(drawerLayout)
-                })
-    }
-
-    private fun refreshFirstLoadData(divvyStations: List<BikeStation>) {
-        intent.putParcelableArrayListExtra(bundleBikeStations, util.asParcelableArrayList(divvyStations))
-        onNewIntent(intent)
-        favoritesFragment?.setBikeStations(divvyStations)
-        bikeFragment?.setBikeStations(divvyStations)
-        if (currentPosition == POSITION_BUS) {
-            busFragment?.update()
         }
     }
 
@@ -240,7 +158,7 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
             R.id.navigation_bike -> {
                 setBarTitle(divvy)
                 bikeFragment = bikeFragment ?: BikeFragment.newInstance(position + 1)
-                bikeFragment!!.setFailure(bikeStationsError)
+                //bikeFragment!!.setFailure(bikeStationsError)
                 supportFragmentManager.beginTransaction().replace(R.id.container, bikeFragment as androidx.fragment.app.Fragment).commit()
                 closeDrawerAndUpdateActionBar(false)
             }
@@ -301,7 +219,6 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
         savedInstanceState.putInt(SELECTED_ID, currentPosition)
         savedInstanceState.putString(bundleTitle, title)
-        savedInstanceState.putParcelableArrayList(bundleBikeStations, intent.getParcelableArrayListExtra(bundleBikeStations))
         super.onSaveInstanceState(savedInstanceState)
     }
 
@@ -309,8 +226,6 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
         super.onRestoreInstanceState(savedInstanceState)
         title = savedInstanceState.getString(bundleTitle)
         currentPosition = savedInstanceState.getInt(SELECTED_ID)
-        val bikeStations = savedInstanceState.getParcelableArrayList<BikeStation>(bundleBikeStations)
-        intent.putParcelableArrayListExtra(bundleBikeStations, bikeStations)
     }
 
     private fun hideActionBarMenu() {
@@ -332,6 +247,5 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
     companion object {
         private val TAG = MainActivity::class.java.simpleName
         private const val SELECTED_ID = "SELECTED_ID"
-        private const val POSITION_BUS = 2
     }
 }

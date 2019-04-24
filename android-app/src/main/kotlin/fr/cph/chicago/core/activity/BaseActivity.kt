@@ -24,19 +24,15 @@ import android.os.Bundle
 import android.util.Log
 import butterknife.BindString
 import fr.cph.chicago.R
-import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
-import fr.cph.chicago.core.model.dto.BusArrivalDTO
 import fr.cph.chicago.core.model.dto.FavoritesDTO
-import fr.cph.chicago.core.model.dto.TrainArrivalDTO
+import fr.cph.chicago.redux.AppState
+import fr.cph.chicago.redux.LoadLocalAndFavoritesDataAction
+import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.repository.RealmConfig
-import fr.cph.chicago.rx.ObservableUtil
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
-import fr.cph.chicago.util.Util
-import io.reactivex.Observable
-import io.reactivex.functions.BiFunction
-import java.util.Calendar
+import org.rekotlin.StoreSubscriber
 
 /**
  * This class represents the base activity of the application It will load the loading screen and/or the main
@@ -45,7 +41,7 @@ import java.util.Calendar
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BaseActivity : ButterKnifeActivity(R.layout.loading) {
+class BaseActivity : ButterKnifeActivity(R.layout.loading), StoreSubscriber<AppState> {
 
     @BindString(R.string.bundle_error)
     lateinit var bundleError: String
@@ -55,9 +51,9 @@ class BaseActivity : ButterKnifeActivity(R.layout.loading) {
     private val trainService: TrainService = TrainService
     private val busService: BusService = BusService
     private val realmConfig: RealmConfig = RealmConfig
-    private val observableUtil: ObservableUtil = ObservableUtil
 
     override fun create(savedInstanceState: Bundle?) {
+        mainStore.subscribe(this)
         setUpRealm()
         loadLocalAndFavoritesData()
     }
@@ -66,33 +62,17 @@ class BaseActivity : ButterKnifeActivity(R.layout.loading) {
         realmConfig.setUpRealm()
     }
 
+    override fun newState(state: AppState) {
+        if (state.error != null && state.error) {
+            startErrorActivity(state.throwable!!)
+        } else if (state.error != null && !state.error) {
+            mainStore.unsubscribe(this)
+            startMainActivity()
+        }
+    }
+
     private fun loadLocalAndFavoritesData() {
-
-        // Train local data
-        val trainLocalData = observableUtil.createLocalTrainDataObs()
-
-        // Bus local data
-        val busLocalData = observableUtil.createLocalBusDataObs()
-
-        // Train online favorites
-        val trainOnlineFavorites = observableUtil.createFavoritesTrainArrivalsObs()
-
-        // Bus online favorites
-        val busOnlineFavorites = observableUtil.createFavoritesBusArrivalsObs()
-
-        // Run local first and then online: Ensure that local data is loaded first
-        Observable.zip(trainLocalData, busLocalData, BiFunction { _: Any, _: Any -> true })
-            .doOnComplete {
-                Observable.zip(trainOnlineFavorites, busOnlineFavorites, BiFunction { trainArrivalsDTO: TrainArrivalDTO, busArrivalsDTO: BusArrivalDTO ->
-                    trainService.setTrainStationError(false)
-                    busService.setBusRouteError(false)
-                    (application as App).lastUpdate = Calendar.getInstance().time
-                    FavoritesDTO(trainArrivalsDTO, busArrivalsDTO, false, listOf())
-                })
-                    .subscribe(
-                        { favoritesDTO -> startMainActivity(favoritesDTO) },
-                        { error -> startErrorActivity(error) })
-            }.subscribe()
+        mainStore.dispatch(LoadLocalAndFavoritesDataAction())
     }
 
     /**
@@ -100,15 +80,8 @@ class BaseActivity : ButterKnifeActivity(R.layout.loading) {
      *
      * @param result the trains and buses arrivals
      */
-    private fun startMainActivity(result: FavoritesDTO) {
+    private fun startMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
-        val bundle = Bundle()
-        bundle.putParcelableArrayList(getString(R.string.bundle_bus_arrivals), Util.asParcelableArrayList(result.busArrivalDTO.busArrivals))
-        bundle.putSparseParcelableArray(getString(R.string.bundle_train_arrivals), result.trainArrivalDTO.trainArrivalSparseArray)
-        bundle.putBoolean(getString(R.string.bundle_train_error), result.trainArrivalDTO.error)
-        bundle.putBoolean(getString(R.string.bundle_bus_error), result.busArrivalDTO.error)
-        intent.putExtras(bundle)
-
         finish()
         startActivity(intent)
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out)

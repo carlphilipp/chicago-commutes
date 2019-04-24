@@ -31,7 +31,6 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.rx.BusDirectionObserver
 import fr.cph.chicago.rx.ObservableUtil
-import fr.cph.chicago.service.BusService
 
 /**
  * Adapter that will handle buses
@@ -39,9 +38,7 @@ import fr.cph.chicago.service.BusService
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BusAdapter : BaseAdapter() {
-
-    var busRoutes: List<BusRoute> = BusService.getBusRoutes()
+class BusAdapter(private var busRoutes: List<BusRoute> = listOf()) : BaseAdapter() {
 
     override fun getCount(): Int {
         return busRoutes.size
@@ -80,6 +77,10 @@ class BusAdapter : BaseAdapter() {
                 .subscribe(BusDirectionObserver(App.instance.screenWidth, parent, holder.detailsLayout, route))
         }
         return view
+    }
+
+    fun updateBusRoutes(busRoutes: List<BusRoute>) {
+        this.busRoutes = busRoutes
     }
 
     private class ViewHolder(

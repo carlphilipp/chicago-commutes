@@ -23,12 +23,16 @@ import fr.cph.chicago.client.DivvyClient
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.entity.DivvyResponse
 import fr.cph.chicago.parser.JsonParser
+import fr.cph.chicago.redux.mainStore
+import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
+import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 
 object BikeService {
 
     private val client = DivvyClient
     private val jsonParser = JsonParser
+    private val util = Util
     private val preferenceService = PreferenceService
 
     fun loadAllBikeStations(): List<BikeStation> {
@@ -36,15 +40,15 @@ object BikeService {
         return jsonParser
             .parse(bikeStationsInputStream, DivvyResponse::class.java)
             .stations
-            .map { divvyStation ->
+            .map { bikeStation ->
                 BikeStation(
-                    divvyStation.id,
-                    divvyStation.name,
-                    divvyStation.availableDocks,
-                    divvyStation.availableBikes,
-                    divvyStation.latitude,
-                    divvyStation.longitude,
-                    divvyStation.stAddress1)
+                    bikeStation.id,
+                    bikeStation.name,
+                    bikeStation.availableDocks,
+                    bikeStation.availableBikes,
+                    bikeStation.latitude,
+                    bikeStation.longitude,
+                    bikeStation.stAddress1)
             }
             .sortedWith(compareBy(BikeStation::name))
             .toMutableList()
@@ -52,6 +56,13 @@ object BikeService {
 
     fun findBikeStation(id: Int): BikeStation {
         return loadAllBikeStations().first { station -> station.id == id }
+    }
+
+    fun searchBikeStations(query: String): List<BikeStation> {
+        return mainStore.state.bikeStations
+            .filter { station -> containsIgnoreCase(station.name, query) || containsIgnoreCase(station.address, query) }
+            .distinct()
+            .sortedWith(util.bikeStationComparator)
     }
 
     fun createEmptyBikeStation(bikeId: String): BikeStation {

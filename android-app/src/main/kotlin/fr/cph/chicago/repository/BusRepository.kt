@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.repository
 
-import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.repository.entity.BusStopDb
@@ -31,22 +30,6 @@ object BusRepository {
 
     // FIXME: No state should be allowed here
     var busRouteError: Boolean = false
-
-    var inMemoryBusRoutes: List<BusRoute> = listOf()
-
-    fun isEmpty(): Boolean {
-        return inMemoryBusRoutes.isEmpty()
-    }
-
-    fun saveBusRoutes(busRoutes: List<BusRoute>) {
-        inMemoryBusRoutes = busRoutes
-    }
-
-    fun getBusRoute(routeId: String): BusRoute {
-        return this.inMemoryBusRoutes
-            .filter { (id) -> id == routeId }
-            .getOrElse(0) { BusRoute("0", "error") }
-    }
 
     fun hasBusStopsEmpty(): Boolean {
         val realm = Realm.getDefaultInstance()

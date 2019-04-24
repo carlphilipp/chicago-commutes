@@ -30,9 +30,9 @@ class BikeAllBikeStationsObserver(private val activity: BikeStationActivity, pri
 
     override fun onSubscribe(d: Disposable) {}
 
-    override fun onNext(divvyStations: List<BikeStation>) {
+    override fun onNext(bikeStations: List<BikeStation>) {
         try {
-            divvyStations
+            bikeStations
                 .filter { station -> bikeStationId == station.id }
                 .elementAtOrElse(0) { BikeStation.buildDefaultBikeStationWithName("error") }
                 .also { station ->

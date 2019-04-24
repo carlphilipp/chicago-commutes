@@ -74,9 +74,9 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
             ) { onError -> Log.e(TAG, onError.message, onError) }
     }
 
-    private fun loadBikes(divvyStation: BikeStation) {
-        nearbyFragment.slidingUpAdapter.updateTitleBike(divvyStation.name)
-        observableUtil.createBikeStationsObs(divvyStation)
+    private fun loadBikes(bikeStation: BikeStation) {
+        nearbyFragment.slidingUpAdapter.updateTitleBike(bikeStation.name)
+        observableUtil.createBikeStationsObs(bikeStation)
             .subscribe({ nearbyFragment.slidingUpAdapter.addBike(it) })
             { onError -> Log.e(TAG, onError.message, onError) }
     }

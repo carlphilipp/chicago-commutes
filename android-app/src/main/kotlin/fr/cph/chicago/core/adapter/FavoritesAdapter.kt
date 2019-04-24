@@ -47,14 +47,9 @@ import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.model.enumeration.BusDirection
-import fr.cph.chicago.redux.AppState
-import fr.cph.chicago.redux.CounterActionDecrease
-import fr.cph.chicago.redux.CounterActionIncrease
-import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.util.LayoutUtil
 import fr.cph.chicago.util.TimeUtil
 import fr.cph.chicago.util.Util
-import org.rekotlin.StoreSubscriber
 import java.util.Calendar
 
 /**
@@ -90,7 +85,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         }
     }
 
-    class FavoritesViewHolder(view: View, val parent: ViewGroup) : RecyclerView.ViewHolder(view), StoreSubscriber<AppState> {
+    class FavoritesViewHolder(view: View, val parent: ViewGroup) : RecyclerView.ViewHolder(view) {
         val mainLayout: LinearLayout = view.findViewById(R.id.favorites_arrival_layout)
         val lastUpdateTextView: TextView = view.findViewById(R.id.last_update)
         val stationNameTextView: TextView = view.findViewById(R.id.favorites_station_name)
@@ -98,24 +93,9 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         val detailsButton: Button = view.findViewById(R.id.details_button)
         val mapButton: Button = view.findViewById(R.id.view_map_button)
 
-        val counter: TextView = view.findViewById(R.id.counter)
-        val decButton: Button = view.findViewById(R.id.dec)
-        val incButton: Button = view.findViewById(R.id.inc)
-
         init {
             this.stationNameTextView.setLines(1)
             this.stationNameTextView.ellipsize = TextUtils.TruncateAt.END
-            this.decButton.setOnClickListener {
-                mainStore.dispatch(CounterActionDecrease())
-            }
-            this.incButton.setOnClickListener {
-                mainStore.dispatch(CounterActionIncrease())
-            }
-            mainStore.subscribe(this)
-        }
-
-        override fun newState(state: AppState) {
-            counter.text = "${state.counter}"
         }
     }
 
@@ -189,17 +169,17 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         holder.mapButton.setOnClickListener(BusMapButtonOnClickListener(activity, busRoute, busDetailsDTOs.map { it.bound }.toSet()))
     }
 
-    private fun handleBikeStation(@StyleRes textAppearance: Int, holder: FavoritesViewHolder, divvyStation: BikeStation) {
-        holder.stationNameTextView.text = divvyStation.name
+    private fun handleBikeStation(@StyleRes textAppearance: Int, holder: FavoritesViewHolder, bikeStation: BikeStation) {
+        holder.stationNameTextView.text = bikeStation.name
         holder.favoriteImage.setImageResource(R.drawable.ic_directions_bike_white_24dp)
 
-        holder.detailsButton.isEnabled = divvyStation.latitude != 0.0 && divvyStation.longitude != 0.0
-        holder.detailsButton.setOnClickListener(BikeDetailsButtonOnClickListener(activity, divvyStation))
+        holder.detailsButton.isEnabled = bikeStation.latitude != 0.0 && bikeStation.longitude != 0.0
+        holder.detailsButton.setOnClickListener(BikeDetailsButtonOnClickListener(activity, bikeStation))
 
         holder.mapButton.text = App.instance.getString(R.string.favorites_view_station)
-        holder.mapButton.setOnClickListener(GoogleMapOnClickListener(divvyStation.latitude, divvyStation.longitude))
+        holder.mapButton.setOnClickListener(GoogleMapOnClickListener(bikeStation.latitude, bikeStation.longitude))
 
-        val bikeResultLayout = layoutUtil.buildBikeFavoritesLayout(textAppearance, divvyStation)
+        val bikeResultLayout = layoutUtil.buildBikeFavoritesLayout(textAppearance, bikeStation)
 
         holder.mainLayout.addView(bikeResultLayout)
     }
@@ -216,27 +196,23 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         favorites.refreshFavorites()
     }
 
-    /**
-     * Refresh date update
-     */
-    fun resetLastUpdate() {
-        App.instance.lastUpdate = Calendar.getInstance().time
-    }
 
     /**
      * Refresh updated view
      */
-    fun updateModel() {
+    fun refreshLastUpdateView() {
         lastUpdate = TimeUtil.lastUpdateInMinutes()
         notifyDataSetChanged()
     }
 
-    fun updateData(trainArrivals: SparseArray<TrainArrival>, busArrivals: List<BusArrival>, divvyStations: List<BikeStation>) {
-        favorites.updateData(trainArrivals, busArrivals, divvyStations)
-        favorites.updateBikeStations(divvyStations)
+    fun updateData(trainArrivals: SparseArray<TrainArrival>, busArrivals: List<BusArrival>, bikeStations: List<BikeStation>) {
+        favorites.updateData(trainArrivals, busArrivals, bikeStations)
+        resetLastUpdate()
+        notifyDataSetChanged()
     }
 
-    fun updateBikeStations(divvyStations: List<BikeStation>) {
-        favorites.updateBikeStations(divvyStations)
+    private fun resetLastUpdate() {
+        App.instance.lastUpdate = Calendar.getInstance().time
+        lastUpdate = TimeUtil.lastUpdateInMinutes()
     }
 }

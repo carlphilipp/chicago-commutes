@@ -32,7 +32,6 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.listener.BikeStationOnClickListener
 import fr.cph.chicago.core.listener.TrainOnClickListener
 import fr.cph.chicago.core.model.BikeStation
@@ -49,14 +48,14 @@ import fr.cph.chicago.util.Util
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
+class SearchAdapter(private val context: Context) : BaseAdapter() {
 
     private var trains: List<TrainStation> = listOf()
     private var busRoutes: List<BusRoute> = listOf()
-    private var divvyStations: List<BikeStation> = listOf()
+    private var bikeStations: List<BikeStation> = listOf()
 
     override fun getCount(): Int {
-        return trains.size + busRoutes.size + divvyStations.size
+        return trains.size + busRoutes.size + bikeStations.size
     }
 
     override fun getItem(position: Int): Any {
@@ -64,7 +63,7 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
         result = when {
             position < trains.size -> trains[position]
             position < trains.size + busRoutes.size -> busRoutes[position - trains.size]
-            else -> divvyStations[position - (trains.size + busRoutes.size)]
+            else -> bikeStations[position - (trains.size + busRoutes.size)]
         }
         return result
     }
@@ -75,7 +74,7 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
 
     @SuppressLint("ViewHolder")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val vi = activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val vi = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val view = vi.inflate(R.layout.list_search, parent, false)
 
         val routeName: TextView = view.findViewById(R.id.station_name)
@@ -129,7 +128,7 @@ class SearchAdapter(private val activity: SearchActivity) : BaseAdapter() {
     fun updateData(trains: List<TrainStation>, buses: List<BusRoute>, divvies: List<BikeStation>) {
         this.trains = trains
         this.busRoutes = buses
-        this.divvyStations = divvies
+        this.bikeStations = divvies
     }
 
     companion object {

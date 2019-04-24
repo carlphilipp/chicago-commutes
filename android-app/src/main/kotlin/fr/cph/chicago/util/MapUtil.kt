@@ -78,7 +78,7 @@ object MapUtil {
         )
     }
 
-    fun readNearbyStation(divvyStations: List<BikeStation>, position: Position): List<BikeStation> {
+    fun readNearbyStation(bikeStations: List<BikeStation>, position: Position): List<BikeStation> {
         val latitude = position.latitude
         val longitude = position.longitude
 
@@ -87,7 +87,7 @@ object MapUtil {
         val lonMax = longitude + DEFAULT_RANGE
         val lonMin = longitude - DEFAULT_RANGE
 
-        return divvyStations
+        return bikeStations
             .filter { station -> station.latitude <= latMax }
             .filter { station -> station.latitude >= latMin }
             .filter { station -> station.longitude <= lonMax }

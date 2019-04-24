@@ -117,8 +117,8 @@ object ObservableUtil {
             .onErrorReturn(handleError())
     }
 
-    fun createBikeStationsObs(divvyStation: BikeStation): Observable<BikeStation> {
-        return createObservableFromCallable(Callable { bikeService.findBikeStation(divvyStation.id) })
+    fun createBikeStationsObs(bikeStation: BikeStation): Observable<BikeStation> {
+        return createObservableFromCallable(Callable { bikeService.findBikeStation(bikeStation.id) })
             .onErrorReturn { throwable ->
                 Log.e(TAG, "Could not load bike stations", throwable)
                 BikeStation.buildDefaultBikeStationWithName("error")
@@ -133,10 +133,10 @@ object ObservableUtil {
         // Bikes online all stations
         val bikeStationsObservable = createAllBikeStationsObs()
         return Observable.zip(busArrivalsObservable, trainArrivalsObservable, bikeStationsObservable,
-            Function3 { busArrivalDTO: BusArrivalDTO, trainArrivalsDTO: TrainArrivalDTO, divvyStations: List<BikeStation>
+            Function3 { busArrivalDTO: BusArrivalDTO, trainArrivalsDTO: TrainArrivalDTO, bikeStations: List<BikeStation>
                 ->
                 App.instance.lastUpdate = Calendar.getInstance().time
-                FavoritesDTO(trainArrivalsDTO, busArrivalDTO, divvyStations.isEmpty(), divvyStations)
+                FavoritesDTO(trainArrivalsDTO, busArrivalDTO, bikeStations.isEmpty(), bikeStations)
             })
     }
 
@@ -192,8 +192,8 @@ object ObservableUtil {
             .onErrorReturn(handleError())
     }
 
-    fun createBikeStationAroundObs(position: Position, divvyStations: List<BikeStation>): Observable<List<BikeStation>> {
-        return createObservableFromCallable(Callable { positionUtil.readNearbyStation(divvyStations, position) })
+    fun createBikeStationAroundObs(position: Position, bikeStations: List<BikeStation>): Observable<List<BikeStation>> {
+        return createObservableFromCallable(Callable { positionUtil.readNearbyStation(bikeStations, position) })
             .onErrorReturn(handleError())
     }
 

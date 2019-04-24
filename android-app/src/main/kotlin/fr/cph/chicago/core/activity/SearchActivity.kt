@@ -32,19 +32,23 @@ import android.widget.ListView
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
-import butterknife.BindString
 import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.adapter.SearchAdapter
 import fr.cph.chicago.core.model.BikeStation
+import fr.cph.chicago.core.model.BusRoute
+import fr.cph.chicago.redux.AppState
+import fr.cph.chicago.redux.mainStore
+import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
+import org.rekotlin.StoreSubscriber
 
-class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
+class SearchActivity : ButterKnifeActivity(R.layout.activity_search)/*, StoreSubscriber<AppState>*/ {
 
     @BindView(R.id.container)
     lateinit var container: FrameLayout
@@ -53,16 +57,15 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
     @BindView(R.id.toolbar)
     lateinit var toolbar: Toolbar
 
-    @BindString(R.string.bundle_bike_stations)
-    lateinit var bundleBikeStations: String
-
     private val trainService: TrainService = TrainService
     private val busService: BusService = BusService
+    private val bikeService: BikeService = BikeService
     private val util: Util = Util
 
     private lateinit var searchView: SearchView
     private lateinit var searchAdapter: SearchAdapter
-    private var divvyStations: List<BikeStation> = listOf()
+    private var busRoutes: List<BusRoute> = listOf()
+    private var bikeStations: List<BikeStation> = listOf()
     private var query: String = ""
 
     private val supportActionBarNotNull: ActionBar
@@ -77,8 +80,7 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
     override fun create(savedInstanceState: Bundle?) {
         setupToolbar()
 
-        searchAdapter = SearchAdapter(this)
-        divvyStations = intent.getParcelableArrayListExtra(bundleBikeStations) ?: listOf()
+        searchAdapter = SearchAdapter(this.baseContext)
         handleIntent(intent)
 
         listView.adapter = searchAdapter
@@ -110,16 +112,27 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
 
     override fun onResume() {
         // Hide keyboard
+        //mainStore.subscribe(this)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
         super.onResume()
     }
 
+    override fun onPause() {
+        super.onPause()
+        //mainStore.unsubscribe(this)
+    }
+
+/*    override fun newState(state: AppState) {
+        this.busRoutes = state.busRoutes
+        this.bikeStations = state.bikeStations
+    }*/
+
     override fun startActivity(intent: Intent) {
         // check if search intent
         if (Intent.ACTION_SEARCH == intent.action) {
-            val bikeStations = getIntent().extras?.getParcelableArrayList(bundleBikeStations)
-                ?: listOf<BikeStation>()
-            intent.putParcelableArrayListExtra(bundleBikeStations, util.asParcelableArrayList(bikeStations))
+            //val bikeStations = getIntent().extras?.getParcelableArrayList(bundleBikeStations)
+            //    ?: listOf<BikeStation>()
+            //intent.putParcelableArrayListExtra(bundleBikeStations, util.asParcelableArrayList(bikeStations))
         }
         super.startActivity(intent)
     }
@@ -168,11 +181,7 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search) {
             query = intent.getStringExtra(SearchManager.QUERY).trim { it <= ' ' }
             val foundStations = trainService.searchStations(query)
             val foundBusRoutes = busService.searchBusRoutes(query)
-            // TODO Consider doing in a different way how bikeStations is stored
-            val foundBikeStations = divvyStations
-                .filter { station -> containsIgnoreCase(station.name, query) || containsIgnoreCase(station.address, query) }
-                .distinct()
-                .sortedWith(util.bikeStationComparator)
+            val foundBikeStations = bikeService.searchBikeStations(query)
             searchAdapter.updateData(foundStations, foundBusRoutes, foundBikeStations)
             searchAdapter.notifyDataSetChanged()
         }

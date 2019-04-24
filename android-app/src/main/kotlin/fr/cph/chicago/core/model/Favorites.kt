@@ -134,10 +134,6 @@ object Favorites {
         this.bikeStations = bikeStations
     }
 
-    fun updateBikeStations(bikeStations: List<BikeStation>) {
-        this.bikeStations = bikeStations
-    }
-
     private fun calculateActualRouteNumberBusFavorites(busFavorites: List<String>): List<String> {
         return busFavorites
             .map { util.decodeBusFavorite(it) }

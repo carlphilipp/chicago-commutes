@@ -232,7 +232,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
     private fun updateMarkersAndModel(
         busStops: List<BusStop>,
         trainStations: List<TrainStation>,
-        divvyStations: List<BikeStation>) {
+        bikeStations: List<BikeStation>) {
 
         val bitmapBus = createStop(context, R.drawable.bus_stop_icon)
         val bitmapTrain = createStop(context, R.drawable.train_station_icon)
@@ -263,7 +263,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
                 markerDataHolder.addData(marker, station)
             }
         }
-        divvyStations.forEach { station ->
+        bikeStations.forEach { station ->
             val options = MarkerOptions()
                 .position(LatLng(station.latitude, station.longitude))
                 .title(station.name)

@@ -99,38 +99,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/counter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toStartOf="@+id/dec"
-                    android:text="0"/>
-
-                <Button
-                    android:id="@+id/dec"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toStartOf="@+id/inc"
-                    android:paddingLeft="16dp"
-                    android:paddingTop="16dp"
-                    android:paddingRight="16dp"
-                    android:paddingBottom="16dp"
-                    android:text="DEC"
-                    android:theme="?attr/favoriteButton" />
-
-                <Button
-                    android:id="@+id/inc"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toStartOf="@+id/details_button"
-                    android:paddingLeft="16dp"
-                    android:paddingTop="16dp"
-                    android:paddingRight="16dp"
-                    android:paddingBottom="16dp"
-                    android:text="INC"
-                    android:theme="?attr/favoriteButton" />
                 <Button
                     android:id="@+id/details_button"
                     style="@style/Widget.AppCompat.Button.Borderless"

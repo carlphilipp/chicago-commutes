@@ -6,7 +6,7 @@ object Android {
 }
 
 object Version {
-    val kotlin = "1.3.20"
+    val kotlin = "1.3.31"
     val android_tools_build = "3.3.2"
     val realm = "5.10.0"
 

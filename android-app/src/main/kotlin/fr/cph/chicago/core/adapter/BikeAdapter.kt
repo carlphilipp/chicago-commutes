@@ -35,7 +35,7 @@ import fr.cph.chicago.core.model.BikeStation
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BikeAdapter(private var bikeStations: List<BikeStation>) : BaseAdapter() {
+class BikeAdapter(private var bikeStations: List<BikeStation> = listOf()) : BaseAdapter() {
 
     override fun getCount(): Int {
         return bikeStations.size
