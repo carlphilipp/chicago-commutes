@@ -39,7 +39,7 @@ import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.TrainStationPattern
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.model.marker.RefreshTrainMarkers
-import fr.cph.chicago.rx.ObservableUtil
+import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.rx.TrainEtaObserver
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.MapUtil
@@ -59,7 +59,7 @@ class TrainMapActivity : FragmentMapActivity() {
     lateinit var bundleTrainLine: String
 
     private val trainService = TrainService
-    private val observableUtil: ObservableUtil = ObservableUtil
+    private val observableUtil: RxUtil = RxUtil
     private var views: MutableMap<Marker, View> = hashMapOf()
 
     private lateinit var line: String

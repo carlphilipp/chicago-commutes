@@ -48,6 +48,7 @@ import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.MapUtil
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function3
@@ -55,9 +56,9 @@ import io.reactivex.schedulers.Schedulers
 import java.util.Calendar
 import java.util.concurrent.Callable
 
-object ObservableUtil {
+object RxUtil {
 
-    private val TAG = ObservableUtil::class.java.simpleName
+    private val TAG = RxUtil::class.java.simpleName
 
     private val trainService = TrainService
     private val busService = BusService
@@ -66,16 +67,16 @@ object ObservableUtil {
     private val positionUtil = MapUtil
 
     // Local
-    fun createLocalTrainDataObs(): Observable<SparseArray<TrainStation>> {
-        return createObservableFromCallable(Callable { trainService.loadLocalTrainData() })
+    fun createLocalTrainDataObs(): Single<SparseArray<TrainStation>> {
+        return createSingleFromCallable(Callable { trainService.loadLocalTrainData() })
             .onErrorReturn { throwable ->
                 Log.e(TAG, "Could not create local train data", throwable)
                 SparseArray()
             }
     }
 
-    fun createLocalBusDataObs(): Observable<Any> {
-        return createObservableFromCallable(Callable { busService.loadLocalBusData() })
+    fun createLocalBusDataObs(): Single<Any> {
+        return createSingleFromCallable(Callable { busService.loadLocalBusData() })
             .onErrorReturn { throwable ->
                 Log.e(TAG, "Could not create local bus data", throwable)
                 Any()
@@ -209,6 +210,12 @@ object ObservableUtil {
 
     fun createAlertRouteObs(id: String): Observable<List<RouteAlertsDTO>> {
         return createObservableFromCallable(Callable { alertService.getRouteAlert(id) })
+    }
+
+    private fun <T> createSingleFromCallable(supplier: Callable<T>): Single<T> {
+        return Single.fromCallable(supplier)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
     }
 
     private fun <T> createObservableFromCallable(supplier: Callable<T>): Observable<T> {

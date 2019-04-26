@@ -30,7 +30,7 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.rx.BusDirectionObserver
-import fr.cph.chicago.rx.ObservableUtil
+import fr.cph.chicago.rx.RxUtil
 
 /**
  * Adapter that will handle buses
@@ -73,7 +73,7 @@ class BusAdapter(private var busRoutes: List<BusRoute> = listOf()) : BaseAdapter
 
         view?.setOnClickListener {
             holder.detailsLayout.visibility = LinearLayout.VISIBLE
-            ObservableUtil.createBusDirectionsObs(route.id)
+            RxUtil.createBusDirectionsObs(route.id)
                 .subscribe(BusDirectionObserver(App.instance.screenWidth, parent, holder.detailsLayout, route))
         }
         return view

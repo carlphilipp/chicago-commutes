@@ -38,7 +38,7 @@ import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.rx.BusDirectionObserver
-import fr.cph.chicago.rx.ObservableUtil
+import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.util.LayoutUtil
 import fr.cph.chicago.util.Util
 
@@ -134,7 +134,7 @@ class SearchAdapter(private val context: Context) : BaseAdapter() {
     companion object {
         private val TAG = SearchAdapter::class.java.simpleName
         private val util = Util
-        private val observableUtil = ObservableUtil
+        private val observableUtil = RxUtil
         private val layoutUtil = LayoutUtil
     }
 }

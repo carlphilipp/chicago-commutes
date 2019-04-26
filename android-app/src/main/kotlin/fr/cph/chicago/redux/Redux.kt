@@ -8,10 +8,11 @@ import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.dto.BusArrivalDTO
 import fr.cph.chicago.core.model.dto.FavoritesDTO
 import fr.cph.chicago.core.model.dto.TrainArrivalDTO
-import fr.cph.chicago.rx.ObservableUtil
+import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.functions.BiFunction
 import org.rekotlin.Action
 import org.rekotlin.Middleware
@@ -57,20 +58,20 @@ internal val loadLocalAndFavoritesDataMiddleware: Middleware<StateType> = { _, _
             (action as? LoadLocalAndFavoritesDataAction)?.let {
                 // FIXME: To put that in ObservableUtils
                 // Train local data
-                val trainLocalData = ObservableUtil.createLocalTrainDataObs()
+                val trainLocalData = RxUtil.createLocalTrainDataObs()
 
                 // Bus local data
-                val busLocalData = ObservableUtil.createLocalBusDataObs()
+                val busLocalData = RxUtil.createLocalBusDataObs()
 
                 // Train online favorites
-                val trainOnlineFavorites = ObservableUtil.createFavoritesTrainArrivalsObs()
+                val trainOnlineFavorites = RxUtil.createFavoritesTrainArrivalsObs()
 
                 // Bus online favorites
-                val busOnlineFavorites = ObservableUtil.createFavoritesBusArrivalsObs()
+                val busOnlineFavorites = RxUtil.createFavoritesBusArrivalsObs()
 
                 // Run local first and then online: Ensure that local data is loaded first
-                Observable.zip(trainLocalData, busLocalData, BiFunction { _: Any, _: Any -> true })
-                    .doOnComplete {
+                Single.zip(trainLocalData, busLocalData, BiFunction { _: Any, _: Any -> true })
+                    .doAfterTerminate {
                         Observable.zip(trainOnlineFavorites, busOnlineFavorites, BiFunction { trainArrivalsDTO: TrainArrivalDTO, busArrivalsDTO: BusArrivalDTO ->
                             TrainService.setTrainStationError(false)
                             BusService.setBusRouteError(false)
@@ -100,7 +101,7 @@ internal val loadFavoritesDataMiddleware: Middleware<StateType> = { _, _ ->
     { next ->
         { action ->
             (action as? LoadFavoritesDataAction)?.let {
-                ObservableUtil.createAllDataObs()
+                RxUtil.createAllDataObs()
                     .subscribe(
                         { next(LoadFavoritesDataAction(favoritesDTO = it)) },
                         { onError ->
@@ -125,7 +126,7 @@ internal val loadFirstDataMiddleware: Middleware<StateType> = { _, _ ->
     { next ->
         { action ->
             (action as? LoadFirstDataAction)?.let {
-                ObservableUtil.createOnFirstLoadObs()
+                RxUtil.createOnFirstLoadObs()
                     .subscribe(
                         { (busRoutesError, bikeStationsError, busRoutes, bikeStations) ->
                             next(LoadFirstDataAction(

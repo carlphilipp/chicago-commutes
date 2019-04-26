@@ -43,7 +43,7 @@ import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.model.marker.RefreshBusMarkers
 import fr.cph.chicago.rx.BusFollowObserver
 import fr.cph.chicago.rx.BusObserver
-import fr.cph.chicago.rx.ObservableUtil
+import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.Util
@@ -64,7 +64,7 @@ class BusMapActivity : FragmentMapActivity() {
     @BindString(R.string.bundle_bus_bounds)
     lateinit var bundleBusBounds: String
 
-    private val observableUtil: ObservableUtil = ObservableUtil
+    private val observableUtil: RxUtil = RxUtil
     private val busService: BusService = BusService
 
     private var busMarkers: List<Marker> = listOf()

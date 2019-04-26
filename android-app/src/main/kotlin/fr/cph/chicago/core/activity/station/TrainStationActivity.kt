@@ -51,7 +51,7 @@ import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import fr.cph.chicago.rx.ObservableUtil
+import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.rx.TrainArrivalObserver
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
@@ -132,7 +132,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
         if (stationId != 0) {
             // Get trainStation
             trainStation = TrainService.getStation(stationId)
-            trainArrivalObservable = ObservableUtil.createTrainArrivalsObs(trainStation)
+            trainArrivalObservable = RxUtil.createTrainArrivalsObs(trainStation)
 
             paramsStop = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
 

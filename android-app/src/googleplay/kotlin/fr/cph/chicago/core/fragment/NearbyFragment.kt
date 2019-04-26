@@ -56,7 +56,7 @@ import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.marker.MarkerDataHolder
-import fr.cph.chicago.rx.ObservableUtil
+import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.util.GoogleMapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.Util
@@ -87,7 +87,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
 
     private val util: Util = Util
     private val googleMapUtil = GoogleMapUtil
-    private val observableUtil: ObservableUtil = ObservableUtil
+    private val observableUtil: RxUtil = RxUtil
 
     private lateinit var mapFragment: SupportMapFragment
     private lateinit var googleApiClient: GoogleApiClient

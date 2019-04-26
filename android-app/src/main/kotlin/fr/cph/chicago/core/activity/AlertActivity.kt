@@ -30,7 +30,7 @@ import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.adapter.AlertRouteAdapter
-import fr.cph.chicago.rx.ObservableUtil
+import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.util.Util
 
 class AlertActivity : ButterKnifeActivity(R.layout.activity_alert) {
@@ -82,7 +82,7 @@ class AlertActivity : ButterKnifeActivity(R.layout.activity_alert) {
 
     @SuppressLint("CheckResult")
     private fun refreshData() {
-        ObservableUtil.createAlertRouteObs(routeId).subscribe(
+        RxUtil.createAlertRouteObs(routeId).subscribe(
             { routeAlertsDTOS ->
                 val ada = AlertRouteAdapter(routeAlertsDTOS)
                 listView.adapter = ada

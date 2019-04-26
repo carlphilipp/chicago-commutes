@@ -37,7 +37,7 @@ import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.rx.BikeAllBikeStationsObserver
-import fr.cph.chicago.rx.ObservableUtil
+import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.Color
 import fr.cph.chicago.util.Util
@@ -78,7 +78,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
     @BindString(R.string.bundle_bike_station)
     lateinit var bundleBikeStation: String
 
-    private val bikeStationsObservable = ObservableUtil.createAllBikeStationsObs()
+    private val bikeStationsObservable = RxUtil.createAllBikeStationsObs()
     private val preferenceService: PreferenceService = PreferenceService
 
     private lateinit var bikeStation: BikeStation

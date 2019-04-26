@@ -32,7 +32,7 @@ import fr.cph.chicago.core.activity.AlertActivity
 import fr.cph.chicago.core.adapter.AlertAdapter
 import fr.cph.chicago.core.model.dto.AlertType
 import fr.cph.chicago.core.model.dto.RoutesAlertsDTO
-import fr.cph.chicago.rx.ObservableUtil
+import fr.cph.chicago.rx.RxUtil
 import org.apache.commons.lang3.StringUtils
 
 /**
@@ -52,7 +52,7 @@ class AlertFragment : Fragment(R.layout.fragment_alert) {
 
     override fun onCreateView(savedInstanceState: Bundle?) {
         loadingState()
-        ObservableUtil.createAlertRoutesObs().subscribe { routesAlerts ->
+        RxUtil.createAlertRoutesObs().subscribe { routesAlerts ->
             val alertAdapter = AlertAdapter(routesAlerts)
             listView.adapter = alertAdapter
             listView.setOnItemClickListener { _, _, position, _ ->

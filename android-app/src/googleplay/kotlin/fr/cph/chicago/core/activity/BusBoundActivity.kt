@@ -48,7 +48,7 @@ import fr.cph.chicago.core.activity.station.BusStopActivity
 import fr.cph.chicago.core.adapter.BusBoundAdapter
 import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.BusStop
-import fr.cph.chicago.rx.ObservableUtil
+import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.util.GoogleMapUtil
 import fr.cph.chicago.util.Util
 import org.apache.commons.lang3.StringUtils
@@ -90,7 +90,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
     @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
     lateinit var arrowBackWhite: Drawable
 
-    private val observableUtil: ObservableUtil = ObservableUtil
+    private val observableUtil: RxUtil = RxUtil
     private val util: Util = Util
 
     private lateinit var mapFragment: SupportMapFragment

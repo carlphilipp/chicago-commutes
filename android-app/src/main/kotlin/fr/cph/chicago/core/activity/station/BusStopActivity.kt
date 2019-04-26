@@ -40,7 +40,7 @@ import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
-import fr.cph.chicago.rx.ObservableUtil
+import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.Color
 import fr.cph.chicago.util.LayoutUtil
@@ -161,7 +161,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
         loadArrivals()
 
         // Load bus stop details and google street image
-        ObservableUtil.createBusStopsForRouteBoundObs(busRouteId, boundTitle)
+        RxUtil.createBusStopsForRouteBoundObs(busRouteId, boundTitle)
             .observeOn(Schedulers.computation())
             .flatMap { stops ->
                 val busStop: BusStop? = stops.firstOrNull { busStop -> busStop.id == busStopId }
@@ -196,7 +196,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
     }
 
     private fun loadArrivals() {
-        ObservableUtil.createBusArrivalObs(requestRt, busRouteId, requestStopId, busStopId, bound, boundTitle)
+        RxUtil.createBusArrivalObs(requestRt, busRouteId, requestStopId, busStopId, bound, boundTitle)
             .doOnError { util.showOopsSomethingWentWrong(swipeRefreshLayout) }
             .doFinally {
                 if (swipeRefreshLayout.isRefreshing) {

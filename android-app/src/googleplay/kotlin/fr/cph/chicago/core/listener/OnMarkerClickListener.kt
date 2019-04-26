@@ -29,7 +29,7 @@ import fr.cph.chicago.core.model.Station
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusArrivalRouteDTO
 import fr.cph.chicago.core.model.marker.MarkerDataHolder
-import fr.cph.chicago.rx.ObservableUtil
+import fr.cph.chicago.rx.RxUtil
 
 class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, private val nearbyFragment: NearbyFragment) : GoogleMap.OnMarkerClickListener {
 
@@ -83,6 +83,6 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
 
     companion object {
         private val TAG = OnMarkerClickListener::class.java.simpleName
-        private val observableUtil = ObservableUtil
+        private val observableUtil = RxUtil
     }
 }

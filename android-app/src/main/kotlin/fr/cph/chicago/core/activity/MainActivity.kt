@@ -158,7 +158,6 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
             R.id.navigation_bike -> {
                 setBarTitle(divvy)
                 bikeFragment = bikeFragment ?: BikeFragment.newInstance(position + 1)
-                //bikeFragment!!.setFailure(bikeStationsError)
                 supportFragmentManager.beginTransaction().replace(R.id.container, bikeFragment as androidx.fragment.app.Fragment).commit()
                 closeDrawerAndUpdateActionBar(false)
             }
