@@ -78,7 +78,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
     @BindString(R.string.bundle_bike_station)
     lateinit var bundleBikeStation: String
 
-    private val bikeStationsObservable = RxUtil.createAllBikeStationsObs()
+    private val bikeStationsSingle = RxUtil.createAllBikeStationsSingle()
     private val preferenceService: PreferenceService = PreferenceService
 
     private lateinit var bikeStation: BikeStation
@@ -91,7 +91,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
         val longitude = bikeStation.longitude
 
         swipeRefreshLayout.setOnRefreshListener {
-            bikeStationsObservable.subscribe(BikeAllBikeStationsObserver(this, bikeStation.id))
+            bikeStationsSingle.subscribe(BikeAllBikeStationsObserver(this, bikeStation.id))
             // FIXME: Identify if it's the place holder or not. This is not great
             if (streetViewImage.scaleType == ImageView.ScaleType.CENTER) {
                 loadGoogleStreetImage(Position(latitude, longitude), streetViewImage, streetViewProgressBar)
@@ -121,7 +121,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
         toolbar.inflateMenu(R.menu.main)
         toolbar.setOnMenuItemClickListener {
             swipeRefreshLayout.isRefreshing = true
-            bikeStationsObservable.subscribe(BikeAllBikeStationsObserver(this@BikeStationActivity, bikeStation.id))
+            bikeStationsSingle.subscribe(BikeAllBikeStationsObserver(this@BikeStationActivity, bikeStation.id))
             false
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

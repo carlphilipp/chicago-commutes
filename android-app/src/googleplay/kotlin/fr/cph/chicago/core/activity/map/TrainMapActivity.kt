@@ -71,11 +71,6 @@ class TrainMapActivity : FragmentMapActivity() {
     private var centerMap = true
     private var drawLine = true
 
-    public override fun onCreate(savedInstanceState: Bundle?) {
-        App.checkTrainData(this)
-        super.onCreate(savedInstanceState)
-    }
-
     override fun create(savedInstanceState: Bundle?) {
         line = if (savedInstanceState != null)
             savedInstanceState.getString(bundleTrainLine) ?: ""

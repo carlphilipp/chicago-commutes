@@ -23,14 +23,14 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.station.BikeStationActivity
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.util.Util
-import io.reactivex.Observer
+import io.reactivex.SingleObserver
 import io.reactivex.disposables.Disposable
 
-class BikeAllBikeStationsObserver(private val activity: BikeStationActivity, private val bikeStationId: Int) : Observer<List<BikeStation>> {
+class BikeAllBikeStationsObserver(private val activity: BikeStationActivity, private val bikeStationId: Int) : SingleObserver<List<BikeStation>> {
 
     override fun onSubscribe(d: Disposable) {}
 
-    override fun onNext(bikeStations: List<BikeStation>) {
+    override fun onSuccess(bikeStations: List<BikeStation>) {
         try {
             bikeStations
                 .filter { station -> bikeStationId == station.id }
@@ -44,6 +44,7 @@ class BikeAllBikeStationsObserver(private val activity: BikeStationActivity, pri
                         util.showOopsSomethingWentWrong(activity.swipeRefreshLayout)
                     }
                 }
+            stopRefreshingIfNeeded()
         } catch (ex: Throwable) {
             handleOnNextError(ex)
         }
@@ -51,10 +52,6 @@ class BikeAllBikeStationsObserver(private val activity: BikeStationActivity, pri
 
     override fun onError(throwable: Throwable) {
         handleError(throwable)
-    }
-
-    override fun onComplete() {
-        stopRefreshingIfNeeded()
     }
 
     private fun handleOnNextError(throwable: Throwable) {

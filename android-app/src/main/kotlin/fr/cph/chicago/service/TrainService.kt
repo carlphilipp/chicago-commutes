@@ -155,14 +155,6 @@ object TrainService {
             .map { route -> Train(route.rn.toInt(), route.destNm, route.approaching.toBoolean(), Position(route.lat.toDouble(), route.lon.toDouble()), route.heading.toInt()) }
     }
 
-    fun setTrainStationError(value: Boolean) {
-        trainRepository.error = value
-    }
-
-    fun getTrainStationError(): Boolean {
-        return trainRepository.error
-    }
-
     fun getStation(id: Int): TrainStation {
         return trainRepository.getStation(id)
     }

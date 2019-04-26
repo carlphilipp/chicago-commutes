@@ -52,6 +52,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function3
+import io.reactivex.functions.Function4
 import io.reactivex.schedulers.Schedulers
 import java.util.Calendar
 import java.util.concurrent.Callable
@@ -67,16 +68,18 @@ object RxUtil {
     private val positionUtil = MapUtil
 
     // Local
-    fun createLocalTrainDataObs(): Single<SparseArray<TrainStation>> {
-        return createSingleFromCallable(Callable { trainService.loadLocalTrainData() })
+    private fun createLocalTrainDataSingle(): Single<SparseArray<TrainStation>> {
+        return Single.fromCallable { trainService.loadLocalTrainData() }
+            .subscribeOn(Schedulers.computation())
             .onErrorReturn { throwable ->
                 Log.e(TAG, "Could not create local train data", throwable)
                 SparseArray()
             }
     }
 
-    fun createLocalBusDataObs(): Single<Any> {
-        return createSingleFromCallable(Callable { busService.loadLocalBusData() })
+    private fun createLocalBusDataSingle(): Single<Any> {
+        return Single.fromCallable { busService.loadLocalBusData() }
+            .subscribeOn(Schedulers.computation())
             .onErrorReturn { throwable ->
                 Log.e(TAG, "Could not create local bus data", throwable)
                 Any()
@@ -88,24 +91,8 @@ object RxUtil {
         return createObservableFromCallable(Callable { busService.loadBusArrivals(requestRt, busRouteId, requestStopId, busStopId, bound, boundTitle) })
     }
 
-    fun createFavoritesTrainArrivalsObs(): Observable<TrainArrivalDTO> {
-        return createObservableFromCallable(Callable { TrainArrivalDTO(trainService.loadFavoritesTrain(), false) })
-            .onErrorReturn { throwable ->
-                Log.e(TAG, "Could not load favorites trains", throwable)
-                TrainArrivalDTO(SparseArray(), true)
-            }
-    }
-
-    fun createTrainArrivalsObs(trainStation: TrainStation): Observable<TrainArrival> {
-        return createObservableFromCallable(Callable { trainService.loadStationTrainArrival(trainStation.id) })
-    }
-
-    fun createFavoritesBusArrivalsObs(): Observable<BusArrivalDTO> {
-        return createObservableFromCallable(Callable { BusArrivalDTO(busService.loadFavoritesBuses(), false) })
-            .onErrorReturn { throwable ->
-                Log.e(TAG, "Could not load bus arrivals", throwable)
-                BusArrivalDTO()
-            }
+    fun createTrainArrivalsSingle(trainStation: TrainStation): Single<TrainArrival> {
+        return createSingleFromCallable(Callable { trainService.loadStationTrainArrival(trainStation.id) })
     }
 
     fun createBusArrivalsObs(busStop: BusStop): Observable<List<BusArrival>> {
@@ -113,8 +100,8 @@ object RxUtil {
             .onErrorReturn(handleError())
     }
 
-    fun createAllBikeStationsObs(): Observable<List<BikeStation>> {
-        return createObservableFromCallable(Callable { bikeService.loadAllBikeStations() })
+    fun createAllBikeStationsSingle(): Single<List<BikeStation>> {
+        return createSingleFromCallable(Callable { bikeService.loadAllBikeStations() })
             .onErrorReturn(handleError())
     }
 
@@ -126,37 +113,12 @@ object RxUtil {
             }
     }
 
-    fun createAllDataObs(): Observable<FavoritesDTO> {
-        // Train online favorites
-        val trainArrivalsObservable = createFavoritesTrainArrivalsObs()
-        // Bus online favorites
-        val busArrivalsObservable = createFavoritesBusArrivalsObs()
-        // Bikes online all stations
-        val bikeStationsObservable = createAllBikeStationsObs()
-        return Observable.zip(busArrivalsObservable, trainArrivalsObservable, bikeStationsObservable,
-            Function3 { busArrivalDTO: BusArrivalDTO, trainArrivalsDTO: TrainArrivalDTO, bikeStations: List<BikeStation>
-                ->
-                App.instance.lastUpdate = Calendar.getInstance().time
-                FavoritesDTO(trainArrivalsDTO, busArrivalDTO, bikeStations.isEmpty(), bikeStations)
-            })
-    }
-
     fun createBusStopsForRouteBoundObs(route: String, bound: String): Observable<List<BusStop>> {
         return createObservableFromCallable(Callable { busService.loadAllBusStopsForRouteBound(route, bound) })
     }
 
     fun createBusDirectionsObs(busRouteId: String): Observable<BusDirections> {
         return createObservableFromCallable(Callable { busService.loadBusDirections(busRouteId) })
-    }
-
-    fun createOnFirstLoadObs(): Observable<FirstLoadDTO> {
-        val busRoutesObs = createObservableFromCallable(Callable { busService.loadBusRoutes() })
-            .onErrorReturn(handleError())
-
-        val bikeStationsObs = createObservableFromCallable(Callable { bikeService.loadAllBikeStations() })
-            .onErrorReturn(handleError())
-
-        return Observable.zip(busRoutesObs, bikeStationsObs, BiFunction { busRoutes, bikeStations -> FirstLoadDTO(busRoutes.isEmpty(), bikeStations.isEmpty(), busRoutes, bikeStations) })
     }
 
     fun createFollowBusObs(busId: String): Observable<List<BusArrival>> {
@@ -203,13 +165,76 @@ object RxUtil {
             .onErrorReturn(handleError())
     }
 
-    fun createAlertRoutesObs(): Observable<List<RoutesAlertsDTO>> {
-        return createObservableFromCallable(Callable { alertService.getAlerts() })
+    fun createAlertRoutesSingle(): Single<List<RoutesAlertsDTO>> {
+        return createSingleFromCallable(Callable { alertService.getAlerts() })
             .onErrorReturn(handleError())
     }
 
     fun createAlertRouteObs(id: String): Observable<List<RouteAlertsDTO>> {
         return createObservableFromCallable(Callable { alertService.getRouteAlert(id) })
+    }
+
+    private fun createFavoritesTrainArrivalsSingle(): Single<TrainArrivalDTO> {
+        return createSingleFromCallable(Callable { TrainArrivalDTO(trainService.loadFavoritesTrain(), false) })
+            .onErrorReturn { throwable ->
+                Log.e(TAG, "Could not load favorites trains", throwable)
+                TrainArrivalDTO(SparseArray(), true)
+            }
+    }
+
+    private fun createFavoritesBusArrivalsSingle(): Single<BusArrivalDTO> {
+        return createSingleFromCallable(Callable { BusArrivalDTO(busService.loadFavoritesBuses(), false) })
+            .onErrorReturn { throwable ->
+                Log.e(TAG, "Could not load bus arrivals", throwable)
+                BusArrivalDTO()
+            }
+    }
+
+    // Combined
+    fun createLocalAndFavoritesDataSingle(): Single<FavoritesDTO> {
+        // Train local data
+        val trainLocalData = createLocalTrainDataSingle()
+
+        // Bus local data
+        val busLocalData = createLocalBusDataSingle()
+
+        // Train online favorites
+        val trainOnlineFavorites = createFavoritesTrainArrivalsSingle()
+
+        // Bus online favorites
+        val busOnlineFavorites = createFavoritesBusArrivalsSingle()
+
+        // Run local first and then online: Ensure that local data is loaded first
+        return Single.zip(trainLocalData, busLocalData, trainOnlineFavorites, busOnlineFavorites, Function4 { _: Any, _: Any, trainArrivalsDTO: TrainArrivalDTO, busArrivalsDTO: BusArrivalDTO ->
+            // FIXME: This time update should be done somewhere else
+            App.instance.lastUpdate = Calendar.getInstance().time
+            FavoritesDTO(trainArrivalsDTO, busArrivalsDTO, false, listOf())
+        })
+    }
+
+    fun createAllDataSingle(): Single<FavoritesDTO> {
+        // Train online favorites
+        val trainArrivalsObservable = createFavoritesTrainArrivalsSingle()
+        // Bus online favorites
+        val busArrivalsObservable = createFavoritesBusArrivalsSingle()
+        // Bikes online all stations
+        val bikeStationsObservable = createAllBikeStationsSingle()
+        return Single.zip(busArrivalsObservable, trainArrivalsObservable, bikeStationsObservable,
+            Function3 { busArrivalDTO: BusArrivalDTO, trainArrivalsDTO: TrainArrivalDTO, bikeStations: List<BikeStation>
+                ->
+                App.instance.lastUpdate = Calendar.getInstance().time
+                FavoritesDTO(trainArrivalsDTO, busArrivalDTO, bikeStations.isEmpty(), bikeStations)
+            })
+    }
+
+    fun createOnFirstLoadObs(): Observable<FirstLoadDTO> {
+        val busRoutesObs = createObservableFromCallable(Callable { busService.loadBusRoutes() })
+            .onErrorReturn(handleError())
+
+        val bikeStationsObs = createObservableFromCallable(Callable { bikeService.loadAllBikeStations() })
+            .onErrorReturn(handleError())
+
+        return Observable.zip(busRoutesObs, bikeStationsObs, BiFunction { busRoutes, bikeStations -> FirstLoadDTO(busRoutes.isEmpty(), bikeStations.isEmpty(), busRoutes, bikeStations) })
     }
 
     private fun <T> createSingleFromCallable(supplier: Callable<T>): Single<T> {

@@ -21,17 +21,13 @@ package fr.cph.chicago.core.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import butterknife.BindString
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
-import fr.cph.chicago.core.model.dto.FavoritesDTO
 import fr.cph.chicago.redux.AppState
 import fr.cph.chicago.redux.LoadLocalAndFavoritesDataAction
 import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.repository.RealmConfig
-import fr.cph.chicago.service.BusService
-import fr.cph.chicago.service.TrainService
 import org.rekotlin.StoreSubscriber
 
 /**
@@ -48,8 +44,6 @@ class BaseActivity : ButterKnifeActivity(R.layout.loading), StoreSubscriber<AppS
     @BindString(R.string.message_something_went_wrong)
     lateinit var somethingWentWrong: String
 
-    private val trainService: TrainService = TrainService
-    private val busService: BusService = BusService
     private val realmConfig: RealmConfig = RealmConfig
 
     override fun create(savedInstanceState: Bundle?) {
@@ -64,7 +58,8 @@ class BaseActivity : ButterKnifeActivity(R.layout.loading), StoreSubscriber<AppS
 
     override fun newState(state: AppState) {
         if (state.error != null && state.error) {
-            startErrorActivity(state.throwable!!)
+            mainStore.unsubscribe(this)
+            startMainActivity()
         } else if (state.error != null && !state.error) {
             mainStore.unsubscribe(this)
             startMainActivity()
@@ -87,12 +82,9 @@ class BaseActivity : ButterKnifeActivity(R.layout.loading), StoreSubscriber<AppS
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
     }
 
-    private fun startErrorActivity(error: Throwable) {
+    // FIXME: If delete that block, delete error activity and layout XML
+/*    private fun startErrorActivity(error: Throwable) {
         Log.e(TAG, error.message, error)
-
-        // Set BusArrivalError
-        trainService.setTrainStationError(true)
-        busService.setBusRouteError(true)
 
         // Start error activity
         val intent = Intent(this, ErrorActivity::class.java)
@@ -101,7 +93,7 @@ class BaseActivity : ButterKnifeActivity(R.layout.loading), StoreSubscriber<AppS
         intent.putExtras(extras)
         finish()
         startActivity(intent)
-    }
+    }*/
 
     companion object {
         private val TAG = BaseActivity::class.java.simpleName

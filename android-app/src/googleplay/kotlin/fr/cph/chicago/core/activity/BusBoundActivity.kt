@@ -101,11 +101,6 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound) {
     private lateinit var busBoundAdapter: BusBoundAdapter
     private var busStops: List<BusStop> = listOf()
 
-    public override fun onCreate(savedInstanceState: Bundle?) {
-        App.checkBusData(this)
-        super.onCreate(savedInstanceState)
-    }
-
     @SuppressLint("CheckResult")
     override fun create(savedInstanceState: Bundle?) {
         busRouteId = intent.getStringExtra(bundleBusRouteId)

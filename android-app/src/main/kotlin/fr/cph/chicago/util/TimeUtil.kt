@@ -6,6 +6,11 @@ import java.util.Calendar
 import java.util.Date
 
 object TimeUtil {
+
+    fun isLessThan1SecondDifference(old: Date, new: Date): Boolean {
+        return new.time - old.time < 1000L
+    }
+
     /**
      * Get last update in minutes
      *

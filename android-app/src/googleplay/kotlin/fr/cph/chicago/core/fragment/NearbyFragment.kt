@@ -48,7 +48,6 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import fr.cph.chicago.Constants.Companion.GPS_ACCESS
 import fr.cph.chicago.R
-import fr.cph.chicago.core.App
 import fr.cph.chicago.core.adapter.SlidingUpAdapter
 import fr.cph.chicago.core.listener.OnMarkerClickListener
 import fr.cph.chicago.core.model.BikeStation
@@ -95,12 +94,6 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
 
     private lateinit var markerDataHolder: MarkerDataHolder
     private var fusedLocationClient: FusedLocationProviderClient? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        App.checkTrainData(mainActivity)
-        App.checkBusData(mainActivity)
-    }
 
     override fun onCreateView(savedInstanceState: Bundle?) {
         slidingUpAdapter = SlidingUpAdapter(this)

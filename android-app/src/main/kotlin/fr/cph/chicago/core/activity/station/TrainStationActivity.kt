@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.core.activity.station
 
-import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -46,28 +45,27 @@ import fr.cph.chicago.core.listener.GoogleMapDirectionOnClickListener
 import fr.cph.chicago.core.listener.GoogleMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.core.model.Stop
-import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.core.model.TrainEta
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.enumeration.TrainDirection
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import fr.cph.chicago.rx.RxUtil
-import fr.cph.chicago.rx.TrainArrivalObserver
+import fr.cph.chicago.redux.AppState
+import fr.cph.chicago.redux.LoadTrainStationAction
+import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Color
 import fr.cph.chicago.util.Util
-import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
+import org.rekotlin.StoreSubscriber
 import java.util.Random
 
 /**
- * Activity that represents the train trainStation
+ * Activity that represents the train station
  *
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class TrainStationActivity : StationActivity(R.layout.activity_station) {
+class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSubscriber<AppState> {
 
     @BindView(android.R.id.content)
     lateinit var viewGroup: ViewGroup
@@ -112,7 +110,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
 
     private lateinit var paramsStop: LinearLayout.LayoutParams
     private lateinit var trainStation: TrainStation
-    private lateinit var trainArrivalObservable: Observable<TrainArrival>
+    //private lateinit var trainArrivalObservable: Single<TrainArrival>
 
     private var isFavorite: Boolean = false
     private var stationId: Int = 0
@@ -121,18 +119,13 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
     private val preferenceService: PreferenceService = PreferenceService
     private val util: Util = Util
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        App.checkTrainData(this)
-        super.onCreate(savedInstanceState)
-    }
-
     override fun create(savedInstanceState: Bundle?) {
         // Get train station id from bundle
         stationId = intent.extras?.getInt(bundleTrainStationId, 0) ?: 0
         if (stationId != 0) {
             // Get trainStation
             trainStation = TrainService.getStation(stationId)
-            trainArrivalObservable = RxUtil.createTrainArrivalsObs(trainStation)
+            //trainArrivalObservable = RxUtil.createTrainArrivalsSingle(trainStation)
 
             paramsStop = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
 
@@ -143,12 +136,13 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
             isFavorite = isFavorite()
 
             loadGoogleStreetImage(position, streetViewImage, streetViewProgressBar)
-            trainArrivalObservable.subscribe(TrainArrivalObserver(this))
+            //trainArrivalObservable.subscribe(TrainArrivalObserver(this))
 
             streetViewImage.setOnClickListener(GoogleStreetOnClickListener(position.latitude, position.longitude))
             streetViewImage.layoutParams = params
             swipeRefreshLayout.setOnRefreshListener {
-                trainArrivalObservable.subscribe(TrainArrivalObserver(this))
+                mainStore.dispatch(LoadTrainStationAction(trainStation))
+                //trainArrivalObservable.subscribe(TrainArrivalObserver(this))
                 // FIXME: Identify if it's the place holder or not. This is not great
                 if (streetViewImage.scaleType == ImageView.ScaleType.CENTER) {
                     loadGoogleStreetImage(position, streetViewImage, streetViewProgressBar)
@@ -172,8 +166,13 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
         }
     }
 
+    override fun newState(state: AppState) {
+        hideAllArrivalViews()
+        state.trainStationArrival.trainEtas.forEach { drawAllArrivalsTrain(it) }
+        stopRefreshingIfNeeded()
+    }
+
     private fun setUpStopLayouts(stopByLines: Map<TrainLine, List<Stop>>) {
-        stopByLines.entries
         stopByLines.entries.forEach { entry ->
             val line = entry.key
             val stops = entry.value
@@ -194,7 +193,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
                 checkBox.setOnCheckedChangeListener { _, isChecked -> preferenceService.saveTrainFilter(stationId, line, stop.direction, isChecked) }
                 checkBox.setOnClickListener {
                     if (checkBox.isChecked) {
-                        trainArrivalObservable.subscribe(TrainArrivalObserver(this))
+                        mainStore.dispatch(LoadTrainStationAction(trainStation))
                     }
                 }
                 checkBox.isChecked = preferenceService.getTrainFilter(stationId, line, stop.direction)
@@ -227,7 +226,7 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
         toolbar.inflateMenu(R.menu.main)
         toolbar.setOnMenuItemClickListener {
             swipeRefreshLayout.isRefreshing = true
-            trainArrivalObservable.subscribe(TrainArrivalObserver(this))
+            mainStore.dispatch(LoadTrainStationAction(trainStation))
             false
         }
 
@@ -243,6 +242,17 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
         toolbar.setOnClickListener { finish() }
     }
 
+    override fun onPause() {
+        super.onPause()
+        mainStore.unsubscribe(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mainStore.subscribe(this)
+        mainStore.dispatch(LoadTrainStationAction(trainStation))
+    }
+
     public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         stationId = savedInstanceState.getInt(getString(R.string.bundle_train_stationId))
@@ -253,12 +263,6 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
         super.onSaveInstanceState(savedInstanceState)
     }
 
-    @SuppressLint("CheckResult")
-    public override fun onDestroy() {
-        super.onDestroy()
-        trainArrivalObservable.unsubscribeOn(Schedulers.io())
-    }
-
     /**
      * Is favorite or not ?
      *
@@ -266,6 +270,10 @@ class TrainStationActivity : StationActivity(R.layout.activity_station) {
      */
     override fun isFavorite(): Boolean {
         return preferenceService.isTrainStationFavorite(stationId)
+    }
+
+    private fun stopRefreshingIfNeeded() {
+        swipeRefreshLayout.isRefreshing = false
     }
 
     fun hideAllArrivalViews() {

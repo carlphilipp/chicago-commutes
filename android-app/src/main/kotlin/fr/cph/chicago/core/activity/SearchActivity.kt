@@ -34,19 +34,14 @@ import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import butterknife.BindView
 import fr.cph.chicago.R
-import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
 import fr.cph.chicago.core.adapter.SearchAdapter
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
-import fr.cph.chicago.redux.AppState
-import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.service.BikeService
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Util
-import org.apache.commons.lang3.StringUtils.containsIgnoreCase
-import org.rekotlin.StoreSubscriber
 
 class SearchActivity : ButterKnifeActivity(R.layout.activity_search)/*, StoreSubscriber<AppState>*/ {
 
@@ -70,12 +65,6 @@ class SearchActivity : ButterKnifeActivity(R.layout.activity_search)/*, StoreSub
 
     private val supportActionBarNotNull: ActionBar
         get() = supportActionBar ?: throw RuntimeException()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        App.checkTrainData(this)
-        App.checkBusData(this)
-        super.onCreate(savedInstanceState)
-    }
 
     override fun create(savedInstanceState: Bundle?) {
         setupToolbar()

@@ -22,28 +22,24 @@ import android.util.Log
 import fr.cph.chicago.core.activity.station.TrainStationActivity
 import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.util.Util
-import io.reactivex.Observer
+import io.reactivex.SingleObserver
 import io.reactivex.disposables.Disposable
 
-class TrainArrivalObserver(private val trainStationActivity: TrainStationActivity) : Observer<TrainArrival> {
+class TrainArrivalObserver(private val trainStationActivity: TrainStationActivity) : SingleObserver<TrainArrival> {
 
     override fun onSubscribe(d: Disposable) {}
 
-    override fun onNext(trainArrival: TrainArrival) {
+    override fun onError(throwable: Throwable) {
+        handleError(throwable)
+    }
+
+    override fun onSuccess(trainArrival: TrainArrival) {
         try {
             trainStationActivity.hideAllArrivalViews()
             trainArrival.trainEtas.forEach { trainStationActivity.drawAllArrivalsTrain(it) }
         } catch (ex: Throwable) {
             handleOnNextError(ex)
         }
-    }
-
-    override fun onError(throwable: Throwable) {
-        handleError(throwable)
-    }
-
-    override fun onComplete() {
-        stopRefreshingIfNeeded()
     }
 
     private fun handleOnNextError(throwable: Throwable) {

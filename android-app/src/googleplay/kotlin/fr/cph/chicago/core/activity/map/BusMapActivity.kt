@@ -79,11 +79,6 @@ class BusMapActivity : FragmentMapActivity() {
 
     private var loadPattern = true
 
-    public override fun onCreate(savedInstanceState: Bundle?) {
-        App.checkBusData(this)
-        super.onCreate(savedInstanceState)
-    }
-
     override fun create(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
             busId = savedInstanceState.getInt(bundleBusId)

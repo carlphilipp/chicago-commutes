@@ -28,9 +28,6 @@ object BusRepository {
 
     private const val DEFAULT_RANGE = 0.008
 
-    // FIXME: No state should be allowed here
-    var busRouteError: Boolean = false
-
     fun hasBusStopsEmpty(): Boolean {
         val realm = Realm.getDefaultInstance()
         return realm.use {

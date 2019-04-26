@@ -29,8 +29,7 @@ import android.util.Log
 import android.view.WindowManager
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.BaseActivity
-import fr.cph.chicago.service.BusService
-import fr.cph.chicago.service.TrainService
+import fr.cph.chicago.core.activity.ErrorActivity
 import io.reactivex.plugins.RxJavaPlugins
 import java.util.Date
 
@@ -69,7 +68,10 @@ class App : Application() {
         ctaBusKey = applicationContext.getString(R.string.cta_bus_key)
         googleStreetKey = applicationContext.getString(R.string.google_maps_api_key)
         instance = this
-        RxJavaPlugins.setErrorHandler { throwable -> Log.e(TAG, "Error not handled", throwable) }
+        RxJavaPlugins.setErrorHandler { throwable ->
+            Log.e(TAG, "Error not handled", throwable)
+            startErrorActivity()
+        }
     }
 
     private val screenSize: IntArray by lazy {
@@ -88,29 +90,12 @@ class App : Application() {
         lateinit var googleStreetKey: String
         lateinit var instance: App
 
-        val trainService = TrainService
-        val busService = BusService
-
-        fun checkTrainData(activity: Activity): Boolean {
-            if (trainService.getTrainStationError()) {
-                startErrorActivity(activity)
-                return false
-            }
-            return true
-        }
-
-        fun checkBusData(activity: Activity) {
-            if (busService.busRouteError()) {
-                startErrorActivity(activity)
-            }
-        }
-
-        private fun startErrorActivity(activity: Activity) {
-            val intent = Intent(activity, BaseActivity::class.java)
-            intent.putExtra(activity.getString(R.string.bundle_error), true)
+        private fun startErrorActivity() {
+            val context = instance.applicationContext
+            val intent = Intent(context, ErrorActivity::class.java)
+            intent.putExtra(context.getString(R.string.bundle_error), "Something went wrong")
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-            activity.startActivity(intent)
-            activity.finish()
+            context.startActivity(intent)
         }
     }
 }

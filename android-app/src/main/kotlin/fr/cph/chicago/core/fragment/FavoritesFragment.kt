@@ -23,6 +23,7 @@ import android.content.Intent
 import android.os.AsyncTask
 import android.os.AsyncTask.Status
 import android.os.Bundle
+import android.util.Log
 import android.util.SparseArray
 import android.view.View
 import android.widget.RelativeLayout
@@ -42,7 +43,6 @@ import fr.cph.chicago.redux.AppState
 import fr.cph.chicago.redux.LoadFavoritesDataAction
 import fr.cph.chicago.redux.LoadFirstDataAction
 import fr.cph.chicago.redux.mainStore
-import fr.cph.chicago.service.BusService
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.task.RefreshTimingTask
 import fr.cph.chicago.util.RateUtil
@@ -132,7 +132,9 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
     override fun onResume() {
         super.onResume()
         mainStore.subscribe(this)
-        mainStore.dispatch(LoadFirstDataAction())
+        if (mainStore.state.busRoutes.isEmpty() || mainStore.state.bikeStations.isEmpty()) {
+            mainStore.dispatch(LoadFirstDataAction())
+        }
         if (App.instance.refresh) {
             App.instance.refresh = false
             mainStore.dispatch(LoadFavoritesDataAction())
@@ -147,13 +149,18 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
     }
 
     override fun newState(state: AppState) {
-        favoritesAdapter?.updateData(
-            trainArrivals = state.trainArrivalsDTO.trainArrivalSparseArray,
-            busArrivals = state.busArrivalsDTO.busArrivals,
-            bikeStations = state.bikeStations
-        )
-        if (state.highlightBackground) {
-            highlightBackground()
+        Log.e(TAG, "Favorites new state")
+        if (state.error != null && state.error) {
+            displayError(R.string.message_something_went_wrong)
+        } else {
+            favoritesAdapter?.updateData(
+                trainArrivals = state.trainArrivalsDTO.trainArrivalSparseArray,
+                busArrivals = state.busArrivalsDTO.busArrivals,
+                bikeStations = state.bikeStations
+            )
+            if (state.highlightBackground) {
+                highlightBackground()
+            }
         }
         stopRefreshing()
     }
@@ -163,8 +170,8 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
      *
      * @param message the message
      */
-    fun displayError(message: Int) {
-        util.showSnackBar(mainActivity.drawerLayout, message)
+    private fun displayError(message: Int) {
+        util.showSnackBar(swipeRefreshLayout, message)
         stopRefreshing()
     }
 

@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.fragment
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -50,45 +51,47 @@ class AlertFragment : Fragment(R.layout.fragment_alert) {
     @BindView(R.id.loading_relativeLayout)
     lateinit var loading: RelativeLayout
 
+    @SuppressLint("CheckResult")
     override fun onCreateView(savedInstanceState: Bundle?) {
         loadingState()
-        RxUtil.createAlertRoutesObs().subscribe { routesAlerts ->
-            val alertAdapter = AlertAdapter(routesAlerts)
-            listView.adapter = alertAdapter
-            listView.setOnItemClickListener { _, _, position, _ ->
-                val (id1, routeName, _, _, _, _, alertType) = alertAdapter.getItem(position)
-                val intent = Intent(context, AlertActivity::class.java)
-                val extras = Bundle()
-                extras.putString("routeId", id1)
-                extras.putString("title", if (alertType === AlertType.TRAIN)
-                    routeName
-                else
-                    "$id1 - $routeName")
-                intent.putExtras(extras)
-                startActivity(intent)
-            }
-            textFilter.addTextChangedListener(object : TextWatcher {
-
-                var routesAlertsDTOS: List<RoutesAlertsDTO> = listOf()
-
-                override fun beforeTextChanged(c: CharSequence, start: Int, count: Int, after: Int) {
-                    this.routesAlertsDTOS = listOf()
+        RxUtil.createAlertRoutesSingle()
+            .subscribe { routesAlerts ->
+                val alertAdapter = AlertAdapter(routesAlerts)
+                listView.adapter = alertAdapter
+                listView.setOnItemClickListener { _, _, position, _ ->
+                    val (id1, routeName, _, _, _, _, alertType) = alertAdapter.getItem(position)
+                    val intent = Intent(context, AlertActivity::class.java)
+                    val extras = Bundle()
+                    extras.putString("routeId", id1)
+                    extras.putString("title", if (alertType === AlertType.TRAIN)
+                        routeName
+                    else
+                        "$id1 - $routeName")
+                    intent.putExtras(extras)
+                    startActivity(intent)
                 }
+                textFilter.addTextChangedListener(object : TextWatcher {
 
-                override fun onTextChanged(c: CharSequence, start: Int, before: Int, count: Int) {
-                    val trimmed = c.toString().trim { it <= ' ' }
-                    routesAlertsDTOS = routesAlerts.filter { (id, routeName) ->
-                        StringUtils.containsIgnoreCase(routeName, trimmed) || StringUtils.containsIgnoreCase(id, trimmed)
+                    var routesAlertsDTOS: List<RoutesAlertsDTO> = listOf()
+
+                    override fun beforeTextChanged(c: CharSequence, start: Int, count: Int, after: Int) {
+                        this.routesAlertsDTOS = listOf()
                     }
-                }
 
-                override fun afterTextChanged(s: Editable) {
-                    alertAdapter.setAlerts(routesAlertsDTOS)
-                    alertAdapter.notifyDataSetChanged()
-                }
-            })
-            successState()
-        }
+                    override fun onTextChanged(c: CharSequence, start: Int, before: Int, count: Int) {
+                        val trimmed = c.toString().trim { it <= ' ' }
+                        routesAlertsDTOS = routesAlerts.filter { (id, routeName) ->
+                            StringUtils.containsIgnoreCase(routeName, trimmed) || StringUtils.containsIgnoreCase(id, trimmed)
+                        }
+                    }
+
+                    override fun afterTextChanged(s: Editable) {
+                        alertAdapter.setAlerts(routesAlertsDTOS)
+                        alertAdapter.notifyDataSetChanged()
+                    }
+                })
+                successState()
+            }
     }
 
     override fun onResume() {

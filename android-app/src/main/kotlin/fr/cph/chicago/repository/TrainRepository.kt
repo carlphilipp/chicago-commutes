@@ -47,8 +47,6 @@ object TrainRepository {
     // https://data.cityofchicago.org/Transportation/CTA-System-Information-List-of-L-Stops/8pix-ypme
     private const val TRAIN_FILE_PATH = "train_stops.csv"
 
-    var error: Boolean = false
-
     private val parser: CsvParser
 
     init {

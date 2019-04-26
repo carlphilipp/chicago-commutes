@@ -27,7 +27,6 @@ import android.util.TypedValue
 import android.view.View
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import com.google.android.material.snackbar.Snackbar
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.BikeStation
@@ -205,7 +204,7 @@ object Util {
     }
 
     fun showSnackBar(view: View, text: CharSequence) {
-        Snackbar.make(view, text, Snackbar.LENGTH_LONG).show()
+        SnackBarUtil.smartShow(view, text)
     }
 
     fun handleConnectOrParserException(throwable: Throwable, parserView: View) {

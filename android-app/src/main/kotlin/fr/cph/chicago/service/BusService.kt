@@ -22,12 +22,29 @@ package fr.cph.chicago.service
 import android.util.Log
 import fr.cph.chicago.R
 import fr.cph.chicago.client.CtaClient
-import fr.cph.chicago.client.CtaRequestType.*
+import fr.cph.chicago.client.CtaRequestType.BUS_ARRIVALS
+import fr.cph.chicago.client.CtaRequestType.BUS_DIRECTION
+import fr.cph.chicago.client.CtaRequestType.BUS_PATTERN
+import fr.cph.chicago.client.CtaRequestType.BUS_ROUTES
+import fr.cph.chicago.client.CtaRequestType.BUS_STOP_LIST
+import fr.cph.chicago.client.CtaRequestType.BUS_VEHICLES
 import fr.cph.chicago.core.App
-import fr.cph.chicago.core.model.*
+import fr.cph.chicago.core.model.Bus
+import fr.cph.chicago.core.model.BusArrival
+import fr.cph.chicago.core.model.BusDirections
+import fr.cph.chicago.core.model.BusPattern
+import fr.cph.chicago.core.model.BusRoute
+import fr.cph.chicago.core.model.BusStop
+import fr.cph.chicago.core.model.BusStopPattern
+import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
 import fr.cph.chicago.core.model.enumeration.BusDirection
-import fr.cph.chicago.entity.*
+import fr.cph.chicago.entity.BusArrivalResponse
+import fr.cph.chicago.entity.BusDirectionResponse
+import fr.cph.chicago.entity.BusPatternResponse
+import fr.cph.chicago.entity.BusPositionResponse
+import fr.cph.chicago.entity.BusRoutesResponse
+import fr.cph.chicago.entity.BusStopsResponse
 import fr.cph.chicago.exception.CtaException
 import fr.cph.chicago.parser.BusStopCsvParser
 import fr.cph.chicago.redux.mainStore
@@ -38,7 +55,7 @@ import org.apache.commons.collections4.multimap.ArrayListValuedHashMap
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.StringUtils.containsIgnoreCase
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 
 object BusService {
 
@@ -172,10 +189,6 @@ object BusService {
         return busRepository.saveBusStops(busStops)
     }
 
-    fun getBusRoutes(): List<BusRoute> {
-        return mainStore.state.busRoutes
-    }
-
     /**
      *  We can't guaranty that the repo will be populated when we call that method
      */
@@ -192,14 +205,6 @@ object BusService {
     private fun getBusRouteFromFavorites(routeId: String): BusRoute {
         val routeName = preferenceService.getBusRouteNameMapping(routeId)
         return BusRoute(routeId, routeName ?: "?")
-    }
-
-    fun busRouteError(): Boolean {
-        return busRepository.busRouteError
-    }
-
-    fun setBusRouteError(value: Boolean) {
-        busRepository.busRouteError = value
     }
 
     // TODO: not sure it's the right pattern to pass busRoutes here.
