@@ -142,6 +142,7 @@
     <string name="message_error_while_loading_data">Error while loading data!</string>
     <string name="message_see_all_buses_on_line">See all buses on line&#160;</string>
     <string name="message_network_error">No network connection detected!</string>
+    <string name="message_connect_error">Sorry, network connection issues</string>
     <string name="message_add_fav">Added to favorites!</string>
     <string name="message_remove_fav">Removed from favorites!</string>
     <string name="message_too_fast">You are a bit fast! Try again in a second!</string>

@@ -24,7 +24,6 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils.TruncateAt
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -58,7 +57,7 @@ import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Color
 import fr.cph.chicago.util.Util
 import org.rekotlin.StoreSubscriber
-import java.util.*
+import java.util.Random
 
 /**
  * Activity that represents the train station
@@ -164,9 +163,12 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
     }
 
     override fun newState(state: AppState) {
-        Log.e("TrainStationActivity", "New state, should stop refresh")
         hideAllArrivalViews()
-        state.trainStationArrival.trainEtas.forEach { drawAllArrivalsTrain(it) }
+        if (state.trainStationError) {
+            util.showSnackBar(swipeRefreshLayout, state.trainStationErrorMessage)
+        } else {
+            state.trainStationArrival.trainEtas.forEach { drawAllArrivalsTrain(it) }
+        }
         stopRefreshing()
     }
 

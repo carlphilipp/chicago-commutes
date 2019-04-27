@@ -1,6 +1,8 @@
 package fr.cph.chicago.redux
 
 import android.util.Log
+import fr.cph.chicago.R
+import fr.cph.chicago.exception.ConnectException
 import fr.cph.chicago.rx.RxUtil
 import org.rekotlin.Middleware
 import org.rekotlin.StateType
@@ -75,20 +77,21 @@ internal val loadTrainStationMiddleware: Middleware<StateType> = { _, _ ->
                 RxUtil.createTrainArrivalsSingle(action.trainStation)
                     .subscribe(
                         { trainArrival ->
-                            val newAction = LoadTrainStationAction(
+                            next(LoadTrainStationAction(
                                 trainStation = action.trainStation,
                                 error = false,
-                                trainArrival = trainArrival)
-                            Log.e(TAG, "New action")
-                            next(newAction)
-                            Log.e(TAG, "After next")
+                                trainArrival = trainArrival))
                         },
                         { throwable ->
                             Log.e(TAG, throwable.message, throwable)
+                            val errorMessage = if (throwable is ConnectException)
+                                R.string.message_connect_error
+                            else
+                                R.string.message_something_went_wrong
                             next(LoadTrainStationAction(
                                 trainStation = action.trainStation,
                                 error = true,
-                                throwable = throwable)
+                                errorMessage = errorMessage)
                             )
                         }
                     )

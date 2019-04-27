@@ -1,6 +1,7 @@
 package fr.cph.chicago.redux
 
 import android.util.SparseArray
+import fr.cph.chicago.R
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.TrainArrival
@@ -39,6 +40,6 @@ data class LoadFirstDataAction(
 data class LoadTrainStationAction(
     val trainStation: TrainStation = TrainStation.buildEmptyStation(),
     val error: Boolean = false,
-    val throwable: Throwable? = null,
+    val errorMessage: Int = R.string.message_something_went_wrong,
     val trainArrival: TrainArrival = TrainArrival()
 ) : Action
