@@ -75,11 +75,13 @@ internal val loadTrainStationMiddleware: Middleware<StateType> = { _, _ ->
                 RxUtil.createTrainArrivalsSingle(action.trainStation)
                     .subscribe(
                         { trainArrival ->
-                            next(LoadTrainStationAction(
+                            val newAction = LoadTrainStationAction(
                                 trainStation = action.trainStation,
                                 error = false,
                                 trainArrival = trainArrival)
-                            )
+                            Log.e(TAG, "New action")
+                            next(newAction)
+                            Log.e(TAG, "After next")
                         },
                         { throwable ->
                             Log.e(TAG, throwable.message, throwable)

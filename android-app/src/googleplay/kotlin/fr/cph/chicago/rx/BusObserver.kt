@@ -25,14 +25,14 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.map.BusMapActivity
 import fr.cph.chicago.core.model.Bus
 import fr.cph.chicago.util.Util
-import io.reactivex.Observer
+import io.reactivex.SingleObserver
 import io.reactivex.disposables.Disposable
 
-class BusObserver(private val activity: BusMapActivity, private val centerMap: Boolean, private val view: View) : Observer<List<Bus>> {
+class BusObserver(private val activity: BusMapActivity, private val centerMap: Boolean, private val view: View) : SingleObserver<List<Bus>> {
 
     override fun onSubscribe(d: Disposable) {}
 
-    override fun onNext(buses: List<Bus>) {
+    override fun onSuccess(buses: List<Bus>) {
         activity.drawBuses(buses)
         if (buses.isNotEmpty()) {
             if (centerMap) {
@@ -47,8 +47,6 @@ class BusObserver(private val activity: BusMapActivity, private val centerMap: B
         Util.handleConnectOrParserException(throwable, view)
         Log.e(TAG, throwable.message, throwable)
     }
-
-    override fun onComplete() {}
 
     companion object {
         private val TAG = BusObserver::class.java.simpleName

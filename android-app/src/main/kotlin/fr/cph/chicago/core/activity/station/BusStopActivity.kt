@@ -46,6 +46,7 @@ import fr.cph.chicago.util.Color
 import fr.cph.chicago.util.LayoutUtil
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
@@ -161,11 +162,11 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
         loadArrivals()
 
         // Load bus stop details and google street image
-        RxUtil.createBusStopsForRouteBoundObs(busRouteId, boundTitle)
+        RxUtil.createBusStopsForRouteBoundSingle(busRouteId, boundTitle)
             .observeOn(Schedulers.computation())
             .flatMap { stops ->
                 val busStop: BusStop? = stops.firstOrNull { busStop -> busStop.id == busStopId }
-                Observable.just(busStop!!)
+                Single.just(busStop!!)
             }
             .observeOn(AndroidSchedulers.mainThread())
             .map { busStop ->

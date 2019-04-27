@@ -2,8 +2,7 @@ package fr.cph.chicago.util
 
 import fr.cph.chicago.R
 import fr.cph.chicago.core.App
-import java.util.Calendar
-import java.util.Date
+import java.util.*
 
 object TimeUtil {
 
@@ -16,10 +15,9 @@ object TimeUtil {
      *
      * @return a string
      */
-    fun lastUpdateInMinutes(): String {
+    fun formatTimeDifference(lastUpdate: Date, currentDate: Date): String {
         val lastUpdateInMinutes = StringBuilder()
-        val currentDate = Calendar.getInstance().time
-        val diff = getTimeDifference(App.instance.lastUpdate, currentDate)
+        val diff = getTimeDifference(lastUpdate, currentDate)
         val hours = diff[0]
         val minutes = diff[1]
         if (hours == 0L && minutes == 0L) {

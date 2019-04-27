@@ -82,7 +82,7 @@ class AlertActivity : ButterKnifeActivity(R.layout.activity_alert) {
 
     @SuppressLint("CheckResult")
     private fun refreshData() {
-        RxUtil.createAlertRouteObs(routeId).subscribe(
+        RxUtil.createAlertRouteSingle(routeId).subscribe(
             { routeAlertsDTOS ->
                 val ada = AlertRouteAdapter(routeAlertsDTOS)
                 listView.adapter = ada

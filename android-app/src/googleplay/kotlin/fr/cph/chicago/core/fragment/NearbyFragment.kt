@@ -59,7 +59,7 @@ import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.util.GoogleMapUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.Util
-import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.functions.Function3
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
@@ -265,10 +265,10 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby), EasyPermissions.Permi
             finalPosition = chicagoPosition
         }
 
-        val trainStationAroundObservable = observableUtil.createTrainStationAroundObs(finalPosition)
-        val busStopsAroundObservable = observableUtil.createBusStopsAroundObs(finalPosition)
-        val bikeStationsObservable = observableUtil.createBikeStationAroundObs(finalPosition, bikeStations)
-        Observable.zip(trainStationAroundObservable, busStopsAroundObservable, bikeStationsObservable, Function3 { trains: List<TrainStation>, buses: List<BusStop>, divvies: List<BikeStation> ->
+        val trainStationAroundObservable = observableUtil.createTrainStationAroundSingle(finalPosition)
+        val busStopsAroundObservable = observableUtil.createBusStopsAroundSingle(finalPosition)
+        val bikeStationsObservable = observableUtil.createBikeStationAroundSingle(finalPosition, bikeStations)
+        Single.zip(trainStationAroundObservable, busStopsAroundObservable, bikeStationsObservable, Function3 { trains: List<TrainStation>, buses: List<BusStop>, divvies: List<BikeStation> ->
             googleMapUtil.centerMap(mapFragment, finalPosition)
             updateMarkersAndModel(buses, trains, divvies)
             Any()

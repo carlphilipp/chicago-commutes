@@ -28,16 +28,16 @@ import fr.cph.chicago.core.activity.map.BusMapActivity
 import fr.cph.chicago.core.adapter.BusMapSnippetAdapter
 import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.util.Util
-import io.reactivex.Observer
+import io.reactivex.SingleObserver
 import io.reactivex.disposables.Disposable
 import org.apache.commons.lang3.StringUtils
-import java.util.Date
+import java.util.*
 
-class BusFollowObserver(private val activity: BusMapActivity, private val layout: View, private val view: View, private val loadAll: Boolean) : Observer<List<BusArrival>> {
+class BusFollowObserver(private val activity: BusMapActivity, private val layout: View, private val view: View, private val loadAll: Boolean) : SingleObserver<List<BusArrival>> {
 
     override fun onSubscribe(d: Disposable) {}
 
-    override fun onNext(busArrivalsParam: List<BusArrival>) {
+    override fun onSuccess(busArrivalsParam: List<BusArrival>) {
         var busArrivals = busArrivalsParam.toMutableList()
         if (!loadAll && busArrivals.size > 7) {
             busArrivals = busArrivals.subList(0, 6)
@@ -62,8 +62,6 @@ class BusFollowObserver(private val activity: BusMapActivity, private val layout
         util.handleConnectOrParserException(throwable, layout)
         Log.e(TAG, throwable.message, throwable)
     }
-
-    override fun onComplete() {}
 
     companion object {
         private val TAG = BusFollowObserver::class.java.simpleName

@@ -7,8 +7,11 @@ import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.core.model.dto.BusArrivalDTO
 import fr.cph.chicago.core.model.dto.TrainArrivalDTO
 import org.rekotlin.StateType
+import java.util.*
 
 data class AppState(
+    val derp : Date = Date(), // field to unsure the update of the state
+    val lastUpdate: Date = Date(),
     val highlightBackground: Boolean = false,
     val error: Boolean? = null,
     val throwable: Throwable? = null,

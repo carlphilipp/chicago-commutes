@@ -24,7 +24,6 @@ import android.os.AsyncTask
 import android.os.AsyncTask.Status
 import android.os.Bundle
 import android.util.Log
-import android.util.SparseArray
 import android.view.View
 import android.widget.RelativeLayout
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -36,9 +35,6 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.adapter.FavoritesAdapter
-import fr.cph.chicago.core.model.BikeStation
-import fr.cph.chicago.core.model.BusArrival
-import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.redux.AppState
 import fr.cph.chicago.redux.LoadFavoritesDataAction
 import fr.cph.chicago.redux.LoadFirstDataAction
@@ -70,19 +66,11 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
     private val util: Util = Util
     private val preferenceService: PreferenceService = PreferenceService
 
-    private var favoritesAdapter: FavoritesAdapter? = null
+    private lateinit var favoritesAdapter: FavoritesAdapter
     private lateinit var refreshTimingTask: RefreshTimingTask
 
     override fun onCreateView(savedInstanceState: Bundle?) {
-        val busArrivals = listOf<BusArrival>()
-        val trainArrivals = SparseArray<TrainArrival>()
-        val bikeStations = listOf<BikeStation>()
-
-        if (favoritesAdapter == null) {
-            favoritesAdapter = FavoritesAdapter(mainActivity)
-            favoritesAdapter?.updateData(trainArrivals, busArrivals, bikeStations)
-            favoritesAdapter?.refreshFavorites()
-        }
+        favoritesAdapter = FavoritesAdapter(mainActivity)
 
         recyclerView.adapter = favoritesAdapter
         recyclerView.layoutManager = LinearLayoutManager(mainActivity)
@@ -133,14 +121,15 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
         super.onResume()
         mainStore.subscribe(this)
         if (mainStore.state.busRoutes.isEmpty() || mainStore.state.bikeStations.isEmpty()) {
+            Log.e(TAG, "Load bus routes and bike stations")
             mainStore.dispatch(LoadFirstDataAction())
         }
         if (App.instance.refresh) {
             App.instance.refresh = false
             mainStore.dispatch(LoadFavoritesDataAction())
         }
-        favoritesAdapter?.refreshFavorites()
-        favoritesAdapter?.notifyDataSetChanged()
+        favoritesAdapter.refreshFavorites()
+        favoritesAdapter.notifyDataSetChanged()
         if (refreshTimingTask.status == Status.FINISHED) {
             startRefreshTask()
         }
@@ -153,7 +142,8 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
         if (state.error != null && state.error) {
             displayError(R.string.message_something_went_wrong)
         } else {
-            favoritesAdapter?.updateData(
+            favoritesAdapter.updateData(
+                date = state.lastUpdate,
                 trainArrivals = state.trainArrivalsDTO.trainArrivalSparseArray,
                 busArrivals = state.busArrivalsDTO.busArrivals,
                 bikeStations = state.bikeStations
@@ -194,8 +184,8 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
      * Start refreshBusAndStation task
      */
     private fun startRefreshTask() {
-        refreshTimingTask = RefreshTimingTask(favoritesAdapter!!).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR) as RefreshTimingTask
-        favoritesAdapter?.refreshLastUpdateView()
+        refreshTimingTask = RefreshTimingTask(favoritesAdapter).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR) as RefreshTimingTask
+        favoritesAdapter.refreshLastUpdateView()
     }
 
     companion object {

@@ -26,15 +26,15 @@ import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.map.TrainMapActivity
 import fr.cph.chicago.core.adapter.TrainMapSnippetAdapter
 import fr.cph.chicago.core.model.TrainEta
-import io.reactivex.Observer
+import io.reactivex.SingleObserver
 import io.reactivex.disposables.Disposable
 
-class TrainEtaObserver(view: View, private val trainMapActivity: TrainMapActivity) : Observer<List<TrainEta>> {
+class TrainEtaObserver(view: View, private val trainMapActivity: TrainMapActivity) : SingleObserver<List<TrainEta>> {
 
     private val arrivals: ListView = view.findViewById(R.id.arrivals)
     private val error: TextView = view.findViewById(R.id.error)
 
-    override fun onNext(trainEtas: List<TrainEta>) {
+    override fun onSuccess(trainEtas: List<TrainEta>) {
         // View can be null
         if (trainEtas.isNotEmpty()) {
             val ada = TrainMapSnippetAdapter(trainEtas)
@@ -51,6 +51,4 @@ class TrainEtaObserver(view: View, private val trainMapActivity: TrainMapActivit
     override fun onSubscribe(d: Disposable) {}
 
     override fun onError(e: Throwable) {}
-
-    override fun onComplete() {}
 }

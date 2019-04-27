@@ -33,7 +33,7 @@ object HttpClient {
     @Throws(ConnectException::class)
     fun connect(address: String): InputStream {
         try {
-            Log.v(TAG, "Address: $address")
+            Log.d(TAG, "Address: $address")
             val url = URL(address)
             val con = url.openConnection()
             con.connectTimeout = TIMEOUT

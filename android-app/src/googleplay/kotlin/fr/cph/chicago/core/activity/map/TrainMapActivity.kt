@@ -45,6 +45,7 @@ import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
@@ -204,7 +205,7 @@ class TrainMapActivity : FragmentMapActivity() {
                         if (!refreshingInfoWindow) {
                             selectedMarker = marker
                             val runNumber = marker.snippet
-                            observableUtil.createLoadTrainEtaObs(runNumber, false)
+                            observableUtil.createLoadTrainEtaSingle(runNumber, false)
                                 .subscribe(TrainEtaObserver(view!!, this@TrainMapActivity))
                             status[marker] = false
                         }
@@ -221,7 +222,7 @@ class TrainMapActivity : FragmentMapActivity() {
                     selectedMarker = marker
                     val runNumber = marker.snippet
                     val current = status[marker] ?: false
-                    observableUtil.createLoadTrainEtaObs(runNumber, !current)
+                    observableUtil.createLoadTrainEtaSingle(runNumber, !current)
                         .subscribe(TrainEtaObserver(view!!, this@TrainMapActivity))
                     status[marker] = !current
                 }
@@ -233,12 +234,12 @@ class TrainMapActivity : FragmentMapActivity() {
     private fun loadActivityData() {
         if (Util.isNetworkAvailable()) {
             // Load train location
-            val trainsObservable = observableUtil.createTrainLocationObs(line)
+            val trainsObservable = observableUtil.createTrainLocationSingle(line)
             // Load pattern from local file
-            val positionsObservable = observableUtil.createTrainPatternObs(line)
+            val positionsObservable = observableUtil.createTrainPatternSingle(line)
 
             if (drawLine) {
-                Observable.zip(trainsObservable, positionsObservable, BiFunction { trains: List<Train>, positions: List<TrainStationPattern> ->
+                Single.zip(trainsObservable, positionsObservable, BiFunction { trains: List<Train>, positions: List<TrainStationPattern> ->
                     drawTrains(trains)
                     drawLine(positions.map { it.position })
                     if (trains.isNotEmpty()) {

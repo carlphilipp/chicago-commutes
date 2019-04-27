@@ -47,10 +47,11 @@ import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusDetailsDTO
 import fr.cph.chicago.core.model.enumeration.BusDirection
+import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.util.LayoutUtil
 import fr.cph.chicago.util.TimeUtil
 import fr.cph.chicago.util.Util
-import java.util.Calendar
+import java.util.*
 
 /**
  * Adapter that will handle favorites
@@ -196,23 +197,14 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         favorites.refreshFavorites()
     }
 
-
-    /**
-     * Refresh updated view
-     */
     fun refreshLastUpdateView() {
-        lastUpdate = TimeUtil.lastUpdateInMinutes()
+        lastUpdate = TimeUtil.formatTimeDifference(mainStore.state.lastUpdate, Calendar.getInstance().time)
         notifyDataSetChanged()
     }
 
-    fun updateData(trainArrivals: SparseArray<TrainArrival>, busArrivals: List<BusArrival>, bikeStations: List<BikeStation>) {
+    fun updateData(date: Date, trainArrivals: SparseArray<TrainArrival>, busArrivals: List<BusArrival>, bikeStations: List<BikeStation>) {
         favorites.updateData(trainArrivals, busArrivals, bikeStations)
-        resetLastUpdate()
+        lastUpdate = TimeUtil.formatTimeDifference(date, Calendar.getInstance().time)
         notifyDataSetChanged()
-    }
-
-    private fun resetLastUpdate() {
-        App.instance.lastUpdate = Calendar.getInstance().time
-        lastUpdate = TimeUtil.lastUpdateInMinutes()
     }
 }

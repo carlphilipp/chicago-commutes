@@ -19,7 +19,6 @@
 
 package fr.cph.chicago.core
 
-import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.Intent
@@ -28,11 +27,8 @@ import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.WindowManager
 import fr.cph.chicago.R
-import fr.cph.chicago.core.activity.BaseActivity
 import fr.cph.chicago.core.activity.ErrorActivity
 import io.reactivex.plugins.RxJavaPlugins
-import java.util.Date
-
 
 /**
  * Main class that extends Application. Mainly used to get the context from anywhere in the app.
@@ -41,8 +37,6 @@ import java.util.Date
  * @version 1
  */
 class App : Application() {
-
-    var lastUpdate: Date = Date()
 
     var refresh: Boolean = false
 

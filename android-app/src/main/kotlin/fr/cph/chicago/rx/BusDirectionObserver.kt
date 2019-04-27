@@ -36,19 +36,19 @@ import fr.cph.chicago.core.adapter.PopupBusAdapter
 import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.util.Util
-import io.reactivex.Observer
+import io.reactivex.SingleObserver
 import io.reactivex.disposables.Disposable
 
 class BusDirectionObserver(private val screenWidth: Int,
                            private val parent: ViewGroup,
                            private val convertView: View,
-                           private val busRoute: BusRoute) : Observer<BusDirections> {
+                           private val busRoute: BusRoute) : SingleObserver<BusDirections> {
 
     private val util = Util
 
     override fun onSubscribe(d: Disposable) {}
 
-    override fun onNext(busDirections: BusDirections) {
+    override fun onSuccess(busDirections: BusDirections) {
         val lBusDirections = busDirections.busDirections
         val data = lBusDirections
             .map { busDir -> busDir.text }
@@ -91,16 +91,13 @@ class BusDirectionObserver(private val screenWidth: Int,
         val dialog = alertDialog.create()
         dialog.show()
         dialog.window?.setLayout((screenWidth * 0.7).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
+        convertView.visibility = LinearLayout.GONE
     }
 
     override fun onError(throwable: Throwable) {
         util.handleConnectOrParserException(throwable, convertView)
         convertView.visibility = LinearLayout.GONE
         Log.e(TAG, throwable.message, throwable)
-    }
-
-    override fun onComplete() {
-        convertView.visibility = LinearLayout.GONE
     }
 
     companion object {

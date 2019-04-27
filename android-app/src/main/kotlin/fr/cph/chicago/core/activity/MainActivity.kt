@@ -82,7 +82,6 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
     private var ctaMapFragment: CtaMapFragment? = null
     private var alertFragment: AlertFragment? = null
     private var settingsFragment: SettingsFragment? = null
-    private var bikeStationsError: Boolean = false
 
     private var title: String? = null
 

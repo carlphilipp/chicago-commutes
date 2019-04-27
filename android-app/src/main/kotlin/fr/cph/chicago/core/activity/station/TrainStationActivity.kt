@@ -24,6 +24,7 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils.TruncateAt
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -57,7 +58,7 @@ import fr.cph.chicago.service.TrainService
 import fr.cph.chicago.util.Color
 import fr.cph.chicago.util.Util
 import org.rekotlin.StoreSubscriber
-import java.util.Random
+import java.util.*
 
 /**
  * Activity that represents the train station
@@ -110,7 +111,6 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
 
     private lateinit var paramsStop: LinearLayout.LayoutParams
     private lateinit var trainStation: TrainStation
-    //private lateinit var trainArrivalObservable: Single<TrainArrival>
 
     private var isFavorite: Boolean = false
     private var stationId: Int = 0
@@ -125,7 +125,6 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
         if (stationId != 0) {
             // Get trainStation
             trainStation = TrainService.getStation(stationId)
-            //trainArrivalObservable = RxUtil.createTrainArrivalsSingle(trainStation)
 
             paramsStop = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
 
@@ -136,13 +135,11 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
             isFavorite = isFavorite()
 
             loadGoogleStreetImage(position, streetViewImage, streetViewProgressBar)
-            //trainArrivalObservable.subscribe(TrainArrivalObserver(this))
 
             streetViewImage.setOnClickListener(GoogleStreetOnClickListener(position.latitude, position.longitude))
             streetViewImage.layoutParams = params
             swipeRefreshLayout.setOnRefreshListener {
                 mainStore.dispatch(LoadTrainStationAction(trainStation))
-                //trainArrivalObservable.subscribe(TrainArrivalObserver(this))
                 // FIXME: Identify if it's the place holder or not. This is not great
                 if (streetViewImage.scaleType == ImageView.ScaleType.CENTER) {
                     loadGoogleStreetImage(position, streetViewImage, streetViewProgressBar)
@@ -167,9 +164,10 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
     }
 
     override fun newState(state: AppState) {
+        Log.e("TrainStationActivity", "New state, should stop refresh")
         hideAllArrivalViews()
         state.trainStationArrival.trainEtas.forEach { drawAllArrivalsTrain(it) }
-        stopRefreshingIfNeeded()
+        stopRefreshing()
     }
 
     private fun setUpStopLayouts(stopByLines: Map<TrainLine, List<Stop>>) {
@@ -272,15 +270,13 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
         return preferenceService.isTrainStationFavorite(stationId)
     }
 
-    private fun stopRefreshingIfNeeded() {
+    private fun stopRefreshing() {
         swipeRefreshLayout.isRefreshing = false
     }
 
     fun hideAllArrivalViews() {
         trainStation.lines
-            .flatMap { trainLine ->
-                TrainDirection.values().map { trainDirection -> trainLine.toString() + "_" + trainDirection.toString() }
-            }
+            .flatMap { trainLine -> TrainDirection.values().map { trainDirection -> trainLine.toString() + "_" + trainDirection.toString() } }
             .forEach { key ->
                 if (ids.containsKey(key)) {
                     val id = ids[key]

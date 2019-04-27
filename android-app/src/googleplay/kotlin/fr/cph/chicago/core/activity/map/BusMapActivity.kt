@@ -110,7 +110,7 @@ class BusMapActivity : FragmentMapActivity() {
     override fun setToolbar() {
         super.setToolbar()
         toolbar.setOnMenuItemClickListener { _ ->
-            observableUtil.createBusListObs(busRouteId).subscribe(BusObserver(this@BusMapActivity, false, layout))
+            observableUtil.createBusListSingle(busRouteId).subscribe(BusObserver(this@BusMapActivity, false, layout))
             false
         }
 
@@ -222,7 +222,7 @@ class BusMapActivity : FragmentMapActivity() {
                     if (!refreshingInfoWindow) {
                         selectedMarker = marker
                         val busId = marker.snippet
-                        observableUtil.createFollowBusObs(busId)
+                        observableUtil.createFollowBusSingle(busId)
                             .subscribe(BusFollowObserver(this@BusMapActivity, layout, view!!, false))
                         status[marker] = false
                     }
@@ -240,7 +240,7 @@ class BusMapActivity : FragmentMapActivity() {
                     selectedMarker = marker
                     val runNumber = marker.snippet
                     val current = status[marker]
-                    observableUtil.createFollowBusObs(runNumber)
+                    observableUtil.createFollowBusSingle(runNumber)
                         .subscribe(BusFollowObserver(this@BusMapActivity, layout, view!!, !current!!))
                     status[marker] = !current
                 }
@@ -252,7 +252,7 @@ class BusMapActivity : FragmentMapActivity() {
     @SuppressLint("CheckResult")
     private fun loadActivityData() {
         if (Util.isNetworkAvailable()) {
-            observableUtil.createBusListObs(busRouteId).subscribe(BusObserver(this@BusMapActivity, true, layout))
+            observableUtil.createBusListSingle(busRouteId).subscribe(BusObserver(this@BusMapActivity, true, layout))
             if (loadPattern) {
                 Observable.fromCallable {
                     val patterns: MutableList<BusPattern> = mutableListOf()
