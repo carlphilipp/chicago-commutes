@@ -1,8 +1,9 @@
 package fr.cph.chicago.redux
 
+import android.util.Log
 import org.rekotlin.Action
 import org.rekotlin.Store
-import java.util.Date
+import java.util.*
 
 val mainStore = Store(
     reducer = ::reducer,
@@ -12,7 +13,9 @@ val mainStore = Store(
         loadFirstDataMiddleware,
         loadFavoritesDataMiddleware,
         loadTrainStationMiddleware,
-        loadBusStopArrivalsMiddleware
+        loadBusStopArrivalsMiddleware,
+        loadBikeStationMiddleware,
+        loadBusRoutesMiddleware
     )
 )
 
@@ -37,7 +40,6 @@ fun reducer(action: Action, oldState: AppState?): AppState {
                 lastUpdate = Date(),
                 highlightBackground = false,
                 error = action.error,
-                throwable = action.throwable,
                 trainArrivalsDTO = action.trainArrivalsDTO,
                 busArrivalsDTO = action.busArrivalsDTO
             )
@@ -48,7 +50,6 @@ fun reducer(action: Action, oldState: AppState?): AppState {
                 lastUpdate = Date(),
                 highlightBackground = true,
                 error = action.error,
-                throwable = action.throwable,
                 trainArrivalsDTO = action.favoritesDTO.trainArrivalDTO,
                 busArrivalsDTO = action.favoritesDTO.busArrivalDTO,
                 bikeStations = action.favoritesDTO.bikeStations
@@ -58,6 +59,7 @@ fun reducer(action: Action, oldState: AppState?): AppState {
             if (action.error) {
                 state = state.copy(
                     lastAction = Date(),
+                    highlightBackground = false,
                     trainStationError = true,
                     trainStationErrorMessage = action.errorMessage
                 )
@@ -67,6 +69,7 @@ fun reducer(action: Action, oldState: AppState?): AppState {
                 val newTrainArrivals = state.trainArrivalsDTO
                 state = state.copy(
                     lastAction = Date(),
+                    highlightBackground = false,
                     trainArrivalsDTO = newTrainArrivals,
                     trainStationError = false,
                     trainStationArrival = action.trainArrival
@@ -76,11 +79,36 @@ fun reducer(action: Action, oldState: AppState?): AppState {
         is LoadBusStopArrivalsAction -> {
             state = state.copy(
                 lastAction = Date(),
+                highlightBackground = false,
                 busStopError = action.error,
                 busStopErrorMessage = action.errorMessage,
                 busArrivalStopDTO = action.busArrivalStopDTO
             )
         }
+        is LoadBikeStationAction -> {
+            state = state.copy(
+                lastAction = Date(),
+                highlightBackground = false,
+                bikeStationsError = action.error,
+                bikeStationsErrorMessage = action.errorMessage,
+                bikeStations = action.bikeStations
+            )
+        }
+        is LoadBusRoutesAction -> {
+            state = state.copy(
+                lastAction = Date(),
+                highlightBackground = false,
+                busRoutes = action.busRoutes,
+                busRoutesError = action.error
+            )
+        }
+        is HighlightBackgroundDone -> {
+            state = state.copy(highlightBackground = false)
+        }
+        else -> Log.w(TAG, "Action $action unknown")
+
     }
     return state
 }
+
+private const val TAG = "Redux"

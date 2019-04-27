@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.listener
 
+import android.annotation.SuppressLint
 import android.util.Log
 import com.mapbox.mapboxsdk.annotations.Marker
 import fr.cph.chicago.core.fragment.NearbyFragment
@@ -28,8 +29,9 @@ import fr.cph.chicago.core.model.Station
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusArrivalRouteDTO
 import fr.cph.chicago.core.model.marker.MarkerDataHolder
-import fr.cph.chicago.rx.ObservableUtil
+import fr.cph.chicago.rx.RxUtil
 
+@SuppressLint("CheckResult")
 class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, private val nearbyFragment: NearbyFragment) : com.mapbox.mapboxsdk.maps.MapboxMap.OnMarkerClickListener {
 
     override fun onMarkerClick(marker: Marker): Boolean {
@@ -55,7 +57,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
 
     private fun loadTrainArrivals(trainTrainStation: TrainStation) {
         nearbyFragment.slidingUpAdapter.updateTitleTrain(trainTrainStation.name)
-        observableUtil.createTrainArrivalsObs(trainTrainStation)
+        rxUtil.createTrainArrivalsSingle(trainTrainStation)
             .subscribe(
                 { nearbyFragment.slidingUpAdapter.addTrainStation(it) },
                 { error -> Log.e(TAG, error.message, error) }
@@ -64,7 +66,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
 
     private fun loadBusArrivals(busStop: BusStop) {
         nearbyFragment.slidingUpAdapter.updateTitleBus(busStop.name)
-        observableUtil.createBusArrivalsObs(busStop)
+        rxUtil.createBusArrivalsObs(busStop)
             .subscribe(
                 { result ->
                     val busArrivalRouteDTO = BusArrivalRouteDTO(BusArrivalRouteDTO.busComparator)
@@ -77,7 +79,7 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
 
     private fun loadBikes(bikeStation: BikeStation) {
         nearbyFragment.slidingUpAdapter.updateTitleBike(bikeStation.name)
-        observableUtil.createBikeStationsObs(bikeStation)
+        rxUtil.createBikeStationsSingle(bikeStation)
             .subscribe(
                 { nearbyFragment.slidingUpAdapter.addBike(it) },
                 { error -> Log.e(TAG, error.message, error) }
@@ -86,6 +88,6 @@ class OnMarkerClickListener(private val markerDataHolder: MarkerDataHolder, priv
 
     companion object {
         private val TAG = OnMarkerClickListener::class.java.simpleName
-        private val observableUtil = ObservableUtil
+        private val rxUtil = RxUtil
     }
 }

@@ -36,6 +36,8 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.SearchActivity
 import fr.cph.chicago.core.adapter.FavoritesAdapter
 import fr.cph.chicago.redux.AppState
+import fr.cph.chicago.redux.HighlightBackgroundDone
+import fr.cph.chicago.redux.LoadBusRoutesAction
 import fr.cph.chicago.redux.LoadFavoritesDataAction
 import fr.cph.chicago.redux.LoadFirstDataAction
 import fr.cph.chicago.redux.mainStore
@@ -86,14 +88,10 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
             }
         })
 
-        swipeRefreshLayout.setOnRefreshListener {
-            swipeRefreshLayout.setColorSchemeColors(util.randomColor)
-            mainStore.dispatch(LoadFavoritesDataAction())
-        }
+        swipeRefreshLayout.setOnRefreshListener { reloadData() }
 
         mainActivity.toolbar.setOnMenuItemClickListener {
-            startRefreshing()
-            mainStore.dispatch(LoadFavoritesDataAction())
+            reloadData()
             true
         }
 
@@ -121,7 +119,6 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
         super.onResume()
         mainStore.subscribe(this)
         if (mainStore.state.busRoutes.isEmpty() || mainStore.state.bikeStations.isEmpty()) {
-            Log.e(TAG, "Load bus routes and bike stations")
             mainStore.dispatch(LoadFirstDataAction())
         }
         if (App.instance.refresh) {
@@ -133,15 +130,17 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
         if (refreshTimingTask.status == Status.FINISHED) {
             startRefreshTask()
         }
-        val hasFav = preferenceService.hasFavorites()
-        welcomeLayout.visibility = if (hasFav) View.GONE else View.VISIBLE
+        welcomeLayout.visibility = if (preferenceService.hasFavorites()) View.GONE else View.VISIBLE
     }
 
     override fun newState(state: AppState) {
-        Log.e(TAG, "Favorites new state")
+        Log.d(TAG, "Favorites new state: $state")
         if (state.error != null && state.error) {
             displayError(R.string.message_something_went_wrong)
         } else {
+            if (state.busRoutesError || state.bikeStationsError) {
+                displayError(R.string.message_something_went_wrong)
+            }
             favoritesAdapter.updateData(
                 date = state.lastUpdate,
                 trainArrivals = state.trainArrivalsDTO.trainArrivalSparseArray,
@@ -155,11 +154,14 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
         stopRefreshing()
     }
 
-    /**
-     * Display error
-     *
-     * @param message the message
-     */
+    private fun reloadData() {
+        startRefreshing()
+        mainStore.dispatch(LoadFavoritesDataAction())
+        if (mainStore.state.busRoutes.isEmpty()) {
+            mainStore.dispatch(LoadBusRoutesAction())
+        }
+    }
+
     private fun displayError(message: Int) {
         util.showSnackBar(swipeRefreshLayout, message)
         stopRefreshing()
@@ -178,6 +180,7 @@ class FavoritesFragment : Fragment(R.layout.fragment_main), StoreSubscriber<AppS
         val currentBackground = rootView.background
         rootView.setBackgroundResource(R.drawable.highlight_selector)
         rootView.postDelayed({ rootView.background = currentBackground }, 100)
+        mainStore.dispatch(HighlightBackgroundDone())
     }
 
     /**

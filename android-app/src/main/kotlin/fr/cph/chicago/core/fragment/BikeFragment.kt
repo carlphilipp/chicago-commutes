@@ -24,12 +24,13 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
 import android.widget.ListView
-import android.widget.RelativeLayout
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import butterknife.BindView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.adapter.BikeAdapter
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.redux.AppState
+import fr.cph.chicago.redux.LoadBikeStationAction
 import fr.cph.chicago.redux.mainStore
 import org.apache.commons.lang3.StringUtils
 import org.rekotlin.StoreSubscriber
@@ -42,8 +43,8 @@ import org.rekotlin.StoreSubscriber
  */
 class BikeFragment : Fragment(R.layout.fragment_bike), StoreSubscriber<AppState> {
 
-    @BindView(R.id.loading_relativeLayout)
-    lateinit var loadingLayout: RelativeLayout
+    @BindView(R.id.fragment_bike_swipe_refresh_layout)
+    lateinit var swipeRefreshLayout: SwipeRefreshLayout
     @BindView(R.id.bike_list)
     lateinit var bikeListView: ListView
     @BindView(R.id.bike_filter)
@@ -54,6 +55,14 @@ class BikeFragment : Fragment(R.layout.fragment_bike), StoreSubscriber<AppState>
 
     override fun onCreateView(savedInstanceState: Bundle?) {
         loadingState()
+
+        swipeRefreshLayout.setOnRefreshListener { mainStore.dispatch(LoadBikeStationAction()) }
+
+        mainActivity.toolbar.setOnMenuItemClickListener {
+            mainStore.dispatch(LoadBikeStationAction())
+            swipeRefreshLayout.isRefreshing = true
+            true
+        }
     }
 
     override fun onResume() {
@@ -73,6 +82,7 @@ class BikeFragment : Fragment(R.layout.fragment_bike), StoreSubscriber<AppState>
         } else {
             displayData()
         }
+        swipeRefreshLayout.isRefreshing = false
     }
 
     private fun displayData() {
@@ -103,18 +113,18 @@ class BikeFragment : Fragment(R.layout.fragment_bike), StoreSubscriber<AppState>
         filter.visibility = ListView.VISIBLE
         bikeListView.visibility = ListView.VISIBLE
 
-        loadingLayout.visibility = RelativeLayout.INVISIBLE
+        //loadingLayout.visibility = RelativeLayout.INVISIBLE
     }
 
     private fun loadingState() {
-        loadingLayout.visibility = RelativeLayout.VISIBLE
+        //loadingLayout.visibility = RelativeLayout.VISIBLE
 
         filter.visibility = ListView.INVISIBLE
         bikeListView.visibility = ListView.INVISIBLE
     }
 
     private fun errorState() {
-        loadingLayout.visibility = RelativeLayout.INVISIBLE
+        //loadingLayout.visibility = RelativeLayout.INVISIBLE
         filter.visibility = ListView.INVISIBLE
         bikeListView.visibility = ListView.INVISIBLE
     }

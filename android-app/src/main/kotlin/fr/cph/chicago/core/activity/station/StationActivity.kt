@@ -19,11 +19,11 @@
 
 package fr.cph.chicago.core.activity.station
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
-import fr.cph.chicago.R
 import fr.cph.chicago.client.GoogleStreetClient
 import fr.cph.chicago.core.App
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
@@ -34,6 +34,7 @@ import io.reactivex.schedulers.Schedulers
 
 abstract class StationActivity(contentView: Int) : ButterKnifeActivity(contentView) {
 
+    @SuppressLint("CheckResult")
     fun loadGoogleStreetImage(position: Position, streetViewImage: ImageView, streetViewProgressBar: ProgressBar) {
         Observable.fromCallable { GoogleStreetClient.connect(position.latitude, position.longitude) }
             .subscribeOn(Schedulers.io())

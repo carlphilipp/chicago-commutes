@@ -51,7 +51,7 @@ import fr.cph.chicago.core.adapter.BusBoundAdapter
 import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.enumeration.TrainLine
-import fr.cph.chicago.rx.ObservableUtil
+import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.util.MapUtil
 import fr.cph.chicago.util.Util
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -98,7 +98,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
     @BindDrawable(R.drawable.ic_arrow_back_white_24dp)
     lateinit var arrowBackWhite: Drawable
 
-    private val observableUtil: ObservableUtil = ObservableUtil
+    private val rxUtil: RxUtil = RxUtil
     private val util: Util = Util
 
     private lateinit var busRouteId: String
@@ -109,7 +109,6 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
     private var busStops: List<BusStop> = listOf()
 
     public override fun onCreate(savedInstanceState: Bundle?) {
-        App.checkBusData(this)
         Mapbox.getInstance(this, getString(R.string.mapbox_token))
         super.onCreate(savedInstanceState)
     }
@@ -172,7 +171,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
         toolbar.navigationIcon = arrowBackWhite
         toolbar.setOnClickListener { finish() }
 
-        observableUtil.createBusStopsForRouteBoundObs(busRouteId, bound)
+        rxUtil.createBusStopsForRouteBoundSingle(busRouteId, bound)
             .subscribe(
                 { onNext ->
                     busStops = onNext
@@ -187,6 +186,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
     }
 
+    @SuppressLint("CheckResult")
     override fun onMapReady(mapBox: MapboxMap) {
         with(mapBox) {
             uiSettings.isLogoEnabled = false
@@ -194,7 +194,7 @@ class BusBoundActivity : ButterKnifeActivity(R.layout.activity_bus_bound_mapbox)
             uiSettings.isRotateGesturesEnabled = false
             uiSettings.isTiltGesturesEnabled = false
         }
-        observableUtil.createBusPatternObs(busRouteId, bound)
+        rxUtil.createBusPatternSingle(busRouteId, bound)
             .observeOn(Schedulers.computation())
             .map { busPattern: BusPattern ->
                 val pair = MapUtil.getBounds(busPattern.busStopsPatterns.map { it.position })

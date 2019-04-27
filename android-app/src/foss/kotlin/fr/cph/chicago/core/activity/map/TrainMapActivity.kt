@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.activity.map
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -55,10 +56,9 @@ import fr.cph.chicago.core.model.Train
 import fr.cph.chicago.core.model.TrainStationPattern
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.core.utils.BitmapGenerator
-import fr.cph.chicago.rx.ObservableUtil
+import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.rx.TrainsFunction
 import fr.cph.chicago.util.Util
-import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
@@ -68,21 +68,17 @@ import io.reactivex.schedulers.Schedulers
  * @author Carl-Philipp Harmant
  * @version 1
  */
+@SuppressLint("CheckResult")
 class TrainMapActivity : FragmentMapActivity() {
 
     @BindString(R.string.bundle_train_line)
     lateinit var bundleTrainLine: String
 
-    private val observableUtil: ObservableUtil = ObservableUtil
+    private val rxUtil: RxUtil = RxUtil
 
     private lateinit var line: String
     val trainLine: TrainLine by lazy {
         TrainLine.fromXmlString(line)
-    }
-
-    public override fun onCreate(savedInstanceState: Bundle?) {
-        App.checkTrainData(this)
-        super.onCreate(savedInstanceState)
     }
 
     override fun create(savedInstanceState: Bundle?) {
@@ -243,7 +239,7 @@ class TrainMapActivity : FragmentMapActivity() {
 
     private fun loadAndUpdateTrainArrivalFeature(feature: Feature, loadAll: Boolean) {
         val runNumber = feature.getStringProperty(PROPERTY_TITLE)
-        observableUtil.createLoadTrainEtaObs(runNumber, loadAll)
+        rxUtil.createLoadTrainEtaSingle(runNumber, loadAll)
             .observeOn(Schedulers.computation())
             .map(TrainsFunction(this@TrainMapActivity, feature))
             .observeOn(AndroidSchedulers.mainThread())
@@ -259,7 +255,7 @@ class TrainMapActivity : FragmentMapActivity() {
     private fun loadActivityData() {
         if (Util.isNetworkAvailable()) {
             // Load train location
-            val featuresTrains = observableUtil.createTrainLocationObs(line)
+            val featuresTrains = rxUtil.createTrainLocationSingle(line)
                 .observeOn(Schedulers.computation())
                 .map { trains: List<Train> ->
                     val features = trains.map { train ->
@@ -275,7 +271,7 @@ class TrainMapActivity : FragmentMapActivity() {
 
             if (drawLine) {
                 // Load pattern from local file
-                val polylineObs: Observable<Pair<PolylineOptions, FeatureCollection>> = observableUtil.createTrainPatternObs(line)
+                val polylineObs: Single<Pair<PolylineOptions, FeatureCollection>> = rxUtil.createTrainPatternSingle(line)
                     .observeOn(Schedulers.computation())
                     .map { trainStationPatterns ->
                         val poly = PolylineOptions()
@@ -295,7 +291,7 @@ class TrainMapActivity : FragmentMapActivity() {
                         Pair(poly, featureCollection)
                     }
 
-                Observable.zip(
+                Single.zip(
                     featuresTrains.observeOn(AndroidSchedulers.mainThread()),
                     polylineObs.observeOn(AndroidSchedulers.mainThread()),
                     BiFunction { featuresTrain: FeatureCollection, pair: Pair<PolylineOptions, FeatureCollection> ->

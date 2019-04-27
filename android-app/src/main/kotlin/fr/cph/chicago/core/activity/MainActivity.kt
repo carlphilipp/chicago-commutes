@@ -33,11 +33,18 @@ import butterknife.BindView
 import com.google.android.material.navigation.NavigationView
 import fr.cph.chicago.R
 import fr.cph.chicago.core.activity.butterknife.ButterKnifeActivity
-import fr.cph.chicago.core.fragment.*
+import fr.cph.chicago.core.fragment.AlertFragment
+import fr.cph.chicago.core.fragment.BikeFragment
+import fr.cph.chicago.core.fragment.BusFragment
+import fr.cph.chicago.core.fragment.CtaMapFragment
+import fr.cph.chicago.core.fragment.FavoritesFragment
+import fr.cph.chicago.core.fragment.NearbyFragment
+import fr.cph.chicago.core.fragment.SettingsFragment
+import fr.cph.chicago.core.fragment.TrainFragment
 import fr.cph.chicago.util.RateUtil
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
 
 class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView.OnNavigationItemSelectedListener {
 
@@ -158,7 +165,7 @@ class MainActivity : ButterKnifeActivity(R.layout.activity_main), NavigationView
                 setBarTitle(divvy)
                 bikeFragment = bikeFragment ?: BikeFragment.newInstance(position + 1)
                 supportFragmentManager.beginTransaction().replace(R.id.container, bikeFragment as androidx.fragment.app.Fragment).commit()
-                closeDrawerAndUpdateActionBar(false)
+                closeDrawerAndUpdateActionBar(true)
             }
             R.id.navigation_nearby -> {
                 setBarTitle(nearby)

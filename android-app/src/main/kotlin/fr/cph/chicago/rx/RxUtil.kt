@@ -26,6 +26,7 @@ import fr.cph.chicago.core.model.Bus
 import fr.cph.chicago.core.model.BusArrival
 import fr.cph.chicago.core.model.BusDirections
 import fr.cph.chicago.core.model.BusPattern
+import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.Train
@@ -221,14 +222,24 @@ object RxUtil {
             })
     }
 
+    fun createBusRoutesSingle(): Single<List<BusRoute>> {
+        return createSingleFromCallable(Callable { busService.loadBusRoutes() })
+    }
+
     fun createOnFirstLoadObs(): Single<FirstLoadDTO> {
-        val busRoutesObs = createSingleFromCallable(Callable { busService.loadBusRoutes() })
+        val busRoutesSingle = createBusRoutesSingle()
             .onErrorReturn(handleError())
 
-        val bikeStationsObs = createSingleFromCallable(Callable { bikeService.loadAllBikeStations() })
+        val bikeStationsSingle = createSingleFromCallable(Callable { bikeService.loadAllBikeStations() })
             .onErrorReturn(handleError())
 
-        return Single.zip(busRoutesObs, bikeStationsObs, BiFunction { busRoutes, bikeStations -> FirstLoadDTO(busRoutes.isEmpty(), bikeStations.isEmpty(), busRoutes, bikeStations) })
+        return Single.zip(
+            busRoutesSingle,
+            bikeStationsSingle,
+            BiFunction { busRoutes, bikeStations ->
+                FirstLoadDTO(busRoutes.isEmpty(), bikeStations.isEmpty(), busRoutes, bikeStations)
+            }
+        )
     }
 
     private fun <T> createSingleFromCallable(supplier: Callable<T>): Single<T> {

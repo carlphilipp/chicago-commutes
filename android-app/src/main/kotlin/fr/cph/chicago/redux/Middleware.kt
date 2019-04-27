@@ -53,6 +53,29 @@ internal val loadFirstDataMiddleware: Middleware<StateType> = { _, _ ->
     }
 }
 
+internal val loadBusRoutesMiddleware: Middleware<StateType> = { _, _ ->
+    { next ->
+        { action ->
+            (action as? LoadBusRoutesAction)?.let {
+                RxUtil.createBusRoutesSingle()
+                    .subscribe(
+                        { busRoutes ->
+                            next(
+                                LoadBusRoutesAction(
+                                    error = false,
+                                    busRoutes = busRoutes)
+                            )
+                        },
+                        { throwable ->
+                            Log.e(TAG, throwable.message, throwable)
+                            next(LoadBusRoutesAction(error = true))
+                        }
+                    )
+            } ?: next(action)
+        }
+    }
+}
+
 internal val loadFavoritesDataMiddleware: Middleware<StateType> = { _, _ ->
     { next ->
         { action ->
@@ -113,6 +136,29 @@ internal val loadBusStopArrivalsMiddleware: Middleware<StateType> = { _, _ ->
                             else
                                 R.string.message_something_went_wrong
                             next(LoadBusStopArrivalsAction(
+                                error = true,
+                                errorMessage = errorMessage)
+                            )
+                        }
+                    )
+            } ?: next(action)
+        }
+    }
+}
+
+internal val loadBikeStationMiddleware: Middleware<StateType> = { _, _ ->
+    { next ->
+        { action ->
+            (action as? LoadBikeStationAction)?.let {
+                RxUtil.createAllBikeStationsSingle()
+                    .subscribe(
+                        { bikeStations -> next(LoadBikeStationAction(bikeStations = bikeStations)) },
+                        { throwable ->
+                            val errorMessage = if (throwable is ConnectException)
+                                R.string.message_connect_error
+                            else
+                                R.string.message_something_went_wrong
+                            next(LoadBikeStationAction(
                                 error = true,
                                 errorMessage = errorMessage)
                             )

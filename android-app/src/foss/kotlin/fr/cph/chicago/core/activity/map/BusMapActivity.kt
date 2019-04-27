@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.activity.map
 
+import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
@@ -54,7 +55,7 @@ import fr.cph.chicago.core.App
 import fr.cph.chicago.core.model.BusPattern
 import fr.cph.chicago.core.model.enumeration.TrainLine
 import fr.cph.chicago.rx.BusesFunction
-import fr.cph.chicago.rx.ObservableUtil
+import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.service.BusService
 import fr.cph.chicago.util.Util
 import io.reactivex.Observable
@@ -74,7 +75,7 @@ class BusMapActivity : FragmentMapActivity() {
     @BindString(R.string.bundle_bus_bounds)
     lateinit var bundleBusBounds: String
 
-    private val observableUtil: ObservableUtil = ObservableUtil
+    private val rxUtil: RxUtil = RxUtil
     private val busService: BusService = BusService
 
     private var busId: Int = 0
@@ -82,11 +83,6 @@ class BusMapActivity : FragmentMapActivity() {
     private lateinit var bounds: Array<String>
     private var markerOptions = listOf<MarkerOptions>()
     private var showStops = false
-
-    public override fun onCreate(savedInstanceState: Bundle?) {
-        App.checkBusData(this)
-        super.onCreate(savedInstanceState)
-    }
 
     override fun create(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
@@ -199,10 +195,11 @@ class BusMapActivity : FragmentMapActivity() {
         }
     }
 
+    @SuppressLint("CheckResult")
     override fun selectVehicle(feature: Feature) {
         super.selectVehicle(feature)
         val id = feature.getStringProperty(PROPERTY_TITLE)
-        observableUtil.createFollowBusObs(id)
+        rxUtil.createFollowBusSingle(id)
             .observeOn(Schedulers.computation())
             .map(BusesFunction(this@BusMapActivity, feature, false))
             .observeOn(AndroidSchedulers.mainThread())
@@ -215,10 +212,11 @@ class BusMapActivity : FragmentMapActivity() {
                 })
     }
 
+    @SuppressLint("CheckResult")
     private fun clickOnVehicleInfo(feature: Feature) {
         showProgress(true)
         val id = feature.getStringProperty(PROPERTY_TITLE)
-        observableUtil.createFollowBusObs(id)
+        rxUtil.createFollowBusSingle(id)
             .observeOn(Schedulers.computation())
             .map(BusesFunction(this@BusMapActivity, feature, true))
             .observeOn(AndroidSchedulers.mainThread())
@@ -231,6 +229,7 @@ class BusMapActivity : FragmentMapActivity() {
                 })
     }
 
+    @SuppressLint("CheckResult")
     private fun loadActivityData() {
         if (Util.isNetworkAvailable()) {
             loadBuses()
@@ -303,8 +302,9 @@ class BusMapActivity : FragmentMapActivity() {
         }
     }
 
+    @SuppressLint("CheckResult")
     private fun loadBuses() {
-        observableUtil.createBusListObs(busRouteId)
+        rxUtil.createBusListSingle(busRouteId)
             .observeOn(Schedulers.computation())
             .map { buses ->
                 val features = buses.map { bus ->

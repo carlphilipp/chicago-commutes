@@ -21,6 +21,7 @@ package fr.cph.chicago.core.activity.station
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
@@ -36,11 +37,13 @@ import fr.cph.chicago.core.listener.GoogleMapOnClickListener
 import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.Position
-import fr.cph.chicago.rx.BikeAllBikeStationsObserver
-import fr.cph.chicago.rx.RxUtil
+import fr.cph.chicago.redux.AppState
+import fr.cph.chicago.redux.LoadBikeStationAction
+import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.Color
 import fr.cph.chicago.util.Util
+import org.rekotlin.StoreSubscriber
 
 /**
  * Activity the list of train stations
@@ -48,7 +51,7 @@ import fr.cph.chicago.util.Util
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
+class BikeStationActivity : StationActivity(R.layout.activity_bike_station), StoreSubscriber<AppState> {
 
     @BindView(R.id.activity_station_swipe_refresh_layout)
     lateinit var swipeRefreshLayout: SwipeRefreshLayout
@@ -78,7 +81,6 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
     @BindString(R.string.bundle_bike_station)
     lateinit var bundleBikeStation: String
 
-    private val bikeStationsSingle = RxUtil.createAllBikeStationsSingle()
     private val preferenceService: PreferenceService = PreferenceService
 
     private lateinit var bikeStation: BikeStation
@@ -91,7 +93,7 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
         val longitude = bikeStation.longitude
 
         swipeRefreshLayout.setOnRefreshListener {
-            bikeStationsSingle.subscribe(BikeAllBikeStationsObserver(this, bikeStation.id))
+            mainStore.dispatch(LoadBikeStationAction())
             // FIXME: Identify if it's the place holder or not. This is not great
             if (streetViewImage.scaleType == ImageView.ScaleType.CENTER) {
                 loadGoogleStreetImage(Position(latitude, longitude), streetViewImage, streetViewProgressBar)
@@ -117,11 +119,43 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
         setToolBar()
     }
 
+    override fun onPause() {
+        super.onPause()
+        mainStore.unsubscribe(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mainStore.subscribe(this)
+    }
+
+    override fun newState(state: AppState) {
+        if (state.bikeStationsError) {
+            util.showSnackBar(swipeRefreshLayout, state.bikeStationsErrorMessage)
+        } else {
+            state.bikeStations
+                .filter { station -> bikeStation.id == station.id }
+                .elementAtOrElse(0) { BikeStation.buildDefaultBikeStationWithName("error") }
+                .also { station ->
+                    if (station.name != "error") {
+                        // FIXME: Check if the updade is good and remove that line
+                        Log.d(TAG, "Station found: [${station.name} - ${station.availableBikes}/${station.availableDocks}]")
+                        refreshStation(station)
+                        intent.extras?.putParcelable(getString(R.string.bundle_bike_station), station)
+                    } else {
+                        Log.w(TAG, "Train station id [${bikeStation.id}] not found")
+                        util.showOopsSomethingWentWrong(swipeRefreshLayout)
+                    }
+                }
+        }
+        stopRefreshing()
+    }
+
     private fun setToolBar() {
         toolbar.inflateMenu(R.menu.main)
         toolbar.setOnMenuItemClickListener {
             swipeRefreshLayout.isRefreshing = true
-            bikeStationsSingle.subscribe(BikeAllBikeStationsObserver(this@BikeStationActivity, bikeStation.id))
+            mainStore.dispatch(LoadBikeStationAction())
             false
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -171,9 +205,13 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
         return preferenceService.isBikeStationFavorite(bikeStation.id)
     }
 
-    fun refreshStation(station: BikeStation) {
+    private fun refreshStation(station: BikeStation) {
         this.bikeStation = station
         drawData()
+    }
+
+    private fun stopRefreshing() {
+        swipeRefreshLayout.isRefreshing = false
     }
 
     /**
@@ -191,5 +229,10 @@ class BikeStationActivity : StationActivity(R.layout.activity_bike_station) {
             App.instance.refresh = true
             true
         }
+    }
+
+    companion object {
+        private val TAG = BikeStationActivity::class.java.simpleName
+        private val util = Util
     }
 }

@@ -51,7 +51,8 @@ import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.util.LayoutUtil
 import fr.cph.chicago.util.TimeUtil
 import fr.cph.chicago.util.Util
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 
 /**
  * Adapter that will handle favorites
@@ -175,7 +176,7 @@ class FavoritesAdapter(private val activity: MainActivity) : RecyclerView.Adapte
         holder.favoriteImage.setImageResource(R.drawable.ic_directions_bike_white_24dp)
 
         holder.detailsButton.isEnabled = bikeStation.latitude != 0.0 && bikeStation.longitude != 0.0
-        holder.detailsButton.setOnClickListener(BikeDetailsButtonOnClickListener(activity, bikeStation))
+        holder.detailsButton.setOnClickListener(BikeDetailsButtonOnClickListener(bikeStation))
 
         holder.mapButton.text = App.instance.getString(R.string.favorites_view_station)
         holder.mapButton.setOnClickListener(GoogleMapOnClickListener(bikeStation.latitude, bikeStation.longitude))

@@ -163,10 +163,10 @@ class TrainStationActivity : StationActivity(R.layout.activity_station), StoreSu
     }
 
     override fun newState(state: AppState) {
-        hideAllArrivalViews()
         if (state.trainStationError) {
             util.showSnackBar(swipeRefreshLayout, state.trainStationErrorMessage)
         } else {
+            hideAllArrivalViews()
             state.trainStationArrival.trainEtas.forEach { drawAllArrivalsTrain(it) }
         }
         stopRefreshing()

@@ -60,10 +60,10 @@ import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.marker.MarkerDataHolder
-import fr.cph.chicago.rx.ObservableUtil
+import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.util.MapUtil.chicagoPosition
 import fr.cph.chicago.util.Util
-import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.functions.Function3
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
@@ -100,7 +100,7 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
     private var locationOrigin: Location? = null
 
     private val util: Util = Util
-    private val observableUtil: ObservableUtil = ObservableUtil
+    private val rxUtil: RxUtil = RxUtil
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Mapbox.getInstance(this.context!!, getString(R.string.mapbox_token))
@@ -159,10 +159,10 @@ class NearbyFragment : Fragment(R.layout.fragment_nearby_mapbox), OnMapReadyCall
         }
 
         val finalPosition = chicago ?: position
-        val trainStationAroundObservable = observableUtil.createTrainStationAroundObs(finalPosition)
-        val busStopsAroundObservable = observableUtil.createBusStopsAroundObs(finalPosition)
-        val bikeStationsObservable = observableUtil.createBikeStationAroundObs(finalPosition, bikeStations)
-        Observable.zip(trainStationAroundObservable, busStopsAroundObservable, bikeStationsObservable, Function3 { trains: List<TrainStation>, buses: List<BusStop>, divvies: List<BikeStation> ->
+        val trainStationAroundObservable = rxUtil.createTrainStationAroundSingle(finalPosition)
+        val busStopsAroundObservable = rxUtil.createBusStopsAroundSingle(finalPosition)
+        val bikeStationsObservable = rxUtil.createBikeStationAroundSingle(finalPosition, bikeStations)
+        Single.zip(trainStationAroundObservable, busStopsAroundObservable, bikeStationsObservable, Function3 { trains: List<TrainStation>, buses: List<BusStop>, divvies: List<BikeStation> ->
             map.cameraPosition = CameraPosition.Builder()
                 .target(LatLng(finalPosition.latitude, finalPosition.longitude))
                 .zoom(15.0)

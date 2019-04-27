@@ -30,6 +30,18 @@ data class LoadFavoritesDataAction(
     )
 ) : Action
 
+// Bus Routes
+data class LoadBusRoutesAction(
+    val error: Boolean = false,
+    val busRoutes: List<BusRoute> = listOf()
+) : Action
+
+// Bike stations
+data class LoadBikesAction(
+    val bikeStationsError: Boolean = false,
+    val bikeStations: List<BikeStation> = listOf()
+) : Action
+
 // Bus Routes + Bike stations
 data class LoadFirstDataAction(
     val busRoutesError: Boolean = false,
@@ -59,3 +71,11 @@ data class LoadBusStopArrivalsAction(
     val busArrivalStopDTO: BusArrivalStopDTO = BusArrivalStopDTO()
 ) : Action
 
+// Bike station activity
+data class LoadBikeStationAction(
+    val error: Boolean = false,
+    val errorMessage: Int = R.string.message_something_went_wrong,
+    val bikeStations: List<BikeStation> = listOf()
+) : Action
+
+data class HighlightBackgroundDone(val unit: Unit = Unit) : Action
