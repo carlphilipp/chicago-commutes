@@ -100,4 +100,28 @@ internal val loadTrainStationMiddleware: Middleware<StateType> = { _, _ ->
     }
 }
 
+internal val loadBusStopArrivalsMiddleware: Middleware<StateType> = { _, _ ->
+    { next ->
+        { action ->
+            (action as? LoadBusStopArrivalsAction)?.let {
+                RxUtil.createBusArrivalObs(action.requestRt, action.busRouteId, action.requestStopId, action.busStopId, action.bound, action.boundTitle)
+                    .subscribe(
+                        { busArrivalStopDTO -> next(LoadBusStopArrivalsAction(busArrivalStopDTO = busArrivalStopDTO)) },
+                        { throwable ->
+                            val errorMessage = if (throwable is ConnectException)
+                                R.string.message_connect_error
+                            else
+                                R.string.message_something_went_wrong
+                            next(LoadBusStopArrivalsAction(
+                                error = true,
+                                errorMessage = errorMessage)
+                            )
+                        }
+                    )
+            } ?: next(action)
+        }
+    }
+}
+
+
 private const val TAG = "Middleware"

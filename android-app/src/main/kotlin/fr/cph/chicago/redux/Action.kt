@@ -7,6 +7,7 @@ import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.core.model.TrainStation
 import fr.cph.chicago.core.model.dto.BusArrivalDTO
+import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
 import fr.cph.chicago.core.model.dto.FavoritesDTO
 import fr.cph.chicago.core.model.dto.TrainArrivalDTO
 import org.rekotlin.Action
@@ -37,9 +38,24 @@ data class LoadFirstDataAction(
     val bikeStations: List<BikeStation> = listOf()
 ) : Action
 
+// Train station activity
 data class LoadTrainStationAction(
     val trainStation: TrainStation = TrainStation.buildEmptyStation(),
     val error: Boolean = false,
     val errorMessage: Int = R.string.message_something_went_wrong,
     val trainArrival: TrainArrival = TrainArrival()
 ) : Action
+
+// Bus stop activity
+data class LoadBusStopArrivalsAction(
+    val error: Boolean = false,
+    val errorMessage: Int = R.string.message_something_went_wrong,
+    val requestRt: String = "",
+    val busRouteId: String = "",
+    val requestStopId: String = "",
+    val busStopId: Int = 0,
+    val bound: String = "",
+    val boundTitle: String = "",
+    val busArrivalStopDTO: BusArrivalStopDTO = BusArrivalStopDTO()
+) : Action
+

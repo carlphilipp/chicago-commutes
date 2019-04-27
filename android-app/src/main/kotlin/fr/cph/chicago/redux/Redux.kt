@@ -11,7 +11,8 @@ val mainStore = Store(
         loadLocalAndFavoritesDataMiddleware,
         loadFirstDataMiddleware,
         loadFavoritesDataMiddleware,
-        loadTrainStationMiddleware
+        loadTrainStationMiddleware,
+        loadBusStopArrivalsMiddleware
     )
 )
 
@@ -71,6 +72,14 @@ fun reducer(action: Action, oldState: AppState?): AppState {
                     trainStationArrival = action.trainArrival
                 )
             }
+        }
+        is LoadBusStopArrivalsAction -> {
+            state = state.copy(
+                lastAction = Date(),
+                busStopError = action.error,
+                busStopErrorMessage = action.errorMessage,
+                busArrivalStopDTO = action.busArrivalStopDTO
+            )
         }
     }
     return state

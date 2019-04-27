@@ -19,6 +19,7 @@
 
 package fr.cph.chicago.core.activity.station
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -40,15 +41,18 @@ import fr.cph.chicago.core.listener.GoogleStreetOnClickListener
 import fr.cph.chicago.core.model.BusStop
 import fr.cph.chicago.core.model.Position
 import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
+import fr.cph.chicago.redux.AppState
+import fr.cph.chicago.redux.LoadBusStopArrivalsAction
+import fr.cph.chicago.redux.mainStore
 import fr.cph.chicago.rx.RxUtil
 import fr.cph.chicago.service.PreferenceService
 import fr.cph.chicago.util.Color
 import fr.cph.chicago.util.LayoutUtil
 import fr.cph.chicago.util.Util
-import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import org.rekotlin.StoreSubscriber
 
 /**
  * Activity that represents the bus stop
@@ -56,7 +60,7 @@ import io.reactivex.schedulers.Schedulers
  * @author Carl-Philipp Harmant
  * @version 1
  */
-class BusStopActivity : StationActivity(R.layout.activity_bus) {
+class BusStopActivity : StationActivity(R.layout.activity_bus), StoreSubscriber<AppState> {
 
     @BindView(R.id.activity_bus_stop_swipe_refresh_layout)
     lateinit var swipeRefreshLayout: SwipeRefreshLayout
@@ -121,6 +125,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
     private var latitude: Double = 0.0
     private var longitude: Double = 0.0
     private var isFavorite: Boolean = false
+    private lateinit var loadBusStopArrivalsAction: LoadBusStopArrivalsAction
 
     override fun create(savedInstanceState: Bundle?) {
         busStopId = intent.getIntExtra(bundleBusStopId, 0)
@@ -128,6 +133,14 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
         bound = intent.getStringExtra(bundleBusBound)
         boundTitle = intent.getStringExtra(bundleBusBoundTitle)
         busRouteName = intent.getStringExtra(bundleBusRouteName)
+
+        loadBusStopArrivalsAction = LoadBusStopArrivalsAction(
+            requestRt = requestRt,
+            busRouteId = busRouteId,
+            requestStopId = requestStopId,
+            busStopId = busStopId,
+            bound = bound,
+            boundTitle = boundTitle)
 
         isFavorite = isFavorite()
 
@@ -139,9 +152,9 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
 
         swipeRefreshLayout.setOnRefreshListener {
             if (latitude == 0.0 && longitude == 0.0) {
-                loadData()
+                loadStopDetailsAndStreetImage()
             } else {
-                loadArrivals()
+                mainStore.dispatch(loadBusStopArrivalsAction)
                 // FIXME: Identify if it's the place holder or not. This is not great
                 if (streetViewImage.scaleType == ImageView.ScaleType.CENTER) {
                     loadGoogleStreetImage(Position(latitude, longitude), streetViewImage, streetViewProgressBar)
@@ -154,13 +167,33 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
 
         setToolBar()
 
-        loadData()
+        loadStopDetailsAndStreetImage()
     }
 
-    private fun loadData() {
-        // Load buses arrivals
-        loadArrivals()
+    override fun onPause() {
+        super.onPause()
+        mainStore.unsubscribe(this)
+    }
 
+    override fun onResume() {
+        super.onResume()
+        mainStore.subscribe(this)
+        mainStore.dispatch(loadBusStopArrivalsAction)
+    }
+
+    override fun newState(state: AppState) {
+        if (state.busStopError) {
+            util.showSnackBar(swipeRefreshLayout, state.busStopErrorMessage)
+        } else {
+            refreshActivity(state.busArrivalStopDTO)
+        }
+        if (swipeRefreshLayout.isRefreshing) {
+            swipeRefreshLayout.isRefreshing = false
+        }
+    }
+
+    @SuppressLint("CheckResult")
+    private fun loadStopDetailsAndStreetImage() {
         // Load bus stop details and google street image
         RxUtil.createBusStopsForRouteBoundSingle(busRouteId, boundTitle)
             .observeOn(Schedulers.computation())
@@ -196,19 +229,6 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
                 })
     }
 
-    private fun loadArrivals() {
-        RxUtil.createBusArrivalObs(requestRt, busRouteId, requestStopId, busStopId, bound, boundTitle)
-            .doOnError { util.showOopsSomethingWentWrong(swipeRefreshLayout) }
-            .doFinally {
-                if (swipeRefreshLayout.isRefreshing) {
-                    swipeRefreshLayout.isRefreshing = false
-                }
-            }
-            .subscribe(
-                { result -> refreshActivity(result) },
-                { util.showOopsSomethingWentWrong(swipeRefreshLayout) })
-    }
-
     private fun onError() {
         util.showOopsSomethingWentWrong(swipeRefreshLayout)
         failStreetViewImage(streetViewImage)
@@ -219,7 +239,7 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
         toolbar.inflateMenu(R.menu.main)
         toolbar.setOnMenuItemClickListener {
             swipeRefreshLayout.isRefreshing = true
-            loadArrivals()
+            mainStore.dispatch(loadBusStopArrivalsAction)
             false
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -240,6 +260,13 @@ class BusStopActivity : StationActivity(R.layout.activity_bus) {
         busRouteName = savedInstanceState.getString(bundleBusRouteName) ?: ""
         latitude = savedInstanceState.getDouble(bundleBusLatitude)
         longitude = savedInstanceState.getDouble(bundleBusLongitude)
+        loadBusStopArrivalsAction = LoadBusStopArrivalsAction(
+            requestRt = requestRt,
+            busRouteId = busRouteId,
+            requestStopId = requestStopId,
+            busStopId = busStopId,
+            bound = bound,
+            boundTitle = boundTitle)
     }
 
     override fun onSaveInstanceState(savedInstanceState: Bundle) {

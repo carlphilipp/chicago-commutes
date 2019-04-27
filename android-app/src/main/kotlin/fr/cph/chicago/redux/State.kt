@@ -6,6 +6,7 @@ import fr.cph.chicago.core.model.BikeStation
 import fr.cph.chicago.core.model.BusRoute
 import fr.cph.chicago.core.model.TrainArrival
 import fr.cph.chicago.core.model.dto.BusArrivalDTO
+import fr.cph.chicago.core.model.dto.BusArrivalStopDTO
 import fr.cph.chicago.core.model.dto.TrainArrivalDTO
 import org.rekotlin.StateType
 import java.util.Date
@@ -28,5 +29,10 @@ data class AppState(
     // Train Station activity state
     val trainStationError: Boolean = false,
     val trainStationErrorMessage: Int = R.string.message_something_went_wrong,
-    val trainStationArrival: TrainArrival = TrainArrival.buildEmptyTrainArrival()
+    val trainStationArrival: TrainArrival = TrainArrival.buildEmptyTrainArrival(),
+
+    // Bus stop activity state
+    val busStopError : Boolean = false,
+    val busStopErrorMessage: Int = R.string.message_something_went_wrong,
+    val busArrivalStopDTO: BusArrivalStopDTO = BusArrivalStopDTO()
 ) : StateType
